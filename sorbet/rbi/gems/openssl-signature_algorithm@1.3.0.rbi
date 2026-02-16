@@ -5,6 +5,10 @@
 # Please instead update this file by running `bin/tapioca gem openssl-signature_algorithm`.
 
 
+class OpenSSL::ASN1::Constructive < ::OpenSSL::ASN1::ASN1Data
+  include ::Enumerable
+end
+
 class OpenSSL::Config
   include ::Enumerable
 end

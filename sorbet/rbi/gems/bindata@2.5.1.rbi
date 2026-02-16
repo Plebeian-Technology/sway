@@ -841,29 +841,6 @@ module BinData::BasePrimitive::ValuePlugin
   def assign(val); end
 end
 
-# source://bindata//lib/bindata/bits.rb#15
-class BinData::Bit < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/bits.rb#27
-  def assign(val); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def bit_aligned?; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_num_bytes; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_write(io); end
-
-  private
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def read_and_return_value(io); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def sensible_default; end
-end
-
 # A monkey patch to force byte-aligned primitives to
 # become bit-aligned.  This allows them to be used at
 # non byte based boundaries.
@@ -955,29 +932,6 @@ end
 module BinData::BitFieldFactory
   # source://bindata//lib/bindata/bits.rb#167
   def const_missing(name); end
-end
-
-# source://bindata//lib/bindata/bits.rb#15
-class BinData::BitLe < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/bits.rb#27
-  def assign(val); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def bit_aligned?; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_num_bytes; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_write(io); end
-
-  private
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def read_and_return_value(io); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def sensible_default; end
 end
 
 # A Buffer is conceptually a substream within a data stream.  It has a
@@ -2915,52 +2869,6 @@ class BinData::SanitizedPrototype < ::BinData::SanitizedParameter
 
   # source://bindata//lib/bindata/sanitize.rb#38
   def instantiate(value = T.unsafe(nil), parent = T.unsafe(nil)); end
-end
-
-# source://bindata//lib/bindata/bits.rb#15
-class BinData::Sbit < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/bits.rb#27
-  def assign(val); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def bit_aligned?; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_num_bytes; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_write(io); end
-
-  private
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def read_and_return_value(io); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def sensible_default; end
-end
-
-# source://bindata//lib/bindata/bits.rb#15
-class BinData::SbitLe < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/bits.rb#27
-  def assign(val); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def bit_aligned?; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_num_bytes; end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def do_write(io); end
-
-  private
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def read_and_return_value(io); end
-
-  # source://bindata//lib/bindata/bits.rb#27
-  def sensible_default; end
 end
 
 # A Section is a layer on top of a stream that transforms the underlying

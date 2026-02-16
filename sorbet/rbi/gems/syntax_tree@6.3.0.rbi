@@ -22906,10 +22906,10 @@ class SyntaxTree::YARV::VM
   def local_set(index, level, value); end
 
   # source://syntax_tree//lib/syntax_tree/yarv/vm.rb#212
-  def pop(*args, **_arg1, &block); end
+  def pop(*_arg0, **_arg1, &_arg2); end
 
   # source://syntax_tree//lib/syntax_tree/yarv/vm.rb#212
-  def push(*args, **_arg1, &block); end
+  def push(*_arg0, **_arg1, &_arg2); end
 
   # source://syntax_tree//lib/syntax_tree/yarv/vm.rb#598
   def require(filepath); end

@@ -919,7 +919,7 @@ class CSV
   def add_row(row); end
 
   # source://csv//lib/csv.rb#2389
-  def binmode(*args, **_arg1, &block); end
+  def binmode(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
   #
@@ -927,16 +927,16 @@ class CSV
   def binmode?; end
 
   # source://csv//lib/csv.rb#2389
-  def close(*args, **_arg1, &block); end
+  def close(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def close_read(*args, **_arg1, &block); end
+  def close_read(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def close_write(*args, **_arg1, &block); end
+  def close_write(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def closed?(*args, **_arg1, &block); end
+  def closed?(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.col_sep -> string
@@ -1099,10 +1099,10 @@ class CSV
   def eof?; end
 
   # source://csv//lib/csv.rb#2389
-  def external_encoding(*args, **_arg1, &block); end
+  def external_encoding(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def fcntl(*args, **_arg1, &block); end
+  def fcntl(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.field_size_limit -> integer or nil
@@ -1117,7 +1117,7 @@ class CSV
   def field_size_limit; end
 
   # source://csv//lib/csv.rb#2389
-  def fileno(*args, **_arg1, &block); end
+  def fileno(*_arg0, **_arg1, &_arg2); end
 
   # @raise [NotImplementedError]
   #
@@ -1125,7 +1125,7 @@ class CSV
   def flock(*args); end
 
   # source://csv//lib/csv.rb#2389
-  def flush(*args, **_arg1, &block); end
+  def flush(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.force_quotes? -> true or false
@@ -1141,7 +1141,7 @@ class CSV
   def force_quotes?; end
 
   # source://csv//lib/csv.rb#2389
-  def fsync(*args, **_arg1, &block); end
+  def fsync(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.shift -> array, csv_row, or nil
@@ -1271,7 +1271,7 @@ class CSV
   def inspect; end
 
   # source://csv//lib/csv.rb#2389
-  def internal_encoding(*args, **_arg1, &block); end
+  def internal_encoding(*_arg0, **_arg1, &_arg2); end
 
   # @raise [NotImplementedError]
   #
@@ -1279,7 +1279,7 @@ class CSV
   def ioctl(*args); end
 
   # source://csv//lib/csv.rb#2389
-  def isatty(*args, **_arg1, &block); end
+  def isatty(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.liberal_parsing? -> true or false
@@ -1362,13 +1362,13 @@ class CSV
   def path; end
 
   # source://csv//lib/csv.rb#2389
-  def pid(*args, **_arg1, &block); end
+  def pid(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def pos(*args, **_arg1, &block); end
+  def pos(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def pos=(*args, **_arg1, &block); end
+  def pos=(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv << row -> self
@@ -1542,7 +1542,7 @@ class CSV
   def readlines; end
 
   # source://csv//lib/csv.rb#2389
-  def reopen(*args, **_arg1, &block); end
+  def reopen(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.return_headers? -> true or false
@@ -1572,7 +1572,7 @@ class CSV
   def row_sep; end
 
   # source://csv//lib/csv.rb#2389
-  def seek(*args, **_arg1, &block); end
+  def seek(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.shift -> array, csv_row, or nil
@@ -1639,16 +1639,16 @@ class CSV
   def stat(*args); end
 
   # source://csv//lib/csv.rb#2389
-  def string(*args, **_arg1, &block); end
+  def string(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def sync(*args, **_arg1, &block); end
+  def sync(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def sync=(*args, **_arg1, &block); end
+  def sync=(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def tell(*args, **_arg1, &block); end
+  def tell(*_arg0, **_arg1, &_arg2); end
 
   # @raise [NotImplementedError]
   #
@@ -1659,10 +1659,10 @@ class CSV
   def to_io; end
 
   # source://csv//lib/csv.rb#2389
-  def truncate(*args, **_arg1, &block); end
+  def truncate(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv.rb#2389
-  def tty?(*args, **_arg1, &block); end
+  def tty?(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   csv.unconverted_fields? -> object
@@ -3496,7 +3496,7 @@ class CSV::Row
   def each_pair(&block); end
 
   # source://csv//lib/csv/row.rb#124
-  def empty?(*args, **_arg1, &block); end
+  def empty?(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   fetch(header) -> value
@@ -3768,7 +3768,7 @@ class CSV::Row
   def key?(header); end
 
   # source://csv//lib/csv/row.rb#124
-  def length(*args, **_arg1, &block); end
+  def length(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   row.has_key?(header) -> true or false
@@ -3795,7 +3795,7 @@ class CSV::Row
   def push(*args); end
 
   # source://csv//lib/csv/row.rb#124
-  def size(*args, **_arg1, &block); end
+  def size(*_arg0, **_arg1, &_arg2); end
 
   # source://csv//lib/csv/row.rb#675
   def to_ary(*_arg0); end
@@ -4688,7 +4688,7 @@ class CSV::Table
   def each(&block); end
 
   # source://csv//lib/csv/table.rb#223
-  def empty?(*args, **_arg1, &block); end
+  def empty?(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   table.headers -> array_of_headers
@@ -4732,7 +4732,7 @@ class CSV::Table
   def inspect; end
 
   # source://csv//lib/csv/table.rb#223
-  def length(*args, **_arg1, &block); end
+  def length(*_arg0, **_arg1, &_arg2); end
 
   # The current access mode for indexing and iteration.
   #
@@ -4759,7 +4759,7 @@ class CSV::Table
   def push(*rows); end
 
   # source://csv//lib/csv/table.rb#223
-  def size(*args, **_arg1, &block); end
+  def size(*_arg0, **_arg1, &_arg2); end
 
   # :call-seq:
   #   table.to_a -> array_of_arrays

@@ -1172,7 +1172,7 @@ class SimpleCov::FileList
   def branch_covered_percent; end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def count(*args, **_arg1, &block); end
+  def count(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/file_list.rb#26
   def coverage_statistics; end
@@ -1211,10 +1211,10 @@ class SimpleCov::FileList
   def covered_strength; end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def each(*args, **_arg1, &block); end
+  def each(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def empty?(*args, **_arg1, &block); end
+  def empty?(*_arg0, **_arg1, &_arg2); end
 
   # Finds the least covered file and returns that file's name
   #
@@ -1222,7 +1222,7 @@ class SimpleCov::FileList
   def least_covered_file; end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def length(*args, **_arg1, &block); end
+  def length(*_arg0, **_arg1, &_arg2); end
 
   # Returns the overall amount of relevant lines of code across all files in this list
   #
@@ -1230,7 +1230,7 @@ class SimpleCov::FileList
   def lines_of_code; end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def map(*args, **_arg1, &block); end
+  def map(*_arg0, **_arg1, &_arg2); end
 
   # Return total count of covered branches
   #
@@ -1248,7 +1248,7 @@ class SimpleCov::FileList
   def never_lines; end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def size(*args, **_arg1, &block); end
+  def size(*_arg0, **_arg1, &_arg2); end
 
   # Returns the count of skipped lines
   #
@@ -1256,10 +1256,10 @@ class SimpleCov::FileList
   def skipped_lines; end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def to_a(*args, **_arg1, &block); end
+  def to_a(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/file_list.rb#10
-  def to_ary(*args, **_arg1, &block); end
+  def to_ary(*_arg0, **_arg1, &_arg2); end
 
   # Return total count of branches in all files
   #
@@ -1466,25 +1466,25 @@ class SimpleCov::Result
   def command_name=(_arg0); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def coverage_statistics(*args, **_arg1, &block); end
+  def coverage_statistics(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def coverage_statistics_by_file(*args, **_arg1, &block); end
+  def coverage_statistics_by_file(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def covered_branches(*args, **_arg1, &block); end
+  def covered_branches(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def covered_lines(*args, **_arg1, &block); end
+  def covered_lines(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def covered_percent(*args, **_arg1, &block); end
+  def covered_percent(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def covered_percentages(*args, **_arg1, &block); end
+  def covered_percentages(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def covered_strength(*args, **_arg1, &block); end
+  def covered_strength(*_arg0, **_arg1, &_arg2); end
 
   # Defines when this result has been created. Defaults to Time.now
   #
@@ -1517,13 +1517,13 @@ class SimpleCov::Result
   def groups; end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def least_covered_file(*args, **_arg1, &block); end
+  def least_covered_file(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def missed_branches(*args, **_arg1, &block); end
+  def missed_branches(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def missed_lines(*args, **_arg1, &block); end
+  def missed_lines(*_arg0, **_arg1, &_arg2); end
 
   # Returns the original Coverage.result used for this instance of SimpleCov::Result
   #
@@ -1541,10 +1541,10 @@ class SimpleCov::Result
   def to_hash; end
 
   # source://simplecov//lib/simplecov/result.rb#23
-  def total_branches(*args, **_arg1, &block); end
+  def total_branches(*_arg0, **_arg1, &_arg2); end
 
   # source://simplecov//lib/simplecov/result.rb#24
-  def total_lines(*args, **_arg1, &block); end
+  def total_lines(*_arg0, **_arg1, &_arg2); end
 
   private
 

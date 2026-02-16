@@ -88,19 +88,19 @@ class ViteRuby
     def bootstrap; end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def commands(*args, **_arg1, &block); end
+    def commands(*_arg0, **_arg1, &_arg2); end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def config(*args, **_arg1, &block); end
+    def config(*_arg0, **_arg1, &_arg2); end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def configure(*args, **_arg1, &block); end
+    def configure(*_arg0, **_arg1, &_arg2); end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def digest(*args, **_arg1, &block); end
+    def digest(*_arg0, **_arg1, &_arg2); end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def env(*args, **_arg1, &block); end
+    def env(*_arg0, **_arg1, &_arg2); end
 
     # Internal: Detects if the application has installed a framework-specific
     # variant of Vite Ruby.
@@ -117,7 +117,7 @@ class ViteRuby
     def instance; end
 
     # source://vite_ruby//lib/vite_ruby.rb#36
-    def mode(*args, **_arg1, &block); end
+    def mode(*_arg0, **_arg1, &_arg2); end
 
     # Internal: Creates a new instance with the specified options.
     #
@@ -125,10 +125,10 @@ class ViteRuby
     def reload_with(**config_options); end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def run(*args, **_arg1, &block); end
+    def run(*_arg0, **_arg1, &_arg2); end
 
     # source://vite_ruby//lib/vite_ruby.rb#35
-    def run_proxy?(*args, **_arg1, &block); end
+    def run_proxy?(*_arg0, **_arg1, &_arg2); end
   end
 end
 
@@ -333,7 +333,7 @@ class ViteRuby::Builder
   def build(*args); end
 
   # source://vite_ruby//lib/vite_ruby/builder.rb#39
-  def config(*args, **_arg1, &block); end
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # Internal: Reads the result of the last compilation from disk.
   #
@@ -341,10 +341,10 @@ class ViteRuby::Builder
   def last_build_metadata(ssr: T.unsafe(nil)); end
 
   # source://vite_ruby//lib/vite_ruby/builder.rb#39
-  def logger(*args, **_arg1, &block); end
+  def logger(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/builder.rb#39
-  def run(*args, **_arg1, &block); end
+  def run(*_arg0, **_arg1, &_arg2); end
 
   private
 
@@ -529,7 +529,7 @@ class ViteRuby::CLI::Install < ::Dry::CLI::Command
   def call(package_manager: T.unsafe(nil), **_arg1); end
 
   # source://vite_ruby//lib/vite_ruby/cli/install.rb#62
-  def config(*args, **_arg1, &block); end
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # Internal: Create a sample JS file and attempt to inject it in an HTML template.
   #
@@ -705,7 +705,7 @@ class ViteRuby::Commands
   def build_from_task(*args); end
 
   # source://vite_ruby//lib/vite_ruby/commands.rb#99
-  def builder(*args, **_arg1, &block); end
+  def builder(*_arg0, **_arg1, &_arg2); end
 
   # Public: Removes all build cache and previously compiled assets.
   #
@@ -713,7 +713,7 @@ class ViteRuby::Commands
   def clobber; end
 
   # source://vite_ruby//lib/vite_ruby/commands.rb#99
-  def config(*args, **_arg1, &block); end
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # Internal: Installs the binstub for the CLI in the appropriate path.
   #
@@ -735,13 +735,13 @@ class ViteRuby::Commands
   def legacy_yarn_version?; end
 
   # source://vite_ruby//lib/vite_ruby/commands.rb#99
-  def logger(*args, **_arg1, &block); end
+  def logger(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/commands.rb#99
-  def logger=(*args, **_arg1, &block); end
+  def logger=(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/commands.rb#99
-  def manifest(*args, **_arg1, &block); end
+  def manifest(*_arg0, **_arg1, &_arg2); end
 
   # Internal: Prints information about ViteRuby's environment.
   #
@@ -1034,10 +1034,10 @@ class ViteRuby::DevServerProxy < ::Rack::Proxy
   def initialize(app = T.unsafe(nil), options = T.unsafe(nil)); end
 
   # source://vite_ruby//lib/vite_ruby/dev_server_proxy.rb#30
-  def config(*args, **_arg1, &block); end
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/dev_server_proxy.rb#30
-  def dev_server_running?(*args, **_arg1, &block); end
+  def dev_server_running?(*_arg0, **_arg1, &_arg2); end
 
   # Rack: Intercept asset requests and send them to the Vite server.
   #
@@ -1134,13 +1134,13 @@ class ViteRuby::Manifest
   def initialize(vite_ruby); end
 
   # source://vite_ruby//lib/vite_ruby/manifest.rb#102
-  def builder(*args, **_arg1, &block); end
+  def builder(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/manifest.rb#102
-  def config(*args, **_arg1, &block); end
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/manifest.rb#102
-  def dev_server_running?(*args, **_arg1, &block); end
+  def dev_server_running?(*_arg0, **_arg1, &_arg2); end
 
   # Public: Returns the path for the specified Vite entrypoint file.
   #
@@ -1352,13 +1352,13 @@ class ViteRuby::Runner
   def initialize(vite_ruby); end
 
   # source://vite_ruby//lib/vite_ruby/runner.rb#26
-  def config(*args, **_arg1, &block); end
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/runner.rb#26
-  def env(*args, **_arg1, &block); end
+  def env(*_arg0, **_arg1, &_arg2); end
 
   # source://vite_ruby//lib/vite_ruby/runner.rb#26
-  def logger(*args, **_arg1, &block); end
+  def logger(*_arg0, **_arg1, &_arg2); end
 
   # Public: Executes Vite with the specified arguments.
   #

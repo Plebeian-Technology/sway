@@ -187,6 +187,9 @@ module GeneratedUrlHelpersModule
   def root_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def settings_notifications_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def sway_locale_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

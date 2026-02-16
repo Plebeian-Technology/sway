@@ -48,52 +48,52 @@ module Capybara
     def add_selector(name, **options, &block); end
 
     # source://capybara//lib/capybara.rb#45
-    def allow_gumbo(*args, **_arg1, &block); end
+    def allow_gumbo(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def allow_gumbo=(*args, **_arg1, &block); end
+    def allow_gumbo=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#58
-    def always_include_port(*args, **_arg1, &block); end
+    def always_include_port(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def always_include_port=(*args, **_arg1, &block); end
+    def always_include_port=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def app(*args, **_arg1, &block); end
+    def app(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def app=(*args, **_arg1, &block); end
+    def app=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#58
-    def app_host(*args, **_arg1, &block); end
+    def app_host(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def app_host=(*args, **_arg1, &block); end
+    def app_host=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def asset_host(*args, **_arg1, &block); end
+    def asset_host(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def asset_host=(*args, **_arg1, &block); end
+    def asset_host=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def automatic_label_click(*args, **_arg1, &block); end
+    def automatic_label_click(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def automatic_label_click=(*args, **_arg1, &block); end
+    def automatic_label_click=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def automatic_reload(*args, **_arg1, &block); end
+    def automatic_reload(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def automatic_reload=(*args, **_arg1, &block); end
+    def automatic_reload=(*_arg0, **_arg1, &_arg2); end
 
     # Configure Capybara to suit your needs.
     #
@@ -169,103 +169,103 @@ module Capybara
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def default_driver(*args, **_arg1, &block); end
+    def default_driver(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def default_driver=(*args, **_arg1, &block); end
+    def default_driver=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def default_host(*args, **_arg1, &block); end
+    def default_host(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def default_host=(*args, **_arg1, &block); end
-
-    # See {Capybara.configure}
-    #
-    # source://capybara//lib/capybara.rb#58
-    def default_max_wait_time(*args, **_arg1, &block); end
-
-    # source://capybara//lib/capybara.rb#58
-    def default_max_wait_time=(*args, **_arg1, &block); end
-
-    # source://capybara//lib/capybara.rb#58
-    def default_normalize_ws(*args, **_arg1, &block); end
-
-    # source://capybara//lib/capybara.rb#58
-    def default_normalize_ws=(*args, **_arg1, &block); end
-
-    # source://capybara//lib/capybara.rb#58
-    def default_retry_interval(*args, **_arg1, &block); end
-
-    # source://capybara//lib/capybara.rb#58
-    def default_retry_interval=(*args, **_arg1, &block); end
+    def default_host=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#58
-    def default_selector(*args, **_arg1, &block); end
+    def default_max_wait_time(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def default_selector=(*args, **_arg1, &block); end
+    def default_max_wait_time=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def default_set_options(*args, **_arg1, &block); end
+    def default_normalize_ws(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def default_set_options=(*args, **_arg1, &block); end
+    def default_normalize_ws=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def disable_animation(*args, **_arg1, &block); end
+    def default_retry_interval(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def disable_animation=(*args, **_arg1, &block); end
+    def default_retry_interval=(*_arg0, **_arg1, &_arg2); end
+
+    # See {Capybara.configure}
+    #
+    # source://capybara//lib/capybara.rb#58
+    def default_selector(*_arg0, **_arg1, &_arg2); end
+
+    # source://capybara//lib/capybara.rb#58
+    def default_selector=(*_arg0, **_arg1, &_arg2); end
+
+    # source://capybara//lib/capybara.rb#58
+    def default_set_options(*_arg0, **_arg1, &_arg2); end
+
+    # source://capybara//lib/capybara.rb#58
+    def default_set_options=(*_arg0, **_arg1, &_arg2); end
+
+    # source://capybara//lib/capybara.rb#58
+    def disable_animation(*_arg0, **_arg1, &_arg2); end
+
+    # source://capybara//lib/capybara.rb#58
+    def disable_animation=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#204
     def drivers; end
 
     # source://capybara//lib/capybara.rb#58
-    def enable_aria_label(*args, **_arg1, &block); end
+    def enable_aria_label(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def enable_aria_label=(*args, **_arg1, &block); end
+    def enable_aria_label=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def enable_aria_role(*args, **_arg1, &block); end
+    def enable_aria_role(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def enable_aria_role=(*args, **_arg1, &block); end
+    def enable_aria_role=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def exact(*args, **_arg1, &block); end
+    def exact(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def exact=(*args, **_arg1, &block); end
+    def exact=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def exact_text(*args, **_arg1, &block); end
+    def exact_text(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def exact_text=(*args, **_arg1, &block); end
+    def exact_text=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def ignore_hidden_elements(*args, **_arg1, &block); end
+    def ignore_hidden_elements(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def ignore_hidden_elements=(*args, **_arg1, &block); end
+    def ignore_hidden_elements=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def javascript_driver(*args, **_arg1, &block); end
+    def javascript_driver(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def javascript_driver=(*args, **_arg1, &block); end
+    def javascript_driver=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def match(*args, **_arg1, &block); end
+    def match(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def match=(*args, **_arg1, &block); end
+    def match=(*_arg0, **_arg1, &_arg2); end
 
     # @return [Symbol] The name of the driver currently in use
     #
@@ -287,16 +287,16 @@ module Capybara
     def modify_selector(name, &block); end
 
     # source://capybara//lib/capybara.rb#58
-    def predicates_wait(*args, **_arg1, &block); end
+    def predicates_wait(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def predicates_wait=(*args, **_arg1, &block); end
+    def predicates_wait=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def raise_server_errors(*args, **_arg1, &block); end
+    def raise_server_errors(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def raise_server_errors=(*args, **_arg1, &block); end
+    def raise_server_errors=(*_arg0, **_arg1, &_arg2); end
 
     # Register a new driver for Capybara.
     #
@@ -343,10 +343,10 @@ module Capybara
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def reuse_server(*args, **_arg1, &block); end
+    def reuse_server(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def reuse_server=(*args, **_arg1, &block); end
+    def reuse_server=(*_arg0, **_arg1, &_arg2); end
 
     # Runs Capybara's default server for the given application and port
     # under most circumstances you should not have to call this method
@@ -359,42 +359,42 @@ module Capybara
     def run_default_server(app, port); end
 
     # source://capybara//lib/capybara.rb#58
-    def run_server(*args, **_arg1, &block); end
+    def run_server(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def run_server=(*args, **_arg1, &block); end
+    def run_server=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def save_path(*args, **_arg1, &block); end
+    def save_path(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def save_path=(*args, **_arg1, &block); end
+    def save_path=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def server(*args, **_arg1, &block); end
+    def server(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def server=(*args, **_arg1, &block); end
+    def server=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def server_errors(*args, **_arg1, &block); end
+    def server_errors(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def server_errors=(*args, **_arg1, &block); end
+    def server_errors=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def server_host(*args, **_arg1, &block); end
+    def server_host(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def server_host=(*args, **_arg1, &block); end
+    def server_host=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def server_port(*args, **_arg1, &block); end
+    def server_port(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def server_port=(*args, **_arg1, &block); end
+    def server_port=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#208
     def servers; end
@@ -442,18 +442,18 @@ module Capybara
     def string(html); end
 
     # source://capybara//lib/capybara.rb#58
-    def test_id(*args, **_arg1, &block); end
+    def test_id(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def test_id=(*args, **_arg1, &block); end
+    def test_id=(*_arg0, **_arg1, &_arg2); end
 
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def threadsafe(*args, **_arg1, &block); end
+    def threadsafe(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def threadsafe=(*args, **_arg1, &block); end
+    def threadsafe=(*_arg0, **_arg1, &_arg2); end
 
     # Use the default driver as the current driver
     #
@@ -463,10 +463,10 @@ module Capybara
     # See {Capybara.configure}
     #
     # source://capybara//lib/capybara.rb#45
-    def use_html5_parsing(*args, **_arg1, &block); end
+    def use_html5_parsing(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#45
-    def use_html5_parsing=(*args, **_arg1, &block); end
+    def use_html5_parsing=(*_arg0, **_arg1, &_arg2); end
 
     # Yield a block using a specific driver
     #
@@ -484,16 +484,16 @@ module Capybara
     def using_wait_time(seconds); end
 
     # source://capybara//lib/capybara.rb#58
-    def visible_text_only(*args, **_arg1, &block); end
+    def visible_text_only(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def visible_text_only=(*args, **_arg1, &block); end
+    def visible_text_only=(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def w3c_click_offset(*args, **_arg1, &block); end
+    def w3c_click_offset(*_arg0, **_arg1, &_arg2); end
 
     # source://capybara//lib/capybara.rb#58
-    def w3c_click_offset=(*args, **_arg1, &block); end
+    def w3c_click_offset=(*_arg0, **_arg1, &_arg2); end
 
     private
 
@@ -533,10 +533,10 @@ class Capybara::Config
   def allow_gumbo=(val); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def always_include_port(*args, **_arg1, &block); end
+  def always_include_port(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def always_include_port=(*args, **_arg1, &block); end
+  def always_include_port=(*_arg0, **_arg1, &_arg2); end
 
   # Returns the value of attribute app.
   #
@@ -551,28 +551,28 @@ class Capybara::Config
   def app=(_arg0); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def app_host(*args, **_arg1, &block); end
+  def app_host(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def app_host=(*args, **_arg1, &block); end
+  def app_host=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def asset_host(*args, **_arg1, &block); end
+  def asset_host(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def asset_host=(*args, **_arg1, &block); end
+  def asset_host=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def automatic_label_click(*args, **_arg1, &block); end
+  def automatic_label_click(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def automatic_label_click=(*args, **_arg1, &block); end
+  def automatic_label_click=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def automatic_reload(*args, **_arg1, &block); end
+  def automatic_reload(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def automatic_reload=(*args, **_arg1, &block); end
+  def automatic_reload=(*_arg0, **_arg1, &_arg2); end
 
   # @return [Symbol] The name of the driver to use by default
   #
@@ -587,79 +587,79 @@ class Capybara::Config
   def default_driver=(_arg0); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_host(*args, **_arg1, &block); end
+  def default_host(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_host=(*args, **_arg1, &block); end
+  def default_host=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_max_wait_time(*args, **_arg1, &block); end
+  def default_max_wait_time(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_max_wait_time=(*args, **_arg1, &block); end
+  def default_max_wait_time=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_normalize_ws(*args, **_arg1, &block); end
+  def default_normalize_ws(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_normalize_ws=(*args, **_arg1, &block); end
+  def default_normalize_ws=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_retry_interval(*args, **_arg1, &block); end
+  def default_retry_interval(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_retry_interval=(*args, **_arg1, &block); end
+  def default_retry_interval=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_selector(*args, **_arg1, &block); end
+  def default_selector(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_selector=(*args, **_arg1, &block); end
+  def default_selector=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_set_options(*args, **_arg1, &block); end
+  def default_set_options(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def default_set_options=(*args, **_arg1, &block); end
+  def default_set_options=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#86
   def deprecate(method, alternate_method, once: T.unsafe(nil)); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def disable_animation(*args, **_arg1, &block); end
+  def disable_animation(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def disable_animation=(*args, **_arg1, &block); end
+  def disable_animation=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def enable_aria_label(*args, **_arg1, &block); end
+  def enable_aria_label(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def enable_aria_label=(*args, **_arg1, &block); end
+  def enable_aria_label=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def enable_aria_role(*args, **_arg1, &block); end
+  def enable_aria_role(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def enable_aria_role=(*args, **_arg1, &block); end
+  def enable_aria_role=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def exact(*args, **_arg1, &block); end
+  def exact(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def exact=(*args, **_arg1, &block); end
+  def exact=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def exact_text(*args, **_arg1, &block); end
+  def exact_text(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def exact_text=(*args, **_arg1, &block); end
+  def exact_text=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def ignore_hidden_elements(*args, **_arg1, &block); end
+  def ignore_hidden_elements(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def ignore_hidden_elements=(*args, **_arg1, &block); end
+  def ignore_hidden_elements=(*_arg0, **_arg1, &_arg2); end
 
   # @return [Symbol] The name of the driver used when JavaScript is needed
   #
@@ -674,22 +674,22 @@ class Capybara::Config
   def javascript_driver=(_arg0); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def match(*args, **_arg1, &block); end
+  def match(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def match=(*args, **_arg1, &block); end
+  def match=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def predicates_wait(*args, **_arg1, &block); end
+  def predicates_wait(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def predicates_wait=(*args, **_arg1, &block); end
+  def predicates_wait=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def raise_server_errors(*args, **_arg1, &block); end
+  def raise_server_errors(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def raise_server_errors=(*args, **_arg1, &block); end
+  def raise_server_errors=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#15
   def reuse_server; end
@@ -698,16 +698,16 @@ class Capybara::Config
   def reuse_server=(_arg0); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def run_server(*args, **_arg1, &block); end
+  def run_server(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def run_server=(*args, **_arg1, &block); end
+  def run_server=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def save_path(*args, **_arg1, &block); end
+  def save_path(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def save_path=(*args, **_arg1, &block); end
+  def save_path=(*_arg0, **_arg1, &_arg2); end
 
   # Return the proc that Capybara will call to run the Rack application.
   # The block returned receives a rack app, port, and host/ip and should run a Rack handler
@@ -729,31 +729,31 @@ class Capybara::Config
   def server=(name); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def server_errors(*args, **_arg1, &block); end
+  def server_errors(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def server_errors=(*args, **_arg1, &block); end
+  def server_errors=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def server_host(*args, **_arg1, &block); end
+  def server_host(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def server_host=(*args, **_arg1, &block); end
+  def server_host=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def server_port(*args, **_arg1, &block); end
+  def server_port(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def server_port=(*args, **_arg1, &block); end
+  def server_port=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#15
   def session_options; end
 
   # source://capybara//lib/capybara/config.rb#19
-  def test_id(*args, **_arg1, &block); end
+  def test_id(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def test_id=(*args, **_arg1, &block); end
+  def test_id=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#15
   def threadsafe; end
@@ -774,16 +774,16 @@ class Capybara::Config
   def use_html5_parsing=(_arg0); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def visible_text_only(*args, **_arg1, &block); end
+  def visible_text_only(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def visible_text_only=(*args, **_arg1, &block); end
+  def visible_text_only=(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def w3c_click_offset(*args, **_arg1, &block); end
+  def w3c_click_offset(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/config.rb#19
-  def w3c_click_offset=(*args, **_arg1, &block); end
+  def w3c_click_offset=(*_arg0, **_arg1, &_arg2); end
 end
 
 # source://capybara//lib/capybara/config.rb#10
@@ -5734,13 +5734,13 @@ class Capybara::Result
   def index(*_arg0); end
 
   # source://capybara//lib/capybara/result.rb#37
-  def inspect(*args, **_arg1, &block); end
+  def inspect(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/result.rb#37
-  def last(*args, **_arg1, &block); end
+  def last(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/result.rb#37
-  def length(*args, **_arg1, &block); end
+  def length(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
   #
@@ -5751,19 +5751,19 @@ class Capybara::Result
   def negative_failure_message; end
 
   # source://capybara//lib/capybara/result.rb#37
-  def sample(*args, **_arg1, &block); end
+  def sample(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/result.rb#37
-  def size(*args, **_arg1, &block); end
+  def size(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/result.rb#37
-  def to_ary(*args, **_arg1, &block); end
+  def to_ary(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/result.rb#133
   def unfiltered_size; end
 
   # source://capybara//lib/capybara/result.rb#37
-  def values_at(*args, **_arg1, &block); end
+  def values_at(*_arg0, **_arg1, &_arg2); end
 
   private
 
@@ -6422,7 +6422,7 @@ class Capybara::Selector::Definition
   def default_visibility(fallback = T.unsafe(nil), options = T.unsafe(nil)); end
 
   # source://capybara//lib/capybara/selector/definition.rb#178
-  def describe(*args, **_arg1, &block); end
+  def describe(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/selector/definition.rb#190
   def describe_all_expression_filters(**opts); end
@@ -6437,7 +6437,7 @@ class Capybara::Selector::Definition
   # @return [String] Description of the selector when used with the options passed
   #
   # source://capybara//lib/capybara/selector/definition.rb#116
-  def description(*args, **_arg1, &block); end
+  def description(*_arg0, **_arg1, &_arg2); end
 
   # @option options
   # @option options
@@ -6449,7 +6449,7 @@ class Capybara::Selector::Definition
   # @param types [Array<Symbol>] The types of the filter - currently valid types are [:boolean]
   #
   # source://capybara//lib/capybara/selector/definition.rb#166
-  def expression_filter(*args, **_arg1, &block); end
+  def expression_filter(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/selector/definition.rb#41
   def expression_filters; end
@@ -6460,7 +6460,7 @@ class Capybara::Selector::Definition
   def expressions; end
 
   # source://capybara//lib/capybara/selector/definition.rb#166
-  def filter(*args, **_arg1, &block); end
+  def filter(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/selector/definition.rb#174
   def filter_set(name, filters_to_use = T.unsafe(nil)); end
@@ -6516,7 +6516,7 @@ class Capybara::Selector::Definition
   # @param types [Array<Symbol>] The types of the filter - currently valid types are [:boolean]
   #
   # source://capybara//lib/capybara/selector/definition.rb#166
-  def node_filter(*args, **_arg1, &block); end
+  def node_filter(*_arg0, **_arg1, &_arg2); end
 
   # source://capybara//lib/capybara/selector/definition.rb#37
   def node_filters; end

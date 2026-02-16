@@ -222,15 +222,6 @@ class Shortener::ShortenedUrl < ::Shortener::Record
   end
 end
 
-module Shortener::ShortenedUrl::GeneratedAssociationMethods
-  def owner; end
-  def owner=(value); end
-  def owner_changed?; end
-  def owner_previously_changed?; end
-  def reload_owner; end
-  def reset_owner; end
-end
-
 module Shortener::ShortenedUrl::GeneratedAttributeMethods; end
 Shortener::ShortenedUrl::REGEX_LINK_HAS_PROTOCOL = T.let(T.unsafe(nil), Regexp)
 
