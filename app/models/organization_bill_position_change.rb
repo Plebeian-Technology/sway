@@ -52,8 +52,6 @@ class OrganizationBillPositionChange < ApplicationRecord
   # NOTE: Old summary CAN be blank when creating a new position
   validates :new_summary, presence: { message: "can't be blank" }
 
-  validates :organization_bill_position, uniqueness: true
-
   # before save, if was pending and approver is not nil, set to approved
 
   sig { returns(T.nilable(User)) }

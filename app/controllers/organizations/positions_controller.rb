@@ -31,6 +31,7 @@ class Organizations::PositionsController < Organizations::BaseController
     change =
       OrganizationBillPositionChange.find_or_initialize_by(
         organization_bill_position: position,
+        approved_by_id: nil,
       )
 
     change.previous_summary = ""

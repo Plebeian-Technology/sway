@@ -13,8 +13,6 @@ RSpec.describe "Organization::Positions", type: :request do
 
   describe "POST /organization/:id/positions" do
     it "creates a new position for the user" do
-      skip "Skipping until implemented"
-
       _, user = setup
       _membership =
         create(
@@ -26,22 +24,76 @@ RSpec.describe "Organization::Positions", type: :request do
       expect do
         post organization_positions_path(organization),
              params: {
-               position: {
-                 bill_id: bill.id,
-                 support: true,
-                 summary: "We support this bill",
-               },
+               bill_id: bill.id,
+               support: "support",
+               summary: "We support this bill",
              }
       end.to change(OrganizationBillPosition, :count).by(1)
+         .and change(OrganizationBillPositionChange, :count).by(1)
 
       position = OrganizationBillPosition.last
       expect(position.organization).to eq(organization)
       expect(position.bill).to eq(bill)
-      expect(position.support).to be true
-      expect(position.summary).to eq("We support this bill")
-      expect(response).to have_http_status(:redirect).or have_http_status(
-             :created,
-           )
+      expect(position.support).to eq("support")
+      expect(position.summary).to eq(OrganizationBillPosition::DEFAULT_SUMMARY)
+      expect(position.active).to be false
+
+      change = OrganizationBillPositionChange.last
+      expect(change.organization_bill_position).to eq(position)
+      expect(change.new_summary).to eq("We support this bill")
+      expect(change.new_support).to eq("support")
+      expect(change.previous_summary).to eq("")
+      expect(change.previous_support).to eq("support") # new position, so previous_support is same as new
+
+      expect(response).to have_http_status(:redirect)
+    end
+
+    it "creates a new change when reactivating a position with history" do
+      _, user = setup
+      _membership =
+        create(
+          :user_organization_membership,
+          user: user,
+          organization: organization,
+        )
+
+      # Create an existing inactive position with an APPROVED change
+      position = create(:organization_bill_position,
+                        organization: organization,
+                        bill: bill,
+                        support: "oppose",
+                        summary: "Old summary",
+                        active: false)
+
+      old_change = create(:organization_bill_position_change,
+                          organization_bill_position: position,
+                          updated_by: user,
+                          approved_by: user, # approved
+                          new_support: "oppose",
+                          new_summary: "Old summary")
+
+      expect do
+        post organization_positions_path(organization),
+             params: {
+               bill_id: bill.id,
+               support: "support",
+               summary: "New summary",
+             }
+      end.to change(OrganizationBillPosition, :count).by(0) # reuses position
+         .and change(OrganizationBillPositionChange, :count).by(1) # creates new change
+
+      position.reload
+      expect(position.support).to eq("support")
+      # Active remains false until approved
+      expect(position.active).to be false
+
+      new_change = OrganizationBillPositionChange.last
+      expect(new_change.id).not_to eq(old_change.id)
+      expect(new_change.approved_by_id).to be_nil
+      expect(new_change.new_summary).to eq("New summary")
+      expect(new_change.new_support).to eq("support")
+
+      expect(response).to have_http_status(:redirect)
     end
   end
 
@@ -59,14 +111,14 @@ RSpec.describe "Organization::Positions", type: :request do
           :organization_bill_position,
           organization: organization,
           bill: bill,
-          support: false,
+          support: "oppose",
           summary: "Old summary",
         )
 
       expect do
         put organization_position_path(organization, position),
             params: {
-              support: true,
+              support: "support",
               summary: "Updated summary",
             }
       end.to change(OrganizationBillPositionChange, :count).by(1)
@@ -93,6 +145,8 @@ RSpec.describe "Organization::Positions", type: :request do
             :organization_bill_position,
             organization: organization,
             bill: bill,
+            support: "neutral",
+            summary: "summary"
           )
       }.to change(OrganizationBillPosition, :count).by(1)
 
@@ -120,6 +174,8 @@ RSpec.describe "Organization::Positions", type: :request do
             :organization_bill_position,
             organization: organization,
             bill: bill,
+            support: "neutral",
+            summary: "summary"
           )
       }.to change(OrganizationBillPosition, :count).by(1)
 
