@@ -97,7 +97,7 @@ class SwayLocale < ApplicationRecord
 
   sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
   def legislators(active = true)
-    Legislator.joins(:district).where(
+    Legislator.joins(:district).includes(:district).where(
       active: active,
       district: {
         sway_locale: self,
