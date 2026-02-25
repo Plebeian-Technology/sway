@@ -95,6 +95,31 @@ RSpec.describe "Organization::Positions", type: :request do
 
       expect(response).to have_http_status(:redirect)
     end
+
+    it "creates multiple pending changes if submitted multiple times (immutability)" do
+      _, user = setup
+      create(:user_organization_membership, user: user, organization: organization)
+
+      # Create inactive position
+      position = create(:organization_bill_position, organization: organization, bill: bill, active: false)
+
+      # First submission
+      expect do
+        post organization_positions_path(organization),
+             params: { bill_id: bill.id, support: "support", summary: "First draft" }
+      end.to change(OrganizationBillPositionChange, :count).by(1)
+
+      # Second submission
+      expect do
+        post organization_positions_path(organization),
+             params: { bill_id: bill.id, support: "oppose", summary: "Second draft" }
+      end.to change(OrganizationBillPositionChange, :count).by(1)
+
+      changes = position.position_changes.order(:created_at)
+      expect(changes.count).to eq(2)
+      expect(changes.first.new_summary).to eq("First draft")
+      expect(changes.last.new_summary).to eq("Second draft")
+    end
   end
 
   describe "PUT /organzations/:organization_id/positions/:id" do
