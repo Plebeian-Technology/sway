@@ -27,7 +27,7 @@ class SwayRegistrationService
     @user = user
     @address = address
     @sway_locale = sway_locale
-    @legislators = sway_locale.legislators
+    @legislators = sway_locale.legislators.includes(:district)
 
     @invited_by_id = invited_by_id
     @async = async
