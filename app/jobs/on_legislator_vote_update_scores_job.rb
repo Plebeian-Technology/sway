@@ -28,7 +28,11 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     newly_saved_legislator_vote.bill
 
     users =
-      UserLegislator.includes(:user).where(legislator:).map(&:user).compact
+      User.joins(:user_legislators).where(
+        user_legislators: {
+          legislator_id: legislator.id,
+        },
+      ).to_a
 
     update_legislator_district_score(
       newly_saved_legislator_vote,
@@ -154,18 +158,20 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     bill = legislator_vote.bill
 
     user_legislator_scores =
-      T.cast(
-        UserLegislator.where(
-          user: users,
-          legislator: legislator_vote.legislator,
-        ).map(&:user_legislator_score),
-        T::Array[UserLegislatorScore],
-      ).compact
-    user_votes = UserVote.where(user: users, bill:)
+      UserLegislatorScore.joins(:user_legislator).where(
+        user_legislators: {
+          user_id: users.map(&:id),
+          legislator_id: legislator_vote.legislator_id,
+        },
+      ).includes(:user_legislator)
+
+    user_votes_by_user_id =
+      UserVote.where(user_id: users.map(&:id), bill_id: bill.id).index_by(
+        &:user_id
+      )
 
     user_legislator_scores.each do |uls|
-      user_vote =
-        user_votes.find { |uv| uv.user.id == uls.user_legislator.user_id }
+      user_vote = user_votes_by_user_id[uls.user_legislator.user_id]
       next if user_vote.nil?
 
       new_count_agreed = uls.count_agreed
