@@ -8,6 +8,8 @@ ruby "4.0.1"
 # gem "rails", "~> 8"
 gem "rails", "~> 8"
 
+gem "state_machines-activerecord"
+
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 

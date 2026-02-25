@@ -43,6 +43,7 @@ class PhoneVerificationController < ApplicationController
         is_phone_verified: true,
         is_registered_to_vote: true,
         is_registration_complete: true,
+        registration_status: "completed",
       )
       a =
         Address.find_or_create_by(

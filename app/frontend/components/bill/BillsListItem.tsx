@@ -11,14 +11,13 @@ import { Link as InertiaLink, router } from "@inertiajs/react";
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
 import VoteButtonsContainer from "../uservote/VoteButtonsContainer";
 import { BillChartFilters } from "./charts/constants";
 
 const BillChartsContainer = lazy(() => import("./charts/BillChartsContainer"));
 
 interface IProps {
-    bill: sway.IBill & { user_vote?: sway.IUserVote };
+    bill: sway.IBill & { user_vote?: sway.IApiUserVote };
     organizations?: sway.IOrganization[];
     index: number;
     isLastItem: boolean;
@@ -33,8 +32,6 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
     const handleGoToSingleBill = useCallback(() => {
         router.visit(ROUTES.bill(bill.id));
     }, [bill.id]);
-
-    const { onUserVote, onScoreReceived } = usePollBillOnUserVote();
 
     if (!inView) {
         return null;
@@ -56,7 +53,8 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                     </div>
                 </InertiaLink>
 
-                <VoteButtonsContainer bill={bill} user_vote={user_vote} onUserVote={onUserVote} />
+                {/* @ts-expect-error */}
+                <VoteButtonsContainer bill={bill} user_vote={user_vote} />
 
                 <div className="col text-center w-100">
                     <Button
@@ -82,7 +80,6 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                             bill={bill}
                             locale={locale}
                             user_vote={user_vote}
-                            onScoreReceived={onScoreReceived}
                             filter={BillChartFilters.total}
                         />
                     </Suspense>

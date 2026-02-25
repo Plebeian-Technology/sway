@@ -1,6 +1,6 @@
 /** @format */
 
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePoll } from "@inertiajs/react";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import SwayLoading from "app/frontend/components/SwayLoading";
@@ -23,6 +23,8 @@ interface IProps {
 }
 
 const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
+    usePoll(15000, { only: ["legislators"] });
+
     const [locale] = useLocale();
 
     const reps = useMemo(

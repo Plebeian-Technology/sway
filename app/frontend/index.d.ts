@@ -208,6 +208,7 @@ declare module "sway" {
             address?: IAddress;
             photo_url?: string;
             twitter?: string;
+            user_legislator_score?: scoring.IUserLegislatorScore;
         }
 
         interface IBaseScore {
@@ -356,6 +357,8 @@ declare module "sway" {
             sway_locale_id: number;
             scheduled_release_date_utc: string; // Date string
             vote?: IVote;
+            bill_score?: scoring.IBillScore;
+            user_vote?: IApiUserVote;
         }
         interface IOrganizationBase extends IIDObject {
             sway_locale_id: number;

@@ -2,7 +2,7 @@
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
-import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
+import { PropsWithChildren, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 
@@ -18,7 +18,6 @@ interface IProps extends PropsWithChildren {
     bill: sway.IBill;
     bill_score?: sway.IBillScore;
     filter?: string;
-    onScoreReceived: () => void;
 }
 
 export interface IChildChartProps {
@@ -39,17 +38,11 @@ interface IChartChoice {
     };
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter, onScoreReceived, children }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter, children }) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
     const [locale] = useLocale();
     const isCongressUserLocale = isCongressLocale(locale);
-
-    useEffect(() => {
-        if (!!bill_score) {
-            onScoreReceived();
-        }
-    }, [bill_score, onScoreReceived]);
 
     // const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
     // const { items: bill_score } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`, options);

@@ -1,5 +1,6 @@
 /** @format */
 
+import { usePoll } from "@inertiajs/react";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
@@ -16,6 +17,8 @@ interface IProps {
 }
 
 const Bills_: React.FC<IProps> = ({ bills }) => {
+    usePoll(15000, { only: ["bills"] });
+
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
 

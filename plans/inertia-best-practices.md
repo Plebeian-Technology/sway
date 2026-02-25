@@ -13,3 +13,6 @@ Patterns to follow when building with inertia:
 6. Within nested JSX props can be accessed using inertia's usePage() hook. Props do not need to be passed to nested components. https://inertiajs.com/docs/v2/advanced/typescript#page-props.
 
 7. Use Material UI components and styling.
+
+8. **Asynchronous Work and Processing States**
+   For complex background tasks (e.g., external API registration, data scraping), introduce a `processing` prop. The backend should return `processing: true` if the user is in a state where background work is still occurring (e.g., `User#registration_status == 'processing'`). The frontend should then use polling (e.g., `Inertia.reload` at a regular interval) until the `processing` state is complete. This ensures a responsive UI that doesn't block while waiting for potentially slow external services.

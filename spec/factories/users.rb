@@ -16,6 +16,7 @@
 #  last_sign_in_at           :datetime
 #  last_sign_in_ip           :string
 #  phone                     :string
+#  registration_status       :string           default("pending")
 #  sign_in_count             :integer          default(0), not null
 #  sms_notifications_enabled :boolean          default(FALSE)
 #  created_at                :datetime         not null

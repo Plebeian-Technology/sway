@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_09_12_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_25_023350) do
   create_table "addresses", force: :cascade do |t|
     t.string "city", null: false
     t.string "country", default: "US", null: false
@@ -379,6 +379,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_09_12_000001) do
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
     t.string "phone"
+    t.string "registration_status", default: "pending"
     t.integer "sign_in_count", default: 0, null: false
     t.boolean "sms_notifications_enabled", default: false
     t.datetime "updated_at", null: false

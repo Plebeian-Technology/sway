@@ -25,6 +25,11 @@ class ScoreUpdaterService
     update_bill_score_districts(update_bill_score)
     update_legislator_district_score
     update_user_legislator_scores
+
+    ActionCable.server.broadcast(
+      "scores_#{user.id}",
+      { action: "refresh_scores" },
+    )
   end
 
   private

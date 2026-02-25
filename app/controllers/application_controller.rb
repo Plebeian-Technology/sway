@@ -199,8 +199,7 @@ class ApplicationController < ActionController::Base
       redirect_to root_url
     elsif !u.is_registration_complete
       if u.has_user_legislators?
-        u.is_registration_complete = true
-        u.save!
+        u.complete!
       else
         Rails.logger.info "Current user registration is not complete, redirect to sway registration"
         redirect_to sway_registration_index_path

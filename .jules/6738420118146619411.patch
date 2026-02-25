@@ -1,0 +1,108 @@
+diff --git a/app/controllers/users/user_details_controller.rb b/app/controllers/users/user_details_controller.rb
+index 408377b..e7dd8b9 100644
+--- a/app/controllers/users/user_details_controller.rb
++++ b/app/controllers/users/user_details_controller.rb
+@@ -8,7 +8,7 @@ module Users
+       unless current_user.update(full_name: user_details_params[:full_name])
+         flash[:error] = "Failed to save your name. Please try again."
+       end
+-      redirect_to redirect_path, inertia: { errors: current_user.errors }
++      redirect_to redirect_path, inertia: { errors: current_user.errors }, allow_other_host: false
+     end
+ 
+     private
+@@ -19,12 +19,18 @@ module Users
+     end
+ 
+     def redirect_path
+-      bill_path(user_details_params[:bill_id], { with: "legislator,address" })
++      if user_details_params[:redirect_url].present?
++        user_details_params[:redirect_url]
++      elsif user_details_params[:bill_id].present?
++        bill_path(user_details_params[:bill_id], { with: "legislator,address" })
++      else
++        root_path
++      end
+     end
+ 
+     # Currently this flow only works on bill path, TODO: Decouple
+     def user_details_params
+-      params.require(:user_detail).permit(:bill_id, :full_name)
++      params.require(:user_detail).permit(:bill_id, :full_name, :redirect_url)
+     end
+   end
+ end
+diff --git a/spec/requests/user_details_spec.rb b/spec/requests/user_details_spec.rb
+index 860fb15..5b933cb 100644
+--- a/spec/requests/user_details_spec.rb
++++ b/spec/requests/user_details_spec.rb
+@@ -5,23 +5,25 @@ RSpec.describe "UserDetails", type: :request do
+   include_context "Setup"
+ 
+   describe "POST /user_details" do
+-    it "updates a user's full name" do
++    it "updates a user's full name and redirects to bill path (legacy behavior)" do
+       _sway_locale, user = setup
++      bill_id = 1
+ 
+       post users_details_path,
+            params: {
+              user_detail: {
+-               bill_id: 1,
++               bill_id: bill_id,
+                user_id: user.id,
+                full_name: "Taco Banana",
+              },
+            }
+ 
+       expect(response).to have_http_status(302)
++      expect(response).to redirect_to(bill_path(bill_id, with: "legislator,address"))
+       expect(User.find(user.id).full_name).to eql("Taco Banana")
+     end
+ 
+-    it "does not update a user's full name" do
++    it "does not update a user's full name with invalid input" do
+       _sway_locale, user = setup
+ 
+       post users_details_path,
+@@ -36,5 +38,39 @@ RSpec.describe "UserDetails", type: :request do
+       expect(response).to have_http_status(302)
+       expect(User.find(user.id).full_name).to_not eql("<scripat></script>")
+     end
++
++    it "redirects to redirect_url if provided" do
++      _sway_locale, user = setup
++      redirect_url = "/some/custom/path"
++
++      post users_details_path,
++           params: {
++             user_detail: {
++               user_id: user.id,
++               full_name: "Redirect User",
++               redirect_url: redirect_url,
++             },
++           }
++
++      expect(response).to have_http_status(302)
++      expect(response).to redirect_to(redirect_url)
++      expect(User.find(user.id).full_name).to eql("Redirect User")
++    end
++
++    it "redirects to root path if neither bill_id nor redirect_url provided" do
++      _sway_locale, user = setup
++
++      post users_details_path,
++           params: {
++             user_detail: {
++               user_id: user.id,
++               full_name: "Root User",
++             },
++           }
++
++      expect(response).to have_http_status(302)
++      expect(response).to redirect_to(root_path)
++      expect(User.find(user.id).full_name).to eql("Root User")
++    end
+   end
+ end
+

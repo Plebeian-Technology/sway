@@ -20,15 +20,17 @@ class SwayRegistrationService
       address: Address,
       sway_locale: SwayLocale,
       invited_by_id: T.nilable(Integer),
+      async: T::Boolean,
     ).void
   end
-  def initialize(user, address, sway_locale, invited_by_id:)
+  def initialize(user, address, sway_locale, invited_by_id:, async: true)
     @user = user
     @address = address
     @sway_locale = sway_locale
     @legislators = sway_locale.legislators
 
     @invited_by_id = invited_by_id
+    @async = async
 
     @feature = T.let(nil, T.nilable(RGeo::GeoJSON::Feature))
     @districts = nil
@@ -36,6 +38,17 @@ class SwayRegistrationService
 
   sig { returns(T::Array[UserLegislator]) }
   def run
+    if @async && @sway_locale.regional?
+      @user.start_processing! if @user.pending?
+      SwayRegistrationJob.perform_later(
+        @user.id,
+        @address.id,
+        @sway_locale.id,
+        invited_by_id: @invited_by_id,
+      )
+      return []
+    end
+
     uls = create_user_legislators
 
     if uls.blank?
@@ -45,8 +58,7 @@ class SwayRegistrationService
       return uls
     end
 
-    @user.is_registration_complete = true
-    @user.save!
+    @user.complete! if @user.pending? || @user.processing?
 
     create_invite
 

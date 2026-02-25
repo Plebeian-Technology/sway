@@ -19,6 +19,7 @@
 #  last_sign_in_at           :datetime
 #  last_sign_in_ip           :string
 #  phone                     :string
+#  registration_status       :string           default("pending")
 #  sign_in_count             :integer          default(0), not null
 #  sms_notifications_enabled :boolean          default(FALSE)
 #  created_at                :datetime         not null
@@ -97,6 +98,24 @@ class User < ApplicationRecord
   has_many :user_legislators, dependent: :destroy
   has_many :user_votes, dependent: :destroy
   has_many :user_bill_reminders, dependent: :destroy
+
+  state_machine :registration_status, initial: :pending do
+    event :start_processing do
+      transition pending: :processing
+    end
+
+    event :complete do
+      transition %i[pending processing completed] => :completed
+    end
+
+    event :mark_failed do
+      transition processing: :failed
+    end
+
+    after_transition on: :complete do |user, _transition|
+      user.update(is_registration_complete: true)
+    end
+  end
 
   validates :phone,
             presence: true,
@@ -184,6 +203,7 @@ class User < ApplicationRecord
       user.invite_url invite_url
       user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
+      user.registration_status registration_status
       user.is_registered_to_vote is_registered_to_vote
       user.sms_notifications_enabled sms_notifications_enabled
 
