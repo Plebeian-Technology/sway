@@ -1172,108 +1172,110 @@ class Selenium::WebDriver::ChildProcess
   # @api private
   # @return [ChildProcess] a new instance of ChildProcess
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#41
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#42
   def initialize(*command); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#73
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#74
   def alive?; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#34
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#35
   def detach; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#34
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#35
   def detach=(_arg0); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#77
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#78
   def exited?; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#48
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#49
   def io; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#35
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#36
   def io=(_arg0); end
 
   # @api private
   # @raise [TimeoutError]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#93
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#94
   def poll_for_exit(timeout); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#52
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#53
   def start; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#63
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#64
   def stop(timeout = T.unsafe(nil)); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#102
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#103
   def wait; end
 
   private
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#129
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#130
   def kill(pid); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#123
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#124
   def terminate(pid); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#110
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#111
   def terminate_and_wait_else_kill(timeout); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#135
+  # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#136
   def waitpid2(pid, flags = T.unsafe(nil)); end
 
   class << self
     # @api private
     #
-    # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#37
+    # source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#38
     def build(*command); end
   end
 end
 
 # @api private
 #
-# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#32
+# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#33
 Selenium::WebDriver::ChildProcess::POLL_INTERVAL = T.let(T.unsafe(nil), Float)
 
 # @api private
 #
-# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#30
+# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#31
 Selenium::WebDriver::ChildProcess::SIGKILL = T.let(T.unsafe(nil), String)
 
 # @api private
 #
-# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#29
+# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#30
 Selenium::WebDriver::ChildProcess::SIGTERM = T.let(T.unsafe(nil), String)
 
 # @api private
+#
+# source://selenium-webdriver//lib/selenium/webdriver/common/child_process.rb#27
 class Selenium::WebDriver::ChildProcess::TimeoutError < ::StandardError; end
 
 # source://selenium-webdriver//lib/selenium/webdriver/chrome.rb#22
@@ -1352,7 +1354,12 @@ class Selenium::WebDriver::Chrome::Profile < ::Selenium::WebDriver::Chromium::Pr
 
 # source://selenium-webdriver//lib/selenium/webdriver/chrome/service.rb#23
 class Selenium::WebDriver::Chrome::Service < ::Selenium::WebDriver::Service
+  # @return [Service] a new instance of Service
+  #
   # source://selenium-webdriver//lib/selenium/webdriver/chrome/service.rb#29
+  def initialize(args: T.unsafe(nil), **_arg1); end
+
+  # source://selenium-webdriver//lib/selenium/webdriver/chrome/service.rb#39
   def log; end
 end
 
@@ -2943,6 +2950,27 @@ module Selenium::WebDriver::DriverExtensions::HasPinnedScripts
   def unpin_script(script); end
 end
 
+# source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_session_events.rb#23
+module Selenium::WebDriver::DriverExtensions::HasSessionEvents
+  # Fires a custom session event to the remote server event bus.
+  # This allows test code to trigger server-side utilities that subscribe to
+  # the event bus.
+  #
+  # @example Fire a simple event
+  #   driver.fire_session_event("test:started")
+  # @example Fire an event with payload
+  #   driver.fire_session_event("test:failed", {
+  #   testName: "LoginTest",
+  #   error: "Element not found"
+  #   })
+  # @param event_type [String] The type of event (e.g., "test:failed", "log:collect")
+  # @param payload [Hash] Optional data to include with the event
+  # @return [Hash] Response data including success status, event type, and timestamp
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_session_events.rb#42
+  def fire_session_event(event_type, payload = T.unsafe(nil)); end
+end
+
 # @api private
 #
 # source://selenium-webdriver//lib/selenium/webdriver/common/driver_extensions/has_session_id.rb#27
@@ -3127,7 +3155,12 @@ class Selenium::WebDriver::Edge::Profile < ::Selenium::WebDriver::Chromium::Prof
 
 # source://selenium-webdriver//lib/selenium/webdriver/edge/service.rb#23
 class Selenium::WebDriver::Edge::Service < ::Selenium::WebDriver::Service
-  # source://selenium-webdriver//lib/selenium/webdriver/edge/service.rb#28
+  # @return [Service] a new instance of Service
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/edge/service.rb#29
+  def initialize(args: T.unsafe(nil), **_arg1); end
+
+  # source://selenium-webdriver//lib/selenium/webdriver/edge/service.rb#39
   def log; end
 end
 
@@ -4267,7 +4300,12 @@ class Selenium::WebDriver::Firefox::Service < ::Selenium::WebDriver::Service
   # @return [Service] a new instance of Service
   #
   # source://selenium-webdriver//lib/selenium/webdriver/firefox/service.rb#29
-  def initialize(path: T.unsafe(nil), port: T.unsafe(nil), log: T.unsafe(nil), args: T.unsafe(nil)); end
+  def initialize(args: T.unsafe(nil), **_arg1); end
+
+  private
+
+  # source://selenium-webdriver//lib/selenium/webdriver/firefox/service.rb#46
+  def remove_log_args(args); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/firefox/service.rb#24
@@ -4417,7 +4455,12 @@ Selenium::WebDriver::IE::Options::SCROLL_BOTTOM = T.let(T.unsafe(nil), Integer)
 Selenium::WebDriver::IE::Options::SCROLL_TOP = T.let(T.unsafe(nil), Integer)
 
 # source://selenium-webdriver//lib/selenium/webdriver/ie/service.rb#23
-class Selenium::WebDriver::IE::Service < ::Selenium::WebDriver::Service; end
+class Selenium::WebDriver::IE::Service < ::Selenium::WebDriver::Service
+  # @return [Service] a new instance of Service
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/ie/service.rb#29
+  def initialize(args: T.unsafe(nil), **_arg1); end
+end
 
 # source://selenium-webdriver//lib/selenium/webdriver/ie/service.rb#24
 Selenium::WebDriver::IE::Service::DEFAULT_PORT = T.let(T.unsafe(nil), Integer)
@@ -5053,7 +5096,7 @@ class Selenium::WebDriver::Logger
   #
   # @param ids [Array, Symbol]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#106
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#134
   def allow(*ids); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#39
@@ -5066,8 +5109,13 @@ class Selenium::WebDriver::Logger
   # @param message [String]
   # @yield see #deprecate
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#118
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#146
   def debug(message, id: T.unsafe(nil), &block); end
+
+  # Forces debug level and prevents it from being overridden.
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#65
+  def debug!; end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#39
   def debug?(*_arg0, **_arg1, &_arg2); end
@@ -5080,7 +5128,7 @@ class Selenium::WebDriver::Logger
   # @param reference [String]
   # @yield appends additional message to end of provided template
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#164
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#192
   def deprecate(old, new = T.unsafe(nil), id: T.unsafe(nil), reference: T.unsafe(nil), &block); end
 
   # Used to supply information that suggests an error occurred
@@ -5089,7 +5137,7 @@ class Selenium::WebDriver::Logger
   # @param message [String]
   # @yield see #deprecate
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#140
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#168
   def error(message, id: T.unsafe(nil), &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#39
@@ -5105,7 +5153,7 @@ class Selenium::WebDriver::Logger
   #
   # @param ids [Array, Symbol]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#97
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#125
   def ignore(*ids); end
 
   # Used to supply information of general interest
@@ -5114,7 +5162,7 @@ class Selenium::WebDriver::Logger
   # @param message [String]
   # @yield see #deprecate
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#129
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#157
   def info(message, id: T.unsafe(nil), &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#39
@@ -5130,21 +5178,26 @@ class Selenium::WebDriver::Logger
   #
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#88
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#116
   def io; end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#39
   def level(*_arg0, **_arg1, &_arg2); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#60
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#78
   def level=(level); end
 
   # Changes logger output to a new IO.
   #
   # @param io [String]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#73
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#96
   def output=(io); end
+
+  # Forces output to stderr and prevents it from being overridden.
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#73
+  def stderr!; end
 
   # Used to supply information that suggests action be taken by user
   #
@@ -5152,7 +5205,7 @@ class Selenium::WebDriver::Logger
   # @param message [String]
   # @yield see #deprecate
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#151
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#179
   def warn(message, id: T.unsafe(nil), &block); end
 
   # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#39
@@ -5160,10 +5213,10 @@ class Selenium::WebDriver::Logger
 
   private
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#183
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#211
   def create_logger(name, level:); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#194
+  # source://selenium-webdriver//lib/selenium/webdriver/common/logger.rb#222
   def discard_or_log(level, message, id); end
 end
 
@@ -7282,62 +7335,81 @@ class Selenium::WebDriver::Remote::Driver < ::Selenium::WebDriver::Driver
   include ::Selenium::WebDriver::DriverExtensions::UploadsFiles
   include ::Selenium::WebDriver::DriverExtensions::HasSessionId
   include ::Selenium::WebDriver::DriverExtensions::HasFileDownloads
+  include ::Selenium::WebDriver::DriverExtensions::HasSessionEvents
 
   # @api private
   # @raise [ArgumentError]
   # @return [Driver] a new instance of Driver
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#33
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#34
   def initialize(capabilities: T.unsafe(nil), options: T.unsafe(nil), service: T.unsafe(nil), url: T.unsafe(nil), **_arg4); end
 
   private
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#47
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#48
   def devtools_url; end
 
   # @api private
   # @raise [Error::WebDriverError]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#51
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#52
   def devtools_version; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#68
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#69
   def generate_capabilities(capabilities); end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#58
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/driver.rb#59
   def process_options(options, capabilities); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#23
 module Selenium::WebDriver::Remote::Features
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#31
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#32
   def add_commands(commands); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#35
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#36
   def command_list; end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#39
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#40
   def commands(command); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#69
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#70
   def delete_downloadable_files; end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#65
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#66
   def download_file(name); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#61
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#62
   def downloadable_files; end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#43
+  # Fires a custom session event to the remote server event bus.
+  # This allows test code to trigger server-side utilities that subscribe to
+  # the event bus.
+  #
+  # @example Fire a simple event
+  #   driver.fire_session_event("test:started")
+  # @example Fire an event with payload
+  #   driver.fire_session_event("test:failed", {
+  #   testName: "LoginTest",
+  #   error: "Element not found"
+  #   })
+  # @param event_type [String] The type of event (e.g., "test:failed", "log:collect")
+  # @param payload [Hash] Optional data to include with the event
+  # @return [Hash] Response data including success status, event type, and timestamp
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#92
+  def fire_session_event(event_type, payload = T.unsafe(nil)); end
+
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#44
   def upload(local_file); end
 
-  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#53
+  # source://selenium-webdriver//lib/selenium/webdriver/remote/features.rb#54
   def upload_if_necessary(keys); end
 end
 
@@ -7953,6 +8025,11 @@ class Selenium::WebDriver::Service
   # source://selenium-webdriver//lib/selenium/webdriver/common/service.rb#95
   def shutdown_supported; end
 
+  private
+
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service.rb#110
+  def warn_driver_log_override; end
+
   class << self
     # source://selenium-webdriver//lib/selenium/webdriver/common/service.rb#31
     def chrome(**_arg0); end
@@ -8028,64 +8105,64 @@ class Selenium::WebDriver::ServiceManager
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#162
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#168
   def cannot_connect_error_text; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#142
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#148
   def check_connection_error; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#89
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#95
   def connect_to_server; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#129
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#135
   def connect_until_stable; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#158
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#164
   def current_time; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#98
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#104
   def find_free_port; end
 
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#125
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#131
   def process_exited?; end
 
   # @api private
   # @return [Boolean]
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#121
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#127
   def process_running?; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#166
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#172
   def socket_lock; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#102
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#108
   def start_process; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#107
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#113
   def stop_process; end
 
   # @api private
   #
-  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#113
+  # source://selenium-webdriver//lib/selenium/webdriver/common/service_manager.rb#119
   def stop_server; end
 end
 
@@ -8359,6 +8436,13 @@ class Selenium::WebDriver::Support::BlockEventListener
 
   # source://selenium-webdriver//lib/selenium/webdriver/support/block_event_listener.rb#28
   def method_missing(meth, *_arg1); end
+
+  private
+
+  # @return [Boolean]
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/support/block_event_listener.rb#32
+  def respond_to_missing?(_meth, _include_private = T.unsafe(nil)); end
 end
 
 # source://selenium-webdriver//lib/selenium/webdriver/support/color.rb#23
@@ -8408,7 +8492,7 @@ class Selenium::WebDriver::Support::Color
 
   class << self
     # source://selenium-webdriver//lib/selenium/webdriver/support/color.rb#75
-    def from_hsl(h, s, l, a); end
+    def from_hsl(hue, sat, light, alpha); end
 
     # source://selenium-webdriver//lib/selenium/webdriver/support/color.rb#50
     def from_string(str); end
@@ -8536,6 +8620,12 @@ class Selenium::WebDriver::Support::EventFiringBridge
   #
   # source://selenium-webdriver//lib/selenium/webdriver/support/event_firing_bridge.rb#123
   def method_missing(meth, *_arg1, **_arg2, &_arg3); end
+
+  # @api private
+  # @return [Boolean]
+  #
+  # source://selenium-webdriver//lib/selenium/webdriver/support/event_firing_bridge.rb#127
+  def respond_to_missing?(meth, include_private = T.unsafe(nil)); end
 end
 
 # @api private

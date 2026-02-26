@@ -1000,6 +1000,10 @@ class RuboCop::Cop::Lint::CopDirectiveSyntax < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
+class RuboCop::Cop::Lint::DataDefineOverride < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Lint::Debugger < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -1470,6 +1474,10 @@ class RuboCop::Cop::Lint::UnreachableCode < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Lint::UnreachableLoop < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Lint::UnreachablePatternBranch < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
@@ -11659,6 +11667,10 @@ class RuboCop::Cop::Style::FileNull < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
+class RuboCop::Cop::Style::FileOpen < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Style::FileRead < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -11846,6 +11858,10 @@ class RuboCop::Cop::Style::MapIntoArray < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
+class RuboCop::Cop::Style::MapJoin < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Style::MapToHash < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -12024,6 +12040,10 @@ class RuboCop::Cop::Style::ObjectThen < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
+class RuboCop::Cop::Style::OneClassPerFile < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Style::OneLineConditional < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -12060,6 +12080,10 @@ class RuboCop::Cop::Style::ParenthesesAroundCondition < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
+class RuboCop::Cop::Style::PartitionInsteadOfDoubleSelect < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Style::PercentLiteralDelimiters < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
   include ::RuboCop::Cop::RangeHelp
@@ -12071,6 +12095,10 @@ class RuboCop::Cop::Style::PercentQLiterals < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Style::PerlBackrefs < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Style::PredicateWithKind < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
@@ -12091,6 +12119,10 @@ class RuboCop::Cop::Style::RaiseArgs < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Style::RandomWithOffset < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Style::ReduceToHash < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
@@ -12189,6 +12221,10 @@ class RuboCop::Cop::Style::RedundantLineContinuation < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
 end
 
+class RuboCop::Cop::Style::RedundantMinMaxBy < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Style::RedundantParentheses < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -12242,6 +12278,10 @@ class RuboCop::Cop::Style::RedundantStringEscape < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
 end
 
+class RuboCop::Cop::Style::RedundantStructKeywordInit < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
 class RuboCop::Cop::Style::RegexpLiteral < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
@@ -12280,6 +12320,14 @@ class RuboCop::Cop::Style::SafeNavigationChainLength < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Style::Sample < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Style::SelectByKind < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Style::SelectByRange < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 
@@ -12400,6 +12448,10 @@ class RuboCop::Cop::Style::SymbolLiteral < ::RuboCop::Cop::Base
 end
 
 class RuboCop::Cop::Style::SymbolProc < ::RuboCop::Cop::Base
+  include ::RuboCop::Rails::MigrationFileSkippable
+end
+
+class RuboCop::Cop::Style::TallyMethod < ::RuboCop::Cop::Base
   include ::RuboCop::Rails::MigrationFileSkippable
 end
 

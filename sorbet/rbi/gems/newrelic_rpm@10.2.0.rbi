@@ -2117,129 +2117,129 @@ module NewRelic::Agent::Configuration
     # Marks the config option as deprecated in the documentation once generated.
     # Does not appear in logs.
     #
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#28
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#29
     def deprecated_description(new_setting, description); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#20
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#21
     def instrumentation_value_from_boolean(key); end
 
     # Helper since default Procs are evaluated in the context of this module
     #
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#14
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#15
     def value_of(key); end
   end
 end
 
-# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#220
+# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#221
 NewRelic::Agent::Configuration::AUTOSTART_DENYLISTED_RAKE_TASKS = T.let(T.unsafe(nil), String)
 
-# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#33
+# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#34
 class NewRelic::Agent::Configuration::Boolean
   class << self
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#34
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#35
     def ===(o); end
   end
 end
 
-# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#273
+# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#274
 NewRelic::Agent::Configuration::DEFAULTS = T.let(T.unsafe(nil), Hash)
 
-# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#39
+# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#40
 class NewRelic::Agent::Configuration::DefaultSource
   extend ::Forwardable
 
   # @return [DefaultSource] a new instance of DefaultSource
   #
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#45
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#46
   def initialize; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def [](*_arg0, **_arg1, &_arg2); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#49
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#50
   def default_values; end
 
   # Returns the value of attribute defaults.
   #
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#40
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#41
   def defaults; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def delete(*_arg0, **_arg1, &_arg2); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def each(*_arg0, **_arg1, &_arg2); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def has_key?(*_arg0, **_arg1, &_arg2); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def keys(*_arg0, **_arg1, &_arg2); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def merge(*_arg0, **_arg1, &_arg2); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#43
+  # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#44
   def to_hash(*_arg0, **_arg1, &_arg2); end
 
   class << self
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#145
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#146
     def agent_enabled; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#65
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#66
     def allowlist_for(key); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#165
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#166
     def app_name; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#155
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#156
     def audit_log_path; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#112
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#113
     def config_path; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#77
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#78
     def config_search_paths; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#207
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#208
     def convert_to_constant_list(string_array); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#203
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#204
     def convert_to_regexp_list(string_array); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#69
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#70
     def default_for(key); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#57
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#58
     def default_settings(key); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#169
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#170
     def dispatcher; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#121
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#122
     def framework; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#192
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#193
     def host; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#181
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#182
     def profiling_available; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#173
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#174
     def thread_profiler_enabled; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#177
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#178
     def transaction_tracer_transaction_threshold; end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#73
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#74
     def transform_for(key); end
 
-    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#61
+    # source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#62
     def value_from_defaults(key, subkey); end
   end
 end
 
-# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#153
+# source://newrelic_rpm//lib/new_relic/agent/configuration/default_source.rb#154
 NewRelic::Agent::Configuration::DefaultSource::DEFAULT_LOG_DIR = T.let(T.unsafe(nil), String)
 
 # source://newrelic_rpm//lib/new_relic/agent/configuration/dotted_hash.rb#8
@@ -4239,7 +4239,7 @@ class NewRelic::Agent::ErrorCollector
   # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#173
   def blamed_metric_name(txn, options); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#290
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#299
   def create_noticed_error(exception, options); end
 
   # @return [Boolean]
@@ -4247,7 +4247,7 @@ class NewRelic::Agent::ErrorCollector
   # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#42
   def disabled?; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#328
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#337
   def drop_buffered_data; end
 
   # @return [Boolean]
@@ -4357,7 +4357,7 @@ class NewRelic::Agent::ErrorCollector
   # class per harvest, disregarding (and not impacting) the app error queue
   # limit.
   #
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#324
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#333
   def notice_agent_error(exception); end
 
   # See NewRelic::Agent.notice_error for options and commentary
@@ -4394,16 +4394,16 @@ class NewRelic::Agent::ErrorCollector
 
   private
 
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#346
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#355
   def build_customer_callback_hash(noticed_error, exception, options); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#356
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#365
   def error_group_callback; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#360
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#369
   def process_http_status_code(exception, options); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#336
+  # source://newrelic_rpm//lib/new_relic/agent/error_collector.rb#345
   def update_error_group_name(noticed_error, exception, options); end
 
   class << self
@@ -6378,7 +6378,7 @@ module NewRelic::Agent::LocalLogDecorator
   # source://newrelic_rpm//lib/new_relic/agent/local_log_decorator.rb#30
   def decorating_enabled?; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/local_log_decorator.rb#37
+  # source://newrelic_rpm//lib/new_relic/agent/local_log_decorator.rb#35
   def escape_entity_name(entity_name); end
 end
 
@@ -6386,118 +6386,135 @@ end
 class NewRelic::Agent::LogEventAggregator < ::NewRelic::Agent::EventAggregator
   # @return [LogEventAggregator] a new instance of LogEventAggregator
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#48
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#49
   def initialize(events); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#188
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#239
   def add_custom_attributes(custom_attributes); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#144
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#168
   def add_event_metadata(formatted_message, severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#178
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#220
+  def add_logging_event_attributes(event, log, mdc_data); end
+
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#202
   def add_logstasher_event_attributes(event, log); end
+
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#231
+  def add_mdc_data_to_event(event, mdc_data); end
 
   # Returns the value of attribute attributes.
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#46
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#47
   def attributes; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#60
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#61
   def capacity; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#163
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#187
   def create_event(priority, formatted_message, severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#170
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#212
+  def create_logging_event(priority, severity, log, mdc_data); end
+
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#194
   def create_logstasher_event(priority, severity, log); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#154
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#178
   def create_prioritized_event(priority, event); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#117
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#141
   def determine_severity(log); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#224
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#275
   def harvest!; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#121
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#145
   def increment_event_counters(severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#192
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#243
   def labels; end
 
   # @return [Boolean]
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#238
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#289
   def logger_enabled?; end
 
   # @return [Boolean]
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#242
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#297
+  def logging_enabled?; end
+
+  # @return [Boolean]
+  #
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#293
   def logstasher_enabled?; end
 
   # @return [Boolean]
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#113
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#137
   def monitoring_conditions_met?(severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#64
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#65
   def record(formatted_message, severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#130
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#154
   def record_batch(txn, logs); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#87
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#114
+  def record_logging_event(log, mdc_data); end
+
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#88
   def record_logstasher_event(log); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#229
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#280
   def reset!; end
 
   private
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#274
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#330
   def after_harvest(metadata); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#324
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#380
   def configured_log_level_constant; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#340
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#396
   def create_labels; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#328
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#384
   def format_log_level_constant(log_level); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#299
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#355
   def line_metric_name_by_severity(severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#304
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#360
   def note_dropped_events(total_count, dropped_count); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#264
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#320
   def record_configuration_metric(format, key); end
 
   # To avoid paying the cost of metric recording on every line, we hold
   # these until harvest before recording them
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#282
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#338
   def record_customer_metrics; end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#310
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#366
   def record_supportability_metrics(total_count, captured_count, dropped_count); end
 
   # We record once-per-connect metrics for enabled/disabled state at the
   # point we consider the configuration stable (i.e. once we've gotten SSC)
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#250
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#305
   def register_for_done_configuring(events); end
 
   # @return [Boolean]
   #
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#332
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#388
   def severity_too_low?(severity); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#318
+  # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#374
   def truncate_message(message); end
 
   class << self
@@ -6511,33 +6528,33 @@ class NewRelic::Agent::LogEventAggregator < ::NewRelic::Agent::EventAggregator
     # We have to keep the aggregated payloads in a separate shape, though, to
     # work with the priority sampling buffers
     #
-    # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#205
+    # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#256
     def payload_to_melt_format(data); end
   end
 end
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#44
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#45
 NewRelic::Agent::LogEventAggregator::CUSTOM_ATTRIBUTES_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#41
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#42
 NewRelic::Agent::LogEventAggregator::DECORATING_ENABLED_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#27
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#28
 NewRelic::Agent::LogEventAggregator::DECORATING_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
 
 # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#20
 NewRelic::Agent::LogEventAggregator::DROPPED_METRIC = T.let(T.unsafe(nil), String)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#40
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#41
 NewRelic::Agent::LogEventAggregator::FORWARDING_ENABLED_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#26
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#27
 NewRelic::Agent::LogEventAggregator::FORWARDING_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#42
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#43
 NewRelic::Agent::LogEventAggregator::LABELS_ENABLED_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#28
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#29
 NewRelic::Agent::LogEventAggregator::LABELS_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
 
 # Per-message keys
@@ -6553,29 +6570,32 @@ NewRelic::Agent::LogEventAggregator::LINES = T.let(T.unsafe(nil), String)
 # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#23
 NewRelic::Agent::LogEventAggregator::LOGGER_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
 
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#25
+NewRelic::Agent::LogEventAggregator::LOGGING_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
+
 # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#24
 NewRelic::Agent::LogEventAggregator::LOGSTASHER_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#43
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#44
 NewRelic::Agent::LogEventAggregator::LOG_LEVEL_KEY = T.let(T.unsafe(nil), Symbol)
 
 # 32 * 1024 bytes (32 kibibytes)
 #
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#29
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#30
 NewRelic::Agent::LogEventAggregator::MAX_BYTES = T.let(T.unsafe(nil), Integer)
 
 # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#14
 NewRelic::Agent::LogEventAggregator::MESSAGE_KEY = T.let(T.unsafe(nil), String)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#39
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#40
 NewRelic::Agent::LogEventAggregator::METRICS_ENABLED_KEY = T.let(T.unsafe(nil), Symbol)
 
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#25
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#26
 NewRelic::Agent::LogEventAggregator::METRICS_SUPPORTABILITY_FORMAT = T.let(T.unsafe(nil), String)
 
 # Config keys
 #
-# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#38
+# source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#39
 NewRelic::Agent::LogEventAggregator::OVERALL_ENABLED_KEY = T.let(T.unsafe(nil), Symbol)
 
 # source://newrelic_rpm//lib/new_relic/agent/log_event_aggregator.rb#16
@@ -7730,14 +7750,28 @@ NewRelic::Agent::Obfuscator::PACK_FORMAT = T.let(T.unsafe(nil), String)
 class NewRelic::Agent::OpenTelemetryBridge
   # @return [OpenTelemetryBridge] a new instance of OpenTelemetryBridge
   #
-  # source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#8
-  def initialize; end
+  # source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#49
+  def initialize(events); end
 
   class << self
-    # source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#22
+    # source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#86
+    def calculate_excluded_tracers; end
+
+    # source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#66
     def install; end
+
+    # source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#97
+    def install_instrumentation; end
   end
 end
+
+# Exclude tracers by default to prevent double-reporting.
+# Affects libraries that the Ruby agent already instruments automatically.
+# Can be overridden via the opentelemetry.traces.include configuration.
+# https://opentelemetry.io/ecosystem/registry/?language=ruby&flag=native
+#
+# source://newrelic_rpm//lib/new_relic/agent/opentelemetry_bridge.rb#12
+NewRelic::Agent::OpenTelemetryBridge::DEFAULT_EXCLUDED_TRACERS = T.let(T.unsafe(nil), Array)
 
 # source://newrelic_rpm//lib/new_relic/agent/payload_metric_mapping.rb#8
 module NewRelic::Agent::PayloadMetricMapping
@@ -14583,31 +14617,28 @@ NewRelic::Agent::Utilization::Vendor::VALID_CHARS = T.let(T.unsafe(nil), Regexp)
 
 # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#14
 class NewRelic::Agent::UtilizationData
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#149
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#171
   def append_boot_id(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#145
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#167
   def append_configured_values(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#136
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#158
   def append_docker_info(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#89
-  def append_ecs_info(collector_hash); end
-
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#173
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#195
   def append_full_hostname(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#155
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#177
   def append_ip_address(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#162
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#184
   def append_kubernetes_info(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#108
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#150
   def append_vendor_info(collector_hash); end
 
-  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#180
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#202
   def config_hash; end
 
   # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#49
@@ -14634,6 +14665,15 @@ class NewRelic::Agent::UtilizationData
   # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#40
   def cpu_count; end
 
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#89
+  def detect_ecs_vendor(collector_hash); end
+
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#106
+  def detect_vendors_parallel(collector_hash); end
+
+  # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#134
+  def detect_vendors_sequential(collector_hash); end
+
   # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#28
   def fqdn; end
 
@@ -14650,7 +14690,7 @@ class NewRelic::Agent::UtilizationData
   def to_collector_hash; end
 end
 
-# source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#160
+# source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#182
 NewRelic::Agent::UtilizationData::KUBERNETES_SERVICE_HOST = T.let(T.unsafe(nil), String)
 
 # source://newrelic_rpm//lib/new_relic/agent/utilization_data.rb#15
