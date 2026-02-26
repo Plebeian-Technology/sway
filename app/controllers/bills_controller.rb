@@ -21,6 +21,7 @@ class BillsController < ApplicationController
           bills:
             Bill
               .previous(current_sway_locale)
+              .includes(:votes, :bill_score)
               .map do |bill|
                 bill.to_sway_json.merge(
                   {
