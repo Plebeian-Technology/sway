@@ -1,11 +1,73 @@
 # frozen_string_literal: true
 
-Capybara.register_driver :selenium_chromium_headless do |app|
-  options = Selenium::WebDriver::Chrome::Options.new
-  options.binary = "/usr/bin/chromium" if File.exist?("/usr/bin/chromium")
-  service = nil
+module SystemBrowserPreflight
+  module_function
 
-  service = Selenium::WebDriver::Service.chrome(path: "/usr/bin/chromedriver") if File.exist?("/usr/bin/chromedriver")
+  CHROME_CANDIDATES = [
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+  ].freeze
+
+  CHROMEDRIVER_CANDIDATES = [
+    "/usr/bin/chromedriver",
+    "/usr/lib/chromium/chromedriver",
+  ].freeze
+
+  def chrome_binary
+    CHROME_CANDIDATES.find { |path| File.executable?(path) }
+  end
+
+  def chromedriver_binary
+    CHROMEDRIVER_CANDIDATES.find { |path| File.executable?(path) }
+  end
+
+  def available?
+    chrome_binary && chromedriver_binary
+  end
+
+  def missing_requirements_message
+    <<~MSG
+      System JS specs require both a browser and chromedriver in the rspec container.
+      Missing browser: #{chrome_binary.nil?}
+      Missing chromedriver: #{chromedriver_binary.nil?}
+
+      Try rebuilding test images:
+        dip compose build rspec
+      Then re-run:
+        dip run bundle exec rspec spec/system/...
+    MSG
+  end
+
+  def log_status_once(reporter: RSpec.configuration.reporter)
+    return if @status_logged
+
+    if available?
+      reporter.message(
+        "[system-driver] Selenium system specs enabled (browser: #{chrome_binary}, chromedriver: #{chromedriver_binary})",
+      )
+    else
+      reporter.message("[system-driver] Selenium system specs skipped. #{missing_requirements_message.strip}")
+    end
+
+    @status_logged = true
+  end
+
+  def assert_available!
+    return if available?
+
+    raise missing_requirements_message
+  end
+end
+
+Capybara.register_driver :selenium_chromium_headless do |app|
+  chrome_binary = SystemBrowserPreflight.chrome_binary
+  chromedriver_binary = SystemBrowserPreflight.chromedriver_binary
+
+  options = Selenium::WebDriver::Chrome::Options.new
+  options.binary = chrome_binary if chrome_binary
+  service = chromedriver_binary ? Selenium::WebDriver::Service.chrome(path: chromedriver_binary) : nil
 
   %w[
     --headless=new
@@ -24,6 +86,9 @@ RSpec.configure do |config|
   end
 
   config.before(:each, type: :system, js: true) do
+    SystemBrowserPreflight.log_status_once
+    skip(SystemBrowserPreflight.missing_requirements_message) unless SystemBrowserPreflight.available?
+
     driven_by :selenium_chromium_headless
   end
 end
