@@ -29,9 +29,7 @@ class Organizations::PositionsController < Organizations::BaseController
     end
 
     change =
-      OrganizationBillPositionChange.new(
-        organization_bill_position: position,
-      )
+      OrganizationBillPositionChange.new(organization_bill_position: position)
 
     change.previous_summary = ""
     change.previous_support = params[:support]

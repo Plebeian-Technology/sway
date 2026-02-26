@@ -28,11 +28,10 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     newly_saved_legislator_vote.bill
 
     users =
-      User.joins(:user_legislators).where(
-        user_legislators: {
-          legislator_id: legislator.id,
-        },
-      ).to_a
+      User
+        .joins(:user_legislators)
+        .where(user_legislators: { legislator_id: legislator.id })
+        .to_a
 
     update_legislator_district_score(
       newly_saved_legislator_vote,
@@ -158,12 +157,15 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     bill = legislator_vote.bill
 
     user_legislator_scores =
-      UserLegislatorScore.joins(:user_legislator).where(
-        user_legislators: {
-          user_id: users.map(&:id),
-          legislator_id: legislator_vote.legislator_id,
-        },
-      ).includes(:user_legislator)
+      UserLegislatorScore
+        .joins(:user_legislator)
+        .where(
+          user_legislators: {
+            user_id: users.map(&:id),
+            legislator_id: legislator_vote.legislator_id,
+          },
+        )
+        .includes(:user_legislator)
 
     user_votes_by_user_id =
       UserVote.where(user_id: users.map(&:id), bill_id: bill.id).index_by(

@@ -97,12 +97,10 @@ class SwayLocale < ApplicationRecord
 
   sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
   def legislators(active = true)
-    Legislator.joins(:district).includes(:district).where(
-      active: active,
-      district: {
-        sway_locale: self,
-      },
-    )
+    Legislator
+      .joins(:district)
+      .includes(:district)
+      .where(active: active, district: { sway_locale: self })
   end
 
   sig { returns(String) }
@@ -143,10 +141,11 @@ class SwayLocale < ApplicationRecord
       return @geojson = nil
     end
 
-    @geojson = T.let(
-      RGeo::GeoJSON.decode(File.read(geojson_file_name)),
-      RGeo::GeoJSON::FeatureCollection,
-    )
+    @geojson =
+      T.let(
+        RGeo::GeoJSON.decode(File.read(geojson_file_name)),
+        RGeo::GeoJSON::FeatureCollection,
+      )
   end
 
   sig { returns(Jbuilder) }

@@ -8,7 +8,11 @@ module Users
       unless current_user.update(full_name: user_details_params[:full_name])
         flash[:error] = "Failed to save your name. Please try again."
       end
-      redirect_to redirect_path, inertia: { errors: current_user.errors }, allow_other_host: false
+      redirect_to redirect_path,
+                  inertia: {
+                    errors: current_user.errors,
+                  },
+                  allow_other_host: false
     end
 
     private

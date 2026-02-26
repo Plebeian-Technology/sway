@@ -19,7 +19,9 @@ RSpec.describe "UserDetails", type: :request do
            }
 
       expect(response).to have_http_status(302)
-      expect(response).to redirect_to(bill_path(bill_id, with: "legislator,address"))
+      expect(response).to redirect_to(
+        bill_path(bill_id, with: "legislator,address"),
+      )
       expect(User.find(user.id).full_name).to eql("Taco Banana")
     end
 

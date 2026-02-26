@@ -28,8 +28,10 @@ RSpec.describe "Organization::Positions", type: :request do
                support: "support",
                summary: "We support this bill",
              }
-      end.to change(OrganizationBillPosition, :count).by(1)
-         .and change(OrganizationBillPositionChange, :count).by(1)
+      end.to change(OrganizationBillPosition, :count).by(1).and change(
+              OrganizationBillPositionChange,
+              :count,
+            ).by(1)
 
       position = OrganizationBillPosition.last
       expect(position.organization).to eq(organization)
@@ -58,19 +60,25 @@ RSpec.describe "Organization::Positions", type: :request do
         )
 
       # Create an existing inactive position with an APPROVED change
-      position = create(:organization_bill_position,
-                        organization: organization,
-                        bill: bill,
-                        support: "oppose",
-                        summary: "Old summary",
-                        active: false)
+      position =
+        create(
+          :organization_bill_position,
+          organization: organization,
+          bill: bill,
+          support: "oppose",
+          summary: "Old summary",
+          active: false,
+        )
 
-      old_change = create(:organization_bill_position_change,
-                          organization_bill_position: position,
-                          updated_by: user,
-                          approved_by: user, # approved
-                          new_support: "oppose",
-                          new_summary: "Old summary")
+      old_change =
+        create(
+          :organization_bill_position_change,
+          organization_bill_position: position,
+          updated_by: user,
+          approved_by: user, # approved
+          new_support: "oppose",
+          new_summary: "Old summary",
+        )
 
       expect do
         post organization_positions_path(organization),
@@ -79,8 +87,11 @@ RSpec.describe "Organization::Positions", type: :request do
                support: "support",
                summary: "New summary",
              }
-      end.to change(OrganizationBillPosition, :count).by(0) # reuses position
-         .and change(OrganizationBillPositionChange, :count).by(1) # creates new change
+      end.to change(OrganizationBillPosition, :count).by(0).and change(
+              # reuses position
+              OrganizationBillPositionChange,
+              :count,
+            ).by(1) # creates new change
 
       position.reload
       expect(position.support).to eq("support")
@@ -98,21 +109,39 @@ RSpec.describe "Organization::Positions", type: :request do
 
     it "creates multiple pending changes if submitted multiple times (immutability)" do
       _, user = setup
-      create(:user_organization_membership, user: user, organization: organization)
+      create(
+        :user_organization_membership,
+        user: user,
+        organization: organization,
+      )
 
       # Create inactive position
-      position = create(:organization_bill_position, organization: organization, bill: bill, active: false)
+      position =
+        create(
+          :organization_bill_position,
+          organization: organization,
+          bill: bill,
+          active: false,
+        )
 
       # First submission
       expect do
         post organization_positions_path(organization),
-             params: { bill_id: bill.id, support: "support", summary: "First draft" }
+             params: {
+               bill_id: bill.id,
+               support: "support",
+               summary: "First draft",
+             }
       end.to change(OrganizationBillPositionChange, :count).by(1)
 
       # Second submission
       expect do
         post organization_positions_path(organization),
-             params: { bill_id: bill.id, support: "oppose", summary: "Second draft" }
+             params: {
+               bill_id: bill.id,
+               support: "oppose",
+               summary: "Second draft",
+             }
       end.to change(OrganizationBillPositionChange, :count).by(1)
 
       changes = position.position_changes.order(:created_at)
@@ -171,7 +200,7 @@ RSpec.describe "Organization::Positions", type: :request do
             organization: organization,
             bill: bill,
             support: "neutral",
-            summary: "summary"
+            summary: "summary",
           )
       }.to change(OrganizationBillPosition, :count).by(1)
 
@@ -200,7 +229,7 @@ RSpec.describe "Organization::Positions", type: :request do
             organization: organization,
             bill: bill,
             support: "neutral",
-            summary: "summary"
+            summary: "summary",
           )
       }.to change(OrganizationBillPosition, :count).by(1)
 
