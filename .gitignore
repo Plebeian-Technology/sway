@@ -80,6 +80,14 @@ tf/
 .env.sentry-build-plugin
 
 registry/
+
+legislation/diffs/
+legislation/__pycache__/
+legislation_log_2.txt
+legislation/diffs/*
+legislation/baltimore_city_charter.md
+legislation/baltimore_city_code.md
+
 coverage/
 .dockerdev/caddy/certs/*
 
