@@ -13,9 +13,7 @@ RSpec.describe Authentication, type: :controller do
     end
   end
 
-  before do
-    routes.draw { get "index" => "anonymous#index" }
-  end
+  before { routes.draw { get "index" => "anonymous#index" } }
 
   describe "#send_phone_verification" do
     let(:session_store) { { existing: "value" } }
@@ -27,7 +25,9 @@ RSpec.describe Authentication, type: :controller do
         ENV["SKIP_PHONE_VERIFICATION"] = "1"
         example.run
       ensure
-        previous.nil? ? ENV.delete("SKIP_PHONE_VERIFICATION") : ENV["SKIP_PHONE_VERIFICATION"] = previous
+        previous.nil? ?
+          ENV.delete("SKIP_PHONE_VERIFICATION") :
+          ENV["SKIP_PHONE_VERIFICATION"] = previous
       end
 
       it "stores the normalized phone and bypasses Twilio" do
@@ -45,7 +45,9 @@ RSpec.describe Authentication, type: :controller do
         ENV.delete("SKIP_PHONE_VERIFICATION")
         example.run
       ensure
-        previous.nil? ? ENV.delete("SKIP_PHONE_VERIFICATION") : ENV["SKIP_PHONE_VERIFICATION"] = previous
+        previous.nil? ?
+          ENV.delete("SKIP_PHONE_VERIFICATION") :
+          ENV["SKIP_PHONE_VERIFICATION"] = previous
       end
 
       it "sends an sms verification through Twilio" do
@@ -61,8 +63,12 @@ RSpec.describe Authentication, type: :controller do
 
       it "returns false and reports the error when Twilio raises" do
         twilio_error = Twilio::REST::RestError.allocate
-        allow(twilio_error).to receive(:full_message).and_return("twilio failure")
-        allow(twilio_verifications_double).to receive(:create).and_raise(twilio_error)
+        allow(twilio_error).to receive(:full_message).and_return(
+          "twilio failure",
+        )
+        allow(twilio_verifications_double).to receive(:create).and_raise(
+          twilio_error,
+        )
         allow(Rails.logger).to receive(:error)
         allow(Sentry).to receive(:capture_exception)
 
@@ -76,14 +82,19 @@ RSpec.describe Authentication, type: :controller do
 
     it "returns false when session or phone is missing" do
       expect(controller.send(:send_phone_verification, nil, phone)).to be(false)
-      expect(controller.send(:send_phone_verification, session_store, nil)).to be(false)
+      expect(
+        controller.send(:send_phone_verification, session_store, nil),
+      ).to be(false)
     end
   end
 
   describe "private helpers" do
     describe "#verified?" do
       it "returns true when @user has a verified phone" do
-        controller.instance_variable_set(:@user, build(:user, is_phone_verified: true))
+        controller.instance_variable_set(
+          :@user,
+          build(:user, is_phone_verified: true),
+        )
 
         expect(controller.send(:verified?)).to be(true)
       end

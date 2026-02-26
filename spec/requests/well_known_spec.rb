@@ -8,11 +8,7 @@ RSpec.describe "WellKnown", type: :request do
       get "/.well-known/webauthn"
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
-        {
-          "origins" => ["https://sway.vote"],
-        },
-      )
+      expect(response.parsed_body).to eq({ "origins" => ["https://sway.vote"] })
     end
 
     it "returns an empty response for non-app hosts" do

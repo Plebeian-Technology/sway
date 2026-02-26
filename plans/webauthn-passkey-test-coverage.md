@@ -244,18 +244,18 @@ PATCH  /phone_verification/:id                → phone_verification_path(id)
 
 69 total examples (64 unit/request + 5 system E2E), 0 failures (~7s).
 
-| Step | Deliverable                                         | Status  | Examples                              |
-| ---- | --------------------------------------------------- | ------- | ------------------------------------- |
-| 1    | `spec/factories/passkey.rb`                         | Done    | —                                     |
-| 2    | SessionDouble `dig` fix                             | Done    | Handles symbol/string key interop     |
-| 3    | `spec/support/webauthn_double.rb`                   | Done    | Stubs RP, reset_session, RefreshToken |
-| 4    | `spec/support/twilio_double.rb`                     | Done    | Full client chain stubbed             |
-| 5    | `spec/models/passkey_spec.rb`                       | Done    | 8 examples                            |
-| 6    | `spec/requests/phone_verification_spec.rb`          | Done    | 9 examples                            |
-| 7    | `spec/requests/users/webauthn/registration_spec.rb` | Done    | 15 examples                           |
-| 8    | `spec/requests/users/webauthn/sessions_spec.rb`     | Done    | 17 examples                           |
-| 9    | Gap closure (security invariants)                   | Done    | All items covered                     |
-| 10   | Capybara E2E                                        | Done    | 5 examples (2 happy + 3 negative)     |
+| Step | Deliverable                                         | Status | Examples                              |
+| ---- | --------------------------------------------------- | ------ | ------------------------------------- |
+| 1    | `spec/factories/passkey.rb`                         | Done   | —                                     |
+| 2    | SessionDouble `dig` fix                             | Done   | Handles symbol/string key interop     |
+| 3    | `spec/support/webauthn_double.rb`                   | Done   | Stubs RP, reset_session, RefreshToken |
+| 4    | `spec/support/twilio_double.rb`                     | Done   | Full client chain stubbed             |
+| 5    | `spec/models/passkey_spec.rb`                       | Done   | 8 examples                            |
+| 6    | `spec/requests/phone_verification_spec.rb`          | Done   | 9 examples                            |
+| 7    | `spec/requests/users/webauthn/registration_spec.rb` | Done   | 15 examples                           |
+| 8    | `spec/requests/users/webauthn/sessions_spec.rb`     | Done   | 17 examples                           |
+| 9    | Gap closure (security invariants)                   | Done   | All items covered                     |
+| 10   | Capybara E2E                                        | Done   | 5 examples (2 happy + 3 negative)     |
 
 ### Quality Notes
 
@@ -278,66 +278,68 @@ PATCH  /phone_verification/:id                → phone_verification_path(id)
 ### Medium Priority
 
 - [ ] **RefreshToken model spec** (`spec/models/refresh_token_spec.rb`)
-  - Source: `app/models/refresh_token.rb`
-  - `RefreshToken.for(user, request)` — creates token, destroys existing one first, captures IP + user-agent
-  - `#expired?` — checks `expires_at < Time.zone.now` (1-year TTL)
-  - `#is_valid?(request)` — compound check: not expired + IP match + user-agent match
-  - `#as_cookie` — returns `{ value:, httponly: true, expires:, secure: <production?>, same_site: "Strict" }`
-  - Token uniqueness (indexed)
-  - Edge case: creating new token while old one exists (should destroy old)
+    - Source: `app/models/refresh_token.rb`
+    - `RefreshToken.for(user, request)` — creates token, destroys existing one first, captures IP + user-agent
+    - `#expired?` — checks `expires_at < Time.zone.now` (1-year TTL)
+    - `#is_valid?(request)` — compound check: not expired + IP match + user-agent match
+    - `#as_cookie` — returns `{ value:, httponly: true, expires:, secure: <production?>, same_site: "Strict" }`
+    - Token uniqueness (indexed)
+    - Edge case: creating new token while old one exists (should destroy old)
 
 - [ ] **Authentication concern spec** (`spec/controllers/concerns/authentication_spec.rb`)
-  - Source: `app/controllers/concerns/authentication.rb`
-  - `send_phone_verification(session, phone)` — normalizes phone, calls Twilio Verify `.verifications.create(to:, channel: "sms")`, stores in session, returns boolean; logs + captures to Sentry on error
-  - `verified?` — returns `@user&.is_phone_verified`
-  - `passkey?` — returns `@user&.passkeys&.size&.> 0`
-  - `find_by_phone(phone)` — `User.find_by(phone:)` with memoization via `@find_by_phone`
-  - `SKIP_PHONE_VERIFICATION` ENV flag bypasses Twilio call
-  - Test via anonymous controller or controller concern testing pattern
+    - Source: `app/controllers/concerns/authentication.rb`
+    - `send_phone_verification(session, phone)` — normalizes phone, calls Twilio Verify `.verifications.create(to:, channel: "sms")`, stores in session, returns boolean; logs + captures to Sentry on error
+    - `verified?` — returns `@user&.is_phone_verified`
+    - `passkey?` — returns `@user&.passkeys&.size&.> 0`
+    - `find_by_phone(phone)` — `User.find_by(phone:)` with memoization via `@find_by_phone`
+    - `SKIP_PHONE_VERIFICATION` ENV flag bypasses Twilio call
+    - Test via anonymous controller or controller concern testing pattern
 
 - [ ] **User model passkey methods** (`spec/models/user_spec.rb`)
-  - Source: `app/models/user.rb`
-  - `has_sway_passkey?` — returns `passkeys.size.positive?` (test 0 vs 1+ passkeys)
-  - `can_delete_sway_passkeys?` — returns `passkeys.size > CREDENTIAL_MIN_AMOUNT` (min=1, so need 2+ to delete)
-  - `webauthn_id` — auto-generated via `after_initialize` callback using `WebAuthn.generate_user_id`; should be set on new records, preserved on existing, unique indexed
+    - Source: `app/models/user.rb`
+    - `has_sway_passkey?` — returns `passkeys.size.positive?` (test 0 vs 1+ passkeys)
+    - `can_delete_sway_passkeys?` — returns `passkeys.size > CREDENTIAL_MIN_AMOUNT` (min=1, so need 2+ to delete)
+    - `webauthn_id` — auto-generated via `after_initialize` callback using `WebAuthn.generate_user_id`; should be set on new records, preserved on existing, unique indexed
 
 - [ ] **WellKnownController spec** (`spec/requests/well_known_spec.rb`)
-  - Source: `app/controllers/well_known_controller.rb`
-  - `GET /.well-known/webauthn` — returns `{ origins: ["https://sway.vote"] }` only when `request.host == "app.sway.vote"`
-  - Test host matching: `app.sway.vote` → JSON response, other hosts → no/empty response
-  - Skips authentication (`skip_before_action :authenticate_sway_user!`)
+    - Source: `app/controllers/well_known_controller.rb`
+    - `GET /.well-known/webauthn` — returns `{ origins: ["https://sway.vote"] }` only when `request.host == "app.sway.vote"`
+    - Test host matching: `app.sway.vote` → JSON response, other hosts → no/empty response
+    - Skips authentication (`skip_before_action :authenticate_sway_user!`)
 
 ### Low Priority
 
 - [ ] **RelyingParty concern spec** (`spec/controllers/concerns/relying_party_spec.rb`)
-  - Source: `app/controllers/concerns/relying_party.rb`
-  - `relying_party` returns `WebAuthn::RelyingParty` with:
-    - Production: `id: "app.sway.vote"`, `allowed_origins: ["https://app.sway.vote", "https://www.sway.vote", "https://sway.vote"]`
-    - Non-production: `id: nil` (uses origin domain), origins from request host
-    - `name: "sway-#{ENV["RAILS_ENV"]}"`
-    - `credential_options_timeout: 120_000`
-  - Test via anonymous controller that includes the concern
+    - Source: `app/controllers/concerns/relying_party.rb`
+    - `relying_party` returns `WebAuthn::RelyingParty` with:
+        - Production: `id: "app.sway.vote"`, `allowed_origins: ["https://app.sway.vote", "https://www.sway.vote", "https://sway.vote"]`
+        - Non-production: `id: nil` (uses origin domain), origins from request host
+        - `name: "sway-#{ENV["RAILS_ENV"]}"`
+        - `credential_options_timeout: 120_000`
+    - Test via anonymous controller that includes the concern
 
 - [ ] **Rate limiting specs** — Both `RegistrationController` and `SessionsController` use `rate_limit(to: 100, within: 1.minute)`. Send 101 requests and assert the last returns `429 Too Many Requests`. May need `Rack::Attack` or Rails rate-limiting test helpers depending on how Rails 8.1 implements this.
 
 - [ ] **WebAuthn::FakeClient for request specs** — The `webauthn` gem ships `WebAuthn::FakeClient` (`require "webauthn/fake_client"`) which generates realistic attestation/assertion payloads. Could replace the current `WebAuthnDouble` stubs with a real RP + FakeClient for higher-fidelity request tests:
-  ```ruby
-  fake_client = WebAuthn::FakeClient.new(origin: "https://localhost:3333")
-  credential = fake_client.create(challenge: challenge, rp_id: rp_id)
-  # post callback with credential — no stubs needed
-  ```
-  Main benefit: tests the actual WebAuthn verification code path instead of stubbing it away.
+
+    ```ruby
+    fake_client = WebAuthn::FakeClient.new(origin: "https://localhost:3333")
+    credential = fake_client.create(challenge: challenge, rp_id: rp_id)
+    # post callback with credential — no stubs needed
+    ```
+
+    Main benefit: tests the actual WebAuthn verification code path instead of stubbing it away.
 
 - [ ] **SimpleCov branch coverage gates** — Add branch coverage thresholds for `users/webauthn/*` and `phone_verification*` in `.simplecov` or `spec/rails_helper.rb` to prevent regressions.
 
 - [ ] **Reduce `allow_any_instance_of` usage** — Refactor WebAuthn RP stubs to use dependency injection (e.g., expose `relying_party` as an injectable method, override in tests) for cleaner test setup.
 
 - [ ] **Frontend test infrastructure** — Zero JS test coverage exists. Key files:
-  - `app/frontend/hooks/authentication/useWebAuthnRegistration.ts` — `startRegistration`, `verifyRegistration` with AbortController
-  - `app/frontend/hooks/authentication/useWebAuthnAuthentication.ts` — `startAuthentication`, `verifyAuthentication` with SMS fallback
-  - `app/frontend/sway_utils/webauthn.ts` — `create()`, `get()` wrapping `navigator.credentials`
-  - `app/frontend/pages/Passkey.tsx` — login page with passkey-first + SMS fallback flow
-  - Needs: Vitest setup, `@testing-library/react`, mock for `navigator.credentials` API
+    - `app/frontend/hooks/authentication/useWebAuthnRegistration.ts` — `startRegistration`, `verifyRegistration` with AbortController
+    - `app/frontend/hooks/authentication/useWebAuthnAuthentication.ts` — `startAuthentication`, `verifyAuthentication` with SMS fallback
+    - `app/frontend/sway_utils/webauthn.ts` — `create()`, `get()` wrapping `navigator.credentials`
+    - `app/frontend/pages/Passkey.tsx` — login page with passkey-first + SMS fallback flow
+    - Needs: Vitest setup, `@testing-library/react`, mock for `navigator.credentials` API
 
 - [ ] **WebMock/VCR + Twilio test credentials** — Replace hand-rolled `TwilioDouble` with recorded HTTP interactions for deterministic payload-shape assertions. Use `webmock` or `vcr` gem to record actual Twilio Verify API responses.
 

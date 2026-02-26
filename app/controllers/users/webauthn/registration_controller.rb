@@ -71,7 +71,9 @@ module Users
         end
 
         user = User.find_or_initialize_by(phone: verified_phone)
-        user.assign_attributes(sanitized_user_attributes(attributes, verified_phone))
+        user.assign_attributes(
+          sanitized_user_attributes(attributes, verified_phone),
+        )
 
         webauthn_passkey =
           relying_party.verify_registration(
@@ -102,26 +104,28 @@ module Users
                  },
                  status: :unprocessable_content
         end
-        rescue WebAuthn::Error => e
-          render json: {
-                   success: false,
-                   message: "Verification failed: #{e.message}",
-                 },
-                 status: :unprocessable_content
-        rescue ActiveRecord::RecordInvalid => e
-          render json: {
-                   success: false,
-                   errors: e.record.errors.full_messages,
-                 },
-                 status: :unprocessable_content
-        ensure
-          session.delete(:current_registration)
+      rescue WebAuthn::Error => e
+        render json: {
+                 success: false,
+                 message: "Verification failed: #{e.message}",
+               },
+               status: :unprocessable_content
+      rescue ActiveRecord::RecordInvalid => e
+        render json: {
+                 success: false,
+                 errors: e.record.errors.full_messages,
+               },
+               status: :unprocessable_content
+      ensure
+        session.delete(:current_registration)
       end
 
       private
 
       sig do
-        params(attributes: T.untyped, verified_phone: String).returns(T::Hash[Symbol, T.untyped])
+        params(attributes: T.untyped, verified_phone: String).returns(
+          T::Hash[Symbol, T.untyped],
+        )
       end
       def sanitized_user_attributes(attributes, verified_phone)
         raw_attributes = attributes.is_a?(Hash) ? attributes : {}
@@ -130,9 +134,11 @@ module Users
           phone: verified_phone,
           email: read_attribute(raw_attributes, "email"),
           full_name: read_attribute(raw_attributes, "full_name"),
-          is_phone_verified: read_attribute(raw_attributes, "is_phone_verified"),
+          is_phone_verified:
+            read_attribute(raw_attributes, "is_phone_verified"),
           is_admin: read_attribute(raw_attributes, "is_admin"),
-          is_email_verified: read_attribute(raw_attributes, "is_email_verified"),
+          is_email_verified:
+            read_attribute(raw_attributes, "is_email_verified"),
           is_registered_to_vote:
             read_attribute(raw_attributes, "is_registered_to_vote"),
           is_registration_complete:
@@ -142,7 +148,11 @@ module Users
         }.compact
       end
 
-      sig { params(attributes: T::Hash[T.untyped, T.untyped], key: String).returns(T.untyped) }
+      sig do
+        params(attributes: T::Hash[T.untyped, T.untyped], key: String).returns(
+          T.untyped,
+        )
+      end
       def read_attribute(attributes, key)
         return attributes[key] if attributes.key?(key)
 

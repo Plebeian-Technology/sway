@@ -13,7 +13,9 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       ENV.delete("SKIP_PHONE_VERIFICATION")
       example.run
     ensure
-      previous.nil? ? ENV.delete("SKIP_PHONE_VERIFICATION") : ENV["SKIP_PHONE_VERIFICATION"] = previous
+      previous.nil? ?
+        ENV.delete("SKIP_PHONE_VERIFICATION") :
+        ENV["SKIP_PHONE_VERIFICATION"] = previous
     end
 
     context "when phone is invalid" do
@@ -40,22 +42,28 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
     end
 
     context "when user has passkeys" do
-      let!(:user) { create(:user, phone: phone, is_registration_complete: true) }
-      let!(:passkey) { create(:passkey, user: user, external_id: fake_credential_id) }
+      let!(:user) do
+        create(:user, phone: phone, is_registration_complete: true)
+      end
+      let!(:passkey) do
+        create(:passkey, user: user, external_id: fake_credential_id)
+      end
 
       it "passes all passkeys as allow_credentials" do
-        second_passkey = create(:passkey, user: user, external_id: "second-credential")
+        second_passkey =
+          create(:passkey, user: user, external_id: "second-credential")
 
         expect_any_instance_of(WebAuthn::RelyingParty).to receive(
           :options_for_authentication,
         ).with(
           hash_including(
-            allow_credentials: match_array(
-              [
-                { id: passkey.external_id, type: "public-key" },
-                { id: second_passkey.external_id, type: "public-key" },
-              ],
-            ),
+            allow_credentials:
+              match_array(
+                [
+                  { id: passkey.external_id, type: "public-key" },
+                  { id: second_passkey.external_id, type: "public-key" },
+                ],
+              ),
           ),
         ).and_return(authentication_options_double)
 
@@ -73,18 +81,13 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         post users_webauthn_sessions_path, params: { phone: phone }
 
         expect(session_hash[:current_authentication]).to eq(
-          {
-            challenge: fake_challenge,
-            phone: phone,
-          },
+          { challenge: fake_challenge, phone: phone },
         )
       end
     end
 
     context "when user has no passkeys" do
-      before do
-        create(:user, phone: phone)
-      end
+      before { create(:user, phone: phone) }
 
       context "when SKIP_PHONE_VERIFICATION is enabled" do
         around do |example|
@@ -92,7 +95,9 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
           ENV["SKIP_PHONE_VERIFICATION"] = "1"
           example.run
         ensure
-          previous.nil? ? ENV.delete("SKIP_PHONE_VERIFICATION") : ENV["SKIP_PHONE_VERIFICATION"] = previous
+          previous.nil? ?
+            ENV.delete("SKIP_PHONE_VERIFICATION") :
+            ENV["SKIP_PHONE_VERIFICATION"] = previous
         end
 
         it "stores phone in session and returns success" do
@@ -160,11 +165,19 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         create(:user, phone: phone).tap do |created_user|
           created_user.update!(
             is_registration_complete: registration_complete,
-            registration_status: registration_complete ? "completed" : "pending",
+            registration_status:
+              registration_complete ? "completed" : "pending",
           )
         end
       end
-      let!(:passkey) { create(:passkey, user: user, external_id: fake_credential_id, sign_count: 0) }
+      let!(:passkey) do
+        create(
+          :passkey,
+          user: user,
+          external_id: fake_credential_id,
+          sign_count: 0,
+        )
+      end
       let(:registration_complete) { true }
 
       it "signs in the user" do
@@ -221,7 +234,9 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
           post callback_users_webauthn_sessions_path, params: callback_params
 
           expect(response).to have_http_status(:ok)
-          expect(response.parsed_body["route"]).to eq(sway_registration_index_path)
+          expect(response.parsed_body["route"]).to eq(
+            sway_registration_index_path,
+          )
         end
       end
 
@@ -230,7 +245,12 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
           Base64.strict_encode64(Base64.strict_encode64(fake_credential_id))
         end
         let!(:passkey) do
-          create(:passkey, user: user, external_id: fallback_external_id, sign_count: 0)
+          create(
+            :passkey,
+            user: user,
+            external_id: fallback_external_id,
+            sign_count: 0,
+          )
         end
 
         it "updates the fallback-matched passkey" do
@@ -271,7 +291,11 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
 
     it "returns 422 on WebAuthn error and cleans session" do
       create(:user, phone: phone)
-      create(:passkey, user: User.find_by(phone: phone), external_id: fake_credential_id)
+      create(
+        :passkey,
+        user: User.find_by(phone: phone),
+        external_id: fake_credential_id,
+      )
 
       allow_any_instance_of(WebAuthn::RelyingParty).to receive(
         :verify_authentication,
@@ -296,7 +320,8 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(response.parsed_body).to eq(
         {
           "success" => false,
-          "message" => "Invalid authentication payload: missing publicKeyCredential",
+          "message" =>
+            "Invalid authentication payload: missing publicKeyCredential",
         },
       )
       expect(session_hash[:current_authentication]).to be_nil
@@ -304,7 +329,11 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
 
     it "returns 422 when verified credential no longer maps to a passkey" do
       create(:user, phone: phone)
-      create(:passkey, user: User.find_by(phone: phone), external_id: "different-id")
+      create(
+        :passkey,
+        user: User.find_by(phone: phone),
+        external_id: "different-id",
+      )
 
       post callback_users_webauthn_sessions_path, params: callback_params
 

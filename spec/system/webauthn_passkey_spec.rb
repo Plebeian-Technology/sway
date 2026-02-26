@@ -3,7 +3,9 @@
 require "rails_helper"
 
 RSpec.describe "WebAuthn Passkey", type: :system, js: true do
-  let(:phone) { "410555#{SecureRandom.random_number(10_000).to_s.rjust(4, "0")}" }
+  let(:phone) do
+    "410555#{SecureRandom.random_number(10_000).to_s.rjust(4, "0")}"
+  end
   let(:default_env) do
     {
       "SKIP_PHONE_VERIFICATION" => "1",
@@ -28,9 +30,10 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
     Capybara.app_host = "http://localhost"
     Capybara.always_include_port = true
 
-    previous_values = default_env.each_with_object({}) do |(key, _value), memo|
-      memo[key] = ENV.fetch(key, nil)
-    end
+    previous_values =
+      default_env.each_with_object({}) do |(key, _value), memo|
+        memo[key] = ENV.fetch(key, nil)
+      end
     default_env.each { |key, value| ENV[key] = value }
 
     example.run
@@ -50,38 +53,54 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
   end
 
   after do
-    Array(@active_authenticators).reverse_each { |id| disable_virtual_authenticator(id) }
+    Array(@active_authenticators).reverse_each do |id|
+      disable_virtual_authenticator(id)
+    end
   end
 
   it "registers a new passkey user through the full browser flow" do
-    start_session = browser_json_request("POST", users_webauthn_sessions_path, { phone: })
+    start_session =
+      browser_json_request("POST", users_webauthn_sessions_path, { phone: })
     expect(start_session.fetch("status")).to eq(202)
     expect(start_session.dig("body", "success")).to eq(true)
 
-    verify_phone = browser_json_request("PATCH", phone_verification_path(1), { phone:, code: "123456" })
+    verify_phone =
+      browser_json_request(
+        "PATCH",
+        phone_verification_path(1),
+        { phone:, code: "123456" },
+      )
     expect(verify_phone.fetch("status")).to eq(200)
     expect(verify_phone.dig("body", "success")).to eq(true)
 
-    registration_options = browser_json_request(
-      "POST",
-      users_webauthn_registration_index_path,
-      { full_name: "Passkey User" },
-    )
+    registration_options =
+      browser_json_request(
+        "POST",
+        users_webauthn_registration_index_path,
+        { full_name: "Passkey User" },
+      )
     expect(registration_options.fetch("status")).to eq(200)
 
     credential = browser_create_credential(registration_options.fetch("body"))
     expect(credential.fetch("id")).to be_present
 
-    complete_registration = browser_json_request(
-      "POST",
-      callback_users_webauthn_registration_index_path,
-      credential.merge("passkey_label" => "System Test Passkey"),
-    )
+    complete_registration =
+      browser_json_request(
+        "POST",
+        callback_users_webauthn_registration_index_path,
+        credential.merge("passkey_label" => "System Test Passkey"),
+      )
     expect(complete_registration.fetch("status")).to eq(200)
-    expect(complete_registration.dig("body", "route")).to eq(SwayRoutes::REGISTRATION)
+    expect(complete_registration.dig("body", "route")).to eq(
+      SwayRoutes::REGISTRATION,
+    )
 
     visit complete_registration.dig("body", "route")
-    expect(page).to have_current_path(/(sway_registration|legislators)/, ignore_query: true, wait: 10)
+    expect(page).to have_current_path(
+      /(sway_registration|legislators)/,
+      ignore_query: true,
+      wait: 10,
+    )
 
     user = User.find_by(phone:)
     expect(user).to be_present
@@ -95,66 +114,91 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
       registration_status: "completed",
     )
 
-    start_session = browser_json_request("POST", users_webauthn_sessions_path, { phone: })
+    start_session =
+      browser_json_request("POST", users_webauthn_sessions_path, { phone: })
     expect(start_session.fetch("status")).to eq(200)
 
     assertion = browser_get_credential(start_session.fetch("body"))
     expect(assertion.fetch("id")).to be_present
 
-    complete_authentication = browser_json_request(
-      "POST",
-      callback_users_webauthn_sessions_path,
-      {
-        publicKeyCredential: assertion,
-      },
-    )
+    complete_authentication =
+      browser_json_request(
+        "POST",
+        callback_users_webauthn_sessions_path,
+        { publicKeyCredential: assertion },
+      )
     expect(complete_authentication.fetch("status")).to eq(200)
     expect(complete_authentication.dig("body", "route")).to eq(legislators_path)
 
     visit complete_authentication.dig("body", "route")
-    expect(page).to have_current_path(legislators_path, ignore_query: true, wait: 10)
+    expect(page).to have_current_path(
+      legislators_path,
+      ignore_query: true,
+      wait: 10,
+    )
   end
 
   it "handles canceled browser prompt without posting callback" do
     user = register_passkey_user(phone:)
-    user.update!(is_registration_complete: true, registration_status: "completed")
+    user.update!(
+      is_registration_complete: true,
+      registration_status: "completed",
+    )
 
-    start_session = browser_json_request("POST", users_webauthn_sessions_path, { phone: })
+    start_session =
+      browser_json_request("POST", users_webauthn_sessions_path, { phone: })
     expect(start_session.fetch("status")).to eq(200)
 
     canceled = browser_cancel_get_credential(start_session.fetch("body"))
     expect(canceled.fetch("ok")).to eq(false)
     expect(canceled.fetch("name")).to eq("AbortError")
 
-    callback = browser_json_request("POST", callback_users_webauthn_sessions_path, {})
+    callback =
+      browser_json_request("POST", callback_users_webauthn_sessions_path, {})
     expect(callback.fetch("status")).to eq(422)
-    expect(callback.dig("body", "message")).to include("missing publicKeyCredential")
+    expect(callback.dig("body", "message")).to include(
+      "missing publicKeyCredential",
+    )
   end
 
   it "rejects authentication when challenge is tampered" do
     user = register_passkey_user(phone:)
-    user.update!(is_registration_complete: true, registration_status: "completed")
+    user.update!(
+      is_registration_complete: true,
+      registration_status: "completed",
+    )
 
-    start_session = browser_json_request("POST", users_webauthn_sessions_path, { phone: })
+    start_session =
+      browser_json_request("POST", users_webauthn_sessions_path, { phone: })
     expect(start_session.fetch("status")).to eq(200)
 
-    assertion = browser_get_credential(start_session.fetch("body"), challenge_override: random_base64url)
+    assertion =
+      browser_get_credential(
+        start_session.fetch("body"),
+        challenge_override: random_base64url,
+      )
 
-    callback = browser_json_request(
-      "POST",
-      callback_users_webauthn_sessions_path,
-      { publicKeyCredential: assertion },
-    )
+    callback =
+      browser_json_request(
+        "POST",
+        callback_users_webauthn_sessions_path,
+        { publicKeyCredential: assertion },
+      )
     expect(callback.fetch("status")).to eq(422)
     expect(callback.dig("body", "message")).to include("Verification failed")
   end
 
   it "rejects unknown credential during browser authentication" do
-    known_phone = "410555#{SecureRandom.random_number(10_000).to_s.rjust(4, "0")}"
-    unknown_phone = "410555#{SecureRandom.random_number(10_000).to_s.rjust(4, "0")}"
+    known_phone =
+      "410555#{SecureRandom.random_number(10_000).to_s.rjust(4, "0")}"
+    unknown_phone =
+      "410555#{SecureRandom.random_number(10_000).to_s.rjust(4, "0")}"
 
     user = register_passkey_user(phone: known_phone)
-    user.update!(is_registration_complete: true, registration_status: "completed")
+    user.update!(
+      is_registration_complete: true,
+      registration_status: "completed",
+    )
 
     disable_virtual_authenticator(@active_authenticators.pop)
     second_authenticator = enable_virtual_authenticator
@@ -162,41 +206,57 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
 
     register_passkey_user(phone: unknown_phone)
 
-    start_session = browser_json_request("POST", users_webauthn_sessions_path, { phone: known_phone })
+    start_session =
+      browser_json_request(
+        "POST",
+        users_webauthn_sessions_path,
+        { phone: known_phone },
+      )
     expect(start_session.fetch("status")).to eq(200)
 
-    random_unknown_id = Base64.urlsafe_encode64(SecureRandom.random_bytes(32), padding: false)
+    random_unknown_id =
+      Base64.urlsafe_encode64(SecureRandom.random_bytes(32), padding: false)
 
     expect do
       browser_get_credential(
         start_session.fetch("body"),
-        allow_credentials_override: [{ "id" => random_unknown_id, "type" => "public-key" }],
+        allow_credentials_override: [
+          { "id" => random_unknown_id, "type" => "public-key" },
+        ],
       )
     end.to raise_error(RuntimeError, /NotAllowedError/)
   end
 
   def register_passkey_user(phone:)
-    start_session = browser_json_request("POST", users_webauthn_sessions_path, { phone: })
+    start_session =
+      browser_json_request("POST", users_webauthn_sessions_path, { phone: })
     expect(start_session.fetch("status")).to eq(202)
     expect(start_session.dig("body", "success")).to eq(true)
 
-    verify_phone = browser_json_request("PATCH", phone_verification_path(1), { phone:, code: "123456" })
+    verify_phone =
+      browser_json_request(
+        "PATCH",
+        phone_verification_path(1),
+        { phone:, code: "123456" },
+      )
     expect(verify_phone.fetch("status")).to eq(200)
     expect(verify_phone.dig("body", "success")).to eq(true)
 
-    registration_options = browser_json_request(
-      "POST",
-      users_webauthn_registration_index_path,
-      { full_name: "Passkey User" },
-    )
+    registration_options =
+      browser_json_request(
+        "POST",
+        users_webauthn_registration_index_path,
+        { full_name: "Passkey User" },
+      )
     expect(registration_options.fetch("status")).to eq(200)
 
     credential = browser_create_credential(registration_options.fetch("body"))
-    callback = browser_json_request(
-      "POST",
-      callback_users_webauthn_registration_index_path,
-      credential.merge("passkey_label" => "System Test Passkey"),
-    )
+    callback =
+      browser_json_request(
+        "POST",
+        callback_users_webauthn_registration_index_path,
+        credential.merge("passkey_label" => "System Test Passkey"),
+      )
     expect(callback.fetch("status")).to eq(200)
 
     User.find_by!(phone:)
@@ -210,7 +270,11 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
     browser_webauthn_credential("create", public_key_options)
   end
 
-  def browser_get_credential(public_key_options, challenge_override: nil, allow_credentials_override: nil)
+  def browser_get_credential(
+    public_key_options,
+    challenge_override: nil,
+    allow_credentials_override: nil
+  )
     browser_webauthn_credential(
       "get",
       public_key_options,
@@ -371,8 +435,16 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
         .catch((error) => done({ ok: false, name: error.name, message: error.message }));
     JS
 
-    result = page.driver.browser.execute_async_script(script, method, public_key_options, overrides)
-    raise "Browser WebAuthn failed: #{result["name"]}: #{result["message"]}" unless result["ok"]
+    result =
+      page.driver.browser.execute_async_script(
+        script,
+        method,
+        public_key_options,
+        overrides,
+      )
+    unless result["ok"]
+      raise "Browser WebAuthn failed: #{result["name"]}: #{result["message"]}"
+    end
 
     result.fetch("credential")
   end
@@ -411,7 +483,8 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
         .catch((error) => done({ error: String(error) }));
     JS
 
-    result = page.driver.browser.execute_async_script(script, method, path, payload)
+    result =
+      page.driver.browser.execute_async_script(script, method, path, payload)
     raise "Browser request failed: #{result["error"]}" if result["error"]
 
     result

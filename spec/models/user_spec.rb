@@ -35,7 +35,9 @@ RSpec.describe User, type: :model do
 
   describe "webauthn_id initialization" do
     it "assigns a generated webauthn_id on new records" do
-      allow(WebAuthn).to receive(:generate_user_id).and_return("generated-webauthn-id")
+      allow(WebAuthn).to receive(:generate_user_id).and_return(
+        "generated-webauthn-id",
+      )
 
       user = User.new(phone: "4105557788")
 

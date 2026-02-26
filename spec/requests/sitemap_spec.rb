@@ -5,7 +5,9 @@ RSpec.describe "Sitemaps", type: :request do
     let(:sway_locale) { create(:sway_locale) }
     let(:district) { create(:district, sway_locale: sway_locale) }
     let(:legislator) { create(:legislator, district: district) }
-    let(:bill) { create(:bill, legislator: legislator, sway_locale: sway_locale) }
+    let(:bill) do
+      create(:bill, legislator: legislator, sway_locale: sway_locale)
+    end
 
     it "returns an xml sitemap with expected URLs" do
       bill
@@ -17,7 +19,9 @@ RSpec.describe "Sitemaps", type: :request do
       expect(response.body).to include(root_url)
       expect(response.body).to include(bills_url)
       expect(response.body).to include(legislators_url)
-      expect(response.body).to include(bill_url(bill, sway_locale_id: sway_locale.id))
+      expect(response.body).to include(
+        bill_url(bill, sway_locale_id: sway_locale.id),
+      )
       expect(response.body).to include(
         legislator_url(legislator, sway_locale_id: sway_locale.id),
       )

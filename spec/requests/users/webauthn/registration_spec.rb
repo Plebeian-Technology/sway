@@ -14,7 +14,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       end
 
       it "returns 422 when user attributes are invalid" do
-        user_errors = instance_double(ActiveModel::Errors, full_messages: ["user invalid"])
+        user_errors =
+          instance_double(ActiveModel::Errors, full_messages: ["user invalid"])
         allow_any_instance_of(User).to receive(:valid?).and_return(false)
         allow_any_instance_of(User).to receive(:errors).and_return(user_errors)
 
@@ -35,22 +36,29 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       it "stores challenge and user attributes in session" do
         post users_webauthn_registration_index_path
 
-        expect(session_hash.dig(:current_registration, :challenge)).to eq(fake_challenge)
-        expect(session_hash.dig(:current_registration, :user_attributes)).to include(
-          "phone" => phone,
+        expect(session_hash.dig(:current_registration, :challenge)).to eq(
+          fake_challenge,
         )
+        expect(
+          session_hash.dig(:current_registration, :user_attributes),
+        ).to include("phone" => phone)
       end
 
       it "passes existing credential ids in exclude" do
         user = create(:user, phone: phone)
-        first_passkey = create(:passkey, user: user, external_id: "credential-1")
-        second_passkey = create(:passkey, user: user, external_id: "credential-2")
+        first_passkey =
+          create(:passkey, user: user, external_id: "credential-1")
+        second_passkey =
+          create(:passkey, user: user, external_id: "credential-2")
 
         expect_any_instance_of(WebAuthn::RelyingParty).to receive(
           :options_for_registration,
         ).with(
           hash_including(
-            exclude: match_array([first_passkey.external_id, second_passkey.external_id]),
+            exclude:
+              match_array(
+                [first_passkey.external_id, second_passkey.external_id],
+              ),
           ),
         ).and_return(registration_options_double)
 
@@ -59,9 +67,7 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
     end
 
     context "when phone is not verified" do
-      before do
-        session_hash[:phone] = phone
-      end
+      before { session_hash[:phone] = phone }
 
       it "returns a confirmation message" do
         post users_webauthn_registration_index_path
@@ -100,12 +106,14 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
 
     it "creates a user" do
       expect do
-        post callback_users_webauthn_registration_index_path, params: callback_params
+        post callback_users_webauthn_registration_index_path,
+             params: callback_params
       end.to change(User, :count).by(1)
     end
 
     it "creates a passkey with verified data" do
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       passkey = Passkey.last
       expect(passkey.external_id).to eq(fake_credential_id)
@@ -115,7 +123,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
     end
 
     it "signs in the user" do
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(session_hash[:user_id]).to eq(User.find_by(phone: phone)&.id)
     end
@@ -123,27 +132,31 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
     it "resets old session data before setting user_id" do
       session_hash[:attacker_session] = "stale"
 
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(session_hash[:attacker_session]).to be_nil
       expect(session_hash[:user_id]).to eq(User.find_by(phone: phone)&.id)
     end
 
     it "writes a refresh token cookie on sign in" do
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(cookies_hash[:refresh_token]).to eq({ value: "refresh-token" })
     end
 
     it "returns the registration route" do
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["route"]).to eq(SwayRoutes::REGISTRATION)
     end
 
     it "cleans up current_registration session data" do
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(session_hash[:current_registration]).to be_nil
     end
@@ -152,7 +165,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       user = create(:user, phone: phone, is_phone_verified: false)
 
       expect do
-        post callback_users_webauthn_registration_index_path, params: callback_params
+        post callback_users_webauthn_registration_index_path,
+             params: callback_params
       end.not_to change(User, :count)
 
       expect(Passkey.where(user: user).count).to eq(1)
@@ -163,7 +177,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
         :verify_registration,
       ).and_raise(WebAuthn::Error, "bad attestation")
 
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body["success"]).to be(false)
@@ -179,21 +194,20 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       ).and_raise(WebAuthn::Error, "bad attestation")
 
       expect do
-        post callback_users_webauthn_registration_index_path, params: callback_params
+        post callback_users_webauthn_registration_index_path,
+             params: callback_params
       end.not_to(change { [User.count, Passkey.count] })
     end
 
     it "returns 422 when passkey save fails and cleans session" do
       allow_any_instance_of(Passkey).to receive(:save).and_return(false)
 
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body).to eq(
-        {
-          "success" => false,
-          "message" => "Couldn't register your Passkey",
-        },
+        { "success" => false, "message" => "Couldn't register your Passkey" },
       )
       expect(session_hash[:current_registration]).to be_nil
     end
@@ -201,7 +215,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
     it "returns an error response when current_registration is missing" do
       session_hash.delete(:current_registration)
 
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(response).not_to have_http_status(:ok)
       expect(session_hash[:current_registration]).to be_nil
@@ -211,7 +226,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       session_hash.delete(:current_registration)
 
       expect do
-        post callback_users_webauthn_registration_index_path, params: callback_params
+        post callback_users_webauthn_registration_index_path,
+             params: callback_params
       end.not_to(change { [User.count, Passkey.count] })
 
       expect(session_hash[:current_registration]).to be_nil
@@ -228,14 +244,12 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
         ActiveRecord::RecordInvalid.new(invalid_user),
       )
 
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body).to eq(
-        {
-          "success" => false,
-          "errors" => ["invalid user"],
-        },
+        { "success" => false, "errors" => ["invalid user"] },
       )
       expect(session_hash[:current_registration]).to be_nil
       expect(Passkey.count).to eq(0)
@@ -249,14 +263,12 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
         ActiveRecord::RecordInvalid.new(invalid_user),
       )
 
-      post callback_users_webauthn_registration_index_path, params: callback_params
+      post callback_users_webauthn_registration_index_path,
+           params: callback_params
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body).to eq(
-        {
-          "success" => false,
-          "errors" => ["cannot save"],
-        },
+        { "success" => false, "errors" => ["cannot save"] },
       )
       expect(session_hash[:current_registration]).to be_nil
       expect(Passkey.count).to eq(0)

@@ -3,16 +3,16 @@
 module SystemBrowserPreflight
   module_function
 
-  CHROME_CANDIDATES = [
-    "/usr/bin/chromium",
-    "/usr/bin/chromium-browser",
-    "/usr/bin/google-chrome",
-    "/usr/bin/google-chrome-stable",
+  CHROME_CANDIDATES = %w[
+    /usr/bin/chromium
+    /usr/bin/chromium-browser
+    /usr/bin/google-chrome
+    /usr/bin/google-chrome-stable
   ].freeze
 
-  CHROMEDRIVER_CANDIDATES = [
-    "/usr/bin/chromedriver",
-    "/usr/lib/chromium/chromedriver",
+  CHROMEDRIVER_CANDIDATES = %w[
+    /usr/bin/chromedriver
+    /usr/lib/chromium/chromedriver
   ].freeze
 
   def chrome_binary
@@ -48,7 +48,9 @@ module SystemBrowserPreflight
         "[system-driver] Selenium system specs enabled (browser: #{chrome_binary}, chromedriver: #{chromedriver_binary})",
       )
     else
-      reporter.message("[system-driver] Selenium system specs skipped. #{missing_requirements_message.strip}")
+      reporter.message(
+        "[system-driver] Selenium system specs skipped. #{missing_requirements_message.strip}",
+      )
     end
 
     @status_logged = true
@@ -67,7 +69,14 @@ Capybara.register_driver :selenium_chromium_headless do |app|
 
   options = Selenium::WebDriver::Chrome::Options.new
   options.binary = chrome_binary if chrome_binary
-  service = chromedriver_binary ? Selenium::WebDriver::Service.chrome(path: chromedriver_binary) : nil
+  service =
+    (
+      if chromedriver_binary
+        Selenium::WebDriver::Service.chrome(path: chromedriver_binary)
+      else
+        nil
+      end
+    )
 
   %w[
     --headless=new
@@ -77,17 +86,22 @@ Capybara.register_driver :selenium_chromium_headless do |app|
     --window-size=1400,1400
   ].each { |arg| options.add_argument(arg) }
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options, service: service)
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    options: options,
+    service: service,
+  )
 end
 
 RSpec.configure do |config|
-  config.before(:each, type: :system) do
-    driven_by :rack_test
-  end
+  config.before(:each, type: :system) { driven_by :rack_test }
 
   config.before(:each, type: :system, js: true) do
     SystemBrowserPreflight.log_status_once
-    skip(SystemBrowserPreflight.missing_requirements_message) unless SystemBrowserPreflight.available?
+    unless SystemBrowserPreflight.available?
+      skip(SystemBrowserPreflight.missing_requirements_message)
+    end
 
     driven_by :selenium_chromium_headless
   end

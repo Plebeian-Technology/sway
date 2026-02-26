@@ -46,7 +46,9 @@ RSpec.describe Passkey, type: :model do
     passkey.sign_count = -1
 
     expect(passkey).to be_invalid
-    expect(passkey.errors[:sign_count]).to include("must be greater than or equal to 0")
+    expect(passkey.errors[:sign_count]).to include(
+      "must be greater than or equal to 0",
+    )
   end
 
   it "is invalid with sign_count above 2^32 - 1" do

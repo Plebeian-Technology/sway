@@ -19,7 +19,8 @@ module VirtualAuthenticator
         },
       },
     ).fetch("authenticatorId")
-  rescue Selenium::WebDriver::Error::WebDriverError, Selenium::WebDriver::Error::NoSuchDriverError => e
+  rescue Selenium::WebDriver::Error::WebDriverError,
+         Selenium::WebDriver::Error::NoSuchDriverError => e
     skip("Virtual authenticator unavailable in this environment: #{e.message}")
   end
 
@@ -30,9 +31,7 @@ module VirtualAuthenticator
       execute_cdp(
         browser,
         "WebAuthn.removeVirtualAuthenticator",
-        {
-          authenticatorId: authenticator_id,
-        },
+        { authenticatorId: authenticator_id },
       )
     rescue StandardError
       nil
@@ -50,6 +49,4 @@ module VirtualAuthenticator
   end
 end
 
-RSpec.configure do |config|
-  config.include VirtualAuthenticator, type: :system
-end
+RSpec.configure { |config| config.include VirtualAuthenticator, type: :system }

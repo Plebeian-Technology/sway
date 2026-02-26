@@ -6,7 +6,9 @@ puts "RAILS_ENV is #{ENV["RAILS_ENV"]}"
 
 require_relative "../config/environment"
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+if Rails.env.production?
+  abort("The Rails environment is running in production mode!")
+end
 require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -37,7 +39,9 @@ def redact_google_api_key(_url, body)
   if body.is_a?(String)
     body.gsub(GOOGLE_MAPS_API_KEY_REGEX, "GOOGLE_API_KEY_REDACTED")
   else
-    JSON.parse(body.to_json.gsub(GOOGLE_MAPS_API_KEY_REGEX, "GOOGLE_API_KEY_REDACTED")).with_indifferent_access
+    JSON.parse(
+      body.to_json.gsub(GOOGLE_MAPS_API_KEY_REGEX, "GOOGLE_API_KEY_REDACTED"),
+    ).with_indifferent_access
   end
 end
 
@@ -68,9 +72,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include FactoryBot::Syntax::Methods
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = [
-    Rails.root.join("spec", "fixtures", "fixtures")
-  ]
+  config.fixture_paths = [Rails.root.join("spec", "fixtures", "fixtures")]
 
   config.use_transactional_fixtures = true
 
@@ -132,27 +134,31 @@ end
 
 Capybara.register_driver :selenium_chrome_headless do |app|
   Capybara::Selenium::Driver.load_selenium
-  browser_options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-    opts.add_argument("--headless=new")
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--disable-site-isolation-trials")
-    opts.add_argument("--window-size=3000,5000")
-    opts.add_argument("--verbose")
-    opts.add_argument("--disable-gpu") if Gem.win_platform?
-    opts.add_argument("--disable-dev-shm-usage")
-    opts.add_argument("--disable-infobars")
-    opts.add_argument("--disable-notifications")
+  browser_options =
+    Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+      opts.add_argument("--headless=new")
+      opts.add_argument("--no-sandbox")
+      opts.add_argument("--disable-site-isolation-trials")
+      opts.add_argument("--window-size=3000,5000")
+      opts.add_argument("--verbose")
+      opts.add_argument("--disable-gpu") if Gem.win_platform?
+      opts.add_argument("--disable-dev-shm-usage")
+      opts.add_argument("--disable-infobars")
+      opts.add_argument("--disable-notifications")
 
-    # Capture chrome logs for debugging
-    # opts.add_argument("--log-net-log=/tmp/chrome-netlog.json")
-    # opts.add_argument("--net-log-capture-mode=Everything")
-    # opts.add_argument("--enable-logging=stderr")
-    # opts.add_argument("--v=1")
-  end
-  Capybara::Selenium::Driver.new(app, browser: :chrome,
+      # Capture chrome logs for debugging
+      # opts.add_argument("--log-net-log=/tmp/chrome-netlog.json")
+      # opts.add_argument("--net-log-capture-mode=Everything")
+      # opts.add_argument("--enable-logging=stderr")
+      # opts.add_argument("--v=1")
+    end
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
     options: browser_options,
     clear_local_storage: true,
-    clear_session_storage: true)
+    clear_session_storage: true,
+  )
 end
 
 # Without this Capybara cannot find React elements such as inputs

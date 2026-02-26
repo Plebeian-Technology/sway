@@ -14,8 +14,10 @@ module CapybaraHelpers
     # and app state can be persisted in storage. Clear it to avoid flaky tests.
     visit("about:blank")
     page.execute_script("window.localStorage && window.localStorage.clear();")
-    page.execute_script("window.sessionStorage && window.sessionStorage.clear();")
-  rescue
+    page.execute_script(
+      "window.sessionStorage && window.sessionStorage.clear();",
+    )
+  rescue StandardError
     # no-op: some drivers/environments may not support browser storage
   end
 
@@ -44,8 +46,10 @@ module CapybaraHelpers
           widths = [320, 1400] # leave normal w as last
           widths.each do |w|
             window.resize_to(w, 5000)
-            total_width = page.driver.execute_script("return document.body.offsetWidth")
-            total_height = page.driver.execute_script("return document.body.scrollHeight")
+            total_width =
+              page.driver.execute_script("return document.body.offsetWidth")
+            total_height =
+              page.driver.execute_script("return document.body.scrollHeight")
             window.resize_to(total_width, total_height)
             page.save_screenshot("#{SCREENSHOT_DIR}/#{now}.png") # rubocop:disable Lint/Debugger
             Rails.logger.info "Saved capybara screenshot to #{SCREENSHOT_DIR}/#{now}.png"
@@ -60,11 +64,8 @@ module CapybaraHelpers
   def wait_for(selector, **options, &block)
     element = nil
     wait_until do
-      element = if selector.blank?
-        find_field(**options)
-      else
-        find(selector, **options)
-      end
+      element =
+        (selector.blank? ? find_field(**options) : find(selector, **options))
       block ? block.call(element) : element.present?
     rescue Capybara::ElementNotFound
       false

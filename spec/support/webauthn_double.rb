@@ -7,7 +7,12 @@ shared_context "WebAuthnDouble" do
     double(
       "RegistrationOptions",
       challenge: fake_challenge,
-      as_json: { challenge: fake_challenge, rp: { name: "sway-test" } },
+      as_json: {
+        challenge: fake_challenge,
+        rp: {
+          name: "sway-test",
+        },
+      },
       to_json: { challenge: fake_challenge, rp: { name: "sway-test" } }.to_json,
     )
   end
@@ -16,7 +21,10 @@ shared_context "WebAuthnDouble" do
     double(
       "AuthenticationOptions",
       challenge: fake_challenge,
-      as_json: { challenge: fake_challenge, timeout: 120_000 },
+      as_json: {
+        challenge: fake_challenge,
+        timeout: 120_000,
+      },
       to_json: { challenge: fake_challenge, timeout: 120_000 }.to_json,
     )
   end

@@ -18,7 +18,10 @@ RSpec.describe "LegislatorsController", type: :request do
         legislator.to_sway_json.merge(
           {
             user_legislator_score:
-              user_legislator.user_legislator_score.to_builder.attributes!
+              user_legislator
+                .user_legislator_score
+                .to_builder
+                .attributes!
                 .except("is_a?"),
           },
         )

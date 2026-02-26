@@ -27,11 +27,15 @@ RSpec.describe UserLegislatorEmailMailer, type: :mailer do
         sway_locale: legislator.sway_locale,
       )
     end
-    let(:user_legislator) { create(:user_legislator, user: user, legislator: legislator) }
+    let(:user_legislator) do
+      create(:user_legislator, user: user, legislator: legislator)
+    end
     let(:user_legislator_email) do
       UserLegislatorEmail.create!(user_legislator: user_legislator, bill: bill)
     end
-    let(:mail) { described_class.send_email_to_legislator(user_legislator_email) }
+    let(:mail) do
+      described_class.send_email_to_legislator(user_legislator_email)
+    end
 
     it "renders message headers" do
       expect(mail.from).to eq(["outreach@sway.vote"])
