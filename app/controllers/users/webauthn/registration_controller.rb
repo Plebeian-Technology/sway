@@ -26,6 +26,7 @@ module Users
               authenticator_selection: {
                 user_verification: "required",
               },
+              exclude: user.passkeys.pluck(:external_id),
             )
 
           if user.valid?

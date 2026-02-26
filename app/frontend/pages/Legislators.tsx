@@ -7,6 +7,7 @@ import SwayLoading from "app/frontend/components/SwayLoading";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { useFetch } from "app/frontend/hooks/useFetch";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { useScoreSubscription } from "app/frontend/hooks/useScoreSubscription";
 import { ROUTES } from "app/frontend/sway_constants";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
@@ -23,7 +24,9 @@ interface IProps {
 }
 
 const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
-    usePoll(15000, { only: ["legislators"] });
+    const only = useMemo(() => ["legislators"], []);
+    usePoll(15000, { only });
+    useScoreSubscription(only);
 
     const [locale] = useLocale();
 

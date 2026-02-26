@@ -76,8 +76,6 @@ class User < ApplicationRecord
     end
   end
 
-  attr_accessor :webauthn_id
-
   has_one :user_address, dependent: :destroy
   has_one :address, through: :user_address, dependent: :destroy
   has_many :user_districts, dependent: :destroy

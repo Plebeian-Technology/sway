@@ -6,6 +6,10 @@
 
 **/.DS_Store
 
+/.jules
+/.claude
+/.serena
+
 # Ignore bundler config.
 /.bundle
 
@@ -77,6 +81,10 @@ tf/
 registry/
 coverage/
 .dockerdev/caddy/certs/*
+
+
+
+
 
 
 !**/**/.keep

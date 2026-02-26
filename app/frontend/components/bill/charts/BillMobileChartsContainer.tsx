@@ -44,9 +44,6 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
     const [locale] = useLocale();
     const isCongressUserLocale = isCongressLocale(locale);
 
-    // const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
-    // const { items: bill_score } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`, options);
-
     const [selected, setSelected] = useState<number>(0);
 
     const chartLabel = useMemo(() => {
