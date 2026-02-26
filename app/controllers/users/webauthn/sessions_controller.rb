@@ -49,17 +49,34 @@ module Users
       end
 
       def callback
-        user =
-          User.find_by(phone: session.dig(:current_authentication, "phone"))
-        unless user
-          raise "user #{session.dig(:current_authentication, "phone")} never initiated sign up"
-        end
+        
+          current_authentication = session[:current_authentication]
+          challenge = current_authentication&.dig("challenge") || current_authentication&.dig(:challenge)
+          authentication_phone = current_authentication&.dig("phone") || current_authentication&.dig(:phone)
 
-        begin
+          if challenge.blank? || authentication_phone.blank?
+            render json: {
+                     success: false,
+                     message: "Authentication session expired. Please try again.",
+                   },
+                   status: :unprocessable_content
+            return
+          end
+
+          user = User.find_by(phone: authentication_phone)
+          unless user
+            render json: {
+                     success: false,
+                     message: "User not found for authentication.",
+                   },
+                   status: :unprocessable_content
+            return
+          end
+
           verified_webauthn_passkey, stored_passkey =
             relying_party.verify_authentication(
               public_key_credential_params,
-              session.dig(:current_authentication, "challenge"),
+              challenge,
               user_verification: true,
             ) do |webauthn_passkey|
               user
@@ -72,6 +89,15 @@ module Users
                 )
                 .first
             end
+
+          unless stored_passkey
+            render json: {
+                     success: false,
+                     message: "Passkey not found for this account.",
+                   },
+                   status: :unprocessable_content
+            return
+          end
 
           stored_passkey.update!(
             sign_count: verified_webauthn_passkey.sign_count,
@@ -89,10 +115,16 @@ module Users
                    success: false,
                    message: "Verification failed: #{e.message}",
                  },
+                  status: :unprocessable_content
+        rescue ActionController::ParameterMissing => e
+          render json: {
+                   success: false,
+                   message: "Invalid authentication payload: missing #{e.param}",
+                 },
                  status: :unprocessable_content
         ensure
           session.delete(:current_authentication)
-        end
+        
       end
 
       def destroy

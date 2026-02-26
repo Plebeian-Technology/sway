@@ -117,5 +117,66 @@ RSpec.describe "PhoneVerification", type: :request do
         patch phone_verification_path("1"), params: params
       end.not_to change(User, :count)
     end
+
+    it "sends Twilio verification check with expected phone and code" do
+      patch phone_verification_path("1"), params: params
+
+      expect(twilio_verification_checks_double).to have_received(:create).with(
+        to: "+14105551212",
+        code: "123456",
+      )
+    end
+
+    context "when SKIP_PHONE_VERIFICATION is enabled" do
+      around do |example|
+        previous_values = {
+          "SKIP_PHONE_VERIFICATION" => ENV["SKIP_PHONE_VERIFICATION"],
+          "DEFAULT_USER_FULL_NAME" => ENV["DEFAULT_USER_FULL_NAME"],
+          "DEFAULT_CITY" => ENV["DEFAULT_CITY"],
+          "DEFAULT_REGION_CODE" => ENV["DEFAULT_REGION_CODE"],
+          "DEFAULT_POSTAL_CODE" => ENV["DEFAULT_POSTAL_CODE"],
+          "DEFAULT_STREET" => ENV["DEFAULT_STREET"],
+          "DEFAULT_LATITUDE" => ENV["DEFAULT_LATITUDE"],
+          "DEFAULT_LONGITUDE" => ENV["DEFAULT_LONGITUDE"],
+        }
+
+        ENV["SKIP_PHONE_VERIFICATION"] = "1"
+        ENV["DEFAULT_USER_FULL_NAME"] = "Skip+Flow+User"
+        ENV["DEFAULT_CITY"] = "Baltimore"
+        ENV["DEFAULT_REGION_CODE"] = "MD"
+        ENV["DEFAULT_POSTAL_CODE"] = "21224"
+        ENV["DEFAULT_STREET"] = "123+Main+St"
+        ENV["DEFAULT_LATITUDE"] = "39.2904"
+        ENV["DEFAULT_LONGITUDE"] = "-76.6122"
+
+        example.run
+      ensure
+        previous_values.each do |key, value|
+          value.nil? ? ENV.delete(key) : ENV[key] = value
+        end
+      end
+
+      it "sets verified_phone and applies default user/address side effects" do
+        expect do
+          patch phone_verification_path("1"), params: params
+        end.to change(User, :count).by(1).and(change(Address, :count).by(1)).and(
+          change(UserAddress, :count).by(1),
+        )
+
+        user = User.find_by(phone: "4105551212")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({ "success" => true })
+        expect(session_hash[:verified_phone]).to eq("4105551212")
+        expect(user).to have_attributes(
+          is_admin: true,
+          is_email_verified: true,
+          is_phone_verified: true,
+          is_registered_to_vote: true,
+          is_registration_complete: true,
+          registration_status: "completed",
+        )
+      end
+    end
   end
 end

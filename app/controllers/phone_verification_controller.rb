@@ -28,33 +28,11 @@ class PhoneVerificationController < ApplicationController
   def update
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present?
       raise "No Twilio Client Available" unless twilio_client.present?
+
       session[:verified_phone] = session[:phone]
       approved = true
-      u =
-        User.find_or_create_by(
-          phone: session[:phone],
-          email: "#{session[:phone]}@sway.vote",
-          full_name: ENV.fetch("DEFAULT_USER_FULL_NAME").split("+").join(" "),
-        )
-      u.update(
-        phone: session[:phone],
-        is_admin: true,
-        is_email_verified: true,
-        is_phone_verified: true,
-        is_registered_to_vote: true,
-        is_registration_complete: true,
-        registration_status: "completed",
-      )
-      a =
-        Address.find_or_create_by(
-          city: ENV.fetch("DEFAULT_CITY"),
-          postal_code: ENV.fetch("DEFAULT_REGION_CODE"),
-          region_code: ENV.fetch("DEFAULT_POSTAL_CODE"),
-          street: ENV.fetch("DEFAULT_STREET").split("+").join(" "),
-          latitude: ENV.fetch("DEFAULT_LATITUDE").to_f,
-          longitude: ENV.fetch("DEFAULT_LONGITUDE").to_f,
-        )
-      UserAddress.find_or_create_by(user: u, address: a)
+
+      SkipPhoneVerificationProvisioner.call(phone: session[:phone])
     else
       approved = false
       begin

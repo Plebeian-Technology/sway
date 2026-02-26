@@ -37,6 +37,9 @@ shared_context "SessionDouble" do
       session_hash.key?(key)
     end
 
+    allow(session_double).to receive(:to_hash).and_return(session_hash)
+    allow(session_double).to receive(:to_h).and_return(session_hash)
+
     allow(session_double).to receive(:dig) do |*keys|
       keys.reduce(session_hash) do |hash, key|
         next nil unless hash.is_a?(Hash)

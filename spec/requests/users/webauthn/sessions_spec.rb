@@ -43,6 +43,25 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       let!(:user) { create(:user, phone: phone, is_registration_complete: true) }
       let!(:passkey) { create(:passkey, user: user, external_id: fake_credential_id) }
 
+      it "passes all passkeys as allow_credentials" do
+        second_passkey = create(:passkey, user: user, external_id: "second-credential")
+
+        expect_any_instance_of(WebAuthn::RelyingParty).to receive(
+          :options_for_authentication,
+        ).with(
+          hash_including(
+            allow_credentials: match_array(
+              [
+                { id: passkey.external_id, type: "public-key" },
+                { id: second_passkey.external_id, type: "public-key" },
+              ],
+            ),
+          ),
+        ).and_return(authentication_options_double)
+
+        post users_webauthn_sessions_path, params: { phone: phone }
+      end
+
       it "returns authentication options" do
         post users_webauthn_sessions_path, params: { phone: phone }
 
@@ -154,6 +173,22 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         expect(session_hash[:user_id]).to eq(user.id)
       end
 
+      it "resets old session data before writing auth state" do
+        session_hash[:attacker_session] = "stale"
+
+        post callback_users_webauthn_sessions_path, params: callback_params
+
+        expect(session_hash[:attacker_session]).to be_nil
+        expect(session_hash[:user_id]).to eq(user.id)
+        expect(session_hash[:verified_phone]).to eq(phone)
+      end
+
+      it "writes a refresh token cookie on sign in" do
+        post callback_users_webauthn_sessions_path, params: callback_params
+
+        expect(cookies_hash[:refresh_token]).to eq({ value: "refresh-token" })
+      end
+
       it "sets verified_phone" do
         post callback_users_webauthn_sessions_path, params: callback_params
 
@@ -189,19 +224,49 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
           expect(response.parsed_body["route"]).to eq(sway_registration_index_path)
         end
       end
+
+      context "when passkey is found by base64 raw_id fallback" do
+        let(:fallback_external_id) do
+          Base64.strict_encode64(Base64.strict_encode64(fake_credential_id))
+        end
+        let!(:passkey) do
+          create(:passkey, user: user, external_id: fallback_external_id, sign_count: 0)
+        end
+
+        it "updates the fallback-matched passkey" do
+          post callback_users_webauthn_sessions_path, params: callback_params
+
+          expect(passkey.reload.sign_count).to eq(42)
+        end
+      end
     end
 
-    it "raises when user is not found" do
-      expect do
-        post callback_users_webauthn_sessions_path, params: callback_params
-      end.to raise_error(RuntimeError, "user #{phone} never initiated sign up")
+    it "returns 422 when user is not found" do
+      post callback_users_webauthn_sessions_path, params: callback_params
 
-      expect(session_hash[:current_authentication]).to eq(
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body).to eq(
         {
-          "challenge" => fake_challenge,
-          "phone" => phone,
+          "success" => false,
+          "message" => "User not found for authentication.",
         },
       )
+      expect(session_hash[:current_authentication]).to be_nil
+    end
+
+    it "returns 422 when current_authentication is missing" do
+      session_hash.delete(:current_authentication)
+
+      post callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body).to eq(
+        {
+          "success" => false,
+          "message" => "Authentication session expired. Please try again.",
+        },
+      )
+      expect(session_hash[:current_authentication]).to be_nil
     end
 
     it "returns 422 on WebAuthn error and cleans session" do
@@ -218,6 +283,37 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(response.parsed_body["success"]).to be(false)
       expect(response.parsed_body["message"]).to eq(
         "Verification failed: bad assertion",
+      )
+      expect(session_hash[:current_authentication]).to be_nil
+    end
+
+    it "returns 422 when publicKeyCredential payload is missing" do
+      create(:user, phone: phone)
+
+      post callback_users_webauthn_sessions_path, params: {}
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body).to eq(
+        {
+          "success" => false,
+          "message" => "Invalid authentication payload: missing publicKeyCredential",
+        },
+      )
+      expect(session_hash[:current_authentication]).to be_nil
+    end
+
+    it "returns 422 when verified credential no longer maps to a passkey" do
+      create(:user, phone: phone)
+      create(:passkey, user: User.find_by(phone: phone), external_id: "different-id")
+
+      post callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body).to eq(
+        {
+          "success" => false,
+          "message" => "Passkey not found for this account.",
+        },
       )
       expect(session_hash[:current_authentication]).to be_nil
     end

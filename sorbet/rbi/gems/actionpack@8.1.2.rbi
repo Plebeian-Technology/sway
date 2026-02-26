@@ -7975,7 +7975,7 @@ module ActionController::Rendering
   #         render "posts/new", status: 422
   #         # => renders app/views/posts/new.html.erb with HTTP status code 422
   #
-  #         render "posts/new", status: :unprocessable_content
+  #         render "posts/new", status: :unprocessable_entity
   #         # => renders app/views/posts/new.html.erb with HTTP status code 422
   #
   # `:variants`

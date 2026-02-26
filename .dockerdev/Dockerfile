@@ -33,10 +33,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     libsqlite3-0 \
     sqlite3 \
     # libnss3-tools for mkcert
-    libnss3-tools
-    # chromium-driver \
-    # chromium \
-    # ruby-selenium-webdriver \
+    libnss3-tools \
+    chromium-driver \
+    chromium \
+    ruby-selenium-webdriver
 
 ARG NODE_MAJOR
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \

@@ -8,8 +8,8 @@ class WellKnownController < ApplicationController
     Rails.logger.info(
       "WellKnownController.index.request.host - #{request.host}",
     )
-    if request.host == "app.sway.vote"
-      render json: { origins: ["https://sway.vote"] }
-    end
+    return render json: { origins: ["https://sway.vote"] } if request.host == "app.sway.vote"
+
+    head :no_content
   end
 end

@@ -10,6 +10,8 @@ class User
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
+  include StateMachineInstanceHelperModule
+  extend StateMachineClassHelperModule
 
   private
 
@@ -1414,6 +1416,51 @@ class User
     sig { void }
     def phone_will_change!; end
 
+    sig { returns(T.nilable(::String)) }
+    def registration_status; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def registration_status=(value); end
+
+    sig { returns(T::Boolean) }
+    def registration_status?; end
+
+    sig { returns(T.nilable(::String)) }
+    def registration_status_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def registration_status_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def registration_status_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def registration_status_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def registration_status_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def registration_status_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def registration_status_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def registration_status_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def registration_status_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def registration_status_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def registration_status_was; end
+
+    sig { void }
+    def registration_status_will_change!; end
+
     sig { void }
     def restore_created_at!; end
 
@@ -1458,6 +1505,9 @@ class User
 
     sig { void }
     def restore_phone!; end
+
+    sig { void }
+    def restore_registration_status!; end
 
     sig { void }
     def restore_sign_in_count!; end
@@ -1560,6 +1610,12 @@ class User
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_phone?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_registration_status; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_registration_status?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_sign_in_count; end
@@ -1809,6 +1865,9 @@ class User
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_phone?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_registration_status?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_sign_in_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
@@ -2161,5 +2220,111 @@ class User
 
     sig { params(opts: T.untyped, rest: T.untyped).returns(PrivateRelation) }
     def not(opts, *rest); end
+  end
+
+  module StateMachineClassHelperModule
+    sig { params(event: T.any(String, Symbol)).returns(String) }
+    def human_registration_status_event_name(event); end
+
+    sig { params(state: T.any(String, Symbol)).returns(String) }
+    def human_registration_status_name(state); end
+
+    sig { params(states: T.any(String, Symbol)).returns(T.untyped) }
+    def with_registration_status(*states); end
+
+    sig { params(states: T.any(String, Symbol)).returns(T.untyped) }
+    def with_registration_statuses(*states); end
+
+    sig { params(states: T.any(String, Symbol)).returns(T.untyped) }
+    def without_registration_status(*states); end
+
+    sig { params(states: T.any(String, Symbol)).returns(T.untyped) }
+    def without_registration_statuses(*states); end
+  end
+
+  module StateMachineInstanceHelperModule
+    sig { returns(T::Boolean) }
+    def can_complete?; end
+
+    sig { returns(T::Boolean) }
+    def can_mark_failed?; end
+
+    sig { returns(T::Boolean) }
+    def can_start_processing?; end
+
+    sig { returns(T::Boolean) }
+    def changed_for_autosave?; end
+
+    sig { params(args: T.untyped).returns(T::Boolean) }
+    def complete(*args); end
+
+    sig { params(args: T.untyped).returns(T::Boolean) }
+    def complete!(*args); end
+
+    sig { params(args: T.untyped).returns(T.nilable(::StateMachines::Transition)) }
+    def complete_transition(*args); end
+
+    sig { returns(T::Boolean) }
+    def completed?; end
+
+    sig { returns(T::Boolean) }
+    def failed?; end
+
+    sig { params(event: T.any(String, Symbol), args: T.untyped).returns(T::Boolean) }
+    def fire_registration_status_event(event, *args); end
+
+    sig { returns(String) }
+    def human_registration_status_name; end
+
+    sig { params(args: T.untyped).returns(T::Boolean) }
+    def mark_failed(*args); end
+
+    sig { params(args: T.untyped).returns(T::Boolean) }
+    def mark_failed!(*args); end
+
+    sig { params(args: T.untyped).returns(T.nilable(::StateMachines::Transition)) }
+    def mark_failed_transition(*args); end
+
+    sig { returns(T::Boolean) }
+    def pending?; end
+
+    sig { returns(T::Boolean) }
+    def processing?; end
+
+    sig { params(state: T.any(String, Symbol)).returns(T::Boolean) }
+    def registration_status?(state); end
+
+    sig { returns(T.nilable(Symbol)) }
+    def registration_status_event; end
+
+    sig { params(value: T.any(String, Symbol)).returns(T.any(String, Symbol)) }
+    def registration_status_event=(value); end
+
+    sig { returns(T.nilable(::StateMachines::Transition)) }
+    def registration_status_event_transition; end
+
+    sig { params(value: ::StateMachines::Transition).returns(::StateMachines::Transition) }
+    def registration_status_event_transition=(value); end
+
+    sig { params(args: T.untyped).returns(T::Array[T.any(String, Symbol)]) }
+    def registration_status_events(*args); end
+
+    sig { returns(T.any(String, Symbol)) }
+    def registration_status_name; end
+
+    sig { params(args: T.untyped).returns(T::Array[::StateMachines::Transition]) }
+    def registration_status_paths(*args); end
+
+    sig { params(args: T.untyped).returns(T::Array[::StateMachines::Transition]) }
+    def registration_status_transitions(*args); end
+
+    sig { params(args: T.untyped).returns(T::Boolean) }
+    def start_processing(*args); end
+
+    sig { params(args: T.untyped).returns(T::Boolean) }
+    def start_processing!(*args); end
+
+    sig { params(args: T.untyped).returns(T.nilable(::StateMachines::Transition)) }
+    def start_processing_transition(*args); end
   end
 end
