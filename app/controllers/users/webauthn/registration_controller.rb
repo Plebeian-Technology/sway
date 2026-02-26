@@ -40,7 +40,7 @@ module Users
             render json: {
                      errors: user.errors.full_messages,
                    },
-                   status: :unprocessable_entity
+                   status: :unprocessable_content
           end
         else
           render json: {
@@ -85,14 +85,14 @@ module Users
                      success: false,
                      message: "Couldn't register your Passkey",
                    },
-                   status: :unprocessable_entity
+                   status: :unprocessable_content
           end
         rescue WebAuthn::Error => e
           render json: {
                    success: false,
                    message: "Verification failed: #{e.message}",
                  },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         ensure
           session.delete(:current_registration)
         end

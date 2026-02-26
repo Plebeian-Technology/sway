@@ -44,7 +44,7 @@ module Users
                    status: :accepted
           end
         else
-          render json: { success: false }, status: :unprocessable_entity
+          render json: { success: false }, status: :unprocessable_content
         end
       end
 
@@ -89,7 +89,7 @@ module Users
                    success: false,
                    message: "Verification failed: #{e.message}",
                  },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         ensure
           session.delete(:current_authentication)
         end

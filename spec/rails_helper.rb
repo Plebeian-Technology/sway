@@ -6,9 +6,7 @@ puts "RAILS_ENV is #{ENV["RAILS_ENV"]}"
 
 require_relative "../config/environment"
 # Prevent database truncation if the environment is production
-if Rails.env.production?
-  abort("The Rails environment is running in production mode!")
-end
+abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -22,6 +20,8 @@ require "pry"
 require "support/factory_bot"
 require "support/session_double"
 require "support/setup"
+require "support/twilio_double"
+require "support/webauthn_double"
 
 # SimpleCov.start "rails"
 SimpleCov.start "rails"

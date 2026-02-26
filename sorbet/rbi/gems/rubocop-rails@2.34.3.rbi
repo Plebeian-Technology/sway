@@ -5600,7 +5600,7 @@ RuboCop::Cop::Rails::HttpStatus::SymbolicStyleChecker::MSG = T.let(T.unsafe(nil)
 #
 # @example
 #   # bad
-#   render json: { error: "Invalid data" }, status: :unprocessable_entity
+#   render json: { error: "Invalid data" }, status: :unprocessable_content
 #   head :payload_too_large
 #
 #   # good
