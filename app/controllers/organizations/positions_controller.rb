@@ -29,7 +29,7 @@ class Organizations::PositionsController < Organizations::BaseController
     end
 
     change =
-      OrganizationBillPositionChange.find_or_initialize_by(
+      OrganizationBillPositionChange.new(
         organization_bill_position: position,
       )
 
