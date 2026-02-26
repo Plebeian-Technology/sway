@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: organization_bill_position_changes
+# Database name: primary
 #
 #  id                            :integer          not null, primary key
 #  new_summary                   :text             not null
@@ -50,8 +51,6 @@ class OrganizationBillPositionChange < ApplicationRecord
 
   # NOTE: Old summary CAN be blank when creating a new position
   validates :new_summary, presence: { message: "can't be blank" }
-
-  validates :organization_bill_position, uniqueness: true
 
   # before save, if was pending and approver is not nil, set to approved
 

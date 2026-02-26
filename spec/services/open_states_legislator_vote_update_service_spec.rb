@@ -50,9 +50,9 @@ RSpec.describe OpenStatesLegislatorVoteUpdateService do
   end
 
   after(:all) do
-    SwayLocale.destroy_all
-    Legislator.destroy_all
     LegislatorVote.destroy_all
+    Legislator.destroy_all
+    SwayLocale.destroy_all
   end
 
   describe "#run" do

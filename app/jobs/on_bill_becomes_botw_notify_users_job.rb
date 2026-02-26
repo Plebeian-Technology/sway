@@ -9,11 +9,12 @@ class OnBillBecomesBotwNotifyUsersJob < ApplicationJob
 
   sig { void }
   def perform
-    SwayLocale.all.each do |sway_locale|
-      botw = Bill.of_the_week(sway_locale:)
-
-      # Only send 1 notification per iteration of this job
-      break if botw&.notifyable? && BillNotification.create!(bill: botw)
-    end
+    Bill
+      .where(scheduled_release_date_utc: Time.zone.today)
+      .left_outer_joins(:bill_notification)
+      .where(bill_notifications: { id: nil })
+      .find_each do |botw|
+        break if botw.notifyable? && BillNotification.create!(bill: botw)
+      end
   end
 end

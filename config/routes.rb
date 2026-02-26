@@ -1,7 +1,9 @@
 # typed: strict
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
-  # get "well_known/index"
+  # https://web.dev/articles/webauthn-related-origin-requests#browser_support
+  # Do this here instead of in a file so that "https://sway.vote" does NOT return this info.
+  # Only app.sway.vote should return it
   get ".well-known/webauthn", action: "index", controller: :well_known
   get "sitemap.xml", action: "index", controller: :sitemap
 
@@ -10,10 +12,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   # ServerRendering
   root "home#index"
-
-  # https://web.dev/articles/webauthn-related-origin-requests#browser_support
-  # Do this here instead of in a file so that "https://sway.vote" does NOT return this info.
-  # Only app.sway.vote should return it
 
   get "s/:id" => "shortener/shortened_urls#show"
   get "invite/:user_id/:invite_uuid",
@@ -96,7 +94,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :assets, only: %i[create]
   end
 
-  resources :notifications, only: %i[index]
+  resources :notifications, only: %i[index] do
+    collection { patch :settings, to: "notifications#update_settings" }
+  end
   namespace :notifications do
     resources :push_notifications, only: %i[create]
     resources :push_notification_subscriptions, only: %i[create] do

@@ -43,6 +43,7 @@ class PhoneVerificationController < ApplicationController
         is_phone_verified: true,
         is_registered_to_vote: true,
         is_registration_complete: true,
+        registration_status: "completed",
       )
       a =
         Address.find_or_create_by(
@@ -55,18 +56,37 @@ class PhoneVerificationController < ApplicationController
         )
       UserAddress.find_or_create_by(user: u, address: a)
     else
-      verification_check =
-        twilio_client
-          .verify
-          .v2
-          .services(service_sid)
-          .verification_checks
-          .create(
-            to: "+1#{session[:phone]}",
-            code: phone_verification_params[:code],
-          )
+      approved = false
+      begin
+        verification_check =
+          twilio_client
+            .verify
+            .v2
+            .services(service_sid)
+            .verification_checks
+            .create(
+              to: "+1#{session[:phone]}",
+              code: phone_verification_params[:code],
+            )
 
-      approved = verification_check&.status == "approved"
+        approved = verification_check&.status == "approved"
+      rescue Twilio::REST::RestError => e
+        Rails.logger.error("Twilio Verification Error: #{e.message}")
+        if e.code&.to_s == "20404" ||
+             e.full_message.include?("VerificationCheck was not found")
+          flash[:alert] = "SMS verification not found. Please try again."
+          return(
+            redirect_to root_path,
+                        inertia: {
+                          errors: {
+                            code: "Code not found.",
+                          },
+                        }
+          )
+        else
+          raise e
+        end
+      end
 
       if approved
         # Do NOT create a user here

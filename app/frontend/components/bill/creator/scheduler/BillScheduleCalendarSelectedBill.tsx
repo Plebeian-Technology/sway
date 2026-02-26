@@ -4,7 +4,6 @@ import { IBillScheduleCalendarProps } from "app/frontend/components/bill/creator
 import { useAxios_NOT_Authenticated_POST_PUT } from "app/frontend/hooks/useAxios";
 import { handleError, notify } from "app/frontend/sway_utils";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
-import { format } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { sway } from "sway";
@@ -61,7 +60,8 @@ const BillScheduleCalendarSelectedBill: React.FC<Omit<IBillScheduleCalendarProps
             )}
             <div className="my-3">
                 <span className="bold">Selected Date: </span>
-                {selectedDate && format(selectedDate, "MMMM dd, yyyy")}
+                {selectedDate &&
+                    selectedDate.toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" })}
             </div>
             <div className="row my-3">
                 {isBillReleaseable ? (

@@ -6,6 +6,11 @@
 
 **/.DS_Store
 
+/.jules
+/.claude
+/.serena
+/.beads
+
 # Ignore bundler config.
 /.bundle
 
@@ -71,15 +76,24 @@ newrelic.yml
 # Not using Terraform/Google Cloud
 tf/
 
-!**/**/.keep
 # Sentry Config File
 .env.sentry-build-plugin
 
 registry/
-coverage//vendor/bundle/
+
 legislation/diffs/
 legislation/__pycache__/
 legislation_log_2.txt
 legislation/diffs/*
 legislation/baltimore_city_charter.md
 legislation/baltimore_city_code.md
+
+coverage/
+.dockerdev/caddy/certs/*
+
+
+
+
+
+
+!**/**/.keep

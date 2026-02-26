@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "BillOfTheWeek", type: :request, inertia: true do
+RSpec.describe "BillOfTheWeek", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 

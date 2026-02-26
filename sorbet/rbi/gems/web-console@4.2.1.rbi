@@ -52,13 +52,9 @@ end
 WebConsole::Context::GLOBAL_OBJECTS = T.let(T.unsafe(nil), Array)
 
 # Raised when there is an attempt to render a console more than once.
-#
-# source://web-console//lib/web_console/errors.rb#8
 class WebConsole::DoubleRenderError < ::WebConsole::Error; end
 
 # The base class for every Web Console related error.
-#
-# source://web-console//lib/web_console/errors.rb#5
 class WebConsole::Error < ::StandardError; end
 
 # Simple Ruby code evaluator.

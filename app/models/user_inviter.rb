@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: user_inviters
+# Database name: primary
 #
 #  id          :integer          not null, primary key
 #  invite_uuid :string           not null

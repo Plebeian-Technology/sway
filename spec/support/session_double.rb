@@ -37,6 +37,20 @@ shared_context "SessionDouble" do
       session_hash.key?(key)
     end
 
+    allow(session_double).to receive(:dig) do |*keys|
+      keys.reduce(session_hash) do |hash, key|
+        next nil unless hash.is_a?(Hash)
+
+        if hash.key?(key)
+          hash[key]
+        elsif key.is_a?(String) && hash.key?(key.to_sym)
+          hash[key.to_sym]
+        elsif key.is_a?(Symbol) && hash.key?(key.to_s)
+          hash[key.to_s]
+        end
+      end
+    end
+
     allow_any_instance_of(ActionDispatch::Request).to receive(
       :session,
     ).and_return(session_double)

@@ -1,15 +1,15 @@
 {
     "displayFieldName": "BASENAME",
-    "fieldAliases": { "STATE": "STATE", "CD118": "CD118" },
+    "fieldAliases": { "STATE": "STATE", "CD119": "CD119" },
     "geometryType": "esriGeometryPolygon",
     "spatialReference": { "wkid": 102100, "latestWkid": 3857 },
     "fields": [
         { "name": "STATE", "type": "esriFieldTypeString", "alias": "STATE", "length": 2 },
-        { "name": "CD118", "type": "esriFieldTypeString", "alias": "CD118", "length": 2 }
+        { "name": "CD119", "type": "esriFieldTypeString", "alias": "CD119", "length": 2 }
     ],
     "features": [
         {
-            "attributes": { "STATE": "24", "CD118": "07" },
+            "attributes": { "STATE": "24", "CD119": "07" },
             "geometry": {
                 "rings": [
                     [

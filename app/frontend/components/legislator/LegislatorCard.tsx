@@ -3,7 +3,6 @@
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { Suspense, lazy } from "react";
 import { sway } from "sway";
-import { useUserLegislatorScore } from "../../hooks/useLegislatorScores";
 
 import CenteredLoading from "app/frontend/components/dialogs/CenteredLoading";
 import LegislatorCardSocialRow from "app/frontend/components/legislator/LegislatorCardSocialRow";
@@ -21,7 +20,8 @@ interface IProps {
 const LegislatorCard: React.FC<IProps> = ({ legislator, inView }) => {
     const [locale] = useLocale();
 
-    const { items: userLegislatorScore, isLoading } = useUserLegislatorScore(legislator);
+    const userLegislatorScore = legislator.user_legislator_score;
+    const isLoading = false;
 
     if (!inView) {
         return null;

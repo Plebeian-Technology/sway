@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "BillsController", type: :request, inertia: true do
+RSpec.describe "BillsController", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
@@ -39,7 +39,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     ]
   end
 
-  describe "GET /index", inertia: true do
+  describe "GET /index" do
     it "gets all bills for a sway locale" do
       sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
@@ -48,7 +48,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills"
 
       expect(inertia).to render_component Pages::BILLS
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bills: [
             bill.to_sway_json.merge(
@@ -60,7 +60,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     end
   end
 
-  describe "GET /show", inertia: true do
+  describe "GET /show" do
     it "gets a bill when passed an id" do
       sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
@@ -69,7 +69,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills/#{bill.id}"
 
       expect(inertia).to render_component Pages::BILL
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bill: bill.to_sway_json,
           organizations: [],
@@ -80,7 +80,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     end
   end
 
-  describe "GET /new", inertia: true do
+  describe "GET /new" do
     it "renders the bill creator with a new bill" do
       sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
@@ -89,7 +89,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills/new"
 
       expect(inertia).to render_component Pages::BILL_CREATOR
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bill: Bill.new.attributes,
           legislators: sway_locale.legislators.map(&:to_sway_json),
@@ -101,7 +101,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     end
   end
 
-  describe "GET /edit", inertia: true do
+  describe "GET /edit" do
     it "renders the bill creator with a bill from params" do
       sway_locale, _user = setup
       bill, _params = get_params(sway_locale)
@@ -110,7 +110,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
       get "/bills/#{bill.id}/edit"
 
       expect(inertia).to render_component Pages::BILL_CREATOR
-      expect(inertia).to include_props(
+      expect(inertia).to have_props(
         {
           bills: [bill.to_sway_json],
           bill: bill.to_sway_json.tap { |b| b[:organizations] = [] },
@@ -123,7 +123,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     end
   end
 
-  describe "POST /create", inertia: true do
+  describe "POST /create" do
     it "creates a new bill" do
       sway_locale, _user = setup
 
@@ -195,7 +195,7 @@ RSpec.describe "BillsController", type: :request, inertia: true do
     end
   end
 
-  describe "PUT /update", inertia: true do
+  describe "PUT /update" do
     it "updates a bill" do
       sway_locale, _user = setup
       bill, _params = get_params(sway_locale)

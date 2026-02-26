@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: addresses
+# Database name: primary
 #
 #  id          :integer          not null, primary key
 #  city        :string           not null
@@ -38,6 +39,8 @@ class Address < ApplicationRecord
                  }
 
   attribute :full_address
+
+  has_one :user_address, dependent: :destroy
 
   sig { params(address_string: T.nilable(String)).returns(T.nilable(Address)) }
   def self.from_string(address_string)

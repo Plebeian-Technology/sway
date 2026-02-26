@@ -2,13 +2,13 @@
 
 import { useLocale } from "app/frontend/hooks/useLocales";
 import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
-import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
+import { PropsWithChildren, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 
 import { isEmptyScore } from "../../../sway_utils/charts";
-import DistrictVotesChart from "./DistrictVotesChart";
-import TotalVotes from "./TotalVotesChart";
+import DistrictVotesChart from "./DistrictVotesChartMui";
+import TotalVotes from "./TotalVotesChartMui";
 
 import { usePage } from "@inertiajs/react";
 import { Button } from "react-bootstrap";
@@ -18,7 +18,6 @@ interface IProps extends PropsWithChildren {
     bill: sway.IBill;
     bill_score?: sway.IBillScore;
     filter?: string;
-    onScoreReceived: () => void;
 }
 
 export interface IChildChartProps {
@@ -39,20 +38,11 @@ interface IChartChoice {
     };
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter, onScoreReceived, children }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter, children }) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
     const [locale] = useLocale();
     const isCongressUserLocale = isCongressLocale(locale);
-
-    useEffect(() => {
-        if (!!bill_score) {
-            onScoreReceived();
-        }
-    }, [bill_score, onScoreReceived]);
-
-    // const options = useMemo(() => ({ callback: onScoreReceived }), [onScoreReceived]);
-    // const { items: bill_score } = useAxiosGet<sway.IBillScore>(`/bill_scores/${bill?.id}`, options);
 
     const [selected, setSelected] = useState<number>(0);
 
@@ -62,7 +52,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
         } else {
             return "Region Total";
         }
-    }, [locale?.region_name]);
+    }, [locale]);
 
     const atLargeDistrict = useMemo(() => districts.find((d) => d.number === 0), [districts]);
     const specificDistrict = useMemo(() => districts.find((d) => d.number !== 0), [districts]);
@@ -110,7 +100,7 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
                   }
                 : null,
         ],
-        [specificDistrict, congressDistrict, chartLabel, atLargeDistrict, isCongressUserLocale, locale?.city],
+        [specificDistrict, congressDistrict, chartLabel, atLargeDistrict, isCongressUserLocale, locale],
     );
 
     const charts = useMemo(() => {

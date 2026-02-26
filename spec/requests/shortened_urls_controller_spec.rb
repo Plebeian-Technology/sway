@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "/s", type: :request, inertia: true do
+RSpec.describe "/s", type: :request do
   include_context "SessionDouble"
 
   describe "GET /:id" do

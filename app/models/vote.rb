@@ -2,6 +2,7 @@
 # == Schema Information
 #
 # Table name: votes
+# Database name: primary
 #
 #  id                           :integer          not null, primary key
 #  house_roll_call_vote_number  :integer

@@ -187,6 +187,9 @@ module GeneratedPathHelpersModule
   def root_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def settings_notifications_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def sway_locale_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }

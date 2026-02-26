@@ -15,6 +15,8 @@ class SwayRegistrationController < ApplicationController
       redirect_to root_path
     elsif u.is_registration_complete
       redirect_to legislators_path
+    elsif u.processing?
+      render_component(Pages::REGISTRATION, { processing: true })
     else
       render_component(Pages::REGISTRATION)
     end
@@ -29,29 +31,27 @@ class SwayRegistrationController < ApplicationController
     if u.nil?
       redirect_to root_path
     elsif u.has_user_legislators?
+      u.complete!
       redirect_to legislators_path
     else
+      address_instance = address
       T
-        .cast(user_address(u).address, Address)
+        .cast(address_instance, Address)
         .sway_locales
         .each do |sway_locale|
           SwayRegistrationService.new(
             u,
-            T.cast(user_address(u).address, Address),
+            T.cast(address_instance, Address),
             sway_locale,
             invited_by_id: invited_by_id,
+            async: true,
           ).run
         end
 
-      if u.is_registration_complete
+      if u.completed?
         redirect_to legislators_path
       else
-        redirect_to sway_registration_index_path,
-                    inertia: {
-                      errros: {
-                        address: "Registration not complete.",
-                      },
-                    }
+        redirect_to sway_registration_index_path
       end
     end
   end

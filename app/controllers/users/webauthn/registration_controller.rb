@@ -7,7 +7,7 @@ module Users
     class RegistrationController < ApplicationController
       extend T::Sig
 
-      rate_limit(to: 5, within: 1.minute)
+      rate_limit(to: 100, within: 1.minute)
 
       skip_before_action :authenticate_sway_user!
 
@@ -26,6 +26,7 @@ module Users
               authenticator_selection: {
                 user_verification: "required",
               },
+              exclude: user.passkeys.pluck(:external_id),
             )
 
           if user.valid?
@@ -39,7 +40,7 @@ module Users
             render json: {
                      errors: user.errors.full_messages,
                    },
-                   status: :unprocessable_entity
+                   status: :unprocessable_content
           end
         else
           render json: {
@@ -84,14 +85,14 @@ module Users
                      success: false,
                      message: "Couldn't register your Passkey",
                    },
-                   status: :unprocessable_entity
+                   status: :unprocessable_content
           end
         rescue WebAuthn::Error => e
           render json: {
                    success: false,
                    message: "Verification failed: #{e.message}",
                  },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         ensure
           session.delete(:current_registration)
         end

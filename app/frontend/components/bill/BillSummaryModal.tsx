@@ -34,15 +34,28 @@ const BillSummaryModal: React.FC<IProps> = ({
         (isTruncated: boolean) => {
             if (!summary) return null;
 
-            // TODO: Arbitrarily picked 300, should probably cut-off also at first bullet point or after first paragraph.
-            // truncate to first index of a markdown link or 300
+            // Cut-off at first markdown link, first paragraph, first bullet point, or 300 chars.
             const firstLinkOpenIndex = summary.indexOf("[");
-            const truncated = summary
-                .substring(0, firstLinkOpenIndex !== -1 && firstLinkOpenIndex <= 300 ? firstLinkOpenIndex : 300)
-                .trim();
+            const firstParaIndex = summary.indexOf("\n\n");
+            const bulletRegex = /\n\s*([\*\-\+]|\d+\.)\s/;
+            const bulletMatch = summary.match(bulletRegex);
+            const firstBulletIndex = bulletMatch?.index ?? -1;
+
+            let cutoff = 300;
+            if (firstLinkOpenIndex !== -1 && firstLinkOpenIndex < cutoff) cutoff = firstLinkOpenIndex;
+            if (firstParaIndex !== -1 && firstParaIndex < cutoff) cutoff = firstParaIndex;
+            if (firstBulletIndex !== -1 && firstBulletIndex < cutoff) cutoff = firstBulletIndex;
+
+            // If the markers are at the very beginning, we ignore them for truncation point
+            // and fallback to 300 to avoid empty summaries.
+            if (cutoff <= 0) cutoff = 300;
+
+            const truncated = summary.substring(0, cutoff).trim();
+            const isActuallyTruncated = truncated.length < summary.trim().length;
             const s = isTruncated
-                ? `${truncated.endsWith(".") || truncated.endsWith("") ? truncated : truncated + "..."}`
+                ? `${isActuallyTruncated && !truncated.endsWith(".") && !truncated.endsWith("...") ? truncated + "..." : truncated}`
                 : summary;
+
             if (isTruncated) {
                 return (
                     <Button onClick={handleClick} className="w-100 p-4" variant="light border-0 text-start">

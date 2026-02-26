@@ -1,7 +1,9 @@
 /** @format */
 
+import { usePoll } from "@inertiajs/react";
 import BillComponent from "app/frontend/components/bill/BillComponent";
-import { useEffect } from "react";
+import { useScoreSubscription } from "app/frontend/hooks/useScoreSubscription";
+import { useMemo } from "react";
 import { sway } from "sway";
 
 interface IProps {
@@ -15,9 +17,9 @@ interface IProps {
 }
 
 const Bill_: React.FC<IProps> = (props) => {
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    });
+    const only = useMemo(() => ["bill_score"], []);
+    usePoll(15000, { only });
+    useScoreSubscription(only);
 
     return <BillComponent {...props} />;
 };

@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: districts
+# Database name: primary
 #
 #  id             :integer          not null, primary key
 #  name           :string           not null

@@ -4,6 +4,7 @@ import ReactPlugin from "@vitejs/plugin-react";
 import visualizer from "rollup-plugin-visualizer";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import { Logger } from "sass";
 
 export default defineConfig({
     plugins: [
@@ -20,10 +21,10 @@ export default defineConfig({
     server: {
         open: false,
 
-        https: {
-            cert: readFileSync("./config/ssl/cert.pem"),
-            key: readFileSync("./config/ssl/key.pem"),
-        },
+        // https: {
+        //     cert: readFileSync("./config/ssl/cert.pem"),
+        //     key: readFileSync("./config/ssl/key.pem"),
+        // },
 
         watch: {
             usePolling: true,
@@ -39,7 +40,7 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                api: "modern-compiler", // or 'modern'
+                logger: Logger.silent,
                 quietDeps: true,
             },
         },

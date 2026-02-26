@@ -274,40 +274,6 @@ class User
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert!(attributes, returning: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all!(attributes, returning: nil); end
-
     sig { returns(T.nilable(::User)) }
     sig { params(limit: Integer).returns(T::Array[::User]) }
     def last(limit = nil); end
@@ -392,24 +358,6 @@ class User
 
     sig { returns(::User) }
     def third_to_last!; end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert_all(attributes, returning: nil, unique_by: nil); end
   end
 
   module GeneratedAssociationMethods
@@ -567,6 +515,20 @@ class User
 
     sig { params(value: T.nilable(::UserAddress)).void }
     def user_address=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def user_bill_reminder_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def user_bill_reminder_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `User` class because it declared `has_many :user_bill_reminders`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::UserBillReminder::PrivateCollectionProxy) }
+    def user_bill_reminders; end
+
+    sig { params(value: T::Enumerable[::UserBillReminder]).void }
+    def user_bill_reminders=(value); end
 
     sig { returns(T::Array[T.untyped]) }
     def user_district_ids; end
@@ -1501,6 +1463,9 @@ class User
     def restore_sign_in_count!; end
 
     sig { void }
+    def restore_sms_notifications_enabled!; end
+
+    sig { void }
     def restore_updated_at!; end
 
     sig { void }
@@ -1602,6 +1567,12 @@ class User
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_sign_in_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def saved_change_to_sms_notifications_enabled; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_sms_notifications_enabled?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_updated_at; end
 
@@ -1658,6 +1629,51 @@ class User
 
     sig { void }
     def sign_in_count_will_change!; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def sms_notifications_enabled; end
+
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def sms_notifications_enabled=(value); end
+
+    sig { returns(T::Boolean) }
+    def sms_notifications_enabled?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def sms_notifications_enabled_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def sms_notifications_enabled_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def sms_notifications_enabled_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def sms_notifications_enabled_change; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def sms_notifications_enabled_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def sms_notifications_enabled_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def sms_notifications_enabled_in_database; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def sms_notifications_enabled_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def sms_notifications_enabled_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def sms_notifications_enabled_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def sms_notifications_enabled_was; end
+
+    sig { void }
+    def sms_notifications_enabled_will_change!; end
 
     sig { returns(::ActiveSupport::TimeWithZone) }
     def updated_at; end
@@ -1796,6 +1812,9 @@ class User
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_sign_in_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_sms_notifications_enabled?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end

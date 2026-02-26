@@ -1158,16 +1158,9 @@ class CodeRay::Encoders::Lint < ::CodeRay::Encoders::Debug
   def setup(options); end
 end
 
-# source://coderay//lib/coderay/encoders/lint.rb#19
 class CodeRay::Encoders::Lint::EmptyToken < ::CodeRay::Encoders::Lint::InvalidTokenStream; end
-
-# source://coderay//lib/coderay/encoders/lint.rb#21
 class CodeRay::Encoders::Lint::IncorrectTokenGroupNesting < ::CodeRay::Encoders::Lint::InvalidTokenStream; end
-
-# source://coderay//lib/coderay/encoders/lint.rb#18
 class CodeRay::Encoders::Lint::InvalidTokenStream < ::StandardError; end
-
-# source://coderay//lib/coderay/encoders/lint.rb#20
 class CodeRay::Encoders::Lint::UnknownTokenKind < ::CodeRay::Encoders::Lint::InvalidTokenStream; end
 
 # = Null Encoder
@@ -1548,7 +1541,6 @@ CodeRay::FileType::TypeFromName = T.let(T.unsafe(nil), Hash)
 # source://coderay//lib/coderay/helpers/file_type.rb#137
 CodeRay::FileType::TypeFromShebang = T.let(T.unsafe(nil), Regexp)
 
-# source://coderay//lib/coderay/helpers/file_type.rb#19
 class CodeRay::FileType::UnknownFileType < ::Exception; end
 
 # = Plugin
@@ -1743,7 +1735,6 @@ module CodeRay::PluginHost
   end
 end
 
-# source://coderay//lib/coderay/helpers/plugin_host.rb#33
 class CodeRay::PluginHost::HostNotFound < ::LoadError; end
 
 # source://coderay//lib/coderay/helpers/plugin_host.rb#35
@@ -1757,8 +1748,6 @@ CodeRay::PluginHost::PLUGIN_HOSTS_BY_ID = T.let(T.unsafe(nil), Hash)
 # Raised if Encoders::[] fails because:
 # * a file could not be found
 # * the requested Plugin is not registered
-#
-# source://coderay//lib/coderay/helpers/plugin_host.rb#32
 class CodeRay::PluginHost::PluginNotFound < ::LoadError; end
 
 # = Scanners
@@ -3084,8 +3073,6 @@ CodeRay::Scanners::Scanner::SCANNER_STATE_INFO = T.let(T.unsafe(nil), String)
 CodeRay::Scanners::Scanner::SCAN_ERROR_MESSAGE = T.let(T.unsafe(nil), String)
 
 # Raised if a Scanner fails while scanning
-#
-# source://coderay//lib/coderay/scanners/scanner.rb#35
 class CodeRay::Scanners::Scanner::ScanError < ::StandardError; end
 
 # source://coderay//lib/coderay/scanners/taskpaper.rb#4

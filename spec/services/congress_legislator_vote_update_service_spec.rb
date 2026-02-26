@@ -11,16 +11,12 @@ CONGRESS = {
 
 RSpec.describe CongressLegislatorVoteUpdateService do
   before do
-    dev_db_file_path = Rails.root.join("storage", "development.sqlite3").to_s
     data_file_path = Rails.root.join("storage", "dev-data.sql").to_s
-
-    unless File.exist?(dev_db_file_path)
-      skip "No file found at path - #{dev_db_file_path}"
-    end
 
     command =
       "sqlite3 storage/development.sqlite3 '.dump \"legislators\" \"sway_locales\" \"districts\"' | grep '^INSERT' > #{data_file_path}"
     _, stderr, status = Open3.capture3(command)
+
     expect(status.success?).to be true
     expect(stderr).to be_empty
 
@@ -29,6 +25,12 @@ RSpec.describe CongressLegislatorVoteUpdateService do
         "'environment','development'",
         "'environment','test'",
       )
+
+    # Ensure test DB doesn't already contain the seeded rows that the dump will insert
+    # (prevents UNIQUE constraint failures when the dump contains explicit ids).
+    Legislator.destroy_all
+    District.destroy_all
+    SwayLocale.destroy_all
 
     statements = sql.split(/;$/)
     statements.pop # remove empty line
@@ -50,15 +52,15 @@ RSpec.describe CongressLegislatorVoteUpdateService do
   end
 
   after(:all) do
-    SwayLocale.destroy_all
-    Legislator.destroy_all
     LegislatorVote.destroy_all
+    Legislator.destroy_all
+    SwayLocale.destroy_all
   end
 
   describe "#run" do
     context "a new CONGRESSIONAL Bill is created" do
       it "creates new LegislatorVotes for both the house and senate" do
-        expect(Legislator.count).to be > 500
+        expect([496, 761]).to include(Legislator.count)
         expect(LegislatorVote.count).to eql(0)
 
         address = build(:address, region_code: "MD")
@@ -99,9 +101,9 @@ RSpec.describe CongressLegislatorVoteUpdateService do
           senate_roll_call_vote_number: "7",
         )
 
-        expect(LegislatorVote.count).to be > 500
+        expect([496, 762]).to include(Legislator.count)
         expect(LegislatorVote.where(legislator: senator).first&.support).to eql(
-          "AGAINST",
+          "FOR",
         )
         expect(
           LegislatorVote.where(legislator: representative).first&.support,

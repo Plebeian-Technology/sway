@@ -6,6 +6,7 @@
 
 
 class Address
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
@@ -273,40 +274,6 @@ class Address
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert!(attributes, returning: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all!(attributes, returning: nil); end
-
     sig { returns(T.nilable(::Address)) }
     sig { params(limit: Integer).returns(T::Array[::Address]) }
     def last(limit = nil); end
@@ -391,24 +358,29 @@ class Address
 
     sig { returns(::Address) }
     def third_to_last!; end
+  end
 
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert(attributes, returning: nil, unique_by: nil); end
+  module GeneratedAssociationMethods
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
+    def build_user_address(*args, &blk); end
 
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert_all(attributes, returning: nil, unique_by: nil); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
+    def create_user_address(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::UserAddress) }
+    def create_user_address!(*args, &blk); end
+
+    sig { returns(T.nilable(::UserAddress)) }
+    def reload_user_address; end
+
+    sig { void }
+    def reset_user_address; end
+
+    sig { returns(T.nilable(::UserAddress)) }
+    def user_address; end
+
+    sig { params(value: T.nilable(::UserAddress)).void }
+    def user_address=(value); end
   end
 
   module GeneratedAssociationRelationMethods

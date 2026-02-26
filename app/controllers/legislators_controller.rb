@@ -29,9 +29,21 @@ class LegislatorsController < ApplicationController
   def json_legislators
     current_user
       &.user_legislators
-      &.joins(:legislator)
+      &.includes(
+        legislator: :legislator_district_score,
+        user_legislator_score: [],
+      )
       &.where(active: true, legislators: { active: true })
-      &.map { |ul| ul.legislator.to_sway_json }
+      &.map do |ul|
+        ul.legislator.to_sway_json.merge(
+          {
+            user_legislator_score:
+              ul.user_legislator_score&.to_builder&.attributes!&.except(
+                "is_a?",
+              ),
+          },
+        )
+      end
   end
 
   # Only allow a list of trusted parameters through.

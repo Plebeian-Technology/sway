@@ -2,8 +2,8 @@ x-app: &app
     build:
         context: .
         args:
-            RUBY_VERSION: "3.4.7"
-            NODE_MAJOR: "22"
+            RUBY_VERSION: "4.0.1"
+            NODE_MAJOR: "24"
     image: sway-dev:1.0.0
     environment: &env
         NODE_ENV: ${NODE_ENV:-development}
@@ -19,8 +19,6 @@ x-backend: &backend
     volumes:
         - ..:/app:cached
         - ${HOME}/Library/Application Support/mkcert:/app/tmp/cache/mkcert:ro
-        - ./sorbet/:/app/sorbet:cached
-        - ./storage/:/app/storage
         - bundle:/usr/local/bundle
         - rails_cache:/app/tmp/cache
         - assets:/app/public/assets
@@ -33,8 +31,8 @@ x-backend: &backend
     environment: &backend_environment
         <<: *env
         VITE_RUBY_HOST: ${VITE_HOST:-vite}
-        SWAY_DATABASE_NAME: storage/dip_development.sqlite3
-        SWAY_QUEUE_DATABASE_NAME: storage/dip_development_queue.sqlite
+        SWAY_DATABASE_NAME: storage/development.sqlite3
+        SWAY_QUEUE_DATABASE_NAME: storage/development_queue.sqlite
         MALLOC_ARENA_MAX: 2
         WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
         BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
@@ -43,7 +41,7 @@ x-backend: &backend
         HISTFILE: /usr/local/hist/.bash_history
         PSQL_HISTFILE: /usr/local/hist/.psql_history
         IRB_HISTFILE: /usr/local/hist/.irb_history
-        PORT: "3333"
+        PORT: "3000"
         EDITOR: vi
 
 services:
@@ -85,15 +83,34 @@ services:
 
     web:
         <<: *backend
-        command: bin/rails s -b 'ssl://0.0.0.0?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+        command: bundle exec rails server -b 0.0.0.0
         ports:
-            - "3333:3333"
+            - "${PORT:-3000}:${PORT:-3000}"
+        environment:
+            <<: *backend_environment
+            PORT: ${PORT:-3000}
+            RAILS_ENV: ${RAILS_ENV:-development}
+            NODE_ENV: ${NODE_ENV:-development}
+            VITE_PORT: ${VITE_PORT:-3036}
+            VITE_RUBY_HOST: ${VITE_RUBY_HOST:-vite}
 
     vite:
         <<: *backend
         command: ./bin/vite dev
         ports:
             - "3036:3036"
+
+    caddy:
+        container_name: caddy
+        image: "caddy:latest"
+        volumes:
+            - ./caddy/certs:/root/certs # to sync mkcert certificates to Caddy
+            - ./Caddyfile:/etc/caddy/Caddyfile # to mount custom Caddyfile
+        ports:
+            # host:container
+            - "3333:3333"
+        depends_on:
+            - web
 
 volumes:
     bundle:
@@ -103,4 +120,3 @@ volumes:
     assets:
     vite_dev:
     vite_test:
-    storage:

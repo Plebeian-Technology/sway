@@ -66,10 +66,10 @@ class WebAuthn::AttestationObject
   def initialize(authenticator_data:, attestation_statement:); end
 
   # source://webauthn//lib/webauthn/attestation_object.rb#44
-  def aaguid(*args, **_arg1, &block); end
+  def aaguid(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/attestation_object.rb#45
-  def attestation_certificate_key_id(*args, **_arg1, &block); end
+  def attestation_certificate_key_id(*_arg0, **_arg1, &_arg2); end
 
   # Returns the value of attribute attestation_statement.
   #
@@ -82,7 +82,7 @@ class WebAuthn::AttestationObject
   def authenticator_data; end
 
   # source://webauthn//lib/webauthn/attestation_object.rb#44
-  def credential(*args, **_arg1, &block); end
+  def credential(*_arg0, **_arg1, &_arg2); end
 
   # Returns the value of attribute relying_party.
   #
@@ -654,19 +654,19 @@ class WebAuthn::AuthenticatorAttestationResponse < ::WebAuthn::AuthenticatorResp
   def initialize(attestation_object:, transports: T.unsafe(nil), **options); end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#56
-  def aaguid(*args, **_arg1, &block); end
+  def aaguid(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#65
-  def attestation_certificate_key(*args, **_arg1, &block); end
+  def attestation_certificate_key(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#56
-  def attestation_certificate_key_id(*args, **_arg1, &block); end
+  def attestation_certificate_key_id(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#52
   def attestation_object; end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#56
-  def attestation_statement(*args, **_arg1, &block); end
+  def attestation_statement(*_arg0, **_arg1, &_arg2); end
 
   # Returns the value of attribute attestation_trust_path.
   #
@@ -679,10 +679,10 @@ class WebAuthn::AuthenticatorAttestationResponse < ::WebAuthn::AuthenticatorResp
   def attestation_type; end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#56
-  def authenticator_data(*args, **_arg1, &block); end
+  def authenticator_data(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/authenticator_attestation_response.rb#56
-  def credential(*args, **_arg1, &block); end
+  def credential(*_arg0, **_arg1, &_arg2); end
 
   # Returns the value of attribute transports.
   #
@@ -1077,58 +1077,58 @@ class WebAuthn::Configuration
   def initialize; end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def acceptable_attestation_types(*args, **_arg1, &block); end
+  def acceptable_attestation_types(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def acceptable_attestation_types=(*args, **_arg1, &block); end
+  def acceptable_attestation_types=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def algorithms(*args, **_arg1, &block); end
+  def algorithms(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def algorithms=(*args, **_arg1, &block); end
+  def algorithms=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def allowed_origins(*args, **_arg1, &block); end
+  def allowed_origins(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def allowed_origins=(*args, **_arg1, &block); end
+  def allowed_origins=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def attestation_root_certificates_finders(*args, **_arg1, &block); end
+  def attestation_root_certificates_finders(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def attestation_root_certificates_finders=(*args, **_arg1, &block); end
+  def attestation_root_certificates_finders=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def credential_options_timeout(*args, **_arg1, &block); end
+  def credential_options_timeout(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def credential_options_timeout=(*args, **_arg1, &block); end
+  def credential_options_timeout=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def encoder(*args, **_arg1, &block); end
+  def encoder(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def encoder=(*args, **_arg1, &block); end
+  def encoder=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def encoding(*args, **_arg1, &block); end
+  def encoding(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def encoding=(*args, **_arg1, &block); end
+  def encoding=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def legacy_u2f_appid(*args, **_arg1, &block); end
+  def legacy_u2f_appid(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def legacy_u2f_appid=(*args, **_arg1, &block); end
+  def legacy_u2f_appid=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def origin(*args, **_arg1, &block); end
+  def origin(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def origin=(*args, **_arg1, &block); end
+  def origin=(*_arg0, **_arg1, &_arg2); end
 
   # Returns the value of attribute relying_party.
   #
@@ -1148,16 +1148,16 @@ class WebAuthn::Configuration
   def rp_name=(name); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def silent_authentication(*args, **_arg1, &block); end
+  def silent_authentication(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def silent_authentication=(*args, **_arg1, &block); end
+  def silent_authentication=(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def verify_attestation_statement(*args, **_arg1, &block); end
+  def verify_attestation_statement(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/configuration.rb#18
-  def verify_attestation_statement=(*args, **_arg1, &block); end
+  def verify_attestation_statement=(*_arg0, **_arg1, &_arg2); end
 end
 
 # source://webauthn//lib/webauthn/credential.rb#9
@@ -1376,10 +1376,10 @@ class WebAuthn::Encoder
   def initialize(encoding = T.unsafe(nil)); end
 
   # source://webauthn//lib/webauthn/encoder.rb#12
-  def decode(*args, **_arg1, &block); end
+  def decode(*_arg0, **_arg1, &_arg2); end
 
   # source://webauthn//lib/webauthn/encoder.rb#12
-  def encode(*args, **_arg1, &block); end
+  def encode(*_arg0, **_arg1, &_arg2); end
 end
 
 # https://www.w3.org/TR/webauthn-2/#base64url-encoding

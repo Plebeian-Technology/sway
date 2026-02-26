@@ -4,6 +4,7 @@
 # == Schema Information
 #
 # Table name: sway_locales
+# Database name: primary
 #
 #  id                         :integer          not null, primary key
 #  city                       :string           not null
@@ -96,12 +97,10 @@ class SwayLocale < ApplicationRecord
 
   sig { params(active: T.nilable(T::Boolean)).returns(ActiveRecord::Relation) }
   def legislators(active = true)
-    Legislator.joins(:district).where(
-      active: active,
-      district: {
-        sway_locale: self,
-      },
-    )
+    Legislator
+      .joins(:district)
+      .includes(:district)
+      .where(active: active, district: { sway_locale: self })
   end
 
   sig { returns(String) }
@@ -135,15 +134,18 @@ class SwayLocale < ApplicationRecord
 
   sig { returns(T.nilable(RGeo::GeoJSON::FeatureCollection)) }
   def load_geojson
+    return @geojson if defined?(@geojson)
+
     unless has_geojson?
       Rails.logger.info "SwayLocale - #{name} - has no geojson file located at - #{geojson_file_name}"
-      return nil
+      return @geojson = nil
     end
 
-    T.let(
-      RGeo::GeoJSON.decode(File.read(geojson_file_name)),
-      RGeo::GeoJSON::FeatureCollection,
-    )
+    @geojson =
+      T.let(
+        RGeo::GeoJSON.decode(File.read(geojson_file_name)),
+        RGeo::GeoJSON::FeatureCollection,
+      )
   end
 
   sig { returns(Jbuilder) }
