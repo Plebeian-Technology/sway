@@ -69,7 +69,11 @@ class BillsController < ApplicationController
     render_component(
       Pages::BILL_CREATOR,
       {
-        bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
+        bills:
+          Bill
+            .current_session(current_sway_locale)
+            .includes(:votes)
+            &.map(&:to_sway_json),
         bill: Bill.new.attributes,
         legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
         legislator_votes: [],
@@ -89,7 +93,11 @@ class BillsController < ApplicationController
     render_component(
       Pages::BILL_CREATOR,
       {
-        bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
+        bills:
+          Bill
+            .current_session(current_sway_locale)
+            .includes(:votes)
+            &.map(&:to_sway_json),
         bill:
           @bill.to_sway_json.tap do |b|
             b[:organizations] = @bill.organizations.map(&:to_sway_json)
