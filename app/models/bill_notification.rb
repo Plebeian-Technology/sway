@@ -49,6 +49,6 @@ class BillNotification < ApplicationRecord
       "BillNotification.notify - ERROR sending notifications for bill - #{bill.id} / #{bill.sway_locale.name}",
     )
     Rails.logger.error(e)
-    Sentry.capture_exception(e)
+    Sentry.capture_exception(e) if Rails.env.production?
   end
 end

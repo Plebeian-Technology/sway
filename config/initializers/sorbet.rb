@@ -6,10 +6,14 @@ require "sorbet-runtime"
 # This runs every time a method with a sig fails to type check at runtime.
 T::Configuration.call_validation_error_handler =
   lambda do |signature, opts|
-    #                                                       ┌──┐
-    if signature&.on_failure && signature&.on_failure[0] == :log
+    if Rails.env.development? || Rails.env.test?
       Rails.logger.error opts[:pretty_message]
     else
-      Sentry.capture_message(opts[:pretty_message])
+      Rails.env.production?
+      begin
+        Sentry.capture_message(opts[:pretty_message])
+      rescue => e
+        Rails.logger.error opts[:pretty_message]
+      end
     end
   end

@@ -30,7 +30,7 @@ module Authentication
         true
       rescue Twilio::REST::RestError => e
         Rails.logger.error(e.full_message)
-        Sentry.capture_exception(e)
+        Sentry.capture_exception(e) if Rails.env.production?
         false
       end
     end
@@ -52,7 +52,7 @@ module Authentication
         true
       rescue Twilio::REST::RestError => e
         Rails.logger.error e.full_message
-        Sentry.capture_exception(e)
+        Sentry.capture_exception(e) if Rails.env.production?
         false
       end
     end

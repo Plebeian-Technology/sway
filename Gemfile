@@ -116,9 +116,6 @@ gem "lograge"
 # Parse fetched xml data for US Congress votes
 gem "rexml"
 
-gem "newrelic_rpm"
-gem "sentry-rails"
-gem "sentry-ruby"
 gem "stackprof"
 
 gem "solid_queue", "~> 1.1"
@@ -130,6 +127,9 @@ gem "pdf-reader"
 group :production do
   # https://github.com/modosc/cloudflare-rails
   # To determine ip addresses in order to rate limit correctly
+  gem "sentry-rails"
+  gem "sentry-ruby"
+  gem "newrelic_rpm"
   gem "cloudflare-rails"
 end
 

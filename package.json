@@ -13,7 +13,6 @@
         "@emotion/styled": "^11.14.1",
         "@inertiajs/react": "^2.3.16",
         "@mui/material": "^7.3.8",
-        "@mui/x-charts": "^8.27.0",
         "@rails/actioncable": "^8.1.200",
         "@react-google-maps/api": "^2.20.8",
         "@sentry/react": "^10.40.0",

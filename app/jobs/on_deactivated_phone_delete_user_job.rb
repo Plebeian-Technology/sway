@@ -23,9 +23,11 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
               Rails.logger.error(
                 "FAILED to destroy user #{user.id} with de-activated phone number.",
               )
-              Sentry.capture_message(
-                "Failed to destroy user #{user.id} with de-activated phone number in job - OnDeactivatedPhoneDeleteUserJob.",
-              )
+              if Rails.env.production?
+                Sentry.capture_message(
+                  "Failed to destroy user #{user.id} with de-activated phone number in job - OnDeactivatedPhoneDeleteUserJob.",
+                )
+              end
             end
           end
       end
@@ -65,7 +67,7 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
         return nil
       else
         Rails.logger.error(e.full_message)
-        Sentry.capture_exception(e)
+        Sentry.capture_exception(e) if Rails.env.production?
         return nil
       end
     end

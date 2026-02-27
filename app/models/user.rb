@@ -97,16 +97,21 @@ class User < ApplicationRecord
   has_many :user_votes, dependent: :destroy
   has_many :user_bill_reminders, dependent: :destroy
 
-  state_machine :registration_status, initial: :pending do
+  T.unsafe(self).state_machine :registration_status, initial: :pending do
+    T.bind(self, StateMachines::Machine)
+
     event :start_processing do
+      T.bind(self, StateMachines::Event)
       transition pending: :processing
     end
 
     event :complete do
+      T.bind(self, StateMachines::Event)
       transition %i[pending processing completed] => :completed
     end
 
     event :mark_failed do
+      T.bind(self, StateMachines::Event)
       transition processing: :failed
     end
 
@@ -159,11 +164,14 @@ class User < ApplicationRecord
     params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator])
   end
   def user_legislators_by_locale(sway_locale)
+    return [] unless sway_locale
+
     user_legislators
       .where(active: true)
       .joins(legislator: :district)
       .where(districts: { sway_locale_id: sway_locale.id })
       .includes(legislator: { district: :sway_locale })
+      .to_a
   end
 
   sig do

@@ -70,13 +70,11 @@ RSpec.describe Authentication, type: :controller do
           twilio_error,
         )
         allow(Rails.logger).to receive(:error)
-        allow(Sentry).to receive(:capture_exception)
 
         result = controller.send(:send_phone_verification, session_store, phone)
 
         expect(result).to be(false)
         expect(Rails.logger).to have_received(:error).with("twilio failure")
-        expect(Sentry).to have_received(:capture_exception).with(twilio_error)
       end
     end
 
