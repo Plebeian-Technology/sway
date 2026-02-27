@@ -6,7 +6,7 @@ import { useMemo, useRef, useState } from "react";
 import { Button, Placeholder } from "react-bootstrap";
 import { FiMap, FiStar } from "react-icons/fi";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import VoterAgreementChart from "./VoterAgreementChartMui";
+import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartContainerProps, IMobileChartChoice } from "./utils";
 
 const LegislatorMobileChartsContainer: React.FC<IChartContainerProps> = ({

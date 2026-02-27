@@ -5,7 +5,7 @@ import { isAtLargeLegislator, isEmptyObject } from "app/frontend/sway_utils";
 import { useMemo, useRef } from "react";
 import { Placeholder } from "react-bootstrap";
 import { isEmptyScore } from "../../../sway_utils/charts";
-import VoterAgreementChart from "./VoterAgreementChartMui";
+import VoterAgreementChart from "./VoterAgreementChart";
 import { IChartChoice, IChartContainerProps } from "./utils";
 
 const LegislatorChartsContainer: React.FC<IChartContainerProps> = ({ legislator, userLegislatorScore, isLoading }) => {

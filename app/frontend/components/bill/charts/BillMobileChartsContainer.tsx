@@ -7,8 +7,8 @@ import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
 
 import { isEmptyScore } from "../../../sway_utils/charts";
-import DistrictVotesChart from "./DistrictVotesChartMui";
-import TotalVotes from "./TotalVotesChartMui";
+import DistrictVotesChart from "./DistrictVotesChart";
+import TotalVotes from "./TotalVotesChart";
 
 import { usePage } from "@inertiajs/react";
 import { Button } from "react-bootstrap";
