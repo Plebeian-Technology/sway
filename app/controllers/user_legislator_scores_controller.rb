@@ -10,7 +10,10 @@ class UserLegislatorScoresController < ApplicationController
                .where(user_legislators: { user_id: current_user.id })
                .includes(
                  user_legislator: {
-                   legislator: [{ district: :sway_locale }, :legislator_district_score],
+                   legislator: [
+                     { district: :sway_locale },
+                     :legislator_district_score,
+                   ],
                  },
                )
                .map(&:to_sway_json),

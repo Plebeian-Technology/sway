@@ -79,7 +79,8 @@ class BillsController < ApplicationController
         legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
         legislator_votes: [],
         organizations:
-          Organization.includes(:organization_bill_positions)
+          Organization
+            .includes(:organization_bill_positions)
             .where(sway_locale: current_sway_locale)
             .map(&:to_sway_json),
         tab_key: params[:tab_key],
@@ -117,7 +118,8 @@ class BillsController < ApplicationController
             &.map(&:to_sway_json),
         legislator_votes: @bill.legislator_votes.map(&:to_sway_json),
         organizations:
-          Organization.includes(:organization_bill_positions)
+          Organization
+            .includes(:organization_bill_positions)
             .where(sway_locale: current_sway_locale)
             .map(&:to_sway_json),
         tab_key: params[:tab_key],
