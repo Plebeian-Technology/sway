@@ -7,7 +7,6 @@ class Organizations::PositionsController < Organizations::BaseController
   before_action :change_must_not_be_approved!, only: %i[update]
   before_action :change_must_be_different!, only: %i[update]
 
-  # TODO: Create a position on a bill
   def create
     position =
       OrganizationBillPosition.find_or_initialize_by(

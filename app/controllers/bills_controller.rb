@@ -21,6 +21,7 @@ class BillsController < ApplicationController
           bills:
             Bill
               .previous(current_sway_locale)
+              .includes(:votes, :bill_score)
               .map do |bill|
                 bill.to_sway_json.merge(
                   {
@@ -69,14 +70,18 @@ class BillsController < ApplicationController
     render_component(
       Pages::BILL_CREATOR,
       {
-        bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
+        bills:
+          Bill
+            .current_session(current_sway_locale)
+            .includes(:votes)
+            &.map(&:to_sway_json),
         bill: Bill.new.attributes,
         legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
         legislator_votes: [],
         organizations:
-          Organization.where(sway_locale: current_sway_locale).map(
-            &:to_sway_json
-          ),
+          Organization.includes(:organization_bill_positions)
+            .where(sway_locale: current_sway_locale)
+            .map(&:to_sway_json),
         tab_key: params[:tab_key],
       },
     )
@@ -89,7 +94,11 @@ class BillsController < ApplicationController
     render_component(
       Pages::BILL_CREATOR,
       {
-        bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
+        bills:
+          Bill
+            .current_session(current_sway_locale)
+            .includes(:votes)
+            &.map(&:to_sway_json),
         bill:
           @bill.to_sway_json.tap do |b|
             b[:organizations] = @bill.organizations.map(&:to_sway_json)
@@ -108,9 +117,9 @@ class BillsController < ApplicationController
             &.map(&:to_sway_json),
         legislator_votes: @bill.legislator_votes.map(&:to_sway_json),
         organizations:
-          Organization.where(sway_locale: current_sway_locale).map(
-            &:to_sway_json
-          ),
+          Organization.includes(:organization_bill_positions)
+            .where(sway_locale: current_sway_locale)
+            .map(&:to_sway_json),
         tab_key: params[:tab_key],
       },
     )

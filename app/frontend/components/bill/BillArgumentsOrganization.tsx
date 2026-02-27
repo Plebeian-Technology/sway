@@ -1,5 +1,6 @@
 import OrganizationIcon from "app/frontend/components/organizations/OrganizationIcon";
 import { Support } from "app/frontend/sway_constants";
+import { memo } from "react";
 import { Button, Image } from "react-bootstrap";
 import { sway } from "sway";
 
@@ -7,27 +8,23 @@ interface IProps {
     organizationPosition: sway.IOrganizationPosition;
     organizationsCount: number;
     organization: sway.IOrganizationBase;
-    supportSelected: number;
-    opposeSelected: number;
+    isSelected: boolean;
     setSupportSelected: React.Dispatch<React.SetStateAction<number>>;
     setOpposeSelected: React.Dispatch<React.SetStateAction<number>>;
     index: number;
 }
 
-const BillArgumentsOrganization: React.FC<IProps> = ({
+const BillArgumentsOrganization = memo(({
     organizationPosition,
     organizationsCount,
     organization,
-    supportSelected,
-    opposeSelected,
+    isSelected,
     setSupportSelected,
     setOpposeSelected,
     index,
-}) => {
+}: IProps) => {
     const handler =
         organizationPosition.support === Support.For ? () => setSupportSelected(index) : () => setOpposeSelected(index);
-    const isSelected =
-        organizationPosition.support === Support.For ? supportSelected === index : opposeSelected === index;
 
     return (
         <div className={`col-${organizationsCount ? 12 / organizationsCount : "auto"} text-center p-2`}>
@@ -61,6 +58,6 @@ const BillArgumentsOrganization: React.FC<IProps> = ({
             </Button>
         </div>
     );
-};
+});
 
 export default BillArgumentsOrganization;
