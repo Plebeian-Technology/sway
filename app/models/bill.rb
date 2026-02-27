@@ -54,12 +54,9 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
-  sig { returns(OrganizationBillPosition::PrivateCollectionProxy) }
+  sig { returns(ActiveRecord::Relation) }
   def organization_bill_positions
-    T.cast(
-      super.where(active: true),
-      OrganizationBillPosition::PrivateCollectionProxy,
-    )
+    T.cast(super.where(active: true), ActiveRecord::Relation)
   end
 
   before_validation :downcase_status

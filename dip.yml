@@ -64,6 +64,7 @@ interaction:
             PORT: "3000"
             VITE_PORT: "3036"
             VITE_RUBY_HOST: vite
+            SOLID_QUEUE_IN_PUMA: true
         description: startup all processes (rails, vite) for development
         command: |
             dip up vite caddy --detach

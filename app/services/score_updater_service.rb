@@ -26,10 +26,7 @@ class ScoreUpdaterService
     update_legislator_district_score
     update_user_legislator_scores
 
-    ActionCable.server.broadcast(
-      "scores_#{user.id}",
-      { action: "refresh_scores" },
-    )
+    broadcast_score_refresh
   end
 
   private
@@ -101,5 +98,17 @@ class ScoreUpdaterService
   sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= bill.sway_locale
+  end
+
+  sig { void }
+  def broadcast_score_refresh
+    ActionCable.server.broadcast(
+      "scores_#{user.id}",
+      { action: "refresh_scores" },
+    )
+  rescue StandardError, LoadError => e
+    Rails.logger.error(
+      "Failed broadcasting score refresh for user=#{user.id}: #{e.class} #{e.message}",
+    )
   end
 end
