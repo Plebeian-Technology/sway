@@ -7,7 +7,7 @@
 #  city                       :string           not null
 #  country                    :string           default("United States"), not null
 #  current_session_start_date :date
-#  icon_path                  :string
+#  icon_url                   :string
 #  latest_election_year       :integer          default(2024), not null
 #  state                      :string           not null
 #  time_zone                  :string
@@ -25,7 +25,7 @@ FactoryBot.define do
     country { Faker::Address.country }
     current_session_start_date { Time.zone.today - 1.year }
     time_zone { "Etc/UTC" }
-    icon_path { "logo.svg" }
+    icon_url { "logo.svg" }
 
     initialize_with { new({ city:, state:, country: }) }
   end

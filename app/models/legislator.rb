@@ -35,6 +35,7 @@ class Legislator < ApplicationRecord
   extend T::Sig
 
   after_create_commit :create_legislator_district_score
+  after_commit :enqueue_photo_mirroring, if: :saved_change_to_photo_url?
 
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
@@ -46,6 +47,7 @@ class Legislator < ApplicationRecord
 
   has_many :bills, dependent: :restrict_with_exception # sponsor
   has_many :legislator_votes, dependent: :destroy
+  has_one_attached :photo
 
   PARTY_BY_CHAR = {
     R: "Republican",
@@ -139,6 +141,36 @@ class Legislator < ApplicationRecord
   end
 
   private
+
+  sig { void }
+  def enqueue_photo_mirroring
+    return if id.blank?
+    return if internal_asset_url?(photo_url)
+
+    MirrorExternalAssetJob.perform_later(
+      record_class_name: self.class.name,
+      record_id: id,
+      attachment_name: "photo",
+      url_column: "photo_url",
+    )
+  end
+
+  sig { params(url: T.nilable(String)).returns(T::Boolean) }
+  def internal_asset_url?(url)
+    return true if url.blank?
+
+    uri = URI.parse(url)
+    return false unless uri.is_a?(URI::HTTP)
+
+    host = uri.host.to_s.downcase
+    host.ends_with?("sway.vote") ||
+      (
+        host == "storage.googleapis.com" &&
+          uri.path.to_s.start_with?("/sway-assets/")
+      )
+  rescue URI::InvalidURIError
+    false
+  end
 
   def create_legislator_district_score
     LegislatorDistrictScore.create(legislator: self)

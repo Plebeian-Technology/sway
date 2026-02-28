@@ -1,5 +1,4 @@
 import { TOrganizationOption } from "app/frontend/components/admin/creator/types";
-import { SWAY_ASSETS_BUCKET_BASE_URL } from "app/frontend/sway_constants/google_cloud_storage";
 
 import { useCallback, useMemo, useState } from "react";
 import { Image } from "react-bootstrap";
@@ -25,10 +24,8 @@ const OrganizationIcon: React.FC<IProps> = ({ organization }) => {
     const icon: string = useMemo(() => {
         if (!organization) {
             return DEFAULT_ICON_PATH;
-        } else if ("icon_path" in organization) {
-            return organization.icon_path || DEFAULT_ICON_PATH;
-        } else if ("icon_path" in organization) {
-            return organization.icon_path || DEFAULT_ICON_PATH;
+        } else if ("icon_url" in organization) {
+            return organization.icon_url || DEFAULT_ICON_PATH;
         } else {
             return DEFAULT_ICON_PATH;
         }
@@ -46,13 +43,7 @@ const OrganizationIcon: React.FC<IProps> = ({ organization }) => {
         }
     }, [organization]) as string;
 
-    const src = useMemo(
-        () =>
-            icon === DEFAULT_ICON_PATH
-                ? DEFAULT_ICON_PATH
-                : `${SWAY_ASSETS_BUCKET_BASE_URL}${(icon.startsWith("/") ? icon : "/" + icon).replace("//", "/")}`,
-        [icon],
-    );
+    const src = useMemo(() => icon, [icon]);
 
     const handleError = useCallback(() => {
         setError(true);

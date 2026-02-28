@@ -678,49 +678,49 @@ class Organization
     def created_at_will_change!; end
 
     sig { returns(T.nilable(::String)) }
-    def icon_path; end
+    def icon_url; end
 
     sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-    def icon_path=(value); end
+    def icon_url=(value); end
 
     sig { returns(T::Boolean) }
-    def icon_path?; end
+    def icon_url?; end
 
     sig { returns(T.nilable(::String)) }
-    def icon_path_before_last_save; end
+    def icon_url_before_last_save; end
 
     sig { returns(T.untyped) }
-    def icon_path_before_type_cast; end
+    def icon_url_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def icon_path_came_from_user?; end
+    def icon_url_came_from_user?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def icon_path_change; end
+    def icon_url_change; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def icon_path_change_to_be_saved; end
+    def icon_url_change_to_be_saved; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def icon_path_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def icon_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
-    def icon_path_in_database; end
+    def icon_url_in_database; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def icon_path_previous_change; end
+    def icon_url_previous_change; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def icon_path_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def icon_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
-    def icon_path_previously_was; end
+    def icon_url_previously_was; end
 
     sig { returns(T.nilable(::String)) }
-    def icon_path_was; end
+    def icon_url_was; end
 
     sig { void }
-    def icon_path_will_change!; end
+    def icon_url_will_change!; end
 
     sig { returns(::Integer) }
     def id; end
@@ -861,7 +861,7 @@ class Organization
     def restore_created_at!; end
 
     sig { void }
-    def restore_icon_path!; end
+    def restore_icon_url!; end
 
     sig { void }
     def restore_id!; end
@@ -885,10 +885,10 @@ class Organization
     def saved_change_to_created_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def saved_change_to_icon_path; end
+    def saved_change_to_icon_url; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def saved_change_to_icon_path?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def saved_change_to_icon_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
@@ -1014,7 +1014,7 @@ class Organization
     def will_save_change_to_created_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def will_save_change_to_icon_path?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def will_save_change_to_icon_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end

@@ -6,8 +6,6 @@ Rails.application.configure do
     begin
       if ENV["IS_DOCKER"].present?
         "#{Resolv.getaddress("host.docker.internal")}/8"
-      else
-        nil
       end
     rescue StandardError
       nil
@@ -63,6 +61,13 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = { address: "127.0.0.1", port: 1025 }
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.after_initialize do
+    Rails.application.routes.default_url_options = {
+      host: "localhost",
+      port: 3333,
+      protocol: "https",
+    }
+  end
   config.action_controller.asset_host = "http://localhost:3000"
   config.action_mailer.asset_host = "http://localhost:3000"
 

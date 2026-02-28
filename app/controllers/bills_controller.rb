@@ -303,7 +303,8 @@ class BillsController < ApplicationController
           :id,
           :sway_locale_id,
           :name,
-          :icon_path,
+          :icon_url,
+          :icon_signed_id,
           positions: %i[id bill_id summary support],
         )
       end
@@ -311,20 +312,5 @@ class BillsController < ApplicationController
 
   def params
     super.transform_keys(&:underscore)
-  end
-
-  sig do
-    params(
-      organization: Organization,
-      current_icon_path: T.nilable(String),
-    ).void
-  end
-  def remove_icon(organization, current_icon_path)
-    return unless organization.icon_path != current_icon_path
-
-    delete_file(
-      bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
-      file_name: current_icon_path,
-    )
   end
 end

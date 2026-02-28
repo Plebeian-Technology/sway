@@ -73,6 +73,7 @@ gem "concurrent-ruby"
 
 # https://github.com/lostisland/faraday
 gem "faraday"
+gem "down"
 
 # https://github.com/mauricio/faraday_curl
 # gem 'faraday_curl'

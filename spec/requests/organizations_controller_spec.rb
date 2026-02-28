@@ -4,12 +4,7 @@ RSpec.describe "OrganizationsController", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
-  def get_params(
-    sway_locale,
-    partial_bill: {},
-    partial_sponsor: {},
-    partial_vote: {}
-  )
+  def get_params(sway_locale)
     bill =
       create(
         :bill,
@@ -25,13 +20,13 @@ RSpec.describe "OrganizationsController", type: :request do
           label: Faker::String.random(length: 5),
           support: "FOR",
           summary: Faker::String.random(length: 20),
-          icon_path: "https://www.example.com",
+          icon_url: "https://www.example.com",
         },
         {
           label: Faker::String.random(length: 5),
           support: "AGAINST",
           summary: Faker::String.random(length: 20),
-          icon_path: "https://www.sway.vote",
+          icon_url: "https://www.sway.vote",
         },
       ],
     }
@@ -52,7 +47,7 @@ RSpec.describe "OrganizationsController", type: :request do
         org = Organization.find_by(name: param[:label])
 
         expect(org).to_not be_nil
-        expect(org.icon_path).to eql(param[:icon_path])
+        expect(org.icon_url).to eql(param[:icon_url])
 
         org.positions.each do |position|
           expect(position.support).to eql(param[:support])

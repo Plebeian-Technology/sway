@@ -1,5 +1,23 @@
 /** @format */
 
+declare module "@rails/activestorage" {
+    export function start(): void;
+
+    export interface IDirectUploadDelegate {
+        directUploadWillStoreFileWithXHR?(xhr: XMLHttpRequest): void;
+    }
+
+    export interface IDirectUploadBlob {
+        signed_id: string;
+    }
+
+    export class DirectUpload {
+        constructor(file: File, url: string, delegate?: IDirectUploadDelegate);
+
+        create(callback: (error: string | Error | null, blob: IDirectUploadBlob | null) => void): void;
+    }
+}
+
 declare module "sway" {
     // https://stackoverflow.com/a/75201302/6410635
     type EitherOnly<T, U> = {
@@ -115,7 +133,7 @@ declare module "sway" {
             region_name: string;
             country: string;
             // districts: IDistrict[];
-            icon_path: string;
+            icon_url: string;
             time_zone: string;
             current_session_start_date: string;
         }
@@ -363,7 +381,7 @@ declare module "sway" {
         interface IOrganizationBase extends IIDObject {
             sway_locale_id: number;
             name: string;
-            icon_path?: string;
+            icon_url?: string;
         }
         interface IOrganization extends IOrganizationBase {
             positions: IOrganizationPosition[];

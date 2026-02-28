@@ -1,3 +1,28 @@
+# == Schema Information
+#
+# Table name: passkeys
+# Database name: primary
+#
+#  id           :integer          not null, primary key
+#  label        :string           not null
+#  last_used_at :datetime
+#  public_key   :string
+#  sign_count   :integer
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  external_id  :string
+#  user_id      :integer          not null
+#
+# Indexes
+#
+#  index_passkeys_on_external_id  (external_id) UNIQUE
+#  index_passkeys_on_public_key   (public_key) UNIQUE
+#  index_passkeys_on_user_id      (user_id)
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id)
+#
 require "rails_helper"
 
 RSpec.describe Passkey, type: :model do

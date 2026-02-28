@@ -37,7 +37,7 @@ const BillArgumentsOrganization = memo(
                     // corner-circle - https://stackoverflow.com/a/58700914/6410635
                     className={isSelected ? " text-primary no-underline" : "no-underline"}
                 >
-                    {organization?.icon_path ? (
+                    {organization?.icon_url ? (
                         <OrganizationIcon organization={organization} maxWidth={100} />
                     ) : (
                         <div className="col">

@@ -10,7 +10,7 @@
 #  city                       :string           not null
 #  country                    :string           default("United States"), not null
 #  current_session_start_date :date
-#  icon_path                  :string
+#  icon_url                   :string
 #  latest_election_year       :integer          default(2024), not null
 #  state                      :string           not null
 #  time_zone                  :string
@@ -35,6 +35,9 @@ class SwayLocale < ApplicationRecord
   has_many :districts, inverse_of: :sway_locale, dependent: :destroy
 
   has_many :organizations, inverse_of: :sway_locale, dependent: :destroy
+  has_one_attached :icon
+
+  after_commit :enqueue_icon_mirroring, if: :saved_change_to_icon_url?
 
   # NOT WORKING
   # has_many :legislators, through: :districts, inverse_of: :sway_locale
@@ -163,7 +166,7 @@ class SwayLocale < ApplicationRecord
       s.country country
 
       s.time_zone time_zone
-      s.icon_path icon_path
+      s.icon_url icon_url
       s.current_session_start_date current_session_start_date
 
       # s.districts districts.map(&:to_sway_json)
@@ -193,6 +196,36 @@ class SwayLocale < ApplicationRecord
   end
 
   private
+
+  sig { void }
+  def enqueue_icon_mirroring
+    return if id.blank?
+    return if internal_asset_url?(icon_url)
+
+    MirrorExternalAssetJob.perform_later(
+      record_class_name: self.class.name,
+      record_id: id,
+      attachment_name: "icon",
+      url_column: "icon_url",
+    )
+  end
+
+  sig { params(url: T.nilable(String)).returns(T::Boolean) }
+  def internal_asset_url?(url)
+    return true if url.blank?
+
+    uri = URI.parse(url)
+    return false unless uri.is_a?(URI::HTTP)
+
+    host = uri.host.to_s.downcase
+    host.ends_with?("sway.vote") ||
+      (
+        host == "storage.googleapis.com" &&
+          uri.path.to_s.start_with?("/sway-assets/")
+      )
+  rescue URI::InvalidURIError
+    false
+  end
 
   sig { void }
   def nameify_country

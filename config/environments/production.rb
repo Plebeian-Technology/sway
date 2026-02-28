@@ -38,8 +38,8 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on GCS (see config/storage.yml for options).
+  config.active_storage.service = :google
   config.active_storage.variant_processor = :disabled
 
   # Mount Action Cable outside main process or domain.
@@ -104,7 +104,10 @@ Rails.application.configure do
     authentication: :plain,
     enable_starttls_auto: true,
   }
-  config.action_mailer.default_url_options = { host: "sway.vote" }
+  config.action_mailer.default_url_options = {
+    host: "app.sway.vote",
+    protocol: "https",
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

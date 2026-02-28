@@ -69,7 +69,7 @@ if Rails.env.development?
 
   organization =
     Organization.find_or_create_by!(name: "Sway", sway_locale: sway_locale)
-  organization.update!(icon_path: "/images/sway-us-light.png")
+  organization.update!(icon_url: "/images/sway-us-light.png")
 
   UserOrganizationMembership.find_or_create_by!(
     user: user,

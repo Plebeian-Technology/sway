@@ -26,7 +26,12 @@ export interface ICreatorLegislatorVotes {
     ABSTAIN: IApiLegislatorVote[];
 }
 
-export type TOrganizationOption = ISelectOption & { summary: string; support: sway.TUserSupport; icon_path?: string };
+export type TOrganizationOption = ISelectOption & {
+    summary: string;
+    support: sway.TUserSupport;
+    icon_url?: string;
+    icon_signed_id?: string;
+};
 
 export type TOrganizationError = Record<KeyOf<TOrganizationOption>, string> | undefined;
 export interface IOrganizationErrors {
