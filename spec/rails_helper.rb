@@ -22,6 +22,7 @@ require "capybara/rails"
 require "capybara/rspec"
 
 require "support/capybara_helpers"
+require "support/dev_data_loader"
 require "support/factory_bot"
 require "support/session_double"
 require "support/setup"

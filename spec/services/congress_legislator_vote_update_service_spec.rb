@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "open3"
-
 CONGRESS = {
   city: "congress",
   state: "congress",
@@ -10,31 +8,12 @@ CONGRESS = {
 }.freeze
 
 RSpec.describe CongressLegislatorVoteUpdateService do
+  include_context "DevDataLoader"
+
   before do
-    data_file_path = Rails.root.join("storage", "dev-data.sql").to_s
-
-    command =
-      "sqlite3 storage/development.sqlite3 '.dump \"legislators\" \"sway_locales\" \"districts\"' | grep '^INSERT' > #{data_file_path}"
-    _, stderr, status = Open3.capture3(command)
-
-    expect(status.success?).to be true
-    expect(stderr).to be_empty
-
-    sql =
-      File.read(data_file_path).gsub(
-        "'environment','development'",
-        "'environment','test'",
-      )
-
-    # Ensure test DB doesn't already contain the seeded rows that the dump will insert
-    # (prevents UNIQUE constraint failures when the dump contains explicit ids).
-    Legislator.destroy_all
-    District.destroy_all
-    SwayLocale.destroy_all
-
-    statements = sql.split(/;$/)
-    statements.pop # remove empty line
-    statements.each { |line| ActiveRecord::Base.connection.execute(line) }
+    sql = dev_seed_sql
+    reset_dev_seed_tables!
+    load_dev_seed_sql!(sql)
 
     User.destroy_all
 
