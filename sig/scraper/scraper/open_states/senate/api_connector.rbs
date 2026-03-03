@@ -1,0 +1,13 @@
+module Scraper
+    module OpenStates
+        module Senate
+            module ApiConnector
+                include FaradayConnector
+
+                def url: -> "https://v3.openstates.org"
+
+                def auth: -> untyped
+            end
+        end
+    end
+end

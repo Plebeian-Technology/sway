@@ -1,0 +1,42 @@
+module Scraper
+    module Congress
+        module Senate
+            QUESTIONS: ::Array["on the nomination" | "on the joint resolution" | "on passage of the bill" | "on the motion"]
+
+            # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
+            # https://senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00421.xml
+            class LegislatorVotes
+                @congress: untyped
+
+                @session: untyped
+
+                @roll_call_number: untyped
+
+                @result: untyped
+
+                include ApiConnector
+
+                def initialize: (untyped congress, untyped roll_call_number) -> void
+
+                def content_type: -> "text/xml"
+
+                def vote_number: -> untyped
+
+                # r = Faraday.get('https://www.senate.gov/legislative/LIS/roll_call_lists/vote_menu_118_2.xml')
+                # r = Faraday.get('https://www.senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00421.xml')
+                def do_request: -> (nil | untyped)
+
+                # [{"member_full"=>"Casey (D-PA)", "last_name"=>"Casey", "first_name"=>"Bob", "party"=>"D", "state"=>"PA", "vote_cast"=>"Yea", "lis_member_id"=>"S309"},]
+                def do_process: -> (::Array[untyped] | untyped)
+
+                private
+
+                def result: -> untyped
+
+                def endpoint: -> ::String
+
+                def acceptable_question?: (untyped question) -> untyped
+            end
+        end
+    end
+end

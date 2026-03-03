@@ -28,10 +28,11 @@ module CapybaraHelpers
   # https://stackoverflow.com/a/23555725/6410635
   def wait_until(delay = 0.1)
     page.document.synchronize do
-      seconds_waited = 0
+      seconds_waited = 0.0
+      delay_seconds = delay
       while !yield && seconds_waited < SECONDS_TO_WAIT
-        sleep delay
-        seconds_waited += delay
+        sleep(delay_seconds)
+        seconds_waited += delay_seconds
       end
 
       unless yield
@@ -54,9 +55,9 @@ module CapybaraHelpers
             page.save_screenshot("#{SCREENSHOT_DIR}/#{now}.png") # rubocop:disable Lint/Debugger
             Rails.logger.info "Saved capybara screenshot to #{SCREENSHOT_DIR}/#{now}.png"
           end
-          puts "Saved capybara log to #{SCREENSHOT_DIR.gsub("/app/", "")}/#{now}.html and #{SCREENSHOT_DIR.gsub("/app/", "")}/#{now}.png"
+          Kernel.puts "Saved capybara log to #{SCREENSHOT_DIR.gsub("/app/", "")}/#{now}.html and #{SCREENSHOT_DIR.gsub("/app/", "")}/#{now}.png"
         end
-        raise "Waited for #{SECONDS_TO_WAIT} seconds but condition did not become true"
+        Kernel.raise "Waited for #{SECONDS_TO_WAIT} seconds but condition did not become true"
       end
     end
   end
@@ -65,8 +66,14 @@ module CapybaraHelpers
     element = nil
     wait_until do
       element =
-        (selector.blank? ? find_field(**options) : find(selector, **options))
-      block ? block.call(element) : element.present?
+        (
+          if selector.blank?
+            page.find_field(**options)
+          else
+            page.find(selector, **options)
+          end
+        )
+      block ? yield(element) : element.present?
     rescue Capybara::ElementNotFound
       false
     end

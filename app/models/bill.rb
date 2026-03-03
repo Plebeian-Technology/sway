@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -41,8 +40,6 @@
 #
 
 class Bill < ApplicationRecord
-  extend T::Sig
-
   belongs_to :legislator
   belongs_to :sway_locale
 
@@ -54,13 +51,12 @@ class Bill < ApplicationRecord
   has_many :legislator_votes, inverse_of: :bill, dependent: :destroy
   has_many :organization_bill_positions, inverse_of: :bill, dependent: :destroy
 
-  sig { returns(ActiveRecord::Relation) }
   def organization_bill_positions
-    T.cast(super.where(active: true), ActiveRecord::Relation)
+    super.where(active: true)
   end
 
   before_validation :downcase_status
-  after_create_commit :create_bill_score
+  after_create_commit :create_default_bill_score
 
   validates :external_id,
             :category,
@@ -83,7 +79,6 @@ class Bill < ApplicationRecord
               allow_nil: true,
             }
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T.nilable(Bill)) }
   def self.of_the_week(sway_locale:)
     b =
       where(
@@ -91,14 +86,11 @@ class Bill < ApplicationRecord
         scheduled_release_date_utc: Time.zone.today - 1.month..Time.zone.today,
       ).order(scheduled_release_date_utc: :desc).limit(1).first
 
-    T.cast(
-      b.presence ||
-        where(sway_locale:)
-          .order(scheduled_release_date_utc: :desc)
-          .limit(1)
-          .first,
-      T.nilable(Bill),
-    )
+    b.presence ||
+      where(sway_locale:)
+        .order(scheduled_release_date_utc: :desc)
+        .limit(1)
+        .first
   end
 
   def self.current_session(sway_locale)
@@ -140,47 +132,35 @@ class Bill < ApplicationRecord
     Status::VETOED.freeze,
   ].freeze
 
-  sig { returns(SwayLocale) }
   def sway_locale
-    T.cast(super, SwayLocale)
+    super
   end
 
-  sig { returns(Legislator) }
   def legislator
-    T.cast(super, Legislator)
+    super
   end
 
-  sig { returns(T::Boolean) }
   def active
     if introduced_date_time_utc.before?(sway_locale.current_session_start_date)
       false
     else
-      T.cast(super.nil? || super, T::Boolean)
+      super.nil? || super
     end
   end
 
-  sig { returns(T.nilable(Vote)) }
   def vote
     votes.last
   end
 
-  sig { returns(T::Array[Organization]) }
   def organizations
     organization_bill_positions.map(&:organization)
   end
 
-  sig { returns(T::Boolean) }
   def notifyable?
     scheduled_release_date_utc == Time.zone.today && bill_notification.nil?
   end
 
   # Render a single bill from a controller
-  sig do
-    params(
-      current_user: T.nilable(User),
-      current_sway_locale: T.nilable(SwayLocale),
-    ).returns(T::Hash[Symbol, T.anything])
-  end
   def render(current_user, current_sway_locale)
     {
       bill: to_sway_json,
@@ -195,7 +175,6 @@ class Bill < ApplicationRecord
     }
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |b|
       b.id id
@@ -243,7 +222,6 @@ class Bill < ApplicationRecord
 
   # before save
 
-  sig { void }
   def downcase_status
     s = status
     return unless s
@@ -264,7 +242,7 @@ class Bill < ApplicationRecord
         Time.zone.today
   end
 
-  def create_bill_score
+  def create_default_bill_score
     BillScore.create(bill: self)
   end
 end

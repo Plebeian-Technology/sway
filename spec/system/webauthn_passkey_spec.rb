@@ -30,8 +30,9 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
     Capybara.app_host = "http://localhost"
     Capybara.always_include_port = true
 
+    initial_values = {} #: Hash[String, String?]
     previous_values =
-      default_env.each_with_object({}) do |(key, _value), memo|
+      default_env.each_with_object(initial_values) do |(key, _value), memo|
         memo[key] = ENV.fetch(key, nil)
       end
     default_env.each { |key, value| ENV[key] = value }
@@ -102,7 +103,7 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true do
       wait: 10,
     )
 
-    user = User.find_by(phone:)
+    user = User.find_by!(phone:)
     expect(user).to be_present
     expect(user.passkeys.count).to eq(1)
   end

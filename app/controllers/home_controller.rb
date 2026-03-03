@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 class HomeController < ApplicationController
@@ -13,7 +12,7 @@ class HomeController < ApplicationController
                isBubbles: true,
                params: params,
              }
-      # T.unsafe(self).render_home({name: "Sway", isBubbles: true})
+      # self.render_home({name: "Sway", isBubbles: true})
     elsif u.is_registration_complete
       redirect_to legislators_path
     else

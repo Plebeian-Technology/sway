@@ -1,0 +1,17 @@
+class SwayRegistrationController < ApplicationController
+    def index: -> untyped
+
+    # Update user's sway registration status
+    # Finds representatives based on a user's address
+    # creates UserLegislators and initial UserLegislatorScores
+    # and sets user.is_registered to true
+    def create: -> untyped
+
+    private
+
+    def user_address: (untyped u) -> untyped
+
+    def address: -> untyped
+
+    def sway_registration_params: -> untyped
+end

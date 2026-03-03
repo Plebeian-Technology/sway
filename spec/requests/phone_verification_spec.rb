@@ -13,9 +13,11 @@ RSpec.describe "PhoneVerification", type: :request do
         ENV["SKIP_PHONE_VERIFICATION"] = "1"
         example.run
       ensure
-        previous.nil? ?
-          ENV.delete("SKIP_PHONE_VERIFICATION") :
+        if previous.nil?
+          ENV.delete("SKIP_PHONE_VERIFICATION")
+        else
           ENV["SKIP_PHONE_VERIFICATION"] = previous
+        end
       end
 
       it "stores phone in session and returns success" do
@@ -33,9 +35,11 @@ RSpec.describe "PhoneVerification", type: :request do
         ENV.delete("SKIP_PHONE_VERIFICATION")
         example.run
       ensure
-        previous.nil? ?
-          ENV.delete("SKIP_PHONE_VERIFICATION") :
+        if previous.nil?
+          ENV.delete("SKIP_PHONE_VERIFICATION")
+        else
           ENV["SKIP_PHONE_VERIFICATION"] = previous
+        end
       end
 
       it "sends a Twilio verification and returns success" do
@@ -67,9 +71,11 @@ RSpec.describe "PhoneVerification", type: :request do
       ENV.delete("SKIP_PHONE_VERIFICATION")
       example.run
     ensure
-      previous.nil? ?
-        ENV.delete("SKIP_PHONE_VERIFICATION") :
+      if previous.nil?
+        ENV.delete("SKIP_PHONE_VERIFICATION")
+      else
         ENV["SKIP_PHONE_VERIFICATION"] = previous
+      end
     end
 
     before { session_hash[:phone] = "4105551212" }

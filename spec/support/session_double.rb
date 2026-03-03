@@ -1,7 +1,7 @@
 # spec/support/session_double.rb
 # https://stackoverflow.com/a/76342410/6410635
 
-shared_context "SessionDouble" do
+RSpec.shared_context "SessionDouble" do
   let(:session_hash) { {} }
   let(:cookies_hash) { {} }
 

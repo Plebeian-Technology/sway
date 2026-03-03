@@ -1,0 +1,7 @@
+module Scraper
+    module Congress
+        module House
+            Vote: untyped
+        end
+    end
+end

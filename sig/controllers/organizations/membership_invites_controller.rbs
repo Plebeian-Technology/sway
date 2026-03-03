@@ -1,0 +1,11 @@
+class Organizations::MembershipInvitesController < Organizations::BaseController
+    @invite: untyped
+
+    def create: -> untyped
+
+    private
+
+    def invite_params: -> untyped
+
+    def require_admin!: -> (untyped | nil)
+end

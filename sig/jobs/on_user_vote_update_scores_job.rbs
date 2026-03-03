@@ -1,0 +1,3 @@
+class OnUserVoteUpdateScoresJob < ApplicationJob
+    def perform: (UserVote user_vote) -> nil
+end

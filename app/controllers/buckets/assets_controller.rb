@@ -1,9 +1,7 @@
 # frozen_string_literal: true
-# typed: true
 
 module Buckets
   class AssetsController < ApplicationController
-    extend T::Sig
     include SwayGoogleCloudStorage
 
     before_action :verify_is_sway_admin
@@ -26,7 +24,7 @@ module Buckets
     private
 
     def file_name
-      "#{T.cast(current_sway_locale, SwayLocale).name}/#{buckets_assets_params[:name]}"
+      "#{current_sway_locale.name}/#{buckets_assets_params[:name]}"
     end
 
     # https://stackoverflow.com/a/16804560/6410635

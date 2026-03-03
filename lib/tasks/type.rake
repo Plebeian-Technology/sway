@@ -1,8 +1,6 @@
-# typed: false
-
-desc "Run Sorbet type checking"
+desc "Run RBS and Steep type checking"
 task :type do
-  next if system("bundle exec srb tc")
+  next if system("bundle exec rbs validate") && system("bundle exec steep check")
 
-  abort("Sorbet type checking failed")
+  abort("Type checking failed")
 end

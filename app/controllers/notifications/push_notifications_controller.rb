@@ -1,10 +1,7 @@
 # frozen_string_literal: true
-# typed: true
 
 module Notifications
   class PushNotificationsController < ApplicationController
-    extend T::Sig
-
     before_action :set_subscription
 
     # Allow the user to test a push notification

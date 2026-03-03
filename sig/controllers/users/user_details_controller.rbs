@@ -1,0 +1,14 @@
+module Users
+    class UserDetailsController < ApplicationController
+        def create: -> untyped
+
+        private
+
+        def current_user: -> untyped
+
+        def redirect_path: -> untyped
+
+        # Currently this flow only works on bill path, TODO: Decouple
+        def user_details_params: -> untyped
+    end
+end

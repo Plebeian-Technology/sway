@@ -1,16 +1,11 @@
 # frozen_string_literal: true
-# typed: true
 
 class InfluenceService
-  extend T::Sig
-
-  sig { params(user: User, sway_locale: SwayLocale).void }
   def initialize(user:, sway_locale:)
     @user = user
     @sway_locale = sway_locale
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     count_invites_redeemed = count_invites_where_inviter_is_user
     count_bills_voted_on = count_user_votes_by_locale
@@ -23,7 +18,6 @@ class InfluenceService
 
   private
 
-  sig { returns(Integer) }
   def count_user_votes_by_locale
     UserVote
       .joins(:bill)
@@ -31,7 +25,6 @@ class InfluenceService
       .count
   end
 
-  sig { returns(Integer) }
   def count_invites_where_inviter_is_user
     Invite.where(inviter_id: @user.id).count
   end

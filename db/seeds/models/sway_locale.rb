@@ -1,27 +1,14 @@
-# typed: true
-
 class SeedSwayLocale
-  extend T::Sig
-
-  sig { returns(T::Array[SwayLocale]) }
   def self.run
-    T
-      .let(read_locales, T::Array[T::Hash[String, String]])
-      .map do |json|
-        SeedSwayLocale.new.seed(T.let(json, T::Hash[String, String]))
-      end
+    read_locales.map { |json| SeedSwayLocale.new.seed(json) }
   end
 
   def self.read_locales
-    T.let(
-      JSON.parse(
-        File.read(Rails.root.join("storage", "seeds", "data", "locales.json")),
-      ),
-      T::Array[T::Hash[String, String]],
+    JSON.parse(
+      File.read(Rails.root.join("storage", "seeds", "data", "locales.json")),
     )
   end
 
-  sig { params(locale_data: T::Hash[String, String]).returns(SwayLocale) }
   def seed(locale_data)
     s =
       SwayLocale.find_or_initialize_by(

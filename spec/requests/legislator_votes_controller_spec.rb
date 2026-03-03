@@ -4,25 +4,22 @@ RSpec.describe "LegislatorVotesController", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
-  def get_params(
-    sway_locale,
-    partial_bill: {},
-    partial_sponsor: {},
-    partial_vote: {}
-  )
-    legislator = create(:legislator)
-    bill =
-      create(
-        :bill,
-        sway_locale:,
-        summary:
-          "Summary from spec - spec/requests/legislator_votes_controller_spec.rb",
-      )
+  let(:build_legislator_vote_params) do
+    lambda do |sway_locale|
+      legislator = create(:legislator)
+      bill =
+        create(
+          :bill,
+          sway_locale:,
+          summary:
+            "Summary from spec - spec/requests/legislator_votes_controller_spec.rb",
+        )
 
-    {
-      bill_id: bill.id,
-      legislator_votes: [{ support: "FOR", legislator_id: legislator.id }],
-    }
+      {
+        bill_id: bill.id,
+        legislator_votes: [{ support: "FOR", legislator_id: legislator.id }],
+      }
+    end
   end
 
   describe "POST /legislator_votes" do
@@ -31,17 +28,18 @@ RSpec.describe "LegislatorVotesController", type: :request do
 
       count_legislator_votes = LegislatorVote.count
 
-      params = get_params(sway_locale)
+      params = build_legislator_vote_params.call(sway_locale)
       post legislator_votes_path, params: params
 
       expect(response).to have_http_status(302)
 
       expect(LegislatorVote.count).to eql(count_legislator_votes + 1)
-      expect(LegislatorVote.last.bill_id).to eql(params[:bill_id])
-      expect(LegislatorVote.last.legislator_id).to eql(
+      latest_vote = LegislatorVote.last!
+      expect(latest_vote.bill_id).to eql(params[:bill_id])
+      expect(latest_vote.legislator_id).to eql(
         params[:legislator_votes].first[:legislator_id],
       )
-      expect(LegislatorVote.last.support).to eql("FOR")
+      expect(latest_vote.support).to eql("FOR")
     end
 
     # def spec_create_failure(key)

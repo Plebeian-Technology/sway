@@ -1,5 +1,3 @@
-# typed: true
-
 # == Schema Information
 #
 # Table name: organization_bill_position_changes
@@ -30,8 +28,6 @@
 #  updated_by_id                  (updated_by_id => users.id)
 #
 class OrganizationBillPositionChange < ApplicationRecord
-  extend T::Sig
-
   belongs_to :updated_by, class_name: "User"
   belongs_to :approved_by, class_name: "User", optional: true
 
@@ -54,26 +50,22 @@ class OrganizationBillPositionChange < ApplicationRecord
 
   # before save, if was pending and approver is not nil, set to approved
 
-  sig { returns(T.nilable(User)) }
   def approver
-    T.unsafe(self).approved_by
+    approved_by
   end
 
-  sig { returns(User) }
   def updater
-    T.unsafe(self).updated_by
+    updated_by
   end
 
-  sig { returns(T.nilable(OrganizationBillPosition)) }
   def position
-    T.unsafe(self).organization_bill_position
+    organization_bill_position
   end
 
   def approved?
     !approved_by_id.nil?
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |change|
       change.id id

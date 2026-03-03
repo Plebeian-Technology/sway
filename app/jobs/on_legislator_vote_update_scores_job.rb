@@ -1,17 +1,7 @@
-# typed: strict
-
 class OnLegislatorVoteUpdateScoresJob < ApplicationJob
-  extend T::Sig
-
   queue_as :background
 
   # NOTE: newly_saved_legislator_vote.support should ALWAYS != previous_support
-  sig do
-    params(
-      newly_saved_legislator_vote: LegislatorVote,
-      previous_support: T.nilable(String),
-    ).void
-  end
   def perform(newly_saved_legislator_vote, previous_support)
     if newly_saved_legislator_vote.support == previous_support
       Rails.logger.warn(
@@ -45,13 +35,6 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     )
   end
 
-  sig do
-    params(
-      legislator_vote: LegislatorVote,
-      users: T::Array[User],
-      previous_support: T.nilable(String),
-    ).void
-  end
   def update_legislator_district_score(legislator_vote, users, previous_support)
     legislator_district_score =
       LegislatorDistrictScore.find_or_create_by!(
@@ -146,13 +129,6 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     legislator_district_score.save!
   end
 
-  sig do
-    params(
-      legislator_vote: LegislatorVote,
-      users: T::Array[User],
-      previous_support: T.nilable(String),
-    ).void
-  end
   def update_user_legislator_scores(legislator_vote, users, previous_support)
     bill = legislator_vote.bill
 
@@ -176,14 +152,16 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
       user_vote = user_votes_by_user_id[uls.user_legislator.user_id]
       next if user_vote.nil?
 
-      new_count_agreed = uls.count_agreed
-      new_count_disagreed = uls.count_disagreed
-      new_count_legislator_abstained = uls.count_legislator_abstained
-      new_count_no_legislator_vote = uls.count_no_legislator_vote
+      new_count_agreed = uls.count_agreed.to_i
+      new_count_disagreed = uls.count_disagreed.to_i
+      new_count_legislator_abstained = uls.count_legislator_abstained.to_i
+      new_count_no_legislator_vote = uls.count_no_legislator_vote.to_i
 
       if previous_support.blank?
-        new_count_no_legislator_vote -=
-          1 if uls.count_no_legislator_vote.positive?
+        new_count_no_legislator_vote -= 1 if uls
+          .count_no_legislator_vote
+          .to_i
+          .positive?
 
         if legislator_vote.support == user_vote.support
           new_count_agreed += 1

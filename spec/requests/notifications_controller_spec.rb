@@ -8,7 +8,7 @@ RSpec.describe "NotificationsController", type: :request do
 
   describe "PATCH /notifications/settings" do
     it "updates sms_notifications_enabled" do
-      sway_locale, user = setup
+      _, user = setup
 
       patch settings_notifications_path,
             params: {
@@ -22,7 +22,7 @@ RSpec.describe "NotificationsController", type: :request do
     end
 
     it "disables sms_notifications_enabled" do
-      sway_locale, user = setup
+      _, user = setup
       user.update(sms_notifications_enabled: true)
 
       patch settings_notifications_path,

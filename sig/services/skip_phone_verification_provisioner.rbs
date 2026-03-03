@@ -1,0 +1,3 @@
+class SkipPhoneVerificationProvisioner
+    def self.call: (phone: untyped) -> untyped
+end

@@ -1,0 +1,6 @@
+module Users
+    module Webauthn
+        module RegistrationHelper
+        end
+    end
+end

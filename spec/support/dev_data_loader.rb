@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 require "open3"
@@ -45,8 +44,10 @@ shared_context "DevDataLoader" do
   end
 
   def load_dev_seed_sql!(sql)
-    statements_by_table = Hash.new { |hash, key| hash[key] = [] }
+    statements_by_table = {}
+    # @type var statements_by_table: Hash[String, Array[String]]
     remaining_statements = []
+    # @type var remaining_statements: Array[String]
 
     sql.each_line do |line|
       statement = line.strip
@@ -59,12 +60,20 @@ shared_context "DevDataLoader" do
         next
       end
 
-      statements_by_table[table_name] << statement
+      statements = statements_by_table[table_name]
+      if statements
+        statements << statement
+      else
+        statements_by_table[table_name] = [statement]
+      end
     end
 
     ordered_statements = []
+    # @type var ordered_statements: Array[String]
     dev_seed_load_order.each do |table_name|
-      ordered_statements.concat(statements_by_table.delete(table_name) || [])
+      ordered_statements.concat(
+        statements_by_table.delete(table_name) || remaining_statements,
+      )
     end
     statements_by_table.each_value do |statements|
       ordered_statements.concat(statements)

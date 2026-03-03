@@ -1,37 +1,23 @@
 # frozen_string_literal: true
-# typed: strict
 
 module Scoreable
-  extend T::Sig
-
-  sig { params(user_vote: UserVote).void }
   def update_supportable_score(user_vote)
-    T.cast(self, Supportable).for =
-      (T.cast(self, Supportable).for + 1) if user_vote.for?
-    T.cast(self, Supportable).against =
-      (T.cast(self, Supportable).against + 1) if user_vote.against?
+    self.for = self.for.to_i + 1 if user_vote.for?
+    self.against = against.to_i + 1 if user_vote.against?
   end
 
-  sig do
-    params(user_vote: UserVote, legislator_vote: T.nilable(LegislatorVote)).void
-  end
   def update_agreeable_score(user_vote, legislator_vote)
     if legislator_vote.nil?
-      T.cast(self, Agreeable).count_no_legislator_vote =
-        T.cast(self, Agreeable).count_no_legislator_vote + 1
+      self.count_no_legislator_vote = count_no_legislator_vote.to_i + 1
     elsif (user_vote.for? && legislator_vote.for?) ||
           (user_vote.against? && legislator_vote.against?)
-      T.cast(self, Agreeable).count_agreed =
-        T.cast(self, Agreeable).count_agreed + 1
+      self.count_agreed = count_agreed.to_i + 1
     else
-      T.cast(self, Agreeable).count_disagreed =
-        T.cast(self, Agreeable).count_disagreed + 1
+      self.count_disagreed = count_disagreed.to_i + 1
 
       # Abstained, Sway users cannot abstain
-      if legislator_vote.abstain?
-        T.cast(self, Agreeable).count_legislator_abstained =
-          T.cast(self, Agreeable).count_legislator_abstained + 1
-      end
+      self.count_legislator_abstained =
+        count_legislator_abstained.to_i + 1 if legislator_vote.abstain?
     end
   end
 end

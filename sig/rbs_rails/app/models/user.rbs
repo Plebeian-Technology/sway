@@ -1,0 +1,1028 @@
+class ::User < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::User, ::User::ActiveRecord_Relation, ::Integer]
+
+    module ::User::GeneratedAttributeMethods
+        def id: -> ::Integer
+
+        def id=: (::Integer) -> ::Integer
+
+        def id?: -> bool
+
+        def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_change: -> [::Integer?, ::Integer?]
+
+        def id_will_change!: -> void
+
+        def id_was: -> ::Integer?
+
+        def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_previous_change: -> ::Array[::Integer?]?
+
+        def id_previously_was: -> ::Integer?
+
+        def id_before_last_save: -> ::Integer?
+
+        def id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def id_in_database: -> ::Integer?
+
+        def saved_change_to_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_id?: -> bool
+
+        def will_save_change_to_id?: -> bool
+
+        def restore_id!: -> void
+
+        def clear_id_change: -> void
+
+        def id_before_type_cast: -> ::Integer
+
+        def id_for_database: -> ::Integer
+
+        def created_at: -> ::ActiveSupport::TimeWithZone
+
+        def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def created_at?: -> bool
+
+        def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def created_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def created_at_will_change!: -> void
+
+        def created_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def created_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_created_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_created_at?: -> bool
+
+        def will_save_change_to_created_at?: -> bool
+
+        def restore_created_at!: -> void
+
+        def clear_created_at_change: -> void
+
+        def created_at_before_type_cast: -> ::Time
+
+        def created_at_for_database: -> ::Time
+
+        def current_sign_in_at: -> ::ActiveSupport::TimeWithZone?
+
+        def current_sign_in_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+        def current_sign_in_at?: -> bool
+
+        def current_sign_in_at_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def current_sign_in_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def current_sign_in_at_will_change!: -> void
+
+        def current_sign_in_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def current_sign_in_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def current_sign_in_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def current_sign_in_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def current_sign_in_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def current_sign_in_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def current_sign_in_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_current_sign_in_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_current_sign_in_at?: -> bool
+
+        def will_save_change_to_current_sign_in_at?: -> bool
+
+        def restore_current_sign_in_at!: -> void
+
+        def clear_current_sign_in_at_change: -> void
+
+        def current_sign_in_at_before_type_cast: -> ::Time?
+
+        def current_sign_in_at_for_database: -> ::Time?
+
+        def current_sign_in_ip: -> ::String?
+
+        def current_sign_in_ip=: (::String?) -> ::String?
+
+        def current_sign_in_ip?: -> bool
+
+        def current_sign_in_ip_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def current_sign_in_ip_change: -> [::String?, ::String?]
+
+        def current_sign_in_ip_will_change!: -> void
+
+        def current_sign_in_ip_was: -> ::String?
+
+        def current_sign_in_ip_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def current_sign_in_ip_previous_change: -> ::Array[::String?]?
+
+        def current_sign_in_ip_previously_was: -> ::String?
+
+        def current_sign_in_ip_before_last_save: -> ::String?
+
+        def current_sign_in_ip_change_to_be_saved: -> ::Array[::String?]?
+
+        def current_sign_in_ip_in_database: -> ::String?
+
+        def saved_change_to_current_sign_in_ip: -> ::Array[::String?]?
+
+        def saved_change_to_current_sign_in_ip?: -> bool
+
+        def will_save_change_to_current_sign_in_ip?: -> bool
+
+        def restore_current_sign_in_ip!: -> void
+
+        def clear_current_sign_in_ip_change: -> void
+
+        def current_sign_in_ip_before_type_cast: -> ::String?
+
+        def current_sign_in_ip_for_database: -> ::String?
+
+        def email: -> ::String?
+
+        def email=: (::String?) -> ::String?
+
+        def email?: -> bool
+
+        def email_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def email_change: -> [::String?, ::String?]
+
+        def email_will_change!: -> void
+
+        def email_was: -> ::String?
+
+        def email_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def email_previous_change: -> ::Array[::String?]?
+
+        def email_previously_was: -> ::String?
+
+        def email_before_last_save: -> ::String?
+
+        def email_change_to_be_saved: -> ::Array[::String?]?
+
+        def email_in_database: -> ::String?
+
+        def saved_change_to_email: -> ::Array[::String?]?
+
+        def saved_change_to_email?: -> bool
+
+        def will_save_change_to_email?: -> bool
+
+        def restore_email!: -> void
+
+        def clear_email_change: -> void
+
+        def email_before_type_cast: -> ::String?
+
+        def email_for_database: -> ::String?
+
+        def full_name: -> ::String?
+
+        def full_name=: (::String?) -> ::String?
+
+        def full_name?: -> bool
+
+        def full_name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def full_name_change: -> [::String?, ::String?]
+
+        def full_name_will_change!: -> void
+
+        def full_name_was: -> ::String?
+
+        def full_name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def full_name_previous_change: -> ::Array[::String?]?
+
+        def full_name_previously_was: -> ::String?
+
+        def full_name_before_last_save: -> ::String?
+
+        def full_name_change_to_be_saved: -> ::Array[::String?]?
+
+        def full_name_in_database: -> ::String?
+
+        def saved_change_to_full_name: -> ::Array[::String?]?
+
+        def saved_change_to_full_name?: -> bool
+
+        def will_save_change_to_full_name?: -> bool
+
+        def restore_full_name!: -> void
+
+        def clear_full_name_change: -> void
+
+        def full_name_before_type_cast: -> ::String?
+
+        def full_name_for_database: -> ::String?
+
+        def is_admin: -> bool?
+
+        def is_admin=: (bool?) -> bool?
+
+        def is_admin?: -> bool
+
+        def is_admin_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_admin_change: -> [bool?, bool?]
+
+        def is_admin_will_change!: -> void
+
+        def is_admin_was: -> bool?
+
+        def is_admin_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_admin_previous_change: -> ::Array[bool?]?
+
+        def is_admin_previously_was: -> bool?
+
+        def is_admin_before_last_save: -> bool?
+
+        def is_admin_change_to_be_saved: -> ::Array[bool?]?
+
+        def is_admin_in_database: -> bool?
+
+        def saved_change_to_is_admin: -> ::Array[bool?]?
+
+        def saved_change_to_is_admin?: -> bool
+
+        def will_save_change_to_is_admin?: -> bool
+
+        def restore_is_admin!: -> void
+
+        def clear_is_admin_change: -> void
+
+        def is_admin_before_type_cast: -> bool?
+
+        def is_admin_for_database: -> bool?
+
+        def is_email_verified: -> bool?
+
+        def is_email_verified=: (bool?) -> bool?
+
+        def is_email_verified?: -> bool
+
+        def is_email_verified_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_email_verified_change: -> [bool?, bool?]
+
+        def is_email_verified_will_change!: -> void
+
+        def is_email_verified_was: -> bool?
+
+        def is_email_verified_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_email_verified_previous_change: -> ::Array[bool?]?
+
+        def is_email_verified_previously_was: -> bool?
+
+        def is_email_verified_before_last_save: -> bool?
+
+        def is_email_verified_change_to_be_saved: -> ::Array[bool?]?
+
+        def is_email_verified_in_database: -> bool?
+
+        def saved_change_to_is_email_verified: -> ::Array[bool?]?
+
+        def saved_change_to_is_email_verified?: -> bool
+
+        def will_save_change_to_is_email_verified?: -> bool
+
+        def restore_is_email_verified!: -> void
+
+        def clear_is_email_verified_change: -> void
+
+        def is_email_verified_before_type_cast: -> bool?
+
+        def is_email_verified_for_database: -> bool?
+
+        def is_phone_verified: -> bool?
+
+        def is_phone_verified=: (bool?) -> bool?
+
+        def is_phone_verified?: -> bool
+
+        def is_phone_verified_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_phone_verified_change: -> [bool?, bool?]
+
+        def is_phone_verified_will_change!: -> void
+
+        def is_phone_verified_was: -> bool?
+
+        def is_phone_verified_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_phone_verified_previous_change: -> ::Array[bool?]?
+
+        def is_phone_verified_previously_was: -> bool?
+
+        def is_phone_verified_before_last_save: -> bool?
+
+        def is_phone_verified_change_to_be_saved: -> ::Array[bool?]?
+
+        def is_phone_verified_in_database: -> bool?
+
+        def saved_change_to_is_phone_verified: -> ::Array[bool?]?
+
+        def saved_change_to_is_phone_verified?: -> bool
+
+        def will_save_change_to_is_phone_verified?: -> bool
+
+        def restore_is_phone_verified!: -> void
+
+        def clear_is_phone_verified_change: -> void
+
+        def is_phone_verified_before_type_cast: -> bool?
+
+        def is_phone_verified_for_database: -> bool?
+
+        def is_registered_to_vote: -> bool?
+
+        def is_registered_to_vote=: (bool?) -> bool?
+
+        def is_registered_to_vote?: -> bool
+
+        def is_registered_to_vote_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_registered_to_vote_change: -> [bool?, bool?]
+
+        def is_registered_to_vote_will_change!: -> void
+
+        def is_registered_to_vote_was: -> bool?
+
+        def is_registered_to_vote_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_registered_to_vote_previous_change: -> ::Array[bool?]?
+
+        def is_registered_to_vote_previously_was: -> bool?
+
+        def is_registered_to_vote_before_last_save: -> bool?
+
+        def is_registered_to_vote_change_to_be_saved: -> ::Array[bool?]?
+
+        def is_registered_to_vote_in_database: -> bool?
+
+        def saved_change_to_is_registered_to_vote: -> ::Array[bool?]?
+
+        def saved_change_to_is_registered_to_vote?: -> bool
+
+        def will_save_change_to_is_registered_to_vote?: -> bool
+
+        def restore_is_registered_to_vote!: -> void
+
+        def clear_is_registered_to_vote_change: -> void
+
+        def is_registered_to_vote_before_type_cast: -> bool?
+
+        def is_registered_to_vote_for_database: -> bool?
+
+        def is_registration_complete: -> bool?
+
+        def is_registration_complete=: (bool?) -> bool?
+
+        def is_registration_complete?: -> bool
+
+        def is_registration_complete_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_registration_complete_change: -> [bool?, bool?]
+
+        def is_registration_complete_will_change!: -> void
+
+        def is_registration_complete_was: -> bool?
+
+        def is_registration_complete_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def is_registration_complete_previous_change: -> ::Array[bool?]?
+
+        def is_registration_complete_previously_was: -> bool?
+
+        def is_registration_complete_before_last_save: -> bool?
+
+        def is_registration_complete_change_to_be_saved: -> ::Array[bool?]?
+
+        def is_registration_complete_in_database: -> bool?
+
+        def saved_change_to_is_registration_complete: -> ::Array[bool?]?
+
+        def saved_change_to_is_registration_complete?: -> bool
+
+        def will_save_change_to_is_registration_complete?: -> bool
+
+        def restore_is_registration_complete!: -> void
+
+        def clear_is_registration_complete_change: -> void
+
+        def is_registration_complete_before_type_cast: -> bool?
+
+        def is_registration_complete_for_database: -> bool?
+
+        def last_sign_in_at: -> ::ActiveSupport::TimeWithZone?
+
+        def last_sign_in_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+        def last_sign_in_at?: -> bool
+
+        def last_sign_in_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def last_sign_in_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def last_sign_in_at_will_change!: -> void
+
+        def last_sign_in_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def last_sign_in_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def last_sign_in_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def last_sign_in_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def last_sign_in_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def last_sign_in_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def last_sign_in_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_last_sign_in_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_last_sign_in_at?: -> bool
+
+        def will_save_change_to_last_sign_in_at?: -> bool
+
+        def restore_last_sign_in_at!: -> void
+
+        def clear_last_sign_in_at_change: -> void
+
+        def last_sign_in_at_before_type_cast: -> ::Time?
+
+        def last_sign_in_at_for_database: -> ::Time?
+
+        def last_sign_in_ip: -> ::String?
+
+        def last_sign_in_ip=: (::String?) -> ::String?
+
+        def last_sign_in_ip?: -> bool
+
+        def last_sign_in_ip_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def last_sign_in_ip_change: -> [::String?, ::String?]
+
+        def last_sign_in_ip_will_change!: -> void
+
+        def last_sign_in_ip_was: -> ::String?
+
+        def last_sign_in_ip_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def last_sign_in_ip_previous_change: -> ::Array[::String?]?
+
+        def last_sign_in_ip_previously_was: -> ::String?
+
+        def last_sign_in_ip_before_last_save: -> ::String?
+
+        def last_sign_in_ip_change_to_be_saved: -> ::Array[::String?]?
+
+        def last_sign_in_ip_in_database: -> ::String?
+
+        def saved_change_to_last_sign_in_ip: -> ::Array[::String?]?
+
+        def saved_change_to_last_sign_in_ip?: -> bool
+
+        def will_save_change_to_last_sign_in_ip?: -> bool
+
+        def restore_last_sign_in_ip!: -> void
+
+        def clear_last_sign_in_ip_change: -> void
+
+        def last_sign_in_ip_before_type_cast: -> ::String?
+
+        def last_sign_in_ip_for_database: -> ::String?
+
+        def phone: -> ::String?
+
+        def phone=: (::String?) -> ::String?
+
+        def phone?: -> bool
+
+        def phone_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def phone_change: -> [::String?, ::String?]
+
+        def phone_will_change!: -> void
+
+        def phone_was: -> ::String?
+
+        def phone_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def phone_previous_change: -> ::Array[::String?]?
+
+        def phone_previously_was: -> ::String?
+
+        def phone_before_last_save: -> ::String?
+
+        def phone_change_to_be_saved: -> ::Array[::String?]?
+
+        def phone_in_database: -> ::String?
+
+        def saved_change_to_phone: -> ::Array[::String?]?
+
+        def saved_change_to_phone?: -> bool
+
+        def will_save_change_to_phone?: -> bool
+
+        def restore_phone!: -> void
+
+        def clear_phone_change: -> void
+
+        def phone_before_type_cast: -> ::String?
+
+        def phone_for_database: -> ::String?
+
+        def sign_in_count: -> ::Integer
+
+        def sign_in_count=: (::Integer) -> ::Integer
+
+        def sign_in_count?: -> bool
+
+        def sign_in_count_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def sign_in_count_change: -> [::Integer?, ::Integer?]
+
+        def sign_in_count_will_change!: -> void
+
+        def sign_in_count_was: -> ::Integer?
+
+        def sign_in_count_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def sign_in_count_previous_change: -> ::Array[::Integer?]?
+
+        def sign_in_count_previously_was: -> ::Integer?
+
+        def sign_in_count_before_last_save: -> ::Integer?
+
+        def sign_in_count_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def sign_in_count_in_database: -> ::Integer?
+
+        def saved_change_to_sign_in_count: -> ::Array[::Integer?]?
+
+        def saved_change_to_sign_in_count?: -> bool
+
+        def will_save_change_to_sign_in_count?: -> bool
+
+        def restore_sign_in_count!: -> void
+
+        def clear_sign_in_count_change: -> void
+
+        def sign_in_count_before_type_cast: -> ::Integer
+
+        def sign_in_count_for_database: -> ::Integer
+
+        def updated_at: -> ::ActiveSupport::TimeWithZone
+
+        def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def updated_at?: -> bool
+
+        def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def updated_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def updated_at_will_change!: -> void
+
+        def updated_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def updated_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_updated_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_updated_at?: -> bool
+
+        def will_save_change_to_updated_at?: -> bool
+
+        def restore_updated_at!: -> void
+
+        def clear_updated_at_change: -> void
+
+        def updated_at_before_type_cast: -> ::Time
+
+        def updated_at_for_database: -> ::Time
+
+        def webauthn_id: -> ::String?
+
+        def webauthn_id=: (::String?) -> ::String?
+
+        def webauthn_id?: -> bool
+
+        def webauthn_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def webauthn_id_change: -> [::String?, ::String?]
+
+        def webauthn_id_will_change!: -> void
+
+        def webauthn_id_was: -> ::String?
+
+        def webauthn_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def webauthn_id_previous_change: -> ::Array[::String?]?
+
+        def webauthn_id_previously_was: -> ::String?
+
+        def webauthn_id_before_last_save: -> ::String?
+
+        def webauthn_id_change_to_be_saved: -> ::Array[::String?]?
+
+        def webauthn_id_in_database: -> ::String?
+
+        def saved_change_to_webauthn_id: -> ::Array[::String?]?
+
+        def saved_change_to_webauthn_id?: -> bool
+
+        def will_save_change_to_webauthn_id?: -> bool
+
+        def restore_webauthn_id!: -> void
+
+        def clear_webauthn_id_change: -> void
+
+        def webauthn_id_before_type_cast: -> ::String?
+
+        def webauthn_id_for_database: -> ::String?
+
+        def sms_notifications_enabled: -> bool?
+
+        def sms_notifications_enabled=: (bool?) -> bool?
+
+        def sms_notifications_enabled?: -> bool
+
+        def sms_notifications_enabled_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def sms_notifications_enabled_change: -> [bool?, bool?]
+
+        def sms_notifications_enabled_will_change!: -> void
+
+        def sms_notifications_enabled_was: -> bool?
+
+        def sms_notifications_enabled_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def sms_notifications_enabled_previous_change: -> ::Array[bool?]?
+
+        def sms_notifications_enabled_previously_was: -> bool?
+
+        def sms_notifications_enabled_before_last_save: -> bool?
+
+        def sms_notifications_enabled_change_to_be_saved: -> ::Array[bool?]?
+
+        def sms_notifications_enabled_in_database: -> bool?
+
+        def saved_change_to_sms_notifications_enabled: -> ::Array[bool?]?
+
+        def saved_change_to_sms_notifications_enabled?: -> bool
+
+        def will_save_change_to_sms_notifications_enabled?: -> bool
+
+        def restore_sms_notifications_enabled!: -> void
+
+        def clear_sms_notifications_enabled_change: -> void
+
+        def sms_notifications_enabled_before_type_cast: -> bool?
+
+        def sms_notifications_enabled_for_database: -> bool?
+
+        def registration_status: -> ::String?
+
+        def registration_status=: (::String?) -> ::String?
+
+        def registration_status?: -> bool
+
+        def registration_status_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def registration_status_change: -> [::String?, ::String?]
+
+        def registration_status_will_change!: -> void
+
+        def registration_status_was: -> ::String?
+
+        def registration_status_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def registration_status_previous_change: -> ::Array[::String?]?
+
+        def registration_status_previously_was: -> ::String?
+
+        def registration_status_before_last_save: -> ::String?
+
+        def registration_status_change_to_be_saved: -> ::Array[::String?]?
+
+        def registration_status_in_database: -> ::String?
+
+        def saved_change_to_registration_status: -> ::Array[::String?]?
+
+        def saved_change_to_registration_status?: -> bool
+
+        def will_save_change_to_registration_status?: -> bool
+
+        def restore_registration_status!: -> void
+
+        def clear_registration_status_change: -> void
+
+        def registration_status_before_type_cast: -> ::String?
+
+        def registration_status_for_database: -> ::String?
+    end
+    include ::User::GeneratedAttributeMethods
+    module ::User::GeneratedAliasAttributeMethods
+        include ::User::GeneratedAttributeMethods
+
+        alias id_value id
+
+        alias id_value= id=
+
+        alias id_value? id?
+
+        alias id_value_changed? id_changed?
+
+        alias id_value_change id_change
+
+        alias id_value_will_change! id_will_change!
+
+        alias id_value_was id_was
+
+        alias id_value_previously_changed? id_previously_changed?
+
+        alias id_value_previous_change id_previous_change
+
+        alias id_value_previously_was id_previously_was
+
+        alias id_value_before_last_save id_before_last_save
+
+        alias id_value_change_to_be_saved id_change_to_be_saved
+
+        alias id_value_in_database id_in_database
+
+        alias saved_change_to_id_value saved_change_to_id
+
+        alias saved_change_to_id_value? saved_change_to_id?
+
+        alias will_save_change_to_id_value? will_save_change_to_id?
+
+        alias restore_id_value! restore_id!
+
+        alias clear_id_value_change clear_id_change
+
+        alias id_value_before_type_cast id_before_type_cast
+
+        alias id_value_for_database id_for_database
+    end
+    include ::User::GeneratedAliasAttributeMethods
+    def user_districts: -> ::UserDistrict::ActiveRecord_Associations_CollectionProxy
+    def user_districts=: (
+        ::UserDistrict::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDistrict]
+    ) -> (::UserDistrict::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDistrict])
+    def user_district_ids: -> ::Array[::Integer]
+    def user_district_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def api_keys: -> ::ApiKey::ActiveRecord_Associations_CollectionProxy
+    def api_keys=: (
+        ::ApiKey::ActiveRecord_Associations_CollectionProxy | ::Array[::ApiKey]
+    ) -> (::ApiKey::ActiveRecord_Associations_CollectionProxy | ::Array[::ApiKey])
+    def api_key_ids: -> ::Array[::Integer]
+    def api_key_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def user_organization_memberships: -> ::UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy
+    def user_organization_memberships=: (
+        ::UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy | ::Array[::UserOrganizationMembership]
+    ) -> (::UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy | ::Array[::UserOrganizationMembership])
+    def user_organization_membership_ids: -> ::Array[::Integer]
+    def user_organization_membership_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def organizations: -> ::Organization::ActiveRecord_Associations_CollectionProxy
+    def organizations=: (
+        ::Organization::ActiveRecord_Associations_CollectionProxy | ::Array[::Organization]
+    ) -> (::Organization::ActiveRecord_Associations_CollectionProxy | ::Array[::Organization])
+    def organization_ids: -> ::Array[::Integer]
+    def organization_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def push_notification_subscriptions: -> ::PushNotificationSubscription::ActiveRecord_Associations_CollectionProxy
+    def push_notification_subscriptions=: (
+        ::PushNotificationSubscription::ActiveRecord_Associations_CollectionProxy | ::Array[::PushNotificationSubscription]
+    ) -> (::PushNotificationSubscription::ActiveRecord_Associations_CollectionProxy
+    | ::Array[::PushNotificationSubscription])
+    def push_notification_subscription_ids: -> ::Array[::Integer]
+    def push_notification_subscription_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def passkeys: -> ::Passkey::ActiveRecord_Associations_CollectionProxy
+    def passkeys=: (
+        ::Passkey::ActiveRecord_Associations_CollectionProxy | ::Array[::Passkey]
+    ) -> (::Passkey::ActiveRecord_Associations_CollectionProxy | ::Array[::Passkey])
+    def passkey_ids: -> ::Array[::Integer]
+    def passkey_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def user_legislators: -> ::UserLegislator::ActiveRecord_Associations_CollectionProxy
+    def user_legislators=: (
+        ::UserLegislator::ActiveRecord_Associations_CollectionProxy | ::Array[::UserLegislator]
+    ) -> (::UserLegislator::ActiveRecord_Associations_CollectionProxy | ::Array[::UserLegislator])
+    def user_legislator_ids: -> ::Array[::Integer]
+    def user_legislator_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def user_votes: -> ::UserVote::ActiveRecord_Associations_CollectionProxy
+    def user_votes=: (
+        ::UserVote::ActiveRecord_Associations_CollectionProxy | ::Array[::UserVote]
+    ) -> (::UserVote::ActiveRecord_Associations_CollectionProxy | ::Array[::UserVote])
+    def user_vote_ids: -> ::Array[::Integer]
+    def user_vote_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def user_bill_reminders: -> ::UserBillReminder::ActiveRecord_Associations_CollectionProxy
+    def user_bill_reminders=: (
+        ::UserBillReminder::ActiveRecord_Associations_CollectionProxy | ::Array[::UserBillReminder]
+    ) -> (::UserBillReminder::ActiveRecord_Associations_CollectionProxy | ::Array[::UserBillReminder])
+    def user_bill_reminder_ids: -> ::Array[::Integer]
+    def user_bill_reminder_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+    def user_address: -> ::UserAddress?
+    def user_address=: (::UserAddress?) -> ::UserAddress?
+    def build_user_address: (?untyped) -> ::UserAddress
+    def create_user_address: (?untyped) -> ::UserAddress
+    def create_user_address!: (?untyped) -> ::UserAddress
+    def reload_user_address: -> ::UserAddress?
+    def address: -> ::Address?
+    def address=: (::Address?) -> ::Address?
+    def build_address: (?untyped) -> ::Address
+    def create_address: (?untyped) -> ::Address
+    def create_address!: (?untyped) -> ::Address
+    def reload_address: -> ::Address?
+    def user_inviter: -> ::UserInviter?
+    def user_inviter=: (::UserInviter?) -> ::UserInviter?
+    def build_user_inviter: (?untyped) -> ::UserInviter
+    def create_user_inviter: (?untyped) -> ::UserInviter
+    def create_user_inviter!: (?untyped) -> ::UserInviter
+    def reload_user_inviter: -> ::UserInviter?
+    def api_key: -> ::ApiKey?
+    def api_key=: (::ApiKey?) -> ::ApiKey?
+    def build_api_key: (?untyped) -> ::ApiKey
+    def create_api_key: (?untyped) -> ::ApiKey
+    def create_api_key!: (?untyped) -> ::ApiKey
+    def reload_api_key: -> ::ApiKey?
+    def refresh_token: -> ::RefreshToken?
+    def refresh_token=: (::RefreshToken?) -> ::RefreshToken?
+    def build_refresh_token: (?untyped) -> ::RefreshToken
+    def create_refresh_token: (?untyped) -> ::RefreshToken
+    def create_refresh_token!: (?untyped) -> ::RefreshToken
+    def reload_refresh_token: -> ::RefreshToken?
+
+    module ::User::GeneratedAssociationMethods
+    end
+    include ::User::GeneratedAssociationMethods
+
+    module ::User::GeneratedRelationMethods
+    end
+
+    class ::User::ActiveRecord_Relation < ::ActiveRecord::Relation
+        include ::Enumerable[::User]
+        include ::User::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::User, ::Integer]
+    end
+
+    class ::User::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+        include ::Enumerable[::User]
+        include ::User::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::User, ::Integer]
+
+        def build:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::User
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::User]
+        def create:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::User
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::User]
+        def create!:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::User
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::User]
+        def reload: -> ::Array[::User]
+
+        def replace: (::Array[::User]) -> void
+        def delete: (*::User | ::Integer) -> ::Array[::User]
+        def destroy: (*::User | ::Integer) -> ::Array[::User]
+        def <<: (*::User | ::Array[::User]) -> self
+        def `prepend`: (*::User | ::Array[::User]) -> self
+    end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+
+class ::UserDistrict < ::ApplicationRecord
+end
+
+class ::UserDistrict::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::ApiKey < ::ApplicationRecord
+end
+
+class ::ApiKey::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::UserOrganizationMembership < ::ApplicationRecord
+end
+
+class ::UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::Organization < ::ApplicationRecord
+end
+
+class ::Organization::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::PushNotificationSubscription < ::ApplicationRecord
+end
+
+class ::PushNotificationSubscription::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::Passkey < ::ApplicationRecord
+end
+
+class ::Passkey::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::UserLegislator < ::ApplicationRecord
+end
+
+class ::UserLegislator::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::UserVote < ::ApplicationRecord
+end
+
+class ::UserVote::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::UserBillReminder < ::ApplicationRecord
+end
+
+class ::UserBillReminder::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+
+class ::UserAddress < ::ApplicationRecord
+end
+
+class ::Address < ::ApplicationRecord
+end
+
+class ::UserInviter < ::ApplicationRecord
+end
+
+class ::RefreshToken < ::ApplicationRecord
+end

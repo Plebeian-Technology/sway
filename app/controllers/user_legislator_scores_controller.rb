@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class UserLegislatorScoresController < ApplicationController
   # GET /user_legislator_scores or /user_legislator_scores.json

@@ -46,3 +46,12 @@ jobs:
             - name: Run tests
               run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
                   bundle exec rspec
+
+            - name: Install RBS collection
+              run: bundle exec rbs collection install
+
+            - name: Validate RBS
+              run: bundle exec rbs validate
+
+            - name: Run Steep
+              run: bundle exec steep check

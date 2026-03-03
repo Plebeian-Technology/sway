@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -23,7 +22,6 @@
 #
 
 class BillScore < ApplicationRecord
-  extend T::Sig
   include Supportable
   include Scoreable
 
@@ -32,19 +30,16 @@ class BillScore < ApplicationRecord
 
   has_many :bill_score_districts, dependent: :destroy
 
-  sig { returns(Bill) }
   def bill
-    T.cast(super, Bill)
+    super
   end
 
-  sig { override.params(user_vote: UserVote).returns(BillScore) }
   def update_score(user_vote)
     update_supportable_score(user_vote)
     save!
     self
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |bs|
       bs.id id
@@ -56,7 +51,6 @@ class BillScore < ApplicationRecord
     end
   end
 
-  sig { params(user: T.nilable(User)).returns(Jbuilder) }
   def to_builder_with_user(user)
     user_districts =
       user&.districts(sway_locale) || [sway_locale.at_large_district].compact

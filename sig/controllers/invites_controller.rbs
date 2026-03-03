@@ -1,0 +1,7 @@
+class InvitesController < ApplicationController
+    def show: -> untyped
+
+    private
+
+    def invite_params: -> untyped
+end

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class Organizations::PositionsController < Organizations::BaseController
   before_action :set_position, only: %i[update destroy]

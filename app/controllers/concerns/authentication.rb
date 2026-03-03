@@ -1,9 +1,7 @@
 # frozen_string_literal: true
-# typed: true
 
 module Authentication
   extend ActiveSupport::Concern
-  extend T::Sig
 
   included do
     def send_phone_verification(session, phone_)
@@ -74,23 +72,18 @@ module Authentication
     def service_sid
       ENV["TWILIO_VERIFY_SERVICE_SID"]
     end
-
-    # sig { params(phone: String).returns(T::Boolean) }
     # def authenticatable(phone)
     #   @user&.phone&.present? && verified?
     # end
 
-    sig { returns(T::Boolean) }
     def verified?
       @user&.is_phone_verified
     end
 
-    sig { returns(T::Boolean) }
     def passkey?
       @user&.passkeys&.size&.> 0
     end
 
-    sig { params(phone: String).returns(T.nilable(User)) }
     def find_by_phone(phone)
       @find_by_phone ||= User.find_by(phone:)
     end

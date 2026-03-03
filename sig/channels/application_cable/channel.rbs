@@ -1,0 +1,6 @@
+module ApplicationCable
+    class Channel < ActionCable::Channel::Base
+        def current_user: -> untyped
+        def stream_from: (untyped broadcasting) -> untyped
+    end
+end

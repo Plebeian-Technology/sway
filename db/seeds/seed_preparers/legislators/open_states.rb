@@ -1,15 +1,10 @@
-# typed: true
-
 require_relative "base"
 
 module SeedPreparers
   module Legislators
     class OpenStates < Base
-      extend T::Sig
-
       attr_reader :json
 
-      sig { returns(District) }
       def district
         if region_code.blank?
           raise SeedErrors::MissingRegionCode,
@@ -29,7 +24,6 @@ module SeedPreparers
         District.find_or_create_by!(name:, sway_locale:)
       end
 
-      sig { returns(T.nilable(Address)) }
       def address
         nil
       end

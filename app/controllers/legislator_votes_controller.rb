@@ -1,14 +1,11 @@
 # frozen_string_literal: true
-# typed: true
 
 class LegislatorVotesController < ApplicationController
   before_action :verify_is_sway_admin, only: %i[create]
   before_action :set_bill, only: %i[show create]
 
   def index
-    render json:
-             current_user&.legislators(T.cast(current_sway_locale, SwayLocale)),
-           status: :ok
+    render json: current_user&.legislators(current_sway_locale), status: :ok
   end
 
   def show

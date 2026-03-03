@@ -1,6 +1,4 @@
-# typed: strict
-
-Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
+Rails.application.routes.draw do
   # https://web.dev/articles/webauthn-related-origin-requests#browser_support
   # Do this here instead of in a file so that "https://sway.vote" does NOT return this info.
   # Only app.sway.vote should return it

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class VotingReminderJob < ApplicationJob
   queue_as :default
@@ -44,23 +43,17 @@ class VotingReminderJob < ApplicationJob
       )
 
       users.find_each do |user|
-        begin
-          SmsNotificationService.send_voting_reminder(user, bill)
-          UserBillReminder.create!(
-            user: user,
-            bill: bill,
-            sent_at: Time.current,
-          )
-          Rails.logger.info(
-            "VotingReminderJob - reminded user_id=#{user.id} bill_id=#{bill.id}",
-          )
-        rescue StandardError => e
-          Rails.logger.error(
-            "VotingReminderJob - failed to remind user_id=#{user.id} bill_id=#{bill.id} error=#{e.class}: #{e.message}",
-          )
-          if Rails.env.development? || Rails.env.test?
-            Rails.logger.debug(e.backtrace)
-          end
+        SmsNotificationService.send_voting_reminder(user, bill)
+        UserBillReminder.create!(user: user, bill: bill, sent_at: Time.current)
+        Rails.logger.info(
+          "VotingReminderJob - reminded user_id=#{user.id} bill_id=#{bill.id}",
+        )
+      rescue StandardError => e
+        Rails.logger.error(
+          "VotingReminderJob - failed to remind user_id=#{user.id} bill_id=#{bill.id} error=#{e.class}: #{e.message}",
+        )
+        if Rails.env.development? || Rails.env.test?
+          Rails.logger.debug(e.backtrace)
         end
       end
     end

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class ExternalAssetMirrorService
   STORAGE_HOST = "storage.googleapis.com"
@@ -24,11 +23,15 @@ class ExternalAssetMirrorService
       return :failed_soft unless attachment.attached?
 
       internal_url = attached_asset_url(attachment)
-      record.update!(url_column => internal_url)
+      attributes = {} #: Hash[Symbol, Object?]
+      attributes[url_column] = internal_url
+      record.update!(attributes)
       :mirrored
     rescue Down::NotFound
       purge_attachment(record, attachment_name)
-      record.update!(url_column => nil)
+      attributes = {} #: Hash[Symbol, Object?]
+      attributes[url_column] = nil
+      record.update!(attributes)
       :cleared_not_found
     rescue StandardError => e
       Rails.logger.warn(
@@ -52,14 +55,16 @@ class ExternalAssetMirrorService
       uri = URI.parse(url)
       host = uri.host.to_s.downcase
 
+      path = uri.path.to_s
+
       host.ends_with?("sway.vote") ||
-        (host == STORAGE_HOST && uri.path.start_with?("/#{ASSETS_BUCKET}/"))
+        (host == STORAGE_HOST && path.start_with?("/#{ASSETS_BUCKET}/"))
     rescue URI::InvalidURIError
       false
     end
 
     def mirror_filename(downloaded_file, source_url)
-      filename = File.basename(URI.parse(source_url).path)
+      filename = File.basename(URI.parse(source_url).path.to_s)
       return filename if filename.present? && filename != "/"
 
       if downloaded_file.respond_to?(:original_filename) &&

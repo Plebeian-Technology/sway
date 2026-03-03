@@ -18,12 +18,12 @@ RSpec.describe "Notifications::PushNotificationSubscriptions", type: :request do
   describe "POST /notifications/push_notification_subscriptions" do
     context "when subscription does not exist" do
       it "creates a new subscription and returns it" do
-        expect {
+        expect do
           post notifications_push_notification_subscriptions_path,
                params: {
                  push_notification_subscription: subscription_params,
                }
-        }.to change(PushNotificationSubscription, :count).by(1)
+        end.to change(PushNotificationSubscription, :count).by(1)
 
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
@@ -44,12 +44,12 @@ RSpec.describe "Notifications::PushNotificationSubscriptions", type: :request do
             subscribed: false,
           )
 
-        expect {
+        expect do
           post notifications_push_notification_subscriptions_path,
                params: {
                  push_notification_subscription: subscription_params,
                }
-        }.not_to change(PushNotificationSubscription, :count)
+        end.not_to change(PushNotificationSubscription, :count)
 
         expect(response).to have_http_status(:ok)
         expect(subscription.reload.subscribed).to be true
@@ -68,12 +68,12 @@ RSpec.describe "Notifications::PushNotificationSubscriptions", type: :request do
             subscribed: true,
           )
 
-        expect {
+        expect do
           post notifications_push_notification_subscriptions_path,
                params: {
                  push_notification_subscription: subscription_params,
                }
-        }.not_to change(PushNotificationSubscription, :count)
+        end.not_to change(PushNotificationSubscription, :count)
 
         expect(response).to have_http_status(:ok)
         expect(subscription.reload.subscribed).to be true
@@ -106,12 +106,12 @@ RSpec.describe "Notifications::PushNotificationSubscriptions", type: :request do
 
     context "when subscription does not exist" do
       it "returns ok and does nothing" do
-        expect {
+        expect do
           post destroy_notifications_push_notification_subscriptions_path,
                params: {
                  push_notification_subscription: subscription_params,
                }
-        }.not_to change(PushNotificationSubscription, :count)
+        end.not_to change(PushNotificationSubscription, :count)
 
         expect(response).to have_http_status(:no_content)
       end

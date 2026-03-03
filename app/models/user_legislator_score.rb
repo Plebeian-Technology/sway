@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: strict
 
 # == Schema Information
 #
@@ -24,25 +23,21 @@
 #  user_legislator_id  (user_legislator_id => user_legislators.id)
 #
 class UserLegislatorScore < ApplicationRecord
-  extend T::Sig
   include Agreeable
   include Scoreable
 
   belongs_to :user_legislator
 
-  sig { returns(UserLegislator) }
   def user_legislator
-    T.cast(super, UserLegislator)
+    super
   end
 
-  sig { params(user_vote: UserVote).returns(UserLegislatorScore) }
   def update_score(user_vote)
     update_agreeable_score(user_vote, legislator_vote(user_vote))
     save!
     self
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |uls|
       # How user compares to Legislator
@@ -55,26 +50,22 @@ class UserLegislatorScore < ApplicationRecord
       uls.count_legislator_abstained count_legislator_abstained
 
       # How User's district compares to Legislator
-      uls.legislator_district_score legislator.legislator_district_score.to_sway_json
+      district_score = legislator.legislator_district_score
+      uls.legislator_district_score district_score&.to_sway_json
     end
   end
 
-  sig { returns(T::Boolean) }
   def empty?
     count_agreed.zero? && count_disagreed.zero? &&
       count_legislator_abstained.zero? && count_no_legislator_vote.zero?
   end
 
-  sig do
-    override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote))
-  end
   def legislator_vote(user_vote)
     legislator.vote(user_vote.bill)
   end
 
   private
 
-  sig { returns(Legislator) }
   def legislator
     user_legislator.legislator
   end

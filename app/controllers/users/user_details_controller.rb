@@ -1,13 +1,11 @@
-# typed: true
-
 module Users
   class UserDetailsController < ApplicationController
-    extend T::Sig
-
     def create
-      unless current_user.update(full_name: user_details_params[:full_name])
-        flash[:error] = "Failed to save your name. Please try again."
-      end
+      flash[
+        :error
+      ] = "Failed to save your name. Please try again." unless current_user.update(
+        full_name: user_details_params[:full_name],
+      )
       redirect_to redirect_path,
                   inertia: {
                     errors: current_user.errors,
@@ -17,9 +15,8 @@ module Users
 
     private
 
-    sig { returns(User) }
     def current_user
-      T.cast(super, User)
+      super
     end
 
     def redirect_path

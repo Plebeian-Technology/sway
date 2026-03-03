@@ -1,0 +1,5 @@
+module Scoreable
+    def update_supportable_score: (UserVote user_vote) -> void
+
+    def update_agreeable_score: (UserVote user_vote, LegislatorVote? legislator_vote) -> void
+end

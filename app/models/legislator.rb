@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -32,9 +31,7 @@
 #  district_id  (district_id => districts.id)
 #
 class Legislator < ApplicationRecord
-  extend T::Sig
-
-  after_create_commit :create_legislator_district_score
+  after_create_commit :create_default_legislator_district_score
   after_commit :enqueue_photo_mirroring, if: :saved_change_to_photo_url?
 
   # use inverse_of to specify relationship
@@ -57,8 +54,6 @@ class Legislator < ApplicationRecord
   }.freeze
 
   class << self
-    extend T::Sig
-    sig { params(party: String).returns(T.nilable(String)) }
     def to_party_name_from_char(party)
       if party.length > 1
         party
@@ -67,34 +62,29 @@ class Legislator < ApplicationRecord
       end
     end
 
-    sig { params(party: String).returns(String) }
     def to_party_char_from_name(party)
       if party.blank? || party.length <= 1
         party
       else
-        T.cast(party[0], String).upcase
+        party[0]&.upcase || party
       end
     end
   end
 
-  sig { returns(String) }
   def full_name
     "#{first_name} #{last_name}"
   end
 
-  sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale
   end
 
-  sig { returns(District) }
   def district
-    T.cast(super, District)
+    super
   end
 
-  sig { returns(LegislatorDistrictScore) }
   def legislator_district_score
-    T.cast(super, LegislatorDistrictScore)
+    super
   end
 
   def at_large?
@@ -102,7 +92,6 @@ class Legislator < ApplicationRecord
   end
 
   # The year the Legislator was elected
-  sig { returns(Numeric) }
   def election_year
     if congress?
       (created_at.year % 2).positive? ? created_at.year - 1 : created_at.year
@@ -113,7 +102,6 @@ class Legislator < ApplicationRecord
 
   delegate :congress?, to: :sway_locale
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |l|
       l.id id
@@ -135,14 +123,12 @@ class Legislator < ApplicationRecord
     end
   end
 
-  sig { params(bill: Bill).returns(T.nilable(LegislatorVote)) }
   def vote(bill)
     legislator_votes.find { |lv| lv if lv.bill.eql?(bill) }
   end
 
   private
 
-  sig { void }
   def enqueue_photo_mirroring
     return if id.blank?
     return if internal_asset_url?(photo_url)
@@ -155,7 +141,6 @@ class Legislator < ApplicationRecord
     )
   end
 
-  sig { params(url: T.nilable(String)).returns(T::Boolean) }
   def internal_asset_url?(url)
     return true if url.blank?
 
@@ -172,7 +157,7 @@ class Legislator < ApplicationRecord
     false
   end
 
-  def create_legislator_district_score
+  def create_default_legislator_district_score
     LegislatorDistrictScore.create(legislator: self)
   end
 end

@@ -1,0 +1,3 @@
+class BillNotificationJob < ApplicationJob
+    def perform: -> nil
+end

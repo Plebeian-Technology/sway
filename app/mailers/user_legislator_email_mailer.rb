@@ -1,15 +1,10 @@
-# typed: true
-
 class UserLegislatorEmailMailer < ApplicationMailer
-  extend T::Sig
-
   default from: "any_from_address@example.com"
 
   helper_method :intro, :body, :conclusion, :bill_link
 
   delegate :link, to: :bill, prefix: true
 
-  sig { params(user_legislator_email: UserLegislatorEmail).void }
   def send_email_to_legislator(user_legislator_email)
     @user_legislator_email = user_legislator_email
 
@@ -104,17 +99,14 @@ class UserLegislatorEmailMailer < ApplicationMailer
     end
   end
 
-  sig { returns(Legislator) }
   def legislator
     @legislator ||= @user_legislator_email.legislator
   end
 
-  sig { returns(User) }
   def user
     @user ||= @user_legislator_email.user
   end
 
-  sig { returns(Bill) }
   def bill
     @bill ||= @user_legislator_email.bill
   end

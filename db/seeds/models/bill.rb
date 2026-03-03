@@ -1,42 +1,27 @@
-# typed: true
-
 # frozen_string_literal: true
 
 # Creates a Bill in Sway if it does not exist
 class SeedBill
-  extend T::Sig
-
-  sig { params(sway_locales: T::Array[SwayLocale]).void }
   def self.run(sway_locales)
     return nil unless Rails.env.development?
 
     sway_locales.each do |sway_locale|
-      T
-        .let(read_bills(sway_locale), T::Array[T::Hash[String, String]])
-        .compact
-        .each do |json|
-          j = T.let(json, T::Hash[String, String])
+      read_bills(sway_locale).compact.each do |json|
+        j = json
 
-          SeedBill.new.seed(j, sway_locale) if j.fetch("test", nil).present?
-        end
+        SeedBill.new.seed(j, sway_locale) if j.fetch("test", nil).present?
+      end
     end
   end
 
-  sig do
-    params(sway_locale: SwayLocale).returns(T::Array[T::Hash[String, String]])
-  end
   def self.read_bills(sway_locale)
-    T.let(
-      JSON.parse(
-        File.read(
-          "storage/seeds/data/#{sway_locale.reversed_name.tr("-", "/")}/bills.json",
-        ),
+    JSON.parse(
+      File.read(
+        "storage/seeds/data/#{sway_locale.reversed_name.tr("-", "/")}/bills.json",
       ),
-      T::Array[T::Hash[String, String]],
     )
   end
 
-  sig { params(time_string: T.nilable(String)).returns(T.nilable(Time)) }
   def self.time(time_string)
     Time.zone.parse(time_string) if time_string
   end
@@ -44,11 +29,6 @@ class SeedBill
   def initialize
   end
 
-  sig do
-    params(json: T::Hash[String, T.untyped], sway_locale: SwayLocale).returns(
-      T.nilable(Bill),
-    )
-  end
   def seed(json, sway_locale)
     return nil if json.fetch("test", nil).blank?
 
@@ -80,16 +60,8 @@ class SeedBill
         .where(external_id: json.fetch("external_id", nil))
         .or(
           Legislator.where(
-            first_name:
-              T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
-                "legislator",
-                "first_name",
-              ),
-            last_name:
-              T.cast(json, T::Hash[String, T::Hash[String, String]]).dig(
-                "legislator",
-                "last_name",
-              ),
+            first_name: json.dig("legislator", "first_name"),
+            last_name: json.dig("legislator", "last_name"),
           ),
         )
         .find { |l| l.sway_locale.eql?(sway_locale) }

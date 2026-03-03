@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -33,8 +32,6 @@
 #  index_users_on_webauthn_id  (webauthn_id) UNIQUE
 #
 class User < ApplicationRecord
-  extend T::Sig
-
   CREDENTIAL_MIN_AMOUNT = 1
   ADMIN_PHONES = ENV["ADMIN_PHONES"]&.split(",") || []
   API_USER_PHONES = ENV["API_USER_PHONES"]&.split(",") || []
@@ -97,21 +94,18 @@ class User < ApplicationRecord
   has_many :user_votes, dependent: :destroy
   has_many :user_bill_reminders, dependent: :destroy
 
-  T.unsafe(self).state_machine :registration_status, initial: :pending do
-    T.bind(self, StateMachines::Machine)
-
+  state_machine :registration_status, initial: :pending do
     event :start_processing do
-      T.bind(self, StateMachines::Event)
       transition pending: :processing
     end
 
     event :complete do
-      T.bind(self, StateMachines::Event)
-      transition %i[pending processing completed] => :completed
+      transition pending: :completed
+      transition processing: :completed
+      transition completed: :completed
     end
 
     event :mark_failed do
-      T.bind(self, StateMachines::Event)
       transition processing: :failed
     end
 
@@ -149,20 +143,15 @@ class User < ApplicationRecord
 
   # Returns an Array because users may have multiple SwayLocales
   # ex. city, state, congressional
-  sig { returns(T::Array[SwayLocale]) }
   def sway_locales
     a = address
     a ? a.sway_locales : []
   end
 
-  sig { returns(T.nilable(SwayLocale)) }
   def default_sway_locale
     sway_locales.find { |s| !s.congress? } || sway_locales.first
   end
 
-  sig do
-    params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator])
-  end
   def user_legislators_by_locale(sway_locale)
     return [] unless sway_locale
 
@@ -174,19 +163,14 @@ class User < ApplicationRecord
       .to_a
   end
 
-  sig do
-    params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[Legislator])
-  end
   def legislators(sway_locale)
     user_legislators_by_locale(sway_locale).map(&:legislator)
   end
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[District]) }
   def districts(sway_locale)
     legislators(sway_locale).filter_map(&:district).uniq(&:id)
   end
 
-  sig { returns(T::Boolean) }
   def email_sendable?
     !!is_email_verified && email.present?
   end
@@ -199,7 +183,6 @@ class User < ApplicationRecord
     end
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |user|
       user.id id
@@ -217,32 +200,28 @@ class User < ApplicationRecord
     end
   end
 
-  sig { returns(T::Boolean) }
   def is_sway_admin?
-    ADMIN_PHONES.include?(phone)
+    current_phone = phone
+    !!(current_phone && ADMIN_PHONES.include?(current_phone))
   end
 
-  sig { returns(T::Boolean) }
   def is_sway_api_user?
-    API_USER_PHONES.include?(phone)
+    current_phone = phone
+    !!(current_phone && API_USER_PHONES.include?(current_phone))
   end
 
-  sig { returns(T::Boolean) }
   def has_sway_passkey?
     passkeys.size.positive?
   end
 
-  sig { returns(T::Boolean) }
   def can_delete_sway_passkeys?
     passkeys.size > CREDENTIAL_MIN_AMOUNT
   end
 
-  sig { returns(T::Boolean) }
   def has_user_legislators?
     user_legislators.present?
   end
 
-  sig { void }
   def create_user_invite_url
     # https://stackoverflow.com/questions/3861777/determine-what-attributes-were-changed-in-rails-after-save-callback
     return if user_inviter.present?

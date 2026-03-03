@@ -13,7 +13,6 @@ require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
 require "inertia_rails/rspec"
-require "rspec/sorbet"
 require "faker"
 require "geocoder"
 require "simplecov"
@@ -91,9 +90,9 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
 
   config.before(:suite) do
-    if ENV["SCREENSHOT_DIR"].present?
-      FileUtils.mkdir_p(ENV["SCREENSHOT_DIR"])
-      FileUtils.rm_rf(Dir.glob("#{ENV["SCREENSHOT_DIR"]}/*"))
+    if (screenshot_dir = ENV["SCREENSHOT_DIR"]) && !screenshot_dir.empty?
+      FileUtils.mkdir_p(screenshot_dir)
+      FileUtils.rm_rf(Dir.glob("#{screenshot_dir}/*"))
     end
   end
 

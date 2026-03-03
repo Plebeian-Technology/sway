@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class OrganizationsController < ApplicationController
   before_action :verify_is_sway_admin, only: %i[create]
@@ -27,7 +26,7 @@ class OrganizationsController < ApplicationController
   end
 
   def create
-    errored = T.let(false, T::Boolean)
+    errored = false
     errors = {
       organization:
         organizations_params[:organizations].map do |_|
@@ -56,23 +55,21 @@ class OrganizationsController < ApplicationController
 
         unless position.save
           errored = true
-          position.errors.each do |e|
-            next unless errors[:organizations][index].key?(e.attribute)
+          position.errors.each do |attribute, message|
+            next unless errors[:organizations][index].key?(attribute)
             errors[:organizations][index][
-              e.attribute
-            ] = "#{e.attribute.capitalize} #{e.message}"
+              attribute
+            ] = "#{attribute.capitalize} #{message}"
           end
         end
       else
         errored = true
-        organization.errors.each do |e|
+        organization.errors.each do |attribute, message|
           attribute_by_key = { name: :label, id: :value, icon_url: :icon_url }
 
-          attr = attribute_by_key[e.attribute]
+          attr = attribute_by_key[attribute]
           next unless attr.present? && errors[:organizations][index].key?(attr)
-          errors[:organizations][index][
-            attr
-          ] = "#{attr} #{e.message.capitalize}"
+          errors[:organizations][index][attr] = "#{attr} #{message.capitalize}"
         end
       end
     end

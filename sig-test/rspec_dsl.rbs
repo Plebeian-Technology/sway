@@ -1,0 +1,825 @@
+class Object
+    def send: (Symbol, *untyped args, **untyped kwargs) -> untyped
+    def describe:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def context:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def it:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def fit:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def xit:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def specify:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def before:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def around:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def after:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def let:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def skip_before_action: (*untyped args, **untyped kwargs) -> untyped
+    def head: (*untyped args, **untyped kwargs) -> untyped
+    def let!:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def shared_examples:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def shared_context:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def include_context: (*untyped args, **untyped kwargs) -> untyped
+    def include_examples: (*untyped args, **untyped kwargs) -> untyped
+    def subject:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def expect: (untyped value) -> untyped | { (*untyped args) -> untyped } -> untyped
+    def allow: (untyped value) -> untyped
+    def allow_any_instance_of: (untyped value) -> untyped
+    def expect_any_instance_of: (untyped value) -> untyped
+    def described_class: -> untyped
+    def instance_double: (*untyped args, **untyped kwargs) -> untyped
+    def class_double: (*untyped args, **untyped kwargs) -> untyped
+    def double: (*untyped args, **untyped kwargs) -> untyped
+    def create:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def build:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def create_list:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def build_stubbed: (*untyped args, **untyped kwargs) -> untyped
+    def attributes_for: (*untyped args, **untyped kwargs) -> untyped
+    def eq: (untyped value) -> untyped
+    def be_nil: -> untyped
+    def be_present: -> untyped
+    def be_truthy: -> untyped
+    def be_falsey: -> untyped
+    def `include`: (*untyped values) -> untyped
+    def have_http_status: (untyped value) -> untyped
+    def raise_error: (*untyped args) -> untyped
+    def change: (*untyped args, **untyped kwargs) -> untyped | (*untyped args, **untyped kwargs) { -> untyped } -> untyped
+    def receive: (*untyped args, **untyped kwargs) -> untyped
+    def be: (untyped value) -> untyped | -> untyped
+    def redirect_to: (untyped value) -> untyped
+    def an_instance_of: (untyped value) -> untyped
+    def match: (untyped value) -> untyped
+    def equal: (untyped value) -> untyped
+    def be_empty: -> untyped
+    def have_attributes: (untyped attrs) -> untyped
+    def eql: (untyped value) -> untyped
+    def setup: -> untyped
+    def inertia: (*untyped args, **untyped kwargs) -> untyped
+
+    def get: (*untyped args, **untyped kwargs) -> untyped
+    def post: (*untyped args, **untyped kwargs) -> untyped
+    def put: (*untyped args, **untyped kwargs) -> untyped
+    def patch: (*untyped args, **untyped kwargs) -> untyped
+    def delete: (*untyped args, **untyped kwargs) -> untyped
+    def response: -> untyped
+    def sign_in: (untyped user) -> untyped
+    def authenticate_sway_user!: -> untyped
+    def index: -> untyped
+    def redact_google_api_key: (untyped url, untyped body) -> untyped
+    def follow_redirect!: -> untyped
+    def cookies_hash: -> untyped
+    def setup_pre_registration: -> untyped
+    def build_bill_params: -> untyped
+    def spec_create_failure: -> untyped
+    def driven_by: (*untyped args, **untyped kwargs) -> untyped
+    def dev_db_file_path: -> String
+    def dev_data_file_path: -> String
+    def dev_seed_tables: -> Array[String]
+    def dev_seed_load_order: -> Array[String]
+    def dev_seed_sql: -> String
+    def reset_dev_seed_tables!: -> untyped
+    def load_dev_seed_sql!: (String sql) -> untyped
+    def browser_json_request: (untyped method, untyped path, untyped payload) -> untyped
+    def browser_create_credential: (untyped public_key_options) -> untyped
+    def browser_get_credential: (
+        untyped public_key_options,
+        ?challenge_override: untyped,
+        ?allow_credentials_override: untyped
+    ) -> untyped
+    def browser_cancel_get_credential: (untyped public_key_options) -> untyped
+    def browser_webauthn_credential: (untyped method, untyped public_key_options, ?untyped overrides) -> untyped
+    def register_passkey_user: (phone: untyped) -> untyped
+    def random_base64url: -> String
+    def get_params: (untyped sway_locale) -> untyped
+    def build_bill_of_the_week: -> untyped
+    def build_bill_for_schedule: -> untyped
+    def build_organization_params: -> untyped
+    def build_legislator_vote_params: -> untyped
+    def root_path: (*untyped args, **untyped kwargs) -> untyped
+    def root_url: (*untyped args, **untyped kwargs) -> untyped
+    def bills_url: (*untyped args, **untyped kwargs) -> untyped
+    def legislators_url: (*untyped args, **untyped kwargs) -> untyped
+    def bill_url: (*untyped args, **untyped kwargs) -> untyped
+    def legislator_url: (*untyped args, **untyped kwargs) -> untyped
+    def notifications_path: (*untyped args, **untyped kwargs) -> untyped
+    def settings_notifications_path: (*untyped args, **untyped kwargs) -> untyped
+    def phone_verification_index_path: (*untyped args, **untyped kwargs) -> untyped
+    def phone_verification_path: (*untyped args, **untyped kwargs) -> untyped
+    def users_details_path: (*untyped args, **untyped kwargs) -> untyped
+    def users_webauthn_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
+    def users_webauthn_sessions_path: (*untyped args, **untyped kwargs) -> untyped
+    def users_webauthn_session_path: (*untyped args, **untyped kwargs) -> untyped
+    def callback_users_webauthn_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
+    def callback_users_webauthn_sessions_path: (*untyped args, **untyped kwargs) -> untyped
+    def legislators_path: (*untyped args, **untyped kwargs) -> untyped
+    def users_organization_memberships_path: (*untyped args, **untyped kwargs) -> untyped
+    def organization_membership_path: (*untyped args, **untyped kwargs) -> untyped
+    def organization_position_change_path: (*untyped args, **untyped kwargs) -> untyped
+    def host!: (*untyped args, **untyped kwargs) -> untyped
+    def invite_path: (*untyped args, **untyped kwargs) -> untyped
+    def organization_membership_invites_path: (*untyped args, **untyped kwargs) -> untyped
+    def notifications_push_notifications_path: (*untyped args, **untyped kwargs) -> untyped
+    def edit_bill_path: (*untyped args, **untyped kwargs) -> untyped
+    def bill_score_path: (*untyped args, **untyped kwargs) -> untyped
+    def have_props: (untyped value) -> untyped
+    def have_current_path: (*untyped args, **untyped kwargs) -> untyped
+    def be_valid: -> untyped
+    def be_invalid: -> untyped
+    def be_blank: -> untyped
+
+    def factory:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def trait:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def association: (*untyped args, **untyped kwargs) -> untyped
+    def initialize_with:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def sequence:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def transient:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+
+    def method_missing: (Symbol, *untyped args, **untyped kwargs) -> untyped
+    def respond_to_missing?: (Symbol, ?bool include_private) -> bool
+end
+
+module RSpec
+    def self.describe:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.configure: { (RSpec::Core::Configuration config) -> untyped } -> untyped
+    def self.configuration: -> RSpec::Core::Configuration
+    def self.shared_context:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+end
+
+module FactoryBot
+    def self.define: { (*untyped args) -> untyped } -> untyped
+    def self.create: (*untyped args, **untyped kwargs) -> untyped
+    def self.build: (*untyped args, **untyped kwargs) -> untyped
+    def self.create_list: (*untyped args, **untyped kwargs) -> untyped
+    def self.build_stubbed: (*untyped args, **untyped kwargs) -> untyped
+    def self.attributes_for: (*untyped args, **untyped kwargs) -> untyped
+end
+
+module Kernel
+    def describe: (*untyped args, **untyped kwargs) -> untyped
+    def context: (*untyped args, **untyped kwargs) -> untyped
+    def it: (*untyped args, **untyped kwargs) -> untyped
+    def let: (*untyped args, **untyped kwargs) -> untyped
+    def let!: (*untyped args, **untyped kwargs) -> untyped
+    def before: (*untyped args, **untyped kwargs) -> untyped
+    def around: (*untyped args, **untyped kwargs) -> untyped
+    def after: (*untyped args, **untyped kwargs) -> untyped
+    def include_context: (*untyped args, **untyped kwargs) -> untyped
+    def shared_context:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def shared_examples:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def expect: (untyped value) -> untyped
+    def allow: (untyped value) -> untyped
+    def allow_any_instance_of: (untyped value) -> untyped
+    def expect_any_instance_of: (untyped value) -> untyped
+    def receive: (*untyped args, **untyped kwargs) -> untyped
+    def described_class: -> untyped
+    def instance_double: (*untyped args, **untyped kwargs) -> untyped
+    def class_double: (*untyped args, **untyped kwargs) -> untyped
+    def double: (*untyped args, **untyped kwargs) -> untyped
+
+    def create:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def build:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def factory: (*untyped args, **untyped kwargs) -> untyped
+    def trait: (*untyped args, **untyped kwargs) -> untyped
+    def association: (*untyped args, **untyped kwargs) -> untyped
+    def initialize_with: (*untyped args, **untyped kwargs) -> untyped
+    def sequence: (*untyped args, **untyped kwargs) -> untyped
+    def transient: (*untyped args, **untyped kwargs) -> untyped
+
+    def get: (*untyped args, **untyped kwargs) -> untyped
+    def post: (*untyped args, **untyped kwargs) -> untyped
+    def put: (*untyped args, **untyped kwargs) -> untyped
+    def patch: (*untyped args, **untyped kwargs) -> untyped
+    def delete: (*untyped args, **untyped kwargs) -> untyped
+    def response: -> untyped
+    def session_hash: -> untyped
+    def flash: -> untyped
+
+    def eq: (untyped value) -> untyped
+    def be: (untyped value) -> untyped | -> untyped
+    def be_nil: -> untyped
+    def be_empty: -> untyped
+    def equal: (untyped value) -> untyped
+    def match: (untyped value) -> untyped
+    def have_http_status: (untyped value) -> untyped
+    def redirect_to: (untyped value) -> untyped
+    def have_attributes: (untyped attrs) -> untyped
+end
+
+class BasicObject
+    def send: (Symbol, *untyped args, **untyped kwargs) -> untyped
+    def describe: (*untyped args, **untyped kwargs) -> untyped
+    def context: (*untyped args, **untyped kwargs) -> untyped
+    def it: (*untyped args, **untyped kwargs) -> untyped
+    def expect: (untyped value) -> untyped
+    def allow: (untyped value) -> untyped
+    def receive: (*untyped args, **untyped kwargs) -> untyped
+    def create:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def described_class: -> untyped
+    def page: -> untyped
+    def execute_cdp: (
+        String command,
+        ?Hash[Symbol, String | Integer | bool | nil] params
+    ) -> Hash[String, (String | Integer | bool | nil)]
+    def `include`: (*untyped args, **untyped kwargs) -> untyped
+    def skip_before_action: (*untyped args, **untyped kwargs) -> untyped
+    def head: (*untyped args, **untyped kwargs) -> untyped
+    def get: (*untyped args, **untyped kwargs) -> untyped
+    def skip: (*untyped args, **untyped kwargs) -> untyped
+    def visit: (*untyped args, **untyped kwargs) -> untyped
+    def have_no_css: (*untyped args, **untyped kwargs) -> untyped
+    def have_css: (*untyped args, **untyped kwargs) -> untyped
+    def build:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def spy: (*untyped args, **untyped kwargs) -> untyped
+    def hash_including: (*untyped args, **untyped kwargs) -> untyped
+    def match_array: (*untyped args, **untyped kwargs) -> untyped
+    def be_attached: -> untyped
+    def sleep: (*untyped args, **untyped kwargs) -> untyped
+end
+
+class Class
+    def describe: (*untyped args, **untyped kwargs) -> untyped
+    def context: (*untyped args, **untyped kwargs) -> untyped
+    def it: (*untyped args, **untyped kwargs) -> untyped
+    def let: (*untyped args, **untyped kwargs) -> untyped
+    def let!: (*untyped args, **untyped kwargs) -> untyped
+    def before: (*untyped args, **untyped kwargs) -> untyped
+    def after: (*untyped args, **untyped kwargs) -> untyped
+    def around: (*untyped args, **untyped kwargs) -> untyped
+    def include_context: (*untyped args, **untyped kwargs) -> untyped
+    def shared_context: (*untyped args, **untyped kwargs) -> untyped
+    def shared_examples: (*untyped args, **untyped kwargs) -> untyped
+
+    def expect: (untyped value) -> untyped
+    def allow: (untyped value) -> untyped
+    def allow_any_instance_of: (untyped value) -> untyped
+    def expect_any_instance_of: (untyped value) -> untyped
+    def receive: (*untyped args, **untyped kwargs) -> untyped
+    def described_class: -> untyped
+    def instance_double: (*untyped args, **untyped kwargs) -> untyped
+    def class_double: (*untyped args, **untyped kwargs) -> untyped
+    def double: (*untyped args, **untyped kwargs) -> untyped
+
+    def create: (*untyped args, **untyped kwargs) -> untyped
+    def build: (*untyped args, **untyped kwargs) -> untyped
+    def factory: (*untyped args, **untyped kwargs) -> untyped
+    def trait: (*untyped args, **untyped kwargs) -> untyped
+    def association: (*untyped args, **untyped kwargs) -> untyped
+    def initialize_with: (*untyped args, **untyped kwargs) -> untyped
+    def sequence: (*untyped args, **untyped kwargs) -> untyped
+    def transient: (*untyped args, **untyped kwargs) -> untyped
+
+    def get: (*untyped args, **untyped kwargs) -> untyped
+    def post: (*untyped args, **untyped kwargs) -> untyped
+    def put: (*untyped args, **untyped kwargs) -> untyped
+    def patch: (*untyped args, **untyped kwargs) -> untyped
+    def delete: (*untyped args, **untyped kwargs) -> untyped
+    def response: -> untyped
+    def session_hash: -> untyped
+    def flash: -> untyped
+
+    def eq: (untyped value) -> untyped
+    def `include`: (*untyped values) -> untyped
+    def be: (untyped value) -> untyped | -> untyped
+    def be_nil: -> untyped
+    def be_empty: -> untyped
+    def equal: (untyped value) -> untyped
+    def match: (untyped value) -> untyped
+    def have_http_status: (untyped value) -> untyped
+    def redirect_to: (untyped value) -> untyped
+    def have_attributes: (untyped attrs) -> untyped
+    def lambda: { (*untyped args) -> untyped } -> untyped
+    def method_missing: (Symbol, *untyped args, **untyped kwargs) -> untyped
+    def respond_to_missing?: (Symbol, ?bool include_private) -> bool
+end
+
+module RSpec
+    module Core
+        class ExampleGroup
+            def self.describe:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.context:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.it:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.specify: (*untyped args, **untyped kwargs) -> untyped
+            def self.before:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.after:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.around:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.controller:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.let:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.let!:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def self.shared_examples: (*untyped args, **untyped kwargs) -> untyped
+            def self.shared_context: (*untyped args, **untyped kwargs) -> untyped
+            def self.include_context: (*untyped args, **untyped kwargs) -> untyped
+            def self.include_examples: (*untyped args, **untyped kwargs) -> untyped
+            def self.describe_class: -> untyped
+            def self.build: (*untyped args, **untyped kwargs) -> untyped
+            def self.create: (*untyped args, **untyped kwargs) -> untyped
+            def self.attributes_for: (*untyped args, **untyped kwargs) -> untyped
+            def self.`include`: (*untyped args, **untyped kwargs) -> untyped
+            def self.skip_before_action: (*untyped args, **untyped kwargs) -> untyped
+            def self.described_class: -> untyped
+            def self.method_missing: (Symbol, *untyped args, **untyped kwargs) -> untyped
+            def self.respond_to_missing?: (Symbol, ?bool include_private) -> bool
+
+            def expect: (untyped value) -> untyped | { (*untyped args) -> untyped } -> untyped
+            def allow: (untyped value) -> untyped
+            def allow_any_instance_of: (untyped value) -> untyped
+            def expect_any_instance_of: (untyped value) -> untyped
+            def instance_double: (*untyped args, **untyped kwargs) -> untyped
+            def class_double: (*untyped args, **untyped kwargs) -> untyped
+            def double: (*untyped args, **untyped kwargs) -> untyped
+            def described_class: -> untyped
+            def controller: -> untyped
+            def routes: -> untyped
+            def create:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def build:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def create_list:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def build_stubbed: (*untyped args, **untyped kwargs) -> untyped
+            def attributes_for: (*untyped args, **untyped kwargs) -> untyped
+            def receive: (*untyped args, **untyped kwargs) -> untyped
+            def eq: (untyped value) -> untyped
+            def `include`: (*untyped values) -> untyped
+            def be_nil: -> untyped
+            def be: (untyped value) -> untyped | -> untyped
+            def have_http_status: (untyped value) -> untyped
+            def redirect_to: (untyped value) -> untyped
+            def match: (untyped value) -> untyped
+            def equal: (untyped value) -> untyped
+            def be_empty: -> untyped
+            def be_valid: -> untyped
+            def be_invalid: -> untyped
+            def be_blank: -> untyped
+            def have_attributes: (untyped attrs) -> untyped
+            def have_props: (untyped value) -> untyped
+            def have_current_path: (*untyped args, **untyped kwargs) -> untyped
+            def eql: (untyped value) -> untyped
+            def have_received: (*untyped args, **untyped kwargs) -> untyped
+            def be_within: (untyped value) -> untyped
+            def setup: -> untyped
+            def sign_in: (*untyped args, **untyped kwargs) -> untyped
+            def inertia: (*untyped args, **untyped kwargs) -> untyped
+            def bill_path: (*untyped args, **untyped kwargs) -> untyped
+            def organizations_path: (*untyped args, **untyped kwargs) -> untyped
+            def organization_positions_path: (*untyped args, **untyped kwargs) -> untyped
+            def organization_position_path: (*untyped args, **untyped kwargs) -> untyped
+            def legislator_votes_path: (*untyped args, **untyped kwargs) -> untyped
+            def user_legislator_emails_path: (*untyped args, **untyped kwargs) -> untyped
+            def notifications_push_notification_subscriptions_path: (*untyped args, **untyped kwargs) -> untyped
+            def destroy_notifications_push_notification_subscriptions_path: (*untyped args, **untyped kwargs) -> untyped
+            def notifications_push_notifications_path: (*untyped args, **untyped kwargs) -> untyped
+            def root_path: (*untyped args, **untyped kwargs) -> untyped
+            def notifications_path: (*untyped args, **untyped kwargs) -> untyped
+            def settings_notifications_path: (*untyped args, **untyped kwargs) -> untyped
+            def phone_verification_index_path: (*untyped args, **untyped kwargs) -> untyped
+            def phone_verification_path: (*untyped args, **untyped kwargs) -> untyped
+            def invite_path: (*untyped args, **untyped kwargs) -> untyped
+            def organization_membership_invites_path: (*untyped args, **untyped kwargs) -> untyped
+            def edit_bill_path: (*untyped args, **untyped kwargs) -> untyped
+            def bill_score_path: (*untyped args, **untyped kwargs) -> untyped
+            def render_component: (*untyped args, **untyped kwargs) -> untyped
+            def build_bill_params: -> untyped
+            def spec_create_failure: -> untyped
+            def driven_by: (*untyped args, **untyped kwargs) -> untyped
+            def dev_db_file_path: -> String
+            def dev_data_file_path: -> String
+            def dev_seed_tables: -> Array[String]
+            def dev_seed_load_order: -> Array[String]
+            def dev_seed_sql: -> String
+            def reset_dev_seed_tables!: -> untyped
+            def load_dev_seed_sql!: (String sql) -> untyped
+            def enable_virtual_authenticator: -> untyped
+            def disable_virtual_authenticator: (untyped id) -> untyped
+            def browser_json_request: (untyped method, untyped path, untyped payload) -> untyped
+            def browser_create_credential: (untyped public_key_options) -> untyped
+            def browser_get_credential: (
+                untyped public_key_options,
+                ?challenge_override: untyped,
+                ?allow_credentials_override: untyped
+            ) -> untyped
+            def browser_cancel_get_credential: (untyped public_key_options) -> untyped
+            def register_passkey_user: (phone: untyped) -> untyped
+            def random_base64url: -> String
+            def browser_webauthn_credential: (untyped method, untyped public_key_options, ?untyped overrides) -> untyped
+            def get_params: (untyped sway_locale) -> untyped
+            def build_bill_of_the_week: -> untyped
+            def build_bill_for_schedule: -> untyped
+            def build_organization_params: -> untyped
+            def build_legislator_vote_params: -> untyped
+            def follow_redirect!: -> untyped
+            def cookies_hash: -> untyped
+            def setup_pre_registration: -> untyped
+            def root_url: (*untyped args, **untyped kwargs) -> untyped
+            def bills_url: (*untyped args, **untyped kwargs) -> untyped
+            def legislators_url: (*untyped args, **untyped kwargs) -> untyped
+            def bill_url: (*untyped args, **untyped kwargs) -> untyped
+            def legislator_url: (*untyped args, **untyped kwargs) -> untyped
+            def users_details_path: (*untyped args, **untyped kwargs) -> untyped
+            def users_webauthn_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
+            def users_webauthn_sessions_path: (*untyped args, **untyped kwargs) -> untyped
+            def users_webauthn_session_path: (*untyped args, **untyped kwargs) -> untyped
+            def callback_users_webauthn_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
+            def callback_users_webauthn_sessions_path: (*untyped args, **untyped kwargs) -> untyped
+            def legislators_path: (*untyped args, **untyped kwargs) -> untyped
+            def sway_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
+            def users_organization_memberships_path: (*untyped args, **untyped kwargs) -> untyped
+            def organization_membership_path: (*untyped args, **untyped kwargs) -> untyped
+            def organization_position_change_path: (*untyped args, **untyped kwargs) -> untyped
+            def host!: (*untyped args, **untyped kwargs) -> untyped
+
+            def address: -> untyped
+            def bill: -> untyped
+            def callback_params: -> untyped
+            def default_env: -> untyped
+            def district: -> untyped
+            def endpoint: -> untyped
+            def fallback_external_id: -> untyped
+            def invite: -> untyped
+            def invite_uuid: -> untyped
+            def inviter: -> untyped
+            def legislator: -> untyped
+            def long_url: -> untyped
+            def mail: -> untyped
+            def organization: -> untyped
+            def params: -> untyped
+            def passkey: -> untyped
+            def phone: -> untyped
+            def position: -> untyped
+            def refresh_token: -> untyped
+            def registration_complete: -> untyped
+            def request: -> untyped
+            def response_body: -> untyped
+            def session_store: -> untyped
+            def setup_data: -> untyped
+            def short_url: -> untyped
+            def source_url: -> untyped
+            def subscription: -> untyped
+            def subscription_params: -> untyped
+            def sway_locale: -> untyped
+            def user: -> untyped
+            def user_inviter: -> untyped
+            def user_legislator: -> untyped
+            def user_legislator_email: -> untyped
+            def twilio_verification_status: -> untyped
+            def twilio_client_double: -> untyped
+            def twilio_verify_double: -> untyped
+            def twilio_verify_v2_double: -> untyped
+            def twilio_service_double: -> untyped
+            def twilio_verifications_double: -> untyped
+            def twilio_verification_checks_double: -> untyped
+            def twilio_verification_result: -> untyped
+            def fake_challenge: -> untyped
+            def fake_credential_id: -> untyped
+            def fake_public_key: -> untyped
+            def registration_options_double: -> untyped
+            def authentication_options_double: -> untyped
+            def verified_registration_double: -> untyped
+            def verified_authentication_double: -> untyped
+
+            def method_missing: (Symbol, *untyped args, **untyped kwargs) -> untyped
+            def respond_to_missing?: (Symbol, ?bool include_private) -> bool
+
+            def get: (*untyped args, **untyped kwargs) -> untyped
+            def post: (*untyped args, **untyped kwargs) -> untyped
+            def put: (*untyped args, **untyped kwargs) -> untyped
+            def patch: (*untyped args, **untyped kwargs) -> untyped
+            def delete: (*untyped args, **untyped kwargs) -> untyped
+            def response: -> untyped
+            def session_hash: -> untyped
+            def flash: -> untyped
+        end
+    end
+end
+
+module FactoryBot
+    module Syntax
+        module Default
+            class DSL
+                def factory:
+                    (*untyped args, **untyped kwargs) -> untyped
+                    | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+                def trait:
+                    (*untyped args, **untyped kwargs) -> untyped
+                    | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+                def association: (*untyped args, **untyped kwargs) -> untyped
+                def initialize_with:
+                    (*untyped args, **untyped kwargs) -> untyped
+                    | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+                def sequence:
+                    (*untyped args, **untyped kwargs) -> untyped
+                    | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+                def transient:
+                    (*untyped args, **untyped kwargs) -> untyped
+                    | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+                def method_missing:
+                    (Symbol, *untyped args, **untyped kwargs) -> untyped
+                    | (Symbol, *untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+                def respond_to_missing?: (Symbol, ?bool include_private) -> bool
+            end
+        end
+    end
+
+    class DefinitionProxy
+        def factory:
+            (*untyped args, **untyped kwargs) -> untyped
+            | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def trait:
+            (*untyped args, **untyped kwargs) -> untyped
+            | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def association: (*untyped args, **untyped kwargs) -> untyped
+        def initialize_with:
+            (*untyped args, **untyped kwargs) -> untyped
+            | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def sequence:
+            (*untyped args, **untyped kwargs) -> untyped
+            | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def transient:
+            (*untyped args, **untyped kwargs) -> untyped
+            | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def new: (*untyped args, **untyped kwargs) -> untyped
+        def add_attribute:
+            (*untyped args, **untyped kwargs) -> untyped
+            | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def active: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def against: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def approved_by_id: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def auth: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def bearer_type: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def category: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def chamber: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def city: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def country: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def current_session_start_date: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def expires_at: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def external_id: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def first_name: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def house_roll_call_vote_number: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def icon_url: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def introduced_date_time_utc: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def invitee: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def invitee_email: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def inviter: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def ip_address: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def is_phone_verified: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def is_registration_complete: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def label: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def last_name: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def last_used_on_utc: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def link: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def name: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def new_summary: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def new_support: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def p256dh: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def party: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def phone: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def postal_code: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def previous_summary: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def previous_support: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def public_key: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def region_code: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def role: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def scheduled_release_date_utc: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def senate_roll_call_vote_number: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def sent_at: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def sign_count: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def sms_notifications_enabled: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def state: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def status: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def street: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def subscribed: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def summary: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def support: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def bill: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def user: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def address: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def endpoint: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def sway_locale: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def district: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def legislator: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def time_zone: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def token: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def token_digest: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def title: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def updated_by: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def user_agent: -> untyped | { (*untyped args) -> untyped } -> untyped
+        def method_missing:
+            (Symbol, *untyped args, **untyped kwargs) -> untyped
+            | (Symbol, *untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+        def respond_to_missing?: (Symbol, ?bool include_private) -> bool
+    end
+end
+
+module RSpec
+    module Core
+        module SharedContext
+            def let: (Symbol name) { -> untyped } -> untyped
+            def before:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def allow: (untyped value) -> untyped
+            def instance_double: (*untyped args, **untyped kwargs) -> untyped
+            def receive: (*untyped args, **untyped kwargs) -> untyped
+            def method_missing: (Symbol, *untyped args, **untyped kwargs) -> untyped
+            def respond_to_missing?: (Symbol name, ?bool include_private) -> bool
+        end
+
+        class Configuration
+            def `include`: (*untyped args, **untyped kwargs) -> untyped
+            def fixture_paths=: (untyped value) -> untyped
+            def use_transactional_fixtures=: (bool value) -> bool
+            def expect_with:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def mock_with:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def shared_context_metadata_behavior=: (untyped value) -> untyped
+            def infer_spec_type_from_file_location!: -> untyped
+            def filter_rails_from_backtrace!: -> untyped
+            def before:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def around:
+                (*untyped args, **untyped kwargs) -> untyped
+                | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+            def reporter: -> untyped
+        end
+    end
+end
+
+module Capybara
+    module Selenium
+        class Driver
+            def self.load_selenium: -> untyped
+            def initialize: (
+                untyped app,
+                ?browser: Symbol,
+                ?options: untyped,
+                ?service: untyped,
+                ?clear_local_storage: bool,
+                ?clear_session_storage: bool
+            ) -> void
+        end
+    end
+
+    class Session
+        def driver: -> untyped
+    end
+
+    class ElementNotFound < StandardError
+    end
+
+    def self.register_driver: (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.configure: { (untyped config) -> untyped } -> untyped
+    def self.ignore_hidden_elements=: (bool value) -> bool
+    def self.reset_sessions!: -> untyped
+    def self.server_host: -> String?
+    def self.server_host=: (String host) -> String
+    def self.app_host: -> String?
+    def self.app_host=: (String host) -> String
+    def self.always_include_port: -> bool
+    def self.always_include_port=: (bool value) -> bool
+end
+
+module CapybaraHelpers
+    SCREENSHOT_DIR: String
+    SECONDS_TO_WAIT: Integer
+
+    def reset_browser_state: -> untyped
+    def clear_browser_storage: -> untyped
+    def wait_until_loaded: -> untyped
+    def wait_until: (?Float delay) { -> untyped } -> untyped
+    def wait_for: (String selector, **untyped options) { (untyped element) -> untyped } -> untyped
+end
+
+module VirtualAuthenticator
+    type cdp_primitive = String | Integer | bool | nil
+    type cdp_value = cdp_primitive | Array[cdp_value] | Hash[Symbol, cdp_value]
+
+    interface _CdpBrowser
+        def execute_cdp:
+            (String command) -> Hash[String, cdp_value]
+            | (String command, **cdp_value params) -> Hash[String, cdp_value]
+    end
+
+    def enable_virtual_authenticator: -> String
+    def disable_virtual_authenticator: (String id) -> top?
+    def execute_cdp: (_CdpBrowser browser, String command, ?Hash[Symbol, cdp_value] params) -> Hash[String, cdp_value]
+end
+
+module Selenium
+    module WebDriver
+        module Service
+            def self.chrome: (*untyped args, **untyped kwargs) -> untyped
+        end
+
+        module Error
+            class WebDriverError < StandardError
+            end
+
+            class NoSuchDriverError < WebDriverError
+            end
+        end
+
+        module Chrome
+            class Options
+                def add_argument: (String arg) -> untyped
+            end
+        end
+    end
+end
+
+class ActionMailer::Base
+    def self.deliveries: -> Array[untyped]
+    def self.default: -> Hash[Symbol, untyped]
+    def self.default_params: -> Hash[Symbol, untyped]
+end
+
+module SystemBrowserPreflight
+    CHROME_CANDIDATES: Array[String]
+    CHROMEDRIVER_CANDIDATES: Array[String]
+
+    def self.chrome_binary: -> String?
+    def self.chromedriver_binary: -> String?
+    def self.available?: -> bool
+    def self.missing_requirements_message: -> String
+    def self.log_status_once: (?reporter: untyped) -> untyped
+    def self.assert_available!: -> untyped
+end

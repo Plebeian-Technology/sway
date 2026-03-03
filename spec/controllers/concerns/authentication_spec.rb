@@ -4,16 +4,18 @@ RSpec.describe Authentication, type: :controller do
   include_context "TwilioDouble"
 
   controller(ApplicationController) do
-    include Authentication
-
-    skip_before_action :authenticate_sway_user!
+    def authenticate_sway_user!
+    end
 
     def index
       head :ok
     end
   end
 
-  before { routes.draw { get "index" => "anonymous#index" } }
+  before do
+    controller.class.include(Authentication)
+    routes.draw { get :index, to: "anonymous#index" }
+  end
 
   describe "#send_phone_verification" do
     let(:session_store) { { existing: "value" } }
@@ -25,9 +27,11 @@ RSpec.describe Authentication, type: :controller do
         ENV["SKIP_PHONE_VERIFICATION"] = "1"
         example.run
       ensure
-        previous.nil? ?
-          ENV.delete("SKIP_PHONE_VERIFICATION") :
+        if previous.nil?
+          ENV.delete("SKIP_PHONE_VERIFICATION")
+        else
           ENV["SKIP_PHONE_VERIFICATION"] = previous
+        end
       end
 
       it "stores the normalized phone and bypasses Twilio" do
@@ -45,9 +49,11 @@ RSpec.describe Authentication, type: :controller do
         ENV.delete("SKIP_PHONE_VERIFICATION")
         example.run
       ensure
-        previous.nil? ?
-          ENV.delete("SKIP_PHONE_VERIFICATION") :
+        if previous.nil?
+          ENV.delete("SKIP_PHONE_VERIFICATION")
+        else
           ENV["SKIP_PHONE_VERIFICATION"] = previous
+        end
       end
 
       it "sends an sms verification through Twilio" do

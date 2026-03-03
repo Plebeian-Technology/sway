@@ -1,15 +1,10 @@
 # frozen_string_literal: true
-# typed: true
 
 class BillOfTheWeekController < ApplicationController
   skip_before_action :authenticate_sway_user!, only: %i[index]
 
   def index
-    b =
-      T.cast(
-        Bill.of_the_week(sway_locale: current_sway_locale),
-        T.nilable(T.any(Bill, T::Array[Bill])),
-      )
+    b = Bill.of_the_week(sway_locale: current_sway_locale)
     b = b.first if b.is_a?(Array)
 
     if b.present?

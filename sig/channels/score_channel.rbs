@@ -1,0 +1,5 @@
+class ScoreChannel < ApplicationCable::Channel
+    def subscribed: -> untyped
+
+    def unsubscribed: -> nil
+end

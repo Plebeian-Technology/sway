@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class Organizations::MembershipInvitesController < Organizations::BaseController
   before_action :require_admin!

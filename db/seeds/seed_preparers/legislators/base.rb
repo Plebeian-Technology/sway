@@ -1,28 +1,16 @@
-# typed: true
-
 require_relative "../../seed_errors"
 
 module SeedPreparers
   module Legislators
     class Base
-      extend T::Sig
-
       attr_reader :json, :sway_locale, :is_internet_connected
 
-      sig do
-        params(
-          json: T::Hash[String, String],
-          sway_locale: SwayLocale,
-          is_internet_connected: T::Boolean,
-        ).void
-      end
       def initialize(json, sway_locale, is_internet_connected)
         @sway_locale = sway_locale
         @json = json
         @is_internet_connected = is_internet_connected
       end
 
-      sig { returns(District) }
       def district
         if region_code.blank?
           raise SeedErrors::MissingRegionCode,

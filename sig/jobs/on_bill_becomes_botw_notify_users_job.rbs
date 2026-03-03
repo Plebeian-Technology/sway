@@ -1,0 +1,5 @@
+# When a Bill becomes the Bill of the Week
+# Notify all users via push
+class OnBillBecomesBotwNotifyUsersJob < ApplicationJob
+    def perform: -> nil
+end

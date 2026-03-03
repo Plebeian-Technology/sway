@@ -1,0 +1,39 @@
+module SwayGoogleCloudStorage
+    @storage: untyped
+
+    @credentials: untyped
+
+    extend ActiveSupport::Concern
+
+    GOOGLE_CLOUD_PROJECT_ID: "sway-421916"
+
+    BUCKETS: { ASSETS: "sway-assets" }
+
+    def self.configure: (bucket_name: untyped) -> untyped
+
+    def self.storage: -> untyped
+
+    def self.credentials: -> untyped
+
+    def generate_get_signed_url_v4: (bucket_name: untyped, file_name: untyped) -> (nil | untyped)
+
+    def generate_put_signed_url_v4: (bucket_name: untyped, file_name: untyped, content_type: untyped) -> (nil | untyped)
+
+    def upload_file: (bucket_name: untyped, bucket_file_path: untyped, local_file_path: untyped) -> (nil | untyped)
+
+    def download_file: (bucket_name: untyped, bucket_file_path: untyped, local_file_path: untyped) -> (nil | untyped)
+
+    def download_directory: (
+        bucket_name: untyped,
+        bucket_directory_name: untyped,
+        local_directory_name: untyped
+    ) -> (nil | untyped)
+
+    def delete_file: (bucket_name: untyped, file_name: untyped) -> (nil | untyped)
+
+    private
+
+    def storage: -> untyped
+
+    def credentials: -> untyped
+end

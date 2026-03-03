@@ -1,0 +1,10 @@
+module RelyingParty
+    extend ActiveSupport::Concern
+
+    def relying_party: -> WebAuthn::RelyingParty
+
+    private
+
+    def origins: -> Array[String]
+    def request: -> untyped
+end

@@ -1,0 +1,16 @@
+class OnLegislatorVoteUpdateScoresJob < ApplicationJob
+    # NOTE: newly_saved_legislator_vote.support should ALWAYS != previous_support
+    def perform: (LegislatorVote newly_saved_legislator_vote, String? previous_support) -> nil
+
+    def update_legislator_district_score: (
+        LegislatorVote legislator_vote,
+        Array[User] users,
+        String? previous_support
+    ) -> nil
+
+    def update_user_legislator_scores: (
+        LegislatorVote legislator_vote,
+        Array[User] users,
+        String? previous_support
+    ) -> nil
+end

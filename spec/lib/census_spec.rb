@@ -4,8 +4,11 @@ require "rails_helper"
 require "census"
 
 RSpec.describe Census::Congress do
-  let(:address) { build_stubbed(:address, latitude: 39.307411, longitude: -76.615712) }
-  subject { described_class.new(address) }
+  subject do
+    Census::Congress.new(
+      FactoryBot.build_stubbed(:address, latitude: 39.307411, longitude: -76.615712),
+    )
+  end
 
   describe "#request" do
     it "calls the correct Census API URL for the 119th Congress" do

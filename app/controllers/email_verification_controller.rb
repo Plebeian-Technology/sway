@@ -1,8 +1,5 @@
-# typed: true
-
 class EmailVerificationController < ApplicationController
   include Authentication
-  extend T::Sig
 
   def create
     if ENV.fetch("SKIP_PHONE_VERIFICATION", nil).present? ||
@@ -78,13 +75,11 @@ class EmailVerificationController < ApplicationController
     ENV["TWILIO_VERIFY_SERVICE_SID"]
   end
 
-  sig { returns(ActionController::Parameters) }
   def email_verification_params
     params.require(:email_verification).permit(:email, :code, :bill_id)
   end
 
-  sig { returns(User) }
   def current_user
-    T.cast(super, User)
+    super
   end
 end

@@ -1,5 +1,3 @@
-# typed: true
-
 class CreateSwayLocales < ActiveRecord::Migration[7.1]
   def change
     create_table :sway_locales do |t|

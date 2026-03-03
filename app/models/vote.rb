@@ -19,20 +19,16 @@
 #
 #  bill_id  (bill_id => bills.id)
 #
-# typed: true
 
 class Vote < ApplicationRecord
-  extend T::Sig
-
   belongs_to :bill
 
   after_create :create_legislator_votes
 
   def bill
-    T.cast(super, Bill)
+    super
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |v|
       v.id id
@@ -43,7 +39,6 @@ class Vote < ApplicationRecord
 
   private
 
-  sig { void }
   def create_legislator_votes
     if bill.sway_locale.congress?
       CongressLegislatorVoteUpdateService.new(bill.id).run

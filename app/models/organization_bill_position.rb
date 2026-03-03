@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -28,8 +27,6 @@
 #  organization_id  (organization_id => organizations.id)
 #
 class OrganizationBillPosition < ApplicationRecord
-  extend T::Sig
-
   DEFAULT_SUMMARY = "Work In Progress."
 
   belongs_to :bill
@@ -54,17 +51,14 @@ class OrganizationBillPosition < ApplicationRecord
     position_changes.order(created_at: :desc).first
   end
 
-  sig { returns(Bill) }
   def bill
-    T.cast(super, Bill)
+    super
   end
 
-  sig { returns(Organization) }
   def organization
-    T.cast(super, Organization)
+    super
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |obp|
       obp.id id

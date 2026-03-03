@@ -1,0 +1,5 @@
+module Scraper
+    module Maryland
+        Vote: untyped
+    end
+end

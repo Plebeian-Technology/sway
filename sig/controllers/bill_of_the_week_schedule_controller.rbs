@@ -1,0 +1,11 @@
+class BillOfTheWeekScheduleController < ApplicationController
+    @bill: untyped
+
+    def update: -> untyped
+
+    private
+
+    def bill_of_the_week_schedule_params: -> untyped
+
+    def set_bill: -> untyped
+end

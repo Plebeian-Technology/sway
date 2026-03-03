@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# typed: true
-
 class UserVotesController < ApplicationController
   def index
     render json: UserVote.where(user: current_user), status: :ok
@@ -12,7 +10,9 @@ class UserVotesController < ApplicationController
     if uv.present?
       render json: uv.to_json, status: :ok
     else
-      render json: {}, status: :no_content
+      empty_json = {}
+      # @type var empty_json: Hash[Symbol, untyped]
+      render json: empty_json, status: :no_content
     end
   end
 

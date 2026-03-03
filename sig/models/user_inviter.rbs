@@ -1,0 +1,13 @@
+class UserInviter < ApplicationRecord
+    SHORT_URL_BASE: String
+    INVITE_URL_BASE: String
+    INVITED_BY_SESSION_KEY: Symbol
+
+    def self.from: (user: User) -> UserInviter
+    def short_url: -> String
+
+    private
+
+    def shorten_url: -> Shortener::ShortenedUrl
+    def invite_url: -> String
+end

@@ -1,0 +1,12 @@
+class SwayLocalesController < ApplicationController
+    # GET /sway_locales or /sway_locales.json
+    def index: -> untyped
+
+    # GET /sway_locales/1 or /sway_locales/1.json
+    def show: -> untyped
+
+    private
+
+    # Only allow a list of trusted parameters through.
+    def sway_locale_params: -> untyped
+end

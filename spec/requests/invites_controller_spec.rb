@@ -38,7 +38,7 @@ RSpec.describe "Invites", type: :request do
              country: "United States",
            },
          }
-    new_user = User.find_by(email: user.email)
+    new_user = User.find_by!(email: user.email)
     expect(new_user).not_to be_nil
 
     # After registration, create Invite (simulate what your registration controller does)

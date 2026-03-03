@@ -1,22 +1,18 @@
 # frozen_string_literal: true
-# typed: true
 
 class UserLegislatorsController < ApplicationController
   def index
-    render json:
-             current_user&.user_legislators_by_locale(
-               T.cast(current_sway_locale, SwayLocale),
-             ),
+    render json: current_user&.user_legislators_by_locale(current_sway_locale),
            status: :ok
   end
 
   def create
-    u = T.cast(current_user, User)
+    u = current_user
 
     SwayRegistrationService.new(
       u,
-      T.cast(u.address, Address),
-      T.cast(current_sway_locale, SwayLocale),
+      u.address,
+      current_sway_locale,
       invited_by_id: invited_by_id,
     ).run
 

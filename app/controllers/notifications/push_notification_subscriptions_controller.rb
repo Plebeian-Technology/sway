@@ -1,10 +1,7 @@
 # frozen_string_literal: true
-# typed: true
 
 module Notifications
   class PushNotificationSubscriptionsController < ApplicationController
-    extend T::Sig
-
     def create
       if subscription.present?
         subscription.update!(subscribed: true) unless subscription.subscribed

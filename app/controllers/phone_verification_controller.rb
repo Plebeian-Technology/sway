@@ -1,11 +1,9 @@
 # frozen_string_literal: true
-# typed: true
 
 # https://www.twilio.com/docs/verify/sms
 # https://www.twilio.com/docs/verify/quickstarts/python-flask
 class PhoneVerificationController < ApplicationController
   include Authentication
-  extend T::Sig
 
   skip_before_action :authenticate_sway_user!
 
@@ -96,7 +94,6 @@ class PhoneVerificationController < ApplicationController
     ENV["TWILIO_VERIFY_SERVICE_SID"]
   end
 
-  sig { returns(ActionController::Parameters) }
   def phone_verification_params
     params.require(:phone_verification).permit(:phone, :code)
   end

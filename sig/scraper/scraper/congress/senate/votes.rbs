@@ -1,0 +1,27 @@
+module Scraper
+    module Congress
+        module Senate
+            # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
+            # https://www.senate.gov/legislative/LIS/roll_call_lists/vote_menu_117_2.xml
+            class Votes
+                @congress: untyped
+
+                @session: untyped
+
+                include ApiConnector
+
+                def initialize: (untyped congress) -> void
+
+                def content_type: -> "application/json"
+
+                def do_request: -> untyped
+
+                def do_process: -> untyped
+
+                private
+
+                def result: -> untyped
+            end
+        end
+    end
+end

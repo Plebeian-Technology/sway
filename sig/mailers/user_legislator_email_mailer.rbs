@@ -1,0 +1,43 @@
+class UserLegislatorEmailMailer < ApplicationMailer
+    @user_legislator_email: UserLegislatorEmail
+
+    @legislator: Legislator
+
+    @user: User
+
+    @bill: Bill
+
+    def send_email_to_legislator: (UserLegislatorEmail user_legislator_email) -> Mail::Message
+
+    def intro: -> ::String
+
+    def body: -> ::String
+
+    def conclusion: -> ::String
+
+    private
+
+    def bill_link_text: -> "which can be found here - "
+
+    def user_vote_support_text: -> ("support" | "oppose")
+
+    def registered_voter_text: -> ("I am registered to vote and" | "I")
+
+    def residence_text: -> (::String | "in your district")
+
+    def address_text: -> (::String | "")
+
+    def from: -> "outreach@sway.vote"
+
+    def reply_to: -> String?
+
+    def to: -> String?
+
+    def subject: -> String
+
+    def legislator: -> Legislator
+
+    def user: -> User
+
+    def bill: -> Bill
+end

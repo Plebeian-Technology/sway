@@ -115,7 +115,7 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       post callback_users_webauthn_registration_index_path,
            params: callback_params
 
-      passkey = Passkey.last
+      passkey = Passkey.last!
       expect(passkey.external_id).to eq(fake_credential_id)
       expect(passkey.public_key).to eq(fake_public_key)
       expect(passkey.label).to eq("MacBook")

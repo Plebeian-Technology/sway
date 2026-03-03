@@ -18,7 +18,7 @@ module VirtualAuthenticator
           automaticPresenceSimulation: true,
         },
       },
-    ).fetch("authenticatorId")
+    ).fetch("authenticatorId").to_s
   rescue Selenium::WebDriver::Error::WebDriverError,
          Selenium::WebDriver::Error::NoSuchDriverError => e
     skip("Virtual authenticator unavailable in this environment: #{e.message}")
@@ -45,7 +45,11 @@ module VirtualAuthenticator
   private
 
   def execute_cdp(browser, command, params = nil)
-    browser.execute_cdp(command, **(params || {}))
+    if params
+      browser.execute_cdp(command, **params)
+    else
+      browser.execute_cdp(command)
+    end
   end
 end
 

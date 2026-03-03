@@ -1,0 +1,396 @@
+class ::UserOrganizationMembership < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::UserOrganizationMembership, ::UserOrganizationMembership::ActiveRecord_Relation, ::Integer]
+
+    module ::UserOrganizationMembership::GeneratedAttributeMethods
+        def id: -> ::Integer
+
+        def id=: (::Integer) -> ::Integer
+
+        def id?: -> bool
+
+        def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_change: -> [::Integer?, ::Integer?]
+
+        def id_will_change!: -> void
+
+        def id_was: -> ::Integer?
+
+        def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_previous_change: -> ::Array[::Integer?]?
+
+        def id_previously_was: -> ::Integer?
+
+        def id_before_last_save: -> ::Integer?
+
+        def id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def id_in_database: -> ::Integer?
+
+        def saved_change_to_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_id?: -> bool
+
+        def will_save_change_to_id?: -> bool
+
+        def restore_id!: -> void
+
+        def clear_id_change: -> void
+
+        def id_before_type_cast: -> ::Integer
+
+        def id_for_database: -> ::Integer
+
+        def created_at: -> ::ActiveSupport::TimeWithZone
+
+        def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def created_at?: -> bool
+
+        def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def created_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def created_at_will_change!: -> void
+
+        def created_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def created_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_created_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_created_at?: -> bool
+
+        def will_save_change_to_created_at?: -> bool
+
+        def restore_created_at!: -> void
+
+        def clear_created_at_change: -> void
+
+        def created_at_before_type_cast: -> ::Time
+
+        def created_at_for_database: -> ::Time
+
+        def organization_id: -> ::Integer
+
+        def organization_id=: (::Integer) -> ::Integer
+
+        def organization_id?: -> bool
+
+        def organization_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def organization_id_change: -> [::Integer?, ::Integer?]
+
+        def organization_id_will_change!: -> void
+
+        def organization_id_was: -> ::Integer?
+
+        def organization_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def organization_id_previous_change: -> ::Array[::Integer?]?
+
+        def organization_id_previously_was: -> ::Integer?
+
+        def organization_id_before_last_save: -> ::Integer?
+
+        def organization_id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def organization_id_in_database: -> ::Integer?
+
+        def saved_change_to_organization_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_organization_id?: -> bool
+
+        def will_save_change_to_organization_id?: -> bool
+
+        def restore_organization_id!: -> void
+
+        def clear_organization_id_change: -> void
+
+        def organization_id_before_type_cast: -> ::Integer
+
+        def organization_id_for_database: -> ::Integer
+
+        def role: -> ::String
+
+        def role=: (::String) -> ::String
+
+        def role?: -> bool
+
+        def role_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def role_change: -> [::String?, ::String?]
+
+        def role_will_change!: -> void
+
+        def role_was: -> ::String?
+
+        def role_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def role_previous_change: -> ::Array[::String?]?
+
+        def role_previously_was: -> ::String?
+
+        def role_before_last_save: -> ::String?
+
+        def role_change_to_be_saved: -> ::Array[::String?]?
+
+        def role_in_database: -> ::String?
+
+        def saved_change_to_role: -> ::Array[::String?]?
+
+        def saved_change_to_role?: -> bool
+
+        def will_save_change_to_role?: -> bool
+
+        def restore_role!: -> void
+
+        def clear_role_change: -> void
+
+        def role_before_type_cast: -> ::Integer
+
+        def role_for_database: -> ::Integer
+
+        def updated_at: -> ::ActiveSupport::TimeWithZone
+
+        def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def updated_at?: -> bool
+
+        def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def updated_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def updated_at_will_change!: -> void
+
+        def updated_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def updated_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_updated_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_updated_at?: -> bool
+
+        def will_save_change_to_updated_at?: -> bool
+
+        def restore_updated_at!: -> void
+
+        def clear_updated_at_change: -> void
+
+        def updated_at_before_type_cast: -> ::Time
+
+        def updated_at_for_database: -> ::Time
+
+        def user_id: -> ::Integer
+
+        def user_id=: (::Integer) -> ::Integer
+
+        def user_id?: -> bool
+
+        def user_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def user_id_change: -> [::Integer?, ::Integer?]
+
+        def user_id_will_change!: -> void
+
+        def user_id_was: -> ::Integer?
+
+        def user_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def user_id_previous_change: -> ::Array[::Integer?]?
+
+        def user_id_previously_was: -> ::Integer?
+
+        def user_id_before_last_save: -> ::Integer?
+
+        def user_id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def user_id_in_database: -> ::Integer?
+
+        def saved_change_to_user_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_user_id?: -> bool
+
+        def will_save_change_to_user_id?: -> bool
+
+        def restore_user_id!: -> void
+
+        def clear_user_id_change: -> void
+
+        def user_id_before_type_cast: -> ::Integer
+
+        def user_id_for_database: -> ::Integer
+    end
+    include ::UserOrganizationMembership::GeneratedAttributeMethods
+    module ::UserOrganizationMembership::GeneratedAliasAttributeMethods
+        include ::UserOrganizationMembership::GeneratedAttributeMethods
+
+        alias id_value id
+
+        alias id_value= id=
+
+        alias id_value? id?
+
+        alias id_value_changed? id_changed?
+
+        alias id_value_change id_change
+
+        alias id_value_will_change! id_will_change!
+
+        alias id_value_was id_was
+
+        alias id_value_previously_changed? id_previously_changed?
+
+        alias id_value_previous_change id_previous_change
+
+        alias id_value_previously_was id_previously_was
+
+        alias id_value_before_last_save id_before_last_save
+
+        alias id_value_change_to_be_saved id_change_to_be_saved
+
+        alias id_value_in_database id_in_database
+
+        alias saved_change_to_id_value saved_change_to_id
+
+        alias saved_change_to_id_value? saved_change_to_id?
+
+        alias will_save_change_to_id_value? will_save_change_to_id?
+
+        alias restore_id_value! restore_id!
+
+        alias clear_id_value_change clear_id_change
+
+        alias id_value_before_type_cast id_before_type_cast
+
+        alias id_value_for_database id_for_database
+    end
+    include ::UserOrganizationMembership::GeneratedAliasAttributeMethods
+
+    def user: -> ::User
+    def user=: (::User?) -> ::User?
+    def reload_user: -> ::User?
+    def build_user: (untyped) -> ::User
+    def create_user: (untyped) -> ::User
+    def create_user!: (untyped) -> ::User
+    def organization: -> ::Organization
+    def organization=: (::Organization?) -> ::Organization?
+    def reload_organization: -> ::Organization?
+    def build_organization: (untyped) -> ::Organization
+    def create_organization: (untyped) -> ::Organization
+    def create_organization!: (untyped) -> ::Organization
+    module ::UserOrganizationMembership::GeneratedAssociationMethods
+    end
+    include ::UserOrganizationMembership::GeneratedAssociationMethods
+
+    def standard!: -> bool
+    def standard?: -> bool
+    def admin!: -> bool
+    def admin?: -> bool
+    def self.roles: -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+    def self.standard: -> ::UserOrganizationMembership::ActiveRecord_Relation
+    def self.not_standard: -> ::UserOrganizationMembership::ActiveRecord_Relation
+    def self.admin: -> ::UserOrganizationMembership::ActiveRecord_Relation
+    def self.not_admin: -> ::UserOrganizationMembership::ActiveRecord_Relation
+
+    module ::UserOrganizationMembership::GeneratedRelationMethods
+        def roles: -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+
+        def standard: -> ::UserOrganizationMembership::ActiveRecord_Relation
+
+        def not_standard: -> ::UserOrganizationMembership::ActiveRecord_Relation
+
+        def admin: -> ::UserOrganizationMembership::ActiveRecord_Relation
+
+        def not_admin: -> ::UserOrganizationMembership::ActiveRecord_Relation
+    end
+
+    class ::UserOrganizationMembership::ActiveRecord_Relation < ::ActiveRecord::Relation
+        include ::Enumerable[::UserOrganizationMembership]
+        include ::UserOrganizationMembership::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::UserOrganizationMembership, ::Integer]
+    end
+
+    class ::UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+        include ::Enumerable[::UserOrganizationMembership]
+        include ::UserOrganizationMembership::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::UserOrganizationMembership, ::Integer]
+
+        def build:
+            (
+                ?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes
+            ) ?{
+                -> untyped
+            } -> ::UserOrganizationMembership
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::UserOrganizationMembership]
+        def create:
+            (
+                ?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes
+            ) ?{
+                -> untyped
+            } -> ::UserOrganizationMembership
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::UserOrganizationMembership]
+        def create!:
+            (
+                ?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes
+            ) ?{
+                -> untyped
+            } -> ::UserOrganizationMembership
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::UserOrganizationMembership]
+        def reload: -> ::Array[::UserOrganizationMembership]
+
+        def replace: (::Array[::UserOrganizationMembership]) -> void
+        def delete: (*::UserOrganizationMembership | ::Integer) -> ::Array[::UserOrganizationMembership]
+        def destroy: (*::UserOrganizationMembership | ::Integer) -> ::Array[::UserOrganizationMembership]
+        def <<: (*::UserOrganizationMembership | ::Array[::UserOrganizationMembership]) -> self
+        def `prepend`: (*::UserOrganizationMembership | ::Array[::UserOrganizationMembership]) -> self
+    end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+
+class ::User < ::ApplicationRecord
+end
+
+class ::Organization < ::ApplicationRecord
+end

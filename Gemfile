@@ -72,8 +72,8 @@ gem "inertia_rails"
 gem "concurrent-ruby"
 
 # https://github.com/lostisland/faraday
-gem "faraday"
 gem "down"
+gem "faraday"
 
 # https://github.com/mauricio/faraday_curl
 # gem 'faraday_curl'
@@ -92,10 +92,6 @@ gem "twilio-ruby", "~> 7"
 # Use sqlite3 as the database for Active Record
 # https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
 gem "sqlite3", "~> 2", force_ruby_platform: true
-
-# Ruby type hints
-# https://sorbet.org/docs/adopting
-gem "sorbet-runtime"
 
 # gcp storage for get/put org icons, etc.
 gem "google-cloud-storage"
@@ -128,10 +124,10 @@ gem "pdf-reader"
 group :production do
   # https://github.com/modosc/cloudflare-rails
   # To determine ip addresses in order to rate limit correctly
+  gem "cloudflare-rails"
+  gem "newrelic_rpm"
   gem "sentry-rails"
   gem "sentry-ruby"
-  gem "newrelic_rpm"
-  gem "cloudflare-rails"
 end
 
 group :development, :test do
@@ -149,14 +145,6 @@ group :development, :test do
 
   # https://github.com/thoughtbot/factory_bot_rails
   gem "factory_bot_rails"
-
-  # https://github.com/samuelgiles/rspec-sorbet
-  # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
-  gem "rspec-sorbet"
-
-  # Generate types from gems
-  # https://github.com/Shopify/tapioca
-  gem "tapioca", "~> 0.17", require: false
 end
 
 group :development do
@@ -167,10 +155,6 @@ group :development do
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
   # Use annotaterb instead of annotate - https://github.com/drwl/annotaterb
   gem "annotaterb"
-
-  # Ruby type hints
-  # https://sorbet.org/docs/adopting
-  gem "sorbet"
 
   # https://github.com/faker-ruby/faker
   gem "faker"
@@ -194,6 +178,9 @@ group :development do
   gem "rubocop-thread_safety"
 
   gem "prettier_print"
+  gem "rbs", require: false
+  gem "rbs_rails", require: false
+  gem "steep", require: false
   gem "syntax_tree"
   gem "syntax_tree-haml"
   gem "syntax_tree-rbs"

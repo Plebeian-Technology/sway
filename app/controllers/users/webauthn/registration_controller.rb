@@ -1,12 +1,8 @@
-# typed: true
-
 # frozen_string_literal: true
 
 module Users
   module Webauthn
     class RegistrationController < ApplicationController
-      extend T::Sig
-
       rate_limit(to: 100, within: 1.minute)
 
       skip_before_action :authenticate_sway_user!
@@ -122,13 +118,10 @@ module Users
 
       private
 
-      sig do
-        params(attributes: T.untyped, verified_phone: String).returns(
-          T::Hash[Symbol, T.untyped],
-        )
-      end
       def sanitized_user_attributes(attributes, verified_phone)
-        raw_attributes = attributes.is_a?(Hash) ? attributes : {}
+        empty_attributes = {}
+        # @type var empty_attributes: Hash[untyped, untyped]
+        raw_attributes = attributes.is_a?(Hash) ? attributes : empty_attributes
 
         {
           phone: verified_phone,
@@ -148,18 +141,12 @@ module Users
         }.compact
       end
 
-      sig do
-        params(attributes: T::Hash[T.untyped, T.untyped], key: String).returns(
-          T.untyped,
-        )
-      end
       def read_attribute(attributes, key)
         return attributes[key] if attributes.key?(key)
 
         attributes[key.to_sym]
       end
 
-      sig { returns(ActionController::Parameters) }
       def registration_params
         params.permit(:passkey_label, :token)
       end

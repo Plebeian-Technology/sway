@@ -1,0 +1,14 @@
+class Address < ApplicationRecord
+    def self.from_string: (String address_string) -> Address?
+
+    def full_address: -> String
+    def sway_locales: -> Array[SwayLocale]
+    def to_cartesian: -> untyped
+
+    private
+
+    def geocode: -> void
+    def find_region_code_from_region_name: -> (String | nil)
+    def upcase_region_code: -> String
+    def titleize_city_name: -> String
+end

@@ -26,7 +26,7 @@
 require "rails_helper"
 
 RSpec.describe Passkey, type: :model do
-  subject(:passkey) { build(:passkey) }
+  subject(:passkey) { FactoryBot.build(:passkey) }
 
   it "is valid with all attributes" do
     expect(passkey).to be_valid

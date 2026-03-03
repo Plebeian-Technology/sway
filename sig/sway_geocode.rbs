@@ -1,0 +1,31 @@
+module SwayGeocode
+    def self.build: (untyped sway_locale, untyped address) -> untyped
+
+    class Congress
+        @address: untyped
+
+        include Census
+
+        def initialize: (untyped address) -> void
+
+        def districts: -> untyped
+    end
+
+    class Local
+        @sway_locale: untyped
+
+        @address: untyped
+
+        @feature: untyped
+
+        def initialize: (untyped sway_locale, untyped address) -> void
+
+        def districts: -> (::Array[untyped] | ::Array[(0 | untyped)])
+
+        private
+
+        def load_feature: -> untyped
+
+        def load_geojson_for_locale: -> untyped
+    end
+end

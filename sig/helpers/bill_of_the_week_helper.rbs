@@ -1,0 +1,2 @@
+module BillOfTheWeekHelper
+end

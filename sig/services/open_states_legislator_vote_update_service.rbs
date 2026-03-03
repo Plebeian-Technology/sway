@@ -1,0 +1,24 @@
+# https://v3.openstates.org/bills/{jurisdiction}/{session}/{bill_id}
+class OpenStatesLegislatorVoteUpdateService
+    @bill: Bill
+
+    attr_reader bill: Bill
+
+    def initialize: (Integer bill_id) -> void
+
+    def run: -> nil
+
+    private
+
+    def scraper: -> untyped
+
+    def senate: -> nil
+
+    def house: -> nil
+
+    def create: (Integer? legislator_id, untyped vote) -> LegislatorVote?
+
+    def representative: (untyped vote) -> Integer?
+
+    def senator: (untyped vote) -> Integer?
+end

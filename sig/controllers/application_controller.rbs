@@ -1,0 +1,55 @@
+class ApplicationController < ActionController::Base
+    @@_ssr_methods: Hash[Symbol, Symbol]
+
+    @current_user: User?
+
+    @current_sway_locale: SwayLocale?
+
+    include DefaultMetaTaggable
+
+    include RelyingParty
+
+    include ApiKeyAuthenticatable
+
+    include SwayProps
+
+    include Pages
+
+    include SwayRoutes
+
+    def render_component: (String? page, ?Hash[Symbol, untyped] | Proc | nil props) -> void
+
+    def route_component: (String? route, ?Hash[Symbol, untyped] new_params) -> void
+
+    def sign_in: (User user) -> void
+
+    def sign_out: -> void
+
+    def current_user: -> User?
+
+    def current_sway_locale: -> SwayLocale?
+
+    def invited_by_id: -> String?
+
+    def authenticate_with_cookies: -> User?
+
+    def is_api_request_and_is_route_api_accessible?: -> void
+
+    def authenticate_sway_user!: -> void
+
+    def verify_is_sway_admin: -> void
+
+    private
+
+    def set_sway_locale_id_in_session: -> void
+
+    def find_current_sway_locale: -> SwayLocale?
+
+    def inertia_page_expired_error: -> void
+
+    # https://rslstandard.org/guide/http
+    # https://arstechnica.com/tech-policy/2025/09/pay-per-output-ai-firms-blindsided-by-beefed-up-robots-txt-instructions/
+    def add_rsl_license_header: -> void
+
+    def redirect_to_https_if_needed: -> void
+end

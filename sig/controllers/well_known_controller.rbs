@@ -1,0 +1,3 @@
+class WellKnownController < ApplicationController
+    def index: -> untyped
+end

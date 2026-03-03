@@ -1,0 +1,7 @@
+class PushNotificationSubscription < ApplicationRecord
+    def send_web_push_notification: (String | Hash[Symbol, untyped] message) -> nil
+
+    private
+
+    def vapid: -> Hash[Symbol, String?]
+end

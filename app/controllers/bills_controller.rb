@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class BillsController < ApplicationController
   include SwayGoogleCloudStorage
@@ -67,6 +66,9 @@ class BillsController < ApplicationController
 
   # GET /bills/new
   def new
+    empty_legislator_votes = []
+    # @type var empty_legislator_votes: Array[untyped]
+
     render_component(
       Pages::BILL_CREATOR,
       {
@@ -77,7 +79,7 @@ class BillsController < ApplicationController
             &.map(&:to_sway_json),
         bill: Bill.new.attributes,
         legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
-        legislator_votes: [],
+        legislator_votes: empty_legislator_votes,
         organizations:
           Organization
             .includes(:organization_bill_positions)
@@ -220,15 +222,12 @@ class BillsController < ApplicationController
 
   def set_bill
     @bill =
-      T.let(
-        Bill.includes(
-          :legislator_votes,
-          :organization_bill_positions,
-          :legislator,
-          :sway_locale,
-        ).find(params[:id]),
-        T.nilable(Bill),
-      )
+      Bill.includes(
+        :legislator_votes,
+        :organization_bill_positions,
+        :legislator,
+        :sway_locale,
+      ).find(params[:id])
   end
 
   def remove_audio(audio_path)

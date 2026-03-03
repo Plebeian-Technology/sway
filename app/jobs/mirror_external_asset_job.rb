@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class MirrorExternalAssetJob < ApplicationJob
   queue_as :default

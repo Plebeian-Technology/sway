@@ -1,0 +1,31 @@
+class User < ApplicationRecord
+    class EmailValidator < ActiveModel::EachValidator
+        def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+        def in_blocklist?: (String email) -> bool
+        def prepare: (String email) -> String
+    end
+
+    CREDENTIAL_MIN_AMOUNT: Integer
+    ADMIN_PHONES: Array[String]
+    API_USER_PHONES: Array[String]
+
+    def sway_locales: -> Array[SwayLocale]
+    def default_sway_locale: -> SwayLocale?
+    def user_legislators_by_locale: (SwayLocale sway_locale) -> Array[UserLegislator]
+    def legislators: (SwayLocale sway_locale) -> Array[Legislator]
+    def districts: (SwayLocale sway_locale) -> Array[District]
+    def email_sendable?: -> bool
+    def as_json: (?untyped options) -> Hash[String, untyped]
+    def to_builder: -> Jbuilder
+    def is_sway_admin?: -> bool
+    def is_sway_api_user?: -> bool
+    def has_sway_passkey?: -> bool
+    def can_delete_sway_passkeys?: -> bool
+    def has_user_legislators?: -> bool
+    def create_user_invite_url: -> UserInviter?
+    def invite_url: -> String?
+
+    def processing?: -> bool
+    def complete!: -> void
+    def mark_failed!: -> void
+end

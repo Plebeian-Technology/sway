@@ -1,4 +1,4 @@
-shared_context "WebAuthnDouble" do
+RSpec.shared_context "WebAuthnDouble" do
   let(:fake_challenge) { "fake-challenge" }
   let(:fake_credential_id) { "fake-credential-id" }
   let(:fake_public_key) { "fake-public-key" }

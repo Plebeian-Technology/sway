@@ -1,9 +1,6 @@
 # frozen_string_literal: true
-# typed: true
 
 class SwayRegistrationJob < ApplicationJob
-  extend T::Sig
-
   queue_as :default
 
   def perform(user_id, address_id, sway_locale_id, invited_by_id:)
@@ -30,7 +27,6 @@ class SwayRegistrationJob < ApplicationJob
 
   private
 
-  sig { params(user_id: Integer).void }
   def mark_failed_if_processing(user_id)
     user = User.find(user_id)
     user.mark_failed! if user.processing?

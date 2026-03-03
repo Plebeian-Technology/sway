@@ -1,4 +1,4 @@
-shared_context "TwilioDouble" do
+RSpec.shared_context "TwilioDouble" do
   let(:twilio_verification_status) { "approved" }
   let(:twilio_client_double) { instance_double(Twilio::REST::Client) }
   let(:twilio_verify_double) { instance_double("TwilioVerify") }

@@ -29,7 +29,7 @@ RSpec.describe "UserOrganizationMembershipInvites", type: :request do
               ActionMailer::Base.deliveries.count
             }.by(1)
 
-      invite = UserOrganizationMembershipInvite.last
+      invite = UserOrganizationMembershipInvite.last!
       mail = ActionMailer::Base.deliveries.last
       expect(mail.to).to include("invitee@example.com")
       expect(invite.organization).to eq(organization)

@@ -1,0 +1,9 @@
+class NotificationsController < ApplicationController
+    def index: -> untyped
+
+    def update_settings: -> untyped
+
+    private
+
+    def notification_params: -> untyped
+end

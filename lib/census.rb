@@ -7,11 +7,13 @@ module Census
 
   class Congress
     def initialize(address)
-      @address = T.let(address, Address)
+      @address = address
     end
 
     def congressional_district
-      data&.fetch("features", [])&.first&.dig("attributes", "CD#{CONGRESS}")
+      default_features = []
+      # @type var default_features: Array[untyped]
+      data&.fetch("features", default_features)&.first&.dig("attributes", "CD#{CONGRESS}")
     end
 
     # {

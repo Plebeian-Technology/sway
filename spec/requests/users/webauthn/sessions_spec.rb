@@ -13,9 +13,11 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       ENV.delete("SKIP_PHONE_VERIFICATION")
       example.run
     ensure
-      previous.nil? ?
-        ENV.delete("SKIP_PHONE_VERIFICATION") :
+      if previous.nil?
+        ENV.delete("SKIP_PHONE_VERIFICATION")
+      else
         ENV["SKIP_PHONE_VERIFICATION"] = previous
+      end
     end
 
     context "when phone is invalid" do
@@ -95,9 +97,11 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
           ENV["SKIP_PHONE_VERIFICATION"] = "1"
           example.run
         ensure
-          previous.nil? ?
-            ENV.delete("SKIP_PHONE_VERIFICATION") :
+          if previous.nil?
+            ENV.delete("SKIP_PHONE_VERIFICATION")
+          else
             ENV["SKIP_PHONE_VERIFICATION"] = previous
+          end
         end
 
         it "stores phone in session and returns success" do

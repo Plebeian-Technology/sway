@@ -1,0 +1,5 @@
+class ApplicationRecord < ActiveRecord::Base
+    def to_sway_json: -> Hash[(String | Symbol), untyped]
+    def to_builder: -> Jbuilder
+    def attributes!: -> Hash[(String | Symbol), untyped]
+end

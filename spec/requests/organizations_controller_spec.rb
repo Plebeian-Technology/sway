@@ -44,9 +44,7 @@ RSpec.describe "OrganizationsController", type: :request do
       expect(Organization.count).to eql(count_organizations + 2)
 
       organization_params[:organizations].each do |param|
-        org = Organization.find_by(name: param[:label])
-
-        expect(org).to_not be_nil
+        org = Organization.find_by!(name: param[:label])
         expect(org.icon_url).to eql(param[:icon_url])
 
         org.positions.each do |position|

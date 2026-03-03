@@ -1,0 +1,15 @@
+class LegislatorVotesController < ApplicationController
+    @bill: untyped
+
+    def index: -> untyped
+
+    def show: -> untyped
+
+    def create: -> untyped
+
+    private
+
+    def set_bill: -> untyped
+
+    def legislator_votes_params: -> untyped
+end

@@ -1,5 +1,3 @@
-# typed: true
-
 # == Schema Information
 #
 # Table name: user_legislator_emails
@@ -23,8 +21,6 @@
 #  user_legislator_id  (user_legislator_id => user_legislators.id)
 #
 class UserLegislatorEmail < ApplicationRecord
-  extend T::Sig
-
   SENDGRID_TEMPLATE_ID = "".freeze
 
   enum :status,
@@ -40,12 +36,10 @@ class UserLegislatorEmail < ApplicationRecord
   delegate :user, to: :user_legislator
   delegate :sway_locale, to: :bill
 
-  sig { returns(Bill) }
   def bill
-    T.cast(super, Bill)
+    super
   end
 
-  sig { returns(T.nilable(UserVote)) }
   def user_vote
     @user_vote ||= UserVote.find_by(bill:, user:)
   end

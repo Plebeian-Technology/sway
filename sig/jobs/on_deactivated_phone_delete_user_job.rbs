@@ -1,0 +1,11 @@
+class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
+    @deactivated_phones: Array[String]?
+
+    def perform: (*untyped _args) -> void
+
+    def deactivated_phones: -> Array[String]?
+
+    def deactivation_url: -> String?
+
+    def twilio_client: -> Twilio::REST::Client
+end

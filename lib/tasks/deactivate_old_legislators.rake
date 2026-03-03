@@ -2,7 +2,7 @@ namespace :sway do
   # Call like: ./bin/rake "sway:deactivate_old_legislators[[2024]]"
 
   desc "De-activates all Legislators that do not have an election_year within the passed array of election years."
-  task :deactivate_old_legislators, [:election_years] => [:environment] do |task, args|
+  task :deactivate_old_legislators, [:election_years] => [:environment] do |_task, args|
     election_years = JSON.parse(args[:election_years])
 
     Rails.logger.info("deactivate_old_legislators.rake - de-activate all Legislators in election years: #{election_years}")

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class LegislatorsController < ApplicationController
   before_action :set_legislator, only: %i[show]
@@ -27,11 +26,14 @@ class LegislatorsController < ApplicationController
   end
 
   def json_legislators
+    empty_scores = []
+    # @type var empty_scores: Array[untyped]
+
     current_user
       &.user_legislators
       &.includes(
         legislator: :legislator_district_score,
-        user_legislator_score: [],
+        user_legislator_score: empty_scores,
       )
       &.where(active: true, legislators: { active: true })
       &.map do |ul|

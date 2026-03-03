@@ -1,0 +1,597 @@
+class ::Address < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::Address, ::Address::ActiveRecord_Relation, ::Integer]
+
+    module ::Address::GeneratedAttributeMethods
+        def id: -> ::Integer
+
+        def id=: (::Integer) -> ::Integer
+
+        def id?: -> bool
+
+        def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_change: -> [::Integer?, ::Integer?]
+
+        def id_will_change!: -> void
+
+        def id_was: -> ::Integer?
+
+        def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_previous_change: -> ::Array[::Integer?]?
+
+        def id_previously_was: -> ::Integer?
+
+        def id_before_last_save: -> ::Integer?
+
+        def id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def id_in_database: -> ::Integer?
+
+        def saved_change_to_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_id?: -> bool
+
+        def will_save_change_to_id?: -> bool
+
+        def restore_id!: -> void
+
+        def clear_id_change: -> void
+
+        def id_before_type_cast: -> ::Integer
+
+        def id_for_database: -> ::Integer
+
+        def city: -> ::String
+
+        def city=: (::String) -> ::String
+
+        def city?: -> bool
+
+        def city_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def city_change: -> [::String?, ::String?]
+
+        def city_will_change!: -> void
+
+        def city_was: -> ::String?
+
+        def city_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def city_previous_change: -> ::Array[::String?]?
+
+        def city_previously_was: -> ::String?
+
+        def city_before_last_save: -> ::String?
+
+        def city_change_to_be_saved: -> ::Array[::String?]?
+
+        def city_in_database: -> ::String?
+
+        def saved_change_to_city: -> ::Array[::String?]?
+
+        def saved_change_to_city?: -> bool
+
+        def will_save_change_to_city?: -> bool
+
+        def restore_city!: -> void
+
+        def clear_city_change: -> void
+
+        def city_before_type_cast: -> ::String
+
+        def city_for_database: -> ::String
+
+        def country: -> ::String
+
+        def country=: (::String) -> ::String
+
+        def country?: -> bool
+
+        def country_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def country_change: -> [::String?, ::String?]
+
+        def country_will_change!: -> void
+
+        def country_was: -> ::String?
+
+        def country_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def country_previous_change: -> ::Array[::String?]?
+
+        def country_previously_was: -> ::String?
+
+        def country_before_last_save: -> ::String?
+
+        def country_change_to_be_saved: -> ::Array[::String?]?
+
+        def country_in_database: -> ::String?
+
+        def saved_change_to_country: -> ::Array[::String?]?
+
+        def saved_change_to_country?: -> bool
+
+        def will_save_change_to_country?: -> bool
+
+        def restore_country!: -> void
+
+        def clear_country_change: -> void
+
+        def country_before_type_cast: -> ::String
+
+        def country_for_database: -> ::String
+
+        def created_at: -> ::ActiveSupport::TimeWithZone
+
+        def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def created_at?: -> bool
+
+        def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def created_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def created_at_will_change!: -> void
+
+        def created_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def created_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_created_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_created_at?: -> bool
+
+        def will_save_change_to_created_at?: -> bool
+
+        def restore_created_at!: -> void
+
+        def clear_created_at_change: -> void
+
+        def created_at_before_type_cast: -> ::Time
+
+        def created_at_for_database: -> ::Time
+
+        def latitude: -> ::Float?
+
+        def latitude=: (::Float?) -> ::Float?
+
+        def latitude?: -> bool
+
+        def latitude_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+        def latitude_change: -> [::Float?, ::Float?]
+
+        def latitude_will_change!: -> void
+
+        def latitude_was: -> ::Float?
+
+        def latitude_previously_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+        def latitude_previous_change: -> ::Array[::Float?]?
+
+        def latitude_previously_was: -> ::Float?
+
+        def latitude_before_last_save: -> ::Float?
+
+        def latitude_change_to_be_saved: -> ::Array[::Float?]?
+
+        def latitude_in_database: -> ::Float?
+
+        def saved_change_to_latitude: -> ::Array[::Float?]?
+
+        def saved_change_to_latitude?: -> bool
+
+        def will_save_change_to_latitude?: -> bool
+
+        def restore_latitude!: -> void
+
+        def clear_latitude_change: -> void
+
+        def latitude_before_type_cast: -> ::Float?
+
+        def latitude_for_database: -> ::Float?
+
+        def longitude: -> ::Float?
+
+        def longitude=: (::Float?) -> ::Float?
+
+        def longitude?: -> bool
+
+        def longitude_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+        def longitude_change: -> [::Float?, ::Float?]
+
+        def longitude_will_change!: -> void
+
+        def longitude_was: -> ::Float?
+
+        def longitude_previously_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+        def longitude_previous_change: -> ::Array[::Float?]?
+
+        def longitude_previously_was: -> ::Float?
+
+        def longitude_before_last_save: -> ::Float?
+
+        def longitude_change_to_be_saved: -> ::Array[::Float?]?
+
+        def longitude_in_database: -> ::Float?
+
+        def saved_change_to_longitude: -> ::Array[::Float?]?
+
+        def saved_change_to_longitude?: -> bool
+
+        def will_save_change_to_longitude?: -> bool
+
+        def restore_longitude!: -> void
+
+        def clear_longitude_change: -> void
+
+        def longitude_before_type_cast: -> ::Float?
+
+        def longitude_for_database: -> ::Float?
+
+        def postal_code: -> ::String
+
+        def postal_code=: (::String) -> ::String
+
+        def postal_code?: -> bool
+
+        def postal_code_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def postal_code_change: -> [::String?, ::String?]
+
+        def postal_code_will_change!: -> void
+
+        def postal_code_was: -> ::String?
+
+        def postal_code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def postal_code_previous_change: -> ::Array[::String?]?
+
+        def postal_code_previously_was: -> ::String?
+
+        def postal_code_before_last_save: -> ::String?
+
+        def postal_code_change_to_be_saved: -> ::Array[::String?]?
+
+        def postal_code_in_database: -> ::String?
+
+        def saved_change_to_postal_code: -> ::Array[::String?]?
+
+        def saved_change_to_postal_code?: -> bool
+
+        def will_save_change_to_postal_code?: -> bool
+
+        def restore_postal_code!: -> void
+
+        def clear_postal_code_change: -> void
+
+        def postal_code_before_type_cast: -> ::String
+
+        def postal_code_for_database: -> ::String
+
+        def region_code: -> ::String
+
+        def region_code=: (::String) -> ::String
+
+        def region_code?: -> bool
+
+        def region_code_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def region_code_change: -> [::String?, ::String?]
+
+        def region_code_will_change!: -> void
+
+        def region_code_was: -> ::String?
+
+        def region_code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def region_code_previous_change: -> ::Array[::String?]?
+
+        def region_code_previously_was: -> ::String?
+
+        def region_code_before_last_save: -> ::String?
+
+        def region_code_change_to_be_saved: -> ::Array[::String?]?
+
+        def region_code_in_database: -> ::String?
+
+        def saved_change_to_region_code: -> ::Array[::String?]?
+
+        def saved_change_to_region_code?: -> bool
+
+        def will_save_change_to_region_code?: -> bool
+
+        def restore_region_code!: -> void
+
+        def clear_region_code_change: -> void
+
+        def region_code_before_type_cast: -> ::String
+
+        def region_code_for_database: -> ::String
+
+        def street: -> ::String
+
+        def street=: (::String) -> ::String
+
+        def street?: -> bool
+
+        def street_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def street_change: -> [::String?, ::String?]
+
+        def street_will_change!: -> void
+
+        def street_was: -> ::String?
+
+        def street_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def street_previous_change: -> ::Array[::String?]?
+
+        def street_previously_was: -> ::String?
+
+        def street_before_last_save: -> ::String?
+
+        def street_change_to_be_saved: -> ::Array[::String?]?
+
+        def street_in_database: -> ::String?
+
+        def saved_change_to_street: -> ::Array[::String?]?
+
+        def saved_change_to_street?: -> bool
+
+        def will_save_change_to_street?: -> bool
+
+        def restore_street!: -> void
+
+        def clear_street_change: -> void
+
+        def street_before_type_cast: -> ::String
+
+        def street_for_database: -> ::String
+
+        def street2: -> ::String?
+
+        def street2=: (::String?) -> ::String?
+
+        def street2?: -> bool
+
+        def street2_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def street2_change: -> [::String?, ::String?]
+
+        def street2_will_change!: -> void
+
+        def street2_was: -> ::String?
+
+        def street2_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def street2_previous_change: -> ::Array[::String?]?
+
+        def street2_previously_was: -> ::String?
+
+        def street2_before_last_save: -> ::String?
+
+        def street2_change_to_be_saved: -> ::Array[::String?]?
+
+        def street2_in_database: -> ::String?
+
+        def saved_change_to_street2: -> ::Array[::String?]?
+
+        def saved_change_to_street2?: -> bool
+
+        def will_save_change_to_street2?: -> bool
+
+        def restore_street2!: -> void
+
+        def clear_street2_change: -> void
+
+        def street2_before_type_cast: -> ::String?
+
+        def street2_for_database: -> ::String?
+
+        def street3: -> ::String?
+
+        def street3=: (::String?) -> ::String?
+
+        def street3?: -> bool
+
+        def street3_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def street3_change: -> [::String?, ::String?]
+
+        def street3_will_change!: -> void
+
+        def street3_was: -> ::String?
+
+        def street3_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def street3_previous_change: -> ::Array[::String?]?
+
+        def street3_previously_was: -> ::String?
+
+        def street3_before_last_save: -> ::String?
+
+        def street3_change_to_be_saved: -> ::Array[::String?]?
+
+        def street3_in_database: -> ::String?
+
+        def saved_change_to_street3: -> ::Array[::String?]?
+
+        def saved_change_to_street3?: -> bool
+
+        def will_save_change_to_street3?: -> bool
+
+        def restore_street3!: -> void
+
+        def clear_street3_change: -> void
+
+        def street3_before_type_cast: -> ::String?
+
+        def street3_for_database: -> ::String?
+
+        def updated_at: -> ::ActiveSupport::TimeWithZone
+
+        def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def updated_at?: -> bool
+
+        def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def updated_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def updated_at_will_change!: -> void
+
+        def updated_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def updated_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_updated_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_updated_at?: -> bool
+
+        def will_save_change_to_updated_at?: -> bool
+
+        def restore_updated_at!: -> void
+
+        def clear_updated_at_change: -> void
+
+        def updated_at_before_type_cast: -> ::Time
+
+        def updated_at_for_database: -> ::Time
+    end
+    include ::Address::GeneratedAttributeMethods
+    module ::Address::GeneratedAliasAttributeMethods
+        include ::Address::GeneratedAttributeMethods
+
+        alias id_value id
+
+        alias id_value= id=
+
+        alias id_value? id?
+
+        alias id_value_changed? id_changed?
+
+        alias id_value_change id_change
+
+        alias id_value_will_change! id_will_change!
+
+        alias id_value_was id_was
+
+        alias id_value_previously_changed? id_previously_changed?
+
+        alias id_value_previous_change id_previous_change
+
+        alias id_value_previously_was id_previously_was
+
+        alias id_value_before_last_save id_before_last_save
+
+        alias id_value_change_to_be_saved id_change_to_be_saved
+
+        alias id_value_in_database id_in_database
+
+        alias saved_change_to_id_value saved_change_to_id
+
+        alias saved_change_to_id_value? saved_change_to_id?
+
+        alias will_save_change_to_id_value? will_save_change_to_id?
+
+        alias restore_id_value! restore_id!
+
+        alias clear_id_value_change clear_id_change
+
+        alias id_value_before_type_cast id_before_type_cast
+
+        alias id_value_for_database id_for_database
+    end
+    include ::Address::GeneratedAliasAttributeMethods
+
+    def user_address: -> ::UserAddress?
+    def user_address=: (::UserAddress?) -> ::UserAddress?
+    def build_user_address: (?untyped) -> ::UserAddress
+    def create_user_address: (?untyped) -> ::UserAddress
+    def create_user_address!: (?untyped) -> ::UserAddress
+    def reload_user_address: -> ::UserAddress?
+
+    module ::Address::GeneratedAssociationMethods
+    end
+    include ::Address::GeneratedAssociationMethods
+
+    module ::Address::GeneratedRelationMethods
+    end
+
+    class ::Address::ActiveRecord_Relation < ::ActiveRecord::Relation
+        include ::Enumerable[::Address]
+        include ::Address::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::Address, ::Integer]
+    end
+
+    class ::Address::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+        include ::Enumerable[::Address]
+        include ::Address::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::Address, ::Integer]
+
+        def build:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::Address
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::Address]
+        def create:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::Address
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::Address]
+        def create!:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::Address
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::Address]
+        def reload: -> ::Array[::Address]
+
+        def replace: (::Array[::Address]) -> void
+        def delete: (*::Address | ::Integer) -> ::Array[::Address]
+        def destroy: (*::Address | ::Integer) -> ::Array[::Address]
+        def <<: (*::Address | ::Array[::Address]) -> self
+        def `prepend`: (*::Address | ::Array[::Address]) -> self
+    end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+
+class ::UserAddress < ::ApplicationRecord
+end

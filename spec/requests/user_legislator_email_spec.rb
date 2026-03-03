@@ -23,8 +23,8 @@ RSpec.describe "UserLegislatorEmails", type: :request do
       end.to change(UserLegislatorEmail, :count).by(1)
 
       expect(response).to redirect_to(bill_path(bill.id))
-      expect(UserLegislatorEmail.last.bill).to eq(bill)
-      expect(UserLegislatorEmail.last.user).to eq(user)
+      expect(UserLegislatorEmail.last!.bill).to eq(bill)
+      expect(UserLegislatorEmail.last!.user).to eq(user)
     end
   end
 end

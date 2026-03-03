@@ -22,7 +22,6 @@
 #
 #  legislator_id  (legislator_id => legislators.id)
 #
-# typed: true
 
 # Scores calculated for a Legislator in a Distict
 # This may seem repetetive since Legislators have 1-1 relationships with Districts
@@ -30,25 +29,21 @@
 # the district attribute will prove to be useful in order to distinguish between
 # the Legislator's new district and old district
 class LegislatorDistrictScore < ApplicationRecord
-  extend T::Sig
   include Agreeable
   include Scoreable
 
   belongs_to :legislator
 
-  sig { returns(Legislator) }
   def legislator
-    T.cast(super, Legislator)
+    super
   end
 
-  sig { params(user_vote: UserVote).returns(LegislatorDistrictScore) }
   def update_score(user_vote)
     update_agreeable_score(user_vote, legislator_vote(user_vote))
     save!
     self
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |lds|
       # How user compares to Legislator
@@ -61,9 +56,6 @@ class LegislatorDistrictScore < ApplicationRecord
     end
   end
 
-  sig do
-    override.params(user_vote: UserVote).returns(T.nilable(LegislatorVote))
-  end
   def legislator_vote(user_vote)
     legislator.vote(user_vote.bill)
   end

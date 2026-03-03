@@ -1,11 +1,8 @@
-# typed: true
-
 # frozen_string_literal: true
 
 module Users
   module Webauthn
     class SessionsController < ApplicationController
-      extend T::Sig
       include Authentication
 
       rate_limit(to: 100, within: 1.minute)
@@ -141,7 +138,6 @@ module Users
         params.require(:publicKeyCredential)
       end
 
-      sig { returns(T.nilable(String)) }
       def phone
         @phone ||= session_params[:phone]&.remove_non_digits
       end

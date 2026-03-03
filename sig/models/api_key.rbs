@@ -1,0 +1,12 @@
+class ApiKey < ApplicationRecord
+    HMAC_SECRET_KEY: String?
+
+    attr_accessor token: String?
+
+    def self.authenticate_by_token!: (String token) -> ApiKey
+    def self.authenticate_by_token: (String token) -> ApiKey?
+
+    private
+
+    def generate_token_hmac_digest: -> void
+end

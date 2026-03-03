@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class SmsNotificationService
   def self.send_bill_of_the_week_notification(bill)

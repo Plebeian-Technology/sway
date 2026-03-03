@@ -29,4 +29,5 @@ Gemfile.lock
 **/lib/**
 
 **/**/*.log
+**/**/*.rbs
 

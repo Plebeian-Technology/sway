@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
@@ -116,8 +115,7 @@ module Scraper
           faraday.request request_type
           faraday.headers["Authorization"] = auth[:header] if auth&.dig(:header)
           faraday.headers["Content-Type"] = content_type
-          faraday.headers =
-            faraday.headers.merge(additional_headers) if additional_headers
+          faraday.headers.merge!(additional_headers) if additional_headers
           faraday.options.timeout = timeout
           faraday.response(:logger)
           # faraday.request :curl, Logger.new($stdout), :info

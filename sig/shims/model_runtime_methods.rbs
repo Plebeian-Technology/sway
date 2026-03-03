@@ -1,0 +1,182 @@
+class RefreshToken < ApplicationRecord
+    def self.for: (User user, ActionDispatch::Request request) -> RefreshToken
+    def self.token: -> String
+    def self.expires_at: -> ActiveSupport::TimeWithZone
+    def is_valid?: (ActionDispatch::Request request) -> bool
+    def expired?: -> bool
+    def as_cookie: -> Hash[Symbol, (String | Integer | bool | Time | ActiveSupport::TimeWithZone)]
+end
+
+class SwayLocale < ApplicationRecord
+    def self.find_by_name: (String name) -> SwayLocale?
+    def self.default_locale: -> SwayLocale?
+    def self.find_or_create_by_normalized!: (**String kwargs) -> SwayLocale
+    def self.format_name: (String name) -> String
+
+    def at_large_district: -> District?
+    def congress?: -> bool
+    def regional?: -> bool
+    def local?: -> bool
+    def name: -> String
+    def city_name: -> String
+    def region_name: -> String
+    def country_name: -> String
+    def region_code: -> String?
+    def has_geojson?: -> bool
+    def geojson_file_name: -> String
+    def internal_asset_url?: (String? url) -> bool
+    def load_geojson: -> RGeo::Cartesian::Geometry?
+end
+
+class Bill < ApplicationRecord
+    class Status
+        PASSED: String
+        FAILED: String
+        COMMITTEE: String
+        VETOED: String
+    end
+
+    STATUSES: Array[String]
+
+    def self.of_the_week: (sway_locale: SwayLocale) -> Bill?
+    def self.current_session: (SwayLocale sway_locale) -> Bill::ActiveRecord_Relation
+    def self.previous: (SwayLocale sway_locale) -> Bill::ActiveRecord_Relation
+
+    def vote: -> Vote?
+    def active: -> bool?
+    def organizations: -> Array[Organization]
+    def notifyable?: -> bool
+    def vote_date_time_utc: -> ActiveSupport::TimeWithZone?
+    def downcase_status: -> String?
+    def updated_scheduled_release_date_utc?: -> bool
+    def create_default_bill_score: -> BillScore
+    def render: (User? current_user, SwayLocale current_sway_locale) -> Hash[Symbol, top]
+end
+
+class BillScore < ApplicationRecord
+    def update_score: (UserVote user_vote) -> BillScore
+    def update_supportable_score: (UserVote user_vote) -> BillScore
+    def sway_locale: -> SwayLocale
+    def to_builder_with_user: (User? user) -> Jbuilder
+end
+
+class BillScoreDistrict < ApplicationRecord
+    def update_score: (UserVote user_vote) -> BillScoreDistrict
+    def update_supportable_score: (UserVote user_vote) -> BillScoreDistrict
+end
+
+class UserLegislatorScore < ApplicationRecord
+    def update_score: (UserVote user_vote) -> UserLegislatorScore
+    def empty?: -> bool
+    def legislator_vote: (UserVote user_vote) -> LegislatorVote?
+    def legislator: -> Legislator
+    def update_agreeable_score: (UserVote user_vote, LegislatorVote? vote) -> UserLegislatorScore
+end
+
+class District < ApplicationRecord
+    def number: -> Integer
+    def region_code: -> String?
+end
+
+class Legislator < ApplicationRecord
+    PARTY_BY_CHAR: Hash[Symbol, String]
+
+    def self.to_party_name_from_char: (String party) -> String?
+    def self.to_party_char_from_name: (String party) -> String
+
+    def sway_locale: -> SwayLocale
+    def congress?: -> bool
+    def full_name: -> String
+    def at_large?: -> bool
+    def election_year: -> Integer
+    def internal_asset_url?: (String? url) -> bool
+    def enqueue_photo_mirroring: -> void
+    def create_default_legislator_district_score: -> LegislatorDistrictScore
+    def vote: (Bill bill) -> LegislatorVote?
+end
+
+class Organization < ApplicationRecord
+    def members: -> UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy
+    def positions: -> OrganizationBillPosition::ActiveRecord_Associations_CollectionProxy
+    def to_simple_builder: -> Jbuilder
+    def internal_asset_url?: (String? url) -> bool
+    def enqueue_icon_mirroring: -> void
+end
+
+class OrganizationBillPosition < ApplicationRecord
+    DEFAULT_SUMMARY: String
+    def latest_position_change: -> OrganizationBillPositionChange?
+end
+
+class OrganizationBillPositionChange < ApplicationRecord
+    def approver: -> User?
+    def updater: -> User?
+    def position: -> OrganizationBillPosition
+end
+
+class Vote < ApplicationRecord
+    def create_legislator_votes: -> void
+end
+
+class LegislatorVote < ApplicationRecord
+    class Support
+        FOR: String
+        AGAINST: String
+        ABSTAIN: String
+        FOR_AGAINST: Array[String]
+        ALL: Array[String]
+    end
+
+    def for?: -> bool
+    def against?: -> bool
+    def abstain?: -> bool
+    def upcase_support: -> String?
+    def transform_support_to_for_against_abstain: -> String?
+    def update_scores: -> void
+end
+
+class UserVote < ApplicationRecord
+    def for?: -> bool
+    def against?: -> bool
+    def upcase_support: -> String?
+    def update_scores: -> void
+end
+
+class LegislatorDistrictScore < ApplicationRecord
+    def update_score: (UserVote user_vote) -> LegislatorDistrictScore
+    def legislator_vote: (UserVote user_vote) -> LegislatorVote?
+    def update_agreeable_score: (UserVote user_vote, LegislatorVote? vote) -> LegislatorDistrictScore
+end
+
+class UserLegislatorEmail < ApplicationRecord
+    SENDGRID_TEMPLATE_ID: String
+
+    def user: -> User
+    def legislator: -> Legislator
+    def sway_locale: -> SwayLocale
+    def user_vote: -> UserVote?
+    def sendable?: -> bool
+    def queue_send_legislator_email: -> void
+    def send_email: -> bool
+end
+
+class UserLegislator < ApplicationRecord
+    def create_default_user_legislator_score: -> UserLegislatorScore
+end
+
+class BillNotification < ApplicationRecord
+    def notify: -> void
+end
+
+class BillSponsor < ApplicationRecord
+end
+
+class SwayLocale < ApplicationRecord
+    def legislators: (?bool active) -> Legislator::ActiveRecord_Relation
+    def reversed_name: -> String
+    def human_name: -> String
+    def enqueue_icon_mirroring: -> void
+    def nameify_country: -> String
+    def nameify_region: -> String
+    def nameify_city: -> String
+end

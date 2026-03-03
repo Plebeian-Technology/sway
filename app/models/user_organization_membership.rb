@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -25,8 +24,6 @@
 #  user_id          (user_id => users.id)
 #
 class UserOrganizationMembership < ApplicationRecord
-  extend T::Sig
-
   belongs_to :user
   belongs_to :organization
 
@@ -34,13 +31,12 @@ class UserOrganizationMembership < ApplicationRecord
 
   validates :role, presence: true
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |m|
       m.id id
-      m.user_id T.unsafe(self).user.id
-      m.organization T.unsafe(self).organization.to_simple_builder.attributes!
-      m.role T.unsafe(self).admin? ? "admin" : "standard"
+      m.user_id user.id
+      m.organization organization.to_simple_builder.attributes!
+      m.role admin? ? "admin" : "standard"
     end
   end
 end

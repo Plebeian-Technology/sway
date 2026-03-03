@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 require "google/cloud/storage"
 
@@ -10,7 +9,6 @@ require "google/cloud/storage"
 
 module SwayGoogleCloudStorage
   extend ActiveSupport::Concern
-  extend T::Sig
 
   GOOGLE_CLOUD_PROJECT_ID = "sway-421916"
 
@@ -19,11 +17,9 @@ module SwayGoogleCloudStorage
   }
 
   class << self
-    extend T::Sig
     # Expose the bucket to cors requests from the frontend
     # https://cloud.google.com/storage/docs/using-cors#client-libraries
 
-    sig { params(bucket_name: String).void }
     def configure(bucket_name:)
       # The ID of your GCS bucket
       # bucket_name = "your-unique-bucket-name"
@@ -77,7 +73,6 @@ module SwayGoogleCloudStorage
     end
   end
 
-  sig { params(bucket_name: String, file_name: String).void }
   def generate_get_signed_url_v4(bucket_name:, file_name:)
     return unless bucket_name.present? && file_name.present?
 
@@ -86,7 +81,6 @@ module SwayGoogleCloudStorage
     storage.signed_url bucket_name, file_name, method: "GET", expires: storage_expiry_time, version: :v4
   end
 
-  sig { params(bucket_name: String, file_name: String, content_type: String).returns(T.nilable(String)) }
   def generate_put_signed_url_v4(bucket_name:, file_name:, content_type:)
     return unless bucket_name.present? && file_name.present?
 
@@ -109,7 +103,6 @@ module SwayGoogleCloudStorage
     bucket.create_file local_file_path, bucket_file_path
   end
 
-  sig { params(bucket_name: String, bucket_file_path: String, local_file_path: String).void }
   def download_file(bucket_name:, bucket_file_path:, local_file_path:)
     return unless bucket_name.present? && bucket_file_path.present? && local_file_path.present?
 
@@ -123,7 +116,6 @@ module SwayGoogleCloudStorage
     file.download local_file_path
   end
 
-  sig { params(bucket_name: String, bucket_directory_name: String, local_directory_name: String).void }
   def download_directory(bucket_name:, bucket_directory_name:, local_directory_name:)
     return unless bucket_name.present? && bucket_directory_name.present? && local_directory_name.present?
 
@@ -137,7 +129,6 @@ module SwayGoogleCloudStorage
     end
   end
 
-  sig { params(bucket_name: String, file_name: T.nilable(String)).void }
   def delete_file(bucket_name:, file_name:)
     return unless bucket_name.present? && file_name.present?
     return if file_name.starts_with? "https://"

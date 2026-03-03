@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
@@ -23,7 +22,6 @@
 #  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 class Organization < ApplicationRecord
-  extend T::Sig
   belongs_to :sway_locale
   has_one_attached :icon
 
@@ -47,7 +45,6 @@ class Organization < ApplicationRecord
     organization_bill_positions
   end
 
-  sig { returns(Jbuilder) }
   def to_simple_builder
     Jbuilder.new do |o|
       o.id id
@@ -57,7 +54,6 @@ class Organization < ApplicationRecord
     end
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |o|
       o.id id
@@ -71,7 +67,6 @@ class Organization < ApplicationRecord
 
   private
 
-  sig { void }
   def enqueue_icon_mirroring
     return if id.blank?
     return if internal_asset_url?(icon_url)
@@ -84,7 +79,6 @@ class Organization < ApplicationRecord
     )
   end
 
-  sig { params(url: T.nilable(String)).returns(T::Boolean) }
   def internal_asset_url?(url)
     return true if url.blank?
 

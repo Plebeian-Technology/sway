@@ -1,9 +1,6 @@
 # frozen_string_literal: true
-# typed: true
 
 class InfluenceController < ApplicationController
-  extend T::Sig
-
   def index
     u = current_user
     l = current_sway_locale

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module SystemBrowserPreflight
-  module_function
-
   CHROME_CANDIDATES = %w[
     /usr/bin/chromium
     /usr/bin/chromium-browser
@@ -15,19 +13,19 @@ module SystemBrowserPreflight
     /usr/lib/chromium/chromedriver
   ].freeze
 
-  def chrome_binary
+  def self.chrome_binary
     CHROME_CANDIDATES.find { |path| File.executable?(path) }
   end
 
-  def chromedriver_binary
+  def self.chromedriver_binary
     CHROMEDRIVER_CANDIDATES.find { |path| File.executable?(path) }
   end
 
-  def available?
-    chrome_binary && chromedriver_binary
+  def self.available?
+    !!(chrome_binary && chromedriver_binary)
   end
 
-  def missing_requirements_message
+  def self.missing_requirements_message
     <<~MSG
       System JS specs require both a browser and chromedriver in the rspec container.
       Missing browser: #{chrome_binary.nil?}
@@ -40,7 +38,7 @@ module SystemBrowserPreflight
     MSG
   end
 
-  def log_status_once(reporter: RSpec.configuration.reporter)
+  def self.log_status_once(reporter: RSpec.configuration.reporter)
     return if @status_logged
 
     if available?
@@ -56,10 +54,10 @@ module SystemBrowserPreflight
     @status_logged = true
   end
 
-  def assert_available!
+  def self.assert_available!
     return if available?
 
-    raise missing_requirements_message
+    Kernel.raise(missing_requirements_message)
   end
 end
 
@@ -68,13 +66,11 @@ Capybara.register_driver :selenium_chromium_headless do |app|
   chromedriver_binary = SystemBrowserPreflight.chromedriver_binary
 
   options = Selenium::WebDriver::Chrome::Options.new
-  options.binary = chrome_binary if chrome_binary
+  options.send(:binary=, chrome_binary) if chrome_binary
   service =
     (
       if chromedriver_binary
         Selenium::WebDriver::Service.chrome(path: chromedriver_binary)
-      else
-        nil
       end
     )
 

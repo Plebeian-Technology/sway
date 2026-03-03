@@ -1,0 +1,13 @@
+class UserVotesController < ApplicationController
+    def index: -> untyped
+
+    def show: -> untyped
+
+    # POST /user_votes or /user_votes.json
+    def create: -> untyped
+
+    private
+
+    # Only allow a list of trusted parameters through.
+    def user_vote_params: -> untyped
+end

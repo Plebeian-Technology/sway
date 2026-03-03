@@ -1,0 +1,3 @@
+class OnUserEmailSavedSendEmailToLegislatorJob < ApplicationJob
+    def perform: (UserLegislatorEmail user_legislator_email) -> void
+end
