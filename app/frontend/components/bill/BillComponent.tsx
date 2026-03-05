@@ -29,6 +29,7 @@ interface IProps {
     locale?: sway.ISwayLocale;
     user_vote?: sway.IUserVote;
     bill_score?: sway.IBillScore;
+    isAwaitingScoreUpdate?: boolean;
 }
 
 const DEFAULT_ORGANIZATION: sway.IOrganization = {
@@ -46,7 +47,14 @@ const DEFAULT_ORGANIZATION: sway.IOrganization = {
     ],
 };
 
-const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizations, user_vote }) => {
+const BillComponent: React.FC<IProps> = ({
+    bill,
+    bill_score,
+    sponsor,
+    organizations,
+    user_vote,
+    isAwaitingScoreUpdate = false,
+}) => {
     const [locale] = useLocale();
     const localeName = useLocaleName();
 
@@ -125,7 +133,11 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                 {user_vote && (
                     // Render this below summary when there is no user vote
                     <Suspense fallback={null}>
-                        <BillMobileChartsContainer bill={bill} bill_score={bill_score}>
+                        <BillMobileChartsContainer
+                            bill={bill}
+                            bill_score={bill_score}
+                            isAwaitingScoreUpdate={isAwaitingScoreUpdate}
+                        >
                             <p className="fw-semibold mb-2">How Others Voted</p>
                         </BillMobileChartsContainer>
                     </Suspense>

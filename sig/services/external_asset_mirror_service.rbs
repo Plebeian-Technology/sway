@@ -11,7 +11,7 @@ class ExternalAssetMirrorService
 
     def self.internal_asset_url?: (String url) -> bool
 
-    def self.mirror_filename: (Down::DownloadedFile downloaded_file, String source_url) -> String
+    def self.mirror_filename: (Down::DownloadedFile downloaded_file, String source_url) -> String?
 
     def self.attached_asset_url: (untyped attachment) -> String
 

@@ -1,0 +1,5 @@
+module ActionController
+    class Parameters
+        def transform_keys: { (untyped key) -> untyped } -> ActionController::Parameters
+    end
+end

@@ -30,14 +30,6 @@ class BillScoreDistrict < ApplicationRecord
   belongs_to :bill_score
   belongs_to :district
 
-  def bill_score
-    super
-  end
-
-  def district
-    super
-  end
-
   def update_score(user_vote)
     update_supportable_score(user_vote)
     save!

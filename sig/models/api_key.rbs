@@ -1,7 +1,7 @@
 class ApiKey < ApplicationRecord
-    HMAC_SECRET_KEY: String?
+    HMAC_SECRET_KEY: untyped
 
-    attr_accessor token: String?
+    attr_accessor token: String
 
     def self.authenticate_by_token!: (String token) -> ApiKey
     def self.authenticate_by_token: (String token) -> ApiKey?

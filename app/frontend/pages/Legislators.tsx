@@ -23,10 +23,11 @@ interface IProps {
     legislators: sway.ILegislator[];
 }
 
+const POLLING_PROPS = ["legislators"];
+
 const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
-    const only = useMemo(() => ["legislators"], []);
-    usePoll(15000, { only });
-    useScoreSubscription(only);
+    usePoll(15000, { only: POLLING_PROPS });
+    useScoreSubscription(POLLING_PROPS);
 
     const [locale] = useLocale();
 

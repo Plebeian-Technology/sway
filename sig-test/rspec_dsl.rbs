@@ -174,8 +174,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
 
-    def method_missing: (Symbol, *untyped args, **untyped kwargs) -> untyped
-    def respond_to_missing?: (Symbol, ?bool include_private) -> bool
 end
 
 module RSpec

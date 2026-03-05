@@ -55,7 +55,12 @@ class ApiKey < ApplicationRecord
       raise(ActiveRecord::RecordInvalid, "HMAC_SECRET_KEY is missing")
     end
 
-    digest = OpenSSL::HMAC.hexdigest("SHA512", secret, token)
+    digest =
+      OpenSSL::HMAC.hexdigest(
+        "SHA512",
+        secret,
+        token, #: String
+      )
 
     self.token_digest = digest
   end

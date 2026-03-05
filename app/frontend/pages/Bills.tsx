@@ -17,10 +17,11 @@ interface IProps {
     bills: sway.IBill[];
 }
 
+const POLLING_PROPS = ["bills"];
+
 const Bills_: React.FC<IProps> = ({ bills }) => {
-    const only = useMemo(() => ["bills"], []);
-    usePoll(15000, { only });
-    useScoreSubscription(only);
+    usePoll(15000, { only: POLLING_PROPS });
+    const isAwaitingScoreUpdate = useScoreSubscription(POLLING_PROPS);
 
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
@@ -54,6 +55,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
                                         index={i}
                                         isLastItem={i === bills.length - 1}
                                         inView={inView}
+                                        isAwaitingScoreUpdate={isAwaitingScoreUpdate}
                                     />
                                 </div>
                             )
@@ -61,7 +63,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
                     </InView>
                 ),
         );
-    }, [bills, categories, locale.name]);
+    }, [bills, categories, locale.name, isAwaitingScoreUpdate]);
 
     return (
         <div className="col">

@@ -1,4 +1,19 @@
 module Scoreable
+    def for: -> Integer
+    def for=: (Integer value) -> Integer
+    def against: -> Integer
+    def against=: (Integer value) -> Integer
+    def count_agreed: -> Integer
+    def count_agreed=: (Integer value) -> Integer
+    def count_disagreed: -> Integer
+    def count_disagreed=: (Integer value) -> Integer
+    def count_no_legislator_vote: -> Integer
+    def count_no_legislator_vote=: (Integer value) -> Integer
+    def count_legislator_abstained: -> Integer
+    def count_legislator_abstained=: (Integer value) -> Integer
+    def count_bills_voted_on: -> Integer
+    def count_bills_voted_on=: (Integer value) -> Integer
+
     def update_supportable_score: (UserVote user_vote) -> void
 
     def update_agreeable_score: (UserVote user_vote, LegislatorVote? legislator_vote) -> void

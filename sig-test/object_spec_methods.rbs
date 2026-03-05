@@ -1,0 +1,356 @@
+class Object
+    def active:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def add_attribute:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def address:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def against:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def approved_by_id:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def auth:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def authentication_options_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def be_within:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def bearer_type:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def bill:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def bill_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def callback_params:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def category:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def chamber:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def city:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def controller:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def country:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def current_session_start_date:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def default_env:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def destroy_notifications_push_notification_subscriptions_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def disable_virtual_authenticator:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def district:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def enable_virtual_authenticator:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def endpoint:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def expires_at:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def external_id:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def fake_challenge:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def fake_credential_id:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def fake_public_key:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def fallback_external_id:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def first_name:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def have_received:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def house_roll_call_vote_number:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def icon_url:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def introduced_date_time_utc:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def invite:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def invite_uuid:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def invitee:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def invitee_email:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def inviter:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def ip_address:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def is_phone_verified:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def is_registration_complete:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def label:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def last_name:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def last_used_on_utc:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def legislator:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def legislator_votes_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def link:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def mail:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def name:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def new:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def new_summary:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def new_support:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def notifications_push_notification_subscriptions_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def organization:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def organization_position_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def organization_positions_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def organizations_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def p256dh:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def params:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def party:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def passkey:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def phone:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def position:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def postal_code:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def previous_summary:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def previous_support:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def public_key:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def refresh_token:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def region_code:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def registration_complete:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def registration_options_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def render_component:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def request:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def response_body:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def role:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def routes:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def scheduled_release_date_utc:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def senate_roll_call_vote_number:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def sent_at:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def session_store:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def setup_data:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def short_url:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def sign_count:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def sms_notifications_enabled:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def source_url:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def state:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def status:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def street:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def subscribed:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def subscription:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def subscription_params:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def summary:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def support:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def sway_locale:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def sway_registration_index_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def time_zone:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def title:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def token:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def token_digest:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_client_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_service_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_verification_checks_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_verification_result:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_verification_status:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_verifications_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_verify_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def twilio_verify_v2_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def updated_by:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def user:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def user_agent:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def user_inviter:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def user_legislator:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def user_legislator_email:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def user_legislator_emails_path:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def verified_authentication_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def verified_registration_double:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+end

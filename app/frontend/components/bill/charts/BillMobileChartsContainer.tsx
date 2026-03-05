@@ -1,7 +1,7 @@
 /** @format */
 
 import { useLocale } from "app/frontend/hooks/useLocales";
-import { SWAY_COLORS, isCongressLocale, titleize } from "app/frontend/sway_utils";
+import { SWAY_COLORS, isCongressLocale, logDev, titleize } from "app/frontend/sway_utils";
 import { PropsWithChildren, useMemo, useRef, useState } from "react";
 import { FiBarChart, FiBarChart2, FiFlag, FiMap } from "react-icons/fi";
 import { sway } from "sway";
@@ -11,6 +11,7 @@ import DistrictVotesChart from "./DistrictVotesChart";
 import TotalVotes from "./TotalVotesChart";
 
 import { usePage } from "@inertiajs/react";
+import SwayLoading from "app/frontend/components/SwayLoading";
 import { Button } from "react-bootstrap";
 import { BillChartFilters } from "./constants";
 
@@ -18,6 +19,7 @@ interface IProps extends PropsWithChildren {
     bill: sway.IBill;
     bill_score?: sway.IBillScore;
     filter?: string;
+    isAwaitingScoreUpdate?: boolean;
 }
 
 export interface IChildChartProps {
@@ -38,7 +40,13 @@ interface IChartChoice {
     };
 }
 
-const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter, children }) => {
+const BillMobileChartsContainer: React.FC<IProps> = ({
+    bill,
+    bill_score,
+    filter,
+    children,
+    isAwaitingScoreUpdate = false,
+}) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
     const [locale] = useLocale();
@@ -103,6 +111,8 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
         [specificDistrict, congressDistrict, chartLabel, atLargeDistrict, isCongressUserLocale, locale],
     );
 
+    logDev("BILL SCRORE", bill_score);
+
     const charts = useMemo(() => {
         const charts_ = [];
         for (const component of components) {
@@ -162,6 +172,10 @@ const BillMobileChartsContainer: React.FC<IProps> = ({ bill, bill_score, filter,
                     {/* @ts-expect-error - weird error with overlapping type interfaces */}
                     {charts.map((item: IChartChoice, index: number) => {
                         if (index !== selected) return null;
+
+                        if (isAwaitingScoreUpdate) {
+                            return <SwayLoading key={`loading-${index}`} />;
+                        }
 
                         return (
                             <item.Component

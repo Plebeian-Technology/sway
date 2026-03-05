@@ -22,9 +22,10 @@ interface IProps {
     index: number;
     isLastItem: boolean;
     inView: boolean;
+    isAwaitingScoreUpdate: boolean;
 }
 
-const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
+const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView, isAwaitingScoreUpdate }) => {
     const [locale] = useLocale();
 
     const { id, category, external_id, title, user_vote } = bill;
@@ -81,6 +82,7 @@ const BillsListItem: React.FC<IProps> = ({ bill, isLastItem, inView }) => {
                             locale={locale}
                             user_vote={user_vote}
                             filter={BillChartFilters.total}
+                            isAwaitingScoreUpdate={isAwaitingScoreUpdate}
                         />
                     </Suspense>
                 </div>

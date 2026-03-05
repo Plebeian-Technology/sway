@@ -8,6 +8,6 @@ class UserInviter < ApplicationRecord
 
     private
 
-    def shorten_url: -> Shortener::ShortenedUrl
+    def shorten_url: -> untyped
     def invite_url: -> String
 end

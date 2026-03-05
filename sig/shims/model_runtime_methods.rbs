@@ -123,7 +123,7 @@ class LegislatorVote < ApplicationRecord
         FOR: String
         AGAINST: String
         ABSTAIN: String
-        FOR_AGAINST: Array[String]
+        FOR_AGAINST: Array[String?]
         ALL: Array[String]
     end
 

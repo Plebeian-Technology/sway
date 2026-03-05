@@ -79,14 +79,6 @@ class Legislator < ApplicationRecord
     @sway_locale ||= district.sway_locale
   end
 
-  def district
-    super
-  end
-
-  def legislator_district_score
-    super
-  end
-
   def at_large?
     district.name.remove_non_digits.to_i.zero?
   end

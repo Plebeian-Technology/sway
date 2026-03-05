@@ -1,10 +1,49 @@
 module Twilio
     module REST
+        module Verify
+            class VerifyService
+                def v2: -> V2::ServiceList
+            end
+
+            class VerificationList
+                def create: (*top args, **top kwargs) -> untyped
+            end
+
+            class Service
+                def verifications: -> VerificationList
+                def verification_checks: -> VerificationList
+            end
+
+            class V2
+                class ServiceList
+                    def services: (String? service_id) -> Service
+                end
+            end
+        end
+
+        module Messaging
+            class DeactivationFetchResult
+                def deactivated_phone_numbers: -> Array[String]
+            end
+
+            class Deactivations
+                def fetch: (date: Date | Time | DateTime) -> DeactivationFetchResult
+            end
+
+            class V1
+                def deactivations: -> Deactivations
+            end
+
+            class MessagingService
+                def v1: -> V1
+            end
+        end
+
         module Api
             module V2010
                 class AccountContext
                     class MessageList
-                        def create: (**String kwargs) -> top
+                        def create: (**(String | nil) kwargs) -> top
                     end
                 end
             end
@@ -17,8 +56,9 @@ module Twilio
 
         class Client
             def initialize: (String? account_sid, String? auth_token) -> void
-            def verify: -> top
+            def verify: -> Twilio::REST::Verify::VerifyService
             def messages: -> Twilio::REST::Api::V2010::AccountContext::MessageList
+            def messaging: -> Twilio::REST::Messaging::MessagingService
         end
     end
 end
@@ -35,7 +75,23 @@ module WebAuthn
 
     class RelyingParty
         def initialize: (*top args, **String | bool | Integer | Array[String] | nil kwargs) -> void
+        def options_for_authentication: (*top args, **top kwargs) -> untyped
+        def verify_authentication:
+            (*top args, **top kwargs) -> [untyped, untyped]
+            | (*top args, **top kwargs) { (untyped) -> untyped } -> [untyped, untyped]
+        def options_for_registration: (*top args, **top kwargs) -> untyped
+        def verify_registration: (*top args, **top kwargs) -> untyped
     end
+
+    class Credential
+        class PublicKey
+            def self.deserialize: (*top args, **top kwargs) -> top
+        end
+    end
+end
+
+module Geocoder
+    def self.search: (*untyped args, **untyped kwargs) -> Array[untyped]
 end
 
 class Class

@@ -15,17 +15,17 @@ class ScoreUpdaterService
 
     def initialize: (UserVote user_vote) -> void
 
-    def run: -> nil
+    def run: -> void
 
     private
 
-    def update_bill_score: -> nil
+    def update_bill_score: -> BillScore?
 
-    def update_bill_score_districts: (BillScore bill_score) -> nil
+    def update_bill_score_districts: (BillScore? bill_score) -> void
 
-    def update_legislator_district_score: -> nil
+    def update_legislator_district_score: -> void
 
-    def update_user_legislator_scores: -> nil
+    def update_user_legislator_scores: -> Array[untyped]
 
     def districts: -> Array[District]
 
@@ -39,5 +39,5 @@ class ScoreUpdaterService
 
     def sway_locale: -> SwayLocale
 
-    def broadcast_score_refresh: -> nil
+    def broadcast_score_refresh: -> void
 end

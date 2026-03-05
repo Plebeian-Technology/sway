@@ -15,6 +15,7 @@ interface IProps {
     locale: sway.ISwayLocale;
     user_vote: sway.IApiUserVote;
     filter?: string;
+    isAwaitingScoreUpdate?: boolean;
 }
 
 export interface IChildChartProps {
@@ -30,7 +31,7 @@ interface IChartChoice {
     props: { district: sway.IDistrict };
 }
 
-const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
+const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter, isAwaitingScoreUpdate = false }) => {
     const districts = usePage().props.districts as sway.IDistrict[];
     const ref = useRef<HTMLDivElement | null>(null);
 
@@ -62,6 +63,12 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
         },
     ];
 
+    logDev("BILL SCRORE", bill_score);
+
+    if (!bill_score || isAwaitingScoreUpdate) {
+        return <SwayLoading />;
+    }
+
     if (isEmptyObject(bill_score)) {
         logDev(`Empty bill scores for bill - ${bill.external_id} - skipping render bill charts.`);
         return null;
@@ -80,10 +87,6 @@ const BillChartsContainer: React.FC<IProps> = ({ bill, locale, filter }) => {
                 charts.push(component);
             }
         }
-    }
-
-    if (!bill_score) {
-        return <SwayLoading />;
     }
 
     return (

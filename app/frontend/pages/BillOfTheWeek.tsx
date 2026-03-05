@@ -20,7 +20,7 @@ interface IProps {
 const BillOfTheWeek_: React.FC<IProps> = (props) => {
     const only = useMemo(() => ["bill_score"], []);
     usePoll(15000, { only });
-    useScoreSubscription(only);
+    const isAwaitingScoreUpdate = useScoreSubscription(only);
 
     return (
         <div className="col pb-5">
@@ -31,7 +31,7 @@ const BillOfTheWeek_: React.FC<IProps> = (props) => {
             </div>
             <div className="row pb-5">
                 <div className="col pb-5">
-                    <BillComponent {...props} />
+                    <BillComponent {...props} isAwaitingScoreUpdate={isAwaitingScoreUpdate} />
                 </div>
             </div>
         </div>

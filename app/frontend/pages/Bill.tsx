@@ -3,7 +3,6 @@
 import { usePoll } from "@inertiajs/react";
 import BillComponent from "app/frontend/components/bill/BillComponent";
 import { useScoreSubscription } from "app/frontend/hooks/useScoreSubscription";
-import { useMemo } from "react";
 import { sway } from "sway";
 
 interface IProps {
@@ -16,12 +15,13 @@ interface IProps {
     bill_score?: sway.IBillScore;
 }
 
-const Bill_: React.FC<IProps> = (props) => {
-    const only = useMemo(() => ["bill_score"], []);
-    usePoll(15000, { only });
-    useScoreSubscription(only);
+const POLLING_PROPS = ["bill_score"];
 
-    return <BillComponent {...props} />;
+const Bill_: React.FC<IProps> = (props) => {
+    usePoll(15000, { only: POLLING_PROPS });
+    const isAwaitingScoreUpdate = useScoreSubscription(POLLING_PROPS);
+
+    return <BillComponent {...props} isAwaitingScoreUpdate={isAwaitingScoreUpdate} />;
 };
 
 const Bill = Bill_;
