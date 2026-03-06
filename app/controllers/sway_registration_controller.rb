@@ -1,13 +1,7 @@
-# typed: true
 # frozen_string_literal: true
 
 class SwayRegistrationController < ApplicationController
-  extend T::Sig
-
   skip_before_action :authenticate_sway_user!
-
-  T::Configuration.inline_type_error_handler =
-    lambda { |error, _opts| Rails.logger.error error }
 
   def index
     u = current_user
@@ -15,6 +9,8 @@ class SwayRegistrationController < ApplicationController
       redirect_to root_path
     elsif u.is_registration_complete
       redirect_to legislators_path
+    elsif u.processing?
+      render_component(Pages::REGISTRATION, { processing: true })
     else
       render_component(Pages::REGISTRATION)
     end
@@ -29,41 +25,34 @@ class SwayRegistrationController < ApplicationController
     if u.nil?
       redirect_to root_path
     elsif u.has_user_legislators?
+      u.complete!
       redirect_to legislators_path
     else
-      T
-        .cast(user_address(u).address, Address)
-        .sway_locales
-        .each do |sway_locale|
-          SwayRegistrationService.new(
-            u,
-            T.cast(user_address(u).address, Address),
-            sway_locale,
-            invited_by_id: invited_by_id,
-          ).run
-        end
+      address_instance = address
+      address_instance.sway_locales.each do |sway_locale|
+        SwayRegistrationService.new(
+          u,
+          address_instance,
+          sway_locale,
+          invited_by_id: invited_by_id,
+          async: true,
+        ).run
+      end
 
-      if u.is_registration_complete
+      if u.completed?
         redirect_to legislators_path
       else
-        redirect_to sway_registration_index_path,
-                    inertia: {
-                      errros: {
-                        address: "Registration not complete.",
-                      },
-                    }
+        redirect_to sway_registration_index_path
       end
     end
   end
 
   private
 
-  sig { params(u: User).returns(UserAddress) }
   def user_address(u)
     u.user_address || UserAddress.find_or_create_by(user: u, address:)
   end
 
-  sig { returns(Address) }
   def address
     Address.find_or_create_by!(
       street: sway_registration_params.fetch(:street),
@@ -76,7 +65,6 @@ class SwayRegistrationController < ApplicationController
     )
   end
 
-  sig { returns(ActionController::Parameters) }
   def sway_registration_params
     params.require(:sway_registration).permit(
       :latitude,

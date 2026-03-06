@@ -1,7 +1,7 @@
 # spec/support/session_double.rb
 # https://stackoverflow.com/a/76342410/6410635
 
-shared_context "SessionDouble" do
+RSpec.shared_context "SessionDouble" do
   let(:session_hash) { {} }
   let(:cookies_hash) { {} }
 
@@ -35,6 +35,23 @@ shared_context "SessionDouble" do
 
     allow(session_double).to receive(:key?) do |key|
       session_hash.key?(key)
+    end
+
+    allow(session_double).to receive(:to_hash).and_return(session_hash)
+    allow(session_double).to receive(:to_h).and_return(session_hash)
+
+    allow(session_double).to receive(:dig) do |*keys|
+      keys.reduce(session_hash) do |hash, key|
+        next nil unless hash.is_a?(Hash)
+
+        if hash.key?(key)
+          hash[key]
+        elsif key.is_a?(String) && hash.key?(key.to_sym)
+          hash[key.to_sym]
+        elsif key.is_a?(Symbol) && hash.key?(key.to_s)
+          hash[key.to_s]
+        end
+      end
     end
 
     allow_any_instance_of(ActionDispatch::Request).to receive(

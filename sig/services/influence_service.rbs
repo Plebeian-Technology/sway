@@ -1,0 +1,15 @@
+class InfluenceService
+    @user: User
+
+    @sway_locale: SwayLocale
+
+    def initialize: (user: User, sway_locale: SwayLocale) -> void
+
+    def to_builder: -> Jbuilder
+
+    private
+
+    def count_user_votes_by_locale: -> Integer
+
+    def count_invites_where_inviter_is_user: -> Integer
+end

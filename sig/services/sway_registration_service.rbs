@@ -1,0 +1,39 @@
+class SwayRegistrationService
+    @user: untyped
+
+    @address: untyped
+
+    @sway_locale: untyped
+
+    @legislators: untyped
+
+    @invited_by_id: untyped
+
+    @async: untyped
+
+    @feature: untyped
+
+    @districts: untyped
+
+    include SwayGeocode
+
+    attr_reader address: untyped
+
+    attr_reader sway_locale: untyped
+
+    def initialize: (untyped user, untyped address, untyped sway_locale, invited_by_id: untyped, ?async: bool) -> void
+
+    def run: -> (::Array[untyped] | untyped)
+
+    def create_user_legislators: -> untyped
+
+    private
+
+    def districts: -> untyped
+
+    def district_legislators: -> (untyped | ::Array[untyped] | untyped)
+
+    def find_legislators_from_open_states_geo_endpoint: -> (::Array[untyped] | untyped)
+
+    def create_invite: -> (nil | untyped)
+end

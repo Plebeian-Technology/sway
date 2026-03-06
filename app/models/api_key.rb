@@ -1,8 +1,7 @@
-# typed: true
-
 # == Schema Information
 #
 # Table name: api_keys
+# Database name: primary
 #
 #  id               :integer          not null, primary key
 #  bearer_type      :string           not null
@@ -20,8 +19,6 @@
 #
 # https://keygen.sh/blog/how-to-implement-api-key-authentication-in-rails-without-devise/
 class ApiKey < ApplicationRecord
-  extend T::Sig
-
   HMAC_SECRET_KEY = Rails.env.test? ? "test" : ENV["API_KEY_HMAC_SECRET_KEY"]
 
   belongs_to :bearer, polymorphic: true
@@ -31,14 +28,17 @@ class ApiKey < ApplicationRecord
   # API key's non-hashed token value. but only directly after creation.
   attr_accessor :token
 
-  sig { params(token: String).returns(T.nilable(ApiKey)) }
   def self.authenticate_by_token!(token)
-    digest = OpenSSL::HMAC.hexdigest "SHA512", HMAC_SECRET_KEY, token
+    secret = HMAC_SECRET_KEY
+    if secret.nil?
+      raise ActiveRecord::RecordInvalid, "HMAC_SECRET_KEY is missing"
+    end
+
+    digest = OpenSSL::HMAC.hexdigest "SHA512", secret, token
 
     find_by! token_digest: digest
   end
 
-  sig { params(token: String).returns(T.nilable(ApiKey)) }
   def self.authenticate_by_token(token)
     authenticate_by_token! token
   rescue ActiveRecord::RecordNotFound
@@ -50,7 +50,17 @@ class ApiKey < ApplicationRecord
   def generate_token_hmac_digest
     raise(ActiveRecord::RecordInvalid, "token is required") if token.blank?
 
-    digest = OpenSSL::HMAC.hexdigest("SHA512", HMAC_SECRET_KEY, token)
+    secret = HMAC_SECRET_KEY
+    if secret.nil?
+      raise(ActiveRecord::RecordInvalid, "HMAC_SECRET_KEY is missing")
+    end
+
+    digest =
+      OpenSSL::HMAC.hexdigest(
+        "SHA512",
+        secret,
+        token, #: String
+      )
 
     self.token_digest = digest
   end

@@ -1,0 +1,5 @@
+class SmsNotificationService
+    def self.send_bill_of_the_week_notification: (untyped bill) -> untyped
+
+    def self.send_voting_reminder: (untyped user, untyped bill) -> untyped
+end

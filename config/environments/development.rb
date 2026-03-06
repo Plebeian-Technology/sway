@@ -2,6 +2,19 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  docker_address =
+    begin
+      if ENV["IS_DOCKER"].present?
+        "#{Resolv.getaddress("host.docker.internal")}/8"
+      end
+    rescue StandardError
+      nil
+    end
+
+  config.web_console.permissions = [
+    docker_address.presence,
+    "127.0.0.1/8",
+  ].compact
 
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development
@@ -11,7 +24,7 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
-  # Show full error reports.
+  # Show full error reports. Set to false to show production error screens like 404/500 pages.
   config.consider_all_requests_local = true
 
   # Enable server timing.
@@ -35,6 +48,7 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
+  config.active_storage.variant_processor = :disabled
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -46,9 +60,16 @@ Rails.application.configure do
   # Mailcatcher gem
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = { address: "127.0.0.1", port: 1025 }
-  config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
-  config.action_controller.asset_host = "https://localhost:3333"
-  config.action_mailer.asset_host = "https://localhost:3333"
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.after_initialize do
+    Rails.application.routes.default_url_options = {
+      host: "localhost",
+      port: 3333,
+      protocol: "https",
+    }
+  end
+  config.action_controller.asset_host = "http://localhost:3000"
+  config.action_mailer.asset_host = "http://localhost:3000"
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -89,10 +110,11 @@ Rails.application.configure do
   config.hosts = %w[
     localhost:3333
     127.0.0.1:3333
-    localhost:3001
-    127.0.0.1:3001
+    localhost:3000
+    127.0.0.1:3000
     192.168.0.*
     192.168.0.251
+    192.168.0.250
   ]
 
   # Enable SQL query logging for ActiveRecord

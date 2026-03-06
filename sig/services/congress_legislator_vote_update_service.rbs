@@ -1,0 +1,24 @@
+# Creates LegislatorVotes for Congressional Legislators when a new Bill is created in the Congress sway locale.
+class CongressLegislatorVoteUpdateService
+    @bill: untyped
+
+    @legislators: untyped
+
+    CONGRESS: 119
+
+    def initialize: (Integer bill_id) -> void
+
+    def run: -> void
+
+    private
+
+    def senate: -> void
+
+    def house: -> void
+
+    def create: (Integer? legislator_id, untyped vote) -> LegislatorVote?
+
+    def representative: (untyped vote) -> Integer?
+
+    def senator: (untyped vote) -> Integer?
+end

@@ -1,0 +1,25 @@
+module Users
+    module Webauthn
+        class SessionsController < ApplicationController
+            @phone: untyped
+
+            include Authentication
+
+            def create: -> untyped
+
+            def callback: -> untyped
+
+            def destroy: -> untyped
+
+            private
+
+            def session_params: -> untyped
+
+            def public_key_credential_params: -> untyped
+
+            def phone: -> untyped
+
+            def verify_valid_phone: -> (nil | untyped)
+        end
+    end
+end

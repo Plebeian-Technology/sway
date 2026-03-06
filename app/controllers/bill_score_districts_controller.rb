@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class BillScoreDistrictsController < ApplicationController
   # GET /bill_score_districts/1 or /bill_score_districts/1.json

@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
@@ -30,8 +29,13 @@ module Scraper
             .XML(result)
             .search("recorded-vote")
             .map do |vote|
-              Vote.new(vote.at("legislator")["name-id"], vote.at("vote").text)
+              legislator = vote.at("legislator")
+              vote_node = vote.at("vote")
+              next if legislator.nil? || vote_node.nil?
+
+              Vote.new(legislator["name-id"], vote_node.text)
             end
+            .compact
         end
 
         private

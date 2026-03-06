@@ -1,9 +1,6 @@
 # frozen_string_literal: true
-# typed: true
 
 class InvitesController < ApplicationController
-  extend T::Sig
-
   skip_before_action :authenticate_sway_user!
 
   def show

@@ -1,17 +1,7 @@
-# typed: strict
-
 class OnLegislatorVoteUpdateScoresJob < ApplicationJob
-  extend T::Sig
-
   queue_as :background
 
   # NOTE: newly_saved_legislator_vote.support should ALWAYS != previous_support
-  sig do
-    params(
-      newly_saved_legislator_vote: LegislatorVote,
-      previous_support: T.nilable(String),
-    ).void
-  end
   def perform(newly_saved_legislator_vote, previous_support)
     if newly_saved_legislator_vote.support == previous_support
       Rails.logger.warn(
@@ -28,7 +18,10 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     newly_saved_legislator_vote.bill
 
     users =
-      UserLegislator.includes(:user).where(legislator:).map(&:user).compact
+      User
+        .joins(:user_legislators)
+        .where(user_legislators: { legislator_id: legislator.id })
+        .to_a
 
     update_legislator_district_score(
       newly_saved_legislator_vote,
@@ -42,13 +35,6 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     )
   end
 
-  sig do
-    params(
-      legislator_vote: LegislatorVote,
-      users: T::Array[User],
-      previous_support: T.nilable(String),
-    ).void
-  end
   def update_legislator_district_score(legislator_vote, users, previous_support)
     legislator_district_score =
       LegislatorDistrictScore.find_or_create_by!(
@@ -143,39 +129,39 @@ class OnLegislatorVoteUpdateScoresJob < ApplicationJob
     legislator_district_score.save!
   end
 
-  sig do
-    params(
-      legislator_vote: LegislatorVote,
-      users: T::Array[User],
-      previous_support: T.nilable(String),
-    ).void
-  end
   def update_user_legislator_scores(legislator_vote, users, previous_support)
     bill = legislator_vote.bill
 
     user_legislator_scores =
-      T.cast(
-        UserLegislator.where(
-          user: users,
-          legislator: legislator_vote.legislator,
-        ).map(&:user_legislator_score),
-        T::Array[UserLegislatorScore],
-      ).compact
-    user_votes = UserVote.where(user: users, bill:)
+      UserLegislatorScore
+        .joins(:user_legislator)
+        .where(
+          user_legislators: {
+            user_id: users.map(&:id),
+            legislator_id: legislator_vote.legislator_id,
+          },
+        )
+        .includes(:user_legislator)
+
+    user_votes_by_user_id =
+      UserVote.where(user_id: users.map(&:id), bill_id: bill.id).index_by(
+        &:user_id
+      )
 
     user_legislator_scores.each do |uls|
-      user_vote =
-        user_votes.find { |uv| uv.user.id == uls.user_legislator.user_id }
+      user_vote = user_votes_by_user_id[uls.user_legislator.user_id]
       next if user_vote.nil?
 
-      new_count_agreed = uls.count_agreed
-      new_count_disagreed = uls.count_disagreed
-      new_count_legislator_abstained = uls.count_legislator_abstained
-      new_count_no_legislator_vote = uls.count_no_legislator_vote
+      new_count_agreed = uls.count_agreed.to_i
+      new_count_disagreed = uls.count_disagreed.to_i
+      new_count_legislator_abstained = uls.count_legislator_abstained.to_i
+      new_count_no_legislator_vote = uls.count_no_legislator_vote.to_i
 
       if previous_support.blank?
-        new_count_no_legislator_vote -=
-          1 if uls.count_no_legislator_vote.positive?
+        new_count_no_legislator_vote -= 1 if uls
+          .count_no_legislator_vote
+          .to_i
+          .positive?
 
         if legislator_vote.support == user_vote.support
           new_count_agreed += 1

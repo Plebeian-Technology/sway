@@ -20,7 +20,7 @@ const Header = ({ membership, children }: PropsWithChildren & { membership: IMem
                 </div>
                 <div className="col text-end">
                     <img
-                        src={membership.organization.icon_path || "/images/organization-placeholder.png"}
+                        src={membership.organization.icon_url || "/images/organization-placeholder.png"}
                         alt="Organization Icon"
                         style={{ maxHeight: "100px", maxWidth: "100px" }}
                         className="me-2"

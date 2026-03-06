@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
 # Table name: districts
+# Database name: primary
 #
 #  id             :integer          not null, primary key
 #  name           :string           not null
@@ -21,8 +21,6 @@
 #  sway_locale_id  (sway_locale_id => sway_locales.id)
 #
 class District < ApplicationRecord
-  extend T::Sig
-
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
   belongs_to :sway_locale, inverse_of: :districts
@@ -32,22 +30,18 @@ class District < ApplicationRecord
            dependent: :restrict_with_exception
   has_many :bill_score_districts, inverse_of: :district, dependent: :destroy
 
-  sig { returns(SwayLocale) }
   def sway_locale
-    T.cast(super, SwayLocale)
+    super
   end
 
-  sig { returns(Integer) }
   def number
     name.remove_non_digits.to_i
   end
 
-  sig { returns(String) }
   def region_code
     name.remove_non_alpha.upcase
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |d|
       d.name name

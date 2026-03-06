@@ -1,0 +1,9 @@
+class BillScoreDistrictsController < ApplicationController
+    # GET /bill_score_districts/1 or /bill_score_districts/1.json
+    def show: -> untyped
+
+    private
+
+    # Only allow a list of trusted parameters through.
+    def bill_score_district_params: -> untyped
+end

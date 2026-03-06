@@ -1,7 +1,9 @@
 /** @format */
 
+import { usePoll } from "@inertiajs/react";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { useScoreSubscription } from "app/frontend/hooks/useScoreSubscription";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
 import { useMemo, useState } from "react";
@@ -15,7 +17,12 @@ interface IProps {
     bills: sway.IBill[];
 }
 
+const POLLING_PROPS = ["bills"];
+
 const Bills_: React.FC<IProps> = ({ bills }) => {
+    usePoll(15000, { only: POLLING_PROPS });
+    const isAwaitingScoreUpdate = useScoreSubscription(POLLING_PROPS);
+
     const [locale] = useLocale();
     const [categories, setCategories] = useState<string[]>([]);
 
@@ -48,6 +55,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
                                         index={i}
                                         isLastItem={i === bills.length - 1}
                                         inView={inView}
+                                        isAwaitingScoreUpdate={isAwaitingScoreUpdate}
                                     />
                                 </div>
                             )
@@ -55,7 +63,7 @@ const Bills_: React.FC<IProps> = ({ bills }) => {
                     </InView>
                 ),
         );
-    }, [bills, categories, locale.name]);
+    }, [bills, categories, locale.name, isAwaitingScoreUpdate]);
 
     return (
         <div className="col">

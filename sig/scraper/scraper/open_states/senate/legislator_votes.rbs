@@ -1,0 +1,54 @@
+module Scraper
+    module OpenStates
+        module Senate
+            # https://v3.openstates.org/redoc#tag/bills/operation/bill_detail_bills__jurisdiction___session___bill_id__get
+            class LegislatorVotes
+                @region_code: untyped
+
+                @bill_created_at_year: untyped
+
+                @external_bill_id: untyped
+
+                @result: untyped
+
+                include ApiConnector
+
+                def initialize: (untyped bill, untyped _roll_call, untyped _roll_call_chamber) -> void
+
+                def content_type: -> "application/json"
+
+                def vote_number: -> nil
+
+                def do_request: -> (nil | untyped)
+
+                # "votes": [
+                # {
+                #     "id": "f0049138-1ad8-4506-a2a4-f4dd1251bbba",
+                #     "option": "no",
+                #     "voter_name": "Wu",
+                #     "voter":
+                # {
+                #     "id": "ocd-person/adb58f21-f2fd-4830-85b6-f490b0867d14",
+                #     "name": "Angela Augusta",
+                #     "party": "Democratic",
+                #     "current_role":
+                #             {
+                #                 "title": "Senator",
+                #                 "org_classification": "upper",
+                #                 "district": 3,
+                #                 "division_id": "ocd-division/country:us/state:nc/sldu:3"
+                #             }
+                #         }
+                #     }
+                # ],
+                def do_process: -> (::Array[untyped] | untyped)
+
+                private
+
+                def result: -> untyped
+
+                def endpoint: -> ::String
+            end
+        end
+    end
+end

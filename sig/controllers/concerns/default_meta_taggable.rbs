@@ -1,0 +1,27 @@
+module DefaultMetaTaggable
+    @meta_tags: untyped
+
+    extend ActiveSupport::Concern
+
+    def self.inertia_share:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.meta_inertia_data: -> untyped
+
+    def meta_title: -> untyped
+
+    def meta_description: -> untyped
+
+    def meta_tags: -> untyped
+
+    def set_meta_tag: (untyped tag_name, untyped value) -> untyped
+
+    def default_meta_tags: -> untyped
+
+    def meta_inertia_data: -> untyped
+
+    private
+
+    def request: -> untyped
+    def url_for: (untyped options) -> untyped
+end

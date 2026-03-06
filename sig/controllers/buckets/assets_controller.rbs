@@ -1,0 +1,20 @@
+module Buckets
+    class AssetsController < ApplicationController
+        include SwayGoogleCloudStorage
+
+        # Upload a file to the assets bucket in GCP
+        # return the new file location
+        def create: -> untyped
+
+        private
+
+        def file_name: -> ::String
+
+        # https://stackoverflow.com/a/16804560/6410635
+        def file_suffix: -> untyped
+
+        # :name will typically be the name of the organization uploading an icon
+        # :mime_type is the type of file being uploaded, i.e. image/png
+        def buckets_assets_params: -> untyped
+    end
+end

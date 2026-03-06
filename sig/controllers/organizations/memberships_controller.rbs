@@ -1,0 +1,17 @@
+class Organizations::MembershipsController < Organizations::BaseController
+    @working_membership: untyped
+
+    def show: -> untyped
+
+    def update: -> untyped
+
+    def destroy: -> untyped
+
+    private
+
+    def current_user_must_be_organization_admin!: -> (nil | untyped)
+
+    def working_membership: -> untyped
+
+    def working_membership_must_be_same_organization_as_current_user!: -> (untyped | nil)
+end

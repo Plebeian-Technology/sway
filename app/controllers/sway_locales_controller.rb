@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class SwayLocalesController < ApplicationController
   skip_before_action :authenticate_sway_user!
@@ -13,9 +12,7 @@ class SwayLocalesController < ApplicationController
 
   # GET /sway_locales/1 or /sway_locales/1.json
   def show
-    locale =
-      T.let(SwayLocale.find(params[:id]), T.nilable(SwayLocale)) ||
-        T.cast(SwayLocale.default_locale, SwayLocale)
+    locale = SwayLocale.find(params[:id]) || SwayLocale.default_locale
     if locale.nil?
       nil
     else

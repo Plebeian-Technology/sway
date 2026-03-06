@@ -1,6 +1,5 @@
 import { Suspense, lazy, useCallback, useState } from "react";
 import { Button, Form, ProgressBar } from "react-bootstrap";
-import { sway } from "sway";
 
 import { Divider } from "@mui/material";
 import {
@@ -14,9 +13,10 @@ import { Support } from "app/frontend/sway_constants";
 import { notify, titleize } from "app/frontend/sway_utils";
 import { FiPenTool, FiPlus } from "react-icons/fi";
 import BillSummaryMarkdown from "../../bill/BillSummaryMarkdown";
+import { IDirectUploadResult } from "../../dialogs/DirectUploadModal";
 import SwayTextArea from "../../forms/SwayTextArea";
 
-const FileUploadModal = lazy(() => import("app/frontend/components/dialogs/FileUploadModal"));
+const DirectUploadModal = lazy(() => import("app/frontend/components/dialogs/DirectUploadModal"));
 
 interface IProps {
     index: number;
@@ -34,10 +34,11 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
     const handleShowHideUploadModal = useCallback(() => setShowUploadModal((current) => !current), []);
 
     const onIconUpload = useCallback(
-        (fileUpload: sway.files.IFileUpload) => {
+        (upload: IDirectUploadResult) => {
             if (!organization.value) return;
 
-            setData(`organizations.${index}.icon_path`, fileUpload.bucket_file_path);
+            setData(`organizations.${index}.icon_signed_id`, upload.signedId);
+            setData(`organizations.${index}.icon_url`, upload.previewUrl);
             notify({ level: "success", title: "Icon Uploaded. Click to Close." });
         },
         [index, organization.value, setData],
@@ -68,7 +69,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                     </Form.Group>
                 </div>
                 <div className="col-6">
-                    {organization.icon_path ? (
+                    {organization.icon_url ? (
                         <div>
                             <OrganizationIcon organization={organization} />
                             <Button variant="outline-primary" onClick={handleShowHideUploadModal}>
@@ -80,7 +81,7 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
                             Add Icon <FiPlus />
                         </Button>
                     )}
-                    {error?.icon_path && <div className="text-danger">{error.icon_path}</div>}
+                    {error?.icon_url && <div className="text-danger">{error.icon_url}</div>}
                 </div>
             </div>
             <Divider className="my-5" />
@@ -105,9 +106,9 @@ const BillCreatorOrganization: React.FC<IProps> = ({ index, organization, error 
             </div>
             <Suspense fallback={<ProgressBar />}>
                 {showUploadModal && (
-                    <FileUploadModal
+                    <DirectUploadModal
                         fileName={organization.label}
-                        currentFilePath={organization.icon_path || null}
+                        currentFilePath={organization.icon_url || null}
                         onHide={handleShowHideUploadModal}
                         callback={onIconUpload}
                         accept="image/*"

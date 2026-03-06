@@ -1,0 +1,3 @@
+class VotingReminderJob < ApplicationJob
+    def perform: -> nil
+end

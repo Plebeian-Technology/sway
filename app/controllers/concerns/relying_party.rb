@@ -1,22 +1,20 @@
 # frozen_string_literal: true
-# typed: true
 
 module RelyingParty
   extend ActiveSupport::Concern
-  extend T::Sig
 
   # https://github.com/ruby-passkeys/devise-passkeys-template/blob/329990739ffffcd9306ceff775c1561cead71029/app/controllers/concerns/relying_party.rb#L4
 
   included do
     def relying_party
       Rails.logger.info(
-        "RelyingParty.relying_party.origin - #{"#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host}"}",
+        "RelyingParty.relying_party.origin - #{"#{request.protocol}#{request.host}"}",
       )
 
       WebAuthn::RelyingParty.new(
         # This value needs to match `window.location.origin` evaluated by
         # the User Agent during registration and authentication ceremonies.
-        # origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3333",
+        # origin: Rails.env.production? ? "https://app.sway.vote" : "https://localhost:3000",
         allowed_origins: origins,
         # Relying Party name for display purposes
         name: "sway-#{ENV["RAILS_ENV"]}",
@@ -50,11 +48,9 @@ module RelyingParty
 
     def origins
       if Rails.env.production?
-        ["#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host}"]
+        %w[https://app.sway.vote https://www.sway.vote https://sway.vote]
       else
-        [
-          "#{T.unsafe(self).request.protocol}#{T.unsafe(self).request.host_with_port}",
-        ]
+        ["#{request.protocol}#{request.host_with_port}"]
       end
     end
   end

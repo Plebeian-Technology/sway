@@ -15,7 +15,9 @@ class OrganizationBillPositionsController < ApplicationController
                ),
              status: :ok
     else
-      render json: [], status: :ok
+      empty_payload = []
+      # @type var empty_payload: Array[untyped]
+      render json: empty_payload, status: :ok
     end
   end
 
@@ -38,9 +40,11 @@ class OrganizationBillPositionsController < ApplicationController
                OrganizationBillPosition.insert_all!(
                  organization_bill_positions_params[:positions],
                ),
-             status: :ok # rubocop:disable Rails/SkipsModelValidations
+             status: :ok
     else
-      render json: [], status: :no_content
+      empty_payload = []
+      # @type var empty_payload: Array[untyped]
+      render json: empty_payload, status: :no_content
     end
   end
 

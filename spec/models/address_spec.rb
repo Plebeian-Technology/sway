@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: addresses
+# Database name: primary
 #
 #  id          :integer          not null, primary key
 #  city        :string           not null

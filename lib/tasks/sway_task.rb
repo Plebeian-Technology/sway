@@ -1,5 +1,3 @@
-# typed: true
-
 require "logger"
 require "open-uri"
 require "google/apis/core"
@@ -10,7 +8,6 @@ require_relative "../sway_google_cloud_storage"
 class SwayTask
   include SwayGoogleCloudStorage
   extend Rake::DSL
-  extend T::Sig
 
   def self.run
     SwayTask.new.run_task
@@ -19,8 +16,7 @@ class SwayTask
   def self.download_email_blocklist
     Rails.logger.info("sway.rake -> Downloading email blocklist.")
     # IO.copy_stream(OpenURI.open(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
-    IO.copy_stream(T.cast(T.unsafe(OpenURI).open_uri(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), IO), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
-  rescue
+    IO.copy_stream(OpenURI.open_uri(Constants::DISPOSABLE_EMAIL_BLOCKLIST_URL), Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH)
   end
 
   def run_task
@@ -73,7 +69,7 @@ class SwayTask
     end
   end
 
-  def backup_sqlite_database_online(local_db_path, local_backup_path, &block)
+  def backup_sqlite_database_online(local_db_path, local_backup_path)
     # Use a separate connection for the backup to avoid interfering with the main database operations.
     source_db = SQLite3::Database.new(local_db_path, readonly: true) # Open the main database in read-only mode
     backup_db = SQLite3::Database.new(local_backup_path)  # Create the backup database *first*
@@ -99,7 +95,7 @@ class SwayTask
     Rails.logger.info("sway.rake.backup -> Finish backup")
     backup.finish # Destroy backup object
     File.delete(local_backup_path)
-  rescue => e
+  rescue StandardError => e
     Rails.logger.info("Error backing up database: #{e.message}")
     nil
   end

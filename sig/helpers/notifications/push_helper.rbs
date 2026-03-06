@@ -1,0 +1,4 @@
+module Notifications
+    module PushHelper
+    end
+end

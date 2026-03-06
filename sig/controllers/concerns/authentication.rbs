@@ -1,0 +1,16 @@
+module Authentication
+    extend ActiveSupport::Concern
+
+    def send_phone_verification: (untyped session, String phone_) -> bool
+    def send_email_verification: (untyped session, String email) -> bool
+
+    private
+
+    def twilio_client: -> Twilio::REST::Client
+    def account_sid: -> String?
+    def auth_token: -> String?
+    def service_sid: -> String?
+    def verified?: -> bool
+    def passkey?: -> bool
+    def find_by_phone: (String phone) -> User?
+end

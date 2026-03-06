@@ -23,9 +23,11 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
               Rails.logger.error(
                 "FAILED to destroy user #{user.id} with de-activated phone number.",
               )
-              Sentry.capture_message(
-                "Failed to destroy user #{user.id} with de-activated phone number in job - OnDeactivatedPhoneDeleteUserJob.",
-              )
+              if Rails.env.production?
+                Sentry.capture_message(
+                  "Failed to destroy user #{user.id} with de-activated phone number in job - OnDeactivatedPhoneDeleteUserJob.",
+                )
+              end
             end
           end
       end
@@ -37,12 +39,36 @@ class OnDeactivatedPhoneDeleteUserJob < ApplicationJob
   end
 
   def deactivated_phones
-    response = Faraday.get(deactivation_url.redirect_to)
-    response.body.split("\n").map { |phone| phone.slice(1..) }
+    return @deactivated_phones if @deactivated_phones.present?
+
+    _url = deactivation_url
+    @deactivated_phones = []
+    if _url.nil?
+      @deactivated_phones = []
+      return @deactivated_phones
+    end
+
+    response = Faraday.get(_url.redirect_to)
+    @deactivated_phones =
+      if response.nil?
+        []
+      else
+        response.body.split("\n").map { |phone| phone.slice(1..) }
+      end
+    @deactivated_phones
   end
 
   def deactivation_url
     twilio_client.messaging.v1.deactivations.fetch(date: Time.zone.today)
+  rescue Twilio::REST::RestError => e
+    if e.full_message.include?("no deactivation file available for that date")
+      Rails.logger.info("No deactivation file available for today.")
+      nil
+    else
+      Rails.logger.error(e.full_message)
+      Sentry.capture_exception(e) if Rails.env.production?
+      nil
+    end
   end
 
   def twilio_client

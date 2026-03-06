@@ -12,7 +12,6 @@ import BillArguments from "app/frontend/components/bill/BillArguments";
 import BillSummaryModal from "app/frontend/components/bill/BillSummaryModal";
 import VoteButtonsContainer from "app/frontend/components/uservote/VoteButtonsContainer";
 import { useLocale, useLocaleName } from "app/frontend/hooks/useLocales";
-import { usePollBillOnUserVote } from "app/frontend/hooks/usePollBillOnUserVote";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
 import UserLegislatorEmailForm from "app/frontend/components/forms/email/UserLegislatorEmailForm";
@@ -30,13 +29,14 @@ interface IProps {
     locale?: sway.ISwayLocale;
     user_vote?: sway.IUserVote;
     bill_score?: sway.IBillScore;
+    isAwaitingScoreUpdate?: boolean;
 }
 
 const DEFAULT_ORGANIZATION: sway.IOrganization = {
     id: -1,
     sway_locale_id: -1,
     name: "Sway",
-    icon_path: "sway-us-light.png",
+    icon_url: "/images/sway-us-light.png",
     positions: [
         {
             id: -1,
@@ -47,13 +47,18 @@ const DEFAULT_ORGANIZATION: sway.IOrganization = {
     ],
 };
 
-const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizations, user_vote }) => {
+const BillComponent: React.FC<IProps> = ({
+    bill,
+    bill_score,
+    sponsor,
+    organizations,
+    user_vote,
+    isAwaitingScoreUpdate = false,
+}) => {
     const [locale] = useLocale();
     const localeName = useLocaleName();
 
     const [showSummary, setShowSummary] = useState<sway.IOrganizationBase | undefined>();
-
-    const { onUserVote, onScoreReceived } = usePollBillOnUserVote();
 
     const handleNavigate = useCallback((pathname: string) => {
         router.visit(pathname);
@@ -97,7 +102,7 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
 
     const title = useMemo(() => {
         return `${(bill.external_id || "").toUpperCase()} - ${bill?.title}`;
-    }, [bill.external_id, bill?.title]);
+    }, [bill]);
 
     return (
         <>
@@ -121,7 +126,7 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                     <div className="row mt-3 mb-1">
                         <div className="col">
                             <p className="fw-semibold m-0">Your Vote</p>
-                            <VoteButtonsContainer bill={bill} user_vote={user_vote} onUserVote={onUserVote} />
+                            <VoteButtonsContainer bill={bill} user_vote={user_vote} />
                         </div>
                     </div>
                 )}
@@ -131,7 +136,7 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                         <BillMobileChartsContainer
                             bill={bill}
                             bill_score={bill_score}
-                            onScoreReceived={onScoreReceived}
+                            isAwaitingScoreUpdate={isAwaitingScoreUpdate}
                         >
                             <p className="fw-semibold mb-2">How Others Voted</p>
                         </BillMobileChartsContainer>
@@ -172,11 +177,7 @@ const BillComponent: React.FC<IProps> = ({ bill, bill_score, sponsor, organizati
                 {!user_vote && (
                     // Render this below summary when there is no user vote
                     <Suspense fallback={null}>
-                        <BillMobileChartsContainer
-                            bill={bill}
-                            bill_score={bill_score}
-                            onScoreReceived={onScoreReceived}
-                        >
+                        <BillMobileChartsContainer bill={bill} bill_score={bill_score}>
                             <p className="fw-semibold mb-2">How Others Voted</p>
                         </BillMobileChartsContainer>
                     </Suspense>

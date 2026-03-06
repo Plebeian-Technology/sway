@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# typed: strict
 
 # == Schema Information
 #
 # Table name: user_votes
+# Database name: primary
 #
 #  id         :integer          not null, primary key
 #  support    :string           not null
@@ -30,8 +30,6 @@
 #  updated_at :datetime         not null
 
 class UserVote < ApplicationRecord
-  extend T::Sig
-
   belongs_to :user
   belongs_to :bill
 
@@ -42,22 +40,18 @@ class UserVote < ApplicationRecord
   validates :support, inclusion: { in: LegislatorVote::Support::FOR_AGAINST }
   validates :user, :bill, presence: { message: "can't be blank" }
 
-  sig { returns(Bill) }
   def bill
-    T.cast(super, Bill)
+    super
   end
 
-  sig { returns(User) }
   def user
-    T.cast(super, User)
+    super
   end
 
-  sig { returns(T::Boolean) }
   def for?
     support == LegislatorVote::Support::FOR
   end
 
-  sig { returns(T::Boolean) }
   def against?
     support == LegislatorVote::Support::AGAINST
   end
@@ -65,7 +59,6 @@ class UserVote < ApplicationRecord
   private
 
   # Update BillScore, BillScoreDistrict and UserLegislatorScore
-  sig { void }
   def update_scores
     Rails.logger.info(
       "UserVote - #{id} - created. Creating job OnUserVoteUpdateScoresJob.",
@@ -73,7 +66,6 @@ class UserVote < ApplicationRecord
     OnUserVoteUpdateScoresJob.perform_later(self)
   end
 
-  sig { void }
   def upcase_support
     self.support = support.upcase.strip if support.present?
   end

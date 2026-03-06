@@ -1,0 +1,26 @@
+class ActionController::Base
+    def self.rate_limit: (*untyped args, **untyped kwargs) -> untyped
+    def self.inertia_config: (*untyped args, **untyped kwargs) -> untyped
+    def self.inertia_share:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.helper_method: (*Symbol methods) -> untyped
+    def self.before_action: (*untyped args, **untyped kwargs) -> untyped
+    def self.after_action: (*untyped args, **untyped kwargs) -> untyped
+    def self.protect_from_forgery: (*untyped args, **untyped kwargs) -> untyped
+    def self.rescue_from: (*untyped args, **untyped kwargs) -> untyped
+
+    def self.request: -> untyped
+    def self.flash: -> untyped
+    def self.params: -> untyped
+    def self.current_user: -> untyped
+    def self.current_sway_locale: -> untyped
+    def self.perform_caching: -> bool
+    def self.perform_caching=: (bool value) -> bool
+
+    def redirect_back_or_to: (*untyped args, **untyped kwargs) -> untyped
+end
+
+class Object
+    def rails_storage_proxy_url: (*untyped args, **untyped kwargs) -> String
+end

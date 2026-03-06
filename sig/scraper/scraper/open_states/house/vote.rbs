@@ -1,0 +1,7 @@
+module Scraper
+    module OpenStates
+        module House
+            Vote: untyped
+        end
+    end
+end

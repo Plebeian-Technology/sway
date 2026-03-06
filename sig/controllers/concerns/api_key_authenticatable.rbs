@@ -1,0 +1,30 @@
+module ApiKeyAuthenticatable
+    @current_api_key: ApiKey?
+
+    extend ActiveSupport::Concern
+
+    include ActionController::HttpAuthentication::Basic::ControllerMethods
+
+    include ActionController::HttpAuthentication::Token::ControllerMethods
+
+    attr_reader current_api_key: ApiKey?
+
+    attr_reader current_bearer: User?
+
+    # Use this to raise an error and automatically respond with a 401 HTTP status
+    # code when API key authentication fails
+    # https://stackoverflow.com/a/34982438/6410635
+    # https://keygen.sh/blog/how-to-implement-api-key-authentication-in-rails-without-devise/
+    def authenticate_with_api_key!: -> (User? | untyped)
+
+    # Use this for optional API key authentication
+    def authenticate_with_api_key: -> (User? | untyped)
+
+    private
+
+    attr_writer current_api_key: ApiKey?
+
+    attr_writer current_bearer: User?
+
+    def authenticator: (String http_token, untyped _options) -> User?
+end

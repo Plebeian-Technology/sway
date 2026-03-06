@@ -1,12 +1,8 @@
-# typed: true
-
 require_relative "base"
 
 module SeedPreparers
   module Legislators
     class Sway < Base
-      extend T::Sig
-
       def external_id
         @external_id ||=
           json.fetch("external_id", json.fetch("externalId", nil))

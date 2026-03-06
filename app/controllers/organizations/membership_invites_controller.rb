@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class Organizations::MembershipInvitesController < Organizations::BaseController
   before_action :require_admin!
@@ -23,7 +22,7 @@ class Organizations::MembershipInvitesController < Organizations::BaseController
       render json: {
                errors: @invite.errors.full_messages,
              },
-             status: :unprocessable_entity
+             status: :unprocessable_content
     end
   end
 

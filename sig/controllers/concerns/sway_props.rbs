@@ -1,0 +1,5 @@
+module SwayProps
+    extend ActiveSupport::Concern
+
+    def expand_props: (Hash[Symbol, untyped] | Proc | nil props) -> Hash[Symbol, untyped]
+end

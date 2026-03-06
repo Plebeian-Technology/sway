@@ -1,0 +1,5 @@
+module Users
+    class OrganizationMembershipsController < ApplicationController
+        def index: -> untyped
+    end
+end

@@ -1,4 +1,4 @@
-# typed: true
+# frozen_string_literal: true
 
 require "google/cloud/storage"
 
@@ -9,7 +9,6 @@ require "google/cloud/storage"
 
 module SwayGoogleCloudStorage
   extend ActiveSupport::Concern
-  extend T::Sig
 
   GOOGLE_CLOUD_PROJECT_ID = "sway-421916"
 
@@ -18,18 +17,16 @@ module SwayGoogleCloudStorage
   }
 
   class << self
-    extend T::Sig
     # Expose the bucket to cors requests from the frontend
     # https://cloud.google.com/storage/docs/using-cors#client-libraries
 
-    sig { params(bucket_name: String).void }
     def configure(bucket_name:)
       # The ID of your GCS bucket
       # bucket_name = "your-unique-bucket-name"
       bucket = storage.bucket bucket_name
 
       bucket.cors do |c|
-        c.add_rule ["https://localhost:3333", "https://sway.vote", "https://app.sway.vote"],
+        c.add_rule ["https://localhost:3333", "https://localhost:3000", "http://localhost:3333", "http://localhost:3000", "https://sway.vote", "https://app.sway.vote", "https://www.sway.vote"],
           %w[PUT GET],
           headers: %w[
             Content-Type
@@ -50,6 +47,9 @@ module SwayGoogleCloudStorage
 
     def credentials
       if Rails.env.production?
+        puts "sway google credentials present? #{Rails.application.credentials.dig(:google).present?}"
+        puts "sway google storage credentials present? #{Rails.application.credentials.dig(:google, :storage).present?}"
+        puts "sway google storage type credentials present? #{Rails.application.credentials.dig(:google, :storage, :type).present?}"
         f = File.open(Rails.root.join("config", "keys", "sway-bucket-storage.json"), "w")
         f.chmod(0o644)
         f.write({
@@ -76,7 +76,6 @@ module SwayGoogleCloudStorage
     end
   end
 
-  sig { params(bucket_name: String, file_name: String).void }
   def generate_get_signed_url_v4(bucket_name:, file_name:)
     return unless bucket_name.present? && file_name.present?
 
@@ -85,7 +84,6 @@ module SwayGoogleCloudStorage
     storage.signed_url bucket_name, file_name, method: "GET", expires: storage_expiry_time, version: :v4
   end
 
-  sig { params(bucket_name: String, file_name: String, content_type: String).returns(T.nilable(String)) }
   def generate_put_signed_url_v4(bucket_name:, file_name:, content_type:)
     return unless bucket_name.present? && file_name.present?
 
@@ -108,7 +106,6 @@ module SwayGoogleCloudStorage
     bucket.create_file local_file_path, bucket_file_path
   end
 
-  sig { params(bucket_name: String, bucket_file_path: String, local_file_path: String).void }
   def download_file(bucket_name:, bucket_file_path:, local_file_path:)
     return unless bucket_name.present? && bucket_file_path.present? && local_file_path.present?
 
@@ -122,7 +119,6 @@ module SwayGoogleCloudStorage
     file.download local_file_path
   end
 
-  sig { params(bucket_name: String, bucket_directory_name: String, local_directory_name: String).void }
   def download_directory(bucket_name:, bucket_directory_name:, local_directory_name:)
     return unless bucket_name.present? && bucket_directory_name.present? && local_directory_name.present?
 
@@ -136,7 +132,6 @@ module SwayGoogleCloudStorage
     end
   end
 
-  sig { params(bucket_name: String, file_name: T.nilable(String)).void }
   def delete_file(bucket_name:, file_name:)
     return unless bucket_name.present? && file_name.present?
     return if file_name.starts_with? "https://"
@@ -154,10 +149,10 @@ module SwayGoogleCloudStorage
   private
 
   def storage
-    @_storage = SwayGoogleCloudStorage.storage
+    @storage = SwayGoogleCloudStorage.storage
   end
 
   def credentials
-    @_credentials ||= SwayGoogleCloudStorage.credentials
+    @credentials ||= SwayGoogleCloudStorage.credentials
   end
 end

@@ -1,0 +1,13 @@
+class ApiKeysController < ApplicationController
+    def index: -> untyped
+
+    def create: -> untyped
+
+    def update: -> untyped
+
+    def destroy: -> untyped
+
+    private
+
+    def update_params: -> untyped
+end

@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
@@ -6,20 +5,10 @@
 module Scraper
   module OpenStates
     module Senate
-      extend T::Sig
-
       # https://v3.openstates.org/redoc#tag/bills/operation/bill_detail_bills__jurisdiction___session___bill_id__get
       class LegislatorVotes
-        extend T::Sig
         include ApiConnector
 
-        sig do
-          params(
-            bill: Bill,
-            _roll_call: String,
-            _roll_call_chamber: String,
-          ).void
-        end
         def initialize(bill, _roll_call, _roll_call_chamber)
           @region_code = bill.sway_locale.region_code # 119
           @bill_created_at_year = bill.introduced_date_time_utc.year

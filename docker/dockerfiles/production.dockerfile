@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+ARG RUBY_VERSION=4.0.1
+=======
 ARG RUBY_VERSION=3.4.5
+>>>>>>> 5cf207c7b94bfe8d868508da73fa867d9f50abb6
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 LABEL fly_launch_runtime="rails"
@@ -53,10 +57,11 @@ COPY vite.config.build.ts vite.config.ts
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) \
     bundle exec bootsnap precompile app/ lib/ && \
-    SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
     rm -rf app/frontend && \
     rm -rf app/stylesheets
 
+# SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber && \
+# SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
 
 # Final stage for app image
 FROM base
@@ -83,5 +88,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3333
+EXPOSE 3000
 
 CMD ["./bin/rails", "server", "-u", "puma", "-b", "0.0.0.0", "-p", "3333", "-e", "production"]

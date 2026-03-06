@@ -1,15 +1,15 @@
-# typed: true
 # frozen_string_literal: true
 
 # == Schema Information
 #
 # Table name: sway_locales
+# Database name: primary
 #
 #  id                         :integer          not null, primary key
 #  city                       :string           not null
 #  country                    :string           default("United States"), not null
 #  current_session_start_date :date
-#  icon_path                  :string
+#  icon_url                   :string
 #  latest_election_year       :integer          default(2024), not null
 #  state                      :string           not null
 #  time_zone                  :string

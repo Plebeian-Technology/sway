@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class BillScoresController < ApplicationController
   skip_before_action :authenticate_sway_user!, only: %i[show]

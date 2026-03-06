@@ -19,7 +19,7 @@ RSpec.describe UserOrganizationMembershipInviteMailer, type: :mailer do
       expect(mail.subject).to include(organization.name)
       expect(mail.to).to eq([invite.invitee_email])
       expect(mail.from).to eq(
-        [UserOrganizationMembershipInviteMailer.default[:from]],
+        [UserOrganizationMembershipInviteMailer.default_params[:from]],
       )
     end
 

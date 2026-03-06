@@ -1,0 +1,287 @@
+module Twilio
+    module REST
+        module Verify
+            class VerifyService
+                def v2: -> V2::ServiceList
+            end
+
+            class VerificationList
+                def create: (*top args, **top kwargs) -> untyped
+            end
+
+            class Service
+                def verifications: -> VerificationList
+                def verification_checks: -> VerificationList
+            end
+
+            class V2
+                class ServiceList
+                    def services: (String? service_id) -> Service
+                end
+            end
+        end
+
+        module Messaging
+            class DeactivationFetchResult
+                def deactivated_phone_numbers: -> Array[String]
+            end
+
+            class Deactivations
+                def fetch: (date: Date | Time | DateTime) -> DeactivationFetchResult
+            end
+
+            class V1
+                def deactivations: -> Deactivations
+            end
+
+            class MessagingService
+                def v1: -> V1
+            end
+        end
+
+        module Api
+            module V2010
+                class AccountContext
+                    class MessageList
+                        def create: (**(String | nil) kwargs) -> top
+                    end
+                end
+            end
+        end
+
+        class RestError < StandardError
+            def code: -> (String | Integer | nil)
+            def full_message: -> String
+        end
+
+        class Client
+            def initialize: (String? account_sid, String? auth_token) -> void
+            def verify: -> Twilio::REST::Verify::VerifyService
+            def messages: -> Twilio::REST::Api::V2010::AccountContext::MessageList
+            def messaging: -> Twilio::REST::Messaging::MessagingService
+        end
+    end
+end
+
+module Faraday
+    def self.get: (*top args, **top kwargs) -> Faraday::Response
+end
+
+module WebAuthn
+    class Error < StandardError
+    end
+
+    def self.generate_user_id: -> String
+
+    class RelyingParty
+        def initialize: (*top args, **String | bool | Integer | Array[String] | nil kwargs) -> void
+        def options_for_authentication: (*top args, **top kwargs) -> untyped
+        def verify_authentication:
+            (*top args, **top kwargs) -> [untyped, untyped]
+            | (*top args, **top kwargs) { (untyped) -> untyped } -> [untyped, untyped]
+        def options_for_registration: (*top args, **top kwargs) -> untyped
+        def verify_registration: (*top args, **top kwargs) -> untyped
+    end
+
+    class Credential
+        class PublicKey
+            def self.deserialize: (*top args, **top kwargs) -> top
+        end
+    end
+end
+
+module Geocoder
+    def self.search: (*untyped args, **untyped kwargs) -> Array[untyped]
+end
+
+class Class
+    def state_machine:
+        (*top args, **top kwargs) -> top
+        | (*top args, **top kwargs) { (ApplicationRecord, top?) -> top? } -> top
+    def event: (*top args, **top kwargs) -> top | (*top args, **top kwargs) { (ApplicationRecord, top?) -> top? } -> top
+    def transition: (*top args, **top kwargs) -> top
+    def after_transition:
+        (*top args, **top kwargs) -> top
+        | (*top args, **top kwargs) { (ApplicationRecord, top?) -> top? } -> top
+    def has_shortened_urls: (*top args, **top kwargs) -> top
+end
+
+module Shortener
+    class ShortenedUrl
+        def unique_key: -> String
+        def self.generate: (*top args, **top kwargs) -> top
+    end
+end
+
+module Google
+    module Cloud
+        def self.storage: (*top args, **top kwargs) -> top
+    end
+end
+
+class UserOrganizationMembershipInviteMailer
+    def self.invite: (UserOrganizationMembershipInvite invite) -> top
+end
+
+class Jbuilder
+    def initialize: (*top args, **top kwargs) -> void | (*top args, **top kwargs) { (Jbuilder) -> top? } -> void
+    def attributes!: -> Hash[(String | Symbol), top]
+    def []=: (String | Symbol key, top value) -> top
+    def method_missing: (Symbol name, *top args, **top kwargs) -> top
+    def active: (*top args) -> Jbuilder
+    def against: (*top args) -> Jbuilder
+    def approved_by_id: (*top args) -> Jbuilder
+    def audio_bucket_path: (*top args) -> Jbuilder
+    def audio_by_line: (*top args) -> Jbuilder
+    def bill_id: (*top args) -> Jbuilder
+    def bill_score_id: (*top args) -> Jbuilder
+    def category: (*top args) -> Jbuilder
+    def chamber: (*top args) -> Jbuilder
+    def count_agreed: (*top args) -> Jbuilder
+    def count_bills_voted_on: (*top args) -> Jbuilder
+    def count_disagreed: (*top args) -> Jbuilder
+    def count_invites_redeemed: (*top args) -> Jbuilder
+    def count_legislator_abstained: (*top args) -> Jbuilder
+    def count_no_legislator_vote: (*top args) -> Jbuilder
+    def created_at: (*top args) -> Jbuilder
+    def district: (*top args) -> Jbuilder
+    def districts: (*top args) -> Jbuilder
+    def email: (*top args) -> Jbuilder
+    def external_id: (*top args) -> Jbuilder
+    def external_version: (*top args) -> Jbuilder
+    def fax: (*top args) -> Jbuilder
+    def first_name: (*top args) -> Jbuilder
+    def for: (*top args) -> Jbuilder
+    def full_name: (*top args) -> Jbuilder
+    def house_roll_call_vote_number: (*top args) -> Jbuilder
+    def house_vote_date_time_utc: (*top args) -> Jbuilder
+    def icon_url: (*top args) -> Jbuilder
+    def id: (*top args) -> Jbuilder
+    def introduced_date_time_utc: (*top args) -> Jbuilder
+    def invite_url: (*top args) -> Jbuilder
+    def is_admin: (*top args) -> Jbuilder
+    def is_email_verified: (*top args) -> Jbuilder
+    def is_registered_to_vote: (*top args) -> Jbuilder
+    def is_registration_complete: (*top args) -> Jbuilder
+    def last_name: (*top args) -> Jbuilder
+    def legislator_district_score: (*top args) -> Jbuilder
+    def legislator_id: (*top args) -> Jbuilder
+    def link: (*top args) -> Jbuilder
+    def name: (*top args) -> Jbuilder
+    def new_summary: (*top args) -> Jbuilder
+    def new_support: (*top args) -> Jbuilder
+    def number: (*top args) -> Jbuilder
+    def organization: (*top args) -> Jbuilder
+    def organization_bill_position_id: (*top args) -> Jbuilder
+    def party: (*top args) -> Jbuilder
+    def phone: (*top args) -> Jbuilder
+    def photo_url: (*top args) -> Jbuilder
+    def positions: (*top args) -> Jbuilder
+    def previous_summary: (*top args) -> Jbuilder
+    def previous_support: (*top args) -> Jbuilder
+    def region_code: (*top args) -> Jbuilder
+    def registration_status: (*top args) -> Jbuilder
+    def role: (*top args) -> Jbuilder
+    def scheduled_release_date_utc: (*top args) -> Jbuilder
+    def senate_roll_call_vote_number: (*top args) -> Jbuilder
+    def senate_vote_date_time_utc: (*top args) -> Jbuilder
+    def sms_notifications_enabled: (*top args) -> Jbuilder
+    def status: (*top args) -> Jbuilder
+    def summary: (*top args) -> Jbuilder
+    def support: (*top args) -> Jbuilder
+    def sway_locale_id: (*top args) -> Jbuilder
+    def title: (*top args) -> Jbuilder
+    def total_sway: (*top args) -> Jbuilder
+    def twitter: (*top args) -> Jbuilder
+    def updated_by_id: (*top args) -> Jbuilder
+    def user_id: (*top args) -> Jbuilder
+    def user_legislator_id: (*top args) -> Jbuilder
+    def vote: (*top args) -> Jbuilder
+    def vote_date_time_utc: (*top args) -> Jbuilder
+    def city: (*top args) -> Jbuilder
+    def country: (*top args) -> Jbuilder
+    def region_name: (*top args) -> Jbuilder
+    def time_zone: (*top args) -> Jbuilder
+    def current_session_start_date: (*top args) -> Jbuilder
+end
+
+module RGeo
+    module Cartesian
+        class Geometry
+        end
+    end
+
+    module GeoJSON
+        def self.decode: (*top args, **top kwargs) -> RGeo::Cartesian::Geometry?
+    end
+end
+
+module OpenURI
+    class HTTPError < StandardError
+    end
+
+    def self.open_uri: (*top args, **top kwargs) -> (String | _Reader | _ReaderPartial)
+end
+
+module SQLite3
+    class Backup
+        def initialize: (*top args, **top kwargs) -> void
+        def step: (*top args, **top kwargs) -> top
+        def remaining: -> Integer
+        def pagecount: -> Integer
+        def finish: -> top
+    end
+end
+
+module Down
+    class NotFound < StandardError
+    end
+
+    class ConnectionError < StandardError
+    end
+
+    class DownloadedFile
+        def content_type: -> String?
+        def original_filename: -> String?
+        def close!: -> nil
+    end
+
+    def self.download: (*top args, **top kwargs) -> DownloadedFile
+end
+
+module PDF
+    class Reader
+        class Page
+            def text: -> String
+        end
+
+        def initialize: (*top args, **top kwargs) -> void
+        def pages: -> Array[Page]
+    end
+end
+
+module SimpleCov
+    def self.start: (*top args, **top kwargs) -> top
+end
+
+module Geocoder
+    module Lookup
+        class Test
+            def self.set_default_stub: (*top args, **top kwargs) -> top
+            def self.add_stub: (*top args, **top kwargs) -> top
+            def self.reset: (*top args, **top kwargs) -> top
+        end
+    end
+end
+
+module FactoryBot
+    module Syntax
+        module Methods
+        end
+    end
+end
+
+module Open3
+    def self.capture2e: (*top args, **top kwargs) -> [String, Process::Status]
+    def self.capture3: (*top args, **top kwargs) -> [String, String, Process::Status]
+end

@@ -1,5 +1,3 @@
-# typed: true
-
 FactoryBot.define do
   factory :api_key do
     name { Faker::ProgrammingLanguage.name }

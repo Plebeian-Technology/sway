@@ -4,7 +4,14 @@ set -eu
 
 SKIP_FILE_UPLOADS=${1:-""}
 
+# export $(cat .env.kamal | xargs)
+# set -a
+# source .env.kamal
+# set +a
+
 export $(cat .env.kamal | xargs)
+
+export BW_SESSION=$(bw unlock --raw)
 
 echo ""
 echo "#############################################################################"
@@ -26,8 +33,8 @@ echo "##########################################################################
 echo "deploy.sh -> Clobber rails assets so they don't get added to the docker build"
 echo "#############################################################################"
 echo ""
-SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
-RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
+# SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
+# RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber
 
 if [[ "$SKIP_FILE_UPLOADS" != "true" && "$SKIP_FILE_UPLOADS" != "1" ]]; then
     echo ""
@@ -51,4 +58,4 @@ echo "deploy.sh -> Kamal Deploy."
 echo "#############################################################################"
 echo ""
 # dotenv -f ".env.production" kamal deploy
-kamal redeploy
+kamal redeploy --verbose

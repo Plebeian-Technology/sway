@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 RSpec.describe SwayRegistrationService do
@@ -114,6 +113,59 @@ RSpec.describe SwayRegistrationService do
             expect(Invite.last&.inviter).to eq(user)
             expect(Invite.last&.invitee).to eq(invited_user)
           end
+      end
+    end
+
+    context "regional registration" do
+      it "enqueues SwayRegistrationJob and sets user to processing status when async is true" do
+        user = create(:user)
+        address = create(:address)
+        sway_locale = create(:sway_locale)
+        allow(sway_locale).to receive(:regional?).and_return(true)
+
+        expect(SwayRegistrationJob).to receive(:perform_later).with(
+          user.id,
+          address.id,
+          sway_locale.id,
+          invited_by_id: nil,
+        )
+
+        SwayRegistrationService.new(
+          user,
+          address,
+          sway_locale,
+          invited_by_id: nil,
+          async: true,
+        ).run
+
+        expect(user.registration_status).to eq("processing")
+      end
+
+      it "does not enqueue job and processes synchronously when async is false" do
+        user = create(:user)
+        address = create(:address)
+        sway_locale = create(:sway_locale)
+        allow(sway_locale).to receive(:regional?).and_return(true)
+
+        # Mocking the actual processing logic to avoid external API calls
+        allow_any_instance_of(SwayRegistrationService).to receive(
+          :create_user_legislators,
+        ).and_return([double(UserLegislator)])
+        allow_any_instance_of(SwayRegistrationService).to receive(
+          :create_invite,
+        ).and_return(nil)
+
+        expect(SwayRegistrationJob).not_to receive(:perform_later)
+
+        SwayRegistrationService.new(
+          user,
+          address,
+          sway_locale,
+          invited_by_id: nil,
+          async: false,
+        ).run
+
+        expect(user.registration_status).to eq("completed")
       end
     end
   end

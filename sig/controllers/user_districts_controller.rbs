@@ -1,0 +1,3 @@
+class UserDistrictsController < ApplicationController
+    def index: -> untyped
+end

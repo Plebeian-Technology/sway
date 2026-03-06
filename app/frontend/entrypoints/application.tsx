@@ -8,8 +8,7 @@ SentryUtil.init().catch(console.error); // only fulfilled in prod
 import "app/frontend/polyfills/scroll_restoration_on_back";
 
 import { createInertiaApp } from "@inertiajs/react";
-import LayoutWithPage from "app/frontend/components/layouts/Layout";
-import NoAuthLayout from "app/frontend/components/layouts/NoAuthLayout";
+import * as ActiveStorage from "@rails/activestorage";
 import ErrorBoundary from "app/frontend/components/error_handling/ErrorBoundary";
 import { onRenderError } from "app/frontend/components/error_handling/utils";
 import axios from "axios";
@@ -19,12 +18,17 @@ import { logDev } from "../sway_utils";
 import SwayApp from "app/frontend/entrypoints/SwayApp";
 import "app/frontend/styles";
 
+import LayoutWithPage from "app/frontend/components/layouts/Layout";
+import NoAuthLayout from "app/frontend/components/layouts/NoAuthLayout";
+
 const NO_AUTH_LAYOUTS = ["home", "registration"];
 
 // const pages = import.meta.glob("../pages/*.tsx", { eager: true }) as Record<string, any>;
 const pages = import.meta.glob("../pages/**/*.tsx") as Record<string, any>;
 
 document.addEventListener("DOMContentLoaded", () => {
+    ActiveStorage.start();
+
     const Sentry = import("@sentry/react");
 
     // https://stackoverflow.com/a/56144709/6410635

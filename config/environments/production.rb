@@ -1,5 +1,3 @@
-# typed: strict
-
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
@@ -38,8 +36,9 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on GCS (see config/storage.yml for options).
+  config.active_storage.service = :google
+  config.active_storage.variant_processor = :disabled
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
@@ -103,7 +102,10 @@ Rails.application.configure do
     authentication: :plain,
     enable_starttls_auto: true,
   }
-  config.action_mailer.default_url_options = { host: "sway.vote" }
+  config.action_mailer.default_url_options = {
+    host: "app.sway.vote",
+    protocol: "https",
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -117,18 +119,24 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # https://guides.rubyonrails.org/security.html#dns-rebinding-and-host-header-attacks
-  config.hosts = [
-    # "example.com",     # Allow requests from example.com
-    "sway.vote",
-    "app.sway.vote",
-    "www.sway.vote",
-    # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
-    /.*\.fly\.dev/, # Allow requests from subdomains like `www.example.com`
-    "localhost",
-    "127.0.0.1",
-    "192.168.0.*",
-    "192.168.0.251",
-  ]
+  # config.hosts = [
+  #   # "example.com",     # Allow requests from example.com
+  #   "sway.vote",
+  #   "app.sway.vote",
+  #   "www.sway.vote",
+  #   # /.*\.sway\.vote/, # Allow requests from subdomains like `www.example.com`
+  #   # "localhost",
+  #   # "127.0.0.1",
+  #   # "192.168.0.*",
+  #   # "192.168.0.251",
+  # ]
+
+  config.hosts << "sway.vote"
+  config.hosts << "app.sway.vote"
+  config.hosts << "www.sway.vote"
+  config.hosts << "192.168.0.251"
+  config.hosts << "192.168.0.250"
+
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 

@@ -1,0 +1,3 @@
+class SmsDeliveryJob < ApplicationJob
+    def perform: (to: String, body: String) -> void
+end

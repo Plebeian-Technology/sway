@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class Organizations::PositionsController < Organizations::BaseController
   before_action :set_position, only: %i[update destroy]
@@ -7,7 +6,6 @@ class Organizations::PositionsController < Organizations::BaseController
   before_action :change_must_not_be_approved!, only: %i[update]
   before_action :change_must_be_different!, only: %i[update]
 
-  # TODO: Create a position on a bill
   def create
     position =
       OrganizationBillPosition.find_or_initialize_by(
@@ -29,9 +27,7 @@ class Organizations::PositionsController < Organizations::BaseController
     end
 
     change =
-      OrganizationBillPositionChange.find_or_initialize_by(
-        organization_bill_position: position,
-      )
+      OrganizationBillPositionChange.new(organization_bill_position: position)
 
     change.previous_summary = ""
     change.previous_support = params[:support]

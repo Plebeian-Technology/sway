@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :organization do
     name { "Taco Org" }
-    icon_path { "logo.svg" }
+    icon_url { "logo.svg" }
     sway_locale
 
-    initialize_with { new({ name:, icon_path: }) }
+    initialize_with { new({ name:, icon_url: }) }
   end
 end

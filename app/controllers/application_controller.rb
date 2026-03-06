@@ -1,8 +1,6 @@
 # frozen_string_literal: true
-# typed: false
 
 class ApplicationController < ActionController::Base
-  extend T::Sig
   include DefaultMetaTaggable
   include RelyingParty
   include ApiKeyAuthenticatable
@@ -10,7 +8,7 @@ class ApplicationController < ActionController::Base
   include Pages
   include SwayRoutes
 
-  rate_limit(to: 200, within: 1.minute, by: -> { request.domain })
+  rate_limit(to: 1000, within: 1.minute, by: -> { request.domain })
 
   # https://inertia-rails.dev/guide/csrf-protection#handling-mismatches
   rescue_from ActionController::InvalidAuthenticityToken,
@@ -20,6 +18,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception, prepend: true
 
   # newrelic_ignore_enduser
+
+  before_action :redirect_to_https_if_needed
 
   before_action :is_api_request_and_is_route_api_accessible?
   before_action :authenticate_sway_user!
@@ -32,29 +32,19 @@ class ApplicationController < ActionController::Base
     always_include_errors_hash: true,
   )
 
-  T::Configuration.inline_type_error_handler =
-    lambda { |error, _opts| Rails.logger.error error }
-
   helper_method :current_user,
                 :current_sway_locale,
                 :verify_is_sway_admin,
                 :invited_by_id
 
-  @@_ssr_methods = {}
+  @@_ssr_methods = {} #: Hash[Symbol, Symbol]
 
-  sig { params(page: T.nilable(String), props: T.untyped).returns(T.untyped) }
   def render_component(page, props = {})
     return render_component(Pages::HOME) if page.nil?
 
     render(inertia: page, props: expand_props(props))
   end
 
-  sig do
-    params(
-      route: T.nilable(String),
-      new_params: T::Hash[T.any(String, Symbol), T.anything],
-    ).returns(T.untyped)
-  end
   def route_component(route, new_params = {})
     return route_component(SwayRoutes::HOME) if route.nil?
 
@@ -85,7 +75,6 @@ class ApplicationController < ActionController::Base
     }
   end
 
-  sig { params(user: T.nilable(User)).returns(T.untyped) }
   def sign_in(user)
     return if user.blank?
 
@@ -122,19 +111,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  sig { void }
   def sign_out
     current_user&.refresh_token&.destroy
     reset_session
     cookies.clear
   end
 
-  sig { returns(T.nilable(User)) }
   def current_user
     @current_user ||= authenticate_with_cookies || authenticate_with_api_key # ApiKeyAuthenticatable
   end
 
-  sig { returns(T.nilable(SwayLocale)) }
   def current_sway_locale
     @current_sway_locale ||= find_current_sway_locale
   end
@@ -168,7 +154,6 @@ class ApplicationController < ActionController::Base
     u
   end
 
-  sig { void }
   def is_api_request_and_is_route_api_accessible?
     if request.path.starts_with?("/api/admin/")
       unless authenticate_with_api_key! && current_user&.is_sway_admin?
@@ -189,7 +174,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  sig { void }
   def authenticate_sway_user!
     u = current_user
     if u.nil?
@@ -197,8 +181,7 @@ class ApplicationController < ActionController::Base
       redirect_to root_url
     elsif !u.is_registration_complete
       if u.has_user_legislators?
-        u.is_registration_complete = true
-        u.save!
+        u.complete!
       else
         Rails.logger.info "Current user registration is not complete, redirect to sway registration"
         redirect_to sway_registration_index_path
@@ -206,7 +189,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  sig { void }
   def verify_is_sway_admin
     redirect_to root_path unless current_user&.is_sway_admin?
   end
@@ -238,7 +220,11 @@ class ApplicationController < ActionController::Base
   def add_rsl_license_header
     response.set_header(
       "Link",
-      'https://www.sway.vote/license.xml; rel="license"; type="application/rsl+xml',
+      'https://sway.vote/license.xml; rel="license"; type="application/rsl+xml',
     )
+  end
+
+  def redirect_to_https_if_needed
+    redirect_to protocol: "https://" unless request.ssl? || Rails.env.test?
   end
 end

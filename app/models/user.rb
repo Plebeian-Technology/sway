@@ -1,27 +1,29 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
 # Table name: users
+# Database name: primary
 #
-#  id                       :integer          not null, primary key
-#  current_sign_in_at       :datetime
-#  current_sign_in_ip       :string
-#  email                    :string
-#  full_name                :string
-#  is_admin                 :boolean          default(FALSE)
-#  is_email_verified        :boolean
-#  is_phone_verified        :boolean
-#  is_registered_to_vote    :boolean
-#  is_registration_complete :boolean
-#  last_sign_in_at          :datetime
-#  last_sign_in_ip          :string
-#  phone                    :string
-#  sign_in_count            :integer          default(0), not null
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  webauthn_id              :string
+#  id                        :integer          not null, primary key
+#  current_sign_in_at        :datetime
+#  current_sign_in_ip        :string
+#  email                     :string
+#  full_name                 :string
+#  is_admin                  :boolean          default(FALSE)
+#  is_email_verified         :boolean
+#  is_phone_verified         :boolean
+#  is_registered_to_vote     :boolean
+#  is_registration_complete  :boolean
+#  last_sign_in_at           :datetime
+#  last_sign_in_ip           :string
+#  phone                     :string
+#  registration_status       :string           default("pending")
+#  sign_in_count             :integer          default(0), not null
+#  sms_notifications_enabled :boolean          default(FALSE)
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  webauthn_id               :string
 #
 # Indexes
 #
@@ -30,8 +32,6 @@
 #  index_users_on_webauthn_id  (webauthn_id) UNIQUE
 #
 class User < ApplicationRecord
-  extend T::Sig
-
   CREDENTIAL_MIN_AMOUNT = 1
   ADMIN_PHONES = ENV["ADMIN_PHONES"]&.split(",") || []
   API_USER_PHONES = ENV["API_USER_PHONES"]&.split(",") || []
@@ -73,10 +73,8 @@ class User < ApplicationRecord
     end
   end
 
-  attr_accessor :webauthn_id
-
   has_one :user_address, dependent: :destroy
-  has_one :address, through: :user_address
+  has_one :address, through: :user_address, dependent: :destroy
   has_many :user_districts, dependent: :destroy
 
   has_many :api_keys, as: :bearer, dependent: :destroy
@@ -94,6 +92,27 @@ class User < ApplicationRecord
   has_many :passkeys, dependent: :destroy
   has_many :user_legislators, dependent: :destroy
   has_many :user_votes, dependent: :destroy
+  has_many :user_bill_reminders, dependent: :destroy
+
+  state_machine :registration_status, initial: :pending do
+    event :start_processing do
+      transition pending: :processing
+    end
+
+    event :complete do
+      transition pending: :completed
+      transition processing: :completed
+      transition completed: :completed
+    end
+
+    event :mark_failed do
+      transition processing: :failed
+    end
+
+    after_transition on: :complete do |user, _transition|
+      user.update(is_registration_complete: true)
+    end
+  end
 
   validates :phone,
             presence: true,
@@ -113,6 +132,7 @@ class User < ApplicationRecord
     self.is_registration_complete = false
     self.is_registered_to_vote = false
     self.is_admin = false
+    self.sms_notifications_enabled = false
 
     self.sign_in_count = 0
   end
@@ -123,39 +143,34 @@ class User < ApplicationRecord
 
   # Returns an Array because users may have multiple SwayLocales
   # ex. city, state, congressional
-  sig { returns(T::Array[SwayLocale]) }
   def sway_locales
     a = address
     a ? a.sway_locales : []
   end
 
-  sig { returns(T.nilable(SwayLocale)) }
   def default_sway_locale
     sway_locales.find { |s| !s.congress? } || sway_locales.first
   end
 
-  sig do
-    params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[UserLegislator])
-  end
   def user_legislators_by_locale(sway_locale)
+    return [] unless sway_locale
+
     user_legislators
       .where(active: true)
-      .select { |ul| sway_locale.eql?(ul.legislator.district.sway_locale) }
+      .joins(legislator: :district)
+      .where(districts: { sway_locale_id: sway_locale.id })
+      .includes(legislator: { district: :sway_locale })
+      .to_a
   end
 
-  sig do
-    params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[Legislator])
-  end
   def legislators(sway_locale)
     user_legislators_by_locale(sway_locale).map(&:legislator)
   end
 
-  sig { params(sway_locale: T.nilable(SwayLocale)).returns(T::Array[District]) }
   def districts(sway_locale)
     legislators(sway_locale).filter_map(&:district).uniq(&:id)
   end
 
-  sig { returns(T::Boolean) }
   def email_sendable?
     !!is_email_verified && email.present?
   end
@@ -168,7 +183,6 @@ class User < ApplicationRecord
     end
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |user|
       user.id id
@@ -178,38 +192,36 @@ class User < ApplicationRecord
       user.invite_url invite_url
       user.is_email_verified is_email_verified
       user.is_registration_complete is_registration_complete
+      user.registration_status registration_status
       user.is_registered_to_vote is_registered_to_vote
+      user.sms_notifications_enabled sms_notifications_enabled
 
       user.is_admin is_sway_admin? if is_sway_admin?
     end
   end
 
-  sig { returns(T::Boolean) }
   def is_sway_admin?
-    ADMIN_PHONES.include?(phone)
+    current_phone = phone
+    !!(current_phone && ADMIN_PHONES.include?(current_phone))
   end
 
-  sig { returns(T::Boolean) }
   def is_sway_api_user?
-    API_USER_PHONES.include?(phone)
+    current_phone = phone
+    !!(current_phone && API_USER_PHONES.include?(current_phone))
   end
 
-  sig { returns(T::Boolean) }
   def has_sway_passkey?
     passkeys.size.positive?
   end
 
-  sig { returns(T::Boolean) }
   def can_delete_sway_passkeys?
     passkeys.size > CREDENTIAL_MIN_AMOUNT
   end
 
-  sig { returns(T::Boolean) }
   def has_user_legislators?
     user_legislators.present?
   end
 
-  sig { void }
   def create_user_invite_url
     # https://stackoverflow.com/questions/3861777/determine-what-attributes-were-changed-in-rails-after-save-callback
     return if user_inviter.present?

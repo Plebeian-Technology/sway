@@ -1,0 +1,49 @@
+class BillsController < ApplicationController
+    @meta_title: String
+
+    @bill: Bill
+
+    include SwayGoogleCloudStorage
+
+    # GET /bills or /bills.json
+    def index: -> void
+
+    # GET /bills/1 or /bills/1.json
+    def show: -> void
+
+    # GET /bills/new
+    def new: -> void
+
+    # GET /bills/1/edit
+    def edit: -> void
+
+    # POST /bills or /bills.json
+    def create: -> void
+
+    # PATCH/PUT /bills/1 or /bills/1.json
+    def update: -> void
+
+    # DELETE /bills/1 or /bills/1.json
+    def destroy: -> void
+
+    def meta_title: -> String
+
+    private
+
+    def set_bill: -> Bill
+
+    def remove_audio: (String audio_path) -> void
+
+    def create_vote: (Bill b) -> void
+
+    # Only allow a list of trusted parameters through.
+    def bill_params: -> ActionController::Parameters
+
+    def vote_params: -> ::Array[(:house_roll_call_vote_number | :senate_roll_call_vote_number)]
+
+    def legislator_vote_params: -> ActionController::Parameters
+
+    def organizations_params: -> ActionController::Parameters
+
+    def params: -> ActionController::Parameters
+end

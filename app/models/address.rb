@@ -1,9 +1,9 @@
-# typed: strict
 # frozen_string_literal: true
 
 # == Schema Information
 #
 # Table name: addresses
+# Database name: primary
 #
 #  id          :integer          not null, primary key
 #  city        :string           not null
@@ -23,8 +23,6 @@
 #  index_addresses_on_latitude_and_longitude  (latitude,longitude)
 #
 class Address < ApplicationRecord
-  extend T::Sig
-
   after_initialize :find_region_code_from_region_name,
                    :upcase_region_code,
                    :titleize_city_name
@@ -39,7 +37,8 @@ class Address < ApplicationRecord
 
   attribute :full_address
 
-  sig { params(address_string: T.nilable(String)).returns(T.nilable(Address)) }
+  has_one :user_address, dependent: :destroy
+
   def self.from_string(address_string)
     return nil if address_string.blank?
 
@@ -56,12 +55,10 @@ class Address < ApplicationRecord
     )
   end
 
-  sig { returns(String) }
   def full_address
     [street, city, region_code, postal_code, country].compact.join(", ")
   end
 
-  sig { returns(T::Array[SwayLocale]) }
   def sway_locales
     [
       SwayLocale.find_or_create_by_normalized!(
@@ -70,11 +67,7 @@ class Address < ApplicationRecord
         country:,
       ),
       SwayLocale.find_or_create_by_normalized!(
-        city:
-          T.cast(
-            RegionUtil.from_region_code_to_region_name(region_code),
-            String,
-          ),
+        city: RegionUtil.from_region_code_to_region_name(region_code),
         state: region_code,
         country:,
       ),
@@ -87,17 +80,12 @@ class Address < ApplicationRecord
   end
 
   # https://rgeo.info/
-  sig { returns(RGeo::Cartesian::PointImpl) }
   def to_cartesian
-    T.let(
-      RGeo::Cartesian.factory.point(longitude, latitude),
-      RGeo::Cartesian::PointImpl,
-    )
+    RGeo::Cartesian.factory.point(longitude, latitude)
   end
 
   private
 
-  sig { void }
   def geocode
     return unless latitude.nil? || longitude.nil?
 
@@ -105,7 +93,6 @@ class Address < ApplicationRecord
     self.latitude, self.longitude = results.first&.coordinates || []
   end
 
-  sig { void }
   def find_region_code_from_region_name
     return unless region_code.length > 2
 
@@ -113,12 +100,10 @@ class Address < ApplicationRecord
       RegionUtil.from_region_name_to_region_code(region_code) || region_code
   end
 
-  sig { void }
   def upcase_region_code
     self.region_code = region_code.upcase
   end
 
-  sig { void }
   def titleize_city_name
     self.city = city.titleize
   end

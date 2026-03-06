@@ -1,0 +1,23 @@
+# https://www.twilio.com/docs/verify/sms
+# https://www.twilio.com/docs/verify/quickstarts/python-flask
+class PhoneVerificationController < ApplicationController
+    @twilio_client: untyped
+
+    include Authentication
+
+    def create: -> untyped
+
+    def update: -> untyped
+
+    private
+
+    def twilio_client: -> untyped
+
+    def account_sid: -> untyped
+
+    def auth_token: -> untyped
+
+    def service_sid: -> untyped
+
+    def phone_verification_params: -> untyped
+end

@@ -1,8 +1,6 @@
 /** @format */
 import { sway } from "sway";
 
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import BillOfTheWeekCreator from "app/frontend/components/bill/creator/BillOfTheWeekCreator";
 import { ETab } from "app/frontend/components/bill/creator/constants";
 import LayoutWithPage from "app/frontend/components/layouts/Layout";
@@ -23,11 +21,7 @@ interface IProps {
 }
 
 const BillOfTheWeekCreatorPage = (props: IProps) => {
-    return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <BillOfTheWeekCreator {...props} />
-        </LocalizationProvider>
-    );
+    return <BillOfTheWeekCreator {...props} />;
 };
 
 const PageLayout = (page: React.JSX.Element) =>

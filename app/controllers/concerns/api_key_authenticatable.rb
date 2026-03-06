@@ -1,10 +1,7 @@
-# typed: true
-
 # https://keygen.sh/blog/how-to-implement-api-key-authentication-in-rails-without-devise/
 
 module ApiKeyAuthenticatable
   extend ActiveSupport::Concern
-  extend T::Sig
 
   include ActionController::HttpAuthentication::Basic::ControllerMethods
   include ActionController::HttpAuthentication::Token::ControllerMethods

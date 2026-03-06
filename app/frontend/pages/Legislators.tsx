@@ -1,12 +1,13 @@
 /** @format */
 
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePoll } from "@inertiajs/react";
 import LegislatorCard from "app/frontend/components/legislator/LegislatorCard";
 import LocaleAvatar from "app/frontend/components/locales/LocaleAvatar";
 import SwayLoading from "app/frontend/components/SwayLoading";
 import LocaleSelector from "app/frontend/components/user/LocaleSelector";
 import { useFetch } from "app/frontend/hooks/useFetch";
 import { useLocale } from "app/frontend/hooks/useLocales";
+import { useScoreSubscription } from "app/frontend/hooks/useScoreSubscription";
 import { ROUTES } from "app/frontend/sway_constants";
 import { toFormattedLocaleName } from "app/frontend/sway_utils";
 import { isEmpty } from "lodash";
@@ -22,12 +23,17 @@ interface IProps {
     legislators: sway.ILegislator[];
 }
 
+const POLLING_PROPS = ["legislators"];
+
 const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
+    usePoll(15000, { only: POLLING_PROPS });
+    useScoreSubscription(POLLING_PROPS);
+
     const [locale] = useLocale();
 
     const reps = useMemo(
         () => representatives.filter((l) => !locale?.id || l.sway_locale_id === locale?.id),
-        [locale?.id, representatives],
+        [locale, representatives],
     );
 
     const render = useMemo(() => {
@@ -60,7 +66,7 @@ const Legislators_: React.FC<IProps> = ({ legislators: representatives }) => {
                 router.reload();
             })
             .catch(console.error);
-    }, [locale?.id, post]);
+    }, [locale, post]);
 
     if (isEmpty(locale)) {
         return (

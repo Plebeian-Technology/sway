@@ -23,7 +23,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "22.18.0"
+                  node-version: "24.14.0"
                   cache: "npm"
 
             - name: Install JS dependencies
@@ -38,11 +38,20 @@ jobs:
                   bundle exec rails db:migrate
                   bundle exec rails db:schema:load
 
-            - name: Set up certs
-              run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
-                  mv config/ssl/github-cert.pem config/ssl/cert.pem
-                  mv config/ssl/github-key.pem config/ssl/key.pem
+            # - name: Set up certs
+            #   run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
+            #       mv config/ssl/github-cert.pem config/ssl/cert.pem
+            #       mv config/ssl/github-key.pem config/ssl/key.pem
 
             - name: Run tests
               run: | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
                   bundle exec rspec
+
+            - name: Install RBS collection
+              run: bundle exec rbs collection install
+
+            - name: Validate RBS
+              run: bundle exec rbs validate
+
+            - name: Run Steep
+              run: bundle exec steep check

@@ -1,4 +1,4 @@
 
 vite: npm run start
-#web: bin/rails server -b 'ssl://localhost:3333?key=config/ssl/key.pem&cert=config/ssl/cert.pem&verify_mode=none'
+#web: bin/rails server -b 0.0.0.0
 jobs: bin/jobs

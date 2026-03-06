@@ -1,0 +1,13 @@
+class OrganizationBillPositionsController < ApplicationController
+    def index: -> untyped
+
+    def show: -> untyped
+
+    def create: -> untyped
+
+    private
+
+    def organization_bill_positions_params: -> untyped
+
+    def organization_bill_position_params: -> untyped
+end

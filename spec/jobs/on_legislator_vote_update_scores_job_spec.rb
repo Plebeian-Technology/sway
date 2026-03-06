@@ -27,19 +27,19 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
             )
 
           lds =
-            LegislatorDistrictScore.find_by(
+            LegislatorDistrictScore.find_by!(
               legislator: legislator_vote.legislator,
             )
           expect(lds).to_not be_nil
 
-          uls = UserLegislatorScore.find_by(user_legislator:)
+          uls = UserLegislatorScore.find_by!(user_legislator:)
           expect(uls).to_not be_nil
 
           job = OnLegislatorVoteUpdateScoresJob.new
           job.perform(legislator_vote, nil)
 
           lds =
-            LegislatorDistrictScore.find_by(
+            LegislatorDistrictScore.find_by!(
               legislator: legislator_vote.legislator,
             )
           expect(lds.count_agreed).to eql(1)
@@ -47,7 +47,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
           expect(lds.count_legislator_abstained).to eql(0)
           expect(lds.count_no_legislator_vote).to eql(0)
 
-          uls = UserLegislatorScore.find_by(user_legislator:)
+          uls = UserLegislatorScore.find_by!(user_legislator:)
           expect(uls.count_agreed).to eql(1)
           expect(uls.count_disagreed).to eql(0)
           expect(uls.count_legislator_abstained).to eql(0)
@@ -59,7 +59,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
           job.perform(legislator_vote, LegislatorVote::Support::FOR)
 
           lds =
-            LegislatorDistrictScore.find_by(
+            LegislatorDistrictScore.find_by!(
               legislator: legislator_vote.legislator,
             )
           expect(lds.count_agreed).to eql(0)
@@ -67,7 +67,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
           expect(lds.count_legislator_abstained).to eql(0)
           expect(lds.count_no_legislator_vote).to eql(0)
 
-          uls = UserLegislatorScore.find_by(user_legislator:)
+          uls = UserLegislatorScore.find_by!(user_legislator:)
           expect(uls.count_agreed).to eql(0)
           expect(uls.count_disagreed).to eql(1)
           expect(uls.count_legislator_abstained).to eql(0)

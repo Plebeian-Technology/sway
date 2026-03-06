@@ -30,7 +30,7 @@ const toCreatorOption = (organization: sway.IOrganization, bill_id: number) =>
         label: organization.name,
         summary: organization.positions?.find((p) => p.bill_id === bill_id)?.summary,
         support: organization.positions?.find((p) => p.bill_id === bill_id)?.support ?? Support.For,
-        icon_path: organization.icon_path,
+        icon_url: organization.icon_url,
     }) as TOrganizationOption;
 
 const BillCreatorOrganizations: React.FC = () => {

@@ -1,21 +1,10 @@
-# typed: true
-
 require_relative "base"
 
 module SeedPreparers
   module Legislators
     class CongressDotGov < Base
-      extend T::Sig
-
       attr_reader :json
 
-      sig do
-        params(
-          json: T::Hash[String, String],
-          sway_locale: SwayLocale,
-          is_internet_connected: T::Boolean,
-        ).void
-      end
       def initialize(json, sway_locale, is_internet_connected)
         super
 
@@ -34,12 +23,10 @@ module SeedPreparers
       def title
         if potus?
           "Pres."
+        elsif json.dig("terms", "item")&.last&.fetch("chamber", nil) == "Senate"
+          "Sen."
         else
-          if json.dig("terms", "item")&.last&.fetch("chamber", nil) == "Senate"
-            "Sen."
-          else
-            "Rep."
-          end
+          "Rep."
         end
       end
 
@@ -100,13 +87,11 @@ module SeedPreparers
 
       def region_code
         @region_code ||=
-          (
-            if potus?
-              json.fetch("state")
-            else
-              RegionUtil.from_region_name_to_region_code(json.fetch("state"))
-            end
-          )
+          if potus?
+            json.fetch("state")
+          else
+            RegionUtil.from_region_name_to_region_code(json.fetch("state"))
+          end
       end
 
       def postal_code
@@ -164,10 +149,9 @@ module SeedPreparers
 
           return json if bioguide_id == "POTUS"
 
-          # T.unsafe - .get does not exist on Faraday
           begin
             response =
-              T.unsafe(Faraday).get(
+              Faraday.get(
                 "https://api.congress.gov/v3/member/#{bioguide_id}?&api_key=#{api_key}",
                 timeout: 1,
               )

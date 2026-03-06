@@ -1,0 +1,43 @@
+class ScoreUpdaterService
+    @user_vote: UserVote
+
+    @user: User?
+
+    @bill: Bill?
+
+    @sway_locale: SwayLocale?
+
+    @districts: Array[District]?
+
+    @bill_districts: Array[District]?
+
+    @user_districts: Array[District]?
+
+    def initialize: (UserVote user_vote) -> void
+
+    def run: -> void
+
+    private
+
+    def update_bill_score: -> BillScore?
+
+    def update_bill_score_districts: (BillScore? bill_score) -> void
+
+    def update_legislator_district_score: -> void
+
+    def update_user_legislator_scores: -> Array[untyped]
+
+    def districts: -> Array[District]
+
+    def bill_districts: -> Array[District]
+
+    def user_districts: -> Array[District]
+
+    def user: -> User
+
+    def bill: -> Bill
+
+    def sway_locale: -> SwayLocale
+
+    def broadcast_score_refresh: -> void
+end

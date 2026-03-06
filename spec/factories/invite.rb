@@ -1,5 +1,3 @@
-# typed: true
-
 # == Schema Information
 #
 # Table name: invites

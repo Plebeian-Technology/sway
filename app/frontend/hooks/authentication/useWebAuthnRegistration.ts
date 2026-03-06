@@ -1,7 +1,10 @@
-import * as webauthnJson from "@github/webauthn-json";
 import { useFetch } from "app/frontend/hooks/useFetch";
-import { handleError } from "app/frontend/sway_utils";
-import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json"; // NOSONAR
+import {
+    create,
+    handleError,
+    PublicKeyCredentialCreationOptionsJSON,
+    PublicKeyCredentialWithAttestationJSON,
+} from "app/frontend/sway_utils";
 import { useCallback, useState } from "react";
 import { sway } from "sway";
 
@@ -9,7 +12,7 @@ const REGISTRATION_ROUTE = "/users/webauthn/registration";
 const CALLBACK_ROUTE = "/users/webauthn/registration/callback";
 
 export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => void) => {
-    const creater = useFetch<PublicKeyCredentialRequestOptionsJSON | sway.IValidationResult>(REGISTRATION_ROUTE);
+    const creater = useFetch<PublicKeyCredentialCreationOptionsJSON | sway.IValidationResult>(REGISTRATION_ROUTE);
     const updater = useFetch<sway.IUser>(CALLBACK_ROUTE);
 
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -24,7 +27,7 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => v
                 .then((result) => {
                     const r = result as PublicKeyCredentialCreationOptionsJSON;
                     if (r) {
-                        return webauthnJson.create({ publicKey: r, signal: controller.signal }).catch((e) => {
+                        return create({ publicKey: r, signal: controller.signal }).catch((e) => {
                             setLoading(false);
                             handleError(e);
                         });
@@ -42,7 +45,7 @@ export const useWebAuthnRegistration = (onAuthenticated: (user: sway.IUser) => v
 
     // https://github.com/Yubico/java-webauthn-server/#3-registration
     const verifyRegistration = useCallback(
-        async (phone: string, publicKeyCredential: webauthnJson.PublicKeyCredentialWithAttestationJSON) => {
+        async (phone: string, publicKeyCredential: PublicKeyCredentialWithAttestationJSON) => {
             if (!phone || !publicKeyCredential) {
                 setLoading(false);
                 return;

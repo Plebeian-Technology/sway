@@ -9,7 +9,9 @@ class WellKnownController < ApplicationController
       "WellKnownController.index.request.host - #{request.host}",
     )
     if request.host == "app.sway.vote"
-      render json: { origins: ["https://sway.vote"] }
+      return render json: { origins: ["https://sway.vote"] }
     end
+
+    head :no_content
   end
 end

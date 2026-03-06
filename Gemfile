@@ -2,11 +2,13 @@
 
 source "https://rubygems.org"
 
-ruby "3.4.5"
+ruby "4.0.1"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 # gem "rails", "~> 8"
 gem "rails", "~> 8"
+
+gem "state_machines-activerecord"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -32,7 +34,7 @@ gem "puma", ">= 5"
 gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '>= 4.0.1'
+gem "redis"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -70,6 +72,7 @@ gem "inertia_rails"
 gem "concurrent-ruby"
 
 # https://github.com/lostisland/faraday
+gem "down"
 gem "faraday"
 
 # https://github.com/mauricio/faraday_curl
@@ -89,10 +92,6 @@ gem "twilio-ruby", "~> 7"
 # Use sqlite3 as the database for Active Record
 # https://github.com/sparklemotion/sqlite3-ruby/pull/402/files
 gem "sqlite3", "~> 2", force_ruby_platform: true
-
-# Ruby type hints
-# https://sorbet.org/docs/adopting
-gem "sorbet-runtime"
 
 # gcp storage for get/put org icons, etc.
 gem "google-cloud-storage"
@@ -114,9 +113,6 @@ gem "lograge"
 # Parse fetched xml data for US Congress votes
 gem "rexml"
 
-gem "newrelic_rpm"
-gem "sentry-rails"
-gem "sentry-ruby"
 gem "stackprof"
 
 gem "solid_queue", "~> 1.1"
@@ -129,6 +125,9 @@ group :production do
   # https://github.com/modosc/cloudflare-rails
   # To determine ip addresses in order to rate limit correctly
   gem "cloudflare-rails"
+  gem "newrelic_rpm"
+  gem "sentry-rails"
+  gem "sentry-ruby"
 end
 
 group :development, :test do
@@ -146,14 +145,6 @@ group :development, :test do
 
   # https://github.com/thoughtbot/factory_bot_rails
   gem "factory_bot_rails"
-
-  # https://github.com/samuelgiles/rspec-sorbet
-  # https://stackoverflow.com/questions/74842832/how-to-configure-sorbet-with-rspec
-  gem "rspec-sorbet"
-
-  # Generate types from gems
-  # https://github.com/Shopify/tapioca
-  gem "tapioca", "~> 0.17", require: false
 end
 
 group :development do
@@ -164,10 +155,6 @@ group :development do
   # https://stackoverflow.com/questions/1289557/how-do-you-discover-model-attributes-in-rails
   # Use annotaterb instead of annotate - https://github.com/drwl/annotaterb
   gem "annotaterb"
-
-  # Ruby type hints
-  # https://sorbet.org/docs/adopting
-  gem "sorbet"
 
   # https://github.com/faker-ruby/faker
   gem "faker"
@@ -191,6 +178,9 @@ group :development do
   gem "rubocop-thread_safety"
 
   gem "prettier_print"
+  gem "rbs", require: false
+  gem "rbs_rails", require: false
+  gem "steep", require: false
   gem "syntax_tree"
   gem "syntax_tree-haml"
   gem "syntax_tree-rbs"
@@ -200,8 +190,6 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-
-  gem "rails-controller-testing"
 
   gem "simplecov", require: false, group: :test
 end

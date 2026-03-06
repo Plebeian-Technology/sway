@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# typed: true
 
 # == Schema Information
 #
 # Table name: legislators
+# Database name: primary
 #
 #  id          :integer          not null, primary key
 #  active      :boolean          not null
@@ -31,9 +31,8 @@
 #  district_id  (district_id => districts.id)
 #
 class Legislator < ApplicationRecord
-  extend T::Sig
-
-  after_create_commit :create_legislator_district_score
+  after_create_commit :create_default_legislator_district_score
+  after_commit :enqueue_photo_mirroring, if: :saved_change_to_photo_url?
 
   # use inverse_of to specify relationship
   # https://stackoverflow.com/a/59222913/6410635
@@ -45,6 +44,7 @@ class Legislator < ApplicationRecord
 
   has_many :bills, dependent: :restrict_with_exception # sponsor
   has_many :legislator_votes, dependent: :destroy
+  has_one_attached :photo
 
   PARTY_BY_CHAR = {
     R: "Republican",
@@ -54,8 +54,6 @@ class Legislator < ApplicationRecord
   }.freeze
 
   class << self
-    extend T::Sig
-    sig { params(party: String).returns(T.nilable(String)) }
     def to_party_name_from_char(party)
       if party.length > 1
         party
@@ -64,34 +62,21 @@ class Legislator < ApplicationRecord
       end
     end
 
-    sig { params(party: String).returns(String) }
     def to_party_char_from_name(party)
       if party.blank? || party.length <= 1
         party
       else
-        T.cast(party[0], String).upcase
+        party[0]&.upcase || party
       end
     end
   end
 
-  sig { returns(String) }
   def full_name
     "#{first_name} #{last_name}"
   end
 
-  sig { returns(SwayLocale) }
   def sway_locale
     @sway_locale ||= district.sway_locale
-  end
-
-  sig { returns(District) }
-  def district
-    T.cast(super, District)
-  end
-
-  sig { returns(LegislatorDistrictScore) }
-  def legislator_district_score
-    T.cast(super, LegislatorDistrictScore)
   end
 
   def at_large?
@@ -99,7 +84,6 @@ class Legislator < ApplicationRecord
   end
 
   # The year the Legislator was elected
-  sig { returns(Numeric) }
   def election_year
     if congress?
       (created_at.year % 2).positive? ? created_at.year - 1 : created_at.year
@@ -110,7 +94,6 @@ class Legislator < ApplicationRecord
 
   delegate :congress?, to: :sway_locale
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |l|
       l.id id
@@ -132,14 +115,41 @@ class Legislator < ApplicationRecord
     end
   end
 
-  sig { params(bill: Bill).returns(T.nilable(LegislatorVote)) }
   def vote(bill)
     legislator_votes.find { |lv| lv if lv.bill.eql?(bill) }
   end
 
   private
 
-  def create_legislator_district_score
+  def enqueue_photo_mirroring
+    return if id.blank?
+    return if internal_asset_url?(photo_url)
+
+    MirrorExternalAssetJob.perform_later(
+      record_class_name: self.class.name,
+      record_id: id,
+      attachment_name: "photo",
+      url_column: "photo_url",
+    )
+  end
+
+  def internal_asset_url?(url)
+    return true if url.blank?
+
+    uri = URI.parse(url)
+    return false unless uri.is_a?(URI::HTTP)
+
+    host = uri.host.to_s.downcase
+    host.ends_with?("sway.vote") ||
+      (
+        host == "storage.googleapis.com" &&
+          uri.path.to_s.start_with?("/sway-assets/")
+      )
+  rescue URI::InvalidURIError
+    false
+  end
+
+  def create_default_legislator_district_score
     LegislatorDistrictScore.create(legislator: self)
   end
 end

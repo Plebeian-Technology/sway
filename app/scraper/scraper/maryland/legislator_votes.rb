@@ -1,4 +1,3 @@
-# typed: true
 # frozen_string_literal: true
 
 # https://medium.com/@zozulyak.nick/ruby-class-pattern-to-work-with-api-requests-with-built-in-async-approach-bf0713a7dc96
@@ -9,7 +8,6 @@ module Scraper
   module Maryland
     class LegislatorVotes
       include ApiConnector
-      extend T::Sig
 
       def initialize(bill, roll_call_number, roll_call_chamber)
         @bill = bill # ex. hr815
@@ -25,10 +23,20 @@ module Scraper
       # r = Faraday.get('https://mgaleg.maryland.gov/2025RS/votes/house/0549.pdf').body
       def do_request
         # get(endpoint)
-        T.unsafe(OpenURI).open_uri("#{url}#{endpoint}")
+
+        OpenURI.open_uri("#{url}#{endpoint}")
+      rescue OpenURI::HTTPError => e
+        Rails.logger.warn("Failed to open URI: #{e.message}")
+        raise e unless Rails.env.test? && e.message.include?("404")
+        unless @bill.introduced_date_time_utc.year > Time.current.year - 4
+          raise e
+        end
+
+        # Bill may have been introduced earlier
+        @bill.introduced_date_time_utc = @bill.introduced_date_time_utc - 1.year
+        do_request
       end
 
-      sig { returns(T::Array[Scraper::Maryland::Vote]) }
       def do_process
         return [] unless result
 

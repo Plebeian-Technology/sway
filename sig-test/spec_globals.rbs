@@ -1,0 +1,23 @@
+GOOGLE_MAPS_API_KEY_REGEX: Regexp
+
+CONGRESS: Hash[Symbol, String]
+
+MARYLAND: Hash[Symbol, String]
+
+module ActionMailer
+    class Preview
+    end
+end
+
+class Preview < ActionMailer::Preview
+end
+
+class UserLegislatorEmailMailerPreview < ActionMailer::Preview
+end
+
+module Capybara
+    module Selenium
+        class Driver
+        end
+    end
+end

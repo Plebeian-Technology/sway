@@ -42,6 +42,8 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
 
     const mapper = useCallback(
         (organizationPosition: sway.IOrganizationPosition & { organization: sway.IOrganization }, index: number) => {
+            const isSelected =
+                organizationPosition.support === Support.For ? supportSelected === index : opposeSelected === index;
             return (
                 <BillArgumentsOrganization
                     key={`${organizationPosition.organization.name}-${index}`}
@@ -51,8 +53,7 @@ const BillArguments: React.FC<IProps> = ({ bill, organizations }) => {
                     organizationPosition={organizationPosition}
                     organization={organizationPosition.organization}
                     index={index}
-                    supportSelected={supportSelected}
-                    opposeSelected={opposeSelected}
+                    isSelected={isSelected}
                     setSupportSelected={setSupportSelected}
                     setOpposeSelected={setOpposeSelected}
                 />

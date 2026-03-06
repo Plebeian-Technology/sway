@@ -1,0 +1,17 @@
+class SwayTask
+    include SwayGoogleCloudStorage
+
+    extend Rake::DSL
+
+    def self.run: -> untyped
+
+    def self.download_email_blocklist: -> untyped
+
+    def run_task: -> untyped
+
+    def backup_db: (?::Integer attempt) -> untyped
+
+    def backup_sqlite_database_online: (untyped local_db_path, untyped local_backup_path) { -> untyped } -> untyped
+
+    def root_path: -> ("/rails" | ".")
+end

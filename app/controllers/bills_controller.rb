@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class BillsController < ApplicationController
   include SwayGoogleCloudStorage
@@ -21,6 +20,7 @@ class BillsController < ApplicationController
           bills:
             Bill
               .previous(current_sway_locale)
+              .includes(:votes, :bill_score)
               .map do |bill|
                 bill.to_sway_json.merge(
                   {
@@ -66,17 +66,25 @@ class BillsController < ApplicationController
 
   # GET /bills/new
   def new
+    empty_legislator_votes = []
+    # @type var empty_legislator_votes: Array[untyped]
+
     render_component(
       Pages::BILL_CREATOR,
       {
-        bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
+        bills:
+          Bill
+            .current_session(current_sway_locale)
+            .includes(:votes)
+            &.map(&:to_sway_json),
         bill: Bill.new.attributes,
         legislators: current_sway_locale&.legislators&.map(&:to_sway_json),
-        legislator_votes: [],
+        legislator_votes: empty_legislator_votes,
         organizations:
-          Organization.where(sway_locale: current_sway_locale).map(
-            &:to_sway_json
-          ),
+          Organization
+            .includes(:organization_bill_positions)
+            .where(sway_locale: current_sway_locale)
+            .map(&:to_sway_json),
         tab_key: params[:tab_key],
       },
     )
@@ -89,7 +97,11 @@ class BillsController < ApplicationController
     render_component(
       Pages::BILL_CREATOR,
       {
-        bills: Bill.current_session(current_sway_locale)&.map(&:to_sway_json),
+        bills:
+          Bill
+            .current_session(current_sway_locale)
+            .includes(:votes)
+            &.map(&:to_sway_json),
         bill:
           @bill.to_sway_json.tap do |b|
             b[:organizations] = @bill.organizations.map(&:to_sway_json)
@@ -108,9 +120,10 @@ class BillsController < ApplicationController
             &.map(&:to_sway_json),
         legislator_votes: @bill.legislator_votes.map(&:to_sway_json),
         organizations:
-          Organization.where(sway_locale: current_sway_locale).map(
-            &:to_sway_json
-          ),
+          Organization
+            .includes(:organization_bill_positions)
+            .where(sway_locale: current_sway_locale)
+            .map(&:to_sway_json),
         tab_key: params[:tab_key],
       },
     )
@@ -209,15 +222,12 @@ class BillsController < ApplicationController
 
   def set_bill
     @bill =
-      T.let(
-        Bill.includes(
-          :legislator_votes,
-          :organization_bill_positions,
-          :legislator,
-          :sway_locale,
-        ).find(params[:id]),
-        T.nilable(Bill),
-      )
+      Bill.includes(
+        :legislator_votes,
+        :organization_bill_positions,
+        :legislator,
+        :sway_locale,
+      ).find(params[:id])
   end
 
   def remove_audio(audio_path)
@@ -292,7 +302,8 @@ class BillsController < ApplicationController
           :id,
           :sway_locale_id,
           :name,
-          :icon_path,
+          :icon_url,
+          :icon_signed_id,
           positions: %i[id bill_id summary support],
         )
       end
@@ -300,20 +311,5 @@ class BillsController < ApplicationController
 
   def params
     super.transform_keys(&:underscore)
-  end
-
-  sig do
-    params(
-      organization: Organization,
-      current_icon_path: T.nilable(String),
-    ).void
-  end
-  def remove_icon(organization, current_icon_path)
-    return unless organization.icon_path != current_icon_path
-
-    delete_file(
-      bucket_name: SwayGoogleCloudStorage::BUCKETS[:ASSETS],
-      file_name: current_icon_path,
-    )
   end
 end

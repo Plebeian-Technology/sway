@@ -1,0 +1,23 @@
+class Faker::Address
+    def self.city: -> String
+    def self.country: -> String
+    def self.state_abbr: -> String
+    def self.street_address: (**untyped kwargs) -> String
+    def self.postcode: -> String
+end
+
+class Faker::String
+    def self.random: (*untyped args, **untyped kwargs) -> ::String
+end
+
+class Faker::Color
+    def self.color_name: -> ::String
+end
+
+class Faker::CryptoCoin
+    def self.coin_name: -> ::String
+end
+
+class Faker::ProgrammingLanguage
+    def self.name: -> ::String
+end

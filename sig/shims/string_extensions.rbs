@@ -1,0 +1,6 @@
+class String
+    def as_cookie: -> String
+    def remove_non_digits: -> String
+    def remove_non_alpha: -> String
+    def starts_with?: (String | Regexp prefix) -> bool
+end

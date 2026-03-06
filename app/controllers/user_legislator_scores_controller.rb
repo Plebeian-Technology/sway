@@ -1,11 +1,21 @@
 # frozen_string_literal: true
-# typed: true
 
 class UserLegislatorScoresController < ApplicationController
   # GET /user_legislator_scores or /user_legislator_scores.json
   def index
     render json:
-             UserLegislatorScore.where(user: current_user).map(&:to_sway_json),
+             UserLegislatorScore
+               .joins(:user_legislator)
+               .where(user_legislators: { user_id: current_user.id })
+               .includes(
+                 user_legislator: {
+                   legislator: [
+                     { district: :sway_locale },
+                     :legislator_district_score,
+                   ],
+                 },
+               )
+               .map(&:to_sway_json),
            status: :ok
   end
 

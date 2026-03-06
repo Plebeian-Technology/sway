@@ -1,5 +1,3 @@
-# typed: true
-
 # frozen_string_literal: true
 
 require_relative "../seed_preparers/legislators/congress_dot_gov"
@@ -8,8 +6,6 @@ require_relative "../seed_preparers/legislators/sway"
 
 # Creates Legislators in Sway only if they do not exist
 class SeedLegislator
-  extend T::Sig
-
   class MissingRegionCode < StandardError
   end
 
@@ -20,22 +16,16 @@ class SeedLegislator
   # Class Methods
   ###################################
 
-  sig do
-    params(sway_locale: SwayLocale).returns(T::Array[T::Hash[String, String]])
-  end
   def self.read_legislators(sway_locale)
     # All Congressional ones are active
-    T.let(
-      JSON.parse(
-        File.read(
-          "storage/seeds/data/#{sway_locale.reversed_name.tr("-", "/")}/legislators.json",
-        ),
+
+    JSON.parse(
+      File.read(
+        "storage/seeds/data/#{sway_locale.reversed_name.tr("-", "/")}/legislators.json",
       ),
-      T::Array[T::Hash[String, String]],
     )
   end
 
-  sig { params(sway_locales: T::Array[SwayLocale]).void }
   def self.run(sway_locales)
     is_internet_connected =
       begin
@@ -60,23 +50,16 @@ class SeedLegislator
 
     sway_locales.each do |sway_locale|
       Rails.logger.info("Seeding Legislators for - #{sway_locale.name}")
-      T
-        .let(read_legislators(sway_locale), T::Array[T::Hash[String, String]])
-        .each do |j|
-          seed_legislator =
-            SeedLegislator.new(j, sway_locale, is_internet_connected)
-          if seed_legislator.present? && seed_legislator.prepared.present?
-            seed_legislator.seed
-          end
+      read_legislators(sway_locale).each do |j|
+        seed_legislator =
+          SeedLegislator.new(j, sway_locale, is_internet_connected)
+        if seed_legislator.present? && seed_legislator.prepared.present?
+          seed_legislator.seed
         end
+      end
     end
   end
 
-  sig do
-    params(region_code: T.nilable(String), district: Integer).returns(
-      T.nilable(String),
-    )
-  end
   def self.district_name(region_code, district)
     return nil if region_code.blank?
     "#{region_code}#{district}"
@@ -88,13 +71,6 @@ class SeedLegislator
 
   attr_reader :prepared, :sway_locale
 
-  sig do
-    params(
-      j: T::Hash[String, String],
-      sway_locale: SwayLocale,
-      is_internet_connected: T::Boolean,
-    ).void
-  end
   def initialize(j, sway_locale, is_internet_connected = true)
     @sway_locale = sway_locale
 
@@ -120,12 +96,10 @@ class SeedLegislator
       end
   end
 
-  sig { returns(T.nilable(Legislator)) }
   def seed
     legislator
   end
 
-  sig { returns(T.nilable(Legislator)) }
   def legislator
     return nil if prepared.json.nil?
 

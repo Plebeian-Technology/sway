@@ -1,0 +1,27 @@
+class EmailVerificationController < ApplicationController
+    @twilio_client: untyped
+
+    include Authentication
+
+    def create: -> untyped
+
+    def update: -> untyped
+
+    def destroy: -> untyped
+
+    private
+
+    def redirect_path: -> untyped
+
+    def twilio_client: -> untyped
+
+    def account_sid: -> untyped
+
+    def auth_token: -> untyped
+
+    def service_sid: -> untyped
+
+    def email_verification_params: -> untyped
+
+    def current_user: -> untyped
+end

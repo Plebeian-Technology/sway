@@ -1,0 +1,29 @@
+class SwayPushNotificationService
+    @title: String
+
+    @body: String
+
+    @subscription: PushNotificationSubscription?
+
+    @message: Hash[Symbol, String]?
+
+    @subscriptions: (Array[PushNotificationSubscription] | untyped)?
+
+    ICON: "sway-us-light.png"
+
+    def initialize: (?PushNotificationSubscription? subscription, title: String, body: String) -> void
+
+    def send_push_notification: -> nil
+
+    private
+
+    def iterator: -> (:each | :find_each)
+
+    def message: -> Hash[Symbol, String]
+
+    def icon: -> String
+
+    def subscriptions: -> (Array[PushNotificationSubscription] | untyped)
+
+    def get_subscriptions: -> (Array[PushNotificationSubscription] | untyped)
+end

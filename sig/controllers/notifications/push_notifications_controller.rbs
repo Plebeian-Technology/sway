@@ -1,0 +1,14 @@
+module Notifications
+    class PushNotificationsController < ApplicationController
+        @subscription: untyped
+
+        # Allow the user to test a push notification
+        def create: -> untyped
+
+        private
+
+        def set_subscription: -> untyped
+
+        def push_notification_subscription_params: -> untyped
+    end
+end

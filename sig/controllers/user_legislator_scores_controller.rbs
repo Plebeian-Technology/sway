@@ -1,0 +1,12 @@
+class UserLegislatorScoresController < ApplicationController
+    # GET /user_legislator_scores or /user_legislator_scores.json
+    def index: -> untyped
+
+    # GET /user_legislator_scores/1 or /user_legislator_scores/1.json
+    def show: -> untyped
+
+    private
+
+    # Only allow a list of trusted parameters through.
+    def user_legislator_score_params: -> untyped
+end

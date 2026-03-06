@@ -1,8 +1,7 @@
-# typed: true
-
 # == Schema Information
 #
 # Table name: refresh_tokens
+# Database name: primary
 #
 #  id         :integer          not null, primary key
 #  expires_at :datetime         not null
@@ -23,13 +22,9 @@
 #  user_id  (user_id => users.id)
 #
 class RefreshToken < ApplicationRecord
-  extend T::Sig
-
   belongs_to :user
 
   class << self
-    extend T::Sig
-
     def token
       SecureRandom.urlsafe_base64(32)
     end
@@ -38,9 +33,6 @@ class RefreshToken < ApplicationRecord
       Time.zone.now + 1.year
     end
 
-    sig do
-      params(user: User, request: ActionDispatch::Request).returns(RefreshToken)
-    end
     def for(user, request)
       user.refresh_token&.destroy
 
@@ -54,22 +46,15 @@ class RefreshToken < ApplicationRecord
     end
   end
 
-  sig { returns(T::Boolean) }
   def expired?
     expires_at < Time.zone.now
   end
 
-  sig { params(request: ActionDispatch::Request).returns(T::Boolean) }
   def is_valid?(request)
     !expired? && request.remote_ip == ip_address &&
       request.user_agent == user_agent
   end
 
-  sig do
-    returns(
-      T::Hash[Symbol, T.any(String, T::Boolean, ActiveSupport::TimeWithZone)],
-    )
-  end
   def as_cookie
     {
       value: token,

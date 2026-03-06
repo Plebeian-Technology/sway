@@ -1,7 +1,8 @@
 /** @format */
 
+import { usePoll } from "@inertiajs/react";
 import BillComponent from "app/frontend/components/bill/BillComponent";
-import { useEffect } from "react";
+import { useScoreSubscription } from "app/frontend/hooks/useScoreSubscription";
 import { sway } from "sway";
 
 interface IProps {
@@ -14,12 +15,13 @@ interface IProps {
     bill_score?: sway.IBillScore;
 }
 
-const Bill_: React.FC<IProps> = (props) => {
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    });
+const POLLING_PROPS = ["bill_score"];
 
-    return <BillComponent {...props} />;
+const Bill_: React.FC<IProps> = (props) => {
+    usePoll(15000, { only: POLLING_PROPS });
+    const isAwaitingScoreUpdate = useScoreSubscription(POLLING_PROPS);
+
+    return <BillComponent {...props} isAwaitingScoreUpdate={isAwaitingScoreUpdate} />;
 };
 
 const Bill = Bill_;

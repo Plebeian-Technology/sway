@@ -1,5 +1,23 @@
 /** @format */
 
+declare module "@rails/activestorage" {
+    export function start(): void;
+
+    export interface IDirectUploadDelegate {
+        directUploadWillStoreFileWithXHR?(xhr: XMLHttpRequest): void;
+    }
+
+    export interface IDirectUploadBlob {
+        signed_id: string;
+    }
+
+    export class DirectUpload {
+        constructor(file: File, url: string, delegate?: IDirectUploadDelegate);
+
+        create(callback: (error: string | Error | null, blob: IDirectUploadBlob | null) => void): void;
+    }
+}
+
 declare module "sway" {
     // https://stackoverflow.com/a/75201302/6410635
     type EitherOnly<T, U> = {
@@ -115,7 +133,7 @@ declare module "sway" {
             region_name: string;
             country: string;
             // districts: IDistrict[];
-            icon_path: string;
+            icon_url: string;
             time_zone: string;
             current_session_start_date: string;
         }
@@ -154,6 +172,7 @@ declare module "sway" {
             locales: ISwayLocale[];
             is_admin?: boolean;
             memberships: IOrganizationMembership[];
+            sms_notifications_enabled: boolean;
         }
 
         interface IApiUserVote {
@@ -207,6 +226,7 @@ declare module "sway" {
             address?: IAddress;
             photo_url?: string;
             twitter?: string;
+            user_legislator_score?: scoring.IUserLegislatorScore;
         }
 
         interface IBaseScore {
@@ -355,11 +375,13 @@ declare module "sway" {
             sway_locale_id: number;
             scheduled_release_date_utc: string; // Date string
             vote?: IVote;
+            bill_score?: scoring.IBillScore;
+            user_vote?: IApiUserVote;
         }
         interface IOrganizationBase extends IIDObject {
             sway_locale_id: number;
             name: string;
-            icon_path?: string;
+            icon_url?: string;
         }
         interface IOrganization extends IOrganizationBase {
             positions: IOrganizationPosition[];

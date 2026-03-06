@@ -1,7 +1,4 @@
-# typed: true
 # frozen_string_literal: true
-
-require "open3"
 
 MARYLAND = {
   city: "maryland",
@@ -10,29 +7,12 @@ MARYLAND = {
 }.freeze
 
 RSpec.describe OpenStatesLegislatorVoteUpdateService do
+  include_context "DevDataLoader"
+
   before do
-    dev_db_file_path = Rails.root.join("storage", "development.sqlite3").to_s
-    data_file_path = Rails.root.join("storage", "dev-data.sql").to_s
-
-    unless File.exist?(dev_db_file_path)
-      skip "No file found at path - #{dev_db_file_path}"
-    end
-
-    command =
-      "sqlite3 storage/development.sqlite3 '.dump \"legislators\" \"sway_locales\" \"districts\"' | grep '^INSERT' > #{data_file_path}"
-    _, stderr, status = Open3.capture3(command)
-    expect(status.success?).to be true
-    expect(stderr).to be_empty
-
-    sql =
-      File.read(data_file_path).gsub(
-        "'environment','development'",
-        "'environment','test'",
-      )
-
-    statements = sql.split(/;$/)
-    statements.pop # remove empty line
-    statements.each { |line| ActiveRecord::Base.connection.execute(line) }
+    sql = dev_seed_sql
+    reset_dev_seed_tables!
+    load_dev_seed_sql!(sql)
 
     User.destroy_all
 
@@ -50,9 +30,9 @@ RSpec.describe OpenStatesLegislatorVoteUpdateService do
   end
 
   after(:all) do
-    SwayLocale.destroy_all
-    Legislator.destroy_all
     LegislatorVote.destroy_all
+    Legislator.destroy_all
+    SwayLocale.destroy_all
   end
 
   describe "#run" do

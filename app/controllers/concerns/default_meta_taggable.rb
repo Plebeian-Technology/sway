@@ -45,7 +45,9 @@ module DefaultMetaTaggable
         lambda do
           meta_tags.map do |tag_name, value|
             id_key = tag_name.start_with?("og") ? :property : :name
-            {}.tap do |h|
+            entry = {}
+            # @type var entry: Hash[Symbol, untyped]
+            entry.tap do |h|
               h[id_key] = tag_name.to_s
               h[:content] = value
             end

@@ -1,41 +1,37 @@
-# typed: true
-
 # frozen_string_literal: true
 
 # require 'lib/sway_geocode'
 
 class SwayRegistrationService
-  extend T::Sig
   include SwayGeocode
 
-  sig { returns(Address) }
-  attr_reader :address
+  attr_reader :address, :sway_locale
 
-  sig { returns(SwayLocale) }
-  attr_reader :sway_locale
-
-  sig do
-    params(
-      user: User,
-      address: Address,
-      sway_locale: SwayLocale,
-      invited_by_id: T.nilable(Integer),
-    ).void
-  end
-  def initialize(user, address, sway_locale, invited_by_id:)
+  def initialize(user, address, sway_locale, invited_by_id:, async: true)
     @user = user
     @address = address
     @sway_locale = sway_locale
-    @legislators = sway_locale.legislators
+    @legislators = sway_locale.legislators.includes(:district)
 
     @invited_by_id = invited_by_id
+    @async = async
 
-    @feature = T.let(nil, T.nilable(RGeo::GeoJSON::Feature))
+    @feature = nil
     @districts = nil
   end
 
-  sig { returns(T::Array[UserLegislator]) }
   def run
+    if @async && @sway_locale.regional?
+      @user.start_processing! if @user.pending?
+      SwayRegistrationJob.perform_later(
+        @user.id,
+        @address.id,
+        @sway_locale.id,
+        invited_by_id: @invited_by_id,
+      )
+      return []
+    end
+
     uls = create_user_legislators
 
     if uls.blank?
@@ -45,15 +41,13 @@ class SwayRegistrationService
       return uls
     end
 
-    @user.is_registration_complete = true
-    @user.save!
+    @user.complete! if @user.pending? || @user.processing?
 
     create_invite
 
     uls
   end
 
-  sig { returns(T::Array[UserLegislator]) }
   def create_user_legislators
     district_legislators.map do |l|
       ul = UserLegislator.find_or_initialize_by(user: @user, legislator: l)
@@ -68,7 +62,6 @@ class SwayRegistrationService
     @districts ||= SwayGeocode.build(sway_locale, address).districts
   end
 
-  sig { returns(T::Array[Legislator]) }
   def district_legislators
     if sway_locale.regional?
       find_legislators_from_open_states_geo_endpoint
@@ -114,7 +107,7 @@ class SwayRegistrationService
 
     # Get Legislators from OpenStates
     response =
-      T.unsafe(Faraday).get(
+      Faraday.get(
         "https://v3.openstates.org/people.geo?apikey=#{ENV["OPEN_STATES_API_KEY"]}&lat=#{address.latitude}&lng=#{address.longitude}",
       )
 

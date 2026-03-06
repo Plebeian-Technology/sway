@@ -1,0 +1,4 @@
+module Users
+    class WebauthnController < ApplicationController
+    end
+end

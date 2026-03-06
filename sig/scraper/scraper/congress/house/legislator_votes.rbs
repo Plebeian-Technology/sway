@@ -1,0 +1,30 @@
+module Scraper
+    module Congress
+        module House
+            class LegislatorVotes
+                @bill_external_id: untyped
+
+                @roll_call_number: untyped
+
+                @result: untyped
+
+                include ApiConnector
+
+                def initialize: (untyped bill_external_id, untyped roll_call_number) -> void
+
+                def content_type: -> "text/xml"
+
+                # r = Faraday.get('https://clerk.house.gov/evs/2024/roll025.xml').body
+                def do_request: -> untyped
+
+                def do_process: -> (::Array[untyped] | untyped)
+
+                private
+
+                def result: -> untyped
+
+                def roll: -> untyped
+            end
+        end
+    end
+end

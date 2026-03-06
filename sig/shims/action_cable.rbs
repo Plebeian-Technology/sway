@@ -1,0 +1,3 @@
+module ActionCable
+    def self.server: -> untyped
+end

@@ -1,0 +1,27 @@
+class Organizations::BaseController < ApplicationController
+    @organization: untyped
+
+    @members: untyped
+
+    @positions: untyped
+
+    @pending_changes: untyped
+
+    @current_user_membership: untyped
+
+    def with_props: -> { organization: untyped }
+
+    def organization: -> untyped
+
+    def members: -> untyped
+
+    def positions: -> untyped
+
+    def pending_changes: -> untyped
+
+    def current_user_membership: -> untyped
+
+    def redirect_to_current_user_membership: (**untyped kwargs) -> untyped
+
+    def membership_as_props: -> untyped
+end

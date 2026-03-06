@@ -1,0 +1,405 @@
+class ::BillScoreDistrict < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::BillScoreDistrict, ::BillScoreDistrict::ActiveRecord_Relation, ::Integer]
+
+    module ::BillScoreDistrict::GeneratedAttributeMethods
+        def id: -> ::Integer
+
+        def id=: (::Integer) -> ::Integer
+
+        def id?: -> bool
+
+        def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_change: -> [::Integer?, ::Integer?]
+
+        def id_will_change!: -> void
+
+        def id_was: -> ::Integer?
+
+        def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_previous_change: -> ::Array[::Integer?]?
+
+        def id_previously_was: -> ::Integer?
+
+        def id_before_last_save: -> ::Integer?
+
+        def id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def id_in_database: -> ::Integer?
+
+        def saved_change_to_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_id?: -> bool
+
+        def will_save_change_to_id?: -> bool
+
+        def restore_id!: -> void
+
+        def clear_id_change: -> void
+
+        def id_before_type_cast: -> ::Integer
+
+        def id_for_database: -> ::Integer
+
+        def against: -> ::Integer
+
+        def against=: (::Integer) -> ::Integer
+
+        def against?: -> bool
+
+        def against_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def against_change: -> [::Integer?, ::Integer?]
+
+        def against_will_change!: -> void
+
+        def against_was: -> ::Integer?
+
+        def against_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def against_previous_change: -> ::Array[::Integer?]?
+
+        def against_previously_was: -> ::Integer?
+
+        def against_before_last_save: -> ::Integer?
+
+        def against_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def against_in_database: -> ::Integer?
+
+        def saved_change_to_against: -> ::Array[::Integer?]?
+
+        def saved_change_to_against?: -> bool
+
+        def will_save_change_to_against?: -> bool
+
+        def restore_against!: -> void
+
+        def clear_against_change: -> void
+
+        def against_before_type_cast: -> ::Integer
+
+        def against_for_database: -> ::Integer
+
+        def bill_score_id: -> ::Integer
+
+        def bill_score_id=: (::Integer) -> ::Integer
+
+        def bill_score_id?: -> bool
+
+        def bill_score_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def bill_score_id_change: -> [::Integer?, ::Integer?]
+
+        def bill_score_id_will_change!: -> void
+
+        def bill_score_id_was: -> ::Integer?
+
+        def bill_score_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def bill_score_id_previous_change: -> ::Array[::Integer?]?
+
+        def bill_score_id_previously_was: -> ::Integer?
+
+        def bill_score_id_before_last_save: -> ::Integer?
+
+        def bill_score_id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def bill_score_id_in_database: -> ::Integer?
+
+        def saved_change_to_bill_score_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_bill_score_id?: -> bool
+
+        def will_save_change_to_bill_score_id?: -> bool
+
+        def restore_bill_score_id!: -> void
+
+        def clear_bill_score_id_change: -> void
+
+        def bill_score_id_before_type_cast: -> ::Integer
+
+        def bill_score_id_for_database: -> ::Integer
+
+        def created_at: -> ::ActiveSupport::TimeWithZone
+
+        def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def created_at?: -> bool
+
+        def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def created_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def created_at_will_change!: -> void
+
+        def created_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def created_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_created_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_created_at?: -> bool
+
+        def will_save_change_to_created_at?: -> bool
+
+        def restore_created_at!: -> void
+
+        def clear_created_at_change: -> void
+
+        def created_at_before_type_cast: -> ::Time
+
+        def created_at_for_database: -> ::Time
+
+        def district_id: -> ::Integer
+
+        def district_id=: (::Integer) -> ::Integer
+
+        def district_id?: -> bool
+
+        def district_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def district_id_change: -> [::Integer?, ::Integer?]
+
+        def district_id_will_change!: -> void
+
+        def district_id_was: -> ::Integer?
+
+        def district_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def district_id_previous_change: -> ::Array[::Integer?]?
+
+        def district_id_previously_was: -> ::Integer?
+
+        def district_id_before_last_save: -> ::Integer?
+
+        def district_id_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def district_id_in_database: -> ::Integer?
+
+        def saved_change_to_district_id: -> ::Array[::Integer?]?
+
+        def saved_change_to_district_id?: -> bool
+
+        def will_save_change_to_district_id?: -> bool
+
+        def restore_district_id!: -> void
+
+        def clear_district_id_change: -> void
+
+        def district_id_before_type_cast: -> ::Integer
+
+        def district_id_for_database: -> ::Integer
+
+        def for: -> ::Integer
+
+        def for=: (::Integer) -> ::Integer
+
+        def for?: -> bool
+
+        def for_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def for_change: -> [::Integer?, ::Integer?]
+
+        def for_will_change!: -> void
+
+        def for_was: -> ::Integer?
+
+        def for_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def for_previous_change: -> ::Array[::Integer?]?
+
+        def for_previously_was: -> ::Integer?
+
+        def for_before_last_save: -> ::Integer?
+
+        def for_change_to_be_saved: -> ::Array[::Integer?]?
+
+        def for_in_database: -> ::Integer?
+
+        def saved_change_to_for: -> ::Array[::Integer?]?
+
+        def saved_change_to_for?: -> bool
+
+        def will_save_change_to_for?: -> bool
+
+        def restore_for!: -> void
+
+        def clear_for_change: -> void
+
+        def for_before_type_cast: -> ::Integer
+
+        def for_for_database: -> ::Integer
+
+        def updated_at: -> ::ActiveSupport::TimeWithZone
+
+        def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def updated_at?: -> bool
+
+        def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def updated_at_change: -> [::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone?]
+
+        def updated_at_will_change!: -> void
+
+        def updated_at_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_previously_changed?: (
+            ?from: ::ActiveSupport::TimeWithZone?,
+            ?to: ::ActiveSupport::TimeWithZone?
+        ) -> bool
+
+        def updated_at_previous_change: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_previously_was: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_before_last_save: -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_change_to_be_saved: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_in_database: -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_updated_at: -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_updated_at?: -> bool
+
+        def will_save_change_to_updated_at?: -> bool
+
+        def restore_updated_at!: -> void
+
+        def clear_updated_at_change: -> void
+
+        def updated_at_before_type_cast: -> ::Time
+
+        def updated_at_for_database: -> ::Time
+    end
+    include ::BillScoreDistrict::GeneratedAttributeMethods
+    module ::BillScoreDistrict::GeneratedAliasAttributeMethods
+        include ::BillScoreDistrict::GeneratedAttributeMethods
+
+        alias id_value id
+
+        alias id_value= id=
+
+        alias id_value? id?
+
+        alias id_value_changed? id_changed?
+
+        alias id_value_change id_change
+
+        alias id_value_will_change! id_will_change!
+
+        alias id_value_was id_was
+
+        alias id_value_previously_changed? id_previously_changed?
+
+        alias id_value_previous_change id_previous_change
+
+        alias id_value_previously_was id_previously_was
+
+        alias id_value_before_last_save id_before_last_save
+
+        alias id_value_change_to_be_saved id_change_to_be_saved
+
+        alias id_value_in_database id_in_database
+
+        alias saved_change_to_id_value saved_change_to_id
+
+        alias saved_change_to_id_value? saved_change_to_id?
+
+        alias will_save_change_to_id_value? will_save_change_to_id?
+
+        alias restore_id_value! restore_id!
+
+        alias clear_id_value_change clear_id_change
+
+        alias id_value_before_type_cast id_before_type_cast
+
+        alias id_value_for_database id_for_database
+    end
+    include ::BillScoreDistrict::GeneratedAliasAttributeMethods
+
+    def bill_score: -> ::BillScore
+    def bill_score=: (::BillScore?) -> ::BillScore?
+    def reload_bill_score: -> ::BillScore?
+    def build_bill_score: (untyped) -> ::BillScore
+    def create_bill_score: (untyped) -> ::BillScore
+    def create_bill_score!: (untyped) -> ::BillScore
+    def district: -> ::District
+    def district=: (::District?) -> ::District?
+    def reload_district: -> ::District?
+    def build_district: (untyped) -> ::District
+    def create_district: (untyped) -> ::District
+    def create_district!: (untyped) -> ::District
+    module ::BillScoreDistrict::GeneratedAssociationMethods
+    end
+    include ::BillScoreDistrict::GeneratedAssociationMethods
+
+    module ::BillScoreDistrict::GeneratedRelationMethods
+    end
+
+    class ::BillScoreDistrict::ActiveRecord_Relation < ::ActiveRecord::Relation
+        include ::Enumerable[::BillScoreDistrict]
+        include ::BillScoreDistrict::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::BillScoreDistrict, ::Integer]
+    end
+
+    class ::BillScoreDistrict::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+        include ::Enumerable[::BillScoreDistrict]
+        include ::BillScoreDistrict::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::BillScoreDistrict, ::Integer]
+
+        def build:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::BillScoreDistrict
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::BillScoreDistrict]
+        def create:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::BillScoreDistrict
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::BillScoreDistrict]
+        def create!:
+            (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ -> untyped } -> ::BillScoreDistrict
+            | (
+                ::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes
+            ) ?{
+                -> untyped
+            } -> ::Array[::BillScoreDistrict]
+        def reload: -> ::Array[::BillScoreDistrict]
+
+        def replace: (::Array[::BillScoreDistrict]) -> void
+        def delete: (*::BillScoreDistrict | ::Integer) -> ::Array[::BillScoreDistrict]
+        def destroy: (*::BillScoreDistrict | ::Integer) -> ::Array[::BillScoreDistrict]
+        def <<: (*::BillScoreDistrict | ::Array[::BillScoreDistrict]) -> self
+        def `prepend`: (*::BillScoreDistrict | ::Array[::BillScoreDistrict]) -> self
+    end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+
+class ::BillScore < ::ApplicationRecord
+end
+
+class ::District < ::ApplicationRecord
+end

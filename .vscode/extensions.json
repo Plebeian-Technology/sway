@@ -6,7 +6,6 @@
         "wix.vscode-import-cost",
         "eriklynd.json-tools",
         "esbenp.prettier-vscode",
-        "syler.sass-indented",
-        "visualstudioexptteam.vscodeintellicode"
+        "syler.sass-indented"
     ]
 }

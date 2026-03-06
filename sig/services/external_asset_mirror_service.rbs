@@ -1,0 +1,21 @@
+class ExternalAssetMirrorService
+    STORAGE_HOST: "storage.googleapis.com"
+
+    ASSETS_BUCKET: "sway-assets"
+
+    def self.call: (record: ApplicationRecord, attachment_name: Symbol, url_column: Symbol) -> Symbol
+
+    private
+
+    def self.non_http_url?: (String url) -> bool
+
+    def self.internal_asset_url?: (String url) -> bool
+
+    def self.mirror_filename: (Down::DownloadedFile downloaded_file, String source_url) -> String?
+
+    def self.attached_asset_url: (untyped attachment) -> String
+
+    def self.default_url_options: -> Hash[Symbol, untyped]
+
+    def self.purge_attachment: (ApplicationRecord record, Symbol attachment_name) -> nil
+end

@@ -1,0 +1,15 @@
+class Organizations::PositionChangesController < Organizations::BaseController
+    @position: untyped
+
+    @change: untyped
+
+    def update: -> untyped
+
+    private
+
+    def position: -> untyped
+
+    def set_change: -> untyped
+
+    def current_user_must_be_admin_to_approve!: -> (nil | untyped)
+end

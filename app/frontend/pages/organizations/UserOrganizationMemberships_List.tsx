@@ -17,8 +17,8 @@ const UserOrganizationMemberships_List = () => {
                 <Card.Header>
                     <Card.Title className="row align-items-center">
                         <div className="col">
-                            {membership.organization.icon_path ? (
-                                <Image src={membership.organization.icon_path} className="me-1" />
+                            {membership.organization.icon_url ? (
+                                <Image src={membership.organization.icon_url} className="me-1" />
                             ) : null}
                         </div>
                         <div className="col text-end">

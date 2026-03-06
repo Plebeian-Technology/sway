@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# typed: true
-
 class UserVotesController < ApplicationController
   def index
     render json: UserVote.where(user: current_user), status: :ok
@@ -12,7 +10,9 @@ class UserVotesController < ApplicationController
     if uv.present?
       render json: uv.to_json, status: :ok
     else
-      render json: {}, status: :no_content
+      empty_json = {}
+      # @type var empty_json: Hash[Symbol, untyped]
+      render json: empty_json, status: :no_content
     end
   end
 
@@ -27,7 +27,7 @@ class UserVotesController < ApplicationController
     uv.save
 
     redirect_to(
-      bill_path(user_vote_params[:bill_id]),
+      user_vote_params[:redirect_to] || bill_path(user_vote_params[:bill_id]),
       inertia: {
         errors: uv.errors,
       },
@@ -38,6 +38,6 @@ class UserVotesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_vote_params
-    params.permit(:bill_id, :support)
+    params.permit(:bill_id, :support, :redirect_to)
   end
 end

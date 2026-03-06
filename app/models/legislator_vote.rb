@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-# typed: strict
 
 # == Schema Information
 #
 # Table name: legislator_votes
+# Database name: primary
 #
 #  id            :integer          not null, primary key
 #  support       :string           not null
@@ -23,16 +23,14 @@
 #  legislator_id  (legislator_id => legislators.id)
 #
 class LegislatorVote < ApplicationRecord
-  extend T::Sig
-
   class Support
     FOR = "FOR"
     AGAINST = "AGAINST"
     ABSTAIN = "ABSTAIN"
 
-    FOR_AGAINST = T.let([FOR, AGAINST], T::Array[String])
+    FOR_AGAINST = [FOR, AGAINST]
 
-    ALL = T.let([FOR, AGAINST, ABSTAIN], T::Array[String])
+    ALL = [FOR, AGAINST, ABSTAIN]
   end
 
   belongs_to :legislator
@@ -57,27 +55,22 @@ class LegislatorVote < ApplicationRecord
               ],
             }
 
-  sig { returns(Bill) }
   def bill
-    T.cast(super, Bill)
+    super
   end
 
-  sig { returns(Legislator) }
   def legislator
-    T.cast(super, Legislator)
+    super
   end
 
-  sig { returns(T::Boolean) }
   def for?
     support == LegislatorVote::Support::FOR
   end
 
-  sig { returns(T::Boolean) }
   def against?
     support == LegislatorVote::Support::AGAINST
   end
 
-  sig { returns(T::Boolean) }
   def abstain?
     support.present? &&
       ![
@@ -86,7 +79,6 @@ class LegislatorVote < ApplicationRecord
       ].include?(support)
   end
 
-  sig { returns(Jbuilder) }
   def to_builder
     Jbuilder.new do |lv|
       lv.id id
@@ -98,12 +90,10 @@ class LegislatorVote < ApplicationRecord
 
   private
 
-  sig { void }
   def upcase_support
     self.support = support.upcase.strip
   end
 
-  sig { void }
   def transform_support_to_for_against_abstain
     s = support.downcase
     case s
@@ -126,7 +116,6 @@ class LegislatorVote < ApplicationRecord
     end
   end
 
-  sig { void }
   def update_scores
     OnLegislatorVoteUpdateScoresJob.perform_later(
       self,

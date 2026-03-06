@@ -1,13 +1,9 @@
-# typed: true
-
 # frozen_string_literal: true
 
 module Users
   module Webauthn
     class RegistrationController < ApplicationController
-      extend T::Sig
-
-      rate_limit(to: 5, within: 1.minute)
+      rate_limit(to: 100, within: 1.minute)
 
       skip_before_action :authenticate_sway_user!
 
@@ -26,6 +22,7 @@ module Users
               authenticator_selection: {
                 user_verification: "required",
               },
+              exclude: user.passkeys.pluck(:external_id),
             )
 
           if user.valid?
@@ -39,7 +36,7 @@ module Users
             render json: {
                      errors: user.errors.full_messages,
                    },
-                   status: :unprocessable_entity
+                   status: :unprocessable_content
           end
         else
           render json: {
@@ -51,64 +48,105 @@ module Users
       end
 
       def callback
-        user = User.find_by(phone: session[:verified_phone])
-        if user.present?
-          user.update!(user_attributes)
-        else
-          user = User.create!(user_attributes)
-        end
+        current_registration = session[:current_registration]
+        registration_challenge =
+          current_registration&.dig("challenge") ||
+            current_registration&.dig(:challenge)
+        attributes =
+          current_registration&.dig("user_attributes") ||
+            current_registration&.dig(:user_attributes)
+        verified_phone = session[:verified_phone]
 
-        begin
-          webauthn_passkey =
-            relying_party.verify_registration(
-              params,
-              challenge,
-              user_verification: true,
-            )
-
-          passkey =
-            Passkey.new(
-              user:,
-              external_id: webauthn_passkey.id,
-              label: params[:passkey_label],
-              public_key: webauthn_passkey.public_key,
-              sign_count: webauthn_passkey.sign_count,
-            )
-
-          if passkey.save
-            sign_in(user)
-
-            route_component(SwayRoutes::REGISTRATION)
-          else
-            render json: {
-                     success: false,
-                     message: "Couldn't register your Passkey",
-                   },
-                   status: :unprocessable_entity
-          end
-        rescue WebAuthn::Error => e
+        if registration_challenge.blank? || verified_phone.blank?
           render json: {
                    success: false,
-                   message: "Verification failed: #{e.message}",
+                   message: "Registration session expired. Please try again.",
                  },
-                 status: :unprocessable_entity
-        ensure
-          session.delete(:current_registration)
+                 status: :unprocessable_content
+          return
         end
-      end
 
-      sig { returns(T::Hash[String, T.anything]) }
-      def user_attributes
-        session.dig(:current_registration, "user_attributes")
-      end
+        user = User.find_or_initialize_by(phone: verified_phone)
+        user.assign_attributes(
+          sanitized_user_attributes(attributes, verified_phone),
+        )
 
-      def challenge
-        session.dig(:current_registration, "challenge")
+        webauthn_passkey =
+          relying_party.verify_registration(
+            params,
+            registration_challenge,
+            user_verification: true,
+          )
+
+        user.save!
+
+        passkey =
+          Passkey.new(
+            user:,
+            external_id: webauthn_passkey.id,
+            label: params[:passkey_label],
+            public_key: webauthn_passkey.public_key,
+            sign_count: webauthn_passkey.sign_count,
+          )
+
+        if passkey.save
+          sign_in(user)
+
+          route_component(SwayRoutes::REGISTRATION)
+        else
+          render json: {
+                   success: false,
+                   message: "Couldn't register your Passkey",
+                 },
+                 status: :unprocessable_content
+        end
+      rescue WebAuthn::Error => e
+        render json: {
+                 success: false,
+                 message: "Verification failed: #{e.message}",
+               },
+               status: :unprocessable_content
+      rescue ActiveRecord::RecordInvalid => e
+        render json: {
+                 success: false,
+                 errors: e.record.errors.full_messages,
+               },
+               status: :unprocessable_content
+      ensure
+        session.delete(:current_registration)
       end
 
       private
 
-      sig { returns(ActionController::Parameters) }
+      def sanitized_user_attributes(attributes, verified_phone)
+        empty_attributes = {}
+        # @type var empty_attributes: Hash[untyped, untyped]
+        raw_attributes = attributes.is_a?(Hash) ? attributes : empty_attributes
+
+        {
+          phone: verified_phone,
+          email: read_attribute(raw_attributes, "email"),
+          full_name: read_attribute(raw_attributes, "full_name"),
+          is_phone_verified:
+            read_attribute(raw_attributes, "is_phone_verified"),
+          is_admin: read_attribute(raw_attributes, "is_admin"),
+          is_email_verified:
+            read_attribute(raw_attributes, "is_email_verified"),
+          is_registered_to_vote:
+            read_attribute(raw_attributes, "is_registered_to_vote"),
+          is_registration_complete:
+            read_attribute(raw_attributes, "is_registration_complete"),
+          registration_status:
+            read_attribute(raw_attributes, "registration_status"),
+        }.compact
+      end
+
+      def read_attribute(attributes, key)
+        return attributes[key] if attributes.key?(key)
+
+        attributes[key.to_sym]
+      end
+
       def registration_params
         params.permit(:passkey_label, :token)
       end

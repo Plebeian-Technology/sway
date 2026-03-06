@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# typed: true
 
 class LegislatorsController < ApplicationController
   before_action :set_legislator, only: %i[show]
@@ -27,11 +26,26 @@ class LegislatorsController < ApplicationController
   end
 
   def json_legislators
+    empty_scores = []
+    # @type var empty_scores: Array[untyped]
+
     current_user
       &.user_legislators
-      &.joins(:legislator)
+      &.includes(
+        legislator: :legislator_district_score,
+        user_legislator_score: empty_scores,
+      )
       &.where(active: true, legislators: { active: true })
-      &.map { |ul| ul.legislator.to_sway_json }
+      &.map do |ul|
+        ul.legislator.to_sway_json.merge(
+          {
+            user_legislator_score:
+              ul.user_legislator_score&.to_builder&.attributes!&.except(
+                "is_a?",
+              ),
+          },
+        )
+      end
   end
 
   # Only allow a list of trusted parameters through.
