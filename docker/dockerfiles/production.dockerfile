@@ -53,10 +53,11 @@ COPY vite.config.build.ts vite.config.ts
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) \
     bundle exec bootsnap precompile app/ lib/ && \
-    SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
     rm -rf app/frontend && \
     rm -rf app/stylesheets
 
+# SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:clobber && \
+# SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
 
 # Final stage for app image
 FROM base

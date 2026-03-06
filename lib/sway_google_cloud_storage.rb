@@ -47,6 +47,9 @@ module SwayGoogleCloudStorage
 
     def credentials
       if Rails.env.production?
+        puts "sway google credentials present? #{Rails.application.credentials.dig(:google).present?}"
+        puts "sway google storage credentials present? #{Rails.application.credentials.dig(:google, :storage).present?}"
+        puts "sway google storage type credentials present? #{Rails.application.credentials.dig(:google, :storage, :type).present?}"
         f = File.open(Rails.root.join("config", "keys", "sway-bucket-storage.json"), "w")
         f.chmod(0o644)
         f.write({
