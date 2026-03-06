@@ -1,8 +1,7 @@
-import WebPushNotifications from "app/frontend/pages/notifications/WebPushNotifications";
-import { useState } from "react";
-import { Tabs, Tab, Box } from "@mui/material";
-import { sway } from "sway";
+import { Box, Tab, Tabs } from "@mui/material";
 import PhoneSmsNotifications from "app/frontend/pages/notifications/PhoneSmsNotifications";
+import { useState } from "react";
+import { sway } from "sway";
 
 interface IProps {
     user: sway.IUser;
@@ -59,9 +58,6 @@ const Notifications: React.FC<IProps> = ({ user }) => {
             </Tabs>
             <CustomTabPanel value={value} index={NotificationType.PHONE}>
                 <PhoneSmsNotifications user={user} />
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={NotificationType.WEB_PUSH}>
-                <WebPushNotifications />
             </CustomTabPanel>
         </Box>
     );

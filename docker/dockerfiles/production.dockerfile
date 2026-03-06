@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ARG RUBY_VERSION=4.0.1
+=======
+ARG RUBY_VERSION=3.4.5
+>>>>>>> 5cf207c7b94bfe8d868508da73fa867d9f50abb6
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 LABEL fly_launch_runtime="rails"

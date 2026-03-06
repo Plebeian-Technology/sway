@@ -67,10 +67,10 @@ default: &default
 development:
     primary:
         <<: *default
-        database: <%= ENV['SWAY_DATABASE_NAME'] || 'storage/development.sqlite3' %>
+        database: storage/development.sqlite3
     queue:
         <<: *default
-        database: <%= ENV['SWAY_QUEUE_DATABASE_NAME'] || 'storage/development_queue.sqlite3' %>
+        database: storage/development_queue.sqlite3
         migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
