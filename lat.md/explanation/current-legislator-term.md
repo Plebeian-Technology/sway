@@ -428,26 +428,13 @@ and term-year aliases. Congress updateDate remains excluded as volatile metadata
 
 ### Baltimore source presence
 
-Baltimore builders omit fields their sources do not publish. Missing ArcGIS contact properties preserve stored contacts, while properties explicitly present as nil or blank clear them.
+Curated Baltimore roster entries preserve stored contact details and photos when incoming updates omit them. Properties explicitly present as nil or blank clear existing values.
 
-ArcGIS names district council members, Legistar names the current council
-chair, and Wikidata names the mayor. None supplies the stored photos or Twitter
-handles; manufacturing photoUrl nil would incorrectly erase them. The executive
-builders likewise omit unsourced email instead of manufacturing an empty string.
-Office phone numbers and links remain declared facts about the office, stable
-across occupants. ArcGIS has no term dates, so missing years retain stored
-values or use the seed calendar for a new person.
+Baltimore configures `roster_rules.retrieval` as `curated` and `term_rules.identified_by` as `seat` in [[config/sway_locales/baltimore-maryland-united_states.yml]]. [[app/services/legislators_cache/base_refresh.rb#BaseRefresh]] skips automated network retrieval for curated rosters, but `merge_stored_fields` handles incoming roster updates against the checked-in seed file.
 
-A district without AREA_NAME is logged and skipped because inventing MD0 would
-assign the wrong constituency. An unresolved council chair remains an unnamed
-seat with a warning; it receives no stored person fields. A missing mayor raises
-because the source did not establish a current occupant. BaltimoreSeatKeys keeps
-office and district identifiers consistent across refresh and seeding.
+The merge pairs the seat external ID with the published first and last name through [[app/models/legislator_identity.rb#LegislatorIdentity]]. A successor arriving on the same seat has a different name, so the merge treats them as a distinct identity and preserves no details from the previous occupant. Unnamed seat entries similarly inherit no stored person fields.
 
-The refresh regression rebuilds source projections from the checked-in public
-Baltimore roster and verifies all 16 photos and 12 Twitter handles survive.
-Separate cases cover explicit clearing, successor isolation, nested Congress
-fields, OpenStates person identity, and legacy alias precedence.
+When incoming entries provide new values, `stored_fields_for` removes competing alias keys before merging. For example, supplying any photo spelling removes stored `photoURL`, `photo_url`, and `photoUrl` before applying the incoming value. [[app/services/legislators_cache/baltimore_seat_keys.rb#LegislatorsCache#BaltimoreSeatKeys]] maintains stable seat identifiers for citywide offices and council districts across seeding and cache operations.
 
 ## Planned automatic legislator updates
 
