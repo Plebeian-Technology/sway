@@ -83,22 +83,7 @@ class Legislator < ApplicationRecord
   before_destroy :destroy_historical_score_explanations
   has_one_attached :photo
 
-  PARTY_BY_CHAR = {
-    R: "Republican",
-    D: "Democrat",
-    I: "Independent",
-    U: "Unknown"
-  }.freeze
-
   class << self
-    def to_party_name_from_char(party)
-      if party.length > 1
-        party
-      else
-        PARTY_BY_CHAR[party.upcase.to_sym]
-      end
-    end
-
     def to_party_char_from_name(party)
       if party.blank? || party.length <= 1
         party

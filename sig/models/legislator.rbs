@@ -6,9 +6,6 @@
 # `self.mirrors_external_asset` is load-bearing: sig/models/concerns/
 # mirrors_external_asset.rbs delegates the singleton call sites to this decl.
 class Legislator < ApplicationRecord
-    PARTY_BY_CHAR: Hash[Symbol, String]
-
-    def self.to_party_name_from_char: (String party) -> String?
     def self.to_party_char_from_name: (String party) -> String
     def self.mirrors_external_asset: (attachment_name: String, url_column: String) -> void
 

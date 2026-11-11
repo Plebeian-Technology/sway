@@ -163,11 +163,4 @@ RSpec.describe Legislator, type: :model do
       expect(legislator.full_name).to eq("Ada Lovelace")
     end
   end
-
-  describe ".to_party_name_from_char" do
-    it "maps single-char codes to full party names" do
-      expect(Legislator.to_party_name_from_char("D")).to eq("Democrat")
-      expect(Legislator.to_party_name_from_char("R")).to eq("Republican")
-    end
-  end
 end
