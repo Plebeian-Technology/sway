@@ -5,5 +5,7 @@ class Object
   def arm_mutation_observer: (Integer) -> void
   def await_mutation_observer: () -> Hash[String, untyped]
   def calculate_metrics: (Array[Float]) -> Hash[Symbol, Float]
-  def record_measurements: (Array[Float], Hash[Symbol, Float]) -> void
+  def record_measurements: (Array[Float], Hash[Symbol, Float], Integer) -> void
+  def measure_round_trip_ms: () -> Float
+  def wait_for_cable_subscription: (String) -> void
 end

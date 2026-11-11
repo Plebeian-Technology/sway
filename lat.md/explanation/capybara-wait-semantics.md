@@ -26,3 +26,9 @@ wait_until { Model.count == before_count + 1 }
 ```
 
 A retrying page assertion placed between the action and the database read closes the same gap — waiting for a flash message that appears only once the server has answered, for instance — and several specs rely on that quite legitimately.
+
+### An optimistic unmount is not a server answer
+
+A page change that the client makes before its request is sent proves nothing about the server, so a retrying assertion on it does not close the gap.
+
+The representative reassignment banner is the case that showed it. [[app/frontend/hooks/legislators/useReassignmentNotifications.ts#useReassignmentNotifications]] hides a notification as soon as its dismiss button is clicked, then sends the PATCH that sets `dismissed_at`. A `have_no_css` on the banner therefore passes before the server has written anything, and the database read after it looked once, too early. It failed that way under the full parallel gate and never alone. The example now waits on `pending_in_app` itself, as the example beside it that dismisses four notifications already did.

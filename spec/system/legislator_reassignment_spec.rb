@@ -180,6 +180,8 @@ RSpec.describe "Legislator reassignment (R7)", type: :system, js: true do
 
     find("[data-testid='reassignment-banner-dismiss']").click
     expect(page).to have_no_css("[data-testid='reassignment-banner']", wait: 10)
+    # @lat: [[capybara-wait-semantics#Waiting on the side effect instead#An optimistic unmount is not a server answer]]
+    wait_until { user.representative_reassignments.pending_in_app.none? }
     expect(user.representative_reassignments.pending_in_app.count).to eq(0)
   end
 
