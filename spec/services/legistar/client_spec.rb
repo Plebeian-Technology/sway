@@ -167,23 +167,8 @@ RSpec.describe Legistar::Client do
     end
   end
 
-  describe "#get_all (pagination)" do
-    it "walks $skip until a short page and concatenates every row" do
-      stub_legistar("Matters", query: {"$top" => "2", "$skip" => "0"}, body: [{"id" => 1}, {"id" => 2}].to_json)
-      stub_legistar("Matters", query: {"$top" => "2", "$skip" => "2"}, body: [{"id" => 3}].to_json)
-
-      expect(client.get_all("Matters", page_size: 2).pluck("id")).to eq([1, 2, 3])
-    end
-
-    it "stops at max_pages even if every page is full" do
-      stub_legistar("Matters", query: hash_including("$top" => "1"), body: [{"id" => 9}].to_json)
-
-      expect(client.get_all("Matters", page_size: 1, max_pages: 3).size).to eq(3)
-    end
-  end
-
   # Only the wrappers that something actually calls were kept: matters,
-  # matter_attachments, matter_histories, person and body_office_records.
+  # matter_attachments, matter_histories and person.
   describe "typed convenience methods" do
     it "matter_histories requests /Matters/:id/Histories" do
       stub_legistar("Matters/9928/Histories", body: "[]")
@@ -203,8 +188,7 @@ RSpec.describe Legistar::Client do
     it "maps the kept sub-resource wrappers to the right Legistar paths" do
       cases = {
         "Matters" => ["[]", -> { client.matters }],
-        "Persons/104" => ["{}", -> { client.person(104) }],
-        "Bodies/3/OfficeRecords" => ["[]", -> { client.body_office_records(3) }]
+        "Persons/104" => ["{}", -> { client.person(104) }]
       } #: Hash[String, [String, ^() -> untyped]]
       cases.each do |path, (body, call)|
         req = stub_legistar(path, body: body)

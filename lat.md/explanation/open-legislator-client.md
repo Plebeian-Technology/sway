@@ -24,7 +24,7 @@ In Legistar, finding a matter by file number requires filtering `Matters?$filter
 
 Collection endpoints in Open Legislator standardize responses using Pagy envelopes with page boundaries.
 
-The native client supports bounded single-page retrieval through `matters(page:, limit:, **filters)` and multi-page iteration through `all_matters(page_size:, max_pages:, **filters)`. By inspecting `page["last"]`, `all_matters` terminates cleanly when the final page is reached, preventing infinite loops while bounding total pages to prevent runaway memory consumption.
+The native client supports bounded single-page retrieval through `matters(page:, limit:, **filters)` and `meetings(page:, limit:, **filters)`. Each response returns a Pagy envelope containing `data` rows alongside `page` metadata (`count`, `page`, `limit`, `last`), allowing callers to inspect pagination state and boundaries.
 
 ## Exception hierarchy and error wrapping
 

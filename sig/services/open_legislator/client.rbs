@@ -43,10 +43,6 @@ module OpenLegislator
 
     def meetings: (?page: Integer?, ?limit: Integer?, **untyped filters) -> (Hash[String, untyped] & _MattersEnvelope)
 
-    def all_matters: (?page_size: Integer, ?max_pages: Integer, **untyped filters) -> Array[Hash[String, untyped]]
-
-    def matter_actions: (String? file_number_or_slug) -> Array[Hash[String, untyped]]
-
     private
 
     def normalize_path: (String resource) -> String

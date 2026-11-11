@@ -107,42 +107,6 @@ module OpenLegislator
       get("meetings", **params)
     end
 
-    def all_matters(page_size: 50, max_pages: 100, **filters)
-      page_size = page_size.to_i.clamp(1, MAX_LIMIT)
-      max_pages = max_pages.to_i.clamp(1, 10_000)
-      rows = []
-      current_page = 1
-
-      max_pages.times do
-        envelope = matters(page: current_page, limit: page_size, **filters)
-        page_rows = envelope.is_a?(Hash) ? envelope["data"] : nil
-        break unless page_rows.is_a?(Array) && page_rows.any?
-
-        rows.concat(page_rows)
-
-        paging = envelope["page"] || {}
-        last_page = paging["last"] || paging[:last]
-        break if last_page.nil? || current_page >= last_page
-
-        current_page += 1
-      end
-
-      rows
-    end
-
-    def matter_actions(file_number_or_slug)
-      return [] if file_number_or_slug.blank?
-
-      resolved = matter_by_file_number(file_number_or_slug)
-      resolved ||= begin
-        matter(file_number_or_slug)
-      rescue HttpError
-        nil
-      end
-
-      resolved.is_a?(Hash) ? Array(resolved["actions"]) : []
-    end
-
     private
 
     def normalize_path(resource)

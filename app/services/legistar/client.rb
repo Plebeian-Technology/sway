@@ -7,9 +7,6 @@ module Legistar
   class Client
     DEFAULT_CLIENT = "baltimore"
 
-    # @lat: [[legistar-client-design#Why get_all takes a max_pages guard]]
-    MAX_PAGE_SIZE = 1000
-
     # @lat: [[hearing-attachment-discovery-internals#matter_id: why it is coerced strictly, twice]]
     ID_MAX = (2**31) - 1 #: Integer
 
@@ -62,25 +59,6 @@ module Legistar
         "Legistar transport error for #{path}: #{e.class.name}: #{Sway::Utf8.scrub(e.message)[0, 300]}"
     end
 
-    # @lat: [[legistar-client-design#Why get_all takes a max_pages guard]]
-    def get_all(resource, page_size: MAX_PAGE_SIZE, max_pages: 1000, **odata)
-      # @lat: [[legistar-client-design#Why get_all takes a max_pages guard]]
-      odata = odata.except(:top, :skip, :$top, :$skip)
-      page_size = page_size.to_i.clamp(1, MAX_PAGE_SIZE)
-      rows = []
-      skip = 0
-      max_pages.times do
-        page = get(resource, **odata, top: page_size, skip: skip)
-        return rows unless page.is_a?(Array) && !page.empty?
-
-        rows.concat(page)
-        return rows if page.size < page_size
-
-        skip += page_size
-      end
-      rows
-    end
-
     # @lat: [[legistar-client-design#Why only wrappers with real callers are kept]]
     def matters(**odata) = get("Matters", **odata)
 
@@ -94,8 +72,6 @@ module Legistar
 
       body #: Hash[String, untyped]
     end
-
-    def body_office_records(body_id, **odata) = get("Bodies/#{coerce_id!(body_id)}/OfficeRecords", **odata)
 
     private
 

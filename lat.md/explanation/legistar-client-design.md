@@ -23,7 +23,6 @@ Primary interface patterns and query conventions for retrieving legislative reco
 client = Legistar::Client.new                       # defaults to "baltimore"
 client.matters(filter: "MatterTypeName eq 'Ordinance'", top: 5, orderby: "MatterId desc")
 client.matter_histories(9928)
-client.get_all("Matters", filter: "MatterIntroDate gt datetime'2025-01-01'")  # auto-paginated
 ```
 
 ## Why callers still rescue Faraday::Error
@@ -67,7 +66,7 @@ The body is scrubbed a second time inside `HttpError#initialize`, even though `#
 
 `#get_raw` scrubs the body to valid UTF-8 BEFORE the bytes can reach a message or consumer — in `#get_raw`, the one door the bytes come in through — so every Legistar consumer inherits a valid-UTF-8 guarantee. `JSON.parse` does NOT validate encoding — it returns UTF-8-tagged strings holding invalid bytes. Two fields taken verbatim from this JSON reach operations that raise on bad bytes: `MatterAttachmentName` flows into `Testimony::NameRules.classify`'s `#downcase` and `#match?` (`ArgumentError`); `MatterAttachmentFileName` flows into `JSON.pretty_generate` and a `serialize coder: JSON` save. Neither error is a `BillProcessingError`, and neither is caught before `RunLegislationPipelineJob::StageError` — one mis-encoded title would abort `fetch_hearings` for every remaining bill in the run.
 
-The consequence is proven; the trigger is not. The reference cassette shows Legistar encoding en-dashes and quotes correctly, so this is defense at a boundary, not a reproduced upstream bug. It's worth the cost anyway: the failure would take down a whole run, while this subsystem is built to degrade one attachment at a time. That cost is NOT zero — Faraday's `net_http` adapter returns raw-bytes bodies, so `#get_raw`'s scrub copies every response via `dup.force_encoding`, and `#get_all` pages in 1000-row chunks. One extra copy of one page body, freed right away — cheap next to parsing it, but not free.
+The consequence is proven; the trigger is not. The reference cassette shows Legistar encoding en-dashes and quotes correctly, so this is defense at a boundary, not a reproduced upstream bug. It's worth the cost anyway: the failure would take down a whole run, while this subsystem is built to degrade one attachment at a time. That cost is NOT zero — Faraday's `net_http` adapter returns raw-bytes bodies, so `#get_raw`'s scrub copies every response via `dup.force_encoding`. One extra copy of one page body, freed right away — cheap next to parsing it, but not free.
 
 Scrubbing before the parse is structurally safe: JSON syntax is pure ASCII, so only string-literal insides can be touched, and a bad byte run becomes U+FFFD rather than a parse failure. `#parse` repeats the scrub because that is the method whose contract consumers depend on directly.
 
@@ -77,13 +76,9 @@ A `Faraday::Connection` with `conn.response(:json)` mounted — which the public
 
 This tolerance branch used to live in `#parse`, where it could never fire: `Sway::Utf8.scrub` had already turned the Hash into Ruby inspect syntax, so `JSON.parse` raised on perfectly good JSON. The check has to run BEFORE the scrub, so it lives in `#get_raw` and `#parse` now takes a String only. A decoded body needs no scrub.
 
-## Why get_all takes a max_pages guard
-
-`#get_all` is an auto-paginating GET for a collection. It steps `$skip` forward in `MAX_PAGE_SIZE` increments until a short (or empty) page comes back. `max_pages` guards against paging forever.
-
 ## Why only wrappers with real callers are kept
 
-The typed convenience wrappers below `#get_all` are thin shims over `#get` so callers don't repeat resource paths; all accept the same OData keyword options as `#get`. Only wrappers with real callers are kept.
+The typed convenience wrappers on `Legistar::Client` are thin shims over `#get` so callers don't repeat resource paths; all accept the same OData keyword options as `#get`. Only wrappers with real callers are kept.
 
 The speculative set (Events/EventItems, reference tables, unused matter/person sub-resources) was removed — call `#get("Matters/#{id}/Sub", ...)` directly when a concrete need arises.
 
