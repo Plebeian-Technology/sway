@@ -131,13 +131,11 @@ export const titleize = (string: string, separator = " ", joiner = " ") => {
     return toJoin.join(joiner);
 };
 
-export * from "app/frontend/sway_utils/charts";
 export * from "app/frontend/sway_utils/emoji";
 export * from "app/frontend/sway_utils/format_eta";
 export * from "app/frontend/sway_utils/legislators";
 export * from "app/frontend/sway_utils/locales";
 export * from "app/frontend/sway_utils/storage";
-export * from "app/frontend/sway_utils/stringSimilarity";
 export * from "app/frontend/sway_utils/webauthn";
 export * from "app/frontend/sway_utils/queryParamClearedSignal";
 export * from "app/frontend/sway_utils/queryParamNavigationCarry";

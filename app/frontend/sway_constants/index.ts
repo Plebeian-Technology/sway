@@ -41,6 +41,5 @@ export type TSupport = (typeof Support)[keyof typeof Support];
 
 export * from "app/frontend/sway_constants/swayLocales";
 export * from "app/frontend/sway_constants/navigation";
-export * from "app/frontend/sway_constants/notifications";
 export * from "app/frontend/sway_constants/parityCopy";
 export * from "app/frontend/sway_constants/routes";
