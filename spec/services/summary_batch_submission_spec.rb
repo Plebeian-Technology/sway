@@ -178,15 +178,6 @@ RSpec.describe SummaryBatchSubmission do
       expect(submitted_custom_ids).to eq(["bill__#{bill.id}__positions"])
     end
 
-    it "does not fan out BillNewsArticleFetchJob when accumulating batch summary items" do
-      submission = described_class.new(run: run)
-      bill = batchable_bill("SBS-NO-AUTO-NEWS", 405, testimony: false)
-
-      expect {
-        accumulate_bill(submission, bill)
-      }.not_to have_enqueued_job(BillNewsArticleFetchJob)
-    end
-
     it "does not call BillNewsArticleFetchService directly when accumulating batch summary items" do
       expect(BillNewsArticleFetchService).not_to receive(:call)
       submission = described_class.new(run: run)

@@ -1,5 +1,0 @@
-class BillNewsArticleFetchJob < ApplicationJob
-  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> untyped, ?duration: untyped, ?on_conflict: Symbol) -> void
-
-  def perform: (Integer bill_id, ?Integer? requested_by_id, ?Integer? discovery_request_id) -> void
-end

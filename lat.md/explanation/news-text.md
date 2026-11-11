@@ -1,12 +1,12 @@
 # News text acquisition
 
-The article text service extracts immutable source text. Both background jobs and administrator discovery requests schedule text retrieval for candidate articles lacking text.
+The article text service extracts immutable source text. Explicit administrator discovery requests schedule text retrieval for candidate articles lacking text.
 
 ## Bounded generic extraction
 
 Article text retrieval applies generic HTML extraction without locale-specific custom scrapers, removing non-editorial layout markup while preserving direct quotes and attributions.
 
-Both [[app/jobs/bill_news_article_fetch_job.rb#BillNewsArticleFetchJob]] and explicit administrator requests through [[app/controllers/admin/bill_news_articles_controller.rb#Admin#BillNewsArticlesController]] schedule text retrieval via [[app/jobs/news_article_text_fetch_job.rb#NewsArticleTextFetchJob]] for candidate articles lacking a text version.
+Explicit administrator requests through [[app/controllers/admin/bill_news_articles_controller.rb#Admin#BillNewsArticlesController]] schedule text retrieval via [[app/jobs/news_article_text_fetch_job.rb#NewsArticleTextFetchJob]] for candidate articles lacking a text version.
 
 Streaming responses enforce a two-megabyte cap and a fifteen-second read timeout, rejecting non-HTML content types. Extracted prose is scrubbed to valid UTF-8, null bytes are removed, and the final body text is bounded at fifty thousand characters.
 
