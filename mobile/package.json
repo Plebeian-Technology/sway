@@ -73,7 +73,6 @@
   "devDependencies": {
     "@babel/core": "^7.25.0",
     "@babel/plugin-transform-react-jsx": "^7.25.0",
-    "@babel/preset-env": "^7.25.0",
     "@babel/runtime": "^7.25.0",
     "@testing-library/jest-native": "^5.4.0",
     "@testing-library/react-native": "^13.0.0",
@@ -83,7 +82,6 @@
     "@types/rails__actioncable": "8.0.3",
     "@types/react": "~19.2.0",
     "babel-preset-expo": "^55.0.0",
-    "eslint-config-expo": "^55.0.0",
     "eslint-plugin-expo": "^1.1.0",
     "jest-expo": "^55.0.22",
     "oxlint": "^1.72.0",
