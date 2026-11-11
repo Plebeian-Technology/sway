@@ -146,7 +146,9 @@ RSpec.describe LegislatorsCache::BaseRefresh do
       it "does not check roster_refresher or roster_source on rules" do
         rules = double(
           "JurisdictionRules",
-          roster_rules: {engine: "unavailable"}
+          roster_rules: {engine: "unavailable"},
+          roster_retrieval: nil,
+          roster_parsing: nil
         )
         expect(rules).not_to receive(:roster_refresher)
         expect(rules).not_to receive(:roster_source)
@@ -156,6 +158,14 @@ RSpec.describe LegislatorsCache::BaseRefresh do
         result = service.call
         expect(result.changed_files).to eq({})
       end
+    end
+
+    it "propagates SwayLocale::JurisdictionRules::Undeclared without referencing RSpec constants" do
+      hide_const("RSpec::Mocks::MockExpectationError")
+      allow(SwayLocale::JurisdictionRulesRegistry).to receive(:fetch).and_raise(SwayLocale::JurisdictionRules::Undeclared)
+      service = described_class.new(sway_locale, adapter: adapter)
+
+      expect { service.call }.to raise_error(SwayLocale::JurisdictionRules::Undeclared)
     end
 
     context "for the Congress locale" do
@@ -274,7 +284,9 @@ RSpec.describe LegislatorsCache::BaseRefresh do
     it "does not call roster_source on rules during roster_identity or stored_fields_for" do
       rules = double(
         "JurisdictionRules",
-        roster_rules: {engine: :curated}
+        roster_rules: {engine: :curated},
+        roster_retrieval: nil,
+        roster_parsing: nil
       )
       expect(rules).not_to receive(:roster_source)
       allow(sway_locale).to receive(:jurisdiction_rules).and_return(rules)

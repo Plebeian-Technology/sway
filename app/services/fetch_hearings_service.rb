@@ -126,11 +126,7 @@ class FetchHearingsService
     rescue
       nil
     end
-    hearings_rules = begin
-      rules&.hearings_rules
-    rescue RSpec::Mocks::MockExpectationError, NoMethodError
-      nil
-    end
+    hearings_rules = rules&.hearings_rules
 
     if rules.nil? || hearings_rules.nil?
       locale_name = locale&.name || "nil"
@@ -165,11 +161,7 @@ class FetchHearingsService
     rescue
       nil
     end
-    hearings_rules = begin
-      rules&.hearings_rules
-    rescue RSpec::Mocks::MockExpectationError, NoMethodError
-      nil
-    end
+    hearings_rules = rules&.hearings_rules
 
     if rules.nil? || hearings_rules.nil?
       locale_name = locale&.name || "nil"
@@ -199,11 +191,7 @@ class FetchHearingsService
     @adapter ||= begin
       locale = sway_locale
       rules = locale&.jurisdiction_rules
-      hearings_rules = begin
-        rules&.hearings_rules
-      rescue RSpec::Mocks::MockExpectationError, NoMethodError
-        nil
-      end
+      hearings_rules = rules&.hearings_rules
       cfg = hearings_rules || (rules.is_a?(SwayLocale::JurisdictionRules) ? rules : nil) || {}
       Legislation::Adapters::GenericHearingsAdapter.new(
         cfg,
@@ -275,11 +263,7 @@ class FetchHearingsService
     rescue
       nil
     end
-    hearings_rules = begin
-      rules&.hearings_rules
-    rescue RSpec::Mocks::MockExpectationError, NoMethodError
-      nil
-    end
+    hearings_rules = rules&.hearings_rules
     retrieval = hearings_rules&.dig(:retrieval) || hearings_rules&.dig("retrieval") ||
       hearings_rules&.dig(:retrieval_strategy) || hearings_rules&.dig("retrieval_strategy") ||
       hearings_rules&.dig(:engine) || hearings_rules&.dig("engine")

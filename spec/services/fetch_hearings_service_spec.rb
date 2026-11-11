@@ -3627,7 +3627,7 @@ RSpec.describe FetchHearingsService do
     let(:service) { described_class.new(bill: bill, faraday_conn: Faraday.new) }
 
     before do
-      @mock_rules = instance_double(SwayLocale::JurisdictionRules)
+      @mock_rules = instance_double(SwayLocale::JurisdictionRules, hearings_rules: nil)
       allow(bill.sway_locale).to receive(:jurisdiction_rules).and_return(@mock_rules)
     end
 
@@ -3754,7 +3754,7 @@ RSpec.describe FetchHearingsService do
     let(:service) { described_class.new(bill: bill, faraday_conn: Faraday.new) }
 
     before do
-      @mock_rules = instance_double(SwayLocale::JurisdictionRules)
+      @mock_rules = instance_double(SwayLocale::JurisdictionRules, hearings_rules: nil)
       allow(bill.sway_locale).to receive(:jurisdiction_rules).and_return(@mock_rules)
     end
 

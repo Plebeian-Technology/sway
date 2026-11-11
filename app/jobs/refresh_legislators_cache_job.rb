@@ -88,11 +88,7 @@ class RefreshLegislatorsCacheJob < ApplicationJob
       nil
     end
 
-    retrieval = begin
-      rules.roster_retrieval
-    rescue RSpec::Mocks::MockExpectationError, NoMethodError
-      nil
-    end
+    retrieval = rules&.roster_retrieval
     retrieval ||= (roster_rules&.dig(:retrieval) || roster_rules&.dig("retrieval") ||
                    roster_rules&.dig(:retrieval_strategy) || roster_rules&.dig("retrieval_strategy") ||
                    roster_rules&.dig(:engine) || roster_rules&.dig("engine"))&.to_s

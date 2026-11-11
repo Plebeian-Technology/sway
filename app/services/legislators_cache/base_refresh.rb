@@ -21,23 +21,9 @@ module LegislatorsCache
     def call
       return Result.new(changed_files: {}) unless freshness_check_passes?
 
-      rules = begin
-        sway_locale&.jurisdiction_rules
-      rescue RSpec::Mocks::MockExpectationError, NoMethodError
-        nil
-      end
-
-      roster_rules = begin
-        rules&.roster_rules
-      rescue RSpec::Mocks::MockExpectationError, NoMethodError
-        nil
-      end
-
-      retrieval = begin
-        rules&.roster_retrieval
-      rescue RSpec::Mocks::MockExpectationError, NoMethodError
-        nil
-      end
+      rules = sway_locale&.jurisdiction_rules
+      roster_rules = rules&.roster_rules
+      retrieval = rules&.roster_retrieval
       retrieval ||= (roster_rules&.dig(:retrieval) || roster_rules&.dig("retrieval") ||
                      roster_rules&.dig(:retrieval_strategy) || roster_rules&.dig("retrieval_strategy") ||
                      roster_rules&.dig(:engine) || roster_rules&.dig("engine"))&.to_s
@@ -250,16 +236,8 @@ module LegislatorsCache
     end
 
     def roster_parsing
-      rules = begin
-        sway_locale.jurisdiction_rules
-      rescue RSpec::Mocks::MockExpectationError, NoMethodError
-        nil
-      end
-      parsing = begin
-        rules&.roster_parsing&.to_sym
-      rescue RSpec::Mocks::MockExpectationError, NoMethodError
-        nil
-      end
+      rules = sway_locale&.jurisdiction_rules
+      parsing = rules&.roster_parsing&.to_sym
       parsing || (rules&.roster_rules&.dig(:parsing) || rules&.roster_rules&.dig("parsing") ||
                   rules&.roster_rules&.dig(:parser_format) || rules&.roster_rules&.dig("parser_format") ||
                   rules&.roster_rules&.dig(:engine) || rules&.roster_rules&.dig("engine"))&.to_sym

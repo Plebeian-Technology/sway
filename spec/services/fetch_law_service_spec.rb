@@ -51,7 +51,7 @@ module FetchLawServiceSpecHelpers
 end
 
 RSpec.describe FetchLawService do
-  let(:run) { instance_double(LegislationPipelineRun, id: 7) }
+  let(:run) { instance_double(LegislationPipelineRun, id: 7, effective_sway_locale: nil) }
   let!(:baltimore) { SwayLocale.find_by(city: "baltimore") || create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states") }
 
   around do |example|

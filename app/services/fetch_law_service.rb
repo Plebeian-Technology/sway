@@ -28,12 +28,7 @@ class FetchLawService
 
   # @lat: [[legislation-pipeline#How a stage resolves its SwayLocale]]
   def resolve_sway_locale(run)
-    candidate =
-      begin
-        run&.effective_sway_locale
-      rescue RSpec::Mocks::MockExpectationError
-        nil
-      end
+    candidate = run&.effective_sway_locale
     sway_locale = candidate || resolve_default_sway_locale
     if sway_locale.is_a?(SwayLocale) || sway_locale.respond_to?(:jurisdiction_rules)
       sway_locale

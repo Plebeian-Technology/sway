@@ -2110,7 +2110,7 @@ RSpec.describe FetchBillsService do
     let(:service) { described_class.new(run: run) }
 
     before do
-      @mock_rules = instance_double(SwayLocale::JurisdictionRules)
+      @mock_rules = instance_double(SwayLocale::JurisdictionRules, legislation_rules: nil)
       allow(service).to receive(:resolve_sway_locale).and_return(baltimore_locale)
       allow(baltimore_locale).to receive(:jurisdiction_rules).and_return(@mock_rules)
     end

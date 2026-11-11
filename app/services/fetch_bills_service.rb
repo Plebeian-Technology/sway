@@ -54,11 +54,7 @@ class FetchBillsService
   def adapter_for(locale = nil)
     target = resolve_target_locale(locale)
     rules = target&.jurisdiction_rules
-    leg_rules = begin
-      rules&.legislation_rules
-    rescue RSpec::Mocks::MockExpectationError, NoMethodError
-      nil
-    end
+    leg_rules = rules&.legislation_rules
     Legislation::Adapters::GenericLegislationAdapter.new(
       leg_rules || rules || {},
       connection: conn,
@@ -318,11 +314,7 @@ class FetchBillsService
     rescue
       nil
     end
-    leg_rules = begin
-      rules&.legislation_rules
-    rescue RSpec::Mocks::MockExpectationError, NoMethodError
-      nil
-    end
+    leg_rules = rules&.legislation_rules
 
     if rules.nil? || leg_rules.nil?
       locale_name = sway_locale&.name || "nil"

@@ -29,7 +29,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:congress_locale) do
       sway_locale = instance_double(SwayLocale, name: "Congress")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -37,7 +37,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:maryland_locale) do
       sway_locale = instance_double(SwayLocale, name: "Maryland")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :open_states})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :open_states}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -45,7 +45,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:baltimore_locale) do
       sway_locale = instance_double(SwayLocale, name: "Baltimore")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :baltimore})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :baltimore}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -98,7 +98,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:congress_locale) do
       sway_locale = instance_double(SwayLocale, name: "Congress")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -106,7 +106,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:maryland_locale) do
       sway_locale = instance_double(SwayLocale, name: "Maryland")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :open_states})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :open_states}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -114,7 +114,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:baltimore_locale) do
       sway_locale = instance_double(SwayLocale, name: "Baltimore")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :baltimore})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :baltimore}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -201,7 +201,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:congress_locale) do
       sway_locale = instance_double(SwayLocale, name: "Congress")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -209,7 +209,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:maryland_locale) do
       sway_locale = instance_double(SwayLocale, name: "Maryland")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :open_states})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :open_states}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -254,7 +254,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:congress_locale) do
       sway_locale = instance_double(SwayLocale, name: "Congress")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -284,7 +284,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:congress_locale) do
       sway_locale = instance_double(SwayLocale, name: "Congress")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -339,7 +339,7 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
     let(:congress_locale) do
       sway_locale = instance_double(SwayLocale, name: "Congress")
       allow(sway_locale).to receive(:declared_jurisdiction_rules).and_return(
-        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+        instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
       )
       sway_locale
     end
@@ -409,11 +409,11 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
   it "skips a configured manual locale with unavailable roster refresher without error or network requests" do
     manual_locale = instance_double(SwayLocale, name: "Annapolis")
     allow(manual_locale).to receive(:declared_jurisdiction_rules).and_return(
-      instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :unavailable})
+      instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :unavailable}, roster_retrieval: nil)
     )
     congress_locale = instance_double(SwayLocale, name: "Congress")
     allow(congress_locale).to receive(:declared_jurisdiction_rules).and_return(
-      instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress})
+      instance_double(SwayLocale::JurisdictionRules, roster_rules: {engine: :congress}, roster_retrieval: nil)
     )
     allow(SwayLocale).to receive(:find_each).and_yield(manual_locale).and_yield(congress_locale)
     allow(LegislatorsCache::BaseRefresh).to receive(:new).with(congress_locale, force: false).and_return(double(call: make_result({})))
