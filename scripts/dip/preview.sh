@@ -35,7 +35,6 @@ if [ -n "${SWAY_GCS_BUCKET_ASSETS:-}" ]; then
 fi
 
 docker rm -f "${PREVIEW_CONTAINER_NAME}" >/dev/null 2>&1 || true
-rm -f storage/preview_queue.sqlite3 storage/preview_queue.sqlite3-*
 
 if [ -n "${SENTRY_AUTH_TOKEN:-}" ]; then
     PREVIEW_SENTRY_SECRET="--secret id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN"

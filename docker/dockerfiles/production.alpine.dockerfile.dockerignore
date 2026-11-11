@@ -59,10 +59,8 @@
 /bin/annotate
 /bin/codeql-local
 /bin/dev
-/bin/preview-reset
 /bin/pry
 /bin/rdbg
-/bin/record_vcr
 /bin/rubocop
 /bin/rustrak-mcp-token
 /bin/rustrak-provision

@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# bin/record_vcr — Re-record VCR cassettes for legislation service specs
-# Usage: bin/record_vcr [optional rspec args]
-# Prerequisites: network access to the upstream hosts a recording example calls.
-set -e
-VCR=record bundle exec rspec spec/services/legislation_ingestion_service_spec.rb \
-  spec/services/legislation_pipeline_run_service_spec.rb \
-  "$@"
-echo "Cassettes updated in spec/cassettes/. Review diff before committing."
