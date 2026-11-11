@@ -70,25 +70,4 @@ RSpec.describe NewsArticleSourceSnapshotService do
       expect(NewsArticleSourceUse.count).to eq(0)
     end
   end
-
-  describe ".compare_eligibility" do
-    it "returns eligible comparison when live state matches captured state" do
-      snapshot = described_class.capture!(bill:, purpose: "summary")
-      comparison = described_class.compare_eligibility(snapshot)
-
-      expect(comparison.eligible?).to be true
-      expect(comparison.mismatches).to be_empty
-      expect(comparison.stale_reasons).to be_empty
-    end
-
-    it "detects when association approval is withdrawn" do
-      snapshot = described_class.capture!(bill:, purpose: "summary")
-      admin = create(:user, :sway_admin)
-      bna.withdraw_approval!(by: admin)
-
-      comparison = described_class.compare_eligibility(snapshot)
-      expect(comparison.eligible?).to be false
-      expect(comparison.stale_reasons).to include(:approval_withdrawn)
-    end
-  end
 end

@@ -74,6 +74,7 @@ module Testimony
       %r{^[ \t]*This[ \t]+(?:e-?mail|message|transmission)[ \t]+(?:and[ \t]+any[ \t]+attachments[ \t]+)?is[ \t]+(?:intended|confidential|for[ \t]+the[ \t]+sole[ \t]+use[ \t]+of)\b[^\n]*(?:\n(?![ \t]*(?:From:|Sent:|Date:|To:|Cc:|Bcc:|Subject:|Dear\b))[ \t]*\S[^\n]*){0,6}?(?:immediately[ \t]+notify|delete[ \t]+(?:this|all)|destroy[ \t]+all|in[ \t]+error)\b[^\n]*\n?}i
     ].freeze
 
+    # @lat: [[testimony-attachment-rules#Testimony attachment rules#Every fixed phrase matches through the extracted-text helper]]
     PATTERNS = [
       Testimony::ExtractedText.phrase_pattern(CITY_IT_BANNER),
       MUNICIPAL_OFFICE_FOOTER_PATTERN,
@@ -81,9 +82,6 @@ module Testimony
       *DEVICE_FOOTER_PATTERNS,
       *CONFIDENTIALITY_DISCLAIMER_PATTERNS
     ].freeze
-
-    # @lat: [[testimony-attachment-rules#Testimony attachment rules#Every fixed phrase matches through the extracted-text helper]]
-    CITY_IT_BANNER_PATTERN = PATTERNS.first
 
     Result = Data.define(:text, :characters_removed, :occurrences)
 

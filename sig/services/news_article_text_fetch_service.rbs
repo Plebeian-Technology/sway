@@ -55,7 +55,6 @@ class NewsArticleTextFetchService
   def normalize_doc_and_body: (untyped first_arg, untyped second_arg) -> [untyped, String]
   def extract_article_metadata: (untyped doc) -> Hash[Symbol, untyped]
   def apply_article_metadata_updates: (Hash[Symbol, untyped] meta_updates) -> void
-  def enrich_article_metadata: (untyped doc) -> void
   def persist_version: (status: Symbol | String, text: String?, final_url: String) -> NewsArticleTextVersion
   def link_association: (NewsArticleTextVersion version) -> void
 end

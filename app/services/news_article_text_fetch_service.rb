@@ -673,10 +673,6 @@ class NewsArticleTextFetchService
     news_article.update!(updates) if updates.present?
   end
 
-  def enrich_article_metadata(doc)
-    apply_article_metadata_updates(extract_article_metadata(doc))
-  end
-
   def persist_version(status:, text:, final_url:)
     status_str = status.to_s
     digest = Digest::SHA256.hexdigest(text || "")

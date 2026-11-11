@@ -2,8 +2,6 @@ module Testimony
   # Phase 67 Plan 06 (D-14/D-16). The one place every coverage number is
   # worked out; see the class docstring in app/ for why.
   class CoverageReport
-    STATES: Array[Symbol]
-
     class Result
       attr_reader state: Symbol
       attr_reader total_chars: Integer

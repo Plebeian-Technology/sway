@@ -93,11 +93,8 @@ class BillPositionsPromptBuilder
   MAX_OPINION_ARTICLES: Integer
 
   MAX_REPORTING_ARTICLES: Integer
-  MAX_NEWS_REPORTING_ARTICLES: Integer
   MAX_REPORTING_SECTION_CHARS: Integer
-  MAX_NEWS_REPORTING_SECTION_CHARS: Integer
   MAX_REPORTING_ARTICLE_CHARS: Integer
-  MAX_NEWS_REPORTING_ARTICLE_CHARS: Integer
 
   @bill: Bill
   @provisioning: BillLlmProvisioning?

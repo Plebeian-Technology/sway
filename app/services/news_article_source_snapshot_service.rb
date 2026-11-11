@@ -32,10 +32,6 @@ class NewsArticleSourceSnapshotService
     alias_method :create_snapshot!, :capture!
   end
 
-  def self.compare_eligibility(snapshot)
-    snapshot.current_eligibility_comparison
-  end
-
   def initialize(
     bill:,
     purpose:,

@@ -81,20 +81,12 @@ class OfficialEvidence
         date_semantics == {"start" => "inclusive", "end" => "exclusive"}
     end
 
-    def supported_vacancy?
-      vacant? && office_identity.present? && evidence_matches_profile? && parsed_values_match?
-    end
-
     def current_member?(on: Date.current)
       return false unless supported_service?
 
       service_start = start_date
       service_end = end_date
       service_start.is_a?(Date) && service_end.is_a?(Date) && service_start <= on && on < service_end
-    end
-
-    def external_fact_key
-      [person_identity&.source, person_identity&.value, office_identity, start_date&.iso8601].join("|")
     end
 
     def normalized_values

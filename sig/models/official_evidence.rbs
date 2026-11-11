@@ -71,9 +71,7 @@ class OfficialEvidence < ApplicationRecord
     def year_only?: () -> bool
     def supported_title?: () -> bool
     def supported_service?: () -> bool
-    def supported_vacancy?: () -> bool
     def current_member?: (?on: Date) -> bool
-    def external_fact_key: () -> String
     def normalized_values: () -> Hash[String, untyped]
 
     private
@@ -91,7 +89,6 @@ class OfficialEvidence < ApplicationRecord
     def initialize: (?facts: Array[Fact], ?coverage_gaps: Array[Hash[Symbol, untyped]], ?unsupported: bool, ?unsupported_reason: Symbol?) -> void
     def unsupported?: () -> bool
     def supported?: () -> bool
-    def facts_by_person_id: () -> Hash[String, Fact]
   end
 
   class PreparedServiceEntry

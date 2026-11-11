@@ -1,7 +1,6 @@
 # RBS sig for Eval::ScoreReport — see app/services/eval/score_report.rb.
 module Eval
   class ScoreReport
-    DIMENSIONS: Hash[String, Array[String]]
     SCORE_VALUES: Array[Integer]
 
     class DimensionDistribution

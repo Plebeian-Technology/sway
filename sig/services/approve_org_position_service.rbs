@@ -1,6 +1,5 @@
 # @lat: [[private-individual-guard-override#The override reaches one guard, not the whole chain]]
 class ApproveOrgPositionService
-  NAME_MATCH_THRESHOLD: Float
   MIN_BACKSTOP_NAME_CHARS: Integer
   BACKSTOP_HEADER_CHARS: Integer
   BACKSTOP_SIGNATURE_CHARS: Integer
@@ -218,6 +217,4 @@ class ApproveOrgPositionService
   def log_decision: () -> void
 
   def logged_draft_id: () -> String?
-
-  def jaro_winkler_similarity: (String s1, String s2) -> Float
 end

@@ -52,14 +52,6 @@ RSpec.describe Eval::ScoreReport do
     }
   end
 
-  describe "::DIMENSIONS" do
-    it "names seven dimensions across the summary and positions answer types" do
-      expect(described_class::DIMENSIONS).to be_frozen
-      expect(described_class::DIMENSIONS.values.sum(&:size)).to eq(7)
-      expect(described_class::DIMENSIONS.fetch("positions")).to include("supported_by_submitted_testimony")
-    end
-  end
-
   describe "::SCORE_VALUES" do
     it "is the frozen integer scale 0 through 4" do
       expect(described_class::SCORE_VALUES).to eq([0, 1, 2, 3, 4])

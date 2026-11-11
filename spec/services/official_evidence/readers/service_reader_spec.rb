@@ -114,7 +114,11 @@ RSpec.describe Legislation::Adapters::GenericRosterAdapter do
     vacancy = result.facts.fetch(0)
     expect(result).to be_supported
     expect(vacancy.vacant?).to be(true)
-    expect(vacancy.supported_vacancy?).to be(true)
+    expect(vacancy.office_identity).to eq("us-president")
+    expect(vacancy.chamber).to eq("Executive")
+    expect(vacancy.district).to eq("US0")
+    expect(vacancy.start_date).to be_nil
+    expect(vacancy.end_date).to be_nil
     expect(vacancy.person_identity).to be_nil
     expect(vacancy.evidence).to be_persisted
 

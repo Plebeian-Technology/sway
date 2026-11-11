@@ -252,8 +252,6 @@ class BillsController < ApplicationController
       download_missing_assets: bool
     }
 
-    # jaro_winkler_similarity moved to ApproveOrgPositionService.
-
     def set_bill_for_show: -> Bill
 
     def set_bill: -> Bill

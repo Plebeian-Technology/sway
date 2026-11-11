@@ -3,11 +3,6 @@
 module Eval
   # @lat: [[lat.md/explanation/eval-prompt-manifest-normalisation#How ScoreReport and VerdictGate aggregate and guard candidate scores]]
   class ScoreReport
-    DIMENSIONS = {
-      "summary" => %w[faithful_to_source carries_actual_effect invents_nothing describes_changes_not_final_text],
-      "positions" => %w[stance_correct supported_by_submitted_testimony stays_off_bill_text]
-    }.freeze
-
     # @lat: [[lat.md/explanation/eval-prompt-manifest-normalisation#How ScoreReport and VerdictGate aggregate and guard candidate scores]]
     SCORE_VALUES = [0, 1, 2, 3, 4].freeze
 

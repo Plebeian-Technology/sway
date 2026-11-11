@@ -20,9 +20,5 @@ class OfficialEvidence
     def supported?
       !unsupported?
     end
-
-    def facts_by_person_id
-      facts.index_by { |fact| fact.person_identity.to_s }
-    end
   end
 end

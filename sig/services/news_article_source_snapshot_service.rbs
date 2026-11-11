@@ -54,8 +54,6 @@ class NewsArticleSourceSnapshotService
     ?source_uses: Array[Hash[Symbol | String, untyped]]?
   ) -> NewsArticleSourceSnapshot
 
-  def self.compare_eligibility: (NewsArticleSourceSnapshot snapshot) -> NewsArticleSourceSnapshot::EligibilityComparison
-
   def initialize: (
     bill: Bill,
     purpose: String | Symbol,

@@ -3,8 +3,6 @@
 module Testimony
   # @lat: [[testimony-coverage-report-invariants#How CoverageReport computes call-time reach, freshness, and coverage gaps]]
   class CoverageReport
-    STATES = %i[cleaned never_run failed running no_testimony stale].freeze
-
     # @lat: [[testimony-coverage-report-invariants#How CoverageReport computes call-time reach, freshness, and coverage gaps]]
     Result = Data.define(
       :state,

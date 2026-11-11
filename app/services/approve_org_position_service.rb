@@ -4,9 +4,6 @@
 # @lat: [[approve-org-position-outcomes#ApproveOrgPositionService outcomes]]
 # @lat: [[news-org-position-persistence#Approval of news-sourced draft positions]]
 class ApproveOrgPositionService
-  # @lat: [[organization-position-removal#Renaming an organization changes it everywhere in its locale]]
-  NAME_MATCH_THRESHOLD = 0.9
-
   # @lat: [[private-individual-guard-regions#What the backstop reads, and what it deliberately does not]]
   MIN_BACKSTOP_NAME_CHARS = 6
 
@@ -425,11 +422,5 @@ class ApproveOrgPositionService
     elsif @claimed_affiliation_position.present?
       "#{@bill.id}-letter-#{@claimed_affiliation_position}"
     end
-  end
-
-  def jaro_winkler_similarity(s1, s2)
-    return 0.0 if s1.blank? || s2.blank?
-
-    DidYouMean::JaroWinkler.distance(s1.downcase, s2.downcase).to_f
   end
 end

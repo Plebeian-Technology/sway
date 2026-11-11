@@ -16,7 +16,6 @@ module Testimony
     DEVICE_FOOTER_PATTERNS: Array[Regexp]
     CONFIDENTIALITY_DISCLAIMER_PATTERNS: Array[Regexp]
     PATTERNS: Array[Regexp]
-    CITY_IT_BANNER_PATTERN: Regexp
 
     class Result
       attr_reader text: String
