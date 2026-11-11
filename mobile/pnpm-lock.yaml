@@ -44,9 +44,6 @@ importers:
       expo-haptics:
         specifier: ^55.0.18
         version: 55.0.18(expo@55.0.31)
-      expo-linking:
-        specifier: ^55.0.17
-        version: 55.0.17(expo@55.0.31)(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(react@19.2.0)(supports-color@8.1.1)
       expo-notifications:
         specifier: 55.0.27
         version: 55.0.27(expo@55.0.31)(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(react@19.2.0)(supports-color@8.1.1)(typescript@5.9.3)
@@ -2371,12 +2368,6 @@ packages:
     peerDependencies:
       expo: '*'
       react: '*'
-
-  expo-linking@55.0.17:
-    resolution: {integrity: sha512-rc41rUbFYdJ4IdPxWQiTDtkOlEbtYQkvsCASzW1pqskfRShAd4tYyyAw1BTez3Cq1IgWkK3wcGR+HbFdzZ7ImQ==}
-    peerDependencies:
-      react: '*'
-      react-native: '*'
 
   expo-modules-autolinking@55.0.27:
     resolution: {integrity: sha512-gBRONXQT41PwfsQgeZfFlaeK+zrYMYjRMgxocecnQuSXEm7wCTqD8SsTJmWAf3SDayMQGDZFBlMODeVEnv8FmA==}
@@ -7257,16 +7248,6 @@ snapshots:
     dependencies:
       expo: 55.0.31(@babel/core@7.29.7(supports-color@8.1.1))(@expo/dom-webview@55.0.6)(react-native-worklets@0.7.4(@babel/core@7.29.7(supports-color@8.1.1))(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(react@19.2.0)(supports-color@8.1.1))(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(react@19.2.0)(supports-color@8.1.1)(typescript@5.9.3)
       react: 19.2.0
-
-  expo-linking@55.0.17(expo@55.0.31)(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(react@19.2.0)(supports-color@8.1.1):
-    dependencies:
-      expo-constants: 55.0.17(expo@55.0.31)(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(supports-color@8.1.1)
-      invariant: 2.2.4
-      react: 19.2.0
-      react-native: 0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1)
-    transitivePeerDependencies:
-      - expo
-      - supports-color
 
   expo-modules-autolinking@55.0.27(supports-color@8.1.1)(typescript@5.9.3):
     dependencies:
