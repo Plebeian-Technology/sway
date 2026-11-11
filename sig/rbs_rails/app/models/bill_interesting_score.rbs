@@ -1,0 +1,426 @@
+# resolve-type-names: false
+
+# Phase 62 Plan 01 — hand-authored generated-layer RBS for BillInterestingScore.
+# rbs_rails:all is not wired in this repo (confirmed via `rake -T | grep rbs_rails`
+# returning nothing — same finding as Phase 60 Plan 01/22-01). Mirrors
+# sig/rbs_rails/app/models/bill_category.rbs pattern for a simple belongs_to-only
+# model. `signals` is typed ::String? here (the raw DB text column) — the
+# Hash[String, untyped] override for the `serialize`-deserialized value lives in
+# sig/models/bill_interesting_score.rbs.
+
+class ::BillInterestingScore < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::BillInterestingScore, ::BillInterestingScore::ActiveRecord_Relation, ::Integer]
+
+  module ::BillInterestingScore::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def bill_id: () -> ::Integer
+
+    def bill_id=: (::Integer) -> ::Integer
+
+    def bill_id?: () -> bool
+
+    def bill_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def bill_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def bill_id_will_change!: () -> void
+
+    def bill_id_was: () -> ::Integer?
+
+    def bill_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def bill_id_previous_change: () -> ::Array[::Integer?]?
+
+    def bill_id_previously_was: () -> ::Integer?
+
+    def bill_id_before_last_save: () -> ::Integer?
+
+    def bill_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def bill_id_in_database: () -> ::Integer?
+
+    def saved_change_to_bill_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_bill_id!: () -> void
+
+    def clear_bill_id_change: () -> void
+
+    def bill_id_before_type_cast: () -> ::Integer
+
+    def bill_id_for_database: () -> ::Integer
+
+    def computed_at: () -> ::ActiveSupport::TimeWithZone
+
+    def computed_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def computed_at?: () -> bool
+
+    def computed_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def computed_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def computed_at_will_change!: () -> void
+
+    def computed_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def computed_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def computed_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def computed_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def computed_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def computed_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def computed_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_computed_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_computed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_computed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_computed_at!: () -> void
+
+    def clear_computed_at_change: () -> void
+
+    def computed_at_before_type_cast: () -> ::Time
+
+    def computed_at_for_database: () -> ::Time
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def normalized_score: () -> ::Float
+
+    def normalized_score=: (::Float) -> ::Float
+
+    def normalized_score?: () -> bool
+
+    def normalized_score_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def normalized_score_change: () -> [ ::Float?, ::Float? ]
+
+    def normalized_score_will_change!: () -> void
+
+    def normalized_score_was: () -> ::Float?
+
+    def normalized_score_previously_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def normalized_score_previous_change: () -> ::Array[::Float?]?
+
+    def normalized_score_previously_was: () -> ::Float?
+
+    def normalized_score_before_last_save: () -> ::Float?
+
+    def normalized_score_change_to_be_saved: () -> ::Array[::Float?]?
+
+    def normalized_score_in_database: () -> ::Float?
+
+    def saved_change_to_normalized_score: () -> ::Array[::Float?]?
+
+    def saved_change_to_normalized_score?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def will_save_change_to_normalized_score?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def restore_normalized_score!: () -> void
+
+    def clear_normalized_score_change: () -> void
+
+    def normalized_score_before_type_cast: () -> ::Float
+
+    def normalized_score_for_database: () -> ::Float
+
+    def raw_score: () -> ::Float
+
+    def raw_score=: (::Float) -> ::Float
+
+    def raw_score?: () -> bool
+
+    def raw_score_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def raw_score_change: () -> [ ::Float?, ::Float? ]
+
+    def raw_score_will_change!: () -> void
+
+    def raw_score_was: () -> ::Float?
+
+    def raw_score_previously_changed?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def raw_score_previous_change: () -> ::Array[::Float?]?
+
+    def raw_score_previously_was: () -> ::Float?
+
+    def raw_score_before_last_save: () -> ::Float?
+
+    def raw_score_change_to_be_saved: () -> ::Array[::Float?]?
+
+    def raw_score_in_database: () -> ::Float?
+
+    def saved_change_to_raw_score: () -> ::Array[::Float?]?
+
+    def saved_change_to_raw_score?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def will_save_change_to_raw_score?: (?from: ::Float?, ?to: ::Float?) -> bool
+
+    def restore_raw_score!: () -> void
+
+    def clear_raw_score_change: () -> void
+
+    def raw_score_before_type_cast: () -> ::Float
+
+    def raw_score_for_database: () -> ::Float
+
+    def signals: () -> ::String?
+
+    def signals=: (::String?) -> ::String?
+
+    def signals?: () -> bool
+
+    def signals_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def signals_change: () -> [ ::String?, ::String? ]
+
+    def signals_will_change!: () -> void
+
+    def signals_was: () -> ::String?
+
+    def signals_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def signals_previous_change: () -> ::Array[::String?]?
+
+    def signals_previously_was: () -> ::String?
+
+    def signals_before_last_save: () -> ::String?
+
+    def signals_change_to_be_saved: () -> ::Array[::String?]?
+
+    def signals_in_database: () -> ::String?
+
+    def saved_change_to_signals: () -> ::Array[::String?]?
+
+    def saved_change_to_signals?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_signals?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_signals!: () -> void
+
+    def clear_signals_change: () -> void
+
+    def signals_before_type_cast: () -> ::String?
+
+    def signals_for_database: () -> ::String?
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+  end
+  include ::BillInterestingScore::GeneratedAttributeMethods
+  module ::BillInterestingScore::GeneratedAliasAttributeMethods
+    include ::BillInterestingScore::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::BillInterestingScore::GeneratedAliasAttributeMethods
+
+  # belongs_to :bill
+  def bill: () -> ::Bill
+  def bill=: (::Bill?) -> ::Bill?
+  def reload_bill: () -> ::Bill?
+  def build_bill: (?untyped) -> ::Bill
+  def create_bill: (?untyped) -> ::Bill
+  def create_bill!: (?untyped) -> ::Bill
+
+  module ::BillInterestingScore::GeneratedAssociationMethods
+  end
+  include ::BillInterestingScore::GeneratedAssociationMethods
+
+  module ::BillInterestingScore::GeneratedRelationMethods
+  end
+
+  class ::BillInterestingScore::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::BillInterestingScore]
+    include ::BillInterestingScore::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillInterestingScore, ::Integer]
+  end
+
+  class ::BillInterestingScore::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::BillInterestingScore]
+    include ::BillInterestingScore::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillInterestingScore, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillInterestingScore
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillInterestingScore]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillInterestingScore
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillInterestingScore]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillInterestingScore
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillInterestingScore]
+    def reload: () -> ::Array[::BillInterestingScore]
+
+    def replace: (::Array[::BillInterestingScore]) -> void
+    def delete: (*::BillInterestingScore | ::Integer) -> ::Array[::BillInterestingScore]
+    def destroy: (*::BillInterestingScore | ::Integer) -> ::Array[::BillInterestingScore]
+    def <<: (*::BillInterestingScore | ::Array[::BillInterestingScore]) -> self
+    def prepend: (*::BillInterestingScore | ::Array[::BillInterestingScore]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Bill < ::ApplicationRecord
+end

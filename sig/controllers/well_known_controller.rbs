@@ -1,0 +1,20 @@
+class WellKnownController < ApplicationController
+    # Development-only widening of the host allowlist for a contributor
+    # serving the app through their own Cloudflare tunnel. nil in every other
+    # environment, which is why the two host readers below `.compact`.
+    def self.dev_tunnel_host: () -> String?
+
+    def self.association_hosts: () -> Array[String]
+
+    def self.webauthn_hosts: () -> Array[String]
+
+    def self.related_origins: () -> Array[String]
+
+    def self.apple_app_id: () -> String?
+
+    def index: -> untyped
+
+    def aasa: -> untyped
+
+    def assetlinks: -> untyped
+end

@@ -1,0 +1,19 @@
+module Api
+  module V1
+    class NotificationPreferencesController < BaseController
+      def index: -> untyped
+      def update: -> untyped
+
+      # Phase 61 D-10 / REQ-5: return global org-notification tier
+      def organization_defaults: -> untyped
+      # Phase 61 D-10 / REQ-6: write global org defaults + asymmetric cascade
+      def update_organization_defaults: -> untyped
+
+      private
+
+      def serialize: (NotificationPreference pref) -> Hash[Symbol, untyped]
+      def serialize_organization_defaults: (NotificationPreference? pref_row) -> Hash[Symbol, untyped]
+      def organization_defaults_params: -> ActionController::Parameters
+    end
+  end
+end

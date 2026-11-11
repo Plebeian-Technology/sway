@@ -1,0 +1,7 @@
+# @lat: [[attachment-attempts#Attachment download attempts#Retention sweep]]
+class TrimAttachmentAttemptsJob < ApplicationJob
+  RETENTION_DAYS: Integer
+  BATCH_SIZE: Integer
+
+  def perform: () -> Integer
+end

@@ -1,0 +1,12 @@
+# @lat: [[rbs-signatures#Why a repeated name stops the whole check]]
+class Object
+  def seat_member: (
+    external_id: String,
+    district_name: String,
+    ?start_year: Integer,
+    ?end_year: Integer,
+    **untyped attrs
+  ) -> Legislator
+
+  def built_entries: (Array[String] listed_bioguide_ids) -> Array[Hash[String, untyped]]
+end

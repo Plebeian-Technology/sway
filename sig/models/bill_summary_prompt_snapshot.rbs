@@ -1,0 +1,21 @@
+# The four rendered prompt sections one summary run sent, plus the counts
+# beside them. rbs_rails covers the attribute readers and the bill
+# association under sig/rbs_rails/app/models/bill_summary_prompt_snapshot.rbs;
+# `facts` is corrected here because `serialize :facts, coder: JSON` makes the
+# text column read as a Hash.
+class BillSummaryPromptSnapshot < ApplicationRecord
+  def facts: () -> Hash[String, untyped]?
+  def facts=: (Hash[untyped, untyped]?) -> Hash[untyped, untyped]?
+
+  def self.record!: (
+    bill: Bill,
+    snapshot: BillSummaryPromptBuilder::Snapshot,
+    built_at: (ActiveSupport::TimeWithZone | Time),
+    summary_run_id: String?,
+    llm_model: String?,
+    llm_provider: String?,
+    facts: Hash[untyped, untyped]
+  ) -> BillSummaryPromptSnapshot
+
+  def self.forget!: (bill: Bill) -> Integer
+end

@@ -1,0 +1,17 @@
+module Scraper
+  module Baltimore
+    class LegislatorVotes
+      FOR_VALUES: ::Array[String]
+      AGAINST_VALUES: ::Array[String]
+
+      @raw_votes: ::Array[untyped]
+
+      def initialize: (raw_votes: ::Array[untyped]?) -> void
+      def process: () -> ::Array[Scraper::LegislatorVote]
+
+      private
+
+      def map_vote: (untyped vote) -> Scraper::LegislatorVote?
+    end
+  end
+end

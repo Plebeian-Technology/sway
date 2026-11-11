@@ -1,0 +1,27 @@
+class UserVotesController < ApplicationController
+    # WS2.8: vote-finality copy — mobile error envelope, web alert flash, and
+    # inertia errors carrier all share this message.
+    VOTE_ALREADY_RECORDED_MESSAGE: ::String
+
+    def index: -> untyped
+
+    def show: -> untyped
+
+    # POST /user_votes or /user_votes.json
+    def create: -> untyped
+
+    # Rails built-in (ActionController::Redirecting#url_from): returns the URL
+    # string when it is safe to redirect to (same-origin), nil otherwise. Not in
+    # the steep RBS collection for ActionController, so declared here for the
+    # WS1.21(3) open-redirect guard.
+    def url_from: (String? url) -> String?
+
+    private
+
+    # WS2.8: render the already-recorded response for (existing) — idempotent
+    # success on matching support, rejection otherwise. Dual-serves web + mobile.
+    def already_voted_response: (UserVote existing, String incoming, String target) -> untyped
+
+    # Only allow a list of trusted parameters through.
+    def user_vote_params: -> untyped
+end

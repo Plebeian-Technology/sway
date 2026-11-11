@@ -1,0 +1,30 @@
+# @lat: [[campaign-organization-link#Why this is a second approval and not part of the first]]
+class LinkCampaignOrganizationService
+  @bill: Bill
+
+  @campaign: Campaign
+
+  @actor: User
+
+  @decision: String
+
+  @organization_id: untyped
+
+  @organization_name: String?
+
+  def initialize: (bill: Bill, campaign: Campaign, actor: User, decision: untyped, ?organization_id: untyped, ?organization_name: untyped) -> void
+
+  def call: () -> Symbol
+
+  private
+
+  def link: () -> Symbol
+
+  def find_or_create_organization: (String name) -> Organization
+
+  def clear: () -> Symbol
+
+  def write: (decision: String, organization: Organization?) -> void
+
+  def log_decision: (String decision, Organization? organization) -> void
+end

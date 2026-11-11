@@ -1,0 +1,5 @@
+class UserLegislatorsController < ApplicationController
+    def index: -> untyped
+
+    def create: -> untyped
+end

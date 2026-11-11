@@ -1,0 +1,46 @@
+class PartnerEngagementReportService
+  class Report < Struct[untyped]
+    attr_accessor organization: Organization
+    attr_accessor partner_slug: String
+    attr_accessor partner_name: String
+    attr_accessor total_articles: Integer
+    attr_accessor total_bills_covered: Integer
+    attr_accessor total_clicks: Integer
+    attr_accessor total_registrations: Integer
+    attr_accessor total_votes: Integer
+    attr_accessor pro_votes: Integer
+    attr_accessor con_votes: Integer
+    attr_accessor pro_percentage: Float?
+    attr_accessor con_percentage: Float?
+    attr_accessor articles: Array[ArticleBill]
+
+    def articles_count: () -> Integer
+    def bills_count: () -> Integer
+
+    def self.new: (
+      organization: Organization,
+      partner_slug: String,
+      partner_name: String,
+      total_articles: Integer,
+      total_bills_covered: Integer,
+      total_clicks: Integer,
+      total_registrations: Integer,
+      total_votes: Integer,
+      pro_votes: Integer,
+      con_votes: Integer,
+      pro_percentage: Float?,
+      con_percentage: Float?,
+      articles: Array[ArticleBill]
+    ) -> Report
+  end
+
+  def articles_count: () -> Integer
+  def bills_count: () -> Integer
+
+  @organization: Organization
+  @start_date: (Time | Date | DateTime)?
+  @end_date: (Time | Date | DateTime)?
+
+  def initialize: (organization: (Organization | Integer), ?start_date: (Time | Date | DateTime)?, ?end_date: (Time | Date | DateTime)?) -> void
+  def call: () -> Report
+end

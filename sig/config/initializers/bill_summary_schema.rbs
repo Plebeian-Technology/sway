@@ -1,0 +1,10 @@
+# RBS sig for the bill-summary schema constants (Phase 52 D-16).
+#
+# The constants are the canonical bill-summary validator and are consumed
+# by Plan 09 (paste_summary) and Plan 08 (BillSummaryJob).
+
+# Parsed JSON Schema document (opaque schema shape).
+BILL_SUMMARY_SCHEMA_HASH: Hash[String, untyped]
+
+# Compiled validator built from BILL_SUMMARY_SCHEMA_HASH.
+BILL_SUMMARY_SCHEMA: JSONSchemer::Schema

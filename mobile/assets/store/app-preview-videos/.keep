@@ -1,0 +1,11 @@
+# App preview videos scaffold (15-30s)
+#
+# - iOS App Preview: H.264, 30fps max, per-device-size .mov / .mp4
+#   - 6.7" / 6.1" / 12.9" each accept up to 3 previews
+# - Android promo video: YouTube URL only (Play Console accepts a YouTube link
+#   in Main store listing → Promo video). The `mp4`/`mov` files in this dir
+#   serve as the source uploads to YouTube.
+#
+# Naming convention:
+#   ios-6.7-{n}.mov     ios-6.1-{n}.mov     ios-12.9-{n}.mov
+#   android-promo.mp4

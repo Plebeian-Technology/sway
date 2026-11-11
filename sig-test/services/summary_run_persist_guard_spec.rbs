@@ -1,0 +1,8 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # What a bought summary call puts on the row.
+  def summary_attrs: () -> Hash[Symbol, untyped]
+
+  # What a bought positions call puts on the row, guarded by an evidence digest.
+  def positions_attrs: () -> Hash[Symbol, untyped]
+end

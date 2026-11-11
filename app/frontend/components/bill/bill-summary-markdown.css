@@ -1,0 +1,118 @@
+.bill-summary-markdown > :first-child {
+    margin-top: 0;
+}
+
+.bill-summary-markdown > :last-child {
+    margin-bottom: 0;
+}
+
+.bill-summary-markdown h1,
+.bill-summary-markdown h2,
+.bill-summary-markdown h3,
+.bill-summary-markdown h4 {
+    margin-block: 1em 0.5em;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.bill-summary-markdown h1 {
+    font-size: 1.5em;
+}
+
+.bill-summary-markdown h2 {
+    font-size: 1.25em;
+}
+
+.bill-summary-markdown h3,
+.bill-summary-markdown h4 {
+    font-size: 1.1em;
+}
+
+.bill-summary-markdown p {
+    margin-block: 0.75em;
+}
+
+.bill-summary-markdown ul,
+.bill-summary-markdown ol {
+    margin-block: 0.75em;
+    padding-inline-start: 1.5em;
+}
+
+.bill-summary-markdown ul {
+    list-style: disc;
+}
+
+.bill-summary-markdown ol {
+    list-style: decimal;
+}
+
+.bill-summary-markdown li + li {
+    margin-top: 0.25em;
+}
+
+.bill-summary-markdown blockquote {
+    margin-block: 1em;
+    border-inline-start: 3px solid var(--border-strong);
+    padding-inline-start: 1em;
+    color: var(--muted-foreground);
+}
+
+.bill-summary-markdown table {
+    display: block;
+    margin-block: 1em;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.bill-summary-markdown th,
+.bill-summary-markdown td {
+    border: 1px solid var(--border-strong);
+    padding: 0.35em 0.65em;
+}
+
+.bill-summary-markdown th:not([align]),
+.bill-summary-markdown td:not([align]) {
+    text-align: start;
+}
+
+.bill-summary-markdown th {
+    font-weight: 700;
+}
+
+.bill-summary-markdown code {
+    border-radius: 3px;
+    background: var(--surface-2);
+    padding: 0.1em 0.3em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+}
+
+.bill-summary-markdown pre {
+    margin-block: 1em;
+    overflow-x: auto;
+    border-radius: 3px;
+    background: var(--surface-2);
+    padding: 0.75em 1em;
+}
+
+.bill-summary-markdown pre code {
+    background: none;
+    padding: 0;
+}
+
+.bill-summary-markdown hr {
+    margin-block: 1em;
+    border-color: var(--border-strong);
+}
+
+.bill-summary-markdown .task-list-item {
+    list-style: none;
+}
+
+.bill-summary-markdown .task-list-item input {
+    margin-inline-end: 0.5em;
+}
+
+.bill-summary-markdown del {
+    text-decoration: line-through;
+}

@@ -1,0 +1,25 @@
+module Legislation
+  module MarkupOps
+    type op_payload = {
+      operation: (:strike | :insert),
+      anchor_text: String,
+      source: :markup,
+      char_start: Integer,
+      char_end: Integer,
+    }
+
+    LEGEND_PATTERN: Regexp
+    EXCLUSIONS: Array[Regexp]
+    BRACKET_PATTERN: Regexp
+    CAPITAL_RUN_PATTERN: Regexp
+
+    def self.markup_fallback: (String text) -> Array[op_payload]
+    def self.reconstruct_before_and_after: (String text) -> [String, String]
+
+    private
+
+    def self.excluded_ranges: (String text) -> Array[Range[Integer]]
+    def self.in_excluded_range?: (Integer char_start, Integer char_end, Array[Range[Integer]] ranges) -> bool
+    def self.mask_ranges: (String text, Array[Range[Integer]] ranges) -> String
+  end
+end

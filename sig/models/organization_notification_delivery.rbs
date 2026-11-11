@@ -1,0 +1,18 @@
+# Phase 61 WR-04 — durable idempotency marker for immediate org-position fan-out.
+# Written by NotifyOrganizationFollowersService#mark_delivered_once! before each
+# immediate delivery; the unique index skips a retried/replayed send.
+#
+# Column accessors and the ClassMethods extend come from the generated layer in
+# sig/rbs_rails/app/models/organization_notification_delivery.rbs.
+class OrganizationNotificationDelivery < ApplicationRecord
+  def user: () -> User
+  def user=: (User) -> User
+
+  # Per-event idempotency token (the triggering change's updated_at, iso8601).
+  def delivery_token: () -> String
+  def delivery_token=: (String) -> String
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+    include Enumerable[OrganizationNotificationDelivery]
+  end
+end

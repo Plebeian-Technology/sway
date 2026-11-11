@@ -1,0 +1,58 @@
+#!/bin/sh
+# Kamal pre-deploy hook — scan the built image before containers boot on the
+# server. Runs after build+push, before the app switches over, so a dirty image
+# never starts serving.
+#
+# Two levels:
+#   Default  — fast: assert no secret-shaped ENV is baked into image config.
+#              WARNS (does not block), because it can't be verified against a
+#              real arm64 image from here first. Flip `warn_only=0` below to make
+#              it fail-closed once you've confirmed a clean image (see
+#              docs/secret-scanning.md).
+#   Deep     — SWAY_DEEP_IMAGE_SCAN=1: full trufflehog layer-content scan,
+#              fail-closed. Slow (minutes); run it before a release.
+set -eu
+
+warn_only=1
+
+# The image store's address is not written here — the repo is public. Read it
+# the same way everything else does. scripts/deploy.sh has usually exported it
+# already, but kamal can be run on its own, so this does not assume that.
+. "$(dirname "$0")/../../deploy/config/load.sh"
+sway_load_config
+sway_require SWAY_REGISTRY
+
+IMAGE="${SWAY_REGISTRY}/sway:${KAMAL_VERSION:-latest}"
+
+if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  echo "pre-deploy: image $IMAGE not present locally; skipping image secret scan." >&2
+  exit 0
+fi
+
+# Fast: runtime secrets are injected by Kamal at boot, NOT baked — so the image
+# config should carry no secret-shaped ENV with a value.
+baked=$(docker image inspect "$IMAGE" \
+  --format '{{range .Config.Env}}{{println .}}{{end}}' \
+  | grep -iE '^[A-Za-z0-9_]*(KEY|TOKEN|SECRET|PASSWORD)=.' \
+  | grep -vE '=(\$|$)' || true)
+if [ -n "$baked" ]; then
+  echo "pre-deploy: secret-shaped ENV baked into $IMAGE:" >&2
+  echo "$baked" | sed -E 's/=.*/=<REDACTED>/' >&2
+  [ "$warn_only" = "1" ] || { echo "pre-deploy: blocking deploy." >&2; exit 1; }
+  echo "pre-deploy: WARNING only (warn_only=1); not blocking." >&2
+fi
+
+# Deep: full content scan of the image layers.
+if [ "${SWAY_DEEP_IMAGE_SCAN:-}" = "1" ]; then
+  if ! command -v trufflehog >/dev/null 2>&1; then
+    echo "pre-deploy: SWAY_DEEP_IMAGE_SCAN=1 but trufflehog not installed (brew install trufflehog)." >&2
+    exit 1
+  fi
+  echo "pre-deploy: deep image scan (trufflehog)…" >&2
+  # verified,unknown — catches live creds AND self-issued secrets (private keys,
+  # RAILS_MASTER_KEY-shaped values) that have no provider to verify against;
+  # excludes 'unverified' (checked-and-dead) to avoid false blocks.
+  trufflehog docker --image "$IMAGE" --results=verified,unknown --fail --no-update
+fi
+
+echo "pre-deploy: image secret scan complete."

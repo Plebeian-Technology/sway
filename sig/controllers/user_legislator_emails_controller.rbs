@@ -1,0 +1,14 @@
+# Modern create path for the email-your-legislator send pipeline.
+class UserLegislatorEmailsController < ApplicationController
+  @bill: Bill?
+
+  def create: -> void
+
+  private
+
+  def respond_failure: (Symbol field, String message, String target) -> void
+
+  def set_bill: -> void
+
+  def user_legislator_email_params: -> untyped
+end

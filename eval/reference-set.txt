@@ -1,0 +1,56 @@
+corpus bills with testimony (local corpus, by band): 192
+excluded for missing diff markdown:                  0
+
+band tally:
+  truncation     9
+  control        13
+  bulk_10k_50k   84
+  bulk_1k_10k    85
+  bulk_under_1k  1
+
+effective truncation boundary: 150000 chars (BillPositionsPromptBuilder.max_testimony_chars)
+
+chosen ids, grouped by band (testimony-scored, 24):
+  truncation:
+    25-0064 (1995251 chars)
+    25-0065 (1512971 chars)
+    25-0062 (1207804 chars)
+    25-0094 (1056346 chars)
+    26-0151 (464968 chars)
+    25-0036 (314238 chars)
+    25-0087 (286402 chars)
+    25-0003 (159560 chars)
+    26-0188 (152212 chars)
+  control:
+    25-0116 (140769 chars)
+    25-0040 (139548 chars)
+    25-0141 (131931 chars)
+    25-0066 (126970 chars)
+    26-0158 (87187 chars)
+    25-0019 (77339 chars)
+    26-0147 (74982 chars)
+    26-0144 (74152 chars)
+    25-0093 (70562 chars)
+    26-0150 (60605 chars)
+    25-0136 (56295 chars)
+    26-0161 (52194 chars)
+    25-0080 (50145 chars)
+  bulk_10k_50k:
+    25-0053 (48469 chars)
+    25-0088 (47673 chars)
+
+chosen ids, no-testimony (summary answer type only, 6):
+  25-0067
+  25-0070
+  25-0115
+  26-0173
+  26-0174
+  26-0195
+
+-- the selection above stratifies on testimony length, which drives the
+   POSITIONS answer. The summary answer's source is on-disk diff markdown,
+   capped separately -- the table below shows what the testimony-length
+   stratification does and does not cover for the SUMMARY answer type.
+source-character band tally (over the chosen 30, summary source cap 300000 chars, BillSummaryPromptBuilder.max_source_chars):
+  over_source_cap  0
+  under_source_cap 30

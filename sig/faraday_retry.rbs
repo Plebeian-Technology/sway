@@ -1,0 +1,15 @@
+# Minimal RBS sig stub for faraday-retry gem (Phase 52 D-36 hookup).
+# rbs_collection has no upstream sig for faraday-retry as of writing, but
+# Sway::FaradayStack mounts the retry middleware and specs assert its class
+# presence in the handler stack. Stub only the surface Sway touches.
+module Faraday
+  module Retry
+    class Middleware
+      # Sway::FaradayStack::TRANSPORT_RETRY_EXCEPTIONS extends this
+      # gem default (timeouts) with connection-reset classes. Elements are a
+      # mix of Class objects (Errno::ETIMEDOUT, Faraday::TimeoutError) and a
+      # String ('Timeout::Error'), matching faraday-retry's build_exception_matcher.
+      DEFAULT_EXCEPTIONS: Array[Class | String]
+    end
+  end
+end

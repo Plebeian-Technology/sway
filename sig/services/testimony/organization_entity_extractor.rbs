@@ -1,0 +1,52 @@
+module Testimony
+  class OrganizationEntityExtractor
+    NAMEABLE_SOURCE_KINDS: Array[String]
+    MAX_LETTER_CHARS: Integer
+    LETTER_HEAD_CHARS: Integer
+    LETTER_TAIL_CHARS: Integer
+    LETTER_WINDOW_NOTICE: String
+    EXTRACTION_ENTITIES: Hash[String, String]
+
+    @llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+    @enabled: bool
+    @route: Llm::RouteResolver::Route?
+    @purpose: Symbol?
+    @model_fallback_letters: Integer
+
+    def self.build: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | nil | :default),
+      ?purpose: Symbol
+    ) -> Testimony::OrganizationEntityExtractor
+
+    def initialize: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?,
+      ?enabled: bool?,
+      ?route: Llm::RouteResolver::Route?,
+      ?purpose: Symbol
+    ) -> void
+
+    def call: (text: String, letters: Array[Hash[String, untyped]]) -> [Array[Hash[String, untyped]], Hash[String, Integer]]
+
+    private
+
+    attr_reader llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+
+    def enabled?: () -> bool
+    def empty_counts: () -> Hash[String, Integer]
+    def letter_text_for: (String full_text, Hash[String, untyped] letter) -> String
+    def fallback_extracted_org: (Hash[String, untyped] letter) -> Hash[String, String?]?
+    def model_for: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _ExtractionAdapter) adapter) -> String
+
+    interface _ExtractionAdapter
+      def generate_entity_extraction: (
+        model: String,
+        content: String,
+        entities: Hash[String, String]
+      ) -> untyped
+      def provider_label: () -> String
+      def is_a?: (Class) -> bool
+    end
+
+    def extract_entities: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _ExtractionAdapter) adapter, String windowed_text) -> Hash[String, String?]?
+  end
+end

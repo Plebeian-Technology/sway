@@ -1,0 +1,40 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # The run's first batch row, and the expiry its retry batch reports.
+  def batch: () -> PipelineRunSummaryBatch
+  def retry_expires_at: () -> ActiveSupport::TimeWithZone
+
+  # A bill stamped onto a batch as the submission would have stamped it.
+  def batched_bill: (
+    String external_id,
+    Integer days_ago,
+    ?on: PipelineRunSummaryBatch,
+    ?text: String?,
+    ?testimony: bool,
+  ) -> Bill
+
+  def bill_existence_queries: () { () -> untyped } -> Array[String]
+
+  def bill_run_for: (Bill bill) -> PipelineRunBill
+
+  def cid: (Bill bill, String answer_type) -> String
+
+  # A batch the API reports as ended, carrying the four per-item counts.
+  def ended_status: (
+    ?succeeded: Integer,
+    ?errored: Integer,
+    ?canceled: Integer,
+    ?expired: Integer,
+  ) -> untyped
+
+  def ok_summary: (Bill bill) -> Llm::ClaudeBatchService::Result
+  def ok_positions: (Bill bill) -> Llm::ClaudeBatchService::Result
+  def failed_item: (Bill bill, String answer_type, ?(Llm::TransportError | Llm::SchemaError) error) -> Llm::ClaudeBatchService::Result
+
+  # Runs one sweep with these results standing in for the API's answer.
+  def ingest!: (
+    Array[Llm::ClaudeBatchService::Result] results,
+    ?untyped status,
+    ?on: PipelineRunSummaryBatch,
+  ) -> void
+end

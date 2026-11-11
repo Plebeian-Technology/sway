@@ -1,0 +1,84 @@
+# Phase 54 D-02..D-06 / D-11 / iter-1 M5.
+#
+# JSONSchemer schemas are inherently recursive JSON; concrete typing
+# requires a recursive type alias which RBS does not yet express
+# cleanly. See [[feedback_rbs_avoid_untyped]] exception clause —
+# `schema:` and the returned parsed Hash genuinely need `untyped` value
+# types because BILL_SUMMARY_SCHEMA_HASH is recursive JSON-Schema.
+#
+# The official anthropic gem does NOT ship RBS sigs — see sig/anthropic.rbs
+# for the minimal stub used here (matches sig/openai.rbs convention).
+module Llm
+  class ClaudeAdapter
+    MAX_TOKENS: Integer
+    DEFAULT_TIMEOUT_SECONDS: Integer
+    DEFAULT_MAX_RETRIES: Integer
+    MAX_TRANSLATED_ERROR_LENGTH: Integer
+
+    @client: untyped # Anthropic::Client — not in RBS gem index
+    @last_response: untyped # Anthropic response struct — opaque
+    @last_usage: untyped # Anthropic usage struct — opaque
+
+    attr_reader last_usage: untyped
+    attr_reader last_response: untyped
+
+    def provider_label: () -> String
+    def generate_bill_summary: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+    def generate_bill_categories: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+    def generate_bill_positions: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    # PROD-CR-01 stage 3: attachment-name classification, the LLM fallback
+    # behind Testimony::NameRules' deterministic allow/deny stages.
+    def generate_testimony_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    def generate_source_kind_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    def generate_testimony_stance_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    def generate_news_claim_grounding: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+
+    private
+
+    # WS5.13: shared body. validation_schema is a boot-loaded JSONSchemer
+    # instance (recursive JSON-Schema — untyped per the header exception).
+    def generate_structured: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      validation_schema: untyped,
+    ) -> Hash[String, untyped]
+
+    def record_usage: (untyped response, fallback_model: String) -> void
+
+    def client: () -> untyped
+  end
+end

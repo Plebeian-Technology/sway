@@ -1,0 +1,14 @@
+# Phase 1 batch-API groundwork: the request-shape builder shared by
+# Llm::ClaudeAdapter (sync) and Llm::ClaudeBatchService (batch). `schema:`
+# is `untyped` for the same recursive-JSON-Schema reason as
+# sig/services/llm/claude_adapter.rbs's header documents.
+module Llm
+  module ClaudeRequestParams
+    MAX_TOKENS: Integer
+
+    def self.build: (prompt: Llm::PromptPayload, model: String, schema: Hash[String, untyped]) -> Hash[Symbol, untyped]
+
+    private def self.system_block: (String system_prompt, String model) -> Hash[Symbol, untyped]
+    private def self.structured_output_args: (Hash[String, untyped] schema) -> Hash[Symbol, untyped]
+  end
+end

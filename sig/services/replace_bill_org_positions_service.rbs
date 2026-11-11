@@ -1,0 +1,30 @@
+class ReplaceBillOrgPositionsService
+  # :ok (payload = upserted rows via the whitelist resource) | :empty (204) |
+  # :error (render args).
+  class Result
+    attr_reader kind: Symbol
+    attr_reader http_status: Symbol?
+    attr_reader error: String?
+    attr_reader message: String?
+    attr_reader payload: untyped
+
+    def initialize: (kind: Symbol, ?http_status: Symbol?, ?error: String?, ?message: String?, ?payload: untyped) -> void
+    def ok?: () -> bool
+    def empty?: () -> bool
+  end
+
+  @positions: untyped
+  @actor: User?
+
+  def self.call: (positions: untyped, actor: User?) -> Result
+  def initialize: (positions: untyped, actor: User?) -> void
+  def call: () -> Result
+
+  private
+
+  def error: (Symbol http_status, String code, String message) -> Result
+  def neutral?: (untyped support) -> bool
+  # Never nil: a non-neutral position is rejected earlier unless its summary is
+  # non-blank, and a neutral one is given DEFAULT_SUMMARY.
+  def summary_for: (Hash[String, untyped] pos) -> String
+end

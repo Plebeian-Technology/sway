@@ -1,0 +1,120 @@
+# Schema specification version.
+schema_version: 1
+
+# Citation: Charter of the City of Annapolis, Art. I, Sec. 1 (Incorporation and Corporate Limits)
+# Source: https://library.municode.com/md/annapolis/codes/code_of_ordinances?nodeId=CH_ARTIIN_S1IN
+city: annapolis
+region: maryland
+region_code: MD
+country: united_states
+name: annapolis-maryland-united_states
+
+legislative_sessions:
+    - name: "2021-2025 City Council"
+      start_date: "2021-01-01"
+      end_date: "2025-01-01"
+      active: false
+      upstream_name: "2021-2025 City Council"
+    - name: "2025-2029 City Council"
+      start_date: "2025-01-01"
+      end_date: "2029-01-01"
+      active: true
+      upstream_name: "2025-2029 City Council"
+
+# Citation: IANA Time Zone Database
+# Source: https://data.iana.org/time-zones/tz-link.html
+time_zone: America/New_York
+
+# Citation: Official Seal & Flag of the City of Annapolis
+# Source: https://www.annapolis.gov/
+icon_url: public/images/flags/annapolis-maryland-united_states.svg
+
+# @lat: [[locale-extension#Nominatim geographic configuration]]
+# Citation: OpenStreetMap Relation 113314 (City of Annapolis Bounding Box) # lat:ignore
+# Source: https://www.openstreetmap.org/relation/113314 # lat:ignore
+nominatim_viewbox: "-76.5450,39.0200,-76.4650,38.9400"
+nominatim_bounded: true
+nominatim_country_codes: "us"
+
+# Citation: Annapolis City Hall (Official Municipal Headquarters)
+# Source: https://www.annapolis.gov/
+sample_address:
+    street: 160 Duke of Gloucester St
+    postal_code: "21401"
+    latitude: 38.9784
+    longitude: -76.4922
+
+source_rules:
+    # Citation: City of Annapolis Voting Records Availability
+    # Source: https://www.annapolis.gov/483/City-Council
+    publishes_legislator_votes: false
+
+    # Citation: Charter of the City of Annapolis, Art. II, Sec. 1 (City Council - Legislative Department)
+    # Source: https://library.municode.com/md/annapolis/codes/code_of_ordinances?nodeId=CH_ARTIIAL_S1CICO
+    chamber_label: City Council
+
+    # Citation: Charter of the City of Annapolis, Art. II, Sec. 4 (4-Year Terms)
+    # Source: https://library.municode.com/md/annapolis/codes/code_of_ordinances?nodeId=CH_ARTIIAL_S4TEOF
+    session_numbering: term_years
+
+    # Citation: Charter of the City of Annapolis, Art. II, Sec. 1 (Unicameral City Council)
+    # Source: https://library.municode.com/md/annapolis/codes/code_of_ordinances?nodeId=CH_ARTIIAL_S1CICO
+    default_bill_chamber: council
+    bill_chambers:
+        - council
+
+    legislation_rules:
+        retrieval: legistar
+        parsing: legistar
+        jurisdiction: annapolis
+        base_url: "https://webapi.legistar.com/v1"
+        generic_portal_urls: []
+        metadata_mapping:
+            external_id: "$.MatterFile"
+            matter_id: "$.MatterId"
+            title: "$.MatterTitle"
+    hearings_rules:
+        retrieval: legistar
+        parsing: legistar
+        jurisdiction: annapolis
+        base_url: "https://webapi.legistar.com/v1"
+    vote_rules:
+        retrieval: manual
+        parsing: manual
+        enable_historical_fallback: false
+        timezone: "America/New_York"
+    roster_rules:
+        retrieval: curated
+        parsing: curated
+        evidence_publisher: "annapolis.gov"
+        evidence_jurisdiction: "annapolis_city"
+        evidence_source_url: "https://www.annapolis.gov/483/City-Council"
+    law_rules:
+        retrieval: unavailable
+        parsing: unavailable
+
+term_rules:
+    # Citation: Charter of the City of Annapolis, Art. II, Sec. 4 (Terms commence on first day of January)
+    # Source: https://library.municode.com/md/annapolis/codes/code_of_ordinances?nodeId=CH_ARTIIAL_S4TEOF
+    convening:
+        kind: fixed_day
+        month: 1
+        day: 1
+
+    # Citation: Charter of the City of Annapolis, Art. II, Sec. 4 (Elected for terms of four years)
+    # Source: https://library.municode.com/md/annapolis/codes/code_of_ordinances?nodeId=CH_ARTIIAL_S4TEOF
+    cycle_anchor_year: 2025
+    cycle_years: 4
+
+    # Citation: City of Annapolis City Council Directory
+    # Source: https://www.annapolis.gov/483/City-Council
+    roster_lists_only_current_legislators: true
+    publishes_term_history: false
+    publishes_exact_term_dates: false
+
+    # Citation: City of Annapolis City Council Ward Representatives
+    # Source: https://www.annapolis.gov/483/City-Council
+    identified_by: person
+
+# @lat: [[news-source-configuration#News source configuration contract]]
+news_sources: []

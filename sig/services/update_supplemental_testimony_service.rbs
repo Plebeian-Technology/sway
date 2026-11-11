@@ -1,0 +1,23 @@
+# @lat: [[bill-creator-summary-tab#Supplemental testimony is replaced, never appended]]
+class UpdateSupplementalTestimonyService
+  @bill: Bill
+  @supplemental_testimony: String?
+  @clear_supplemental_testimony: bool
+
+  def initialize: (
+    bill: Bill,
+    ?supplemental_testimony: String?,
+    ?clear_supplemental_testimony: bool
+  ) -> void
+
+  # :updated when the column was written, :noop when the request carried
+  # nothing to apply (a blank value with no clear flag).
+  def call: () -> (:updated | :noop)
+
+  private
+
+  # D-WR-01: the rule + the write, run either bare (a new record has no row to
+  # hold and no drafts to retract) or inside #call's with_lock, because the
+  # retraction is a read-modify-write of operator-mutable triage state.
+  def write: (BillLlmProvisioning provisioning) -> (:updated | :noop)
+end

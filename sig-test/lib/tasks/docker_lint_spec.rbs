@@ -1,0 +1,42 @@
+# Spec-only declarations for spec/lib/tasks/docker_lint_spec.rb.
+# `DockerLintHelpers` is a module defined inside docker_lint.rake (a .rake
+# file, which Steep does not type-check); `DockerLintSpecHelpers` is the
+# top-level alias the spec assigns to it.
+module DockerLintHelpers
+  def self.extract_tesseract_langs: (String body, package_prefix: String, ?skip_bare_base: bool) -> Set[String]
+
+  # Returns the bare `-DSQLITE_*` option names a dockerfile compiles in, with
+  # any `=value` still attached, so a changed value reads as a different option.
+  def self.extract_sqlite_options: (String body) -> Set[String]
+
+  # Maps each forbidden option present to the reason it is forbidden.
+  def self.forbidden_sqlite_options_in: (Set[String] options) -> Hash[String, String]
+
+  # Renames declared -DSQLITE_* options to the form `PRAGMA compile_options`
+  # reports them in (prefix dropped, value kept).
+  def self.sqlite_options_as_reported: (Set[String] options) -> Set[String]
+
+  # Sentences describing every disagreement between what the dockerfiles
+  # compile and what the loaded SQLite reports; empty when they agree.
+  def self.sqlite_runtime_problems: (declared: Set[String], reported: Set[String]) -> Array[String]
+end
+
+DockerLintSpecHelpers: singleton(DockerLintHelpers)
+
+# The `let` and def-in-describe helpers the spec's blocks define. Steep cannot
+# see either form, so each one is declared here with the type it really holds.
+# The two hashes are keyed by a repository-relative dockerfile path.
+class Object
+  def shipped: () -> Hash[String, Set[String]]
+
+  def declaring: () -> Hash[String, Set[String]]
+
+  def alpine: () -> Set[String]
+
+  # The compile options the production container reported, and the ones the
+  # shipped alpine dockerfile declares — the pair the sqlite_runtime examples
+  # compare.
+  def production_reported: () -> Set[String]
+
+  def shipped_declared: () -> Set[String]
+end

@@ -1,0 +1,3 @@
+class DeliverReassignmentNotificationJob < ApplicationJob
+  def perform: (Integer user_id) -> void
+end

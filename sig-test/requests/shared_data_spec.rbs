@@ -1,0 +1,4 @@
+# Helper defined inside the RSpec example group in shared_data_spec.rb.
+class Object
+  def complete_registration: (User user) -> void
+end

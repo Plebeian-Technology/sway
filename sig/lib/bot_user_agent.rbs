@@ -1,0 +1,5 @@
+module BotUserAgent
+  PATTERN: Regexp
+
+  def self.bot?: (String? user_agent) -> bool
+end

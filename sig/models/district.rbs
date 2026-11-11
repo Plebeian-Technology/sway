@@ -1,0 +1,9 @@
+# Manual extensions for District. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/district.rbs; this file holds
+# the hand-written instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class District < ApplicationRecord
+    def number: -> Integer
+    def region_code: -> String?
+    def seats: -> ActiveRecord::Associations::CollectionProxy
+end

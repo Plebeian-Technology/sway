@@ -1,0 +1,35 @@
+module BraveSearch
+  class Client
+    class Error < StandardError
+    end
+
+    PROVIDER_NAME: String
+    MODEL_NAME: String
+    SEARCH_PATH: String
+    MAX_QUERY_CHARS: Integer
+    MAX_QUERY_WORDS: Integer
+    MAX_BASE_QUERY_CHARS: Integer
+    MAX_BASE_QUERY_WORDS: Integer
+    MAX_COUNT: Integer
+    MAX_CITED_TEXT_CHARS: Integer
+
+    def self.configured?: () -> bool
+    def self.redact_api_key: (untyped text) -> String
+
+    @connection: Faraday::Connection
+
+    def initialize: (?connection: Faraday::Connection?) -> void
+    def search: (query: untyped, allowed_domains: untyped, ?count: Integer) -> Array[Hash[String, String]]
+
+    private
+
+    def sanitize_base_query: (untyped query) -> String
+    def normalize_allowed_domains: (untyped allowed_domains) -> Array[String]
+    def format_batch_query: (String base_query, Array[String] domains) -> String
+    def query_within_limits?: (String query_str) -> bool
+    def partition_batches: (String base_query, Array[String] domains) -> Array[Array[String]]
+    def execute_batch: (String batch_query, Integer count, String api_key) -> Array[Hash[String, String]]
+    def extract_candidates: (untyped parsed) -> Array[Hash[String, String]]
+    def wrap_error: (untyped exception, ?status: Integer?, ?body: untyped) -> Error
+  end
+end

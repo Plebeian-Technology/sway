@@ -1,0 +1,94 @@
+default: &default
+    adapter: sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    # Milliseconds to wait for a write lock before raising, mapped to SQLite's
+    # busy_timeout pragma. Can't be combined with a `retries:` key.
+    timeout: 10_000
+    # IMMEDIATE trades some write throughput for better concurrency than the
+    # DEFERRED default: https://github.com/rails/solid_queue/issues/309#issuecomment-2324605993
+    default_transaction_mode: IMMEDIATE
+    pragmas: &default_pragmas
+        # https://fractaledmind.github.io/2023/09/07/enhancing-rails-sqlite-fine-tuning/
+        # Durability level: 2 = FULL (sync every write), 1 = NORMAL (sync every
+        # ~1000 pages), 0 = NONE. https://www.sqlite.org/pragma.html#pragma_synchronous
+        synchronous: "NORMAL"
+        # WAL allows concurrent readers alongside one writer.
+        # https://www.sqlite.org/pragma.html#pragma_journal_mode
+        journal_mode: "WAL"
+        # Caps the WAL file so it can't grow unbounded (which would also hurt
+        # read performance). https://www.sqlite.org/pragma.html#pragma_journal_size_limit
+        journal_size_limit: <%= 64.megabytes %>
+        # Global memory map so every process can share data.
+        # https://www.sqlite.org/pragma.html#pragma_mmap_size
+        mmap_size: <%= 64.megabytes %>
+        # Local connection cache, in pages.
+        # https://www.sqlite.org/pragma.html#pragma_cache_size
+        cache_size: 2_000
+        # @lat: [[auxiliary-databases#Why default pragmas keep temporary storage in memory]]
+        temp_store: "MEMORY"
+
+development:
+    primary:
+        <<: *default
+        database: <%= ENV["SWAY_DATABASE_NAME"] || "storage/development.sqlite3" %>
+    # @lat: [[auxiliary-databases#Why the queue database names a migrations path]]
+    queue:
+        <<: *default
+        pragmas:
+            <<: *default_pragmas
+            mmap_size: 0
+        database: <%= ENV["SWAY_QUEUE_DATABASE_NAME"] || "storage/development_queue.sqlite3" %>
+        migrations_paths: db/queue_migrate
+    # @lat: [[auxiliary-databases#Why cable and cache are provisioned by a migrations path]]
+    cable:
+        <<: *default
+        pragmas:
+            <<: *default_pragmas
+            mmap_size: 0
+        database: <%= ENV["SWAY_CABLE_DATABASE_NAME"] || "storage/development_cable.sqlite3" %>
+        migrations_paths: db/cable_migrate
+    # @lat: [[auxiliary-databases#Why cable and cache are provisioned by a migrations path]]
+    cache:
+        <<: *default
+        pragmas:
+            <<: *default_pragmas
+            mmap_size: 0
+        database: <%= ENV["SWAY_CACHE_DATABASE_NAME"] || "storage/development_cache.sqlite3" %>
+        migrations_paths: db/cache_migrate
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+    <<: *default
+    # @lat: [[auxiliary-databases#The four SQLite databases#Why every test worker gets its own database file]]
+    database: <%= ENV["SWAY_TEST_DATABASE_DIR"].presence || "storage" %>/test<%= ENV["TEST_ENV_NUMBER"] %>.sqlite3
+
+production:
+    primary:
+        <<: *default
+        database: <%= ENV["SWAY_DATABASE_NAME"] || "storage/production.sqlite3" %>
+    # @lat: [[auxiliary-databases#Why the queue database names a migrations path]]
+    queue:
+        <<: *default
+        pragmas:
+            <<: *default_pragmas
+            mmap_size: 0
+        database: <%= ENV["SWAY_QUEUE_DATABASE_NAME"] || "storage/production_queue.sqlite3" %>
+        migrations_paths: db/queue_migrate
+    # @lat: [[auxiliary-databases#Why cable and cache are provisioned by a migrations path]]
+    cable:
+        <<: *default
+        pragmas:
+            <<: *default_pragmas
+            mmap_size: 0
+        database: <%= ENV["SWAY_CABLE_DATABASE_NAME"] || "storage/production_cable.sqlite3" %>
+        migrations_paths: db/cable_migrate
+    # @lat: [[auxiliary-databases#Why cable and cache are provisioned by a migrations path]]
+    cache:
+        <<: *default
+        pragmas:
+            <<: *default_pragmas
+            mmap_size: 0
+        database: <%= ENV["SWAY_CACHE_DATABASE_NAME"] || "storage/production_cache.sqlite3" %>
+        migrations_paths: db/cache_migrate

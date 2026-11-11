@@ -1,0 +1,39 @@
+# Hand-written, in the style of sig/sway_deploy_config.rbs. Extend the
+# GROUPS type and add a reader signature here whenever a later plan adds a
+# group class.
+module Sway
+  module Settings
+    class MissingValues < StandardError
+    end
+
+    GROUPS: Hash[Symbol, singleton(Base)]
+
+    def self.build!: () -> singleton(Sway::Settings)
+
+    def self.reset!: () -> singleton(Sway::Settings)
+
+    def self.upstream: () -> Upstream
+
+    def self.rate_limits: () -> RateLimits
+
+    def self.legislation: () -> Legislation
+
+    def self.llm: () -> Llm
+
+    def self.dev_login: () -> DevLogin
+
+    def self.mobile: () -> Mobile
+
+    def self.ops: () -> Ops
+
+    def self.webauthn: () -> Webauthn
+
+    def self.install: (Symbol name, Base instance) -> Base
+
+    private
+
+    def self.instances: () -> Hash[Symbol, Base]
+
+    def self.missing_message: (Array[String] failures) -> String
+  end
+end

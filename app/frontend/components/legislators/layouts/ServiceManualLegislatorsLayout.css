@@ -1,0 +1,98 @@
+/* @lat: [[legislator-directory-layouts#ServiceManualLegislatorsLayout.tsx]] */
+
+[data-theme="service-manual"] .service-manual-legislators {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--foreground);
+    border-top: var(--rule-thick) var(--rule-style) var(--foreground);
+    padding-top: calc(var(--space-unit) * 4);
+}
+
+[data-theme="service-manual"] .service-manual-phase-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    padding-bottom: calc(var(--space-unit) * 3);
+    border-bottom: 4px solid var(--primary);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+[data-theme="service-manual"] .service-manual-tag {
+    display: inline-block;
+    padding: calc(var(--space-unit) * 0.5) calc(var(--space-unit) * 2);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+}
+
+[data-theme="service-manual"] .service-manual-legislators__header {
+    padding: calc(var(--space-unit) * 4) 0;
+}
+
+[data-theme="service-manual"] .service-manual-legislators__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+[data-theme="service-manual"] .service-manual-legislators__count {
+    margin-top: calc(var(--space-unit) * 1);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+[data-theme="service-manual"] .service-manual-legislators__term-range {
+    margin-top: calc(var(--space-unit) * 1);
+    font-variant-numeric: var(--font-numeric);
+    font-size: var(--type-micro);
+    color: var(--muted-foreground);
+}
+
+[data-theme="service-manual"] .service-manual-filter-well {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 4);
+    padding: calc(var(--space-unit) * 4);
+    background-color: var(--surface-2);
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    margin-bottom: calc(var(--space-unit) * 6);
+}
+
+[data-theme="service-manual"] .service-manual-field {
+    display: flex;
+    flex: 1 1 14rem;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    min-width: 0;
+    max-width: 100%;
+}
+
+[data-theme="service-manual"] .service-manual-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+[data-theme="service-manual"] .service-manual-card-wrapper {
+    border-left: 4px solid var(--primary);
+}
+
+[data-theme="service-manual"] .service-manual-legislators__notice {
+    padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
+    text-align: center;
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    background-color: var(--surface-1);
+}

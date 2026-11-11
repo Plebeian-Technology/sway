@@ -1,0 +1,27 @@
+# @lat: [[local-store-uploads#Why the screenshot flow navigates by deep link]]
+# Run through scripts/capture-screenshots.sh, which sets APP_ID and SHOTS.
+appId: ${APP_ID}
+---
+- launchApp:
+      clearState: true
+- assertVisible: "Sway"
+
+- openLink: sway://bill_of_the_month
+- assertVisible:
+      id: "botm-scroll"
+- takeScreenshot: ${SHOTS}/01-bill-of-the-month
+
+- openLink: sway://legislators
+- assertVisible:
+      id: "legislators-list"
+- takeScreenshot: ${SHOTS}/02-legislators
+
+- openLink: sway://past_bills_of_the_month
+- assertVisible:
+      id: "bills-list"
+- takeScreenshot: ${SHOTS}/03-past-bills-of-the-month
+
+- openLink: sway://organizations
+- assertVisible:
+      id: "orgs-list"
+- takeScreenshot: ${SHOTS}/04-organizations

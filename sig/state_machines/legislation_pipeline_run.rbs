@@ -1,0 +1,93 @@
+# Hand-written RBS overlay for LegislationPipelineRun's state machine.
+# state_machines-activerecord generates these dynamically; this overlay
+# enumerates them concretely per D-40 (no `untyped`).
+#
+# Phase 52 Plan 03: stage events + force_fail + state predicates.
+
+class LegislationPipelineRun < ApplicationRecord
+  # Phase 52 Plan 03 constants — canonical declaration lives in
+  # sig/models/legislation_pipeline_run.rbs (single source of truth,
+  # co-located with the model-level STAGE_STATUS_TO_DAG_NAME mapping
+  # added by HI3-01). Re-declaring them here would trip the
+  # RBS::DuplicatedDeclaration check (cycle-4 verification finding).
+  #
+  # PHASE_52_STAGE_STATES, PHASE_52_NON_TERMINAL_STATES — see model sig.
+
+  # -------------------------------------------------------------------------
+  # Stage event bang transitions (raise StateMachines::InvalidTransition)
+  # -------------------------------------------------------------------------
+  def start_fetch_bills!: () -> bool
+  def complete_fetch_bills!: () -> bool
+  def start_extract_text!: () -> bool
+  def complete_extract_text!: () -> bool
+  def start_parse_sections!: () -> bool
+  def complete_parse_sections!: () -> bool
+  def start_generate_diffs!: () -> bool
+  def complete_generate_diffs!: () -> bool
+  def start_fetch_law!: () -> bool
+  def complete_fetch_law!: () -> bool
+  def start_fetch_hearings!: () -> bool
+  def complete_fetch_hearings!: () -> bool
+  def start_summarize!: () -> bool
+  def complete_summarize!: () -> bool
+  def await_summary_batch!: () -> bool
+  def resume_summary_batch!: () -> bool
+
+  # Aggregate fail event (D-19)
+  def force_fail!: () -> bool
+
+  # Non-bang transitions
+  def start_fetch_bills: () -> bool
+  def complete_fetch_bills: () -> bool
+  def start_extract_text: () -> bool
+  def complete_extract_text: () -> bool
+  def start_parse_sections: () -> bool
+  def complete_parse_sections: () -> bool
+  def start_generate_diffs: () -> bool
+  def complete_generate_diffs: () -> bool
+  def start_fetch_law: () -> bool
+  def complete_fetch_law: () -> bool
+  def start_fetch_hearings: () -> bool
+  def complete_fetch_hearings: () -> bool
+  def start_summarize: () -> bool
+  def complete_summarize: () -> bool
+  def await_summary_batch: () -> bool
+  def resume_summary_batch: () -> bool
+  def force_fail: () -> bool
+
+  # can_*? predicates
+  def can_start_fetch_bills?: () -> bool
+  def can_complete_fetch_bills?: () -> bool
+  def can_start_extract_text?: () -> bool
+  def can_complete_extract_text?: () -> bool
+  def can_start_parse_sections?: () -> bool
+  def can_complete_parse_sections?: () -> bool
+  def can_start_generate_diffs?: () -> bool
+  def can_complete_generate_diffs?: () -> bool
+  def can_start_fetch_law?: () -> bool
+  def can_complete_fetch_law?: () -> bool
+  def can_start_fetch_hearings?: () -> bool
+  def can_complete_fetch_hearings?: () -> bool
+  def can_start_summarize?: () -> bool
+  def can_complete_summarize?: () -> bool
+  def can_await_summary_batch?: () -> bool
+  def can_resume_summary_batch?: () -> bool
+  def can_force_fail?: () -> bool
+
+  # State predicates (per-stage internal states + existing pre-Phase-52 ones)
+  def fetching_bills?: () -> bool
+  def extracting_text?: () -> bool
+  def parsing_sections?: () -> bool
+  def generating_diffs?: () -> bool
+  def fetching_law?: () -> bool
+  def fetching_hearings?: () -> bool
+  def summarizing?: () -> bool
+  def awaiting_summary_batch?: () -> bool
+
+  # Pre-existing state predicates (also produced by state_machines)
+  def queued?: () -> bool
+  def running?: () -> bool
+  def completed?: () -> bool
+  def failed?: () -> bool
+  def cancelled?: () -> bool
+end

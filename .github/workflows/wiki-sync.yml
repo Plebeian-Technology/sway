@@ -1,0 +1,71 @@
+name: Sync GitHub Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lat.md/**"
+      - "scripts/github_wiki_builder.rb"
+      - "scripts/build-github-wiki.rb"
+      - ".github/workflows/wiki-sync.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-wiki:
+    # @lat: [[continuous-integration#Why no workflow names its machine]]
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby (hosted)
+        if: runner.environment == 'github-hosted'
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version-file: .ruby-version
+
+      # @lat: [[continuous-integration#Why the runner's Ruby comes from the host toolchain]]
+      - name: Set up Ruby (host mise)
+        if: runner.environment == 'self-hosted'
+        run: |
+          MISE_SHIMS="$HOME/.local/share/mise/shims"
+          test -x "$MISE_SHIMS/ruby" || {
+            echo "::error::mise shims not found at $MISE_SHIMS — is mise installed for the runner user?"
+            exit 1
+          }
+          echo "$MISE_SHIMS" >> "$GITHUB_PATH"
+
+      # @lat: [[github-wiki-sync#Why the workflow probes the wiki remote before cloning]]
+      - name: Build and push GitHub Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_SLUG: ${{ github.repository }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          WIKI_URL="https://x-access-token:${GH_TOKEN}@github.com/${REPO_SLUG}.wiki.git"
+          WIKI_DIR="$(mktemp -d)"
+
+          if ! git ls-remote "$WIKI_URL" >/dev/null 2>&1; then
+            echo "::notice::${REPO_SLUG}.wiki.git is not initialized yet. Open https://github.com/${REPO_SLUG}/wiki and click 'Create the first page' once to provision the Wiki repository."
+            exit 0
+          fi
+
+          git clone --depth 1 "$WIKI_URL" "$WIKI_DIR"
+          ruby scripts/build-github-wiki.rb "$WIKI_DIR" "$REPO_SLUG" "$BRANCH_NAME"
+
+          git -C "$WIKI_DIR" add -A
+          if git -C "$WIKI_DIR" diff --cached --quiet; then
+            echo "Wiki is already up to date."
+            exit 0
+          fi
+
+          git -C "$WIKI_DIR" \
+            -c "user.name=github-actions[bot]" \
+            -c "user.email=41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Sync lat.md wiki from ${COMMIT_SHA}"
+          git -C "$WIKI_DIR" push origin HEAD

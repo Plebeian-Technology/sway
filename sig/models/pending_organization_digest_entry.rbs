@@ -1,0 +1,9 @@
+# Phase 61 Plan 07 — durable pending digest queue row.
+# Written by DigestOrgNotificationAggregator.enqueue, deleted by dispatch_period.
+class PendingOrganizationDigestEntry < ApplicationRecord
+  # IN-01: cadence whitelist backing the inclusion validation.
+  CADENCES: Array[String]
+
+  def user: () -> User
+  def user=: (User) -> User
+end

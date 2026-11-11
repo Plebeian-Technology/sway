@@ -1,0 +1,14 @@
+# Spec-only helper module for Legislation::BillMetadata specs (A1-WR-02).
+# Lives in sig-test because it is only referenced from spec files, matching
+# the FetchBillsServiceSpecHelpers / MupdfExtractorSpecHelpers pattern.
+module LegislationBillMetadataSpecHelpers
+  ROOT: String
+
+  # metadata.json now sits at <root>/<sway_locale>/<external_id>/, because a
+  # Bill is unique on (external_id, sway_locale_id) together. Every example in
+  # that file uses this one jurisdiction.
+  SWAY_LOCALE: String
+
+  def self.dir_for: (String external_id) -> Pathname
+  def self.write: (String external_id, String contents) -> void
+end

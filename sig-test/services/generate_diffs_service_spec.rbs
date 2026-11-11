@@ -1,0 +1,13 @@
+# Spec-only helper module for GenerateDiffsService specs.
+# Lives in sig-test (not sig) because it's only referenced from spec files.
+# Mirrors the MupdfExtractorSpecHelpers / FetchBillsServiceSpecHelpers pattern.
+module GenerateDiffsServiceSpecHelpers
+  TMP_DIFFS_DIR: String
+  self.@release_date_offset: Integer
+
+  def self.build_op: (operation: Symbol, ?anchor_text: String?, ?replacement_text: String?) -> BillAmendmentOperation
+
+  def self.next_release_date_offset: () -> Integer
+
+  def self.make_bill: (sway_locale: SwayLocale, legislator: Legislator, external_id: String, ?parsing_target: String) -> Bill
+end

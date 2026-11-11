@@ -1,0 +1,81 @@
+# resolve-type-names: false
+
+class ::ArticleBill < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::ArticleBill, ::ArticleBill::ActiveRecord_Relation, ::Integer]
+
+  module ::ArticleBill::GeneratedAttributeMethods
+    def id: () -> ::Integer
+    def id=: (::Integer) -> ::Integer
+    def id?: () -> bool
+
+    def bill_id: () -> ::Integer
+    def bill_id=: (::Integer) -> ::Integer
+    def bill_id?: () -> bool
+
+    def organization_id: () -> ::Integer
+    def organization_id=: (::Integer) -> ::Integer
+    def organization_id?: () -> bool
+
+    def partner_slug: () -> ::String
+    def partner_slug=: (::String) -> ::String
+    def partner_slug?: () -> bool
+
+    def article_url: () -> ::String
+    def article_url=: (::String) -> ::String
+    def article_url?: () -> bool
+
+    def article_title: () -> ::String
+    def article_title=: (::String) -> ::String
+    def article_title?: () -> bool
+
+    def published_at: () -> ::ActiveSupport::TimeWithZone?
+    def published_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+    def published_at?: () -> bool
+
+    def clicks_count: () -> ::Integer
+    def clicks_count=: (::Integer) -> ::Integer
+
+    def registrations_count: () -> ::Integer
+    def registrations_count=: (::Integer) -> ::Integer
+
+    def votes_count: () -> ::Integer
+    def votes_count=: (::Integer) -> ::Integer
+
+    def pro_votes_count: () -> ::Integer
+    def pro_votes_count=: (::Integer) -> ::Integer
+
+    def con_votes_count: () -> ::Integer
+    def con_votes_count=: (::Integer) -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+  end
+
+  module ::ArticleBill::GeneratedAssociationMethods
+    def bill: () -> ::Bill
+    def bill=: (::Bill?) -> ::Bill?
+    def organization: () -> ::Organization
+    def organization=: (::Organization?) -> ::Organization?
+  end
+
+  module ::ArticleBill::GeneratedRelationMethods
+  end
+
+  class ::ArticleBill::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::ArticleBill]
+    include ::ArticleBill::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ArticleBill, ::Integer]
+  end
+
+  class ::ArticleBill::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::ArticleBill]
+    include ::ArticleBill::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ArticleBill, ::Integer]
+  end
+
+  include ::ArticleBill::GeneratedAttributeMethods
+  include ::ArticleBill::GeneratedAssociationMethods
+end

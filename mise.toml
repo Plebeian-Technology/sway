@@ -1,0 +1,19 @@
+[tools]
+"gem:dip" = "latest"
+"gem:kamal" = "latest"
+# @lat: [[toolchain-pins#Why a moving alias is refused]]
+node = "24.19.0"
+python = "latest"
+ruby = "4.0.9"
+
+[env]
+# @lat: [[browser-error-reporting#Development reports stay on this machine#Where each development address is read]]
+RUSTRAK_API_TOKEN = "{{ exec(command='cat ' ~ config_root ~ '/config/rustrak_mcp.key 2>/dev/null || true') }}"
+# @lat: [[browser-error-reporting#Development reports stay on this machine#Where each development address is read]]
+RUSTRAK_DSN_MOBILE = "{{ exec(command='cat ' ~ config_root ~ '/config/rustrak_project.key 2>/dev/null || true') }}"
+# @lat: [[deploy-configuration#Why the vault account is named in the tool environment as well]]
+SWAY_BW_ACCOUNT = "{{ exec(command='sed -n s/^SWAY_BW_ACCOUNT=//p ' ~ config_root ~ '/.env.kamal 2>/dev/null || true') }}"
+# @lat: [[use-your-own-secret-store]]
+SWAY_SECRETS_ADAPTER = "{{ exec(command='sed -n s/^SWAY_SECRETS_ADAPTER=//p ' ~ config_root ~ '/.env.kamal 2>/dev/null || true') }}"
+SWAY_SECRETS_ACCOUNT = "{{ exec(command='sed -n s/^SWAY_SECRETS_ACCOUNT=//p ' ~ config_root ~ '/.env.kamal 2>/dev/null || true') }}"
+SWAY_SECRETS_FROM = "{{ exec(command='sed -n s/^SWAY_SECRETS_FROM=//p ' ~ config_root ~ '/.env.kamal 2>/dev/null || true') }}"

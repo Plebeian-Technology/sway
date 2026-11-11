@@ -1,0 +1,31 @@
+module LegislatorsCache
+  # Roster entries rebuilt from the database for the people Sway
+  # still shows in office whom congress.gov no longer lists.
+  class DepartedMemberEntries
+    @sway_locale: SwayLocale
+    @listed_bioguide_ids: Array[String]
+
+    def self.for: (
+      sway_locale: SwayLocale,
+      listed_bioguide_ids: Array[String]
+    ) -> Array[Hash[String, untyped]]
+
+    def initialize: (SwayLocale sway_locale, Array[String] listed_bioguide_ids) -> void
+
+    def call: () -> Array[Hash[String, untyped]]
+
+    private
+
+    attr_reader sway_locale: SwayLocale
+
+    attr_reader listed_bioguide_ids: Array[String]
+
+    def still_in_office: () -> Array[Legislator]
+
+    def entry_for: (Legislator legislator) -> Hash[String, untyped]?
+
+    # The state code and seat number of the last seat the person held, or a
+    # pair of nils when no seat can be read off their terms.
+    def seat_of: (Legislator legislator) -> [String?, String?]
+  end
+end

@@ -1,0 +1,40 @@
+---
+lat:
+  mode: explanation
+---
+# The public organizations endpoint
+
+`Public::OrganizationsController` serves read-only organization browsing to everyone, signed in or not. It is a separate controller from the admin one so that the admin gate and the public reads cannot drift into the same class.
+
+`OrganizationsController` keeps its admin gate on `#create`. This controller
+answers four shapes: every active organization, the organizations of one
+locale, the ones the signed-in reader follows, and one organization with its
+bill positions.
+
+## What a signed-out reader is never sent
+
+Follow state and membership state ride on the payload only when
+`current_user` is present.
+
+The index adds a map of the reader's own follows and the ids of the
+organizations they belong to; the show adds the reader's own follow id and the
+same membership ids. Both read through `current_user`, so the widest thing
+either can disclose is the requesting reader's own relationships. A signed-out
+request gets the payload the endpoint has always returned.
+
+The organization's follower count is different in kind: it is a public fact
+about the organization rather than about any reader, so it travels for
+everyone.
+
+## Why the list preloads icons and the detail does not
+
+Resolving an organization's icon reads the attachment row and then the blob
+row, so the question is whether saying that up front costs less than asking per
+record.
+
+On the index it does, because every returned row resolves an icon. On the show
+it does not, because preloading for one row adds a query. The measured
+single-record case and the list savings are owned by
+[[lazy-inertia-props#Preload savings depend on result size]]. The same
+row-scaled rule makes the memberships list preload its organizations and their
+icons, because every row there draws one.

@@ -1,0 +1,24 @@
+Hi <%= @user.full_name.presence || "there" %>,
+
+Your elected representation on Sway has been updated following recent election results or redistricting in your area:
+
+<% @reassignments.each do |reassignment| %>
+<% case reassignment.reassignment_type %>
+<% when "successor_seeded" %>
+* <%= reassignment.legislator&.full_name %> has succeeded <%= reassignment.previous_legislator&.full_name %> as your representative for <%= reassignment.district&.name %>.
+<% when "district_changed" %>
+* Your voting district has shifted from <%= reassignment.previous_district&.name %> to <%= reassignment.district&.name %>, represented by <%= reassignment.legislator&.full_name %>.
+<% when "vacant_seat" %>
+* <%= reassignment.previous_legislator&.full_name %>'s term has concluded, and the seat for <%= reassignment.district&.name %> is currently vacant.
+<% when "vacancy_filled" %>
+* <%= reassignment.legislator&.full_name %> has been seated to represent <%= reassignment.district&.name %>.
+<% else %>
+* Your representative for <%= reassignment.district&.name %> has been updated.
+<% end %>
+<% end %>
+
+View your representatives at: https://sway.vote/legislators
+
+---
+You received this email because you opted into representative updates on Sway.
+Manage notification preferences: https://sway.vote/notifications

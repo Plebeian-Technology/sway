@@ -1,0 +1,11 @@
+# Phase 32 plan 14 Task 2 — RBS sig for MarketingController.
+# Mirrors app/controllers/marketing_controller.rb.
+class MarketingController < ApplicationController
+  @apple_app_store_id: String
+  @android_package: String
+
+  def mobile_download: () -> untyped
+  def sms: () -> untyped
+  def privacy: () -> untyped
+  def terms: () -> untyped
+end

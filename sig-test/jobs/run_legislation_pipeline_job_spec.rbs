@@ -1,0 +1,19 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # Every per-bill stage before summarize, already succeeded, so only the
+  # summarize stage really runs.
+  def seed_through_clean_testimony: () -> Hash[String, Hash[String, String]]
+
+  # A bill with source text and testimony, plus the run's row for it.
+  def batch_bill: (String external_id, Integer days_ago, ?text: String?) -> Bill
+
+  def with_tmp_legislation_roots: (String prefix) { (String raw_root, String text_root) -> void } -> void
+
+  def canonical_dir: () -> Pathname
+end
+
+module StateMachines
+  class InvalidTransition < StandardError
+    def initialize: (?untyped object, ?untyped machine, ?untyped event) -> void
+  end
+end

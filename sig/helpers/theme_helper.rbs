@@ -1,0 +1,21 @@
+# ThemeHelper is included into ApplicationController, so methods can call
+# current_user / cookies. Declare the host interface for Steep.
+module ThemeHelper : _ThemeHelperHost
+  COOKIE_NAME: Symbol
+  VALID_PREFERENCES: Array[String]
+  DEFAULT_PREFERENCE: String
+  THEME_ID_COOKIE_NAME: Symbol
+  VALID_THEME_IDS: Array[String]
+  DEFAULT_THEME_ID: String
+  THEME_FONT_HREFS: Hash[String, String]
+
+  def theme_preference: -> String
+  def theme_html_class: -> String?
+  def theme_id: -> String
+  def theme_font_stylesheet_href: -> String?
+end
+
+interface _ThemeHelperHost
+  def current_user: -> User?
+  def cookies: -> ActionDispatch::Cookies::CookieJar
+end

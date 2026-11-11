@@ -1,0 +1,56 @@
+# Steep sig for the GitHubPrService spec.
+# Defines the lightweight Struct-based Sawyer response doubles and helper methods
+# used only in tests.
+# Octokit types are untyped at the boundary (not RBS-annotated in this project).
+
+# make_commit helper — defined as an instance method via `def` inside RSpec.describe;
+# Steep resolves it through Object.
+class Object
+  def make_commit: (untyped sha, untyped tree_sha) -> ::GHCommit
+  def make_git_commit: (untyped sha, untyped tree_sha) -> ::GHGitCommit
+end
+
+class GHRepo
+  def initialize: (untyped default_branch) -> void
+  def default_branch: () -> untyped
+end
+
+class GHObject
+  def initialize: (untyped sha) -> void
+  def sha: () -> untyped
+end
+
+class GHRef
+  def initialize: (untyped object) -> void
+  def object: () -> untyped
+end
+
+class GHTree
+  def initialize: (untyped sha) -> void
+  def sha: () -> untyped
+end
+
+class GHCommitDetail
+  def initialize: (untyped tree) -> void
+  def tree: () -> untyped
+end
+
+class GHCommit
+  def initialize: (untyped sha, untyped commit) -> void
+  def sha: () -> untyped
+  def commit: () -> untyped
+end
+
+# @client.create_commit (git data endpoint) answers .tree.sha and
+# has no .commit, unlike GHCommit above.
+class GHGitCommit
+  def initialize: (untyped sha, untyped tree) -> void
+  def sha: () -> untyped
+  def tree: () -> untyped
+end
+
+class GHPR
+  def initialize: (untyped number, untyped html_url) -> void
+  def number: () -> untyped
+  def html_url: () -> untyped
+end

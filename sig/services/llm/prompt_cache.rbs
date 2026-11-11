@@ -1,0 +1,19 @@
+# B-WR-02 / B2-WR-05: per-model minimum cacheable prefix gate for the
+# Anthropic `cache_control: {type: "ephemeral"}` marker.
+module Llm
+  module PromptCache
+    MINIMUM_CACHEABLE_PREFIX_TOKENS: Hash[String, Integer]
+    CHARS_PER_TOKEN: Float
+    EPHEMERAL: Hash[Symbol, String]
+
+    # B4-IN-06: how close to its floor a withheld prefix must be before the
+    # withholding is worth a log line. Affects logging only, never the marker.
+    NEAR_MISS_LOG_RATIO: Float
+
+    # nil when the model's floor is not documented in the table above.
+    def self.minimum_prefix_tokens: (String model) -> Integer?
+    def self.estimated_tokens: (String? text) -> Integer
+    def self.cacheable?: (String? system_prompt, model: String) -> bool
+    def self.cache_control_for: (String? system_prompt, model: String) -> Hash[Symbol, String]?
+  end
+end

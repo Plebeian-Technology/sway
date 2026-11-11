@@ -1,0 +1,207 @@
+/* @lat: [[bill-list-layouts-design#SwissGridBillListLayout.tsx]] */
+
+.sgl-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+.sgl-grid {
+    border: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.sgl-row {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+@media (max-width: 640px) {
+    .sgl-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.sgl-index {
+    padding: calc(var(--space-unit) * 4);
+    border-right: var(--rule-hair) var(--rule-style) var(--border);
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-unit) * 1);
+}
+
+@media (max-width: 640px) {
+    .sgl-index {
+        border-right: none;
+        border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+        padding-bottom: calc(var(--space-unit) * 2);
+    }
+}
+
+.sgl-content {
+    min-width: 0;
+    padding: calc(var(--space-unit) * 4) calc(var(--space-unit) * 6);
+}
+
+.sgl-headline {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+.sgl-subhead {
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    margin-top: calc(var(--space-unit) * 1);
+}
+
+.sgl-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 4);
+}
+
+.sgl-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    max-width: 100%;
+    gap: calc(var(--space-unit) * 1);
+}
+
+.sgl-field--wide {
+    flex-basis: 100%;
+}
+
+.sgl-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.sgl-input {
+    cursor: text;
+}
+
+.sgl-count {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.sgl-count-row {
+    padding: calc(var(--space-unit) * 3) calc(var(--space-unit) * 4);
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+    margin: 0;
+}
+
+.sgl-ledger {
+    display: grid;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sgl-placeholders {
+    display: grid;
+    gap: calc(var(--space-unit) * 3);
+    list-style: none;
+    padding: 0;
+    margin: calc(var(--space-unit) * 2) 0 0 0;
+}
+
+.sgl-code {
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    color: var(--foreground);
+}
+
+.sgl-chamber {
+    font-size: var(--type-micro);
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+}
+
+.sgl-row__title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.sgl-row__title:hover,
+.sgl-row__title:focus-visible {
+    text-decoration: underline;
+}
+
+.sgl-qualifier {
+    font-weight: var(--weight-body);
+    color: var(--muted-foreground);
+}
+
+.sgl-brief {
+    margin-top: calc(var(--space-unit) * 1.5);
+    max-width: var(--measure);
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--muted-foreground);
+}
+
+.sgl-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 2);
+}
+
+.sgl-tally {
+    font-size: var(--type-micro);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--muted-foreground);
+}
+
+.sgl-date {
+    font-size: var(--type-micro);
+    color: var(--muted-foreground);
+}
+
+.sgl-voted {
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--foreground);
+    font-weight: var(--weight-bold);
+}
+
+.sgl-more {
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 3);
+    background: transparent;
+    border: var(--rule-hair) var(--rule-style) var(--border-strong);
+    font-size: var(--type-micro);
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+.sgl-more:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

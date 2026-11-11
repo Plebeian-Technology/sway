@@ -1,0 +1,237 @@
+/* themes/cornerstore — "Corner-Store Civic". Direction C of the 2026-07-26 UI
+   distinctiveness audit, chosen by the owner alongside ballot.
+   @lat: [[theme-tokens#Why every theme is grounded in a real artifact]]
+
+   Artifact: Baltimore vernacular — screen-printed protest posters, hand-set
+   wood type, flat blocks with hard offset shadows. The COLOUR is deliberately
+   Sway's own original palette (owner decision 2026-07-26 after comparing it
+   against the gold/black original): this theme demonstrates that a theme
+   re-skins far more than colour. Everything structural diverges from the sway
+   theme — square corners, 3px ink frames, hard un-blurred offsets, heavy
+   display weights, snappier motion — while the palette stays home.
+
+   Type-layer note, mirroring banner's accent note: the canonical --font-display
+   is Libre Franklin at weight 900, because --weight-display also drives the
+   app-wide `font-black` utility and Alfa Slab One ships a single 400 weight
+   (requesting 900 from it triggers smeared synthetic bolding). The wood-type
+   face itself is reserved for the per-theme Cornerstore layouts, where it is
+   set explicitly at its own weight on poster headlines and block headings —
+   boldness spent in one place rather than smeared across the chrome.
+
+   Colour rule carried from the sketch feedback: blue and black never touch.
+   Full-strength --primary appears against the light page, never stacked
+   directly on the ink masthead; the layout's headline offset is a tint of the
+   primary (color-mix), not the primary itself. */
+
+[data-theme="cornerstore"] {
+    color-scheme: light;
+
+    /* --- COLOR --- (Sway's own palette, unchanged except the frame ink) */
+    --background: #f7f9fc;
+    --foreground: #363636;
+    --card: #ffffff;
+    --card-foreground: #363636;
+    --popover: #ffffff;
+    --popover-foreground: #363636;
+    --primary: #3260db;
+    --primary-foreground: #ffffff;
+    --secondary: #f1f1f1;
+    --secondary-foreground: #363636;
+    --muted: #e9ecef;
+    --muted-foreground: #636b73;
+    --accent: #3260db;
+    --accent-foreground: #ffffff;
+    --destructive: #c62b38;
+    /* --border is the poster frame, so it is ink rather than a hairline grey;
+       --border-soft keeps a genuinely quiet divider for list separators. */
+    --border: #363636;
+    --border-soft: #dee2e6;
+    --border-strong: #1d1d1d;
+    --input: #ffffff;
+    --ring: #3260db;
+    /* mid-dark so these hold contrast as text (text-success) AND as fills
+       carrying their -foreground (bg-success text-success-foreground) */
+    --success: #1f7a45;
+    --success-foreground: #f2faf5;
+    --warning: #8a5a00;
+    --warning-foreground: #fff8e8;
+    --info: #0b5d78;
+    --info-foreground: #eef8fb;
+    --surface-1: #f1f1f1;
+    --surface-2: #e9ecef;
+    --surface-3: #eaf0fe;
+    --vote-for: #1f7a45;
+    --vote-against: #c62b38;
+    --muted-icon: #5b6670;
+    --avatar-border: #363636;
+    --chart-muted: #7b838b;
+    --scrim: rgba(0, 0, 0, 0.55);
+
+    /* --- TYPE --- (heavy grotesque; the wood type lives in the layouts) */
+    --font-display:
+        "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --font-body: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --font-numeric: tabular-nums lining-nums;
+    --type-display: 3.75rem;
+    --type-h2: 2rem;
+    --type-h3: 1.375rem;
+    --type-lede: 1.1875rem;
+    --type-body: 1rem;
+    --type-small: 0.875rem;
+    --type-micro: 0.75rem;
+    --type-stat: 2.75rem;
+    --weight-body: 400;
+    --weight-medium: 700;
+    --weight-bold: 800;
+    --weight-display: 900;
+    --leading-display: 1.02;
+    --leading-heading: 1.1;
+    --leading-body: 1.6;
+    --tracking-display: -0.01em;
+    --tracking-body: 0em;
+    --tracking-caps: 0.08em;
+
+    /* --- DENSITY --- (chunky hit targets; a poster column) */
+    --space-unit: 0.25rem;
+    --measure: 620px;
+    --content-max: 1020px;
+    --control-pad-x: 1rem;
+    --chart-label-gutter: 6.25rem;
+
+    /* --- SHAPE --- (screen-printed blocks have no rounding at all) */
+    --radius: 0px;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+
+    /* --- RULE --- (heavy ink frames) */
+    --rule-hair: 2px;
+    --rule-mid: 3px;
+    --rule-thick: 4px;
+    --rule-style: solid;
+
+    /* --- TEXTURE --- (flat ink on flat stock) */
+    --texture-page: none;
+
+    /* --- MOTION --- (a block being pressed, not an easing curve) */
+    --dur-1: 80ms;
+    --dur-2: 140ms;
+    --dur-3: 220ms;
+    --ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+    /* --- INTENSITY --- (hard offset, never blurred — the screen-print register) */
+    --neo-border-width: 3px;
+    --neo-shadow: 5px 5px 0 #363636;
+}
+
+[data-theme="cornerstore"][data-intensity="bold"] {
+    --neo-border-width: 4px;
+    --neo-shadow: 7px 7px 0 #363636;
+}
+
+[data-theme="cornerstore"][data-intensity="calm"] {
+    --neo-border-width: 3px;
+    --neo-shadow: 3px 3px 0 #363636;
+}
+
+/* Dark — the same poster printed on black stock. Sway's dark ramp, with the
+   offset shifted to a near-black that still reads against lifted cards. */
+[data-theme="cornerstore"].dark {
+    color-scheme: dark;
+    --background: #212529;
+    --foreground: #dee2e6;
+    --card: #2b3035;
+    --card-foreground: #dee2e6;
+    --popover: #2b3035;
+    --popover-foreground: #dee2e6;
+    --primary: #7db5f3;
+    --primary-foreground: #0b1a2f;
+    --secondary: #343a40;
+    --secondary-foreground: #dee2e6;
+    --muted: #2b3035;
+    --muted-foreground: #adb5bd;
+    --accent: #7db5f3;
+    --accent-foreground: #0b1a2f;
+    --destructive: #f08d94;
+    --border: #dee2e6;
+    --border-soft: #3a4047;
+    --border-strong: #ffffff;
+    --input: #1a1d20;
+    --ring: #7db5f3;
+    --success: #6dd7a0;
+    --success-foreground: #0a1f14;
+    --warning: #ffd600;
+    --warning-foreground: #2b2300;
+    --info: #6edff6;
+    --info-foreground: #04323b;
+    --surface-1: #2b3035;
+    --surface-2: #343a40;
+    --surface-3: #243a52;
+    --vote-for: #6dd7a0;
+    --vote-against: #f08d94;
+    --muted-icon: #8a939c;
+    --avatar-border: #dee2e6;
+    --chart-muted: #7b848c;
+    --scrim: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="cornerstore"].dark[data-intensity="bold"] {
+    --neo-border-width: 4px;
+    --neo-shadow: 7px 7px 0 #0d0f12;
+}
+
+[data-theme="cornerstore"].dark[data-intensity="calm"] {
+    --neo-border-width: 3px;
+    --neo-shadow: 3px 3px 0 #0d0f12;
+}
+
+/* Auto-mode follows the OS: the dark palette applies when the OS is dark. */
+@media (prefers-color-scheme: dark) {
+    [data-theme="cornerstore"][data-theme-mode="auto"] {
+        color-scheme: dark;
+        --background: #212529;
+        --foreground: #dee2e6;
+        --card: #2b3035;
+        --card-foreground: #dee2e6;
+        --popover: #2b3035;
+        --popover-foreground: #dee2e6;
+        --primary: #7db5f3;
+        --primary-foreground: #0b1a2f;
+        --secondary: #343a40;
+        --secondary-foreground: #dee2e6;
+        --muted: #2b3035;
+        --muted-foreground: #adb5bd;
+        --accent: #7db5f3;
+        --accent-foreground: #0b1a2f;
+        --destructive: #f08d94;
+        --border: #dee2e6;
+        --border-soft: #3a4047;
+        --border-strong: #ffffff;
+        --input: #1a1d20;
+        --ring: #7db5f3;
+        --success: #6dd7a0;
+        --success-foreground: #0a1f14;
+        --warning: #ffd600;
+        --warning-foreground: #2b2300;
+        --info: #6edff6;
+        --info-foreground: #04323b;
+        --surface-1: #2b3035;
+        --surface-2: #343a40;
+        --surface-3: #243a52;
+        --vote-for: #6dd7a0;
+        --vote-against: #f08d94;
+        --muted-icon: #8a939c;
+        --avatar-border: #dee2e6;
+        --chart-muted: #7b848c;
+        --scrim: rgba(0, 0, 0, 0.7);
+    }
+
+    [data-theme="cornerstore"][data-theme-mode="auto"][data-intensity="bold"] {
+        --neo-border-width: 4px;
+        --neo-shadow: 7px 7px 0 #0d0f12;
+    }
+
+    [data-theme="cornerstore"][data-theme-mode="auto"][data-intensity="calm"] {
+        --neo-border-width: 3px;
+        --neo-shadow: 3px 3px 0 #0d0f12;
+    }
+}

@@ -1,0 +1,36 @@
+class NewsArticle < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[NewsArticle, NewsArticle::ActiveRecord_Relation, Integer]
+
+  ARTICLE_KINDS: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def canonical_url: () -> String
+  def canonical_url=: (String) -> String
+  def url: () -> String
+  def url=: (String) -> String
+  def title: () -> String
+  def title=: (String) -> String
+  def outlet_name: () -> String
+  def outlet_name=: (String) -> String
+  def author_name: () -> String?
+  def author_name=: (String?) -> String?
+  def published_at: () -> ActiveSupport::TimeWithZone?
+  def published_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+  def article_kind: () -> String
+  def article_kind=: (String) -> String
+
+  def bill_news_articles: () -> BillNewsArticle::ActiveRecord_Associations_CollectionProxy
+  def bills: () -> Bill::ActiveRecord_Associations_CollectionProxy
+  def text_versions: () -> NewsArticleTextVersion::ActiveRecord_Associations_CollectionProxy
+
+  private
+
+  def validate_canonical_url_format: () -> void
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+  end
+end

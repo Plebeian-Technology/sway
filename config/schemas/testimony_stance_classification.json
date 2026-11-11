@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "TestimonyStanceClassificationPayload",
+    "description": "Batch classification of testimony letter stances (support, oppose, or neutral), judged on the letter's own text. Items are keyed by POSITION, never by name — the position is the letter's index in the cleaned artifact's letters array.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["classifications"],
+    "properties": {
+        "classifications": {
+            "type": "array",
+            "maxItems": 25,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["position", "stance"],
+                "properties": {
+                    "position": { "type": "integer", "minimum": 0 },
+                    "stance": { "enum": ["support", "oppose", "neutral"] }
+                }
+            }
+        }
+    }
+}

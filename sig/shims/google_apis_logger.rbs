@@ -1,0 +1,5 @@
+module Google
+    module Apis
+        def self.logger=: (untyped logger) -> untyped
+    end
+end

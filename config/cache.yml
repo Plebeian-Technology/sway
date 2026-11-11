@@ -1,0 +1,16 @@
+# @lat: [[auxiliary-databases#Adding the Solid Cache store is a separate step from switching to it]]
+#
+# @lat: [[auxiliary-databases#What bounds the cache database's growth]]
+default: &default
+    database: cache
+    store_options:
+        max_age: <%= 1.week.to_i %>
+        max_size: <%= 128.megabytes %>
+
+development:
+    <<: *default
+
+test: {}
+
+production:
+    <<: *default

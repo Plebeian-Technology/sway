@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# bin/codeql-local — run CodeQL's security analysis natively on the host.
+#
+# WHY NATIVE (not dip/Docker): CodeQL ships NO linux-arm64 build (AMD64 only;
+# GitHub's own docs warn emulation degrades performance) and the bundle is
+# ~785MB, so it must not go in the arm64 .dockerdev image — it would run emulated
+# AND bloat web/vite/rspec/jobs. Unlike rspec, CodeQL is pure static source
+# analysis: it needs no database, runtime, gems, or browser, so there is nothing
+# environment-specific to containerize. The host is Apple Silicon and CodeQL's
+# macOS build is native arm64 and fast.
+#
+# This is a LOCAL PRE-CHECK. The gate of record is the pull request's CodeQL
+# run in CI (.github/workflows/codeql-analysis.yml).
+#
+# Usage:
+#   bin/codeql-local                       # ruby + javascript, default (code-scanning) suite = CI parity
+#   CODEQL_SUITE=security-extended bin/codeql-local   # deeper local pass
+#   CODEQL_CLI=/path/to/codeql bin/codeql-local       # explicit CLI location
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+OUT="tmp/codeql"                        # tmp/ is gitignored
+# CI runs languages [javascript, ruby] with NO `queries:` override, i.e. the
+# default "code-scanning" suite. Match that by default; override with
+# CODEQL_SUITE=security-extended (or security-and-quality) for a deeper pass.
+SUITE="${CODEQL_SUITE:-code-scanning}"
+THREADS="${CODEQL_THREADS:-0}"          # 0 = one thread per core
+LANGS=(ruby javascript-typescript)      # CLI ids; "javascript-typescript" == CI's "javascript"
+
+# --- locate the codeql CLI: explicit env var, PATH, then the VS Code extension's managed copy ---
+find_codeql() {
+    if [[ -n "${CODEQL_CLI:-}" && -x "${CODEQL_CLI}" ]]; then echo "${CODEQL_CLI}"; return 0; fi
+    if command -v codeql >/dev/null 2>&1; then command -v codeql; return 0; fi
+    local c
+    for c in \
+        "$HOME/Library/Application Support/Code/User/globalStorage/github.vscode-codeql"/distribution*/codeql/codeql \
+        "$HOME/.vscode/extensions"/github.vscode-codeql-*/codeql/codeql \
+        "$HOME/.vscode-server/data/User/globalStorage/github.vscode-codeql"/distribution*/codeql/codeql; do
+        [[ -x "$c" ]] && { echo "$c"; return 0; }
+    done
+    return 1
+}
+
+if ! CODEQL="$(find_codeql)"; then
+    cat >&2 <<'MSG'
+✖ codeql CLI not found. Install it one of these ways, then re-run:
+  • Homebrew:            brew install codeql
+  • VS Code extension:   run any CodeQL command once so the extension downloads
+                         its managed CLI, then re-run this script. If it still is
+                         not found, point at it explicitly:
+                             export CODEQL_CLI="/path/to/codeql"
+                         (VS Code → Command Palette → "CodeQL: Copy Version
+                          Information" prints the path.)
+MSG
+    exit 127
+fi
+
+echo "▸ codeql: $CODEQL"
+"$CODEQL" version --format=terse 2>/dev/null | sed 's/^/  /' || true
+echo "▸ suite:  $SUITE   (override with CODEQL_SUITE=security-extended)"
+mkdir -p "$OUT"
+
+summarize() {
+    local sarif="$1" label="$2"
+    if command -v jq >/dev/null 2>&1; then
+        local n; n="$(jq '[.runs[].results[]] | length' "$sarif" 2>/dev/null || echo '?')"
+        echo "  ${label}: ${n} result(s) → ${sarif}"
+        jq -r '.runs[].results[] | "    [\(.level // "note")] \(.ruleId): \(.message.text)"' \
+            "$sarif" 2>/dev/null | head -50
+    else
+        echo "  ${label}: SARIF at ${sarif} (install jq for an inline summary, or open in the SARIF Viewer)"
+    fi
+}
+
+for lang in "${LANGS[@]}"; do
+    short="${lang%%-*}"                 # ruby -> ruby ; javascript-typescript -> javascript
+    pack="codeql/${short}-queries"
+    db="$OUT/$lang"
+    sarif="$OUT/$lang.sarif"
+
+    echo
+    echo "═══ $lang: building database ═══"
+    "$CODEQL" database create "$db" --language="$lang" --source-root=. \
+        --overwrite --threads="$THREADS"
+
+    echo "═══ $lang: analyzing (${short}-${SUITE}) ═══"
+    "$CODEQL" database analyze "$db" \
+        "${pack}:codeql-suites/${short}-${SUITE}.qls" \
+        --format=sarif-latest --output="$sarif" --threads="$THREADS"
+done
+
+echo
+echo "═══ summary ═══"
+for lang in "${LANGS[@]}"; do
+    summarize "$OUT/$lang.sarif" "$lang"
+done
+echo
+echo "SARIF written to $OUT/. Open in VS Code with the SARIF Viewer extension, e.g.:"
+echo "    code $OUT/ruby.sarif"
+echo "Reminder: the pull request's CodeQL run in CI is the gate of record; this is a pre-check."

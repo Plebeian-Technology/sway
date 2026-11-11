@@ -1,0 +1,37 @@
+class SwayLocale
+  class ReadinessPreflight
+    class Result
+      attr_reader file_path: String
+      attr_reader filename: String
+      attr_reader sway_locale_name: String?
+      attr_reader errors: Array[String]
+      attr_reader warnings: Array[String]
+      attr_reader capabilities: Hash[Symbol, untyped]
+      attr_accessor roster_bootstrap_present: bool
+      attr_accessor roster_bootstrap_path: String?
+      attr_accessor geography_present: bool
+      attr_accessor geography_path: String?
+      attr_accessor icon_present: bool
+      attr_accessor icon_path: String?
+
+      def initialize: (file_path: String, ?filename: String?) -> void
+      def set_locale_name: (String name) -> void
+      def ready?: () -> bool
+      def manual_only?: () -> bool
+      def summary: () -> String
+    end
+
+    def self.check_all: (?Pathname | String directory) -> Array[Result]
+    def self.check_file: (String path) -> Result
+
+    private
+
+    def self.load_document: (String path, Result result) -> SwayLocale::DocumentReader::Document?
+    def self.check_registries: (SwayLocale::DocumentReader::Document doc, Result result) -> void
+    def self.check_term_rules: (SwayLocale::DocumentReader::Document doc, Result result) -> void
+    def self.check_roster_bootstrap: (SwayLocale::DocumentReader::Document doc, Result result) -> void
+    def self.check_geography: (SwayLocale::DocumentReader::Document doc, Result result) -> void
+    def self.check_icon: (SwayLocale::DocumentReader::Document doc, Result result) -> void
+    def self.check_capabilities: (SwayLocale::DocumentReader::Document doc, Result result) -> void
+  end
+end

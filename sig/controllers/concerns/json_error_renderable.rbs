@@ -1,0 +1,10 @@
+# Self-typed to ActionController::Base so steep resolves `render` inside the
+# concern body (mirrors RateLimitResponder). render_error is a private instance
+# helper reached by every controller via ApplicationController's include.
+module JsonErrorRenderable : ActionController::Base
+  extend ActiveSupport::Concern
+
+  private
+
+  def render_error: (code: String, message: String, status: Symbol | Integer, ?details: Hash[untyped, untyped]?) -> untyped
+end

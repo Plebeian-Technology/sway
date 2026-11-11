@@ -1,0 +1,53 @@
+# Instance variables read inside RSpec blocks resolve on ::Object, one
+# namespace shared by every spec, so each name is declared exactly once here.
+# @lat: [[rbs-signatures#Why the declarations land on ::Object]]
+class Object
+  # System specs: the signed-in account and the WebAuthn authenticator ids.
+  @signed_in_user: User
+  @sway_admin_user: User
+  @admin: User
+  @plain_user: User
+  @membership: UserOrganizationMembership
+  @active_authenticators: Array[String]
+  @bill_of_the_month: Bill
+
+  # Vote-update service specs: the doubled scraper each service is handed.
+  @senate_scraper: Scraper::Congress::Senate::LegislatorVotes
+  @house_scraper: Scraper::Congress::House::LegislatorVotes
+  @scraper: Scraper::Maryland::LegislatorVotes
+
+  # Temp-directory fixtures.
+  @manifest_dir: Pathname
+  @tmp_dirs: Array[String]?
+  @licenses_dir: String
+  @licenses_path: Pathname
+  @atomic_write_dir: Pathname
+
+  # Counters and flags set in one hook or helper and read in another.
+  @bill_sequence: Integer
+  @bill_materialized: bool?
+  @created_jobs_table: bool
+  @created_failed_table: bool
+  @created_solid_queue_jobs_table: bool
+  @created_sway_locale: bool?
+  @testimony_classification_sway_locale: SwayLocale?
+
+  # spec/data/convert_duplicate_legislators_to_terms_spec.rb fixture rows.
+  @congress_locale: SwayLocale
+  @district_ga6: District
+  @district_ga7: District
+  @preserved_vote: LegislatorVote
+  @sponsor_bill: Bill
+  @preserved_cosponsor: BillCosponsor
+  @loser_district_score: LegislatorDistrictScore
+  @loser_locale_score: LegislatorLocaleScore
+  @fresh_2025_locale_score: LegislatorLocaleScore
+  @stale_2025_locale_score: LegislatorLocaleScore
+  @lone_legislator: Legislator
+  @plain_user_legislator: UserLegislator
+  @dup_user_legislator_loser: UserLegislator
+  @dup_user_legislator_survivor: UserLegislator
+  @lone_user_legislator: UserLegislator
+  @collision_user_a: UserLegislator
+  @collision_user_b: UserLegislator
+end

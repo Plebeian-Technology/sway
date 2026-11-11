@@ -1,0 +1,59 @@
+# Phase 52 Plan 09 (SPEC R13, D-22): admin-gated draft-org-position decisions.
+# Round 2 review: no `untyped` tokens in public method signatures.
+class BillDraftOrgPositionsController < ApplicationController
+  # C2-IN-03 / C2-WR-04: the local `draft_entry` alias is gone. It duplicated
+  # BillLlmProvisioning::draft_entry verbatim, and its only consumer — this
+  # controller's copy of the identity guard — moved to the model. One
+  # definition of the element type, where the column lives.
+
+  # PATCH /bill_draft_org_positions/:id — D-22.
+  def update: -> void
+
+  private
+
+  # B2-IN-02: the outcome of #apply_draft_decision. :already_removed,
+  # :identity_required and :identity_mismatch carry no payload; :applied
+  # carries the decision and the post-mutation entry the caller needs for the
+  # audit line and the flash.
+  #
+  # :out_of_bounds was renamed :already_removed, because a slot past
+  # the end is now two answers rather than one — the named draft is gone, or it
+  # merely moved and the caller should reload (:identity_mismatch).
+  #
+  # D-IN-04: :identity_required was missing from this list. It is C2-WR-03's
+  # outcome — the caller named an index but named no draft — and it is
+  # deliberately NOT :identity_mismatch, because "reload and try again" is no
+  # remedy for a caller that asserted nothing. A list that omits it invites the
+  # two to be collapsed, which is the drift the split exists to prevent.
+  # ApproveOrgPositionService returns the same Symbol for the same reason.
+  type draft_decision = {status: Symbol, ?decision: Symbol, ?entry: Hash[String, untyped]}
+
+  # B2-IN-02: bounds-check, identity-check and mutate inside ONE held
+  # transaction. config/database.yml sets `default_transaction_mode: IMMEDIATE`,
+  # so SQLite takes the write lock at BEGIN and no other connection can commit
+  # between the re-read and the write.
+  def apply_draft_decision: (BillLlmProvisioning provisioning, Integer index, bool rejecting) -> draft_decision
+
+  # C2-IN-03: the identity guard moved to
+  # BillLlmProvisioning.draft_identity_mismatch?, which
+  # ApproveOrgPositionService now calls too. Two spellings of one predicate had
+  # already drifted on what an empty-string name asserts.
+
+  # True when the draft entry holds a Neutral position.
+  def neutral_draft?: (Hash[String, untyped] entry) -> bool
+
+  # True when the draft this request names is still somewhere in the
+  # array, just not where the caller said. Distinguishes a list that moved from
+  # a draft that is really gone.
+  def draft_named_elsewhere?: (Array[untyped] drafts) -> bool
+
+  # Returns [bill_id, index] from "<bill_id>-<index>". Both elements may
+  # be nil on a malformed composite id (REVIEW-7 MEDIUM-7 cycle 7 — the
+  # method returns `[nil, nil]` instead of letting `Bill.find(0)` raise).
+  def parse_composite_id: (String? raw) -> ([Integer, Integer] | [nil, nil])
+
+  # REVIEW-9 LOW-3 (cycle 9): narrower permit list for the edit branch.
+  # Drops :rejected so the merge-into-entry path can't silently flip
+  # rejected:true via an "edit"-tagged request.
+  def edit_params: -> ActionController::Parameters
+end

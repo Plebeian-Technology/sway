@@ -1,0 +1,11 @@
+module Legistar
+  class StatusMapper
+    type status_input = String | Integer | Float | bool | nil | Array[String | Integer | Float | bool | nil]
+
+    STATUS_MAP: Hash[String, String]
+
+    def self.map: (status_input status_name) -> String?
+    def self.known?: (status_input status_name) -> bool
+    def self.canonical?: (status_input status) -> bool
+  end
+end

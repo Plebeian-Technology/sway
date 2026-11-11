@@ -1,0 +1,3 @@
+class Object
+  def report: () -> BillSummaryReport
+end

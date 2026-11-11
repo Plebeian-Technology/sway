@@ -1,0 +1,78 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BillSummaryPayload",
+    "description": "Canonical wire contract for paste_summary and llama.cpp output. draft_org_positions is optional here (see config/schemas/bill_positions.json for the testimony-only positions contract); cited_section_keys is an optional grounded-citations field; cited_news_urls is an optional array of local news reporting URLs cited by the summary. Bounded by MAX_NEWS_ARTICLES (5) and MAX_METADATA_FIELD_CHARS (1000) so a model response cannot bloat storage or injection surface. Unlike cited_section_keys, cited_news_urls is NOT in NO_TRIM_FIELDS; ResponseNormalizer truncates overshoots past 5 items. Every array here is bounded in both directions: cited_section_keys takes BillSummaryPromptBuilder::MAX_CITATION_KEYS (250) and MAX_METADATA_FIELD_CHARS (1000), which are the most DISTINCT keys the allow list can print and the longest key it will print, so no honest answer is refused. This bounds distinct keys, not array length: nothing here forbids a repeated key, and Llm::ResponseNormalizer removes repeats before this maxItems is checked, so a repeat never counts against the 250. The categories item bound is Category::MAX_NAME_CHARS (100), the longest name a Category record can hold, so a longer name could never match an active category anyway; bill_categories.json declares the same array and states the same reason.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["summary_markdown"],
+    "properties": {
+        "summary_markdown": {
+            "type": "string",
+            "minLength": 1
+        },
+        "full_breakdown_markdown": {
+            "type": "string"
+        },
+        "draft_org_positions": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["org_name", "stance", "summary"],
+                "properties": {
+                    "org_name": { "type": "string", "minLength": 1, "maxLength": 200 },
+                    "support": { "enum": ["support", "oppose", "neutral"] },
+                    "stance": { "enum": ["support", "oppose", "neutral"] },
+                    "summary": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "bill_news_article_id": { "type": "integer" },
+                    "text_version_id": { "type": "integer" },
+                    "evidence_excerpt": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "speaker_name": { "type": ["string", "null"], "maxLength": 200 },
+                    "speaker_role": { "type": ["string", "null"], "maxLength": 200 }
+                }
+            }
+        },
+        "categories": {
+            "type": "array",
+            "maxItems": 3,
+            "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+        },
+        "cited_section_keys": {
+            "type": "array",
+            "maxItems": 250,
+            "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+        },
+        "cited_news_urls": {
+            "type": "array",
+            "maxItems": 5,
+            "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+        },
+        "news_usage": {
+            "type": "string",
+            "enum": ["none", "cited"]
+        },
+        "source_uses": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "bill_news_article_id",
+                    "text_version_id",
+                    "claim_text",
+                    "evidence_excerpt",
+                    "citation_url"
+                ],
+                "properties": {
+                    "bill_news_article_id": { "type": "integer" },
+                    "text_version_id": { "type": "integer" },
+                    "claim_text": { "type": "string", "minLength": 1 },
+                    "evidence_excerpt": { "type": "string", "minLength": 1 },
+                    "citation_url": { "type": "string", "minLength": 1 }
+                }
+            }
+        }
+    }
+}

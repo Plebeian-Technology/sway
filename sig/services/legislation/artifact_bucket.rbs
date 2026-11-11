@@ -1,0 +1,21 @@
+module Legislation
+  # Upload-and-read face of the legislation artifact bucket. It has no delete:
+  # the service account holds object create and object view only.
+  class ArtifactBucket
+    include SwayGoogleCloudStorage
+
+    @bucket_name: String?
+
+    def initialize: (?bucket_name: String?) -> void
+
+    def bucket_name: () -> String
+
+    def upload: (object_name: String, local_path: (String | Pathname)) -> nil
+
+    # Fetches one object. The shared storage module creates the parent
+    # directory, so the caller only has to name the file.
+    def download: (object_name: String, local_path: (String | Pathname)) -> nil
+
+    def list: (prefix: String) -> Array[SwayGoogleCloudStorage::ListedFile]
+  end
+end

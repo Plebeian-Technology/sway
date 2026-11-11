@@ -1,0 +1,6 @@
+module Sway
+  class TwilioClient
+    def self.build: () -> Twilio::REST::Client
+    def self.display_from_phone: () -> String?
+  end
+end

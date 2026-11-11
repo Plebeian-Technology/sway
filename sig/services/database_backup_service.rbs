@@ -1,0 +1,54 @@
+# Copies one SQLite database to Google Cloud Storage and deletes copies that are
+# too old. Says :skipped, :refused or :ok.
+#
+# The listing call comes from SwayGoogleCloudStorage#list_files, which returns
+# SwayGoogleCloudStorage::ListedFile.
+class DatabaseBackupService
+  include SwayGoogleCloudStorage
+
+  BUCKET_NAME: String
+
+  RETENTION_DAYS: Integer
+
+  MINIMUM_SIZE_RATIO: Float
+
+  @db_name: String
+
+  @retention_days: Integer
+
+  @backups: Array[SwayGoogleCloudStorage::ListedFile]?
+
+  def initialize: (db_name: String, ?retention_days: Integer) -> void
+
+  def call: () -> (:skipped | :refused | :ok)
+
+  private
+
+  attr_reader db_name: String
+
+  attr_reader retention_days: Integer
+
+  def local_db_path: () -> String
+
+  # False means the copy was unusable or refused, and the caller MUST NOT delete
+  # old copies — see the comment on #call.
+  def backup_and_upload: () -> bool
+
+  # previous_size can be nil because there may be no earlier copy to compare
+  # against: a brand-new database, or a bucket someone has just emptied.
+  def size_regression?: (Integer new_size, Integer? previous_size) -> bool
+
+  def most_recent_backup_size: () -> Integer?
+
+  def report_refusal: (new_size: Integer, previous_size: Integer?) -> void
+
+  def online_backup: (String source_path, String dest_path) -> void
+
+  def prune_old_backups: () -> void
+
+  def backups_for_this_db: () -> Array[SwayGoogleCloudStorage::ListedFile]
+
+  def backups: () -> Array[SwayGoogleCloudStorage::ListedFile]
+
+  def existing_backups: () -> Array[SwayGoogleCloudStorage::ListedFile]
+end

@@ -1,0 +1,12 @@
+class PendingVoteReconciliationService
+  @user: User
+  @cookies: untyped
+
+  def self.call: (user: User, cookies: untyped) -> Hash[Symbol, untyped]
+  def initialize: (user: User, cookies: untyped) -> void
+  def call: -> Hash[Symbol, untyped]
+
+  private
+
+  def parse_payload: (untyped raw_data) -> untyped
+end

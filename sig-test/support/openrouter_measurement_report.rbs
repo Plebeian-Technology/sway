@@ -1,0 +1,22 @@
+module OpenRouterMeasurementReport
+  USAGE_FIELDS: Array[String]
+
+  def self?.build: (recorded_at: Time) -> Hash[String, untyped]
+  def self?.choice: (label: String, model: String) -> Hash[String, untyped]
+  def self?.usage_snapshot: (untyped usage) -> Hash[String, untyped]
+  def self?.write: (Hash[String, untyped] report) -> Pathname
+  def self?.measured_call: (
+    adapter_class: singleton(Llm::OpenRouterAdapter),
+    prompt: Llm::PromptPayload,
+    model: String,
+    schema: Hash[String, untyped],
+    validator: untyped,
+    method_name: Symbol
+  ) -> Hash[String, untyped]
+  def self?.aggregate_schema_measurement: (
+    label: String,
+    model: String,
+    outcomes: Array[Hash[String, untyped]]
+  ) -> Hash[String, untyped]
+  def self?.cache_evidence_status: (Hash[String, untyped] usage) -> String
+end

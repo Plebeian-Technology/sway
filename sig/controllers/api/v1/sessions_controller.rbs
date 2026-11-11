@@ -1,0 +1,20 @@
+module Api
+  module V1
+    class SessionsController < BaseController
+      include RelyingParty
+
+      def challenge: -> untyped
+      def discoverable_challenge: -> untyped
+      def callback: -> untyped
+      def create: -> untyped
+      def revoke_all: -> untyped
+
+      private
+
+      def issue_bearer_token: (User user, ?platform: String?) -> untyped
+
+
+      def user_from_credential: (untyped credential) -> User?
+    end
+  end
+end

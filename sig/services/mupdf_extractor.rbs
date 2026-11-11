@@ -1,0 +1,88 @@
+# RBS sig for MupdfExtractor (Phase 52 Plan 02).
+# Canonical sig path: sig/services/ (Phase 52 HIGH-R2-2 convention).
+class MupdfExtractor
+  include PdfSubprocessRunner
+
+  class MissingTessdataError < RuntimeError
+  end
+
+  class ExtractionFailed < RuntimeError
+  end
+
+  # A-IN-03: mutool has no bundled OCR. A subclass, so every existing
+  # `rescue ExtractionFailed` still catches it; #run_ocr selects it by CLASS
+  # instead of matching a substring of a message this class truncates to 500
+  # chars and Sway::Subprocess can withhold entirely.
+  class OcrUnavailable < ExtractionFailed
+  end
+
+  MIN_NATIVE_CHARS: Integer
+  OCR_DPI: Integer
+  OCR_DISABLED_SIGNATURE: String
+
+  # A3-WR-07: bounds the OCR page COUNT, not only each page's runtime — an
+  # unbounded page map at 300s per page was a ~33-hour worst case for one
+  # attachment.
+  MAX_OCR_PAGES: Integer
+  OCR_PAGE_TRUNCATION_NOTICE: String
+
+  @pdf_path: String
+
+  self.@mutool_ocr_unavailable: bool?
+
+  # HI2-09: class-level ENV probe (no filesystem side effects, no extractor
+  # instantiation). Orchestrator's preflight_stage_environment! calls this.
+  def self.preflight!: () -> void
+
+  # UAT Phase 52 / Test 2 fallback: detection cache for the "mutool packaged
+  # without bundled OCR" case (Debian/Alpine mupdf-tools).
+  def self.mutool_ocr_unavailable?: () -> bool
+  def self.reset_mutool_ocr_detection!: () -> void
+
+  def initialize: (String pdf_path) -> void
+
+  def call: () -> String
+
+  private
+
+  def extract_remote: (String base_url) -> String
+
+  # A2-WR-03: raises ExtractionFailed rather than returning "" when the OCR
+  # pass succeeds with no text. mutool's OCR mode exits 0 with empty stdout
+  # whenever its language data is unusable, which .preflight! cannot see —
+  # and the caller persisted that "" to bill.extracted_text and to the .md
+  # while recording the stage green.
+  def ocr_extract: () -> String
+
+  # A2-WR-03: returns the OCR text AND whether MAX_OCR_PAGES truncated it, so
+  # #ocr_extract owns the single decision about what an empty result means and
+  # appends OCR_PAGE_TRUNCATION_NOTICE only after that decision.
+  def run_ocr: () -> [String, bool]
+
+  # A2-CR-03: raises ExtractionFailed for Dir.mktmpdir's own SystemCallError
+  # (a full or read-only /tmp), so an unwritable workspace stays a per-bill
+  # failure instead of a run-killing StageError.
+  def ocr_via_tesseract: () -> [String, bool]
+
+  # A2-CR-03: split out of #ocr_via_tesseract so this subprocess owns its own
+  # translation ladder (non-zero exit, TimedOut, OutputTooLarge,
+  # SystemCallError) and the caller's SystemCallError rescue can mean only the
+  # workspace.
+  def run_png_render: (String png_template) -> void
+
+  # A2-CR-03: translates SystemCallError as well — the likeliest absent binary
+  # in this class, since this path runs only when mutool was packaged without
+  # bundled OCR and nothing probes for standalone tesseract.
+  def run_tesseract: (String png_path) -> String
+
+  # A2-CR-03: translates SystemCallError, matching
+  # TestimonyTextExtractor#run_mutool (PROD-CR-02).
+  # A-IN-03: raises OcrUnavailable rather than ExtractionFailed when the full
+  # stderr carries OCR_DISABLED_SIGNATURE, on both the non-zero-exit path and
+  # the OutputTooLarge path.
+  def run_mutool: (Array[String] args) -> String
+
+  # A-IN-03: the single judgement of "is this the no-bundled-OCR build?",
+  # taken against the whole stderr so the two bounded paths cannot disagree.
+  def ocr_failure_class: (String stderr) -> Class
+end

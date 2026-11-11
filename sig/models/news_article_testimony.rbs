@@ -1,0 +1,88 @@
+class NewsArticleTestimony < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[NewsArticleTestimony, NewsArticleTestimony::ActiveRecord_Relation, Integer]
+
+  STANCES: Array[String]
+  PUBLICATION_STATES: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def bill_news_article: () -> BillNewsArticle
+  def bill_news_article=: (BillNewsArticle) -> BillNewsArticle
+  def news_article_source_snapshot: () -> NewsArticleSourceSnapshot?
+  def news_article_source_snapshot=: (NewsArticleSourceSnapshot?) -> NewsArticleSourceSnapshot?
+  def snapshot: () -> NewsArticleSourceSnapshot?
+  def snapshot=: (NewsArticleSourceSnapshot?) -> NewsArticleSourceSnapshot?
+  def news_article_text_version: () -> NewsArticleTextVersion
+  def news_article_text_version=: (NewsArticleTextVersion) -> NewsArticleTextVersion
+  def text_version: () -> NewsArticleTextVersion
+  def text_version=: (NewsArticleTextVersion) -> NewsArticleTextVersion
+  def bill: () -> Bill?
+  def news_article: () -> NewsArticle?
+
+  def bill_news_article_id: () -> Integer
+  def bill_news_article_id=: (Integer) -> Integer
+  def news_article_source_snapshot_id: () -> Integer?
+  def news_article_source_snapshot_id=: (Integer?) -> Integer?
+  def news_article_text_version_id: () -> Integer
+  def news_article_text_version_id=: (Integer) -> Integer
+  def argument_markdown: () -> String
+  def argument_markdown=: (String) -> String
+  def argument: () -> String
+  def argument=: (String) -> String
+  def evidence_excerpt: () -> String
+  def evidence_excerpt=: (String) -> String
+  def citation_url: () -> String
+  def citation_url=: (String) -> String
+  def url: () -> String
+  def url=: (String) -> String
+  def canonical_url: () -> String
+  def canonical_url=: (String) -> String
+  def outlet_name: () -> String
+  def outlet_name=: (String) -> String
+  def author_name: () -> String?
+  def author_name=: (String?) -> String?
+  def stance: () -> String
+  def stance=: (String) -> String
+  def stance_version: () -> Integer
+  def stance_version=: (Integer) -> Integer
+  def review_version: () -> Integer?
+  def review_version=: (Integer?) -> Integer?
+  def text_digest: () -> String
+  def text_digest=: (String) -> String
+  def publication_state: () -> String
+  def publication_state=: (String) -> String
+  def status: () -> String
+  def status=: (String) -> String
+  def published_at: () -> Time?
+  def published_at=: (Time?) -> Time?
+
+  def draft?: () -> bool
+  def published?: () -> bool
+  def stale?: (?reload: bool) -> bool
+  def currently_eligible?: (?reload: bool) -> bool
+
+  def self.drafts: () -> NewsArticleTestimony::ActiveRecord_Relation
+  def self.published: () -> NewsArticleTestimony::ActiveRecord_Relation
+  def self.supporting: () -> NewsArticleTestimony::ActiveRecord_Relation
+  def self.opposing: () -> NewsArticleTestimony::ActiveRecord_Relation
+
+  private
+
+  def validate_evidence_excerpt_in_text_version: () -> void
+  def validate_cross_bill_isolation: () -> void
+  def validate_text_version_belongs_to_article: () -> void
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    def drafts: () -> NewsArticleTestimony::ActiveRecord_Relation
+    def published: () -> NewsArticleTestimony::ActiveRecord_Relation
+    def supporting: () -> NewsArticleTestimony::ActiveRecord_Relation
+    def opposing: () -> NewsArticleTestimony::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+    def drafts: () -> NewsArticleTestimony::ActiveRecord_Relation
+    def published: () -> NewsArticleTestimony::ActiveRecord_Relation
+    def supporting: () -> NewsArticleTestimony::ActiveRecord_Relation
+    def opposing: () -> NewsArticleTestimony::ActiveRecord_Relation
+  end
+end

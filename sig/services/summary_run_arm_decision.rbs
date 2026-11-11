@@ -1,0 +1,70 @@
+# B22-01: the arm/reclaim/settle decision GenerateBillSummaryJob used to spread
+# across a chain of early returns, written down as one table with a row per
+# case. Four consecutive reviews found a defect in that chain, each one a branch
+# the previous fix did not reach; the cases now sit together.
+#
+# See the implementation for the five invariants each row protects.
+class SummaryRunArmDecision
+  GENERATING: String
+
+  # B23-01: the two statuses PasteSummaryService defers on, which is what tells
+  # a deferred paste hand-off from one that settled its own row.
+  PENDING: String
+
+  # The cases, in the order they are tested. The count lives in the spec's
+  # "enumerates exactly the ... cases" example, not here.
+  CASES: Array[Symbol]
+
+  # The cases that make no paid call and write nothing.
+  DECLINED: Array[Symbol]
+
+  # The cases that stamp "run:<job_id>" over the marker. The others carry a
+  # marker the arm may not destroy — an operator paste, or this enqueue's own
+  # purchase receipt.
+  CLAIMING: Array[Symbol]
+
+  attr_reader name: Symbol
+
+  # Reads the four inputs off a row the caller has already reloaded under its
+  # write lock.
+  def self.for: (
+    provisioning: BillLlmProvisioning,
+    status_at_load: String?,
+    job_id: String,
+  ) -> SummaryRunArmDecision
+
+  def initialize: (
+    status_at_load: String?,
+    status: String?,
+    marker: String?,
+    updated_at: ActiveSupport::TimeWithZone?,
+    job_id: String,
+  ) -> void
+
+  def proceed?: () -> bool
+
+  def claim_row?: () -> bool
+
+  # The same answer as #proceed?, and that is the invariant rather than a
+  # coincidence: an execution that proceeds is the live owner, and updated_at is
+  # the only thing that says so.
+  def refresh_clock?: () -> bool
+
+  # True only for :reclaim_abandoned, so the log key an on-call reader greps for
+  # a dead worker cannot fire for a healthy paste hand-off (B22-06).
+  def log_reclaim?: () -> bool
+
+  private
+
+  def decide: (
+    status_at_load: String?,
+    status: String?,
+    marker: String?,
+    updated_at: ActiveSupport::TimeWithZone?,
+    job_id: String,
+  ) -> Symbol
+
+  # GenerateBillSummaryService::RECLAIM_ABANDONED_AFTER, deliberately the same
+  # constant rather than a second number. A nil timestamp is NOT abandoned.
+  def abandoned?: (ActiveSupport::TimeWithZone? updated_at) -> bool
+end

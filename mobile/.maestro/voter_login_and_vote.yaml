@@ -1,0 +1,44 @@
+# voter_login_and_vote — passkey sign-in then cast a Bill-of-the-Month vote.
+#
+# REAL DEVICE ONLY. Passkey ceremonies require Associated Domains
+# (webcredentials:app.sway.vote) plus biometric hardware; iOS/Android
+# simulators cannot complete the WebAuthn flow end-to-end.
+# @lat: [[submit-the-mobile-app#The accessibility precondition]]
+#
+# Prereqs:
+#   - TEST_PHONE env var and account state as listed in README.md.
+#   - Device booted, dev build installed.
+#   - Run command: README.md, "Run a single flow".
+#
+# testIDs are owned by the screens; this flow adds none.
+appId: ${APP_ID}
+---
+- clearKeychain
+- launchApp:
+      clearState: true
+- assertVisible:
+      id: "auth-screen"
+- tapOn:
+      id: "auth-phone-field-input"
+- inputText: "${TEST_PHONE}"
+- tapOn:
+      id: "auth-submit-cta"
+- extendedWaitUntil:
+      visible:
+          id: "botm-scroll"
+      timeout: 60000
+- scrollUntilVisible:
+      element:
+          id: "vote-panel-for"
+- tapOn:
+      id: "vote-panel-for"
+- assertVisible:
+      id: "vote-panel-confirm"
+- tapOn:
+      id: "vote-panel-confirm-submit"
+- extendedWaitUntil:
+      notVisible:
+          id: "vote-panel-confirm"
+      timeout: 15000
+- assertNotVisible:
+      id: "vote-panel-error"

@@ -1,0 +1,27 @@
+{
+  "bill": {
+    "actions": {
+      "count": 5
+    },
+    "congress": 118,
+    "introducedDate": "2023-01-09",
+    "latestAction": {
+      "actionDate": "2023-01-09",
+      "text": "Referred to the Committee on House Administration"
+    },
+    "number": "1",
+    "originChamber": "House",
+    "originChamberCode": "H",
+    "title": "For the People Act of 2023",
+    "type": "HR",
+    "textVersions": {
+      "count": 1,
+      "url": "https://api.congress.gov/v3/bill/118/hr/1/text?format=json"
+    },
+    "sponsors": [
+      {
+        "bioguideId": "H000001"
+      }
+    ]
+  }
+}

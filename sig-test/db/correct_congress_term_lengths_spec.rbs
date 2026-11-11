@@ -1,0 +1,25 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class CorrectCongressTermLengths < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  # The years and title to write on this term, or an empty Hash when it already
+  # says what the roster says.
+  def changes_for: (LegislatorTerm term, String title, CongressRoster roster) -> Hash[Symbol, untyped]
+
+  def end_year_for: (LegislatorTerm term, String title, CongressRoster roster) -> Integer
+end
+
+# Steep does not resolve RSpec `let` or a `def` inside a describe block.
+class Object
+  # Builds a member of Congress carrying the defect: the two-year span and
+  # blank title the phase 65 backfill wrote for everybody.
+  def member_with: (
+    external_id: String,
+    ?term_start_year: Integer,
+    ?term_end_year: Integer,
+    ?title: String?
+  ) -> [Legislator, LegislatorTerm]
+end

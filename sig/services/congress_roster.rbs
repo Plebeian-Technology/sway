@@ -1,0 +1,29 @@
+# Reads the committed roster of sitting members of Congress as
+# stretches of service. Hand-maintained (RBS here is not rbs_rails-generated).
+class CongressRoster
+  ROSTER_PATH: String
+
+  # One stretch of unbroken service in one chamber: the year it began, the year
+  # it ended (nil while it is still open), and the chamber itself.
+  type stretch = {start: Integer, end: Integer?, chamber: String}
+
+  @path: Pathname
+
+  @by_external_id: Hash[String, Array[stretch]]
+
+  def initialize: (?Pathname path) -> void
+
+  def title_in: (String external_id, Integer year) -> String?
+
+  def service_ended_in: (String external_id, Integer year) -> Integer?
+
+  private
+
+  attr_reader path: Pathname
+
+  def stretch_in: (String external_id, Integer year) -> stretch?
+
+  def by_external_id: () -> Hash[String, Array[stretch]]
+
+  def stretches_from: (Hash[String, untyped] entry) -> Array[stretch]
+end

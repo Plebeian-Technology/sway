@@ -1,0 +1,115 @@
+inherit_mode:
+    merge:
+        - Exclude
+
+require:
+    - standard
+    - ./lib/cops/rspec/inertia_matcher_required
+
+plugins:
+    - standard-custom
+    - rubocop-rails
+    - rubocop-performance
+    - rubocop-factory_bot
+    - rubocop-capybara
+    - rubocop-rspec
+
+inherit_gem:
+    standard: config/base.yml
+    standard-performance: config/base.yml
+    standard-custom: config/base.yml
+    standard-rails: config/base.yml
+
+inherit_from:
+    - .rubocop/strict.yml
+    - .rubocop/rails.yml
+    - .rubocop/rspec.yml
+
+AllCops:
+    # Rubocop's default cache root is under $HOME. Where that path is
+    # protected by the operating system, every subdirectory of it is
+    # unreadable, and cleanup — which globs `*/*/*` across the whole root
+    # before inspecting anything — takes the run down having checked no files
+    # at all. Measured 2026-08-16 on one machine here: all 87 subdirectories
+    # refused both reading and removal, so there was nothing to delete and no
+    # permission to grant.
+    #
+    # Set here rather than as an environment variable in the one script that
+    # noticed, because every caller reads this file: the regression gate, the
+    # pre-commit hook (`bundle exec rubocop` on staged files), a bare
+    # bin/rubocop, and editor integrations.
+    #
+    # The value has to be absolute: a relative one follows whoever invoked
+    # rubocop and leaves cache directories in subdirectories. Anchoring it to
+    # this file is not as simple as reading Dir.pwd, because rubocop evaluates
+    # this ERB twice by two different routes — the main config load chdirs
+    # here first, but the lightweight read that decides where the SERVER's
+    # directory goes does not, and takes the caller's directory instead.
+    # Measured: with Dir.pwd alone, `cd app && rubocop` put the result cache
+    # in the right place and app/tmp/rubocop_cache/server in the wrong one.
+    # Walking up for this very file gives the same answer down both routes.
+    # tmp/ is gitignored; `bin/setup` clears it, costing one cold run.
+    CacheRootDirectory: <%= require "pathname"; File.join((Pathname.new(Dir.pwd).ascend.find { |dir| dir.join(".rubocop.yml").file? } || Dir.pwd).to_s, "tmp") %>
+    UseProjectIndex: true
+    NewCops: enable
+    SuggestExtensions: false
+    TargetRubyVersion: 4.0
+    # Only app, config, db, lib and spec hold Ruby we lint. Everything below is
+    # a directory that does not, listed so rubocop never looks inside it.
+    #
+    # WRITE EVERY DIRECTORY AS `name/**/*`. That exact ending is the only form
+    # rubocop prunes on; any other shape is a filter applied AFTER the whole
+    # tree has already been read, so it costs the same as no entry at all.
+    #
+    # Measured 2026-08-17: reading the tree was 336 of this lint's 362 seconds.
+    # It descends into symlinks, so the eight checkouts under .claude/worktrees
+    # and their copies of node_modules came to 304,518 directories against the
+    # 8,468 that hold the code. Pruning them: 362s -> 26s, same 1071 files.
+    # `--parallel` cannot help — the read is one thread and ran 362s with it.
+    #
+    # A NEW TOP-LEVEL DIRECTORY IS NOT COVERED and silently returns the cost.
+    # The lint's own duration in `dip run verify` is where that shows up.
+    Exclude:
+        - ".agents/**/*"
+        - ".beads/**/*"
+        - ".bundle/**/*"
+        - ".claude/**/*"
+        - ".dockerdev/**/*"
+        - ".gem_rbs_collection/**/*"
+        - ".github/**/*"
+        - ".husky/**/*"
+        - ".jules/**/*"
+        - ".kamal/**/*"
+        - ".playwright-mcp/**/*"
+        - ".pnpm-store/**/*"
+        - ".rubocop/**/*"
+        - ".ruby-lsp/**/*"
+        - ".vscode/**/*"
+        # @lat: [[verification-gates#Known traps]]
+        - ".worktrees/**/*"
+        - "bin/**/*"
+        - "coverage/**/*"
+        - "deploy/**/*"
+        - "docker/**/*"
+        - "docs/**/*"
+        - "legislation/**/*"
+        - "log/**/*"
+        - "mobile/**/*"
+        - "node_modules/**/*"
+        - "ops/**/*"
+        - "plans/**/*"
+        - "prompts/**/*"
+        - "public/**/*"
+        - "screenshots/**/*"
+        - "scripts/**/*"
+        - "scratch/**/*"
+        - "sig-test/**/*"
+        - "sig/**/*"
+        - "storage/**/*"
+        - "swagger/**/*"
+        - "tmp/**/*"
+        - "vendor/**/*"
+        - "vite/**/*"
+        # Generated, and a migration is a record of what already ran.
+        - "db/schema.rb"
+        - "db/migrate/*.rb"

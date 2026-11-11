@@ -1,0 +1,73 @@
+# Methods anyway_config really has that its published signature leaves out,
+# checked against the installed gem (2.8.1) rather than guessed. Needed by
+# Sway::Settings::Base (D-30, T-68-01): moving the gem's own required-check
+# callback to run after this app's blank-repair, and pinning the boot check so
+# ANYWAY_SUPPRESS_VALIDATIONS in the environment cannot switch it off.
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+module Anyway
+  class Settings
+    def self.suppress_required_validations=: (bool) -> void
+
+    # dev_login's production-safety proof (68-07) stubs this directly:
+    # `required ..., env: [...]` is fixed when the class LOADS, so proving
+    # what a production load would have decided means asking matching_env?
+    # under a stubbed current_environment rather than rebuilding the class.
+    def self.current_environment=: (String?) -> void
+
+    # The check `required(*, env:)` calls in the class body. A bare Array is
+    # the gem's real "only these environments" spelling; a Hash reads only
+    # `env[:except]` (see dev_login.rb's own comment on why `{only: [...]}`
+    # is NOT the same thing).
+    def self.matching_env?: (Array[String] | Hash[Symbol, untyped] | String | nil) -> bool
+  end
+
+  # Neither module appears in sig/anyway_config.rbs; both exist in
+  # lib/anyway/type_casting.rb. Sway::Settings::Base sets Config's
+  # fallback_type_caster to NoCast (disable_auto_cast!); the gem's own
+  # default is AutoCast. 68-02's structural spec compares
+  # Config.fallback_type_caster against Anyway::NoCast by identity, so both
+  # need a name here to resolve.
+  module NoCast
+    def self.call: (untyped val) -> untyped
+    def self.coerce: (untyped key, untyped val) -> untyped
+  end
+
+  module AutoCast
+    def self.call: (untyped val) -> untyped
+    def self.coerce: (untyped key, untyped val) -> untyped
+  end
+
+  # The registry of named type casters (:string, :integer, ...) that
+  # coerce_types looks names up in. Sway::Settings::Base replaces four of
+  # the built-in casters and adds :integer!/:float! (D-08, D-31).
+  class TypeRegistry
+    def self.default: () -> TypeRegistry
+
+    def accept: (Symbol name_or_object) { (untyped) -> untyped } -> untyped
+  end
+
+  class Config
+    # The ordered list of callbacks #load runs, after every attribute is
+    # written, in class-definition order (a subclass's own on_load appends
+    # after whatever it inherited).
+    def self.load_callbacks: () -> Array[NamedCallback | BlockCallback]
+
+    # The caster #coerce falls back to for an attribute with no coerce_types
+    # entry -- Anyway::NoCast once disable_auto_cast! has run (the class
+    # itself, or an ancestor), Anyway::AutoCast otherwise. Not in the gem's
+    # published signature; used by 68-02's structural casting spec.
+    def self.fallback_type_caster: () -> untyped
+
+    class NamedCallback
+      def initialize: (Symbol name) -> void
+      def name: () -> Symbol
+      def apply_to: (untyped config) -> untyped
+    end
+
+    class BlockCallback
+      def initialize: (Proc block) -> void
+      def block: () -> Proc
+      def apply_to: (untyped config) -> untyped
+    end
+  end
+end

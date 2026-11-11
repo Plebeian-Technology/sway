@@ -1,0 +1,80 @@
+class NewsOrgPositionGroundingService
+  NAME_MATCH_THRESHOLD: Float
+  MAX_SUMMARY_LENGTH: Integer
+  MIN_AUTHORITY_CONFIDENCE: Float
+  DEFAULT_DECISION_MODEL: String
+  MAX_ORG_NAME_CHARS: Integer
+  MAX_SPEAKER_ROLE_CHARS: Integer
+  MAX_SENTENCE_CHARS: Integer
+  SPOKESPERSON_ROLE_PATTERN: Regexp
+  MERE_MEMBER_PATTERN: Regexp
+  PUBLIC_BODY_PATTERN: Regexp
+  DIRECT_QUOTE_PATTERN: Regexp
+
+  interface _DecisionAdapter
+    def generate_decisions: (
+      model: String,
+      state: Hash[String, untyped],
+      questions: Hash[String, untyped]
+    ) -> Hash[String, untyped]
+    def provider_label: () -> String
+    def respond_to?: (Symbol | String) -> bool
+    def ==: (untyped) -> bool
+    def !=: (untyped) -> bool
+  end
+
+  def self.eligible_reporting_articles: (Bill? bill) -> BillNewsArticle::ActiveRecord_Relation
+  def self.reporting_eligible?: (Bill? bill) -> bool
+  def self.normalize_organization_name: (untyped name) -> String
+  def self.match_existing_organization: (Bill? bill, untyped org_name) -> Organization?
+  def self.organization_has_users?: (Organization? organization) -> bool
+  def self.public_body_name?: (untyped name) -> bool
+  def self.default_decision_adapter: (?decision_model: String?, ?route: Llm::RouteResolver::Route?) -> (Llm::OpenRouterAdapter | _DecisionAdapter)?
+  private def self.default_decision_route: (?decision_model: String?) -> Llm::RouteResolver::Route?
+  private def self.requires_decision_model?: (String speaker_role, String sentence) -> bool
+  def self.filter_draft_positions: (
+    bill: Bill?,
+    raw_positions: untyped,
+    ?snapshots: untyped,
+    ?hearing_testimony_present: bool,
+    ?decision_adapter: (Llm::OpenRouterAdapter | _DecisionAdapter | :default)?,
+    ?decision_model: String?
+  ) -> Array[Hash[String, untyped]]
+  def self.entry_still_grounded?: (
+    untyped entry,
+    bill: Bill?,
+    ?decision_adapter: (Llm::OpenRouterAdapter | _DecisionAdapter | :default)?,
+    ?decision_model: String?
+  ) -> bool
+
+  private def self.build_source_registry: (Bill? bill, untyped snapshots) -> Hash[[Integer, Integer], Hash[Symbol, untyped]]
+  private def self.direct_quote?: (String excerpt, String window) -> bool
+  private def self.valid_spokesperson_authority?: (
+    String speaker_role,
+    String sentence,
+    ?org_name: untyped,
+    ?decision_adapter: (Llm::OpenRouterAdapter | _DecisionAdapter | :default)?,
+    ?decision_model: String?
+  ) -> bool
+  private def self.verify_with_decision_model: (
+    speaker_role: String,
+    sentence: String,
+    org_name: untyped,
+    decision_adapter: (Llm::OpenRouterAdapter | _DecisionAdapter),
+    decision_model: String?
+  ) -> bool
+  private def self.self_attribution?: (String org_name, String outlet_name, String author_name) -> bool
+  private def self.extract_surrounding_sentence: (String text, Integer offset, Integer length) -> String
+  private def self.calculate_paragraph_index: (String text, Integer offset) -> Integer
+  private def self.calculate_page_number: (String text, Integer offset) -> Integer?
+  private def self.extract_quote: (String excerpt) -> String
+  private def self.format_news_summary: (
+    quote: String,
+    speaker_name: untyped,
+    speaker_role: untyped,
+    outlet_name: String,
+    stance: untyped,
+    source_url: String,
+    org_name: String
+  ) -> String
+end

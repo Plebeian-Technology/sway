@@ -1,0 +1,13 @@
+module RelyingParty
+    extend ActiveSupport::Concern
+
+    def relying_party: -> WebAuthn::RelyingParty
+
+    private
+
+    def resolved_rp_id: -> String?
+    def android_origins: -> Array[String]
+    def origins: -> Array[String]
+    def request: -> untyped
+    def rp_id_source: (String? resolved_id) -> String
+end

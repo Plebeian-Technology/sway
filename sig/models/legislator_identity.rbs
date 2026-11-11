@@ -1,0 +1,28 @@
+class LegislatorIdentity
+    BIOGUIDE: String
+    OPENSTATES: String
+    SEAT_AND_NAME: String
+    CURATED_PERSON: String
+    SEPARATOR: String
+
+    attr_reader source: String
+    attr_reader value: String
+
+    def self.seat_and_name: (seat: String?, first_name: String?, last_name: String?) -> LegislatorIdentity?
+
+    def self.seat_from: (String? value) -> String?
+
+    def self.from_published_id: (String source, String? published_id) -> LegislatorIdentity?
+
+    def self.name_key: (String? first_name, String? last_name) -> String?
+
+    def initialize: (source: String | Symbol, value: String) -> void
+
+    def ==: (untyped other) -> bool
+
+    def eql?: (untyped other) -> bool
+
+    def hash: -> Integer
+
+    def to_s: -> String
+end

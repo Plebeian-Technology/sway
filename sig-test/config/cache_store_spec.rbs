@@ -1,0 +1,10 @@
+# Spec-only declarations for spec/config/cache_store_spec.rb.
+#
+# Steep cannot see a `def` written inside a describe block — RSpec builds an
+# anonymous class while the suite runs, and nothing about that shape exists in
+# the source a type checker reads.
+class Object
+  # The `config.cache_store = ...` line from one environment file, as source
+  # text. Raises when that environment sets no store.
+  def cache_store_line: (String env) -> String
+end

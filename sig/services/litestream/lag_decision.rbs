@@ -1,0 +1,35 @@
+# @lat: [[signature-placement#Why only some value objects carry a runtime guard]]
+module Litestream
+  class LagDecision
+    attr_reader outcome: (:first_run | :healthy | :recovered | :stall | :read_failure | :empty_listing)
+    attr_reader alarm: bool
+    attr_reader last_replica_txid: Integer?
+    attr_reader consecutive_stalls: Integer
+    attr_reader consecutive_read_failures: Integer
+    attr_reader consecutive_empty_listings: Integer
+    attr_reader stalled_since: ActiveSupport::TimeWithZone?
+    attr_reader stalled_for_seconds: Integer?
+
+    def initialize: (
+      outcome: (:first_run | :healthy | :recovered | :stall | :read_failure | :empty_listing),
+      alarm: bool,
+      last_replica_txid: Integer?,
+      consecutive_stalls: Integer,
+      consecutive_read_failures: Integer,
+      consecutive_empty_listings: Integer,
+      stalled_since: ActiveSupport::TimeWithZone?,
+      stalled_for_seconds: Integer?
+    ) -> void
+
+    def self.new: (
+      outcome: (:first_run | :healthy | :recovered | :stall | :read_failure | :empty_listing),
+      alarm: bool,
+      last_replica_txid: Integer?,
+      consecutive_stalls: Integer,
+      consecutive_read_failures: Integer,
+      consecutive_empty_listings: Integer,
+      stalled_since: ActiveSupport::TimeWithZone?,
+      stalled_for_seconds: Integer?
+    ) -> Litestream::LagDecision
+  end
+end

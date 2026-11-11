@@ -1,0 +1,31 @@
+<%# @lat: [[submit-the-mobile-app#Values no waiver covers]] %>
+
+<div class="mt-10 flex flex-wrap items-center justify-center gap-6">
+  <% if apple_app_store_id.present? && apple_app_store_id !~ /[<>]/ %>
+    <a
+      href="https://apps.apple.com/app/id<%= apple_app_store_id %>"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Download Sway on the App Store"
+      class="inline-block"
+    >
+      <%= image_tag "/apple-app-store-badge.svg",
+            alt: "Download on the App Store",
+            height: 48,
+            class: "h-12 w-auto" %>
+    </a>
+  <% end %>
+
+  <a
+    href="https://play.google.com/store/apps/details?id=<%= android_package %>"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Get Sway on Google Play"
+    class="inline-block"
+  >
+    <%= image_tag "/google-play-badge.svg",
+          alt: "Get it on Google Play",
+          height: 48,
+          class: "h-12 w-auto" %>
+  </a>
+</div>

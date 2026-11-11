@@ -1,0 +1,5 @@
+class Object
+  def article_bill: () -> ArticleBill
+  def second_article_bill: () -> ArticleBill
+  def uncovered_bill: () -> Bill
+end

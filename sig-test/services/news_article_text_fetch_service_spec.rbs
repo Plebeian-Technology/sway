@@ -1,0 +1,13 @@
+class Object
+  def valid_html_body: () -> String
+  def sources_with_restrict: () -> Array[Hash[String, String]]
+  def challenge_screen_html: () -> String
+  def paywall_screen_html: () -> String
+  def doc_reader: () -> SwayLocale::DocumentReader::Document
+  def sources_politics_first: () -> Array[Hash[String, String]]
+  def sources_local_first: () -> Array[Hash[String, String]]
+  def restrict_then_search_hint: () -> Array[Hash[String, String]]
+  def search_hint_then_restrict: () -> Array[Hash[String, String]]
+  def multi_host_sources: () -> Array[Hash[String, String]]
+  def multi_sources: () -> Array[Hash[String, String]]
+end

@@ -1,0 +1,26 @@
+# Minimal RBS sig stub for json_schemer (Phase 52 D-16 hookup).
+# rbs_collection has no upstream sig for json_schemer as of writing.
+# Surface limited to what Sway code calls:
+#
+#   * JSONSchemer.schema(path_or_hash) → JSONSchemer::Schema
+#   * JSONSchemer::Schema#validate(instance) → Enumerator of error hashes
+#   * JSONSchemer::Schema#valid?(instance) → bool
+#
+# `json_value` is genuinely polymorphic (the universe of JSON-decoded
+# Ruby values); the json_schemer error hash is best modelled with
+# `untyped` values because the error shape changes per-error-type
+# (data_pointer, schema_pointer, type, details: { missing_keys: [...] },
+# etc.). This is the same justified exception PipelineActivityLogger uses
+# for serialize_entry per sig/services/pipeline_activity_logger.rbs.
+module JSONSchemer
+  type json_value = String | Integer | Float | bool | nil | Hash[String, untyped] | Array[untyped]
+  type schema_source = String | Pathname | Hash[String, untyped]
+
+  class Schema
+    def validate: (json_value instance) -> Enumerator[Hash[String, untyped], untyped]
+
+    def valid?: (json_value instance) -> bool
+  end
+
+  def self.schema: (schema_source source) -> JSONSchemer::Schema
+end

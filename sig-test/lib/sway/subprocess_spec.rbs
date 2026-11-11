@@ -1,0 +1,42 @@
+# Spec-only doubles for Sway::Subprocess.terminate's two callers (A-WR-03 /
+# A2-WR-04). The spec declares them as module constants rather than `let(...)`
+# for exactly the reason this file exists: Steep resolves neither `let` nor a
+# `def` inside a describe block.
+module SubprocessSpecHelpers
+  # A wait thread whose BOUNDED join always reports "still running" and whose
+  # UNBOUNDED join never returns — a child in uninterruptible sleep.
+  # `Struct.new(:pid)` in the spec; the members it actually uses are declared
+  # directly so nothing here is untyped.
+  class UnreapableWaiter
+    def initialize: (Integer pid) -> void
+    def pid: () -> Integer
+    # nil under a bound; blocks forever unbounded, so the Integer arm of
+    # Kernel#sleep is unreachable in practice but is the honest return type.
+    def join: (?Numeric? limit) -> Integer?
+  end
+
+  # A wait thread that has ALREADY completed — the drain-timeout path, where
+  # the direct child exited and a DESCENDANT still holds the pipe open.
+  class ExitedWaiter
+    def initialize: (Integer pid) -> void
+    def pid: () -> Integer
+    def join: (?Numeric? limit) -> ExitedWaiter
+  end
+
+  # A-IN-02: a wait thread that has already completed AND carries the status
+  # .drain_within hands back — the state the drain phase is in once the child
+  # has exited and only the buffered pipe contents are left.
+  class CompletedWaiter
+    def initialize: (Integer pid, Process::Status value) -> void
+    def pid: () -> Integer
+    def value: () -> Process::Status
+    def join: (?Numeric? limit) -> CompletedWaiter
+  end
+
+  # A pid whose process and process group are both certainly gone, so
+  # .signal_group is a no-op (ESRCH) rather than a hazard.
+  def self.reaped_pid: () -> Integer
+
+  # A real, successful Process::Status for those doubles.
+  def self.reaped_status: () -> Process::Status
+end

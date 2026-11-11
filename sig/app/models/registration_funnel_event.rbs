@@ -1,0 +1,68 @@
+class RegistrationFunnelEvent < ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::RegistrationFunnelEvent, ::RegistrationFunnelEvent::ActiveRecord_Relation, ::Integer]
+
+  CANONICAL_STEPS: Array[String]
+  STEP_ALIASES: Hash[String, String]
+
+  def id: () -> Integer
+  def id=: (Integer) -> Integer
+  def visitor_token: () -> String
+  def visitor_token=: (String) -> String
+  def user_id: () -> Integer?
+  def user_id=: (Integer?) -> Integer?
+  def step: () -> String
+  def step=: (String | Symbol | Integer) -> (String | Symbol | Integer)
+  def attribution_key: () -> String?
+  def attribution_key=: (String?) -> String?
+  def metadata: () -> Hash[String, untyped]
+  def metadata=: (Hash[String, untyped]) -> Hash[String, untyped]
+  def bot: () -> bool
+  def bot=: (bool) -> bool
+  def bot?: () -> bool
+  def occurred_at: () -> ActiveSupport::TimeWithZone?
+  def occurred_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+  def created_at: () -> ActiveSupport::TimeWithZone
+  def updated_at: () -> ActiveSupport::TimeWithZone
+
+  def user: () -> User?
+  def user=: (User?) -> User?
+
+  def latency_ms: () -> Numeric?
+  def latency_ms=: (Numeric?) -> void
+
+  def self.steps: () -> Hash[String, Integer]
+  def self.normalize_step: (String | Symbol | Integer | untyped) -> String
+  def self.recent: () -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.for_visitor: (String) -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.for_user: (Integer) -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.for_step: (String | Symbol) -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.since: (untyped) -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.humans: () -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.bots: () -> RegistrationFunnelEvent::ActiveRecord_Relation
+  def self.bot_traffic?: (user: User?, ?user_agent: String?) -> bool
+  def self.mark_visitor_human!: (String visitor_token) -> Integer
+  def self.first: () -> RegistrationFunnelEvent?
+  def self.last: () -> RegistrationFunnelEvent?
+
+  module GeneratedRelationMethods
+    def recent: () -> RegistrationFunnelEvent::ActiveRecord_Relation
+    def for_visitor: (String) -> RegistrationFunnelEvent::ActiveRecord_Relation
+    def for_user: (Integer) -> RegistrationFunnelEvent::ActiveRecord_Relation
+    def for_step: (String | Symbol) -> RegistrationFunnelEvent::ActiveRecord_Relation
+    def since: (untyped) -> RegistrationFunnelEvent::ActiveRecord_Relation
+    def humans: () -> RegistrationFunnelEvent::ActiveRecord_Relation
+    def bots: () -> RegistrationFunnelEvent::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::RegistrationFunnelEvent]
+    include ::RegistrationFunnelEvent::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::RegistrationFunnelEvent, ::Integer]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::RegistrationFunnelEvent]
+    include ::RegistrationFunnelEvent::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::RegistrationFunnelEvent, ::Integer]
+  end
+end

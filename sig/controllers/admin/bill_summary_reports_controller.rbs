@@ -1,0 +1,12 @@
+module Admin
+  class BillSummaryReportsController < ApplicationController
+    def index: () -> untyped
+    def show: () -> untyped
+    def update: () -> untyped
+
+    private
+
+    def set_report: () -> BillSummaryReport
+    def report_params: () -> Hash[Symbol, untyped]
+  end
+end

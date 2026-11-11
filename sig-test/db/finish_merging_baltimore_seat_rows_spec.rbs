@@ -1,0 +1,29 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class FinishMergingBaltimoreSeatRows < ActiveRecord::Migration
+  @baltimore_legislators: Array[Legislator]
+
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  def seat_rows: () -> Array[Legislator]
+
+  def seat_key?: (String? external_id) -> bool
+
+  def row_holding_the_history_for: (Legislator seat_row) -> Legislator?
+
+  def full_name: (Legislator legislator) -> String
+
+  def holds_history?: (Legislator legislator) -> bool
+
+  def settle_user_links: (Legislator seat_row, Legislator keeper) -> void
+
+  def switch_keeper_link_on: (Legislator keeper, Array[UserLegislator] copies) -> void
+
+  def carry_title_over: (Legislator seat_row, Legislator keeper) -> void
+
+  def delete_row: (Legislator legislator) -> void
+
+  def baltimore_legislators: () -> Array[Legislator]
+end

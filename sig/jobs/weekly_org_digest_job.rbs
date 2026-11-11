@@ -1,0 +1,7 @@
+# Phase 61 D-12 — weekly org-position-change digest dispatcher.
+# Scheduled at cron "0 23 * * 0" (Sunday 23:00 UTC).
+class WeeklyOrgDigestJob < ApplicationJob
+  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> String | String, ?on_conflict: Symbol) -> void
+
+  def perform: () -> void
+end

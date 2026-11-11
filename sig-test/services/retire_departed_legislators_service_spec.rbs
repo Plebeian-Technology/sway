@@ -1,0 +1,7 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # A person holding a term that runs today, keyed the way the seeder keys them.
+  def seated: (SwayLocale sway_locale, String external_id, ?start_year: Integer, ?end_year: Integer) -> Legislator
+
+  def today: () -> Date
+end

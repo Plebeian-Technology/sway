@@ -1,0 +1,12 @@
+# RBS sig for BillTitle — see app/services/bill_title.rb.
+module BillTitle
+  LEGAL_CLAUSE: Regexp
+
+  DECK_SEPARATOR: Regexp
+
+  SURROUNDING_SPACE: Regexp
+
+  def self?.headline: (String? title) -> String
+
+  def self?.trim: (String text) -> String
+end

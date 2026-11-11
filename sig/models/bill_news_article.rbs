@@ -1,0 +1,121 @@
+class BillNewsArticle < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[BillNewsArticle, BillNewsArticle::ActiveRecord_Relation, Integer]
+
+  MATCH_KINDS: Array[String]
+  STANCES: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def bill: () -> Bill
+  def bill=: (Bill) -> Bill
+  def news_article: () -> NewsArticle
+  def news_article=: (NewsArticle) -> NewsArticle
+  def approved_by: () -> User?
+  def approved_by=: (User?) -> User?
+  def stance_by: () -> User?
+  def stance_by=: (User?) -> User?
+  def current_text_version: () -> NewsArticleTextVersion?
+  def current_text_version=: (NewsArticleTextVersion?) -> NewsArticleTextVersion?
+  def source_uses: () -> NewsArticleSourceUse::ActiveRecord_Associations_CollectionProxy
+  def news_article_source_uses: () -> NewsArticleSourceUse::ActiveRecord_Associations_CollectionProxy
+
+  def bill_id: () -> Integer
+  def bill_id=: (Integer) -> Integer
+  def bill_id_changed?: () -> bool
+  def news_article_id: () -> Integer
+  def news_article_id=: (Integer) -> Integer
+  def current_text_version_id: () -> Integer?
+  def current_text_version_id=: (Integer?) -> Integer?
+  def match_kind: () -> String
+  def match_kind=: (String) -> String
+  def match_evidence: () -> String?
+  def match_evidence=: (String?) -> String?
+  def approved: () -> bool
+  def approved=: (bool) -> bool
+  def approved?: () -> bool
+  def approved_by_id: () -> Integer?
+  def approved_by_id=: (Integer?) -> Integer?
+  def approved_at: () -> ActiveSupport::TimeWithZone?
+  def approved_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+  def review_version: () -> Integer
+  def review_version=: (Integer) -> Integer
+  def stance: () -> String?
+  def stance=: (String?) -> String?
+  def stance_by_id: () -> Integer?
+  def stance_by_id=: (Integer?) -> Integer?
+  def stance_version: () -> Integer
+  def stance_version=: (Integer) -> Integer
+
+  def sway_locale: () -> SwayLocale?
+  def legislative_session: () -> LegislativeSession?
+
+  def approve!: (by: User?) -> self
+  def withdraw_approval!: (by: User?) -> self
+  def set_stance!: (String | Symbol new_stance, by: User?) -> self
+  def clear_stance!: (by: User?) -> self
+
+  def eligible_for_link?: () -> bool
+  def link_eligible?: () -> bool
+  def eligible_for_synthesis?: () -> bool
+  def synthesis_eligible?: () -> bool
+  def eligible_for_testimony?: () -> bool
+  def testimony_eligible?: () -> bool
+
+  def news_article_testimonies: () -> NewsArticleTestimony::ActiveRecord_Associations_CollectionProxy
+
+  def self.approved: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.unapproved: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.with_stance: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.supporting: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.opposing: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.support: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.oppose: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.direct_matches: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.context_matches: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.direct_match: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.context_match: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.eligible_for_link: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.link_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.eligible_for_synthesis: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.synthesis_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.eligible_for_testimony: () -> BillNewsArticle::ActiveRecord_Relation
+  def self.testimony_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+
+  private
+
+  def prevent_cross_bill_reassignment: () -> void
+  def current_text_version_belongs_to_article: () -> void
+  def reload_source_uses_if_loaded: () -> void
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    def approved: () -> BillNewsArticle::ActiveRecord_Relation
+    def unapproved: () -> BillNewsArticle::ActiveRecord_Relation
+    def with_stance: () -> BillNewsArticle::ActiveRecord_Relation
+    def supporting: () -> BillNewsArticle::ActiveRecord_Relation
+    def opposing: () -> BillNewsArticle::ActiveRecord_Relation
+    def direct_matches: () -> BillNewsArticle::ActiveRecord_Relation
+    def context_matches: () -> BillNewsArticle::ActiveRecord_Relation
+    def eligible_for_link: () -> BillNewsArticle::ActiveRecord_Relation
+    def link_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+    def eligible_for_synthesis: () -> BillNewsArticle::ActiveRecord_Relation
+    def synthesis_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+    def eligible_for_testimony: () -> BillNewsArticle::ActiveRecord_Relation
+    def testimony_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+    def approved: () -> BillNewsArticle::ActiveRecord_Relation
+    def unapproved: () -> BillNewsArticle::ActiveRecord_Relation
+    def with_stance: () -> BillNewsArticle::ActiveRecord_Relation
+    def supporting: () -> BillNewsArticle::ActiveRecord_Relation
+    def opposing: () -> BillNewsArticle::ActiveRecord_Relation
+    def direct_matches: () -> BillNewsArticle::ActiveRecord_Relation
+    def context_matches: () -> BillNewsArticle::ActiveRecord_Relation
+    def eligible_for_link: () -> BillNewsArticle::ActiveRecord_Relation
+    def link_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+    def eligible_for_synthesis: () -> BillNewsArticle::ActiveRecord_Relation
+    def synthesis_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+    def eligible_for_testimony: () -> BillNewsArticle::ActiveRecord_Relation
+    def testimony_eligible: () -> BillNewsArticle::ActiveRecord_Relation
+  end
+end

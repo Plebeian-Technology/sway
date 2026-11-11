@@ -1,0 +1,8 @@
+# Helper defined at describe-block scope in
+# spec/services/summary_batch_item_spec.rb, which Steep cannot see. Named apart
+# from summary_item_eligibility_spec.rbs's two-argument `eligibility_for`
+# because sig-test declares every helper on Object, where one name has one
+# signature across the whole repository.
+class Object
+  def item_eligibility_for: (Bill bill) -> SummaryItemEligibility
+end

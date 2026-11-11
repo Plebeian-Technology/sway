@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def insert_preference: (String key, bool enabled, ?for_user: User) -> NotificationPreference
+  def run_rename: () -> void
+end

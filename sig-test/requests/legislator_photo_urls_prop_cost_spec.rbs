@@ -1,0 +1,10 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # How many LegislatorTerm rows the given block reads.
+  def legislator_term_rows_read: () { () -> void } -> Integer
+
+  # Adds currently-serving representatives nobody in the spec is represented by.
+  def add_serving_strangers: (count: Integer, from: Integer, sway_locale: SwayLocale) -> void
+
+  def visit_a_page_showing_no_legislators: () -> void
+end

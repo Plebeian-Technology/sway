@@ -1,0 +1,31 @@
+# D-20/D-20a: loads the schema once per lane and copies the template into
+# each parallel_tests worker's own database file. See lib/sway/test_shard_databases.rb.
+module Sway
+  class TestShardDatabases
+    @template_path: String
+
+    def initialize: (String template_path) -> void
+
+    def worker_paths: (Integer count) -> Array[String]
+
+    def prepare: (Integer count) -> Array[String]
+
+    def copy_out: (String destination, String label) -> Array[String]
+
+    private
+
+    def checkpoint_and_disconnect!: () -> void
+
+    def copy_template_to: (String path) -> void
+
+    def copy_sqlite_main_and_wal: (String src, String dest) -> void
+
+    def sibling_path: (Integer worker) -> String
+
+    def template_dir: () -> String
+
+    def template_base: () -> String
+
+    def existing_worker_paths: () -> Hash[Integer, String]
+  end
+end

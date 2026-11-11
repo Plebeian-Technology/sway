@@ -1,0 +1,11 @@
+# RBS sig for the testimony-classification schema constants (PROD-CR-01
+# stage 3).
+#
+# Consumed by Llm::ClaudeAdapter and
+# Llm::LlamacppAdapter#generate_testimony_classification.
+
+# Parsed JSON Schema document (opaque schema shape).
+TESTIMONY_CLASSIFICATION_SCHEMA_HASH: Hash[String, untyped]
+
+# Compiled validator built from TESTIMONY_CLASSIFICATION_SCHEMA_HASH.
+TESTIMONY_CLASSIFICATION_SCHEMA: JSONSchemer::Schema

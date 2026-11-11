@@ -1,0 +1,264 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./tokens.css";
+@import "./theme-selects.css";
+
+@theme inline {
+    --font-sans: var(--font-body);
+    --font-mono: var(--font-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-border-soft: var(--border-soft);
+    --color-border-strong: var(--border-strong);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-foreground);
+    --color-surface-1: var(--surface-1);
+    --color-surface-2: var(--surface-2);
+    --color-surface-3: var(--surface-3);
+    --color-vote-for: var(--vote-for);
+    --color-vote-against: var(--vote-against);
+    --color-chart-muted: var(--chart-muted);
+    --color-muted-icon: var(--muted-icon);
+    --color-scrim: var(--scrim);
+    /* Shape — radius-sm/-md are explicit theme tokens (ballot's radii are
+       non-proportional); lg is the base radius, xl derives from it. */
+    --radius-sm: var(--radius-sm);
+    --radius-md: var(--radius-md);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.15);
+    --shadow-neo: var(--neo-shadow);
+
+    /* Density — Tailwind spacing utilities (padding, margin, gap, width, …)
+       all derive from --spacing. */
+    --spacing: var(--space-unit);
+
+    /* Type scale — Tailwind text-* utilities resolve to the theme's scale. */
+    --text-xs: var(--type-micro);
+    --text-sm: var(--type-small);
+    --text-base: var(--type-body);
+    --text-lg: var(--type-lede);
+    --text-xl: var(--type-h3);
+    --text-2xl: var(--type-h2);
+    --text-3xl: var(--type-stat);
+    --text-4xl: var(--type-display);
+
+    /* Font weight — font-normal/-medium/-semibold/-black follow the theme. */
+    --font-weight-normal: var(--weight-body);
+    --font-weight-medium: var(--weight-medium);
+    --font-weight-semibold: var(--weight-bold);
+    --font-weight-black: var(--weight-display);
+
+    /* Line-height and letter-spacing. */
+    --leading-tight: var(--leading-heading);
+    --leading-snug: var(--leading-heading);
+    --leading-relaxed: var(--leading-body);
+    --tracking-tight: var(--tracking-display);
+    --tracking-widest: var(--tracking-caps);
+}
+
+/* Neo-brutalist border width — the design system's signature heavy ink
+   border. Border width has no @theme namespace in Tailwind v4, so these
+   custom utilities stand in for the repeated `border-[var(--neo-border-width)]`
+   (and its directional variants) across the component tree. */
+@utility border-neo {
+    border-width: var(--neo-border-width);
+}
+@utility border-t-neo {
+    border-top-width: var(--neo-border-width);
+}
+@utility border-r-neo {
+    border-right-width: var(--neo-border-width);
+}
+@utility border-b-neo {
+    border-bottom-width: var(--neo-border-width);
+}
+@utility border-l-neo {
+    border-left-width: var(--neo-border-width);
+}
+
+/* Named stand-in for the arbitrary duration-[var(--dur-1)] bracket class, per
+   the named-utilities house rule. Sets --tw-duration too so it matches what the
+   bracket utility compiled to (composes with transition-* the same way). */
+@utility duration-fast {
+    --tw-duration: var(--dur-1, 150ms);
+    transition-duration: var(--dur-1, 150ms);
+}
+
+@utility duration-normal {
+    --tw-duration: var(--dur-2, 200ms);
+    transition-duration: var(--dur-2, 200ms);
+}
+
+@utility duration-slow {
+    --tw-duration: var(--dur-3, 550ms);
+    transition-duration: var(--dur-3, 550ms);
+}
+
+/* @lat: [[navigation-placeholder-tracer#Why the two new CSS custom properties live in application.css, not a theme file]] */
+@utility placeholder-block {
+    background-color: color-mix(in srgb, var(--muted-foreground) 16%, var(--background));
+    border-radius: calc(var(--radius-md) * 2);
+    animation: placeholder-pulse var(--dur-placeholder-pulse, 1800ms) ease-in-out infinite alternate;
+}
+
+/* @lat: [[system-shape#What a reader sees during the round trip#Why the outgoing page is not painted under the placeholder]] */
+@utility nav-leaving {
+    opacity: var(--nav-leaving-opacity, 0.4);
+    transition: opacity var(--dur-1, 150ms) var(--ease-out, ease-out);
+}
+
+@utility nav-replaced {
+    opacity: 0;
+    transition: opacity var(--dur-1, 150ms) var(--ease-out, ease-out);
+}
+
+/* @lat: [[navigation-placeholder-tracer#Why the pulse keyframes moved from 12%/20% to 16%/24%, and resting stayed at 16%]] */
+@keyframes placeholder-pulse {
+    0% {
+        background-color: color-mix(in srgb, var(--muted-foreground) 16%, var(--background));
+    }
+    100% {
+        background-color: color-mix(in srgb, var(--muted-foreground) 24%, var(--background));
+    }
+}
+
+/* @lat: [[navigation-placeholder-tracer#Which links carry the crossfade, and which also carry hover prefetch]] */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: var(--dur-2, 200ms);
+}
+
+/* @lat: [[navigation-placeholder-tracer#Why the crossfade's reduced-motion rule can't join the existing block]] */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+}
+
+@layer base {
+    [data-theme] {
+        min-height: 100svh;
+        color: var(--foreground);
+        background-color: var(--background);
+        background-image: var(--texture-page);
+        font-family: var(--font-body);
+        --nav-leaving-opacity: 0.4;
+        --dur-placeholder-pulse: 1800ms;
+    }
+
+    /* Headings take the theme's display font. */
+    [data-theme] :is(h1, h2, h3, h4, h5, h6) {
+        font-family: var(--font-display);
+    }
+
+    [data-theme] *,
+    [data-theme] *::before,
+    [data-theme] *::after {
+        border-color: var(--border);
+    }
+
+    [data-theme] ::selection {
+        color: var(--accent-foreground);
+        background: color-mix(in srgb, var(--accent) 78%, var(--background) 22%);
+    }
+
+    [data-theme] a,
+    [data-theme] button,
+    [data-theme] input,
+    [data-theme] textarea,
+    [data-theme] select {
+        transition:
+            box-shadow var(--dur-2) var(--ease-out),
+            transform var(--dur-2) var(--ease-out),
+            background-color var(--dur-1) var(--ease-out),
+            color var(--dur-1) var(--ease-out),
+            border-color var(--dur-1) var(--ease-out);
+    }
+
+    [data-theme] button:not(:disabled),
+    [data-theme] select:not(:disabled),
+    [data-theme] input[type="checkbox"]:not(:disabled),
+    [data-theme] input[type="radio"]:not(:disabled),
+    [data-theme] [role="switch"]:not([aria-disabled="true"]),
+    [data-theme] [role="checkbox"]:not([aria-disabled="true"]),
+    [data-theme] [aria-pressed]:not([aria-disabled="true"]) {
+        cursor: pointer;
+    }
+
+    [data-theme] :focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--primary) 72%, var(--background) 28%);
+        outline-offset: 3px;
+    }
+
+    [data-theme] [data-neo-surface="true"] {
+        border: var(--neo-border-width) solid var(--border);
+        box-shadow: var(--neo-shadow);
+        background: var(--card);
+    }
+}
+
+@layer utilities {
+    /*
+     * Nested surface de-emphasis.
+     *
+     * A Card (or [data-neo-surface]) that lives inside another Card gets
+     * its hard shadow removed and its fill shifted to a secondary surface
+     * so the inner panel reads as an inset region instead of a duplicate
+     * card. Without this, data-intensity="bold" stacks two 1.5px ink
+     * borders + two hard shadows right next to each other, and the
+     * top/left edges of the inner card blend into the outer card's
+     * interior. The :is() wrappers bump the specificity above the
+     * default Tailwind utilities (bg-card, shadow-neo) so the override
+     * actually wins within @layer utilities.
+     */
+    [data-theme] :is([data-slot="card"]) :is([data-slot="card"], [data-neo-surface="true"]),
+    [data-theme] :is([data-neo-surface="true"]) :is([data-slot="card"], [data-neo-surface="true"]) {
+        box-shadow: none;
+        background-color: var(--surface-2);
+        border-color: var(--border-soft);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-theme] *,
+    [data-theme] *::before,
+    [data-theme] *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@keyframes activity-log-pulse {
+    0% {
+        background-color: color-mix(in srgb, var(--warning) 20%, transparent);
+    }
+    60% {
+        background-color: color-mix(in srgb, var(--warning) 20%, transparent);
+    }
+    100% {
+        background-color: transparent;
+    }
+}

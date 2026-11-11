@@ -1,0 +1,10 @@
+# @lat: [[llm-summaries#Batch summarisation#One stage-result writer for the job and the ingest]]
+class PipelineStageResult
+  def self.record: (
+    bill_run: PipelineRunBill,
+    stage: Symbol,
+    status: RunLegislationPipelineJob::stage_status,
+    ?error: String?,
+    ?reason: String?,
+  ) -> void
+end

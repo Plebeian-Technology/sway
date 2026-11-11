@@ -1,0 +1,50 @@
+{
+    "data": {
+        "id": 201,
+        "slug": "city-council-hearing-2026-05-15",
+        "location": "City Hall, Council Chambers",
+        "room": "Room 400",
+        "status": "held",
+        "agenda_status": "final",
+        "minutes_status": "final",
+        "video_url": "https://open-legislator.test/videos/201",
+        "captions_url": null,
+        "comment": null,
+        "agenda_url": "https://open-legislator.test/documents/meetings/201/agenda",
+        "minutes_url": "https://open-legislator.test/documents/meetings/201/minutes",
+        "starts_at_utc": "2026-05-15T14:00:00Z",
+        "starts_at_time_known": true,
+        "ends_at_utc": "2026-05-15T16:30:00Z",
+        "time_zone": "America/New_York",
+        "body": {
+            "slug": "city-council",
+            "name": "City Council"
+        },
+        "agenda_items": [
+            {
+                "sequence": 1,
+                "agenda_number": "1",
+                "title": "Ordinance 24-0001 - Housing Affordability",
+                "action_name": "Passage",
+                "result": "pass",
+                "consent": false,
+                "matter_slug": "ordinance-24-0001-housing-affordability",
+                "roll_call_recorded": true,
+                "vote_visibility": "recorded",
+                "tally": {
+                    "yes": 14,
+                    "no": 0,
+                    "abstain": 0,
+                    "absent": 1
+                },
+                "votes": [
+                    {
+                        "person_slug": "john-smith",
+                        "person_name": "John Smith",
+                        "value": "yes"
+                    }
+                ]
+            }
+        ]
+    }
+}

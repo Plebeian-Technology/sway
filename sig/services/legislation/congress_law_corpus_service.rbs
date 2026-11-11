@@ -1,0 +1,25 @@
+module Legislation
+  class CongressLawCorpusService
+    CATALOG_URL: String
+    MAX_CATALOG_BYTES: Integer
+    MAX_ARCHIVE_BYTES: Integer
+    MAX_TITLE_BYTES: Integer
+    MAX_CORPUS_BYTES: Integer
+    MAX_ARCHIVES: Integer
+    CHUNK_BYTES: Integer
+
+    @law_root: Pathname
+    @http: Faraday::Connection
+    @extracted_bytes: Integer
+
+    def initialize: (law_root: Pathname, ?http: Faraday::Connection?) -> void
+    def call: () { (Pathname) -> void } -> void
+
+    private
+
+    def corpus_present?: (Pathname root) -> bool
+    def archive_urls: () -> Array[String]
+    def download: (String url, Pathname destination, Integer limit) -> void
+    def extract_title: (Pathname archive, Pathname destination, String url) -> void
+  end
+end

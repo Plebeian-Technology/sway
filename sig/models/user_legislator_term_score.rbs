@@ -1,0 +1,6 @@
+# Manual extensions for UserLegislatorTermScore. Schema-derived accessors +
+# associations live in the rbs_rails-generated
+# sig/rbs_rails/app/models/user_legislator_term_score.rbs; this file has no
+# hand-written methods beyond the model shell (WS7.28 two-file convention).
+class UserLegislatorTermScore < ApplicationRecord
+end

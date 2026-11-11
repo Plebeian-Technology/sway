@@ -1,0 +1,136 @@
+#!/usr/bin/env sh
+#
+# prepare-commit-msg — auto-draft the commit message via Claude.
+#
+# Runs only on a plain `git commit` (no -m, no merge/template/amend). All
+# diagnostics go to stderr so silent failure modes (not-logged-in, rate-
+# limited, missing binary) surface in the commit terminal rather than
+# leaving the editor blank. Claude's own stderr is captured to
+# tmp/prepare-commit-msg.log (already gitignored via /tmp/*) for
+# post-mortem inspection.
+#
+# Husky v9 invokes this via `sh -e "$0"` (see .husky/_/h:17), so the script
+# must be POSIX-portable — no `print`, no `whence -p`, no `local`.
+
+set -eu
+
+MSG_FILE=$1
+MSG_SOURCE=${2:-}
+
+# Opt-in only: set SWAY_AUTO_COMMIT_MSG=1 to draft commit messages with Claude.
+if [ "${SWAY_AUTO_COMMIT_MSG:-0}" != "1" ]; then
+    exit 0
+fi
+
+# Only auto-generate for a plain `git commit`. Skip merge / squash / template
+# / amend / rebase / -m flows where git already supplied a message.
+if [ -n "$MSG_SOURCE" ]; then
+    exit 0
+fi
+
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+LOG_FILE="$REPO_ROOT/tmp/prepare-commit-msg.log"
+mkdir -p "$REPO_ROOT/tmp"
+: > "$LOG_FILE"
+
+log() {
+    printf '%s\n' "[prepare-commit-msg] $*" >&2
+}
+
+log "drafting commit message with Claude…"
+
+# Resolve a `claude` binary. Common install locations first, then PATH.
+# Hooks run in a non-interactive shell that doesn't source .zshrc, so any
+# `claude` shell function the user has defined isn't visible here and
+# `command -v claude` will resolve to a real executable on PATH.
+CLAUDE_BIN=""
+for candidate in \
+    "$HOME/.local/bin/claude" \
+    "$HOME/.claude/local/claude" \
+    "/opt/homebrew/bin/claude" \
+    "/usr/local/bin/claude"; do
+    if [ -x "$candidate" ]; then
+        CLAUDE_BIN="$candidate"
+        break
+    fi
+done
+if [ -z "$CLAUDE_BIN" ] && command -v claude >/dev/null 2>&1; then
+    CLAUDE_BIN=$(command -v claude)
+fi
+
+if [ -z "$CLAUDE_BIN" ] || [ ! -x "$CLAUDE_BIN" ]; then
+    log "skipping: could not locate 'claude' binary (checked ~/.local/bin/, ~/.claude/local/, /opt/homebrew/bin/, /usr/local/bin/, PATH)"
+    exit 0
+fi
+log "using $CLAUDE_BIN"
+
+diff=$(git diff --cached)
+if [ -z "$diff" ]; then
+    log "skipping: empty staged diff"
+    exit 0
+fi
+
+# Cap diff at ~80KB. Huge diffs make claude time out or produce generic
+# summaries — truncating gives it a representative sample without blowing
+# the prompt budget.
+diff_bytes=${#diff}
+if [ "$diff_bytes" -gt 80000 ]; then
+    log "diff is $diff_bytes bytes; truncating to 80000"
+    diff=$(printf '%s' "$diff" | head -c 80000)
+fi
+
+files=$(git diff --cached --name-status)
+context="Files changed:
+$files
+
+Diff:
+$diff"
+
+system_prompt='You are a git commit message generator. The user provides a staged diff via stdin. You must reply with exactly one line: the commit message itself. No code fences. No preamble. No quotes. No trailing prose. Conventional-commits format: <type>(<scope>): <subject>. Under 500 chars total. Imperative mood. Lowercase subject. No trailing period.'
+
+user_prompt='Write the commit message line for the staged change provided as input.'
+
+# 60s wall-clock cap. claude can hang on auth prompts or rate-limit retries
+# — the hook should never block a commit indefinitely.
+log "calling claude (60s timeout)…"
+if ! generated=$(printf '%s' "$context" \
+    | timeout 60 "$CLAUDE_BIN" -p \
+        --output-format text \
+        --append-system-prompt "$system_prompt" \
+        "$user_prompt" \
+    2>>"$LOG_FILE"); then
+    rc=$?
+    log "skipping: claude exited with code $rc — see $LOG_FILE"
+    exit 0
+fi
+
+# Defensive extraction: even with the strict system prompt, claude
+# occasionally wraps output in code fences or adds prose. Drop fences and
+# blanks, prefer the first conventional-commits-shaped line, fall back to
+# the first non-empty content line.
+plain=$(printf '%s\n' "$generated" \
+    | grep -v '^[[:space:]]*```' \
+    | grep -v '^[[:space:]]*$' \
+    || true)
+
+cc_line=$(printf '%s\n' "$plain" \
+    | grep -Em1 '^(feat|fix|chore|refactor|docs|test|perf|ci|build|style|revert)(\([^)]+\))?!?:[[:space:]]' \
+    || true)
+
+if [ -n "$cc_line" ]; then
+    message="$cc_line"
+else
+    message=$(printf '%s\n' "$plain" | head -n1)
+fi
+
+if [ -z "$message" ]; then
+    log "skipping: claude returned no usable message — see $LOG_FILE"
+    exit 0
+fi
+
+log "drafted: $message"
+
+# Prepend the generated message; keep whatever git already wrote
+# (comments, scissors line, template) below.
+existing=$(cat "$MSG_FILE")
+printf '%s\n\n%s\n' "$message" "$existing" > "$MSG_FILE"

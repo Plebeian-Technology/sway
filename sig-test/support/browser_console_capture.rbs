@@ -1,0 +1,19 @@
+module BrowserConsoleCapture
+  SEVERITY: Hash[String, Integer]
+  DEFAULT_MINIMUM_LEVEL: String
+  MAX_REPORT_BYTES: Integer
+
+  def self.minimum_level: () -> String
+  def self.drain: (untyped page) -> Array[untyped]
+  def self.log_unreadable_console: (Exception error) -> void
+  def self.filter: (Array[untyped] entries, ?level: String) -> Array[untyped]
+  def self.format: (Array[untyped] entries) -> String
+  def self.artifact_name: (untyped example) -> String
+
+  def minimum_level: () -> String
+  def drain: (untyped page) -> Array[untyped]
+  def log_unreadable_console: (Exception error) -> void
+  def filter: (Array[untyped] entries, ?level: String) -> Array[untyped]
+  def format: (Array[untyped] entries) -> String
+  def artifact_name: (untyped example) -> String
+end

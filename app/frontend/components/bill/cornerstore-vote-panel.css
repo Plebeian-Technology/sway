@@ -1,0 +1,136 @@
+/* Corner Store's vote control: two screen-printed blocks that press into the
+   page when chosen. Wood type (Alfa Slab One) appears here, at poster scale,
+   rather than in the app chrome — see the type note in themes/cornerstore.css. */
+
+.cs-panel {
+    margin-top: calc(var(--space-unit) * 6);
+}
+
+.cs-panel__title {
+    font-family: "Alfa Slab One", var(--font-display);
+    font-weight: 400;
+    font-size: var(--type-h3);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin: 0 0 calc(var(--space-unit) * 3);
+}
+
+.cs-blocks {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+}
+
+@media (min-width: 640px) {
+    .cs-blocks {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.cs-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--space-unit) * 1);
+    padding: calc(var(--space-unit) * 5) calc(var(--space-unit) * 3);
+    border: var(--neo-border-width) var(--rule-style) var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--neo-shadow);
+    cursor: pointer;
+    text-align: center;
+    transition:
+        transform var(--dur-1) var(--ease-out),
+        box-shadow var(--dur-1) var(--ease-out);
+}
+
+.cs-block--for {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.cs-block--against {
+    background: var(--card);
+    color: var(--card-foreground);
+}
+
+.cs-block:disabled {
+    cursor: default;
+}
+
+.cs-block:not(:disabled):hover {
+    transform: translate(-2px, -2px);
+}
+
+.cs-block:focus-visible {
+    outline: var(--rule-thick) var(--rule-style) var(--ring);
+    outline-offset: 3px;
+}
+
+/* Pressed and cast share the same physical language: the block sits down into
+   the page and its offset shrinks, as if actually pushed. */
+.cs-block:not(:disabled):active,
+.cs-block[aria-pressed="true"] {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--border);
+}
+
+.cs-block__word {
+    font-family: "Alfa Slab One", var(--font-display);
+    font-weight: 400;
+    font-size: var(--type-h2);
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+
+.cs-block__sub {
+    font-size: var(--type-small);
+    font-weight: var(--weight-medium);
+}
+
+/* Reads as text, not as a decorative tick. Rendered only once cast. */
+.cs-block__mark {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    margin-top: calc(var(--space-unit) * 1);
+}
+
+.cs-receipt,
+.cs-pending,
+.cs-offline {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    margin: calc(var(--space-unit) * 3) 0 0;
+    font-size: var(--type-small);
+}
+
+.cs-receipt {
+    color: var(--muted-foreground);
+}
+
+.cs-receipt b {
+    font-weight: var(--weight-display);
+    color: var(--foreground);
+}
+
+.cs-spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.cs-offline {
+    border-left: var(--rule-thick) var(--rule-style) var(--destructive);
+    padding-left: calc(var(--space-unit) * 3);
+    font-weight: var(--weight-medium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cs-block {
+        transition: none;
+    }
+
+    .cs-block:not(:disabled):hover {
+        transform: none;
+    }
+}

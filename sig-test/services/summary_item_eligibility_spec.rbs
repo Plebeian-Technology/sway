@@ -1,0 +1,4 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def eligibility_for: (Bill bill, BillLlmProvisioning provisioning) -> SummaryItemEligibility
+end

@@ -1,0 +1,29 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # A bill with a provisioning row, ready to earn one or two batch items.
+  def batchable_bill: (String external_id, Integer days_ago, ?text: String?, ?testimony: bool) -> Bill
+
+  # Creates the run's row for this bill and accumulates it.
+  def accumulate_bill: (SummaryBatchSubmission submission, Bill bill) -> PipelineRunBill
+
+  # Every custom_id handed to Llm::ClaudeBatchService.submit, across all chunks.
+  def submitted_custom_ids: () -> Array[String]
+
+  def pipeline_run_bill_for: (Bill bill) -> PipelineRunBill
+
+  # The bill's provisioning row, read back from the database, raising rather
+  # than answering nil so an assertion reads what the row holds now.
+  def provisioning_for: (Bill bill) -> BillLlmProvisioning
+
+  # A bill whose provisioning row another writer has already claimed.
+  def contended_bill: (String external_id, Integer days_ago) -> Bill
+
+  def paste_onto_bill!: (Bill bill) -> void
+
+  # SummaryRunArmDecision answers :paste_hand_off only from pending or generating.
+  def pending_batchable_bill: (String external_id, Integer days_ago) -> Bill
+
+  def paste_between_accumulate_and_submit: (String external_id, Integer days_ago) -> Hash[Symbol, untyped]
+
+  def paste_while_the_batch_is_bought: (String external_id, Integer days_ago) -> Hash[Symbol, untyped]
+end

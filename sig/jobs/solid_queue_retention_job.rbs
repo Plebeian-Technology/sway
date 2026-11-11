@@ -1,0 +1,14 @@
+# Solid Queue retention sweep. See
+# app/jobs/solid_queue_retention_job.rb for the full contract.
+class SolidQueueRetentionJob < ApplicationJob
+  FINISHED_RETENTION_DAYS: Integer
+  FAILED_RETENTION_DAYS: Integer
+  BATCH_SIZE: Integer
+
+  def perform: () -> Integer
+
+  private
+
+  def clear_finished: () -> Integer
+  def prune_failed: () -> Integer
+end

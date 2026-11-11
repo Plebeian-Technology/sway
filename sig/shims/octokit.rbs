@@ -1,0 +1,30 @@
+# The GitHubPrService calls the gem collection's octokit sig does not carry.
+# Sawyer::Resource responses are untyped.
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+
+module Octokit
+  class Client
+    def repo: (String repo) -> untyped
+    def ref: (String repo, String ref) -> untyped
+    def commit: (String repo, String sha) -> untyped
+    def create_ref: (String repo, String ref, String sha) -> untyped
+    def create_blob: (String repo, String content, String encoding) -> untyped
+    def create_tree: (String repo, Array[untyped] tree, ?base_tree: String) -> untyped
+    def create_commit: (String repo, String message, String tree, String parent) -> untyped
+    def update_ref: (String repo, String ref, String sha) -> untyped
+    def create_pull_request: (String repo, String base, String head, String title, String body) -> untyped
+  end
+
+  class Error < StandardError
+    def initialize: (*untyped) -> void
+  end
+
+  class ClientError < Error
+  end
+
+  class UnprocessableEntity < ClientError
+  end
+
+  class TooManyRequests < ClientError
+  end
+end

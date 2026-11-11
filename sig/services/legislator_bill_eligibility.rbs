@@ -1,0 +1,22 @@
+class LegislatorBillEligibility
+  TITLE_ALIASES: Hash[String, String]
+  CHAMBER_BY_LABEL: Hash[String, Symbol]
+
+  @eligible_terms: Array[[Symbol?, Range[Date]]]
+
+  def self.eligible?: (legislator: Legislator, bill: Bill, ?has_recorded_vote: bool) -> bool
+
+  def initialize: (Legislator legislator) -> void
+  def eligible?: (bill: Bill, ?has_recorded_vote: bool) -> bool
+
+  private
+
+  def build_eligible_terms: (Legislator legislator) -> Array[[Symbol?, Range[Date]]]
+  def term_chamber: (LegislatorTerm term) -> Symbol?
+  def chamber_from_label: (String? label) -> Symbol?
+  def declared_seat_chamber: (LegislatorTerm term) -> String?
+  def executive_title_chamber: (LegislatorTerm term) -> Symbol?
+  def bill_chamber_dates: (Bill bill) -> Array[[Symbol?, Date?]]
+  def fallback_date: (Bill bill) -> Date?
+  def term_running_on?: (Symbol? target_chamber, Date? date) -> bool
+end

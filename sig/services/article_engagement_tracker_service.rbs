@@ -1,0 +1,8 @@
+class ArticleEngagementTrackerService
+  def self.track_click: (article_bill: (ArticleBill | Integer)) -> bool
+  def self.track_registration: (attribution_key: String?) -> bool
+  def self.track_vote: (bill: (Bill | Integer | String), stance: (String | Symbol | bool), attribution_key: String?) -> bool
+  def self.resolve_article_bill: (attribution_key: String?, ?bill_id: (Bill | Integer | String)?) -> ArticleBill?
+  def self.pro_stance?: (String stance_str) -> bool
+  def self.con_stance?: (String stance_str) -> bool
+end

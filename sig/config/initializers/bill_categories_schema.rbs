@@ -1,0 +1,11 @@
+# RBS sig for the bill-categories schema constants (Phase 60 D-02 / R4).
+#
+# The constants are the canonical categorize-only validator consumed by
+# BackfillBillCategoriesJob (60-05 Task 2/3) via Llm::ClaudeAdapter and
+# Llm::LlamacppAdapter#generate_bill_categories.
+
+# Parsed JSON Schema document (opaque schema shape).
+BILL_CATEGORIES_SCHEMA_HASH: Hash[String, untyped]
+
+# Compiled validator built from BILL_CATEGORIES_SCHEMA_HASH.
+BILL_CATEGORIES_SCHEMA: JSONSchemer::Schema

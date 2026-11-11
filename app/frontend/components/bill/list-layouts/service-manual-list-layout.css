@@ -1,0 +1,182 @@
+/* @lat: [[bill-list-layouts-design#ServiceManualBillListLayout.tsx]] */
+
+.sml-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--foreground);
+    border-top: var(--rule-thick) var(--rule-style) var(--accent);
+    padding-top: calc(var(--space-unit) * 4);
+}
+
+.sml-header {
+    margin-bottom: calc(var(--space-unit) * 4);
+}
+
+.sml-phase-banner {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    margin-bottom: calc(var(--space-unit) * 2);
+}
+
+.sml-tag {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    padding: calc(var(--space-unit) * 0.5) calc(var(--space-unit) * 2);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+}
+
+.sml-tag--neutral {
+    background-color: var(--surface-2);
+    color: var(--foreground);
+    border: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.sml-title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+.sml-filter-well {
+    background: var(--surface-1);
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    padding: calc(var(--space-unit) * 4);
+    margin-bottom: calc(var(--space-unit) * 4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 4);
+}
+
+.sml-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    max-width: 100%;
+    gap: calc(var(--space-unit) * 1);
+}
+
+.sml-field--wide {
+    flex-basis: 100%;
+}
+
+.sml-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.sml-input {
+    cursor: text;
+}
+
+.sml-count {
+    padding: calc(var(--space-unit) * 3) 0;
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.sml-entries {
+    display: grid;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sml-entry {
+    padding: calc(var(--space-unit) * 4) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.sml-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.sml-code {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    color: var(--foreground);
+}
+
+.sml-entry__title {
+    display: block;
+    margin-top: calc(var(--space-unit) * 2);
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.sml-entry__title:hover,
+.sml-entry__title:focus-visible {
+    text-decoration: underline;
+    color: var(--accent);
+}
+
+.sml-entry__qualifier {
+    font-weight: var(--weight-body);
+    color: var(--muted-foreground);
+}
+
+.sml-entry__brief {
+    margin-top: calc(var(--space-unit) * 1.5);
+    max-width: var(--measure);
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--muted-foreground);
+}
+
+.sml-entry__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 2);
+}
+
+.sml-tally {
+    font-size: var(--type-micro);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--muted-foreground);
+}
+
+.sml-voted {
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: var(--weight-bold);
+}
+
+.sml-more {
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 4);
+    background: var(--surface-2);
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    color: var(--foreground);
+    font-size: var(--type-small);
+    cursor: pointer;
+}
+
+.sml-more:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -1,0 +1,3 @@
+class Object
+  def valid_params: () -> Hash[Symbol, untyped]
+end

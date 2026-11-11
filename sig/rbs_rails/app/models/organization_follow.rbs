@@ -1,0 +1,467 @@
+# resolve-type-names: false
+
+class ::OrganizationFollow < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::OrganizationFollow, ::OrganizationFollow::ActiveRecord_Relation, ::Integer]
+
+  module ::OrganizationFollow::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def user_id: () -> ::Integer
+
+    def user_id=: (::Integer) -> ::Integer
+
+    def user_id?: () -> bool
+
+    def user_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def user_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def user_id_will_change!: () -> void
+
+    def user_id_was: () -> ::Integer?
+
+    def user_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def user_id_previous_change: () -> ::Array[::Integer?]?
+
+    def user_id_previously_was: () -> ::Integer?
+
+    def user_id_before_last_save: () -> ::Integer?
+
+    def user_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def user_id_in_database: () -> ::Integer?
+
+    def saved_change_to_user_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_user_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_user_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_user_id!: () -> void
+
+    def clear_user_id_change: () -> void
+
+    def user_id_before_type_cast: () -> ::Integer
+
+    def user_id_for_database: () -> ::Integer
+
+    def organization_id: () -> ::Integer
+
+    def organization_id=: (::Integer) -> ::Integer
+
+    def organization_id?: () -> bool
+
+    def organization_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def organization_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def organization_id_will_change!: () -> void
+
+    def organization_id_was: () -> ::Integer?
+
+    def organization_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def organization_id_previous_change: () -> ::Array[::Integer?]?
+
+    def organization_id_previously_was: () -> ::Integer?
+
+    def organization_id_before_last_save: () -> ::Integer?
+
+    def organization_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def organization_id_in_database: () -> ::Integer?
+
+    def saved_change_to_organization_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_organization_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_organization_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_organization_id!: () -> void
+
+    def clear_organization_id_change: () -> void
+
+    def organization_id_before_type_cast: () -> ::Integer
+
+    def organization_id_for_database: () -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+
+    # Phase 61 D-15: per-follow preference columns (added by migration 20260626000003)
+
+    def notification_cadence: () -> ::String
+
+    def notification_cadence=: (::Integer | ::String | ::Symbol) -> ::String
+
+    def notification_cadence?: () -> bool
+
+    def notification_cadence_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def notification_cadence_change: () -> [ ::String?, ::String? ]
+
+    def notification_cadence_will_change!: () -> void
+
+    def notification_cadence_was: () -> ::String?
+
+    def notification_cadence_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def notification_cadence_previous_change: () -> ::Array[::String?]?
+
+    def notification_cadence_previously_was: () -> ::String?
+
+    def notification_cadence_before_last_save: () -> ::String?
+
+    def notification_cadence_change_to_be_saved: () -> ::Array[::String?]?
+
+    def notification_cadence_in_database: () -> ::String?
+
+    def saved_change_to_notification_cadence: () -> ::Array[::String?]?
+
+    def saved_change_to_notification_cadence?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_notification_cadence?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_notification_cadence!: () -> void
+
+    def clear_notification_cadence_change: () -> void
+
+    def notification_cadence_before_type_cast: () -> ::Integer
+
+    def notification_cadence_for_database: () -> ::Integer
+
+    def notify_on_new_position: () -> bool?
+
+    def notify_on_new_position=: (bool?) -> bool?
+
+    def notify_on_new_position?: () -> bool
+
+    def notify_on_new_position_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def notify_on_new_position_change: () -> [ bool?, bool? ]
+
+    def notify_on_new_position_will_change!: () -> void
+
+    def notify_on_new_position_was: () -> bool?
+
+    def notify_on_new_position_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def notify_on_new_position_previous_change: () -> ::Array[bool?]?
+
+    def notify_on_new_position_previously_was: () -> bool?
+
+    def notify_on_new_position_before_last_save: () -> bool?
+
+    def notify_on_new_position_change_to_be_saved: () -> ::Array[bool?]?
+
+    def notify_on_new_position_in_database: () -> bool?
+
+    def saved_change_to_notify_on_new_position: () -> ::Array[bool?]?
+
+    def saved_change_to_notify_on_new_position?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_notify_on_new_position?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_notify_on_new_position!: () -> void
+
+    def clear_notify_on_new_position_change: () -> void
+
+    def notify_on_new_position_before_type_cast: () -> bool?
+
+    def notify_on_new_position_for_database: () -> bool?
+
+    def notify_on_support_change: () -> bool?
+
+    def notify_on_support_change=: (bool?) -> bool?
+
+    def notify_on_support_change?: () -> bool
+
+    def notify_on_support_change_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def notify_on_support_change_change: () -> [ bool?, bool? ]
+
+    def notify_on_support_change_will_change!: () -> void
+
+    def notify_on_support_change_was: () -> bool?
+
+    def notify_on_support_change_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def notify_on_support_change_previous_change: () -> ::Array[bool?]?
+
+    def notify_on_support_change_previously_was: () -> bool?
+
+    def notify_on_support_change_before_last_save: () -> bool?
+
+    def notify_on_support_change_change_to_be_saved: () -> ::Array[bool?]?
+
+    def notify_on_support_change_in_database: () -> bool?
+
+    def saved_change_to_notify_on_support_change: () -> ::Array[bool?]?
+
+    def saved_change_to_notify_on_support_change?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_notify_on_support_change?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_notify_on_support_change!: () -> void
+
+    def clear_notify_on_support_change_change: () -> void
+
+    def notify_on_support_change_before_type_cast: () -> bool?
+
+    def notify_on_support_change_for_database: () -> bool?
+
+    def notify_on_summary_change: () -> bool?
+
+    def notify_on_summary_change=: (bool?) -> bool?
+
+    def notify_on_summary_change?: () -> bool
+
+    def notify_on_summary_change_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def notify_on_summary_change_change: () -> [ bool?, bool? ]
+
+    def notify_on_summary_change_will_change!: () -> void
+
+    def notify_on_summary_change_was: () -> bool?
+
+    def notify_on_summary_change_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def notify_on_summary_change_previous_change: () -> ::Array[bool?]?
+
+    def notify_on_summary_change_previously_was: () -> bool?
+
+    def notify_on_summary_change_before_last_save: () -> bool?
+
+    def notify_on_summary_change_change_to_be_saved: () -> ::Array[bool?]?
+
+    def notify_on_summary_change_in_database: () -> bool?
+
+    def saved_change_to_notify_on_summary_change: () -> ::Array[bool?]?
+
+    def saved_change_to_notify_on_summary_change?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_notify_on_summary_change?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_notify_on_summary_change!: () -> void
+
+    def clear_notify_on_summary_change_change: () -> void
+
+    def notify_on_summary_change_before_type_cast: () -> bool?
+
+    def notify_on_summary_change_for_database: () -> bool?
+  end
+  include ::OrganizationFollow::GeneratedAttributeMethods
+  module ::OrganizationFollow::GeneratedAliasAttributeMethods
+    include ::OrganizationFollow::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::OrganizationFollow::GeneratedAliasAttributeMethods
+
+  def user: () -> ::User
+  def user=: (::User?) -> ::User?
+  def reload_user: () -> ::User?
+  def build_user: (?untyped) -> ::User
+  def create_user: (?untyped) -> ::User
+  def create_user!: (?untyped) -> ::User
+  def organization: () -> ::Organization
+  def organization=: (::Organization?) -> ::Organization?
+  def reload_organization: () -> ::Organization?
+  def build_organization: (?untyped) -> ::Organization
+  def create_organization: (?untyped) -> ::Organization
+  def create_organization!: (?untyped) -> ::Organization
+
+  module ::OrganizationFollow::GeneratedAssociationMethods
+  end
+  include ::OrganizationFollow::GeneratedAssociationMethods
+
+  module ::OrganizationFollow::GeneratedRelationMethods
+  end
+
+  class ::OrganizationFollow::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::OrganizationFollow]
+    include ::OrganizationFollow::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrganizationFollow, ::Integer]
+  end
+
+  class ::OrganizationFollow::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::OrganizationFollow]
+    include ::OrganizationFollow::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrganizationFollow, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrganizationFollow
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrganizationFollow]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrganizationFollow
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrganizationFollow]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrganizationFollow
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrganizationFollow]
+    def reload: () -> ::Array[::OrganizationFollow]
+
+    def replace: (::Array[::OrganizationFollow]) -> void
+    def delete: (*::OrganizationFollow | ::Integer) -> ::Array[::OrganizationFollow]
+    def destroy: (*::OrganizationFollow | ::Integer) -> ::Array[::OrganizationFollow]
+    def <<: (*::OrganizationFollow | ::Array[::OrganizationFollow]) -> self
+    def prepend: (*::OrganizationFollow | ::Array[::OrganizationFollow]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::User < ::ApplicationRecord
+end
+class ::Organization < ::ApplicationRecord
+end

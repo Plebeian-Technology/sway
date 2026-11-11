@@ -1,0 +1,47 @@
+# Hand-written RBS for lib/sqlite_integrity_check.rb.
+# The module uses `module_function`, so every method is both a singleton
+# method and a (private) instance method — `def self?.*` declares both.
+module SqliteIntegrityCheck
+  # Wait budget (ms) for a transient writer lock before quick_check skips a DB.
+  BUSY_TIMEOUT_MS: Integer
+
+  # Inspect every SQLite database configured for the given env; raise in
+  # development, Sentry-log in production, no-op in test.
+  def self?.run: (env: String | Symbol, ?logger: Logger) -> void
+
+  # Run PRAGMA quick_check against every sqlite3 database for `env_name`,
+  # returning a human-readable failure line per corrupt/unopenable DB. A
+  # busy/locked DB is skipped (warned via logger), never reported as a failure.
+  def self?.collect_failures: (String env_name, ?logger: Logger) -> Array[String]
+
+  # Open the database read-only and return the PRAGMA quick_check rows
+  # (["ok"] when healthy).
+  def self?.quick_check: (String absolute_path) -> Array[String]
+end
+
+# Minimal sqlite3-gem surface used by SqliteIntegrityCheck that the
+# gem_rbs_collection sig does not cover.
+module SQLite3
+  # Base class for sqlite3-ruby errors (rescued in #collect_failures).
+  class Exception < StandardError
+  end
+
+  # Raised when a database is locked by another connection — contention, not
+  # corruption (rescued + skipped in #collect_failures).
+  class BusyException < Exception
+  end
+
+  class Database[T]
+    # Wait up to N ms for a lock before raising BusyException (#quick_check).
+    def busy_timeout=: (Integer) -> void
+
+    # Release the underlying connection (called in #quick_check's ensure).
+    def close: () -> void
+  end
+end
+
+# ActiveRecord::Base.configurations is present in the gem collection but not
+# resolvable on the Base singleton from Steep's view — declare it directly.
+class ActiveRecord::Base
+  def self.configurations: () -> ActiveRecord::DatabaseConfigurations
+end

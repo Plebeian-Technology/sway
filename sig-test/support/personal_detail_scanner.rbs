@@ -1,0 +1,53 @@
+# spec/support/personal_detail_scanner.rb.
+#
+# A real class rather than a spec-DSL helper, so it gets a real signature --
+# same reasoning as EnvCredentialScanner's own sig-test signature.
+class PersonalDetailScanner
+  # One planted detail, at the place it was found.
+  class Finding
+    attr_reader path: String
+    attr_reader line: Integer
+    attr_reader kind: Symbol
+    attr_reader source: String
+    attr_reader exempt: bool
+
+    def initialize: (path: String, line: Integer, kind: Symbol, source: String, exempt: bool) -> void
+
+    def to_s: () -> String
+  end
+
+  SKIPPED_PREFIXES: Array[String]
+  SCANNED_EXTENSIONS: Array[String]
+
+  PLACEHOLDER_EMAIL: String
+  PLACEHOLDER_PHONE: String
+  SWAY_OWN_CONTACT: String
+  THIRD_PARTY_SERVICE_ADDRESS: String
+  PUBLIC_GOV_CONTACT: String
+
+  # path => the evidence for accepting that path's findings.
+  EXEMPT_PATHS: Hash[String, String]
+
+  STREET_TYPE_SUFFIXES: Array[String]
+  DETAIL_PATTERNS: Hash[Symbol, Regexp]
+
+  @findings: Array[Finding]?
+  @unexempt: Array[Finding]?
+
+  def initialize: (?root: Pathname) -> void
+
+  def findings: () -> Array[Finding]
+
+  # The findings nothing has vouched for.
+  def unexempt: () -> Array[Finding]
+
+  private
+
+  attr_reader root: Pathname
+
+  def raw_paths: () -> Array[String]
+
+  def scannable_paths: () -> Array[String]
+
+  def findings_in: (String path) -> Array[Finding]
+end

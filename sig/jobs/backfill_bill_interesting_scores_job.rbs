@@ -1,0 +1,9 @@
+# Phase 62 Plan 05: one-off idempotent interesting-score backfill job.
+# See app/jobs/backfill_bill_interesting_scores_job.rb for the full contract.
+class BackfillBillInterestingScoresJob < ApplicationJob
+  # Solid Queue concurrency control — global single-flight guard so concurrent
+  # puma + bin/jobs boots each enqueue collapse to one run.
+  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> String, ?on_conflict: Symbol) -> void
+
+  def perform: () -> void
+end

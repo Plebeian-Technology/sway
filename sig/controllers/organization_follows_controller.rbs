@@ -1,0 +1,28 @@
+# Phase 61 D-16 — OrganizationFollowsController RBS overlay.
+# Gate: authenticate_sway_user! (inherited; NOT skipped).
+# Dual-surface: redirect_or_json via MobileFormatNegotiation concern.
+class OrganizationFollowsController < ApplicationController
+  @follow: OrganizationFollow
+
+  def create: () -> void
+
+  def destroy: () -> void
+
+  def preferences: () -> void
+
+  private
+
+  def follow_success_response: (OrganizationFollow follow) -> void
+
+  # Same-origin referer (url_from) or the org detail fallback.
+  def back_or_organization_path: (Integer organization_id) -> String
+
+  # Rails built-in (ActionController::Redirecting#url_from): returns the URL
+  # when it is same-origin/protocol-relative-safe, else nil (same decl pattern
+  # as UserVotesController).
+  def url_from: (String? url) -> String?
+
+  def set_follow: () -> void
+
+  def follow_prefs_params: () -> ActionController::Parameters
+end

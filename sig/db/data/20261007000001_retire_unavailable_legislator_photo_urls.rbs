@@ -1,0 +1,12 @@
+class RetireUnavailableLegislatorPhotoUrls < ActiveRecord::Migration
+  RETIREMENTS: Array[{
+    city: String,
+    region_name: String,
+    country: String,
+    external_id: String,
+    photo_url: String
+  }]
+
+  def up: () -> void
+  def down: () -> void
+end

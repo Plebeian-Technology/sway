@@ -1,0 +1,28 @@
+# Phase 60 Plan 01 — hand-authored extensions for Category.
+# rbs_rails covers attribute readers and base associations under
+# sig/rbs_rails/app/models/category.rbs. This file declares the
+# additions: self.slugify (single normalization point), self.find_slug_collision
+# (W-01 shared collision check) and to_builder (admin serialization for 60-06,
+# 60-09, 60-10), plus the private validation hooks.
+class Category < ApplicationRecord
+  # C2-IN-05: the one name for "at most N ACTIVE categories per bill", read by
+  # BillCategoryAssigner, Bills::CategoriesController, Admin::CategoriesController
+  # and BillsController's props.
+  MAX_ACTIVE_PER_BILL: Integer
+
+  # B6-WR-05: the two CONTENT rules on a name. Every active name is
+  # interpolated raw into the cache-eligible SYSTEM block of two prompts, so
+  # the string has to be safe to read as an instruction line.
+  MAX_NAME_CHARS: Integer
+  NAME_CONTROL_CHARACTERS: Regexp
+
+  def self.slugify: (String name) -> String
+  def self.find_slug_collision: (String name, ?except_id: Integer?) -> Category?
+  def to_builder: () -> Jbuilder
+
+  private
+
+  def name_is_free_of_control_characters: () -> void
+  def slug_is_normalized: () -> void
+  def slugified_name_is_unique: () -> void
+end

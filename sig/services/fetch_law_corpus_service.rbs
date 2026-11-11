@@ -1,0 +1,50 @@
+# RBS sig for FetchLawCorpusService, which restores the law-xml corpus
+# download dropped in the Phase 52 Python-to-Ruby migration.
+class FetchLawCorpusService
+  DEFAULT_REPO: String
+  DEFAULT_BRANCH: String
+  COMMITS_URL: String
+  TARBALL_URL: String
+  REQUIRED_CORPUS_FILE: String
+  MAX_TARBALL_BYTES: Integer
+  MAX_EXTRACTED_BYTES: Integer
+  REDIRECT_STATUSES: Range[Integer]
+
+  class TooLarge < StandardError
+  end
+
+  @run: LegislationPipelineRun?
+  @http: Faraday::Connection
+  @sway_locale: SwayLocale?
+  @repo: String?
+  @branch: String?
+
+  attr_reader sway_locale: SwayLocale?
+
+  def self.commits_url: (?String repo, ?String branch) -> String
+  def self.tarball_url: (?String repo, ?String branch) -> String
+  def initialize: (?run: LegislationPipelineRun?, ?http: Faraday::Connection, ?sway_locale: SwayLocale?) -> void
+
+  def repo: () -> String
+  def branch: () -> String
+  def commits_url: () -> String
+  def tarball_url: () -> String
+
+  # :downloaded | :unchanged | :cached_offline (raises StageError when no
+  # corpus exists on disk AND the download fails).
+  def call: () -> Symbol
+
+  private
+
+  def resolve_repo_config: () -> { repo: String, branch: String }
+  def fallback_or_raise: (String reason) -> Symbol
+  def raw_root: () -> Pathname
+  def sha_file: () -> Pathname
+  def corpus_present?: () -> bool
+  def unchanged?: (String sha) -> bool
+  def latest_commit_sha: () -> String?
+  def download_tarball: () -> String?
+  def extract_tarball: (String bytes) -> void
+  def safe_destination: (String name) -> Pathname?
+  def persist_commit_sha: (String? sha) -> void
+end

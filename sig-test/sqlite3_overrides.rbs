@@ -1,0 +1,13 @@
+# Test-only RBS overrides for sqlite3 methods the production-snapshot rake-replay
+# spec (spec/production_readiness/production_migrate_with_data_task_spec.rb) uses
+# that the vendored gem_rbs_collection sig omits: Database.open (the block form
+# returns the block's value, then closes the handle) and get_first_value (single
+# scalar). Kept out of the :app target — these call sites live only in specs.
+module SQLite3
+  class Database[ResultType]
+    def self.open: [T] (String file, **untyped) { (Database[result_as_array]) -> T } -> T
+                 | (String file, **untyped) -> Database[result_as_array]
+
+    def get_first_value: (String sql, *untyped) -> row_value_type
+  end
+end

@@ -1,0 +1,661 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProfileScreen matches snapshot — loaded state (mode=auto) 1`] = `
+<View
+  className="flex-1 bg-dominant-light dark:bg-dominant-dark"
+  testID="profile-screen"
+>
+  <View
+    className="flex-row items-center gap-2 px-2 py-1.5"
+    style={
+      {
+        "backgroundColor": "#3260db",
+        "borderBottomColor": "rgba(255, 255, 255, 0)",
+        "borderBottomWidth": 0,
+        "minHeight": 56,
+      }
+    }
+    testID="profile-brand-header"
+  >
+    <View
+      accessibilityLabel="Open menu"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="rounded-xl px-4 py-2 items-center justify-center bg-transparent w-11 h-11 !px-0 !py-0"
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "minHeight": 44,
+            "opacity": 1,
+          },
+          null,
+          null,
+          undefined,
+        ]
+      }
+      testID="brand-header-menu"
+    >
+      <View
+        testID="lucide-menu"
+      />
+    </View>
+    <Image
+      accessibilityLabel="Sway"
+      resizeMode="cover"
+      source={
+        {
+          "testUri": "../../../../../../assets/sway-logo.png",
+        }
+      }
+      style={
+        {
+          "borderRadius": 8,
+          "height": 32,
+          "width": 32,
+        }
+      }
+    />
+    <Text
+      accessibilityRole="header"
+      className="flex-1 text-xl font-open-sans-semibold"
+      numberOfLines={2}
+      style={
+        {
+          "color": "#ffffff",
+        }
+      }
+    >
+      Profile
+    </Text>
+  </View>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "paddingBottom": 32,
+      }
+    }
+    testID="profile-scroll"
+  >
+    <View>
+      <View
+        className="mx-4 mt-4 flex-row items-center gap-3 rounded-card bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark px-4 py-3"
+        style={
+          [
+            {
+              "elevation": 3,
+              "shadowColor": "#000000",
+              "shadowOffset": {
+                "height": 3,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 6,
+            },
+            {
+              "borderLeftColor": "#3260db",
+              "borderLeftWidth": 5,
+            },
+          ]
+        }
+        testID="profile-identity"
+      >
+        <View
+          className="w-12 h-12 rounded-full items-center justify-center bg-accent-light dark:bg-accent-dark"
+        >
+          <View
+            testID="lucide-userround"
+          />
+        </View>
+        <View
+          className="flex-1"
+        >
+          <Text
+            className="text-lg font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            Voter One
+          </Text>
+          <Text
+            className="text-sm font-open-sans text-muted-foreground-light dark:text-muted-foreground-dark"
+            style={
+              {
+                "fontVariant": [
+                  "tabular-nums",
+                ],
+              }
+            }
+          >
+            4105551212
+          </Text>
+        </View>
+      </View>
+      <Text
+        className="text-xs font-open-sans-semibold text-accent-light dark:text-accent-dark px-5 pt-5 pb-2"
+        style={
+          {
+            "letterSpacing": 1.6,
+            "textTransform": "uppercase",
+          }
+        }
+      >
+        Your account
+      </Text>
+      <View
+        className="mx-4 rounded-card overflow-hidden bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark"
+        style={
+          {
+            "elevation": 3,
+            "shadowColor": "#000000",
+            "shadowOffset": {
+              "height": 3,
+              "width": 0,
+            },
+            "shadowOpacity": 0.1,
+            "shadowRadius": 6,
+          }
+        }
+      >
+        <View
+          accessibilityLabel="Address"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="profile-row-address"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-mappin"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            Address
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="My Memberships"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="profile-my-memberships-row"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-users"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            My Memberships
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="Notification Preferences"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="profile-row-notification-preferences"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-bell"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            Notification Preferences
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="Passkey Management"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="profile-row-passkey-management"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-keyround"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            Passkey Management
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="Theme: Auto. Tap to switch to Light."
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="profile-row-theme"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-sunmoon"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            Theme
+          </Text>
+          <Text
+            className="text-sm font-open-sans text-muted-foreground-light dark:text-muted-foreground-dark"
+          >
+            Auto
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+      </View>
+      <Text
+        className="text-xs font-open-sans-semibold text-accent-light dark:text-accent-dark px-5 pt-5 pb-2"
+        style={
+          {
+            "letterSpacing": 1.6,
+            "textTransform": "uppercase",
+          }
+        }
+      >
+        Session
+      </Text>
+      <View
+        className="mx-4 rounded-card overflow-hidden bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark"
+        style={
+          {
+            "elevation": 3,
+            "shadowColor": "#000000",
+            "shadowOffset": {
+              "height": 3,
+              "width": 0,
+            },
+            "shadowOpacity": 0.1,
+            "shadowRadius": 6,
+          }
+        }
+      >
+        <View
+          accessibilityLabel="Sign Out"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="btn-sign-out"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-logout"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+          >
+            Sign Out
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="Sign Out All Devices"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="btn-sign-out-all"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-userx"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-destructive-light dark:text-destructive-dark"
+          >
+            Sign Out All Devices
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="Delete Account"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="min-h-[52px] flex-row items-center gap-3 px-4 py-2 border-b border-border-soft-light dark:border-border-soft-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="btn-delete-account"
+        >
+          <View
+            accessibilityElementsHidden={true}
+            className="w-9 h-9 rounded-lg items-center justify-center bg-surface-3-light dark:bg-surface-3-dark"
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View
+              testID="lucide-trash"
+            />
+          </View>
+          <Text
+            className="flex-1 text-base font-open-sans-semibold text-destructive-light dark:text-destructive-dark"
+          >
+            Delete Account
+          </Text>
+          <Text
+            className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+          >
+            ›
+          </Text>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</View>
+`;

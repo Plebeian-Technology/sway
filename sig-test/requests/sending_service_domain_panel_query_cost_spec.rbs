@@ -1,0 +1,13 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # How many SQL statements touching sending_service_domain_bills the given
+  # block issues.
+  def sending_service_domain_bill_reads: () { () -> void } -> Integer
+
+  # The reads for a short list and then for a longer one. `add` is handed the
+  # number of records to add and the number already there, so each round can
+  # name its own records.
+  def domain_panel_reads_at_two_sizes: (add: ^(Integer, Integer) -> void) { () -> void } -> Array[Integer]
+
+  def add_contributing_domains: (count: Integer, from: Integer) -> void
+end

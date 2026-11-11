@@ -1,0 +1,19 @@
+module Admin
+  class BillNewsArticlesController < ApplicationController
+    @bill: Bill
+    @bill_news_article: BillNewsArticle
+
+    def index: () -> untyped
+    def create: () -> untyped
+    def update: () -> untyped
+
+    private
+
+    def set_bill: () -> Bill
+    def set_bill_news_article: () -> BillNewsArticle
+    def find_discovery_request: () -> NewsArticleDiscoveryRequest?
+    def article_params: () -> ActionController::Parameters
+    def extract_receipt_error: (NewsArticleDiscoveryRequest? receipt) -> String?
+    def record_not_found: () -> untyped
+  end
+end

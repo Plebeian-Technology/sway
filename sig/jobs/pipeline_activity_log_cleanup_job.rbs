@@ -1,0 +1,7 @@
+# Phase 52 Plan 12 (D-37): RBS signature for the pipeline-activity-log cleanup job.
+class PipelineActivityLogCleanupJob < ApplicationJob
+  RETENTION_DAYS: Integer
+  RECENT_RUNS_PRESERVED: Integer
+
+  def perform: () -> Integer
+end

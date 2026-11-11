@@ -1,0 +1,18 @@
+# Hand-authored RBS sig for PipelineRunSummaryBatch.
+# Regenerate the rbs_rails half with: bundle exec rbs_rails all
+class PipelineRunSummaryBatch < ApplicationRecord
+  FIRST_ATTEMPT: Integer
+  MAX_ATTEMPTS: Integer
+
+  # @lat: [[llm-summaries#Batch summarisation#Why chunking is a progress decision, not a cost one]]
+  def live?: () -> bool
+
+  def ingested?: () -> bool
+
+  def retryable?: () -> bool
+
+  def failed_count: () -> Integer
+
+  def model: () -> String?
+  def model=: (String?) -> String?
+end

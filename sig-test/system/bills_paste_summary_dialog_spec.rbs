@@ -1,0 +1,6 @@
+# spec/system/bills_paste_summary_dialog_spec.rb — Steep resolves no `let`
+# written inside a describe block. Declared here rather than silenced.
+class Object
+  # The public summary an admin wrote by hand, as opposed to a generated one.
+  def published_summary: () -> String
+end

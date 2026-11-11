@@ -1,0 +1,23 @@
+# Spec-only declarations for spec/config/deploy_build_values_spec.rb.
+#
+# These are plain `def`s written inside a describe block. Steep cannot see
+# those either, for the same reason it cannot see a `let`: the block builds an
+# anonymous class while the suite runs, and nothing about it exists in the
+# source a type checker reads.
+class Object
+  # Every Ruby file that can ask for a deploy value while production starts.
+  def boot_paths: () -> Array[String]
+
+  # The value names one file body asks for.
+  def names_asked_for: (String body) -> Array[String]
+
+  # Every value name production asks for at boot, sorted, without repeats.
+  def required_at_boot: () -> Array[String]
+
+  # The lines of the dockerfile's `build` stage, with any line continuations
+  # already joined up.
+  def build_stage_instructions: () -> Array[String]
+
+  # The names one kind of instruction (ARG or ENV) declares in that stage.
+  def build_stage_names: (String instruction) -> Array[String]
+end

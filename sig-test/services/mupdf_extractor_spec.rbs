@@ -1,0 +1,8 @@
+# Spec-only helper module for MupdfExtractor specs (Phase 52 Plan 02).
+# Lives in sig-test (not sig) because it's only referenced from spec files.
+module MupdfExtractorSpecHelpers
+  NATIVE_PDF_PATH: String
+  IMAGE_PDF_PATH: String
+  TEXT_LAYER_PDF_PATH: String
+  TESSDATA_DIR: String
+end

@@ -1,0 +1,11 @@
+class CloudflareConnectingIpMiddleware
+  @app: untyped
+
+  def initialize: (untyped app) -> void
+
+  def call: (untyped env) -> untyped
+
+  private
+
+  def valid_ip: (untyped raw_ip) -> String?
+end

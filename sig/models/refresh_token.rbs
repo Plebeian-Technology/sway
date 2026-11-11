@@ -1,0 +1,12 @@
+# Manual extensions for RefreshToken. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/refresh_token.rbs; this file
+# holds the hand-written class + instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class RefreshToken < ApplicationRecord
+    def self.for: (User user, ActionDispatch::Request request) -> RefreshToken
+    def self.token: -> String
+    def self.expires_at: -> ActiveSupport::TimeWithZone
+    def usable_for?: (ActionDispatch::Request request) -> bool
+    def expired?: -> bool
+    def as_cookie: -> Hash[Symbol, (String | Integer | bool | Time | ActiveSupport::TimeWithZone)]
+end

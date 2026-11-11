@@ -1,0 +1,65 @@
+# Phase 1 batch-API proving path (SPEC batch-01). Every Anthropic SDK
+# response/result type is `untyped` for the same reason
+# sig/services/llm/claude_adapter.rbs's header documents — the SDK ships no
+# RBS sigs; see sig/anthropic.rbs for the hand-written stub this depends on.
+module Llm
+  class ClaudeBatchService
+    class Item
+      attr_reader custom_id: String
+      attr_reader prompt: Llm::PromptPayload
+      attr_reader model: String
+      attr_reader schema: Hash[String, untyped]
+      attr_reader validation_schema: untyped
+
+      def initialize: (
+        custom_id: String,
+        prompt: Llm::PromptPayload,
+        model: String,
+        schema: Hash[String, untyped],
+        validation_schema: untyped
+      ) -> void
+
+      def self.new: (
+        custom_id: String,
+        prompt: Llm::PromptPayload,
+        model: String,
+        schema: Hash[String, untyped],
+        validation_schema: untyped
+      ) -> Llm::ClaudeBatchService::Item
+    end
+
+    # Exactly one of `value`/`error` is set — never raised out of .results,
+    # so one bad item cannot discard the rest of the batch. `model` is the
+    # model the returned message names, nil on every non-succeeded Result.
+    class Result
+      attr_reader custom_id: String
+      attr_reader value: untyped
+      attr_reader error: (Llm::TransportError | Llm::SchemaError)?
+      attr_reader usage: untyped
+      attr_reader model: String?
+
+      def initialize: (custom_id: String, value: untyped, error: (Llm::TransportError | Llm::SchemaError)?, usage: untyped, model: String?) -> void
+      def self.new: (custom_id: String, value: untyped, error: (Llm::TransportError | Llm::SchemaError)?, usage: untyped, model: String?) -> Llm::ClaudeBatchService::Result
+    end
+
+    DEFAULT_MAX_RETRIES: Integer
+    DEFAULT_TIMEOUT_SECONDS: Integer
+    BATCH_RESULTS_TIMEOUT_SECONDS: Integer
+    MAX_TRANSLATED_ERROR_LENGTH: Integer
+    SUBMIT_MAX_RETRIES: Integer
+
+    def self.submit: (items: Array[Llm::ClaudeBatchService::Item]) -> untyped
+    def self.status: (batch_id: String) -> untyped
+    def self.cancel: (batch_id: String) -> untyped
+    def self.results: (batch_id: String, items_by_custom_id: Hash[String, Llm::ClaudeBatchService::Item]) -> Hash[String, Llm::ClaudeBatchService::Result]
+
+    # A custom_id the caller's map does not know. The map is rebuilt from the
+    # database hours after submission, so it can legitimately have drifted.
+    private def self.unknown_custom_id_result: (String custom_id) -> Llm::ClaudeBatchService::Result
+    private def self.mapped_result: (untyped individual, Llm::ClaudeBatchService::Item item) -> Llm::ClaudeBatchService::Result
+    private def self.map_result: (untyped individual, Llm::ClaudeBatchService::Item item) -> Llm::ClaudeBatchService::Result
+    private def self.map_succeeded: (untyped message, Llm::ClaudeBatchService::Item item) -> Llm::ClaudeBatchService::Result
+    private def self.errored_result_error: (untyped result) -> Llm::TransportError
+    private def self.client: () -> untyped
+  end
+end

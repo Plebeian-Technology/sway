@@ -1,0 +1,153 @@
+# Schema specification version.
+schema_version: 1
+
+# Citation: Constitution of Maryland, Declaration of Rights & Art. III, Sec. 1
+# Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+city: maryland
+region: maryland
+region_code: MD
+country: united_states
+name: maryland-maryland-united_states
+
+legislative_sessions:
+    - name: "2024 Regular Session"
+      start_date: "2024-01-10"
+      end_date: "2025-01-08"
+      active: false
+      upstream_name: "2024RS"
+    - name: "2025 Regular Session"
+      start_date: "2025-01-08"
+      end_date: "2026-01-14"
+      active: false
+      upstream_name: "2025RS"
+    - name: "2026 Regular Session"
+      start_date: "2026-01-14"
+      end_date: "2027-01-13"
+      active: true
+      upstream_name: "2026RS"
+
+# Citation: IANA Time Zone Database
+# Source: https://data.iana.org/time-zones/tz-link.html
+time_zone: America/New_York
+
+# Citation: Official Flag of the State of Maryland (Md. State Government Code Ann. § 13-102; Ch. 48, Acts of 1904)
+# Source: https://msa.maryland.gov/msa/mdmanual/01glance/html/symbols/flag.html
+icon_url: public/images/flags/maryland-maryland-united_states.svg
+
+# @lat: [[locale-extension#Nominatim geographic configuration]]
+# Citation: OpenStreetMap Relation 162110 (State of Maryland Bounding Box) # lat:ignore
+# Source: https://www.openstreetmap.org/relation/162110 # lat:ignore
+nominatim_viewbox: "-79.4877,39.7230,-75.0489,37.9117"
+nominatim_bounded: true
+nominatim_country_codes: "us"
+
+source_rules:
+    # Citation: Maryland General Assembly Roll Call Voting Records
+    # Source: https://mgaleg.maryland.gov/
+    publishes_legislator_votes: true
+
+    # Citation: Constitution of Maryland, Art. III, Sec. 1 ("The General Assembly")
+    # Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+    chamber_label: General Assembly
+
+    # Citation: Constitution of Maryland, Art. III, Sec. 6-7 (4-Year Legislative Terms)
+    # Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+    session_numbering: term_years
+
+    # Citation: Constitution of Maryland, Art. III, Sec. 1 (Bicameral: Senate and House of Delegates)
+    # Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+    default_bill_chamber: house
+    bill_chambers:
+        - house
+        - senate
+        - both
+
+    legislation_rules:
+        retrieval: generic_html
+        parsing: generic_html
+        base_url: "https://mgaleg.maryland.gov"
+        generic_portal_urls:
+            - "https://mgaleg.maryland.gov"
+            - "https://mgaleg.maryland.gov/mgawebsite"
+        chamber_patterns:
+            house: "^H[BJ]"
+            senate: "^S[BJ]"
+        endpoints:
+            index: "/mgawebsite/Legislation/Index?ys=:session"
+            details: "/mgawebsite/Legislation/Details/:external_id?ys=:session"
+    hearings_rules:
+        retrieval: generic_html
+        parsing: generic_html
+        base_url: "https://mgaleg.maryland.gov"
+        endpoints:
+            details: "/mgawebsite/Legislation/Details/:external_id?ys=2026RS"
+    vote_rules:
+        retrieval: maryland_general_assembly
+        parsing: generic_html
+        base_url: "https://mgaleg.maryland.gov"
+        enable_historical_fallback: true
+        timezone: "America/New_York"
+    roster_rules:
+        retrieval: open_states
+        parsing: open_states
+        base_url: "https://v3.openstates.org"
+        jurisdiction: Maryland
+        api_key_secret: OPENSTATES_API_KEY
+        evidence_publisher: "openstates.org"
+        evidence_jurisdiction: "maryland-maryland-united_states"
+        evidence_source_url: "https://v3.openstates.org/people"
+    law_rules:
+        retrieval: configured_pdf_catalog
+        parsing: pdf_statute_sections
+        local_path: raw
+        base_url: "https://mgaleg.maryland.gov"
+        endpoints:
+            catalog: "/mgawebsite/api/Laws/GetArticles"
+            article_link: "/mgawebsite/api/Laws/GetArticleLink"
+        params:
+            enactments: "true"
+
+term_rules:
+    # Citation: Constitution of Maryland, Art. III, Sec. 14 (Convenes second Wednesday in January)
+    # Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+    convening:
+        kind: nth_weekday
+        month: 1
+        weekday: 3
+        ordinal: 2
+        offset_days: 0
+
+    # Citation: Constitution of Maryland, Art. III, Sec. 6-7 (4-Year Terms Anchored in 2023, 2027)
+    # Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+    cycle_anchor_year: 2023
+    cycle_years: 4
+
+    # Citation: OpenStates API v3 (Roster lists currently serving members)
+    # Source: https://v3.openstates.org/docs
+    roster_lists_only_current_legislators: true
+    publishes_term_history: false
+    publishes_exact_term_dates: false
+
+    # Citation: OpenStates Person Entity Model
+    # Source: https://v3.openstates.org/docs
+    identified_by: person
+
+    # @lat: [[representative-resolution#Maryland seat identity conventions]]
+    seat_chambers:
+        Senator: Senate
+        Delegate: House of Delegates
+        Governor: Executive
+        # Lt_Governor: Executive # Note for the future. Do not include executives with non-legislative functions.
+        # "Attorney General": Executive # Note for the future. Do not include executives with non-legislative functions.
+
+# @lat: [[news-source-configuration#News source configuration contract]]
+representative_resolution:
+    locale_wide_district_name: "MD0"
+
+news_sources:
+    - url: "https://marylandmatters.org/"
+      path_policy: search_hint
+    - url: "https://www.baltimoresun.com/location/maryland/"
+      path_policy: search_hint
+    - url: "https://www.thebanner.com/topic/politics-power/"
+      path_policy: search_hint

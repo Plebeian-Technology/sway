@@ -1,0 +1,36 @@
+module Scraper
+    module Maryland
+        class LegislatorVotes
+            @bill: untyped
+
+            @sway_locale: untyped
+
+            @roll_call_number: untyped
+
+            @roll_call_chamber: untyped
+
+            @result: untyped
+
+            include ApiConnector
+
+            def initialize: (bill: untyped, roll_call_number: untyped, roll_call_chamber: untyped) -> void
+
+            def content_type: -> "application/pdf"
+
+            # r = Faraday.get('https://mgaleg.maryland.gov/2025RS/votes/house/0549.pdf').body
+            def do_request: (?year_offset: Integer) -> untyped
+
+            def do_process: -> ::Array[Scraper::LegislatorVote]
+
+            private
+
+            def voted_on: -> untyped
+
+            def result: -> untyped
+
+            def endpoint: (?Integer year_offset) -> ::String
+
+            def roll: -> untyped
+        end
+    end
+end

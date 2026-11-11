@@ -1,0 +1,6 @@
+# RBS sig for Legislation::AtomicWrite. See app/services/legislation/atomic_write.rb.
+module Legislation
+  module AtomicWrite
+    def self.write: (Pathname | String path) { (Pathname tmp_path) -> void } -> Pathname
+  end
+end

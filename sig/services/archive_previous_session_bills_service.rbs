@@ -1,0 +1,8 @@
+class ArchivePreviousSessionBillsService
+  @sway_locale: SwayLocale
+
+  def initialize: (sway_locale: SwayLocale) -> void
+  def candidates: () -> Bill::ActiveRecord_Relation
+  def call: () -> Integer
+  def current_session: () -> LegislativeSession
+end

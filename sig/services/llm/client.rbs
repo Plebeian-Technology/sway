@@ -1,0 +1,31 @@
+# Phase 54 D-01: facade factory. Build returns either adapter; unknown
+# providers fail-fast with ArgumentError.
+#
+# module_function (NOT extend self) creates both module-level AND
+# instance-level methods, so declare both shapes.
+module Llm
+  module Client
+    def self?.build: (?provider: (String | Symbol)?) -> (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | untyped)
+    def self?.generate_news_claim_grounding: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?provider: (String | Symbol)?
+    ) -> Hash[String, untyped]
+
+    def self?.generate_decisions: (
+      model: String,
+      state: Hash[String, untyped],
+      questions: Hash[String, untyped],
+      ?provider: (String | Symbol)?
+    ) -> Hash[String, untyped]
+
+    def self?.generate_entity_extraction: (
+      model: String,
+      content: String,
+      entities: Hash[(String | Symbol), String],
+      ?max_tokens: Integer?,
+      ?provider: (String | Symbol)?
+    ) -> Hash[String, untyped]
+  end
+end

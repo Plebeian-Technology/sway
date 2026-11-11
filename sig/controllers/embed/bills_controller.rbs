@@ -1,0 +1,11 @@
+module Embed
+  class BillsController < BaseController
+    @bill: Bill
+
+    def show: -> untyped
+
+    private
+
+    def referral_params: -> Hash[String, untyped]
+  end
+end

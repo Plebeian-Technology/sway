@@ -1,0 +1,8 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # Whether ANALYZE has ever run against this database.
+  def statistics_table_exists?: () -> bool
+
+  # The table names sqlite_stat1 holds statistics for.
+  def analyzed_tables: () -> Array[untyped]
+end

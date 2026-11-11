@@ -1,0 +1,23 @@
+# @lat: [[explanation/llm-summaries#Runs are marked and reclaimable#The persist guard is extracted so a batch ingest can call it directly]]
+# @lat: [[news-gate#Why ungrounded generations are quarantined as draft revisions]]
+class SummaryRunPersistGuard
+  def self.call: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    Hash[Symbol, untyped] attrs,
+    ?evidence_digest: String?,
+    ?news_source_snapshot: (NewsArticleSourceSnapshot | Integer)?,
+    ?grounding_result: NewsClaimGroundingService::Result?
+  ) -> (:persisted | :superseded | :evidence_withdrawn | :vanished)
+
+  private
+
+  def self.publish_summary!: (
+    Bill bill,
+    Hash[Symbol, untyped] attrs,
+    String? previous_draft,
+    ?news_usage: String,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?grounding_result: NewsClaimGroundingService::Result?
+  ) -> [bool, BillSummaryPublication::Decision?]
+end

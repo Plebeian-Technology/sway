@@ -1,0 +1,15 @@
+# @lat: [[signature-placement#Why a controller action's return type is untyped]]
+module Admin
+  class IndexController < ApplicationController
+    # GET /admin — renders admin/Index Inertia page with the per-user
+    # tools list.
+    def show: () -> untyped
+
+    private
+
+    # Returns an Array of Hashes describing the admin tools to surface.
+    # No-arg today; future role-tier gating (sub-admin / org-admin) will
+    # promote this to `tools_for(user)` (F-i1-WR-006).
+    def tools: () -> Array[Hash[Symbol, untyped]]
+  end
+end

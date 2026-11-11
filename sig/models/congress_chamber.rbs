@@ -1,0 +1,20 @@
+# What one chamber of Congress says about how a member is addressed
+# and how long their term runs. Hand-maintained (not rbs_rails-generated —
+# CongressChamber is a plain object, not a record).
+class CongressChamber
+  SENATE: String
+
+  WHITE_HOUSE: String
+
+  PRESIDENT: String
+
+  SENATOR: String
+
+  REPRESENTATIVE: String
+
+  TERM_YEARS: Hash[String, Integer]
+
+  def self.title_for: (String? chamber, ?president: bool) -> String
+
+  def self.term_years_for: (String? title) -> Integer
+end

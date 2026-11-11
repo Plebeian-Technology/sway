@@ -1,0 +1,98 @@
+# resolve-type-names: false
+
+class ::BillSummaryReport < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::BillSummaryReport, ::BillSummaryReport::ActiveRecord_Relation, ::Integer]
+
+  module ::BillSummaryReport::GeneratedAttributeMethods
+    def id: () -> ::Integer
+    def id=: (::Integer) -> ::Integer
+    def id?: () -> bool
+
+    def bill_id: () -> ::Integer
+    def bill_id=: (::Integer) -> ::Integer
+    def bill_id?: () -> bool
+
+    def user_id: () -> ::Integer?
+    def user_id=: (::Integer?) -> ::Integer?
+    def user_id?: () -> bool
+
+    def resolved_by_id: () -> ::Integer?
+    def resolved_by_id=: (::Integer?) -> ::Integer?
+    def resolved_by_id?: () -> bool
+
+    def reason: () -> ::String
+    def reason=: (::String) -> ::String
+    def reason?: () -> bool
+
+    def details: () -> ::String?
+    def details=: (::String?) -> ::String?
+    def details?: () -> bool
+
+    def status: () -> ::String
+    def status=: (::String | ::Integer) -> (::String | ::Integer)
+    def status?: () -> bool
+
+    def admin_notes: () -> ::String?
+    def admin_notes=: (::String?) -> ::String?
+    def admin_notes?: () -> bool
+
+    def bill_title_snapshot: () -> ::String?
+    def bill_title_snapshot=: (::String?) -> ::String?
+
+    def bill_summary_snapshot: () -> ::String?
+    def bill_summary_snapshot=: (::String?) -> ::String?
+
+    def summary_ai_unreviewed: () -> bool?
+    def summary_ai_unreviewed=: (bool?) -> bool?
+    def summary_ai_unreviewed?: () -> bool
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+  end
+
+  module ::BillSummaryReport::GeneratedAssociationMethods
+    def bill: () -> ::Bill
+    def bill=: (::Bill?) -> ::Bill?
+    def user: () -> ::User?
+    def user=: (::User?) -> ::User?
+    def resolved_by: () -> ::User?
+    def resolved_by=: (::User?) -> ::User?
+  end
+
+  module ::BillSummaryReport::GeneratedRelationMethods
+    def pending: () -> ::BillSummaryReport::ActiveRecord_Relation
+    def reviewed: () -> ::BillSummaryReport::ActiveRecord_Relation
+    def resolved: () -> ::BillSummaryReport::ActiveRecord_Relation
+    def dismissed: () -> ::BillSummaryReport::ActiveRecord_Relation
+    def unresolved: () -> ::BillSummaryReport::ActiveRecord_Relation
+    def recent_first: () -> ::BillSummaryReport::ActiveRecord_Relation
+    def for_bill: (::Integer) -> ::BillSummaryReport::ActiveRecord_Relation
+  end
+
+  class ::BillSummaryReport::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::BillSummaryReport]
+    include ::BillSummaryReport::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillSummaryReport, ::Integer]
+  end
+
+  class ::BillSummaryReport::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::BillSummaryReport]
+    include ::BillSummaryReport::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillSummaryReport, ::Integer]
+  end
+
+  include ::BillSummaryReport::GeneratedAttributeMethods
+  include ::BillSummaryReport::GeneratedAssociationMethods
+
+  def self.statuses: () -> ::Hash[::String, ::Integer]
+  def self.pending: () -> ::BillSummaryReport::ActiveRecord_Relation
+  def self.reviewed: () -> ::BillSummaryReport::ActiveRecord_Relation
+  def self.resolved: () -> ::BillSummaryReport::ActiveRecord_Relation
+  def self.dismissed: () -> ::BillSummaryReport::ActiveRecord_Relation
+  def self.unresolved: () -> ::BillSummaryReport::ActiveRecord_Relation
+  def self.recent_first: () -> ::BillSummaryReport::ActiveRecord_Relation
+  def self.for_bill: (::Integer) -> ::BillSummaryReport::ActiveRecord_Relation
+end

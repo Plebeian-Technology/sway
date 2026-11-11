@@ -1,0 +1,7 @@
+class Object
+  def stance_letter: (Integer position, String text, ?offset: Integer?, ?characters: Integer?) -> Hash[String, untyped]
+  def support_text: () -> String
+  def oppose_text: () -> String
+  def neutral_text: () -> String
+  def ambiguous_text: () -> String
+end

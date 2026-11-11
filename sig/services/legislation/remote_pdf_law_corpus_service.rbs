@@ -1,0 +1,37 @@
+module Legislation
+  class RemotePdfLawCorpusService
+    MAX_CATALOG_BYTES: Integer
+    MAX_LINK_BYTES: Integer
+    MAX_PDF_BYTES: Integer
+    MAX_CORPUS_BYTES: Integer
+    MAX_ARTICLES: Integer
+    CHUNK_BYTES: Integer
+    MANIFEST_FILENAME: String
+
+    @sway_locale: SwayLocale
+    @law_root: Pathname
+    @http: Faraday::Connection?
+    @base_url: String?
+
+    def initialize: (sway_locale: SwayLocale, law_root: Pathname, ?http: Faraday::Connection?) -> void
+    def call: () -> Symbol
+
+    private
+
+    def call_locked: (Hash[Symbol, untyped] config, Pathname raw_root) -> Symbol
+    def law_config: () -> Hash[Symbol, untyped]
+    def local_root: (Hash[Symbol, untyped] config) -> Pathname
+    def discover_articles: (Hash[Symbol, untyped] config) -> Hash[String, String]
+    def get_json: (untyped endpoint, Hash[String, String] params, Integer byte_limit, String description) -> untyped
+    def validate_pdf_url!: (String url, String base_url) -> String
+    def publish_corpus: (Pathname raw_root, Hash[String, String] articles) -> void
+    def download_pdf: (String code, String url) -> String
+    def publish_directory: (Pathname staged_root, Pathname raw_root) -> void
+    def same_manifest?: (Hash[String, untyped] manifest, Hash[String, String] articles) -> bool
+    def read_verified_manifest: (Pathname raw_root, String base_url) -> Hash[String, untyped]?
+    def cached_or_raise: (Hash[String, untyped]? verified_manifest, Pathname raw_root, Exception error) -> Symbol
+    def string_params: (Hash[Symbol | String, untyped] params) -> Hash[String, String]
+    def http_connection: () -> Faraday::Connection
+    def diagnostic: (Exception error) -> String
+  end
+end

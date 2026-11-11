@@ -1,0 +1,28 @@
+module Legislation
+  class ArtifactRelocationService
+    # A jurisdiction segment and no reason, or no segment and the reason there
+    # is not exactly one owner. Exactly one of the two is ever filled in.
+    type placement = [String?, String?]
+
+    BILL_KEYED_TREES: Hash[String, Symbol]
+
+    @root: Pathname
+    @report: Legislation::ArtifactRelocationReport
+    @locale_segments: Set[String]
+
+    def initialize: (?root: Pathname) -> void
+    def call: () -> Legislation::ArtifactRelocationReport
+
+    private
+
+    def locale_segments: () -> Set[String]
+    def relocate_bill_keyed_tree: (String relative, Symbol kind) -> void
+    def relocate_attachments: () -> void
+    def locale_for_external_id: (String external_id) -> placement
+    def locale_for_attachment_id: (String attachment_id) -> placement
+    def bills_including_archived: () -> Bill::ActiveRecord_Relation
+    def resolve_single_locale: (Array[SwayLocale] locales, String absent_reason) -> placement
+    def move: (Pathname entry, String relative, placement) -> void
+    def record_left: (Pathname entry, String relative, String reason) -> void
+  end
+end

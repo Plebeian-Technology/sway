@@ -1,0 +1,26 @@
+# The one parse of bill_llm_provisioning.diff_content's `stats` object.
+class SummaryDiffFacts
+  class Facts
+    attr_reader target: String?
+    attr_reader sections_modified: Integer?
+    attr_reader sections_referenced_only: Integer?
+    attr_reader sections_not_found: Integer?
+
+    def initialize: (
+      target: String?, sections_modified: Integer?,
+      sections_referenced_only: Integer?, sections_not_found: Integer?
+    ) -> void
+
+    def self.new: (
+      target: String?, sections_modified: Integer?,
+      sections_referenced_only: Integer?, sections_not_found: Integer?
+    ) -> SummaryDiffFacts::Facts
+  end
+
+  def self.call: (BillLlmProvisioning? provisioning) -> Facts
+  def self.empty: () -> Facts
+
+  # A payload that does not parse reads as no payload.
+  def self.parse: (String? raw) -> untyped
+  def self.integer_or_nil: (untyped value) -> Integer?
+end

@@ -1,0 +1,22 @@
+module OpenBaltimore
+  class Client
+    class Error < StandardError
+    end
+
+    COUNCIL_DISTRICT_SERVICE: String
+
+    @conn: Faraday::Connection
+
+    def initialize: (?connection: Faraday::Connection?) -> void
+
+    def council_districts: () -> Array[Hash[String, untyped]]
+
+    private
+
+    def council_district_layer_id: () -> untyped
+
+    def get_json: (String resource, **untyped params) -> untyped
+
+    def parse: (untyped body) -> untyped
+  end
+end

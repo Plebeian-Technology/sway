@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en_US" data-theme="<%= theme_id %>" data-theme-mode="<%= theme_preference %>" data-intensity="calm" class="<%= theme_html_class %>">
+  <head>
+    <title>Sway</title>
+    <%= favicon_link_tag "/favicon.ico" %>
+
+    <link rel="manifest" href="/manifest.json" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <% inertia_props = local_assigns.fetch(:page, {}).fetch(:props, {}) %>
+    <% inertia_props.fetch(:meta, []).each do |meta| %>
+      <% if meta[:name] %>
+        <meta name="<%= meta[:name] %>" content="<%= meta[:content] %>" />
+      <% else %>
+        <meta property="<%= meta[:property] %>" content="<%= meta[:content] %>" />
+      <% end %>
+    <% end %>
+    
+    <% if (theme_font_href = theme_font_stylesheet_href) %>
+      <%# @lat: [[theme-font-hrefs#Why the layout requests only the active theme's fonts]] %>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <%# @lat: [[theme-font-hrefs#Why the shared theme prop carries the whole font map]] %>
+      <link data-theme-fonts href="<%= theme_font_href %>" rel="stylesheet" />
+    <% end %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# @lat: [[shared-stylesheet-entrypoint#Why an import inside a JavaScript entrypoint is not enough]] %>
+    <%= vite_stylesheet_tag 'application', "data-turbo-track": "reload" %>
+    <%= vite_typescript_tag 'application.tsx', "data-turbo-track": "reload", nonce: content_security_policy_nonce %>
+    <%= Rails.env.production? ? Sentry.get_trace_propagation_meta.html_safe : nil %>
+  </head>
+
+  <body>
+    <main>
+      <%= yield %>
+      <div id="application-loading" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 80vh; overflow: hidden;">
+        <img src="/images/loading.svg" alt="Loading..." style="max-width: 100px;" />
+      </div>
+    </main>
+  </body>
+  <script nonce="<%= content_security_policy_nonce %>">
+    // @lat: [[push-subscriptions#Push subscriptions in the browser#Why the public key is stripped of padding but not of whitespace]]
+    window.VAPID_PUBLIC_KEY = "<%= EnvSecret.read('VAPID_PUBLIC_KEY')&.delete('=') %>"
+  </script>
+  <script nonce="<%= content_security_policy_nonce %>">
+    // @lat: [[system-shape#System shape#Deployment#An open page pings the health check to stay inside the idle window]]
+    window.setInterval(() => {
+      fetch("/up").catch(() => null)
+    }, 1000 * 60 * 4.95)
+  </script>
+</html>

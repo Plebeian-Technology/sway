@@ -1,0 +1,4 @@
+module SwayLocalErrorReporting
+  def self.apply: (untyped config, dsn: String) -> untyped
+  def apply: (untyped config, dsn: String) -> untyped
+end

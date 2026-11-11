@@ -1,0 +1,17 @@
+# Phase 54 D-04 / F-iter1-018: shared parse-and-validate helper for
+# the two LLM adapters. Returns the parsed JSON object (typically
+# Hash[String, untyped]); raises Llm::SchemaError on JSON::ParserError
+# or schema validation failure.
+module Llm
+  module SchemaValidator
+    # B2-IN-03: there is no `schema_hash` parameter any more. Normalization
+    # derives its hash from the validator itself (JSONSchemer::Schema#value),
+    # so a caller cannot point the two at different schemas — nor switch
+    # normalization off by omitting one of them.
+    #
+    # B3-WR-02: a repairable overshoot is degraded before validation rather
+    # than discarding a paid-for response — see Llm::ResponseNormalizer for
+    # which overshoots qualify.
+    def self?.parse_and_validate: (String text, provider_label: String, schema: untyped) -> untyped
+  end
+end

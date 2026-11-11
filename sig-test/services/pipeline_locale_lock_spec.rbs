@@ -1,0 +1,9 @@
+module PipelineLocaleLockSpecHelpers
+  def with_held_locale: (Integer? locale_id) { () -> untyped } -> untyped
+end
+
+class PipelineLocaleLockSpecContext < Object
+  include PipelineLocaleLockSpecHelpers
+
+  def lock_directory: () -> Pathname
+end

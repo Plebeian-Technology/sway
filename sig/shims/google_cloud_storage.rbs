@@ -1,0 +1,40 @@
+# google-cloud-storage ships no RBS and the collection carries only
+# google-cloud-errors, so the classes this repository names are declared here.
+# @lat: [[sway-google-cloud-storage#Why a download lands through a temporary file]]
+module Google
+  module Cloud
+    module Storage
+      class FileVerificationError < Google::Cloud::Error
+      end
+
+      class Project
+        def bucket: (String bucket_name, ?skip_lookup: bool) -> Google::Cloud::Storage::Bucket?
+      end
+
+      class Bucket
+        class Cors
+          def size: () -> Integer
+          def add_rule: (*untyped, **untyped) -> untyped
+          def clear: () -> untyped
+        end
+
+        def cors: () { (Google::Cloud::Storage::Bucket::Cors) -> void } -> void
+        def files: (?prefix: String?) -> Google::Cloud::Storage::File::List
+      end
+
+      class File
+        class List
+          def all: (?request_limit: Integer?) { (Google::Cloud::Storage::File) -> void } -> void
+        end
+
+        def name: () -> String
+
+        def content_type: () -> String?
+
+        def cache_control: () -> String?
+
+        def cache_control=: (String) -> void
+      end
+    end
+  end
+end

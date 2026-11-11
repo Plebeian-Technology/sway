@@ -1,0 +1,14 @@
+# The shared support module reads Bill Creator poll tuples out of TypeScript.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+module BillCreatorPollProps
+  # Constant name to the frontend file declaring it.
+  SOURCES: Hash[String, String]
+
+  # The prop names each Bill Creator tab polls on.
+  def self.pipeline_llm: () -> Array[String]
+  def self.summary: () -> Array[String]
+  def self.positions: () -> Array[String]
+
+  # The names in one `as const` array literal.
+  def self.names_in: (String constant) -> Array[String]
+end

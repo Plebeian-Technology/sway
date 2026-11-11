@@ -1,0 +1,26 @@
+# Phase 59 D-04/D-17: opens ONE combined GitHub PR via Octokit.
+# Octokit::Client is shimmed in sig/shims/octokit.rbs; its return values
+# (Sawyer::Resource) remain `untyped`.
+class GitHubPrService
+  # Deadline on the one local `git` read below.
+  GIT_TIMEOUT_SECONDS: Integer
+
+  @client: Octokit::Client
+
+  @repo: String
+
+  @default_branch: String?
+
+  def initialize: (?token: String) -> void
+
+  # Opens one PR containing all changed files; returns nil when files is empty.
+  def open_pr: (branch: String, title: String, body: String, files: Hash[String, String]) -> (untyped | nil)
+
+  private
+
+  def default_branch: () -> String
+
+  # Local-development fallback for GITHUB_REPO, derived from the git remote.
+  # Raises ArgumentError when there is no remote to derive a slug from.
+  def repo_from_git_remote: () -> String
+end

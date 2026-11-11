@@ -1,0 +1,7 @@
+# Helper defined at describe-block scope in
+# spec/system/admin_testimony_report_layout_spec.rb. Steep cannot see a `def`
+# written inside a describe block, so it is declared here.
+class Object
+  # How many sending-service rows one page of the admin panel renders.
+  def sending_services_page_size: () -> Integer
+end

@@ -1,0 +1,34 @@
+class ReviewBillNewsArticleService
+  class Result
+    attr_reader status: Symbol
+    attr_reader bill_news_article: BillNewsArticle
+    attr_reader errors: Array[String]
+
+    def initialize: (status: Symbol, bill_news_article: BillNewsArticle, ?errors: Array[String]) -> void
+    def ok?: () -> bool
+    def success?: () -> bool
+  end
+
+  @bill: Bill
+  @bill_news_article: BillNewsArticle
+  @admin: User
+  @params: Hash[Symbol, untyped]
+
+  def self.call: (bill: Bill, bill_news_article: BillNewsArticle, ?admin: User?, ?actor: User?, ?params: untyped) -> Result
+  def initialize: (bill: Bill, bill_news_article: BillNewsArticle, ?admin: User?, ?actor: User?, ?params: untyped) -> void
+  def call: () -> Result
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader bill_news_article: BillNewsArticle
+  attr_reader admin: User
+  attr_reader params: Hash[Symbol, untyped]
+
+  def validate_actor_and_bill!: () -> void
+  def apply_article_kind_update!: () -> void
+  def apply_manual_text!: () -> NewsArticleTextVersion?
+  def apply_approval_update!: () -> bool
+  def apply_evidence_retraction!: (new_text_version: NewsArticleTextVersion?, withdrew_approval: bool) -> void
+  def apply_stance_update!: () -> void
+end

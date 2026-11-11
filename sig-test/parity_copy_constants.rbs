@@ -1,0 +1,45 @@
+# Phase 36-02 / 36-04 / 36-05: parity-copy spec files define top-level
+# constants describing the canonical web copy strings that mobile mirrors.
+# Declare them so request specs that reference the constants type-check.
+#
+# Record types, not Hash[Symbol, String]: a handful of keys hold a
+# parameterized-copy lambda (e.g. billsShowingCount) rather than a plain
+# String, and #fetch on a record type resolves to that key's own type.
+PARITY_COPY_VALUES: {
+  billsTitle: String,
+  billsShowingCount: ^(Integer, String) -> String,
+  billsNoneFound: ^(String) -> String,
+  billsLoading: String,
+  billsCategoriesLabel: String,
+  billContentHowOthersVoted: String,
+  billContentVoteBreakdown: String,
+  billContentSwaysSummary: String,
+  billContentWhySupport: String,
+  billContentWhyOppose: String,
+  billContentTakeNextStep: String,
+  orgNoSupport: String,
+  orgNoOppose: String,
+  votePanelTitle: String,
+  votePanelForLabel: String,
+  votePanelForSublabel: String,
+  votePanelAgainstLabel: String,
+  votePanelAgainstSublabel: String,
+  botmEmpty: String,
+  billDetailError: String,
+  compareWithReps: String,
+  voteOnPastLegislation: String,
+  showMore: String,
+  showLess: String
+}
+PARITY_COPY_VALUES_MEMBERSHIPS: Hash[Symbol, String]
+PARITY_COPY_VALUES_LEGISLATORS: {
+  legislatorsTitle: String,
+  legislatorsSearchAgain: String,
+  legislatorsNoneFound: ^(String) -> String,
+  legislatorsShowCharts: String,
+  legislatorsHideCharts: String,
+  legislatorsLoading: String,
+  legislatorScoreAgreed: String,
+  legislatorScoreDisagreed: String,
+  legislatorScoreNoVote: String
+}

@@ -1,0 +1,13 @@
+class UserBillSharesController < ApplicationController
+  def create: () -> void
+
+  def show: () -> void
+
+  private
+
+  def find_or_create_share: (Bill bill) -> UserBillShare
+
+  def respond_with_share: (UserBillShare share, Bill bill) -> void
+
+  def url_from: (String? url) -> String?
+end

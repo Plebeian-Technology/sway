@@ -1,0 +1,25 @@
+# Spec-only declarations for spec/config/sentry_sourcemap_guard_spec.rb.
+#
+# Steep cannot see a `let`, so every helper that spec defines is declared here
+# with the type it really holds. The two condition helpers pull a capture group
+# out of a file body, and a capture that does not match gives nil back — which
+# is exactly what the spec's first example checks for, so the nil must stay in
+# the type.
+class Object
+  def vite_config: () -> String
+
+  def dockerfile: () -> String
+
+  def upload_condition: () -> String?
+
+  def delete_condition: () -> String?
+
+  def sentry_variables: () -> Array[String]
+
+  # nil when no RUN block runs the asset build — the state the spec's own
+  # anti-vacuity example exists to catch.
+  def asset_build: () -> String?
+
+  # One entry per secret read: [the word "export" or nil, the variable name].
+  def secret_reads: () -> Array[Array[String?]]
+end

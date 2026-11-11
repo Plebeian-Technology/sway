@@ -1,0 +1,67 @@
+# Minimal RBS sig stub for ruby-openai (Phase 52 Plan 08 / SPEC R8).
+# rbs_collection has no upstream sig for ruby-openai as of writing.
+# Surface limited to the call shape GenerateBillSummaryJob uses against
+# the local llama.cpp HTTP server (D-10–D-14):
+#
+#   * OpenAI::Client.new(uri_base:, access_token:, request_timeout:) { |Faraday::Connection| ... }
+#   * OpenAI::Client#chat(parameters:) → Hash[String, untyped]
+#
+# REVIEW-7 LOW-4 + REVIEW-8 LOW-7 (cycles 7-8): chat-response Hash
+# retains its polymorphic `Hash[String, untyped]` shape because
+# ruby-openai also surfaces error-payload responses through the same
+# return value when log_errors=false. The caller
+# (`GenerateBillSummaryJob#call_llama`) narrows the value at the
+# `response.dig("choices", 0, "message", "content")` boundary before
+# passing the String content downstream.
+#
+# REVIEW-8 LOW-7 (cycle 8): the parameters Hash is now narrowed to a
+# concrete chat_parameters record type matching the five keys the
+# Phase 52 caller actually sends (model, messages, response_format,
+# temperature, max_tokens). The cycle-7 widening to
+# `Hash[Symbol, untyped]` was a pragmatic deferral; the production
+# call-site is fully typeable. If a future caller wants stream:
+# / tools: / etc., either add them to the record or accept the
+# narrower-than-gem tradeoff (Steep will fail loudly on the new key).
+#
+# OpenAI::Error is the top-level error class ruby-openai raises on
+# non-2xx responses (see ruby-openai-7.4.0/lib/openai.rb). Modelled
+# here so `rescue OpenAI::Error` in the job is Steep-resolvable.
+module OpenAI
+  class Error < StandardError
+  end
+
+  type chat_message = { role: String, content: String }
+
+  # Phase 52 UAT Test 4 follow-up: callers may request structured output
+  # via `json_schema` (token-level constrained sampling) in addition to the
+  # bare `json_object` mode. `json_schema` is optional — the bare
+  # `{ type: "json_object" }` shape stays valid. `schema` is a JSON Schema
+  # document, which is genuinely heterogeneous (Hash[String, untyped]).
+  type chat_response_format = {
+    type: String,
+    ?json_schema: {
+      name: String,
+      schema: Hash[String, untyped],
+      strict: bool,
+    },
+  }
+
+  type chat_parameters = {
+    model: String,
+    messages: Array[chat_message],
+    response_format: chat_response_format,
+    temperature: Float,
+    max_tokens: Integer,
+  }
+
+  class Client
+    def initialize: (
+      ?uri_base: String,
+      ?access_token: String,
+      ?request_timeout: Integer | Float,
+      **untyped
+    ) ?{ (Faraday::Connection) -> void } -> void
+
+    def chat: (parameters: chat_parameters) -> Hash[String, untyped]
+  end
+end

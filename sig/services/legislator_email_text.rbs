@@ -1,0 +1,46 @@
+# Single source of truth for the email-your-legislator message
+# text — rendered by UserLegislatorEmailMailer and shipped as the
+# email_preview Bill prop.
+class LegislatorEmailText
+  @user_legislator_email: UserLegislatorEmail
+
+  @legislator: Legislator
+
+  @user: User
+
+  @bill: Bill
+
+  def initialize: (UserLegislatorEmail user_legislator_email) -> void
+
+  def subject: -> String
+
+  def intro: -> String
+
+  def body: -> String
+
+  def conclusion: -> String
+
+  def as_props: -> Hash[Symbol, String?]
+
+  def bill_link: -> String?
+
+  private
+
+  def user_full_name: -> String
+
+  def bill_link_text: -> "which can be found here - "
+
+  def user_vote_support_text: -> ("support" | "oppose")
+
+  def registered_voter_text: -> ("I am registered to vote and" | "I")
+
+  def residence_text: -> (::String | "in your district")
+
+  def address_text: -> (::String | "")
+
+  def legislator: -> Legislator
+
+  def user: -> User
+
+  def bill: -> Bill
+end

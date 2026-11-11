@@ -1,0 +1,30 @@
+# Phase 67 Plan 03 (D-08, add-alongside). rbs_rails covers the attribute
+# readers and bill/organization/sway_locale associations under
+# sig/rbs_rails/app/models/campaign.rbs. STANCE_TO_SUPPORT and
+# normalize_support moved here from the deleted CampaignBillPosition model
+# (Phase 67 Plan 09).
+class Campaign < ApplicationRecord
+  MAX_NAME_CHARS: Integer
+
+  STANCE_TO_SUPPORT: Hash[String, String]
+
+  def self.normalize_support: (untyped value) -> String?
+
+  LINKED: String
+
+  NO_ORGANIZATION: String
+
+  UNDETERMINED: String
+
+  ORGANIZATION_LINK_DECISIONS: Array[String]
+
+  def organization_link_decision: () -> String?
+
+  def organization_link_decision=: (String?) -> String?
+
+  def organization_link_decided?: () -> bool
+
+  private
+
+  def organization_matches_link_decision: () -> void
+end

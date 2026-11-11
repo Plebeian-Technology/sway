@@ -1,0 +1,25 @@
+# Helpers and lets used from inside `def` bodies in
+# spec/services/summary_batch_result_persister_spec.rb. Steep resolves neither
+# a `def` written inside a describe block nor a `let` read from one.
+#
+# The summary helper is named apart from object_spec_methods.rbs's
+# `summary_result` because sig-test declares every helper on Object, where one
+# name carries one signature across the whole repository.
+class Object
+  def batch_id: () -> String
+
+  def batch_summary_result: (?Hash[String, untyped] overrides) -> Llm::ClaudeBatchService::Result
+
+  def positions_result: (?Array[Hash[String, untyped]] positions) -> Llm::ClaudeBatchService::Result
+
+  def persist_summary: (
+    ?result: Llm::ClaudeBatchService::Result,
+    ?active_categories: Array[Category],
+  ) -> Symbol
+
+  def persist_positions: (?result: Llm::ClaudeBatchService::Result) -> Symbol
+
+  def item_custom_id: () -> String
+
+  def positions_batch_result: () -> Llm::ClaudeBatchService::Result
+end

@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow restore) snapshot matches (signed-out view) 1`] = `
+<View
+  accessibilityLabel="Open organization Civic Alliance"
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  className="bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark rounded-card px-4 py-4 gap-3 mb-3"
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "elevation": 3,
+        "shadowColor": "#000000",
+        "shadowOffset": {
+          "height": 3,
+          "width": 0,
+        },
+        "shadowOpacity": 0.1,
+        "shadowRadius": 6,
+      },
+      {
+        "borderLeftColor": "#3260db",
+        "borderLeftWidth": 5,
+      },
+      null,
+      undefined,
+    ]
+  }
+  testID="org-card-7"
+>
+  <View
+    className="gap-2"
+  >
+    <Text
+      className="text-xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+    >
+      Civic Alliance
+    </Text>
+    <Text
+      className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+    >
+      baltimore-maryland-united_states
+    </Text>
+    <Text
+      className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+      testID="org-card-follower-count-7"
+    >
+      12 followers
+    </Text>
+    <View
+      accessibilityLabel="Follow Civic Alliance"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="rounded-xl px-4 py-2 items-center justify-center bg-accent-light dark:bg-accent-dark border border-accent-light dark:border-accent-dark"
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "minHeight": 44,
+            "opacity": 1,
+          },
+          {
+            "elevation": 3,
+            "shadowColor": "#000000",
+            "shadowOffset": {
+              "height": 3,
+              "width": 0,
+            },
+            "shadowOpacity": 0.1,
+            "shadowRadius": 6,
+          },
+          null,
+          undefined,
+        ]
+      }
+      testID="org-card-follow-btn-7"
+    >
+      <Text
+        className="text-sm font-open-sans-semibold text-white"
+      >
+        Follow
+      </Text>
+    </View>
+  </View>
+</View>
+`;

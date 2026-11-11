@@ -1,0 +1,16 @@
+{
+    "expo": {
+        "name": "Sway",
+        "slug": "sway",
+        "extra": {
+            "apiBaseUrl": "https://app.sway.vote",
+            "webauthnRpId": "app.sway.vote"
+        },
+        "android": {
+            "versionCode": 2
+        },
+        "ios": {
+            "buildNumber": "6"
+        }
+    }
+}

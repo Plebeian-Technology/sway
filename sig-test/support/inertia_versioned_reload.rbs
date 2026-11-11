@@ -1,0 +1,11 @@
+module InertiaVersionedReload
+  # Rails request-spec methods used internally
+  def get: (untyped path, **untyped options) -> untyped
+  def request: -> untyped
+
+  # inertia_rails/rspec matcher method used internally
+  def inertia: -> untyped
+
+  # Methods defined by this module
+  def inertia_versioned_reload_only: (*untyped props) -> untyped
+end

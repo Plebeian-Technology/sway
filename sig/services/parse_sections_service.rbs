@@ -1,0 +1,129 @@
+# Phase 52 Plan 05 Task 2 — RBS sig for ParseSectionsService.
+class ParseSectionsService
+  type amendment_source_value = ("markup" | "text_pattern" | "none")
+  type parsing_target_value   = ("charter" | "code")
+
+  # Section reference Hash payload produced internally by extract_section_references.
+  # Concrete keys + concrete value union (no opaque placeholder).
+  type section_ref_payload = {
+    key:                   String,
+    article:               String?,
+    section:               String?,
+    title:                 String?,
+    anchor:                String?,
+    resolution:            (:exact | :fuzzy | :unresolved),
+    fuzzy_score:           Integer?,
+    target_law_section_id: Integer?,
+    authoritative:         bool,
+  }
+
+  # Raw cite Hash payload (scan_for_section_cites output).
+  type cite_payload = {
+    article:    String,
+    section:    String,
+    anchor:     String,
+    char_start: Integer,
+  }
+
+  # Resolved-section Hash payload (resolve_against_law_sections output).
+  type resolved_payload = {
+    key:                   String,
+    article:               String?,
+    section:               String?,
+    title:                 String?,
+    resolution:            (:exact | :fuzzy | :unresolved),
+    fuzzy_score:           Integer?,
+    target_law_section_id: Integer?,
+  }
+
+  # nearest_preceding_section attribution entry. char_start admits Float
+  # (Float::INFINITY sentinel for "anchor not found"). section_ref_id is
+  # nullable because section_ref_ids array is built one element at a time
+  # and indexing past size is theoretically nil.
+  type ordered_ref = {
+    char_start:            (Integer | Float),
+    section_ref_id:        Integer?,
+    target_law_section_id: Integer?,
+  }
+
+  FUZZY_THRESHOLD_SAME_LENGTH: Integer
+  FUZZY_THRESHOLD_DIFF_LENGTH: Integer
+  CHARTER_KEYWORDS: Array[String]
+  CODE_KEYWORDS:    Array[String]
+  CITE_PATTERNS:    Array[Regexp]
+  BY_HEADER_PATTERN: Regexp
+  UNICODE_DASHES:   Regexp
+
+  # `Struct` typed result. Steep accepts attr_accessor declarations on the
+  # subclass; the parent Struct[result] alias is avoided to keep all type
+  # parameters concrete (no widened polymorphic placeholders).
+  class Result
+    attr_accessor section_reference_ids: Array[Integer]
+    attr_accessor operation_ids:         Array[Integer]
+    attr_accessor amendment_source:      String
+    attr_accessor no_sections_found:     bool
+    attr_accessor unresolved_keys:       Array[String]
+
+    def self.new: (
+      ?section_reference_ids: Array[Integer],
+      ?operation_ids:         Array[Integer],
+      ?amendment_source:      String,
+      ?no_sections_found:     bool,
+      ?unresolved_keys:       Array[String],
+    ) -> Result
+  end
+
+  @bill: Bill
+  @bill_run: PipelineRunBill?
+  @run: LegislationPipelineRun?
+
+  def initialize: (bill: Bill, ?bill_run: PipelineRunBill?, ?run: LegislationPipelineRun?) -> void
+  def call: () -> Result
+
+  private
+
+  # HI-03 / ME-05 / HI2-07: the indexed-resolver row tuple shape, populated
+  # once in extract_section_references from a single pluck call. The fifth
+  # element (title) admits nil because LawSection.title is nullable.
+  type law_section_row = [Integer, String, String, String, String?]
+
+  def classify_target: (String text) -> [String, String]
+
+  # Position of the earliest mention and the wording found there, or nil.
+  def earliest_keyword: (String head, Array[String] keywords) -> [Integer, String]?
+  def extract_section_references: (String text, SwayLocale? sway_locale) -> Array[section_ref_payload]
+  def scan_for_declared_target: (String head) -> cite_payload?
+  def scan_for_declared_targets: (String head) -> Array[cite_payload]
+  def without_amendments_header?: (String? anchor) -> bool
+  def duplicate_of_target?: (cite_payload cite, cite_payload target_cite, Hash[String, String] title_prefix_map) -> bool
+  def scan_for_section_cites: (String text) -> Array[cite_payload]
+  def deduplicate_cites: (Array[cite_payload] cites) -> Array[cite_payload]
+  def normalize_citation_article: (String raw_article) -> String
+  def normalize_citation_section: (String raw_section) -> String
+  def build_title_prefix_map: (Hash[String, law_section_row] exact_index) -> Hash[String, String]
+  def normalize_to_key: (String article_id, String section_num) -> String
+  def derive_short_key: (String key) -> String?
+  # BL2-04 fix: replaces the cycle-0 `resolve_against_law_sections` (deleted)
+  # with the cycle-1 indexed-resolver shape. Consumes the pre-built
+  # exact_index Hash + locale_keys list rather than issuing per-call queries.
+  def resolve_against_indexed_law_sections: (
+    String key,
+    Hash[String, law_section_row] exact_index,
+    Array[String] locale_keys,
+    ?article: String?,
+    ?section: String?,
+    ?title_prefix_map: Hash[String, String]?,
+  ) -> resolved_payload
+  def locate_section_char_start: (String text, section_ref_payload sec) -> (Integer | Float)
+  def nearest_preceding_section: ((Integer | Float) op_char_start, Array[ordered_ref] ordered_refs) -> ordered_ref?
+
+  public
+
+  # `self?.` declares both the singleton and the instance method, so a `self.`
+  # line beside it is a duplicate definition rather than an addition.
+  module FuzzyRatio
+    def self?.ratio: (String, String) -> Integer
+    def self?.levenshtein: (String, String) -> Integer
+  end
+
+end

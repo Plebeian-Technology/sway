@@ -1,0 +1,54 @@
+name: mobile-test
+
+on:
+  push:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/mobile-test.yml"
+  pull_request:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/mobile-test.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  jest:
+    # @lat: [[ci-runner-variable-indirection#Why the fallback matters as much as the indirection]]
+    runs-on: ${{ (github.event_name == 'pull_request' && 'ubuntu-latest') || vars.CI_RUNNER || 'ubuntu-latest' }}
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      # @lat: [[production-image#Why the package manager floats within its major]]
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+        with:
+          version: 12
+
+      # Read the pin rather than repeat it. A bare major floats to whatever
+      # 22.x is current, so this lane drifted from every other one on its own —
+      # and the runtime decides behaviour, not just syntax: Node 26 declares
+      # localStorage where 24 does not. Path is workspace-relative,
+      # not relative to the working-directory above.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: mobile/.node-version
+          cache: pnpm
+          cache-dependency-path: mobile/pnpm-lock.yaml
+
+      # mobile/ is excluded from the root pnpm workspace — install must
+      # run with --ignore-workspace so pnpm targets mobile/pnpm-lock.yaml.
+      - name: Install mobile deps
+        run: pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
+
+      - name: Jest (jest-expo)
+        run: pnpm test:ci
+
+      - name: TypeScript check
+        run: pnpm typecheck
+
+      - name: oxlint
+        run: pnpm run lint

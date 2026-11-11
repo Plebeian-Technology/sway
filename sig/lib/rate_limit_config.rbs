@@ -1,0 +1,4 @@
+module RateLimitConfig
+  FLAG_FOR: Hash[Symbol, Symbol]
+  def self.enabled?: (Symbol scope) -> bool
+end

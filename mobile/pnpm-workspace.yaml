@@ -1,0 +1,11 @@
+# Anchors mobile/ as its own pnpm workspace root. Without this, pnpm walks up
+# from mobile/ and finds the parent (Rails+React monolith) workspace, which
+# excludes mobile via `!mobile` — but the upward walk still lands on the
+# parent's root and installs node_modules there. Planting an empty workspace
+# file here stops the walk and keeps mobile self-contained (D-18).
+packages: []
+allowBuilds:
+  '@sentry/cli': true
+  unrs-resolver: true
+overrides:
+  '@react-navigation/elements': 2.9.40

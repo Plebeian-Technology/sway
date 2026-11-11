@@ -1,0 +1,18 @@
+# Phase 52 Plan 09 (SPEC R13, D-19/D-20): admin-gated PipelineRuns surface.
+# Round 2 review: no `untyped` tokens in public method signatures.
+class PipelineRunsController < ApplicationController
+
+  # GET /pipeline_runs
+  def index: -> void
+
+  # POST /pipeline_runs/:id/force_fail — D-19.
+  def force_fail: -> void
+
+  # DELETE /pipeline_runs/orphans — bulk orphan sweep.
+  def destroy_orphans: -> void
+
+  private
+
+  # Solid Queue lookup; fail-closed on raise.
+  def solid_queue_job_exists_for?: (LegislationPipelineRun run) -> bool
+end

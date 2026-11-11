@@ -1,0 +1,21 @@
+class LegislatorVotesController < ApplicationController
+    include LegislatorVoteUpserter
+
+    @bill: untyped
+
+    def index: -> untyped
+
+    def show: -> untyped
+
+    def create: -> untyped
+
+    private
+
+    def error_redirect: (String message) -> untyped
+
+    def saved_flash: (Integer vote_count, Array[Integer] skipped_legislator_ids) -> Hash[Symbol, String]
+
+    def set_bill: -> untyped
+
+    def legislator_votes_params: -> untyped
+end

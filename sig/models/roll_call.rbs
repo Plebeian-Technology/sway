@@ -1,0 +1,15 @@
+# Manual extensions for RollCall. Schema-derived accessors and the bill
+# association live in the generated sig/rbs_rails/app/models/roll_call.rbs.
+class RollCall < ApplicationRecord
+  def to_builder: () -> Jbuilder
+
+  def self.create!: (?untyped attributes) ?{ () -> untyped } -> RollCall
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+    def last: () -> RollCall?
+  end
+
+  private
+
+  def create_legislator_votes: () -> void
+end

@@ -1,0 +1,6 @@
+# Helper defined at describe-block scope in
+# spec/jobs/ingest_summary_batches_job_spec.rb, which Steep cannot see.
+class Object
+  # A run parked in awaiting_summary_batch holding one unread batch.
+  def awaiting_run: (String batch_id) -> LegislationPipelineRun
+end

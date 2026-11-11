@@ -1,0 +1,50 @@
+# Phase 32 Plan 09 (D-08) — manual extensions for OrganizationBillPosition.
+# rbs_rails covers attribute readers + bill/organization/sway_locale
+# associations under sig/rbs_rails/app/models/organization_bill_position.rbs.
+# This file declares the hand-written additions: PUBLIC_FIELDS constant, the
+# to_builder/to_public_json whitelist serializers, plus DEFAULT_SUMMARY +
+# latest_position_change (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class OrganizationBillPosition < ApplicationRecord
+  PUBLIC_FIELDS: Array[Symbol]
+
+  DEFAULT_SUMMARY: String
+
+  # Phase 61 D-13: fields whose changes can trigger follower notifications.
+  NOTIFIABLE_FIELDS: Array[Symbol]
+
+  # Phase 52 REVIEW-10 MEDIUM-1 (cycle 10): single source of truth for
+  # the wire-side stance enum -> legacy support-column enum mapping
+  # (hoisted from the cycle-9 controller-level duplicates).
+  STANCE_TO_SUPPORT: Hash[String, String]
+
+  # The stored support value a Neutral position carries.
+  NEUTRAL_SUPPORT: String
+
+  def self.normalize_support: (untyped value) -> String?
+
+  def self.neutral_support?: (untyped value) -> bool
+
+  def neutral?: () -> bool
+
+  # The testimony a reader is shown: nil for a Neutral position.
+  def summary_for_readers: () -> String?
+
+  # True when this position's text is still the model's own words,
+  # so nobody has revised it. The bill page renders a notice from this.
+  def summary_ai_unreviewed?: () -> bool
+
+  def to_builder: -> Jbuilder
+  def to_public_json: -> Hash[Symbol, untyped]
+  def latest_position_change: -> OrganizationBillPositionChange?
+
+  private
+
+  def normalize_support_value: () -> void
+
+  # Phase 62 Plan 04 (D-14): first callback on this model.
+  def enqueue_interesting_score_recompute: () -> void
+
+  # Phase 61 D-13: after_commit handler — label and route change notification.
+  def notify_followers_on_change: () -> void
+end

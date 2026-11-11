@@ -1,0 +1,33 @@
+# Phase 66 Plan 01. Reads the replica's position, asks
+# Litestream::ReplicationLagCheck what it means, and writes the decision onto
+# the one ReplicationHeartbeat row. See the class comment for what each plan
+# in this phase adds on top.
+class ReplicationLagCheckJob < ApplicationJob
+  MONITOR_SLUG: String
+  MONITOR_CRONTAB: String
+  MONITOR_CHECKIN_MARGIN_MINUTES: Integer
+  MONITOR_CONFIG: Sentry::Cron::MonitorConfig
+
+  STALL_ALARM: String
+  READ_FAILURE_ALARM: String
+  EMPTY_LISTING_ALARM: String
+  RECOVERY_MESSAGE: String
+
+  # @lat: [[signature-placement#Why the Sentry cron class methods are declared by hand]]
+  def self.sentry_monitor_check_ins: (slug: String, monitor_config: Sentry::Cron::MonitorConfig) -> void
+  def self.sentry_monitor_slug: (?name: String) -> String
+  def self.sentry_monitor_config: () -> Sentry::Cron::MonitorConfig?
+
+  def perform: () -> void
+
+  private
+
+  def build_decision: (reading: Litestream::ReplicaReading, heartbeat: ReplicationHeartbeat, now: ActiveSupport::TimeWithZone) -> Litestream::LagDecision
+  def write_heartbeat: (heartbeat: ReplicationHeartbeat, decision: Litestream::LagDecision, checked_at: ActiveSupport::TimeWithZone) -> void
+  def report: (decision: Litestream::LagDecision, reading: Litestream::ReplicaReading, previous_stalled_since: ActiveSupport::TimeWithZone?) -> void
+  def report_stall: (decision: Litestream::LagDecision, reading: Litestream::ReplicaReading) -> void
+  def report_recovery: (decision: Litestream::LagDecision, previous_stalled_since: ActiveSupport::TimeWithZone?) -> void
+  def report_read_failure: (decision: Litestream::LagDecision, reading: Litestream::ReplicaReading) -> void
+  def report_empty_listing: (decision: Litestream::LagDecision, reading: Litestream::ReplicaReading) -> void
+  def required_error: (Litestream::ReplicaReading reading) -> Exception
+end

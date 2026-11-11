@@ -1,0 +1,11 @@
+# Helpers defined at describe-block scope in
+# spec/services/legislation/atomic_write_spec.rb, prefixed so they cannot
+# collide on ::Object.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # The file each example asks AtomicWrite to end up holding.
+  def atomic_write_dest: () -> Pathname
+
+  # Everything left in the temp directory that is not the destination.
+  def atomic_write_tmp_siblings: () -> Array[Pathname]
+end

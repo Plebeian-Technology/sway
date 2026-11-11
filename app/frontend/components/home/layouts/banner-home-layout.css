@@ -1,0 +1,157 @@
+/* BANNER home layout — the public landing page set as a local-newsroom front
+   page: a lead-story hero, the passkey panel framed as the reader's entrance,
+   and the value propositions as a ranked "why it matters" rail. Mona Sans is
+   loaded by application.html.erb when the Banner theme is active. Colour comes
+   from the banner theme tokens. Realizes mockups/banner.html. */
+
+.bnh-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    color: var(--foreground);
+    font-family: var(--font-body);
+    line-height: var(--leading-body);
+}
+
+.bnh-kicker {
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.bnh-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.bnh-eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* masthead ---------------------------------------------------------------- */
+.bnh-masthead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding: 1.5rem 0 1rem;
+    border-bottom: 2px solid var(--foreground);
+}
+.bnh-wordmark {
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+    line-height: 1;
+}
+.bnh-dot {
+    color: var(--accent);
+}
+.bnh-tagline {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.bnh-main {
+    padding: 2rem 0 3rem;
+}
+
+/* lead story -------------------------------------------------------------- */
+.bnh-lead {
+    max-width: 820px;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+.bnh-lead .bnh-kicker {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+.bnh-headline {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: clamp(2.1rem, 1.3rem + 3.2vw, var(--type-display));
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--foreground);
+    text-wrap: balance;
+    margin-bottom: 1rem;
+}
+.bnh-dek {
+    font-size: var(--type-lede);
+    line-height: var(--leading-heading);
+    color: var(--muted-foreground);
+    font-weight: var(--weight-medium);
+}
+
+/* entrance + rail --------------------------------------------------------- */
+.bnh-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 3rem;
+    align-items: start;
+}
+@media (max-width: 920px) {
+    .bnh-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}
+
+.bnh-promises {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-strong);
+}
+.bnh-promise {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 0.875rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+.bnh-num {
+    font-size: 1.25rem;
+    font-weight: var(--weight-bold);
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+.bnh-promise__title {
+    font-size: 1.05rem;
+    font-weight: var(--weight-bold);
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+}
+.bnh-promise__text {
+    font-size: var(--type-small);
+    line-height: 1.5;
+    color: var(--muted-foreground);
+}
+
+/* footer ------------------------------------------------------------------ */
+.bnh-foot {
+    margin-top: 3rem;
+    padding: 1.5rem 0 2rem;
+    border-top: 1px solid var(--border);
+}
+.bnh-foot p {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    line-height: var(--leading-body);
+}
+.bnh-mark {
+    font-weight: 800;
+    color: var(--foreground);
+}

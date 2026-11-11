@@ -1,0 +1,14 @@
+# Hand-written shim for the data_migrate gem (11.x, ships no RBS).
+# Only the surface ProductionSnapshot.migrate!/#pending_migrations (Phase 65
+# A6 combined schema + db/data runner) actually calls is declared.
+module DataMigrate
+  class DataMigrator
+    def self.create_data_schema_table: () -> void
+  end
+
+  module DatabaseTasks
+    # Combined pending list: [{version: Integer, name: String, kind: :data | :schema}, ...]
+    def self.pending_migrations: () -> Array[Hash[Symbol, untyped]]
+    def self.run_migration: (Hash[Symbol, untyped] migration, Symbol direction) -> void
+  end
+end

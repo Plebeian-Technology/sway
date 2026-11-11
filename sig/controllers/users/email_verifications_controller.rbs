@@ -1,0 +1,27 @@
+# Email capture + Twilio Verify email-channel verification —
+# modern replacement for the WS5.10-deleted EmailVerificationController.
+module Users
+  class EmailVerificationsController < ApplicationController
+    include Authentication
+
+    # rate_limit `by:` lambdas type-check in singleton context (house pattern:
+    # sig/controllers/phone_verification_controller.rbs).
+    def self.email_verification_params: () -> untyped
+
+    def create: -> void
+
+    def update: -> void
+
+    def destroy: -> void
+
+    private
+
+    def respond_success: (String notice) -> void
+
+    def respond_failure: (Symbol field, String message) -> void
+
+    def bill_target: -> String
+
+    def email_verification_params: -> untyped
+  end
+end

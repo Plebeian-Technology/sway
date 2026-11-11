@@ -1,0 +1,8 @@
+class RepresentativeReassignmentMailer < ApplicationMailer
+  @user: User
+  @reassignments: Array[RepresentativeReassignment]
+
+  def reassignment_digest: (User user, Array[RepresentativeReassignment] reassignments) -> untyped
+  def self.reassignment_digest: (User user, Array[RepresentativeReassignment] reassignments) -> ActionMailer::MessageDelivery
+  def single_subject: (RepresentativeReassignment reassignment) -> String
+end

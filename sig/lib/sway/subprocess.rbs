@@ -1,0 +1,122 @@
+# A-WR-03 / A2-WR-04: Open3.capture3 with a deadline. See lib/sway/subprocess.rb
+# for why Timeout.timeout around capture3 does not work.
+module Sway
+  module Subprocess
+    class TimedOut < StandardError
+    end
+
+    # A2-CR-02: raised when either stream outruns its per-stream cap.
+    #
+    # A-IN-03: carries the bounded stderr, because raising instead of
+    # returning takes the stream away from the caller — and MupdfExtractor's
+    # "OCR Disabled in this build" detection reads it. Always a String so no
+    # caller has to tell "no stderr" apart from "older exception".
+    class OutputTooLarge < StandardError
+      attr_reader stderr: String
+
+      def initialize: (String message, ?stderr: String) -> void
+    end
+
+    DEFAULT_TIMEOUT_SECONDS: Integer
+    TERM_GRACE_SECONDS: Integer
+
+    # A2-WR-04: poll interval for .await_group_exit.
+    GROUP_POLL_SECONDS: Float
+
+    # A-IN-02: floor on the reader joins, so a spent budget cannot turn a
+    # finished drain into a TimedOut.
+    DRAIN_FLOOR_SECONDS: Float
+    MAX_STDOUT_BYTES: Integer
+    MAX_STDERR_BYTES: Integer
+    CHUNK_BYTES: Integer
+
+    # A3-WR-01: `timeout` bounds TOTAL WALL CLOCK — child exit AND output
+    # drain — not just child exit. Raises TimedOut when either overruns.
+    # A2-CR-02: max_stdout_bytes / max_stderr_bytes bound SIZE the same way.
+    # Raises OutputTooLarge when either overruns.
+    #
+    # A-CR-02: that bound is real ONLY with Open3.popen3's NON-BLOCK form.
+    # The block form's ensure runs an unbounded `wait_thr.join`
+    # (open3.rb:533-546), which the TimedOut raise unwinds straight into — so
+    # the documented deadline silently became "however long the child takes to
+    # die", and .terminate's bounded reap was inert. This method now owns its
+    # own teardown: it closes the parent ends and does not join.
+    def self.capture3: (
+      *String command,
+      ?timeout_seconds: Numeric,
+      ?max_stdout_bytes: Integer,
+      ?max_stderr_bytes: Integer
+    ) -> [String, String, Process::Status]
+
+    # A2-CR-02: reads one pipe to EOF or to `limit`, whichever comes first.
+    # The block is invoked once, on overflow only, to kill the process group —
+    # a child left blocked on a full pipe would otherwise be reported as
+    # TimedOut on the deadline's timescale rather than as OutputTooLarge.
+    def self.drain: (IO io, Integer limit) ?{ () -> void } -> [String, bool]
+
+    # IO#read(length) returns ASCII-8BIT; this restores the stream's external
+    # encoding so the caps are the only observable change at this seam.
+    def self.reencode: (String buffer, IO io) -> String
+
+    # A3-WR-05: enforces "positional args only, never a shell string". A
+    # single String command is rewritten to spawn's [executable, argv0] form,
+    # which is never shell-interpreted; an empty command raises ArgumentError.
+    def self.argv: (Array[String] command) -> Array[String | [String, String]]
+
+    # A-CR-02: .capture3's body, extracted so the deadline logic keeps a
+    # declared tuple return — steep types the value of a `begin/ensure` as
+    # Array[untyped] rather than propagating the declared tuple into it, and
+    # .capture3 must own a `begin/ensure` now that popen3's block form (with
+    # its unbounded join) is gone.
+    def self.drain_within: (
+      Array[String] command,
+      IO stdout,
+      IO stderr,
+      Process::Waiter wait_thr,
+      timeout_seconds: Numeric,
+      max_stdout_bytes: Integer,
+      max_stderr_bytes: Integer
+    ) -> [String, String, Process::Status]
+
+    # Seconds left on the monotonic deadline, never negative.
+    def self.remaining: (Float deadline) -> Float
+
+    # A-IN-02: what remains of the deadline, floored at DRAIN_FLOOR_SECONDS.
+    # For the two reader joins only, and only once the child has exited —
+    # Thread#join(0.0) is a poll, so a budget spent on the same tick as the
+    # child's exit reported a timeout over output already in memory.
+    def self.drain_join_limit: (Float deadline) -> Float
+
+    def self.abandon: (Process::Waiter wait_thr, Thread out_reader, Thread err_reader) -> void
+
+    # Signals the child's process GROUP, so a descendant holding the pipe open
+    # cannot outlive the deadline.
+    #
+    # A2-WR-04: BOTH waits are bounded. The bare `wait_thr.join` this used to
+    # end with was the only unbounded wait in the module, and it sat inside
+    # the path whose purpose is to convert "hangs forever" into "fails
+    # loudly". An unreapable child is logged, not waited on.
+    #
+    # A-CR-02: "not waited on" holds only because .capture3 no longer uses
+    # popen3's block form, whose ensure re-added an unbounded join AFTER this
+    # method returned. This bound was inert until that changed, so a revert
+    # there re-breaks this signature's claim without editing this file.
+    def self.terminate: (Process::Waiter wait_thr) -> void
+
+    # A2-WR-04: waits up to `seconds` for the signalled process GROUP to
+    # drain, not just for the direct child — on the drain-timeout path
+    # wait_thr has already completed, so joining it gave the descendants zero
+    # grace between TERM and KILL.
+    def self.await_group_exit: (Process::Waiter wait_thr, Numeric seconds) -> void
+
+    # Whether anything remains in the child's process group. Signal 0 runs the
+    # existence and permission checks without delivering anything.
+    def self.group_alive?: (Integer pid) -> bool
+
+    # A-IN-01: delivers only while the group still has a member. Once the
+    # group has drained, the pid is free and any group wearing that number is
+    # a stranger — so the signal is withheld rather than sent to whatever the
+    # kernel handed the number to next.
+    def self.signal_group: (String name, Integer pid) -> void
+  end
+end

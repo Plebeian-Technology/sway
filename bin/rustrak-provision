@@ -1,0 +1,78 @@
+#!/usr/bin/env sh
+# Give the local error collector a project, so errors have somewhere to go.
+# Called by scripts/dip/dev.sh once the collector is up.
+#
+# Writes config/rustrak_project.key, which holds the address the browser uses.
+# dev.sh reads that file and exports both addresses. Nothing is written to any
+# .env file, and nothing here is specific to one machine.
+#
+# Safe to re-run. It adopts a project the collector already has rather than
+# making a second one.
+set -eu
+
+root="$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)"
+cd "$root"
+
+project_file=config/rustrak_project.key
+admin_file=config/rustrak_admin.key
+url="http://127.0.0.1:${RUSTRAK_PORT:-8482}"
+
+if [ -f "$project_file" ]; then
+    exit 0
+fi
+
+if [ ! -f "$admin_file" ]; then
+    echo "rustrak-provision: $admin_file is missing. Run 'dip run dev' once." >&2
+    exit 1
+fi
+
+# The collector needs a moment after the container starts. Give it 30 seconds.
+attempt=0
+until curl -sf "$url/health" >/dev/null 2>&1; do
+    attempt=$((attempt + 1))
+    if [ "$attempt" -ge 60 ]; then
+        echo "rustrak-provision: no answer from $url after 30s." >&2
+        exit 1
+    fi
+    sleep 0.5
+done
+
+email="$(cut -d: -f1 "$admin_file")"
+# f2- and not f2, so a password that contains a colon survives.
+password="$(cut -d: -f2- "$admin_file")"
+
+jar="$(mktemp)"
+trap 'rm -f "$jar"' EXIT
+
+if ! curl -sf -c "$jar" -X POST "$url/auth/login" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$email\",\"password\":\"$password\"}" -o /dev/null; then
+    echo "rustrak-provision: could not sign in to $url." >&2
+    exit 1
+fi
+
+# grep -o and head, because two projects put two "dsn" fields on one line and a
+# greedy sed would take the last.
+first_dsn() {
+    grep -o '"dsn":"[^"]*"' | head -1 | sed 's/^"dsn":"//; s/"$//'
+}
+
+dsn="$(curl -sf -b "$jar" "$url/api/projects" | first_dsn || true)"
+
+if [ -z "$dsn" ]; then
+    dsn="$(curl -sf -b "$jar" -X POST "$url/api/projects" \
+        -H 'Content-Type: application/json' \
+        -d '{"name":"Sway","platform":"javascript"}' | first_dsn || true)"
+    made="made"
+else
+    made="adopted"
+fi
+
+if [ -z "$dsn" ]; then
+    echo "rustrak-provision: the collector returned no address." >&2
+    exit 1
+fi
+
+printf '%s\n' "$dsn" >"$project_file"
+chmod 600 "$project_file"
+echo "rustrak-provision: $made a collector project. Wrote $project_file."

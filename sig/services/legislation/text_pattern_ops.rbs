@@ -1,0 +1,18 @@
+# Phase 52 Plan 05 Task 2 — RBS sig for the verbatim port of
+# legislation/parse_sections.py TEXT_PATTERN_OPS + text_pattern_fallback.
+module Legislation
+  module TextPatternOps
+    # Shape returned by text_pattern_fallback. Plain Hash payloads (not AR rows).
+    type op_payload = {
+      operation: (:strike | :insert | :replace),
+      anchor_text: String,
+      source: :text_pattern,
+      char_start: Integer,
+      char_end: Integer,
+    }
+
+    TEXT_PATTERN_OPS: Array[[Regexp, String]]
+
+    def self.text_pattern_fallback: (String text) -> Array[op_payload]
+  end
+end

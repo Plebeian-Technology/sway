@@ -1,0 +1,65 @@
+# Sway gitleaks configuration.
+#
+# Auto-discovered by gitleaks when it runs with the repo root as the target
+# (so bin/secret-scan.sh, the husky hooks, and a manual `gitleaks git .` all
+# pick it up without an explicit --config).
+
+title = "Sway gitleaks config"
+
+[extend]
+# Keep gitleaks' full built-in ruleset; we only ADD to it below.
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Custom rule: Twilio Auth Token.
+#
+# The built-in rule set does not match 32-character hexadecimal auth tokens,
+# so this rule adds that shape. It matches a 32-hex value
+# anchored to a Twilio token identifier, so a bare MD5/SHA doesn't trip it.
+# ---------------------------------------------------------------------------
+[[rules]]
+id = "twilio-auth-token"
+description = "Twilio Auth Token (32-hex value near a Twilio token identifier)"
+regex = '''(?i)twilio[_-]?(?:auth[_-]?)?token['"\s:=]{1,10}([0-9a-f]{32})'''
+secretGroup = 1
+keywords = ["twilio"]
+
+# ---------------------------------------------------------------------------
+# Global allowlist.
+# ---------------------------------------------------------------------------
+[allowlist]
+description = "Paths that are encrypted or otherwise safe but read as high-entropy"
+
+# Rails encrypted credentials. Their ciphertext is high-entropy base64 and would
+# trip generic rules. bin/secret-scan.sh also neutralizes the rails_credentials
+# textconv to `cat` so the scanner never sees DECRYPTED contents.
+paths = [
+  '''config/credentials\.yml\.enc''',
+  '''config/credentials/.*\.yml\.enc''',
+  # Vendored Sorbet RBI gem type-stubs (twilio-ruby, faker, uri, websocket, …).
+  # These carry example "-----BEGIN RSA PRIVATE KEY-----" strings and base64
+  # docs, never real secrets. sorbet/ was removed in the RBS migration, so this
+  # only affects historical scans — but keeps them clean without 28 fingerprints.
+  '''sorbet/rbi/.*''',
+  # .planning/ exists only in history; like sorbet/ above, this only affects historical scans.
+  '''\.planning/.*''',
+]
+
+# Public Android APK certificate hashes for WebAuthn passkey origins.
+regexes = [
+  '''jUq66o1Q-pLfevNNmzNACuA64GMfTy6QQmWZIDmtd2I''',
+  '''XXqp1NeqXZ2AjKyWtEyRM0BqxFPv6kUB7NcDah0_X0Y''',
+  '''-sYXRdwJA3hvue3mKpYrOZ9zSPC7b4mbgzJmdZEDO5w''',
+  # Apple iCloud Keychain (Managed) public AAGUID in spec/models/passkey_spec.rb.
+  '''dd4ec289-e01d-41c9-bb89-70fa845d4bf2''',
+  # CI test VAPID private key in .github/workflows/rspec.yml (verified non-production/test-only).
+  '''WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s''',
+  # Synthetic test service-account private key in spec/services/fcm_client_spec.rb
+  # (verified non-production test fixture, project sway-fcm-test).
+  '''MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAyOlRkr4l5Z6Q3vQs''',
+  # Fixed WebAuthn credential id in spec/requests/api/v1/registrations_spec.rb,
+  # asserting the same id maps to one user across calls. Not a credential.
+  '''consistent-wid-123''',
+  # Synthetic Brave Search API test key in spec/services/bill_news_article_fetch_service_spec.rb.
+  '''BSAtestsecret1234567890abcdef''',
+]

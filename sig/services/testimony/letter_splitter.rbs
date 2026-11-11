@@ -1,0 +1,36 @@
+module Testimony
+  class LetterSplitter
+    LETTER_MARKER: Regexp
+    MARKER_LOOKBACK_LINES: Integer
+    ATTACHMENT_BOUNDARY: Regexp
+    PAGE_BREAK: Regexp
+    PAGE_TOP_LOOKAHEAD_LINES: Integer
+    PAGE_TOP_LETTER_CUE: Regexp
+
+    class Entry
+      attr_reader position: Integer
+      attr_reader character_offset: Integer
+      attr_reader text: String
+
+      def initialize: (position: Integer, character_offset: Integer, text: String) -> void
+      def self.new: (position: Integer, character_offset: Integer, text: String) -> Testimony::LetterSplitter::Entry
+    end
+
+    def self.call: (String text) -> Array[Entry]
+
+    @text: String
+
+    def initialize: (String text) -> void
+    def call: () -> Array[Entry]
+
+    private
+
+    def split_attachment_boundaries: (Integer start, Integer finish) -> Array[[Integer, Integer]]
+    def fold_print_header_stubs: (Array[[Integer, Integer]] segments) -> Array[[Integer, Integer]]
+    def collapsible_print_header_stub?: (String seg_text) -> bool
+    def split_overlong_segment: (Integer start, Integer finish) -> Array[[Integer, Integer]]
+    def report_appendix_start?: (String preceding_text, String page_text) -> bool
+    def remaining_unheaded_pages: (String seg, Array[Integer] page_starts, Integer current_idx) -> Integer
+    def page_opens_new_letter?: (String page_text) -> bool
+  end
+end

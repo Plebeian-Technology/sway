@@ -1,0 +1,87 @@
+class UserAddressChange < ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::UserAddressChange, ::UserAddressChange::ActiveRecord_Relation, ::Integer]
+
+  ID_LIST_COLUMNS: Array[Symbol]
+
+  # Attributes
+  def id: () -> Integer
+  def id=: (Integer) -> Integer
+  def user_id: () -> Integer
+  def user_id=: (Integer) -> Integer
+  def previous_address_id: () -> Integer
+  def previous_address_id=: (Integer) -> Integer
+  def new_address_id: () -> Integer
+  def new_address_id=: (Integer) -> Integer
+  def deactivated_legislator_ids: () -> Array[Integer]
+  def deactivated_legislator_ids=: (Array[untyped]) -> Array[Integer]
+  def activated_legislator_ids: () -> Array[Integer]
+  def activated_legislator_ids=: (Array[untyped]) -> Array[Integer]
+  def deactivated_district_ids: () -> Array[Integer]
+  def deactivated_district_ids=: (Array[untyped]) -> Array[Integer]
+  def activated_district_ids: () -> Array[Integer]
+  def activated_district_ids=: (Array[untyped]) -> Array[Integer]
+  def previous_sway_locale_ids: () -> Array[Integer]
+  def previous_sway_locale_ids=: (Array[untyped]) -> Array[Integer]
+  def new_sway_locale_ids: () -> Array[Integer]
+  def new_sway_locale_ids=: (Array[untyped]) -> Array[Integer]
+  def prior_vote_count: () -> Integer
+  def prior_vote_count=: (Integer) -> Integer
+  def prior_voted_bill_ids: () -> Array[Integer]
+  def prior_voted_bill_ids=: (Array[untyped]) -> Array[Integer]
+  def prior_voted_sway_locale_ids: () -> Array[Integer]
+  def prior_voted_sway_locale_ids=: (Array[untyped]) -> Array[Integer]
+  def created_at: () -> ActiveSupport::TimeWithZone
+  def updated_at: () -> ActiveSupport::TimeWithZone
+
+  # Associations
+  def user: () -> User
+  def user=: (User) -> User
+  def previous_address: () -> Address?
+  def previous_address=: (Address?) -> Address?
+  def new_address: () -> Address?
+  def new_address=: (Address?) -> Address?
+
+  # Domain predicates
+  def cross_district?: () -> bool
+  def cross_sway_locale?: () -> bool
+  def voted_before_switch?: () -> bool
+
+  private
+
+  def normalize_id_lists: () -> void
+  def addresses_must_differ: () -> void
+
+  public
+
+  module GeneratedRelationMethods
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::UserAddressChange]
+    include ::UserAddressChange::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::UserAddressChange, ::Integer]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::UserAddressChange]
+    include ::UserAddressChange::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::UserAddressChange, ::Integer]
+
+    def first: () -> UserAddressChange?
+    def last: () -> UserAddressChange?
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::UserAddressChange
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::UserAddressChange]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::UserAddressChange
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::UserAddressChange]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::UserAddressChange
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::UserAddressChange]
+    def reload: () -> ::Array[::UserAddressChange]
+
+    def replace: (::Array[::UserAddressChange]) -> void
+    def delete: (*::UserAddressChange | ::Integer) -> ::Array[::UserAddressChange]
+    def destroy: (*::UserAddressChange | ::Integer) -> ::Array[::UserAddressChange]
+    def <<: (*::UserAddressChange | ::Array[::UserAddressChange]) -> self
+    def prepend: (*::UserAddressChange | ::Array[::UserAddressChange]) -> self
+  end
+end

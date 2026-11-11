@@ -1,0 +1,79 @@
+# RBS for the PROD-CR-01 stage-3 verdict cache. All types concrete per
+# [[feedback_rbs_avoid_untyped]].
+#
+# Only LLM verdicts are stored — the NameRules stages are pure and free, and
+# caching them would make a rule edit sticky for every already-classified
+# attachment.
+class TestimonyAttachmentClassification < ApplicationRecord
+  TESTIMONY: String
+  NOT_TESTIMONY: String
+  LABELS: Array[String]
+
+  attr_accessor source_endpoint: String
+  attr_accessor attachment_id: Integer
+
+  # The other half of the identity. NOT NULL with a foreign key, added by
+  # migration 20260810120000, which deleted the existing rows rather than
+  # backfilling them — they carry no jurisdiction, so any backfilled value would
+  # have been an assumption dressed as data, and every row is re-derivable by
+  # classifying the attachment again.
+  attr_accessor sway_locale_id: Integer
+  attr_accessor label: String
+  attr_accessor model: String?
+
+  # A-WR-05: the second half of the cache's read predicate. NULL on rows
+  # written before the column existed, which is what makes them re-classify
+  # once instead of being trusted forever.
+  attr_accessor prompt_version: String?
+
+  # belongs_to :sway_locale
+  attr_reader sway_locale: SwayLocale
+
+  attr_reader id: Integer
+  attr_reader created_at: ActiveSupport::TimeWithZone
+  attr_reader updated_at: ActiveSupport::TimeWithZone
+
+  # Keyed by (sway_locale_id, attachment_id) TOGETHER. Legistar's two attachment
+  # collections share one id space within a city — EventItemMatterAttachments is
+  # a projection of MatterAttachments — so source_endpoint stays provenance only.
+  # The jurisdiction is the piece that was missing: Legistar runs one instance
+  # per city, so the old attachment_id-alone key made a second city's attachment
+  # 38947 the same row as Baltimore's.
+  # A-IN-02 said this hand-redeclares a method rbs_rails already generates.
+  # It does not: there is no sig/rbs_rails/app/models/
+  # testimony_attachment_classification.rbs — the generator has not been run
+  # since this model was added — so deleting it breaks the :app target. The
+  # real defect was the `(*untyped)` shape, which erased argument checking
+  # entirely. Declared concretely instead: every call site passes a Symbol
+  # hash of column values, and `attachment_id:` is also used with an Array in
+  # the specs.
+  def self.where: (
+    Hash[Symbol, (Integer | String | Array[Integer] | nil)] conditions,
+  ) -> ActiveRecord::Relation
+
+  # A-WR-05: the READ predicate — "what did THIS model, under THIS prompt,
+  # decide?". `model` is nil when the caller has no adapter, which matches no
+  # row and correctly degrades to a cache miss.
+  def self.for_verdict: (
+    Integer sway_locale_id,
+    Integer attachment_id,
+    String? model,
+    String prompt_version,
+  ) -> ActiveRecord::Relation
+
+  # The only caller passes the full identity, {sway_locale_id:, attachment_id:},
+  # both Integers. Declaring Hash[Symbol, untyped] would erase that and
+  # type-check any key with any value — including a `source_endpoint:` key,
+  # whose absence from the identity is deliberate.
+  def self.find_or_initialize_by: (Hash[Symbol, Integer] attrs) -> TestimonyAttachmentClassification
+
+  # A2-WR-02: used by the migration spec to reset the table between examples
+  # (it runs with use_transactional_tests = false, so rows do not roll back).
+  def self.delete_all: () -> Integer
+
+  # A4-IN-03: `#testimony?` deleted — zero references anywhere, and reading
+  # `label` outside `.for_verdict` reintroduces the stale-verdict bug that
+  # scope exists to prevent.
+  #
+  # attachment_name column dropped — written on every verdict, read by nothing.
+end

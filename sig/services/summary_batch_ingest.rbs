@@ -1,0 +1,202 @@
+# @lat: [[llm-summaries#Batch summarisation#Why no job waits on a batch]]
+class SummaryBatchIngest
+  # The one processing_status that means a batch has stopped moving.
+  ENDED: String
+
+  # A read-back needs a validation schema and a custom_id, nothing else — the
+  # prompt is never rebuilt, because the source files may have changed since
+  # submission.
+  READ_BACK_PROMPT: Llm::PromptPayload
+
+  SUMMARY_FAILED_PREFIX: String
+  POSITIONS_FAILED_PREFIX: String
+  POSITIONS_FAILED_WITH_SUMMARY_PREFIX: String
+
+  # One bill's settle state, keyed by provisioning id in `entry_for`'s caller.
+  type entry = {
+    bill: Bill,
+    provisioning: BillLlmProvisioning,
+    landed: Array[SummaryBatchIngest::Landed],
+    failed: Array[SummaryBatchIngest::Failure],
+    retried: bool,
+  }
+
+  # One (bill, answer type) the batch may answer. Built from the rows stamped
+  # with the batch id, so it can be a superset of what was submitted.
+  class Answer
+    attr_reader bill: Bill
+    attr_reader provisioning: BillLlmProvisioning
+    attr_reader answer_type: String
+    attr_reader custom_id: String
+
+    def initialize: (bill: Bill, provisioning: BillLlmProvisioning, answer_type: String, custom_id: String) -> void
+    def self.new: (bill: Bill, provisioning: BillLlmProvisioning, answer_type: String, custom_id: String) -> SummaryBatchIngest::Answer
+  end
+
+  # An answer that reached the row, carrying the persist guard's verdict.
+  class Landed
+    attr_reader answer: SummaryBatchIngest::Answer
+    attr_reader outcome: SummaryBatchResultPersister::outcome
+
+    def initialize: (answer: SummaryBatchIngest::Answer, outcome: SummaryBatchResultPersister::outcome) -> void
+    def self.new: (answer: SummaryBatchIngest::Answer, outcome: SummaryBatchResultPersister::outcome) -> SummaryBatchIngest::Landed
+  end
+
+  # An answer that did not: errored, canceled, expired, or unreadable.
+  class Failure
+    attr_reader answer: SummaryBatchIngest::Answer
+    attr_reader error: StandardError
+
+    def initialize: (answer: SummaryBatchIngest::Answer, error: StandardError) -> void
+    def self.new: (answer: SummaryBatchIngest::Answer, error: StandardError) -> SummaryBatchIngest::Failure
+  end
+
+  def self.call: (run: LegislationPipelineRun) -> void
+
+  def initialize: (run: LegislationPipelineRun) -> void
+
+  def call: () -> void
+
+  private
+
+  attr_reader run: LegislationPipelineRun
+
+  @bill_runs: Hash[String, PipelineRunBill]?
+  @model: String?
+  @active_categories: Array[Category]?
+
+  # Leaves a batch that has not ended for the next tick, ingested_at untouched.
+  def ingest: (PipelineRunSummaryBatch batch) -> void
+
+  def answers_for: (PipelineRunSummaryBatch batch) -> Array[SummaryBatchIngest::Answer]
+
+  def items_map: (Array[SummaryBatchIngest::Answer] answers, ?model: String) -> Hash[String, Llm::ClaudeBatchService::Item]
+
+  def settle_read: (
+    PipelineRunSummaryBatch batch,
+    Array[SummaryBatchIngest::Answer] answers,
+    untyped status,
+    Hash[String, Llm::ClaudeBatchService::Result] results,
+  ) -> void
+
+  # A batch that expired before it could be read is settled as fully expired;
+  # one that is still live is left for the next tick.
+  def settle_unreadable: (
+    PipelineRunSummaryBatch batch,
+    Array[SummaryBatchIngest::Answer] answers,
+    StandardError error,
+  ) -> void
+
+  def retryable_answer?: (SummaryBatchIngest::Answer answer) -> bool
+
+  def outstanding?: (SummaryBatchIngest::Answer answer) -> bool
+
+  def persist: (
+    PipelineRunSummaryBatch batch,
+    SummaryBatchIngest::Answer answer,
+    Llm::ClaudeBatchService::Result result,
+  ) -> SummaryBatchResultPersister::outcome
+
+  def settle: (
+    PipelineRunSummaryBatch batch,
+    landed: Array[SummaryBatchIngest::Landed],
+    failures: Array[SummaryBatchIngest::Failure],
+    counts: Hash[Symbol, Integer],
+  ) -> void
+
+  def entry_for: (
+    Hash[Integer, SummaryBatchIngest::entry] state,
+    SummaryBatchIngest::Answer answer,
+  ) -> SummaryBatchIngest::entry
+
+  # A bill whose failed item is being retried is left `generating` with its
+  # stage result still awaiting_batch; the retry batch's ingest settles it.
+  def settle_bill: (SummaryBatchIngest::entry entry) -> void
+
+  def settle_bill_completed: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    Array[SummaryBatchIngest::Landed] landed,
+    Array[SummaryBatchIngest::Failure] failed,
+  ) -> void
+
+  def settle_bill_failed: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    Array[SummaryBatchIngest::Failure] failed,
+  ) -> void
+
+  def half_written?: (BillLlmProvisioning provisioning) -> bool
+
+  def settle_half_written: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    Array[SummaryBatchIngest::Failure] failed,
+  ) -> void
+
+  def record_stage: (Bill bill, RunLegislationPipelineJob::stage_status status, ?error: String?, ?reason: String?) -> void
+
+  # Already capped at GenerateBillSummaryJob::MAX_GENERATION_ERROR_LENGTH.
+  def failure_text: (
+    BillLlmProvisioning provisioning,
+    Array[SummaryBatchIngest::Failure] failures,
+  ) -> String
+
+  def failure_prefix: (SummaryBatchIngest::Failure failure, bool summary_present) -> String
+
+  def write_partial_failure!: (
+    BillLlmProvisioning provisioning,
+    Array[SummaryBatchIngest::Failure] failures,
+  ) -> void
+
+  def settle_failed!: (BillLlmProvisioning provisioning, String message) -> Symbol?
+
+  def report_failures: (Bill bill, Array[SummaryBatchIngest::Failure] failures) -> void
+
+  # The custom_ids a retry batch now carries. Empty when the batch has already
+  # had its one retry, when nothing failed, or when the retry could not be
+  # bought.
+  def retry_failures: (
+    PipelineRunSummaryBatch batch,
+    Array[SummaryBatchIngest::Failure] failures,
+  ) -> Set[String]
+
+  def submit_retry!: (
+    PipelineRunSummaryBatch batch,
+    Array[Llm::ClaudeBatchService::Item] items,
+    ?model: String?
+  ) -> PipelineRunSummaryBatch
+
+  def restamp!: (SummaryBatchIngest::Answer answer, PipelineRunSummaryBatch record) -> bool?
+
+  def mark_ingested!: (PipelineRunSummaryBatch batch, Hash[Symbol, Integer] counts) -> void
+
+  # The batch's own per-item outcome tally, which is what the four columns
+  # mirror. Falls back to counting the results when the status carries none.
+  def counts_from: (untyped status, Hash[String, Llm::ClaudeBatchService::Result] results) -> Hash[Symbol, Integer]
+
+  def count_of: (untyped request_counts, Symbol name) -> Integer
+
+  def expired_counts: (
+    PipelineRunSummaryBatch batch,
+    Array[SummaryBatchIngest::Failure] failures,
+  ) -> Hash[Symbol, Integer]
+
+  def log_unknown_custom_id: (PipelineRunSummaryBatch batch, Llm::ClaudeBatchService::Result result) -> void
+
+  # Fires only once every batch of the run is ingested, including a retry
+  # batch this sweep just created.
+  def finish_run!: () -> void
+
+  def bill_run_for: (Bill bill) -> PipelineRunBill?
+
+  def bill_runs: () -> Hash[String, PipelineRunBill]
+
+  def record_batch_usage: (untyped result, ?batch: PipelineRunSummaryBatch?) -> void
+
+  def batch_claude_model: (?PipelineRunSummaryBatch? batch) -> String
+
+  def model: (?PipelineRunSummaryBatch? batch) -> String
+
+  def active_categories: () -> Array[Category]
+end

@@ -1,0 +1,13 @@
+class SwayLocale
+  module TermRulesRegistry
+    CONGRESS_LOCALE_NAME: String
+
+    DECLARATIONS: Hash[String, TermRules]
+
+    def self.fetch: (String locale_name) -> TermRules
+
+    def self.declared?: (String locale_name) -> bool
+
+    def self.declared_locale_names: () -> Array[String]
+  end
+end

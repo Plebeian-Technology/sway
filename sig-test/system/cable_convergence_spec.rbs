@@ -1,0 +1,9 @@
+# spec/system/cable_convergence_spec.rb — Steep resolves no helper methods
+# written inside a describe block. Declared here rather than silenced.
+# @lat: [[cable-convergence-budget#ActionCable convergence measurement]]
+class Object
+  def arm_mutation_observer: (Integer) -> void
+  def await_mutation_observer: () -> Hash[String, untyped]
+  def calculate_metrics: (Array[Float]) -> Hash[Symbol, Float]
+  def record_measurements: (Array[Float], Hash[Symbol, Float]) -> void
+end

@@ -1,0 +1,212 @@
+/* The Corner Store bill-list layout: the bulletin board in a shop window, one
+   screen-printed poster per bill. Flat blocks with hard offsets, matching
+   cornerstore-bill-layout.css. */
+
+.csl-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+.csl-masthead {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+}
+
+/* Emblem-sized only — never a repeating band. */
+.csl-masthead__flag {
+    width: calc(var(--space-unit) * 9);
+    height: auto;
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    box-shadow: 4px 4px 0 var(--border);
+    flex: none;
+}
+
+.csl-kicker {
+    display: inline-block;
+    background: var(--destructive);
+    color: var(--primary-foreground);
+    font-weight: var(--weight-display);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
+    transform: rotate(-1.5deg);
+    box-shadow: 4px 4px 0 var(--border);
+}
+
+/* Ink over a TINT of the primary, never the primary at full strength — at
+   letterform scale that pairing vibrates.
+   Set at h2, not display: on a list the locale is context and the bills are
+   the subject, so a full-height wood-type locale name would eat the first
+   screen before a single bill appeared. */
+.csl-headline {
+    margin-top: calc(var(--space-unit) * 4);
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    text-transform: uppercase;
+    color: var(--foreground);
+    text-shadow: 4px 4px 0 var(--surface-3);
+}
+
+/* --- controls ------------------------------------------------------------ */
+
+.csl-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 4);
+    margin-top: calc(var(--space-unit) * 5);
+    padding: calc(var(--space-unit) * 4);
+    background: var(--card);
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    box-shadow: var(--neo-shadow);
+}
+
+/* @lat: [[bills-filter-header#Why the categories control gets its own line]] */
+.csl-field--wide {
+    flex-basis: 100%;
+}
+
+.csl-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    max-width: 100%;
+    gap: calc(var(--space-unit) * 1);
+}
+
+.csl-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--foreground);
+}
+
+/* @lat: [[theme-tokens#Theme tokens#Why native select chrome is defined once, globally]] */
+
+.csl-input {
+    cursor: text;
+}
+
+.csl-more {
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 3);
+    background: var(--background);
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+/* --- the board ----------------------------------------------------------- */
+
+.csl-count {
+    padding: calc(var(--space-unit) * 4) 0 calc(var(--space-unit) * 2);
+    font-size: var(--type-small);
+    color: var(--foreground);
+}
+
+.csl-board {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.csl-poster {
+    padding: calc(var(--space-unit) * 4);
+    background: var(--card);
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    box-shadow: var(--neo-shadow);
+}
+
+/* The identifier is stencilled, not a control: it names the bill and cannot
+   be pressed, so it must not take a control's shape (audit F3). */
+.csl-poster__code {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: var(--tracking-display);
+    color: var(--primary);
+}
+
+/* The chamber is running text — a third kind of information, a third shape. */
+.csl-poster__kind {
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.csl-poster__title {
+    display: block;
+    margin-top: calc(var(--space-unit) * 3);
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.csl-poster__title:hover,
+.csl-poster__title:focus-visible {
+    text-decoration: underline;
+}
+
+.csl-poster__brief {
+    margin-top: calc(var(--space-unit) * 2);
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+.csl-poster__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 3);
+    padding-top: calc(var(--space-unit) * 2);
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.csl-tally {
+    font-size: var(--type-micro);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--muted-foreground);
+}
+
+.csl-voted {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--vote-for);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .csl-kicker {
+        transform: none;
+    }
+}
+
+/* The segment that distinguishes this bill from its neighbours. Dropped out of
+   the wood type so the stencilled subject still leads the poster. */
+.csl-poster__qualifier {
+    font-family: var(--font-body);
+    font-weight: var(--weight-body);
+    text-transform: none;
+    letter-spacing: var(--tracking-body);
+    color: var(--muted-foreground);
+}

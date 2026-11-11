@@ -1,0 +1,6 @@
+# Hand-written RBS for app/jobs/analyze_database_job.rb.
+class AnalyzeDatabaseJob < ApplicationJob
+  ANALYSIS_LIMIT: Integer
+
+  def perform: () -> Integer
+end

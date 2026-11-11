@@ -1,0 +1,15 @@
+# Phase 67 Plan 03. rbs_rails covers the attribute readers and the
+# sending_service_domain/bill associations under
+# sig/rbs_rails/app/models/sending_service_domain_bill.rbs.
+class SendingServiceDomainBill < ApplicationRecord
+  # Pitfall 12 (67-RESEARCH.md): replaces this bill's contribution rather
+  # than adding a second one, so re-running the cleaning stage can never
+  # inflate a domain's totals.
+  def self.record_contribution!: (
+    sending_service_domain: SendingServiceDomain,
+    bill: Bill,
+    sender_count: Integer,
+    letter_count: Integer,
+    machine_sent_letter_count: Integer
+  ) -> SendingServiceDomainBill
+end

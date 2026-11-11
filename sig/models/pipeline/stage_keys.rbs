@@ -1,0 +1,49 @@
+# RBS signature for Pipeline::StageKeys — the canonical hyphenated-key ↔
+# symbol mapping for the eight pipeline stages. Literal-union types
+# (`stage_key`, `stage_symbol`) make Steep refuse unknown stage strings
+# and unknown stage symbols at every callsite. No `untyped` — concrete
+# unions only, per feedback_rbs_avoid_untyped.
+#
+# Path convention: sig files mirror app/. `app/models/pipeline/stage_keys.rb`
+# → `sig/models/pipeline/stage_keys.rbs` (matches sig/models/pipeline/stage_deps.rbs
+# precedent).
+module Pipeline
+  type stage_key = "fetch-bills"
+                 | "fetch-law"
+                 | "extract-text"
+                 | "parse-sections"
+                 | "generate-diffs"
+                 | "fetch-hearings"
+                 | "clean-testimony"
+                 | "summarize-bill"
+
+  type stage_symbol = :fetch_bills
+                    | :fetch_law
+                    | :extract_text
+                    | :parse_sections
+                    | :generate_diffs
+                    | :fetch_hearings
+                    | :clean_testimony
+                    | :summarize
+
+  module StageKeys
+    # Hash key types are the broader String / Symbol (not the literal
+    # unions `stage_key` / `stage_symbol`) so that `.fetch(unknown_input)`
+    # type-checks at the parser seam — fail-closed `KeyError` is the
+    # intended runtime behavior for unknown input. Hash value types
+    # ARE the literal unions, so consumers of the returned symbol/key
+    # get full literal-union narrowing.
+    KEY_TO_SYMBOL: Hash[String, stage_symbol]
+    SYMBOL_TO_KEY: Hash[Symbol, stage_key]
+
+    # `to_symbol` arg is `String` (not `stage_key`) because callers
+    # routinely pass operator-supplied strings of unknown provenance and
+    # rely on the `.fetch` raise to fail closed on bogus input.
+    def self.to_symbol: (String key) -> stage_symbol
+
+    # `to_key` arg is `Symbol` (not `stage_symbol`) for symmetric reasons —
+    # programmatic callers may pass symbols of unknown provenance and
+    # rely on the `.fetch` raise to fail closed.
+    def self.to_key: (Symbol symbol) -> stage_key
+  end
+end

@@ -1,0 +1,11 @@
+# Weekly pass that writes the audio caching instruction onto objects
+# an admin upload put in the bucket without one. See
+# app/jobs/audio_cache_control_job.rb for the full contract.
+class AudioCacheControlJob < ApplicationJob
+  # Objects written this pass.
+  def perform: () -> Integer
+
+  private
+
+  def assets_bucket: () -> untyped
+end

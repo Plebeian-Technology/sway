@@ -1,0 +1,26 @@
+# Copies the legislation artifact tree to its bucket once a day.
+class BackupLegislationArtifactsJob < ApplicationJob
+  # Raised when a pass did not finish clean, so the cron monitor goes red.
+  class BackupIncomplete < StandardError
+  end
+
+  MAX_REPORTED_FAILURES: Integer
+
+  MONITOR_SLUG: String
+  MONITOR_CRONTAB: String
+  MONITOR_CHECKIN_MARGIN_MINUTES: Integer
+  MONITOR_MAX_RUNTIME_MINUTES: Integer
+  MONITOR_CONFIG: Sentry::Cron::MonitorConfig
+
+  # @lat: [[signature-placement#Why the Sentry cron class methods are declared by hand]]
+  def self.sentry_monitor_check_ins: (slug: String, monitor_config: Sentry::Cron::MonitorConfig) -> void
+  def self.sentry_monitor_slug: (?name: String) -> String
+  def self.sentry_monitor_config: () -> Sentry::Cron::MonitorConfig?
+
+  def perform: () -> void
+
+  private
+
+  def format_failure_summary: (Legislation::ArtifactBackupReport report) -> String
+  def format_failed_details: (Legislation::ArtifactBackupReport report) -> String
+end

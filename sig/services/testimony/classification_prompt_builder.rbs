@@ -1,0 +1,92 @@
+# RBS signature for Testimony::ClassificationPromptBuilder — the stage-3
+# prompt (PROD-CR-01). Mirrors BillPositionsPromptBuilder's
+# system_prompt / user_message split so the caller builds an
+# Llm::PromptPayload identically.
+module Testimony
+  class ClassificationPromptBuilder
+    # A-WR-05 / A3-WR-06: DERIVED from the prompt bytes (a 12-char SHA-256
+    # prefix), not declared. Stored on every cached row and part of the read
+    # predicate, so any prompt change re-classifies — the only path by which a
+    # wrong "not_testimony" is ever corrected, and previously a hand-maintained
+    # literal that a prompt edit could silently fail to move.
+    #
+    # A2-WR-01: from BOTH halves. The bytes were #system_prompt only, so
+    # #user_message's numbering template, #sanitize and MAX_NAME_CHARS could
+    # all shift verdicts without moving the version — and this RBS repeated
+    # the unqualified "any prompt change" claim.
+    PROMPT_VERSION: String
+    MAX_NAME_CHARS: Integer
+
+    # @lat: [[untrusted-text-in-prompts#Why character caps stand in for token budgets]]
+    MAX_DOCUMENT_CHARS: Integer
+    TEXT_TRUNCATION_NOTICE: String
+
+    # @lat: [[signature-placement#Why a string-keyed record is written as a Hash]]
+    type document = {
+      name: String?,
+      text: String?,
+    }
+
+    # A2-WR-01: the fixed name PROMPT_VERSION is computed over. Never sent to
+    # a model; long enough and awkward enough that MAX_NAME_CHARS and
+    # #sanitize_name are both observable in the digest.
+    PROBE_NAME: String
+
+    # The TEXT half of the probe, so MAX_DOCUMENT_CHARS and
+    # #sanitize_text are observable in the digest too, and PROBE_DOCUMENT, the
+    # one document .version_digest hashes.
+    PROBE_TEXT: String
+    PROBE_DOCUMENT: document
+
+    # The registered content class this builder encloses, and the
+    # fixed stand-in .version_digest substitutes for the per-instance random
+    # delimiter. NORMALIZED_DELIMITER keeps the prefix, so a prefix rename
+    # still moves PROMPT_VERSION.
+    DELIMITER_PREFIX: String
+    NORMALIZED_DELIMITER: String
+
+    @documents: Array[document]
+    @boundary: Llm::UntrustedTextBlock
+
+    def initialize: (Array[document] documents) -> void
+
+    # A-IN-03: no #call. The sibling builders' joined-string form is the
+    # llama.cpp path; this prompt only ever reaches Claude, which takes the
+    # system/user split, so #call had zero callers and no spec.
+
+    # Cache-eligible: no per-call interpolation.
+    def system_prompt: () -> String
+
+    # Per-call content: the numbered document list — a NAME line and a TEXT
+    # line per index — enclosed in an Llm::UntrustedTextBlock.
+    def user_message: () -> String
+
+    # The exact bytes PROMPT_VERSION is taken over — both halves,
+    # with this instance's random delimiter replaced by NORMALIZED_DELIMITER.
+    # Public only because .version_digest is a class method.
+    def version_probe_text: () -> String
+
+    # A2-WR-01: PROMPT_VERSION's derivation, exposed so a spec can re-run it
+    # against a modified prompt and assert the version actually moved.
+    def self.version_digest: () -> String
+
+    private
+
+    attr_reader documents: Array[document]
+    attr_reader boundary: Llm::UntrustedTextBlock
+
+    # Names are operator-typed third-party free text — data, not
+    # instructions. Newlines are stripped so a name cannot forge extra
+    # numbered entries.
+    def sanitize_name: (String? name) -> String
+
+    # @lat: [[untrusted-text-in-prompts#Why text is scrubbed before a regex reads it]]
+    def sanitize_text: (String? text) -> String
+    def header: () -> String
+
+    # PROD-WR-04: names the CONSTANT prefix only, so #header stays
+    # byte-identical across instances and across calls.
+    def boundary_instruction: () -> String
+    def output_contract: () -> String
+  end
+end

@@ -1,0 +1,21 @@
+# This file orchestrates the local candidate only and reads committed
+# fixtures back; judging is session work, done elsewhere, over data.
+# A verify step checks this file stays that way.
+prompts:
+  - file://prompt.mjs
+
+providers:
+  - id: "openai:chat:unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M"
+    label: llamacpp
+    config:
+      apiBaseUrl: http://localhost:8888/v1
+      apiKey: not-needed-llamacpp-ignores-this
+      temperature: 0
+
+outputPath: tmp/promptfoo/output.json
+
+tests:
+  - vars:
+      system_prompt_path: legislation/prompt_dumps/baltimore-maryland-united_states/25-0064/positions.system.txt
+      user_message_path: legislation/prompt_dumps/baltimore-maryland-united_states/25-0064/positions.user.txt
+      source: positions

@@ -1,0 +1,12 @@
+# iOS App Store screenshots scaffold
+#
+# Required device sizes (App Store Connect 2026):
+# - 6.7"  (iPhone 16 Pro Max / 15 Pro Max)         1290 x 2796 px
+# - 6.1"  (iPhone 16 / 15)                         1179 x 2556 px
+# - 5.5"  (iPhone 8 Plus, legacy fallback)         1242 x 2208 px
+#
+# No iPad sizes: app.config.ts sets supportsTablet: false.
+#
+# Replace this .keep file with the captured PNGs before submission.
+# lat.md/how-to/submit-the-mobile-app.md carries this as a precondition no
+# waiver covers.

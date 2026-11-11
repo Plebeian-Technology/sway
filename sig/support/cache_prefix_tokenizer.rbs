@@ -1,0 +1,19 @@
+# Phase 54 R5 / iter-3 Q2: concrete sig for the two-tier cache-prefix
+# tokenizer helper. Return type is Integer? (nilable) because Tier 1 may
+# return nil under any of three conditions:
+#   1. The `anthropic` gem is not yet loaded (LoadError path in the
+#      fresh-clone scenario before Task 2 installs the gem).
+#   2. B2-WR-07: LiveLlmGate.enabled? is false — the operator has not opted
+#      into live LLM traffic, which is the ordinary case for every run.
+#   3. ANTHROPIC_API_KEY is unset or blank once stripped.
+# Every case is the documented Tier 2 fallthrough — callers MUST handle
+# the nil branch and apply the char-length heuristic instead.
+module CachePrefixTokenizer
+  # B3-WR-01: the Tier-2 char-length density, DELEGATED to
+  # Llm::PromptCache::CHARS_PER_TOKEN rather than restated. Two figures for one
+  # quantity (4.0 in production, 3.5 here) is how a silent withholding of
+  # cache_control shipped.
+  TIER_2_CHARS_PER_TOKEN: Float
+
+  def self?.count: (String system_prompt, ?model: String) -> Integer?
+end

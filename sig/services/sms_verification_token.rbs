@@ -1,0 +1,8 @@
+class SmsVerificationToken
+  TTL: ActiveSupport::Duration
+  KEY_PREFIX: String
+
+  def self.issue!: (String | Symbol phone) -> String
+  def self.consume!: (String? token, phone: String) -> bool
+  def self.peek: (String? token) -> Hash[Symbol, untyped]?
+end

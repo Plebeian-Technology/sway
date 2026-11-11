@@ -1,0 +1,20 @@
+# Rails marks both of these :nodoc:, so the vendored ActiveRecord signatures leave
+# them out — but they are the supported way to reach a database OTHER than the one
+# the app is currently connected to, which is what QueueDatabaseSetupService needs.
+# Rails uses this exact pair itself, in DatabaseTasks.load_schema_current.
+module ActiveRecord
+  module Tasks
+    module DatabaseTasks
+      def self.with_temporary_connection: [T] (
+        ActiveRecord::DatabaseConfigurations::DatabaseConfig db_config,
+        ?clobber: bool
+      ) { (ActiveRecord::ConnectionAdapters::AbstractAdapter connection) -> T } -> T
+
+      def self.load_schema: (
+        ActiveRecord::DatabaseConfigurations::DatabaseConfig db_config,
+        ?Symbol format,
+        ?String? file
+      ) -> void
+    end
+  end
+end

@@ -1,0 +1,26 @@
+# Helpers defined at describe-block scope in
+# spec/lib/sway_google_cloud_storage_spec.rb, prefixed so they cannot collide
+# on ::Object.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # An anonymous class that has mixed SwayGoogleCloudStorage in, so the module's
+  # instance methods can be called.
+  def gcs_includer: () -> untyped
+
+  # Builds the object `bucket.files(prefix:)` answers with: its `all` walks the
+  # given pages one after another, the way the Google client's own list does.
+  def paged_file_list: () -> (^(Array[Array[untyped]] pages) -> untyped)
+
+  # One entry in such a page.
+  def gcs_fake_file: (name: String, size: Integer, ?created_at: untyped, ?md5: untyped) -> untyped
+
+  # Builds the same object for a caller that passes `all` a block, which is how
+  # download_directory walks the listing.
+  def gcs_yielding_file_list: (Array[untyped] files) -> untyped
+
+  # Points the includer's storage at a bucket listing those files.
+  def gcs_stub_bucket_with: (Array[untyped] files) -> untyped
+
+  def cors_builder: () -> untyped
+  def storage: () -> untyped
+end

@@ -1,0 +1,5 @@
+module BillScheduleBrowserHelpers : ::Object
+  AGENDA_DATE_TEST_ID_PREFIX: String
+
+  def select_first_available_agenda_date: (untyped page) -> String
+end

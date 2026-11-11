@@ -1,0 +1,11 @@
+class SolidQueue::Job
+  def self.enqueue: (ActiveJob::Base active_job, ?scheduled_at: Time | ActiveSupport::TimeWithZone) -> SolidQueue::Job
+end
+
+class SolidQueue::ReadyExecution
+  def self.claim: (Array[String] queue_list, Integer limit, Integer process_id) -> Array[SolidQueue::ClaimedExecution]
+end
+
+class SolidQueue::ClaimedExecution
+  def perform: () -> void
+end

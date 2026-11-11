@@ -1,0 +1,105 @@
+# RBS sig for Legislation::Paths — the single source of truth for where the
+# legislation pipeline's files live on disk. See app/services/legislation/paths.rb.
+#
+# No `untyped` (per project memory feedback_rbs_avoid_untyped). Every root
+# accessor returns a Pathname (absolute in production via LEGISLATION_ROOT;
+# repo-relative in dev and test).
+#
+# The coercions take String? because that is what every caller actually holds:
+# Bill#external_id, PipelineRunBill#bill_external_id, SwayLocale#name, and a
+# JSON value read back off disk. .upstream_file_name takes Object? because its
+# whole job is to answer for a value that may be ANY JSON type — the
+# implementation refuses everything that is not a String on its first line.
+# (`top` would also accept anything, but `top` has no methods at all, so the
+# is_a? check could not even be written.)
+#
+# EVERY PER-BILL BUILDER TAKES sway_locale AS A KEYWORD. A Bill is unique on
+# (external_id, sway_locale_id) together, so external_id alone does not name one
+# bill. Both values are short strings, so a positional pair could be passed in
+# the wrong order and still build a path — one that is wrong in a way no type
+# check would notice. A keyword cannot be swapped by accident.
+module Legislation
+  module Paths
+    # The shape a value must have to be ONE safe piece of a file path. Used for
+    # the external_id and for the sway_locale name alike.
+    EXTERNAL_ID_PATTERN: Regexp
+
+    # How much of a rejected (untrusted, unbounded) value the error message may
+    # echo back.
+    UNSAFE_EXTERNAL_ID_ECHO_LENGTH: Integer
+
+    # Raised by the two `!` coercions and so by every builder below.
+    class UnsafeExternalIdError < StandardError
+    end
+
+    # Coerce an external_id to a safe single path segment (trimming surrounding
+    # whitespace), or raise. Mirrors FetchHearingsService#coerce_matter_id!.
+    def self.external_id_segment!: (String? value) -> String
+
+    # The non-raising sibling — nil when the value cannot name a path segment.
+    # Stands to the method above as #coerce_attachment_id does to
+    # #coerce_matter_id!. Readers that only ask "is there a file for this bill?"
+    # use this one, because raising would turn one unusable row into a server
+    # error for a whole admin page.
+    def self.external_id_segment: (String? value) -> String?
+
+    # Coerce a SwayLocale NAME to the path segment that keeps one jurisdiction's
+    # files apart from another's, or raise. The name, not the id: the id is an
+    # autoincrement key that means a different locale in every database, so a
+    # path built from it breaks silently when a production copy is restored into
+    # development.
+    def self.sway_locale_segment!: ((SwayLocale | String)? value) -> String
+
+    # The non-raising sibling, standing to .sway_locale_segment! exactly as
+    # .external_id_segment stands to .external_id_segment!.
+    def self.sway_locale_segment: ((SwayLocale | String)? value) -> String?
+
+    # Turns a file name an outside system supplied into one that is safe to join
+    # onto a directory, or nil. Removes NUL bytes (valid UTF-8, so the client's
+    # scrub keeps them, and File.basename raises on them) and refuses "." and
+    # "..". Object? because the value arrives from parsed JSON and may be
+    # anything; the first line refuses everything that is not a String.
+    def self.upstream_file_name: (Object? value) -> String?
+
+    # Per-bill artifact path builders. Every one coerces BOTH pieces before
+    # joining, so no caller has to remember to, and every one raises
+    # UnsafeExternalIdError when either piece is unusable. The locale segment
+    # always comes first in the path, so an operator can remove one
+    # jurisdiction's files with a single directory removal.
+    def self.bill_artifact_dir: (String? external_id, sway_locale: (SwayLocale | String)?) -> Pathname
+
+    # A String rather than a Pathname because every caller hands it to
+    # Pathname.glob.
+    def self.bill_pdf_glob: (String? external_id, sway_locale: (SwayLocale | String)?) -> String
+    def self.bill_metadata_file: (String? external_id, sway_locale: (SwayLocale | String)?) -> Pathname
+    def self.bill_text_file: (String? external_id, sway_locale: (SwayLocale | String)?) -> Pathname
+    def self.hearings_file: (String? external_id, sway_locale: (SwayLocale | String)?) -> Pathname
+    def self.diff_json_file: (String? external_id, sway_locale: (SwayLocale | String)?) -> Pathname
+    def self.diff_markdown_file: (String? external_id, sway_locale: (SwayLocale | String)?) -> Pathname
+
+    # The directory Eval::PromptDump writes one bill's untracked
+    # "<answer_type>.system.txt"/"<answer_type>.user.txt" files into.
+    def self.prompt_dump_file: (String? external_id, answer_type: String, sway_locale: (SwayLocale | String)?) -> Pathname
+
+    # The directory holding ONE LOCALE's testimony attachment PDFs and the .txt
+    # files extracted from them. It takes no external_id: attachments are keyed
+    # by Legistar attachment id, which is shared across the bills of one
+    # jurisdiction, so the file name carries the id and the directory carries the
+    # locale.
+    def self.attachment_dir: (sway_locale: (SwayLocale | String)?) -> Pathname
+
+    def self.legacy_path_fallback?: ((SwayLocale | String)? sway_locale) -> bool
+    def self.law_section_index_file: (sway_locale: (SwayLocale | String)) -> Pathname
+
+    def self.root: () -> Pathname
+    def self.bills_raw: () -> Pathname
+    def self.bills_text: () -> Pathname
+    def self.hearings: () -> Pathname
+    def self.law: (?sway_locale: (SwayLocale | String)?) -> Pathname
+    def self.diffs: () -> Pathname
+    def self.prompt_dumps: () -> Pathname
+    def self.attachments: () -> Pathname
+    def self.sub: (Symbol attribute, String relative) -> Pathname
+    def self.resolve: (String value) -> Pathname
+  end
+end

@@ -1,0 +1,4 @@
+# Phase 32 Plan 11 (REVIEWS.md MEDIUM): Receipt-based cleanup job signatures.
+class CleanupRevokedDevicesJob < ApplicationJob
+  def perform: () -> void
+end

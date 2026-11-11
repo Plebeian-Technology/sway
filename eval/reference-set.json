@@ -1,0 +1,367 @@
+[
+  {
+    "kind": "header",
+    "run_at": "2026-09-08T12:53:39Z",
+    "effective_truncation_boundary": 150000,
+    "summary_source_cap": 300000,
+    "source_char_bands": {
+      "over_source_cap": 0,
+      "under_source_cap": 30
+    },
+    "manual_substitutions": []
+  },
+  {
+    "external_id": "25-0064",
+    "band": "truncation",
+    "extracted_testimony_chars": 1995251,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 16844,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0065",
+    "band": "truncation",
+    "extracted_testimony_chars": 1512971,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 73868,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0062",
+    "band": "truncation",
+    "extracted_testimony_chars": 1207804,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 15578,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0094",
+    "band": "truncation",
+    "extracted_testimony_chars": 1056346,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 3164,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0151",
+    "band": "truncation",
+    "extracted_testimony_chars": 464968,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 296,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0036",
+    "band": "truncation",
+    "extracted_testimony_chars": 314238,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 543,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0087",
+    "band": "truncation",
+    "extracted_testimony_chars": 286402,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 29197,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0003",
+    "band": "truncation",
+    "extracted_testimony_chars": 159560,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 564,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0188",
+    "band": "truncation",
+    "extracted_testimony_chars": 152212,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 363,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0116",
+    "band": "control",
+    "extracted_testimony_chars": 140769,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 26826,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0040",
+    "band": "control",
+    "extracted_testimony_chars": 139548,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 2923,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0141",
+    "band": "control",
+    "extracted_testimony_chars": 131931,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 18013,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0066",
+    "band": "control",
+    "extracted_testimony_chars": 126970,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 23511,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0158",
+    "band": "control",
+    "extracted_testimony_chars": 87187,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 1088,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0019",
+    "band": "control",
+    "extracted_testimony_chars": 77339,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 43408,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0147",
+    "band": "control",
+    "extracted_testimony_chars": 74982,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 3237,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0144",
+    "band": "control",
+    "extracted_testimony_chars": 74152,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 3717,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0093",
+    "band": "control",
+    "extracted_testimony_chars": 70562,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 5265,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0150",
+    "band": "control",
+    "extracted_testimony_chars": 60605,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 14027,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0136",
+    "band": "control",
+    "extracted_testimony_chars": 56295,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 363,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0161",
+    "band": "control",
+    "extracted_testimony_chars": 52194,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 383,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0080",
+    "band": "control",
+    "extracted_testimony_chars": 50145,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 820,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0053",
+    "band": "bulk_10k_50k",
+    "extracted_testimony_chars": 48469,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 373,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0088",
+    "band": "bulk_10k_50k",
+    "extracted_testimony_chars": 47673,
+    "answer_types": [
+      "summary",
+      "positions"
+    ],
+    "substituted_for": null,
+    "source_chars": 841,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0067",
+    "band": "no_testimony",
+    "extracted_testimony_chars": 0,
+    "answer_types": [
+      "summary"
+    ],
+    "substituted_for": null,
+    "source_chars": 11085,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0070",
+    "band": "no_testimony",
+    "extracted_testimony_chars": 0,
+    "answer_types": [
+      "summary"
+    ],
+    "substituted_for": null,
+    "source_chars": 3248,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "25-0115",
+    "band": "no_testimony",
+    "extracted_testimony_chars": 0,
+    "answer_types": [
+      "summary"
+    ],
+    "substituted_for": null,
+    "source_chars": 30689,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0173",
+    "band": "no_testimony",
+    "extracted_testimony_chars": 0,
+    "answer_types": [
+      "summary"
+    ],
+    "substituted_for": null,
+    "source_chars": 10526,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0174",
+    "band": "no_testimony",
+    "extracted_testimony_chars": 0,
+    "answer_types": [
+      "summary"
+    ],
+    "substituted_for": null,
+    "source_chars": 14367,
+    "source_char_band": "under_source_cap"
+  },
+  {
+    "external_id": "26-0195",
+    "band": "no_testimony",
+    "extracted_testimony_chars": 0,
+    "answer_types": [
+      "summary"
+    ],
+    "substituted_for": null,
+    "source_chars": 10511,
+    "source_char_band": "under_source_cap"
+  }
+]

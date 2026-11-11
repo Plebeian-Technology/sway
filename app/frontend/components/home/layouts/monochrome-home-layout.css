@@ -1,0 +1,118 @@
+.mch-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+.mch-header {
+    padding-bottom: calc(var(--space-unit) * 6);
+    border-bottom: var(--rule-thick) var(--rule-style) var(--foreground);
+}
+
+.mch-wordmark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.mch-headline {
+    margin-top: calc(var(--space-unit) * 3);
+    font-family: var(--font-display);
+    font-size: var(--type-display);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--foreground);
+}
+
+.mch-paragraph {
+    margin-top: calc(var(--space-unit) * 3);
+    max-width: var(--measure);
+    font-size: var(--type-lede);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+.mch-section {
+    padding: calc(var(--space-unit) * 6) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.mch-section__title {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin-bottom: calc(var(--space-unit) * 4);
+}
+
+.mch-tally {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-unit) * 4);
+    max-width: var(--measure);
+}
+
+.mch-tally__row {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-unit) * 1);
+}
+
+.mch-tally__meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-medium);
+}
+
+.mch-tally__label {
+    color: var(--foreground);
+}
+
+.mch-tally__pct {
+    font-variant-numeric: var(--font-numeric);
+    color: var(--muted-foreground);
+}
+
+.mch-tally__track {
+    width: 100%;
+    height: calc(var(--space-unit) * 5);
+    background-color: var(--surface-2);
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    overflow: hidden;
+}
+
+.mch-tally__bar--for {
+    height: 100%;
+    background-color: var(--foreground);
+}
+
+.mch-tally__bar--against {
+    height: 100%;
+    border: 3px double var(--foreground);
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--foreground),
+        var(--foreground) 2px,
+        transparent 2px,
+        transparent 6px
+    );
+}
+
+.mch-tally__bar--against[style*="width: 0%"] {
+    border-width: 0;
+}
+
+.mch-signin {
+    padding-top: calc(var(--space-unit) * 6);
+}

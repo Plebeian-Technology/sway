@@ -1,0 +1,85 @@
+# RBS sig for Eval::ReferenceSetSelector — see app/services/eval/reference_set_selector.rb.
+module Eval
+  class ReferenceSetSelector
+    # Symbol => untyped rather than a strict record: a pick's keys grow
+    # (band, substituted_for) as it moves through #call via Hash#merge,
+    # which Steep cannot narrow back to a fixed record shape (the same
+    # trade Eval::ScoreReport's Hash[String, untyped] fixtures make).
+    type pick = Hash[Symbol, untyped]
+
+    type substitution = {from: String, to: String}
+
+    class BandCollisionError < StandardError
+    end
+
+    class InsufficientNoTestimonyError < StandardError
+    end
+
+    class InvalidSubstitutionError < StandardError
+    end
+
+    class MissingDiffMarkdownError < StandardError
+    end
+
+    SET_SIZE: Integer
+    TESTIMONY_SCORED_SLOTS: Integer
+    NO_TESTIMONY_SLOTS: Integer
+    CONTROL_BAND_LOWER: Integer
+    BULK_10K_50K_LOWER: Integer
+    BULK_1K_10K_LOWER: Integer
+    BANDS: Array[Symbol]
+    BULK_BAND_ORDER: Array[Symbol]
+    SOURCE_CHAR_BANDS: Array[Symbol]
+
+    class Result
+      attr_reader bands: Hash[Symbol, Integer]
+      attr_reader source_char_bands: Hash[Symbol, Integer]
+      attr_reader picks: Array[pick]
+      attr_reader no_testimony_picks: Array[pick]
+      attr_reader excluded_for_missing_diff: Array[String]
+      attr_reader substitutions_applied: Array[substitution]
+
+      def initialize: (
+        bands: Hash[Symbol, Integer],
+        source_char_bands: Hash[Symbol, Integer],
+        picks: Array[pick],
+        no_testimony_picks: Array[pick],
+        excluded_for_missing_diff: Array[String],
+        substitutions_applied: Array[substitution]
+      ) -> void
+
+      def self.new: (
+        bands: Hash[Symbol, Integer],
+        source_char_bands: Hash[Symbol, Integer],
+        picks: Array[pick],
+        no_testimony_picks: Array[pick],
+        excluded_for_missing_diff: Array[String],
+        substitutions_applied: Array[substitution]
+      ) -> Eval::ReferenceSetSelector::Result
+    end
+
+    def self.call: (?manual_substitutions: Array[substitution]) -> Result
+    def self.truncation_cap: () -> Integer
+    def self.source_cap: () -> Integer
+
+    @manual_substitutions: Array[substitution]
+    @substitutions_applied: Array[substitution]
+
+    def initialize: (?manual_substitutions: Array[substitution]) -> void
+    def call: () -> Result
+
+    private
+
+    attr_reader manual_substitutions: Array[substitution]
+
+    def load_corpus: () -> Array[pick]
+    def band_corpus: (Array[pick] items) -> Hash[Symbol, Array[pick]]
+    def band_for: (Integer chars) -> Symbol
+    def sort_band: (Array[pick] items) -> Array[pick]
+    def bulk_fill: (Hash[Symbol, Array[pick]] banded, Integer remainder) -> Array[pick]
+    def collision_message: (Hash[Symbol, Integer] band_counts, Integer whole_count) -> String
+    def apply_substitutions: (Array[pick] picks, Hash[String, pick] corpus_by_id) -> Array[pick]
+    def missing_diff_ids: (Array[pick] picks) -> Array[String]
+    def source_char_bands_for: (Array[pick] picks) -> Hash[Symbol, Integer]
+  end
+end

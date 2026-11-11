@@ -1,0 +1,29 @@
+class Organizations::PositionChangesController < Organizations::BaseController
+    # Phase 999.2 WR-02 (iter4 fix): declare the constant Ruby defines at
+    # controller.rb line 7. Spec assertions reference the qualified form
+    # `Organizations::PositionChangesController::ALREADY_FINALIZED_MESSAGE`
+    # — under `dip run steep check` the qualified constant would warn
+    # "unknown constant on class" without this declaration. Per project
+    # memory feedback_update_rbs_with_code.md ("Update sig/ alongside app
+    # code; drive `steep check` to zero errors AND zero warnings").
+    ALREADY_FINALIZED_MESSAGE: ::String
+
+    # WR-03: @change is non-nil within #update and #destroy because before_action
+    # :set_change always assigns it prior to the action body. The trade-off is the
+    # initialized-elsewhere ivar shape: Steep cannot prove the before_action
+    # sets it, but typing it non-nilable matches actual runtime semantics
+    # and avoids spurious nil-on-method warnings inside the action.
+    # (@position dropped — the position mutation moved into
+    # ApprovePositionChangeService, so the controller no longer memoizes it.)
+    @change: OrganizationBillPositionChange
+
+    def update: () -> void
+
+    def destroy: () -> void
+
+    private
+
+    def respond_already_finalized: () -> void
+
+    def set_change: () -> OrganizationBillPositionChange
+end

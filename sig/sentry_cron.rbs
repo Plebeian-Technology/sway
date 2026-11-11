@@ -1,0 +1,27 @@
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+module Sentry
+  def self.capture_check_in: (String slug, Symbol status, **untyped options) -> untyped
+
+  module Cron
+    class MonitorConfig
+      def self.from_crontab: (String crontab, **untyped options) -> MonitorConfig
+      def self.from_interval: (Integer num, Symbol unit, **untyped options) -> MonitorConfig?
+
+      attr_accessor checkin_margin: Integer?
+      attr_accessor max_runtime: Integer?
+      attr_accessor schedule: Sentry::Cron::MonitorSchedule::Crontab
+
+      def to_h: () -> Hash[Symbol, untyped]
+    end
+
+    module MonitorSchedule
+      class Crontab
+        attr_reader value: String
+      end
+    end
+
+    module MonitorCheckIns
+      MAX_SLUG_LENGTH: Integer
+    end
+  end
+end

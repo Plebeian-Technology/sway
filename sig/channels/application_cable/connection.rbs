@@ -1,0 +1,17 @@
+module ApplicationCable
+    class Connection < ActionCable::Connection::Base
+        attr_accessor current_user: User?
+
+        def connect: () -> void
+
+        private
+
+        def find_verified_user: () -> User
+
+        def user_from_session: () -> User?
+
+        def user_from_refresh_token: () -> User?
+
+        def user_from_bearer_token: () -> User?
+    end
+end

@@ -1,0 +1,7 @@
+# Phase 62 Plan 04 (D-14): thin per-bill recompute dispatcher.
+# Concurrency-coalesced per bill_id, mirroring legislator_vote_fetch_job.rbs.
+class RecomputeBillInterestingScoreJob < ApplicationJob
+  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> String, ?on_conflict: Symbol) -> void
+
+  def perform: (Integer bill_id) -> void
+end

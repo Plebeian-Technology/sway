@@ -1,0 +1,374 @@
+/* BANNER bill-detail layout — a contemporary local-newsroom article over real
+   bill data: an orange section kicker, a bold Mona Sans headline, a ruled
+   byline, and the accountability module as an editorial election-returns box.
+   Mona Sans + DM Serif Display are loaded by application.html.erb when the
+   Banner theme is active. Realizes mockups/banner.html. Colour comes from the
+   banner theme tokens. */
+
+.bn-stage {
+    --bn-serif: "DM Serif Display", Georgia, "Times New Roman", serif;
+    --bn-link: #520bc4; /* The Banner's first-party body-link purple (AA on white) */
+    --bn-vivid: #ff6207; /* vivid kicker orange — decorative / large numerals only */
+
+    max-width: var(--content-max);
+    margin: 0 auto;
+    color: var(--foreground);
+    font-family: var(--font-body);
+    line-height: var(--leading-body);
+}
+html.dark .bn-stage {
+    --bn-link: #b9a3ff;
+}
+@media (prefers-color-scheme: dark) {
+    html[data-theme-mode="auto"] .bn-stage {
+        --bn-link: #b9a3ff;
+    }
+}
+
+/* shared atoms ------------------------------------------------------------ */
+.bn-kicker {
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.bn-cat {
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+.bn-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.bn-eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* top strip + footer ------------------------------------------------------ */
+.bn-topbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+.bn-back {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    text-decoration: none;
+    transition: color var(--dur-1) var(--ease-out);
+}
+.bn-back:hover {
+    color: var(--foreground);
+}
+.bn-edition {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.bn-main {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 2rem 0 3rem;
+}
+
+.bn-crumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+}
+.bn-sep {
+    color: var(--border-strong);
+}
+
+.bn-head {
+    margin-bottom: 1.25rem;
+}
+.bn-billno {
+    font-size: var(--type-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    font-variant-numeric: tabular-nums;
+}
+.bn-title {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: clamp(2.1rem, 1.4rem + 2.8vw, var(--type-display));
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--foreground);
+    text-wrap: balance;
+    margin-bottom: 1rem;
+}
+/* @lat: [[bill-title-display#How a bill's title is shown#Why the qualifier is kept rather than discarded]] */
+.bn-title__qualifier {
+    font-weight: var(--weight-body);
+    color: var(--muted-foreground);
+}
+.bn-dek {
+    font-size: var(--type-lede);
+    line-height: var(--leading-heading);
+    color: var(--muted-foreground);
+    font-weight: var(--weight-medium);
+}
+
+.bn-byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem 0;
+    margin-bottom: 2rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+.bn-by {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+.bn-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--avatar-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--weight-bold);
+    font-size: var(--type-small);
+    color: var(--primary);
+}
+.bn-by b {
+    color: var(--foreground);
+    font-weight: var(--weight-bold);
+}
+.bn-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--foreground);
+    font-weight: var(--weight-medium);
+}
+.bn-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+.bn-link {
+    color: var(--bn-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* the election-returns box ------------------------------------------------ */
+.bn-results {
+    border: 1px solid var(--border-strong);
+    border-top: var(--rule-thick) solid var(--foreground);
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--card);
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+.bn-results__k {
+    display: block;
+    margin-bottom: 1rem;
+}
+.bn-twovote {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.bn-v {
+    padding-right: 1.5rem;
+}
+.bn-v + .bn-v {
+    padding-right: 0;
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--border);
+}
+.bn-who {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+.bn-pos {
+    font-size: 1.6rem;
+    font-weight: var(--weight-bold);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+}
+.bn-pos--for {
+    color: var(--vote-for);
+}
+.bn-pos--against {
+    color: var(--vote-against);
+}
+.bn-pos--none {
+    color: var(--muted-foreground);
+}
+.bn-verdict {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 1.2rem;
+    font-weight: var(--weight-bold);
+    line-height: 1.3;
+    color: var(--foreground);
+}
+.bn-verdict em {
+    color: var(--accent);
+    font-style: normal;
+}
+.bn-tallies {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+.bn-tl {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+.bn-tn {
+    font-size: var(--type-stat);
+    font-weight: var(--weight-bold);
+    line-height: 1;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+}
+.bn-tn .bn-u {
+    font-size: 0.8rem;
+    font-weight: var(--weight-medium);
+    color: var(--muted-foreground);
+}
+.bn-bar {
+    margin-top: 0.625rem;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+}
+.bn-bar > span {
+    display: block;
+    height: 100%;
+    background: var(--vote-for);
+}
+.bn-action {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+}
+
+/* prose + organization positions ----------------------------------------- */
+.bn-section {
+    margin-top: 2.5rem;
+}
+.bn-prose {
+    font-size: var(--type-body);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+.bn-provisions {
+    border-top: 1px solid var(--border-strong);
+}
+.bn-prov {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+.bn-num {
+    font-size: 1.5rem;
+    font-weight: var(--weight-bold);
+    line-height: 1;
+    color: var(--bn-vivid);
+    font-variant-numeric: tabular-nums;
+}
+.bn-prov h3 {
+    font-size: var(--type-h3);
+    font-weight: var(--weight-bold);
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.005em;
+}
+.bn-prov p {
+    font-size: var(--type-body);
+    color: var(--muted-foreground);
+    line-height: var(--leading-body);
+}
+.bn-empty {
+    font-size: var(--type-body);
+    color: var(--muted-foreground);
+    padding: 1rem 0;
+}
+
+/* footer ------------------------------------------------------------------ */
+.bn-foot {
+    max-width: var(--measure);
+    margin: 3rem auto 0;
+    padding: 1.5rem 0 2rem;
+    border-top: 1px solid var(--border);
+}
+.bn-foot p {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    line-height: var(--leading-body);
+}
+.bn-mark {
+    font-weight: 800;
+    color: var(--foreground);
+}
+
+@media (max-width: 640px) {
+    .bn-twovote {
+        grid-template-columns: 1fr;
+    }
+    .bn-v {
+        padding: 0;
+    }
+    .bn-v + .bn-v {
+        padding: 1rem 0 0;
+        margin-top: 1rem;
+        border-left: none;
+        border-top: 1px solid var(--border);
+    }
+    .bn-tallies {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,77 @@
+# Declared as a module constant, outside RSpec.describe, rather than `let`:
+# Steep resolves neither `let` nor a `def` inside a describe block.
+module SettingsSpecHelpers
+  DECLARED_NAMES: Array[String]
+  EXPECTED_PREFIXES: Hash[Symbol, String]
+  PROBE_VALUE_BY_TYPE: Hash[Symbol | Hash[Symbol, bool | Symbol], [String, untyped]]
+  VALID_DEV_ACCOUNT_ENV: Hash[String, String]
+  ALLOWED_SETTINGS_WRITE_PATHS: Array[String]
+  ALLOWED_SETTINGS_WRITE_PREFIXES: Array[String]
+
+  def self.env_var_name: (singleton(Sway::Settings::Base) klass, Symbol attribute) -> String
+  def self.attributes_without_declared_type: (singleton(Sway::Settings::Base) klass) -> Array[Symbol]
+  def self.probe_pair_for: (singleton(Sway::Settings::Base) klass, Symbol attribute) -> [String, untyped]
+  def self.companion_env_for: (singleton(Sway::Settings::Base) klass, Symbol attribute) -> Hash[String, String]
+
+  def self.tracked_ruby_files: () -> Array[String]
+  def self.settings_setter_findings: (Array[String] paths) -> Array[SettingsSpecHelpers::SettingsSetterVisitor::SettingsWrite]
+  def self.deploy_clear_env: () -> Hash[String, untyped]
+
+  # Four deliberately broken (or merely probe-shaped) group classes. Named
+  # top-level classes rather than `Class.new(Sway::Settings::Base) { ... }`
+  # blocks: Steep reads a `Class.new { ... }` block's self as plain
+  # `::Class`, so a macro call inside it does not resolve.
+  class NoTypeProbe < Sway::Settings::Base
+    def bare_number: () -> untyped
+    def bare_number=: (untyped) -> void
+  end
+
+  class WrongPrefixProbe < Sway::Settings::Base
+    def target_name: () -> String
+    def target_name=: (String) -> void
+  end
+
+  class MissingRequiredProbe < Sway::Settings::Base
+    def required_name: () -> String?
+    def required_name=: (String?) -> void
+  end
+
+  class IntegerProbe < Sway::Settings::Base
+    def whole_number: () -> Integer?
+    def whole_number=: (Integer?) -> void
+  end
+
+  class FloatProbe < Sway::Settings::Base
+    def decimal_number: () -> Float?
+    def decimal_number=: (Float?) -> void
+  end
+
+  # Built under a stubbed production environment (plan 12, task 2; T-68-27)
+  # -- see this class's own comment in settings_spec.rb.
+  class ProductionScopedRequiredProbe < Sway::Settings::Base
+    def probed_value: () -> String?
+    def probed_value=: (String?) -> void
+  end
+
+  class SettingsSetterVisitor < Prism::Visitor
+    @path: String
+    class SettingsWrite
+      attr_reader path: String
+      attr_reader line: Integer
+      attr_reader method: String
+
+      def initialize: (path: String, line: Integer, method: String) -> void
+      def to_s: () -> String
+    end
+
+    attr_reader findings: Array[SettingsWrite]
+
+    def initialize: (String path) -> void
+    def visit_call_node: (Prism::CallNode node) -> void
+
+    private
+
+    def rooted_at_sway_settings?: (Prism::node? node) -> bool
+    def base_receiver: (Prism::node? node) -> Prism::node?
+  end
+end

@@ -1,0 +1,87 @@
+# Phase 54 SPEC R6 / 54-RESEARCH §3.4: concrete RBS for the singleton
+# admin-tunable settings model. All types concrete per
+# [[feedback_rbs_avoid_untyped]].
+class AdminSetting < ApplicationRecord
+  SUPPORTED_MODELS: Array[String]
+
+  # Short display names for the Bill Creator's per-run model picker, keyed by
+  # the same ids SUPPORTED_MODELS lists.
+  SUPPORTED_MODEL_LABELS: Hash[String, String]
+
+  SUPPORTED_DECISION_MODELS: Array[String]
+  SUPPORTED_DECISION_MODEL_LABELS: Hash[String, String]
+
+  SUPPORTED_EXTRACTION_MODELS: Array[String]
+  SUPPORTED_EXTRACTION_MODEL_LABELS: Hash[String, String]
+
+  REASONING_EFFORTS: Array[String]
+
+  attr_accessor summarization_model: String
+  attr_accessor summarization_reasoning_effort: String?
+
+  # @lat: [[llm-summaries#Settings live in the database]]
+  attr_accessor classification_model: String
+  attr_accessor classification_reasoning_effort: String?
+
+  attr_accessor decision_model: String
+  attr_accessor extraction_model: String
+
+  # @lat: [[llm-summaries#Batch summarisation#What decides how many batches a run submits]]
+  SUMMARY_BATCH_CHUNK_SIZE_DEFAULT: Integer
+
+  attr_accessor summary_batch_chunk_size: Integer
+
+  attr_accessor offered_models: Array[String]?
+
+  attr_accessor updated_by_id: Integer?
+
+  attr_reader id: Integer
+  attr_reader created_at: ActiveSupport::TimeWithZone
+  attr_reader updated_at: ActiveSupport::TimeWithZone
+
+  # updated_by / updated_by= are declared by rbs_rails (belongs_to :updated_by)
+  # in sig/rbs_rails/app/models/admin_setting.rbs — not redeclared here to
+  # avoid RBS::DuplicatedMethodDefinition.
+
+  def offered_models_list: (?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+  def offered_decision_models_list: (?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+  def offered_extraction_models_list: (?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?precomputed_offered_models: Array[String]?) -> Array[String]
+
+  def stored_model?: ((String | Symbol)? model_id) -> bool
+
+  def add_offered_model!: ((String | Symbol) model_id, ?updated_by: User?) -> bool
+
+  def remove_offered_model!: ((String | Symbol) model_id, ?updated_by: User?) -> bool
+
+  def self.offered_models: (?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+  def self.offered_decision_models: (?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+  def self.offered_extraction_models: (?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+  def self.offered_model_labels: (?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?setting: AdminSetting?, ?precomputed_offered_models: Array[String]?) -> Hash[String, String]
+
+  def self.stored_model?: ((String | Symbol)? model_id) -> bool
+
+  # ActiveRecord first_or_create! — not in rbs_rails generated sigs by
+  # default for non-relation receivers. Declare explicitly so Steep can
+  # resolve the .singleton helper body.
+  def self.first_or_create!: (Hash[Symbol, untyped] attrs) -> AdminSetting
+
+  # ActiveRecord exists? on the class — used by F-iter1-004 singleton
+  # enforcement to detect a pre-existing row before create! and by
+  # .stored_model? to query stored columns.
+  def self.exists?: (?untyped conditions) -> bool
+
+  # Singleton accessor — returns the one row, creating it with the
+  # default (Haiku) if absent.
+  def self.singleton: () -> AdminSetting
+
+  # F-iter1-004 singleton-enforcement callback (validates :enforce_singleton).
+  private def raw_offered_models_list: () -> Array[String]
+  private def enforce_singleton: () -> void
+  private def normalize_reasoning_efforts: () -> void
+  private def supports_reasoning_for_model?: (String model_id) -> bool
+end

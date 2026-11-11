@@ -1,0 +1,190 @@
+# Docker build-context exclusions.
+#
+# NOTE: under BuildKit, a `<dockerfile>.dockerignore` next to the Dockerfile
+# (docker/dockerfiles/*.dockerfile.dockerignore) REPLACES this file entirely
+# for that build — Kamal deploys and `dip preview` use those. This root file
+# is the fallback for any build without a sibling ignore file; keep its
+# secret/PII exclusions in parity with the sibling files.
+#
+# The build context was previously EMPTY, so `COPY . .` shipped the entire repo
+# into the build stage — including config/master.key, dev SQLite databases under
+# storage/, and the multi-hundred-MB dev legislation corpus. Everything listed
+# here is either a secret, dev-only runtime data, build output regenerated in
+# the image, or otherwise not a build input.
+#
+# The production build (docker/dockerfiles/production.alpine.dockerfile) needs:
+#   Gemfile* · package.json · pnpm-*.yaml · app/ · lib/ · config/ · db/ · bin/
+#   public/ · Rakefile · config.ru · vite.config*.ts · tsconfig* · app/frontend
+# None of those are excluded below.
+#
+# NOTE: validate with a `dip preview` (production image) build before the next
+# prod deploy — a wrong exclusion here would surface only at image-build time.
+
+# Version control
+/.git/
+/.gitignore
+/.gitignore.local
+/.gitattributes
+/.gitleaks.toml
+/.gitleaksignore
+
+# Secrets — RAILS_MASTER_KEY + Vite keys are injected via BuildKit --secret
+# mounts (see scripts/dip/preview.sh / config/deploy.yml), never the context.
+/config/master.key
+/config/credentials/*.key
+/config/cloudflared.key
+/keys/
+/config/ssl/
+/wireguard.conf
+/.env
+/.env.*
+**/.env*
+
+# Dev databases + uploaded files (production uses the Kamal storage volume).
+/storage/
+
+# Production DB snapshots + passkey credential-id dump — real user PII that
+# must never enter an image layer. The runtime DB lives on the Kamal volume.
+/db/*.sqlite3
+/db/*.sqlite3-shm
+/db/*.sqlite3-wal
+/snapshot.txt
+
+# Host build output — images rebuild their own assets in-image.
+/public/assets/
+# @lat: [[production-image#Why the build context excludes built output by pattern]]
+/public/vite*/
+/app/assets/builds/
+/app/frontend/**/__tests__/
+/app/frontend/**/*.test.*
+/bin/annotate
+/bin/codeql-local
+/bin/dev
+/bin/preview-reset
+/bin/pry
+/bin/rdbg
+/bin/record_vcr
+/bin/rubocop
+/bin/rustrak-mcp-token
+/bin/rustrak-provision
+/bin/secret-scan.sh
+/bin/setup
+/bin/spoom
+/bin/srb
+/bin/srb-rbi
+/bin/steep-rs
+/bin/steep-rs-darwin
+/bin/steep-rs-linux
+/bin/yard
+/bin/yardoc
+/bin/yri
+
+# Logs, tempfiles, coverage, local tool state.
+/log/
+/tmp/
+/coverage/
+/.playwright-mcp/
+/.agents/
+/.beads/
+/.beads.gate.lock
+/.bundle/
+/.claude/
+/.codex/
+/.cursor/
+/.gem_rbs_collection/
+/.gemini/
+/.husky/
+/.jules/
+/.kamal/
+/.opencode/
+/.pi/
+/.pnpm-store/
+/.pytest_cache/
+/.ruby-lsp/
+/.serena/
+/.vscode/
+/.worktrees/
+/browser_profiling/
+/chromedriver/
+/deploy/
+/docker/
+/docs/
+/eval/
+/firefox-perf-profiles/
+/lat.md/
+/litestream/
+/plans/
+/prompts/
+/registry/
+/scratch/
+/screenshots/
+/scripts/
+/sig/
+/sig-test/
+/sorbet/
+/swagger/
+/tf/
+
+# Node modules are rebuilt in the `nodemods` build stage; never copy the host's.
+/node_modules/
+**/node_modules/
+
+# Dev-only legislation corpus + pipeline artifacts. Runtime data lives on the
+# storage volume and the law corpus is downloaded at runtime (FetchLawCorpusService).
+/legislation/
+/legislation.egg-info/
+
+# Expo mobile app — not part of the Rails / Vite build.
+/mobile/
+
+# Tests, dev compose, CI config — not needed in the runtime image.
+/spec/
+/.dockerdev/
+/.github/
+
+# Host-side production debugging toolkit — operator tooling, never shipped.
+/ops/
+/Procfile.dev
+/.rspec
+/.nvmrc
+/.node-version
+/.oxlint.*
+/.index.yml
+/.oxfmtrc.json
+/.oxlintrc.json
+/.oxlintrc.json.bak
+/.annotaterb.yml
+/.mcp.json
+/.ncurc.json
+/.rubocop.yml
+/.rubocop/
+/axe-linter.yml
+/components.json
+/playwright.config.ts
+/*.tsbuildinfo
+/vitest.config.ts
+/cors.json
+**/.*geojson
+/fly.toml
+/Steepfile
+/CLAUDE.md
+/CLAUDE.local.md
+/AGENTS.md
+/GEMINI.md
+/CONTRIBUTING.md
+/LICENSE
+/ORIGINAL_REQUEST.md
+/PROJECT.md
+/README.md
+/SECURITY.md
+/sway-a2p.md
+/sway-banner.jpg
+/sway-landscape.jpeg
+/memories.json
+/dip.yml
+/mise.toml
+/.zshrc
+/rbs_collection.yaml
+/rbs_collection.lock.yaml
+/skills-lock.json
+**/.DS_Store

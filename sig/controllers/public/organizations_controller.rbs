@@ -1,0 +1,16 @@
+module Public
+  class OrganizationsController < ApplicationController
+    MAX_ORGANIZATIONS_PER_INDEX_PAGE: Integer
+
+    def index: -> untyped
+    def show: -> untyped
+
+    private
+
+    # NEW PROPS CONTRACT (Wave A): per-follow notification prefs payload.
+    def follow_prefs_payload: (OrganizationFollow follow) -> Hash[Symbol, untyped]
+
+    # NEW PROPS CONTRACT (Wave A): the user's global org-notification defaults.
+    def org_defaults_payload: (User user) -> Hash[Symbol, untyped]
+  end
+end

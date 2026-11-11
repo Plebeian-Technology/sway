@@ -1,0 +1,63 @@
+module Llm
+  class UnknownRouteError < ArgumentError
+  end
+
+  module ModelCatalog
+    UnknownRouteError: singleton(Llm::UnknownRouteError)
+
+    class ModelRoute
+      attr_reader provider: Symbol
+      attr_reader api_model: String
+      attr_reader label: String
+      attr_reader supports_reasoning: bool?
+      attr_reader mode: Symbol
+
+      def initialize: (provider: Symbol, api_model: String, label: String, ?supports_reasoning: bool?, ?mode: Symbol?) -> void
+      def openrouter?: () -> bool
+      def claude?: () -> bool
+      def llamacpp?: () -> bool
+      def decision_model?: () -> bool
+      def extraction_model?: () -> bool
+      def supports_reasoning?: () -> bool
+      def to_ary: () -> [Symbol, String]
+      def []: (Symbol | String | Integer) -> untyped
+      def deconstruct: () -> [Symbol, String]
+      def deconstruct_keys: (Array[Symbol]? keys) -> Hash[Symbol, untyped]
+    end
+
+    OPUS_LATEST_ROUTE: ModelRoute
+    SONNET_LATEST_ROUTE: ModelRoute
+    HAIKU_LATEST_ROUTE: ModelRoute
+    GEMINI_ARGON_LATEST_ROUTE: ModelRoute
+    GEMINI_FLASH_LATEST_ROUTE: ModelRoute
+    GLM_LATEST_ROUTE: ModelRoute
+    DEEPSEEK_PRO_ROUTE: ModelRoute
+    DEEPSEEK_FLASH_ROUTE: ModelRoute
+    OPENROUTER_AUTO_ROUTE: ModelRoute
+
+    SCALEDOWN_CLASSIFY_LATEST_ROUTE: ModelRoute
+    JEV_LATEST_ROUTE: ModelRoute
+    PERPLEXITY_DECIDER_LATEST_ROUTE: ModelRoute
+    PERPLEXITY_DECIDER_FLASH_LATEST_ROUTE: ModelRoute
+    SCALEDOWN_EXTRACT_LATEST_ROUTE: ModelRoute
+
+    OPENROUTER_ROUTES: Hash[String, ModelRoute]
+    OPENROUTER_DECISION_ROUTES: Hash[String, ModelRoute]
+    OPENROUTER_EXTRACTION_ROUTES: Hash[String, ModelRoute]
+    ACTIVE_CLAUDE_ROUTES: Hash[String, ModelRoute]
+    RETIRED_CLAUDE_ROUTES: Hash[String, ModelRoute]
+    ALL_ROUTES: Hash[String, ModelRoute]
+
+    def self?.lookup: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> ModelRoute?
+    def self?.fetch: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> ModelRoute
+    def self?.supports_reasoning?: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> bool
+    def self?.decision_model?: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> bool
+    def self?.extraction_model?: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> bool
+    def self?.openrouter_choices: () -> Array[String]
+    def self?.openrouter_decision_choices: () -> Array[String]
+    def self?.openrouter_extraction_choices: () -> Array[String]
+    def self?.active_claude_choices: () -> Array[String]
+    def self?.retired_claude_choices: () -> Array[String]
+    def self?.all_choices: () -> Array[String]
+  end
+end

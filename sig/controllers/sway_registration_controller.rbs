@@ -1,0 +1,47 @@
+class SwayRegistrationController < ApplicationController
+    REGISTRATION_UNAVAILABLE_MESSAGE: ::String
+    REGISTRATION_NO_REPRESENTATIVES_MESSAGE: ::String
+    REGISTRATION_ADDRESS_SWITCH_CONFIRMATION_MESSAGE: ::String
+    REGISTRATION_ADDRESS_SWITCH_COOLDOWN_MESSAGE: ::String
+
+    @submitted_normalized_key: String?
+
+    @submitted_place_types: Array[String]
+
+    def index: -> untyped
+
+    # Finds representatives for the submitted address and reports completion only for active pairings.
+    def create: -> untyped
+
+    private
+
+    def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
+
+    def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
+
+    def render_no_representatives: () -> untyped
+
+    def registered_voter_address_confirmed: -> bool
+
+    def confirm_deactivate_legislators?: -> bool
+
+    def address: -> untyped
+
+    def submitted_place_types: -> Array[String]
+
+    def address_by_normalized_key: -> Address?
+
+    def registration_page_props: (?processing: bool) -> Hash[Symbol, untyped]
+
+    def submitted_normalized_key: -> String?
+
+    def submitted_coordinate: (Symbol name) -> Float?
+
+    def sway_registration_params: -> untyped
+
+    # Phase 36-05: dual-format response helper for sway_registration. Web sends
+    # Inertia redirect; mobile/JSON gets a status + payload + redirect path
+    # envelope.
+    def respond_json_or_redirect: (status: Symbol, json: Hash[Symbol, untyped], redirect: String) -> untyped
+    def redirect_after_registration_completion: (User user) -> untyped
+end

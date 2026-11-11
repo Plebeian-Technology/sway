@@ -1,0 +1,14 @@
+class Test::QueryParameterCarryProbeController < ApplicationController
+  def redirect_to_organizations: () -> void
+  def redirect_to_organizations_without_tab: () -> void
+  def redirect_to_bills: () -> void
+  def redirect_to_bills_with_clear: () -> void
+  def redirect_to_bills_with_repeated_clear: () -> void
+  def redirect_to_creator: () -> void
+  def redirect_to_creator_with_empty_list: () -> void
+  def redirect_to_excluded_target: () -> void
+  def redirect_to_excluded_destination: () -> void
+  def redirect_to_location: () -> void
+  def render_conflict: () -> void
+  def show_target: () -> void
+end

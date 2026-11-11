@@ -1,0 +1,20 @@
+module Testimony
+  module StanceRules
+    POSITION_HEADER_LINE_PATTERN: Regexp
+    SUBJECT_HEADER_LINE_PATTERN: Regexp
+    POSITION_HEADER_OPPOSE_PATTERN: Regexp
+    POSITION_HEADER_SUPPORT_PATTERN: Regexp
+    SUBJECT_HEADER_OPPOSE_PATTERN: Regexp
+    SUBJECT_HEADER_SUPPORT_PATTERN: Regexp
+    BILL_TARGET: Regexp
+    NEGATED_PREFIX: Regexp
+    OPPOSE_PATTERNS: Array[Regexp]
+    SUPPORT_PATTERNS: Array[Regexp]
+
+    def self.classify: (String? raw_text) -> String?
+
+    private
+
+    def self.classify_headers: (String text) -> String?
+  end
+end

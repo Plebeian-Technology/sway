@@ -1,0 +1,10 @@
+module SmsKeywords
+  STOP: Array[String]
+  START: Array[String]
+  HELP: Array[String]
+  ALL: Array[String]
+
+  def self.normalize: (untyped body) -> String
+
+  def self.keyword?: (untyped body) -> bool
+end

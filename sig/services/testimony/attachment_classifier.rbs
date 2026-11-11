@@ -1,0 +1,186 @@
+# RBS signature for Testimony::AttachmentClassifier — the three-part
+# testimony attachment filter (PROD-CR-01): NameRules, then the durable
+# verdict cache, then batched LLM calls over the CONTENTS of what is still
+# undecided.
+#
+# @lat: [[untrusted-text-in-prompts#Why the model judges the document rather than its name]]
+module Testimony
+  class AttachmentClassifier
+    # One candidate as handed in by FetchHearingsService. source_endpoint is
+    # PROVENANCE — recorded on the cache row, never part of the key (A-CR-01).
+    type candidate = {
+      "id" => Integer,
+      "name" => String?,
+      "source_endpoint" => String,
+    }
+
+    # A downloaded and extracted candidate; `text` is non-nilable because one whose text could not be read never reaches stage 3.
+    type content_candidate = {
+      "id" => Integer,
+      "name" => String?,
+      "source_endpoint" => String,
+      "text" => String,
+    }
+
+    # @lat: [[signature-placement#Why a string-keyed record is written as a Hash]]
+    type prefilter_result = {
+      verdicts: Hash[Integer, bool],
+      undecided: Array[candidate],
+    }
+
+    # The Haiku DEFAULT and the fallback when the settings row is
+    # unreadable. Still never AdminSetting#summarization_model — see the
+    # constant's comment in the implementation.
+    CLASSIFIER_MODEL: String
+    MAX_ATTACHMENTS_PER_BATCH: Integer
+
+    # #prefilter's routing table as data. The two `when` clauses are written
+    # from KEEP_LABELS and REJECT_LABELS, and MODEL_PASS_LABELS is what is
+    # left over — derived by subtraction from NameRules::LABELS rather than
+    # restated, so the corpus measurement task that reads it cannot drift from
+    # the set the model is really given.
+    KEEP_LABELS: Array[NameRules::label]
+    REJECT_LABELS: Array[NameRules::label]
+    MODEL_PASS_LABELS: Array[NameRules::label]
+
+    @llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+    @enabled: bool
+
+    # Fallback model for classifiers built with a directly injected adapter.
+    @classification_model: String?
+    # Retained route for adapter/model consistency in default-built classifiers.
+    @route: Llm::RouteResolver::Route?
+    @purpose: Symbol?
+
+    # Wiring seam: decides whether an adapter is reachable at all.
+    def self.build: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | nil | :default),
+      ?purpose: Symbol
+    ) -> AttachmentClassifier
+
+    def initialize: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?,
+      ?enabled: bool?,
+      ?route: Llm::RouteResolver::Route?,
+      ?purpose: Symbol
+    ) -> void
+
+    # Stages 1 and 2 only — name rules plus the durable cache. No adapter, no
+    # network, no bytes. The `undecided` half is what stage 3 must read.
+    def prefilter: (
+      Array[candidate] candidates,
+      sway_locale_id: Integer,
+    ) -> prefilter_result
+
+    # Stage 3 — the LLM pass over the documents' extracted text. The ONLY
+    # method in this class that reaches an adapter, which is what makes the
+    # once-per-document guarantee structural.
+    #
+    # @return attachment id => keep-as-testimony
+    def classify_contents: (
+      Array[content_candidate] candidates,
+      sway_locale_id: Integer,
+    ) -> Hash[Integer, bool]
+
+    private
+
+    attr_reader llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+
+    def enabled?: () -> bool
+    # Keyed by (sway_locale_id, attachment_id, model, prompt_version). The
+    # attachment id alone was enough only while Legistar::Client::DEFAULT_CLIENT
+    # was the sole jurisdiction: one Legistar instance runs per city, so a second
+    # city's attachment 38947 was the same row as Baltimore's.
+    def locale_name_for: (Integer sway_locale_id) -> String?
+
+    def cached_label: (candidate candidate, sway_locale_id: Integer) -> String?
+
+    interface _DecisionAdapter
+      def generate_decisions: (
+        model: String,
+        state: Hash[String, untyped],
+        questions: Hash[String, untyped]
+      ) -> Hash[String, untyped]
+      def provider_label: () -> String
+    end
+
+    def decision_model_route?: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter) -> bool
+
+    def llm_verdicts: (
+      Array[content_candidate] candidates,
+      (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter,
+      sway_locale_id: Integer,
+    ) -> Hash[Integer, bool]
+
+    def llm_verdicts_via_decisions: (
+      Array[content_candidate] candidates,
+      (Llm::OpenRouterAdapter | _DecisionAdapter) adapter,
+      sway_locale_id: Integer,
+    ) -> Hash[Integer, bool]
+
+    def llm_verdicts_via_chat: (
+      Array[content_candidate] candidates,
+      (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter,
+      sway_locale_id: Integer,
+    ) -> Hash[Integer, bool]
+
+    def sanitize_name: (untyped name) -> String
+    def sanitize_text: (untyped text) -> String
+    # A-IN-02: `classifications` was `untyped`, but its shape is pinned by
+    # config/schemas/testimony_classification.json — an array of
+    # {"index" => Integer, "label" => String}. The `?` and the wider element
+    # type are load-bearing, not decorative: this value comes off a parsed LLM
+    # response, so the key may be absent and a misbehaving model may put
+    # anything in it. That is exactly why #apply_classifications guards with
+    # is_a?(::Array) and #apply_one_classification re-checks every field.
+    def apply_classifications: (
+      Array[content_candidate] candidates,
+      Array[Hash[String, (Integer | String)]]? classifications,
+      (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _DecisionAdapter) adapter,
+      sway_locale_id: Integer,
+    ) -> Hash[Integer, bool]
+
+    # A2-WR-05: one entry, applied in isolation. Mutates `verdicts` in place
+    # and returns nothing meaningful — a raising entry is logged and skipped
+    # so the rest of the model's verdicts survive.
+    def apply_one_classification: (
+      Hash[Integer, bool] verdicts,
+      Array[content_candidate] candidates,
+      Hash[String, (Integer | String)]? entry,
+      (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _DecisionAdapter) adapter,
+      sway_locale_id: Integer,
+    ) -> void
+
+    def persist_verdict: (
+      content_candidate candidate,
+      String label,
+      (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _DecisionAdapter) adapter,
+      sway_locale_id: Integer,
+    ) -> void
+
+    # Fail-open default: undecided candidates are KEPT.
+    #
+    # A2-WR-05: this used to claim the residual "contains no bill text —
+    # NameRules already removed that non-overridably". That is false.
+    # Replaying the current NameRules against the on-disk corpus (re-checked
+    # 2026-08-05) leaves `Findings of Fact 25-0082 PUD`, `Replacement Sheet 2 -
+    # Proposed Development Plan - CC25-0082` and the whole `Law NN-NNNN` family
+    # :undecided. Fail-open trades REAS-01 precision for availability — the
+    # right trade, but a real cost, not a free one. This line said "the
+    # reference cassette" while its .rb counterpart said the corpus; the
+    # cassette holds one matter and cannot answer the question (A21-01).
+    def fallback_verdicts: (Array[content_candidate] candidates) -> Hash[Integer, bool]
+    # A-WR-05: the model this instance would classify with, or nil when it has
+    # no adapter and therefore would not classify at all.
+    def current_model: () -> String?
+    def model_for: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _DecisionAdapter) adapter) -> String
+
+    # The admin-selected classification model, memoized per instance.
+    def classification_model: () -> String
+
+    # Reads AdminSetting.singleton. Never raises — #discover_attachments's
+    # contract is that it degrades rather than failing the bill, so an
+    # unreadable settings row falls back to CLASSIFIER_MODEL.
+    def resolve_classification_model: () -> String
+  end
+end

@@ -1,0 +1,103 @@
+# spec/support/production_snapshot.rb: deploy-verification
+# harness that replays pending migrations against a disposable copy of the
+# local production snapshot (db/production.pristine.sqlite3).
+module ProductionSnapshot
+  PRISTINE_PATH: Pathname
+  WORK_DIR: Pathname
+  RAW_COPY: Pathname
+  MIGRATED_TEMPLATE: Pathname
+  ACTIVE_COPY: Pathname
+
+  self.@template_built: bool?
+
+  def self.available?: () -> bool
+  def self.stage_pristine_copy!: (Pathname dest) -> Pathname
+  def self.with_connection: (Pathname path) { () -> void } -> void
+  def self.connect: (Pathname path) -> void
+  def self.migrate!: () -> void
+  # Phase 65 (A6): combined schema + db/data pending list from
+  # DataMigrate::DatabaseTasks — hashes ({version:, name:, kind:}), no longer
+  # ActiveRecord::MigrationProxy records.
+  def self.pending_migrations: () -> Array[Hash[Symbol, untyped]]
+  def self.fresh_migrated_copy!: () -> Pathname
+  # The column holding a legislator's locale and the join that
+  # reaches it, as a pair of SQL fragments — which one depends on whether the
+  # snapshot was taken before or after legislators.district_id was dropped.
+  def self.locale_reached_by: () -> [String, String]
+  # Baltimore's locale id on the copy, and how to name the person
+  # behind a legislator row so the same fact can be compared either side of the
+  # run — the key everywhere except Baltimore, whose rows the chain renames.
+  def self.baltimore_locale_id: () -> Integer?
+  def self.person_key_sql: (String locale_id_sql) -> String
+  # Whether the copy already records the wrong-year cleanup
+  # (db/data/20260804000001) as applied, and the WHERE clause that leaves the
+  # rows it will delete out of a "survives the deploy" before-set while it is
+  # still pending ("" once applied).
+  def self.wrong_year_cleanup_applied?: () -> bool
+  def self.wrong_year_cleanup_exclusion: () -> String
+  # Whether the copy already records the wrong-seat term correction
+  # (db/data/20260807000001) as applied.
+  def self.seat_correction_applied?: () -> bool
+
+  private
+
+  WRONG_YEAR_CLEANUP_VERSION: String
+  SEAT_CORRECTION_VERSION: String
+  BILL_VOTE_YEAR_SQL: String
+
+  def self.data_migration_applied?: (String version) -> bool
+
+  def self.checkpoint_and_disconnect!: () -> void
+  def self.build_migrated_template!: () -> void
+  def self.remove_sqlite_files: (Pathname path) -> void
+  def self.copy_sqlite_files: (Pathname src, Pathname dest) -> void
+  def self.reset_model_columns!: () -> void
+end
+
+# Phase 65 (R6) — db/data/20260711000004_convert_duplicate_legislators_to_terms.rb.
+# db/data (like db/migrate) is not steep-checked in the :app target, but the
+# data migration's spec (spec/data/) references the class, so the :test
+# target needs its shape.
+class ConvertDuplicateLegislatorsToTerms < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+end
+
+# db/data/20260807000001_correct_wrong_seat_congress_terms.rb,
+# referenced by spec/migrations/correct_wrong_seat_congress_terms_spec.rb.
+class CorrectWrongSeatCongressTerms < ActiveRecord::Migration
+  CORRECTIONS: Array[[String, Integer, String, String]]
+
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  def correct_one: (SwayLocale locale, String bioguide, Integer start_year, String wrong_seat, String right_seat) -> void
+end
+
+# db/data/20260813000001_clear_our_own_address_from_organization_icons.rb,
+# referenced by spec/migrations/clear_our_own_address_from_organization_icons_spec.rb.
+class ClearOurOwnAddressFromOrganizationIcons < ActiveRecord::Migration
+  OUR_OWN_STORAGE: String
+
+  def up: () -> void
+  def down: () -> void
+end
+
+# Shims for APIs the harness drives that the generated ActiveRecord RBS
+# predates (same principle as the other sig-test gap-fills: type the thing,
+# never steep:ignore).
+module ActiveRecord
+  class Base
+    # Rails 7.1+: the resolved DatabaseConfig of the current connection; the
+    # harness merges its configuration_hash with the snapshot-copy path.
+    def self.connection_db_config: () -> ActiveRecord::DatabaseConfigurations::DatabaseConfig
+  end
+
+  class DatabaseConfigurations
+    class DatabaseConfig
+      def configuration_hash: () -> Hash[Symbol, untyped]
+    end
+  end
+end

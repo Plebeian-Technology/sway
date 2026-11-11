@@ -1,0 +1,8 @@
+# @lat: [[query-parameter-navigation-carry#Excluded route constants and security boundaries]]
+module NavigationRouteExclusions
+  EXCLUDED_PREFIXES: Array[String]
+
+  def self.excluded_path?: (untyped path_or_url) -> bool
+
+  def self.normalize_path: (untyped path_or_url) -> String
+end

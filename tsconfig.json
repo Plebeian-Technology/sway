@@ -1,0 +1,48 @@
+{
+    /* VITE */
+    "compilerOptions": {
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+
+        "allowJs": true, // polyfills/scroll_restoration_on_back.js
+
+        /* Bundler mode */
+        "moduleResolution": "Bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        // "isolatedModules": false,
+        "isolatedModules": true, // VITE
+        "noEmit": true,
+        "jsx": "react-jsx",
+
+        // "verbatimModuleSyntax": false,
+
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+
+        /* SWAY */
+        "types": ["vite/client", "vitest/globals", "node"],
+        // "typeRoots": ["app/frontend/types"],
+        "forceConsistentCasingInFileNames": true,
+
+        // Deprecated
+        "paths": {
+            "*": ["./*"],
+            "@/*": ["./app/frontend/*"],
+            "app/frontend/*": ["./app/frontend/*"]
+        }
+    },
+    // "include": ["src"],
+    "references": [{ "path": "./tsconfig.node.json" }],
+
+    /* LOBBIE */
+    "include": ["app/frontend", "vite"],
+    "exclude": ["node_modules", "build", "public", "docker", ".vscode", ".bundle"]
+}

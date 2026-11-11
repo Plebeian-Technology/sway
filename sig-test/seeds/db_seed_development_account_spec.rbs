@@ -1,0 +1,7 @@
+class Object
+  def prepare_prerequisites: (?seat_chambers: Hash[String, String]?) -> SwayLocale
+  def with_seed_environment: [T] () { () -> T } -> T
+  def required_admin_address: (User admin) -> Address
+  def active_mayor: (Array[UserLegislator] pairings) -> Legislator
+  def required_pairing_district: (UserLegislator pairing) -> District
+end

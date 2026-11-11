@@ -1,0 +1,50 @@
+class LegislativeSession < ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::LegislativeSession, ::LegislativeSession::ActiveRecord_Relation, ::Integer]
+
+  def sway_locale: () -> SwayLocale
+  def sway_locale=: (SwayLocale) -> SwayLocale
+  def sway_locale_id: () -> Integer
+  def sway_locale_id=: (Integer) -> Integer
+
+  def name: () -> String
+  def name=: (String) -> String
+
+  def start_date: () -> Date
+  def start_date=: (Date) -> Date
+
+  def end_date: () -> Date
+  def end_date=: (Date) -> Date
+
+  def active: () -> bool
+  def active=: (bool) -> bool
+  def active?: () -> bool
+
+  def legislator_terms: () -> LegislatorTerm::ActiveRecord_Associations_CollectionProxy
+  def legislators: () -> Legislator::ActiveRecord_Associations_CollectionProxy
+  def bills: () -> Bill::ActiveRecord_Associations_CollectionProxy
+
+  def upstream_name: () -> String
+  def definition: () -> SwayLocale::DocumentReader::LegislativeSessionDefinition?
+
+  def self.containing_date: (Date | Time | ActiveSupport::TimeWithZone date) -> LegislativeSession::ActiveRecord_Relation
+  def self.active: () -> LegislativeSession::ActiveRecord_Relation
+
+  def end_date_on_or_after_start_date: () -> void
+
+  module GeneratedRelationMethods
+    def containing_date: (Date | Time | ActiveSupport::TimeWithZone date) -> LegislativeSession::ActiveRecord_Relation
+    def active: () -> LegislativeSession::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::LegislativeSession]
+    include ::LegislativeSession::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::LegislativeSession, ::Integer]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::LegislativeSession]
+    include ::LegislativeSession::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::LegislativeSession, ::Integer]
+  end
+end

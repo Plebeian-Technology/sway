@@ -1,0 +1,58 @@
+# Phase 67 Plan 03 (D-11/D-12). rbs_rails covers the attribute readers and
+# the confirmed_by/sending_service_domain_bills associations under
+# sig/rbs_rails/app/models/sending_service_domain.rbs.
+#
+# sender_count/letter_count/machine_sent_letter_count are hand-written
+# INSTANCE METHODS here (they sum sending_service_domain_bills — see
+# app/models/sending_service_domain.rb), not database columns, so rbs_rails
+# never generates them and they belong in this overlay instead.
+class SendingServiceDomain < ApplicationRecord
+  NO_LABEL: String
+  PROPOSED: String
+  CONFIRMED: String
+  LABELS: Array[String]
+  MAX_PANEL_ROWS: Integer
+  PANEL_TOTALS: Hash[Symbol, String]
+
+  def self.summed_alias: (Symbol column) -> Symbol
+
+  def self.panel_total_selections: () -> Array[String]
+
+  def self.for_panel: () -> SendingServiceDomain::ActiveRecord_Relation
+
+  def self.panel_ranked: () -> SendingServiceDomain::ActiveRecord_Relation
+
+  # A `scope` is chainable on a relation, not just callable on the class —
+  # bills_controller.rb calls `panel_domains.panel_ranked` where
+  # panel_domains is already `SendingServiceDomain.for_panel`'s result, so
+  # rbs_rails' generated ActiveRecord_Relation class needs the method too,
+  # not only the self. declaration above.
+  class ActiveRecord_Relation
+    def panel_ranked: () -> SendingServiceDomain::ActiveRecord_Relation
+  end
+
+  def sender_count: () -> Integer
+
+  def letter_count: () -> Integer
+
+  def machine_sent_letter_count: () -> Integer
+
+  def bill_count: () -> Integer
+
+  def machine_sent_share: () -> Float?
+
+  # Present only on a row loaded through panel_ranked, which SELECTs them as
+  # ad-hoc aliases (B12) — absent on a plain load, which is why the readers
+  # above guard every call with has_attribute?.
+  def summed_sender_count: () -> Integer
+
+  def summed_letter_count: () -> Integer
+
+  def summed_machine_sent_letter_count: () -> Integer
+
+  def summed_bill_count: () -> Integer
+
+  private
+
+  def summed_or_query: (Symbol column) { () -> Integer } -> Integer
+end

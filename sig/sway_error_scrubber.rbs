@@ -1,0 +1,29 @@
+module SwayErrorScrubber
+  RULES_PATH: String
+  RULES: Hash[String, untyped]
+  REDACTIONS: Array[[Regexp, String]]
+  MAX_STRING_LENGTH: Integer
+  MAX_DEPTH: Integer
+  DROPPED_KEYS: Array[String]
+  PRESERVED_KEYS: Array[String]
+
+  def self.scrub_text: (untyped value) -> String
+  def self.deep_scrub: (untyped value, ?Integer depth) -> untyped
+  # `top` rather than untyped: the value is anything an event can hold, and the
+  # case/when narrows it. The return is always one of these three.
+  def self.dropped: (top value) -> (Array[untyped] | Hash[untyped, untyped] | String)
+  def self.call: (untyped event, ?untyped hint) -> untyped
+  def self.remove_empty_fingerprint: (untyped event) -> void
+  def self.scrub_exception: (untyped event) -> void
+  def self.scrub_request: (untyped event) -> void
+  def self.scrub_breadcrumbs: (untyped event) -> void
+
+  def scrub_text: (untyped value) -> String
+  def deep_scrub: (untyped value, ?Integer depth) -> untyped
+  def dropped: (top value) -> (Array[untyped] | Hash[untyped, untyped] | String)
+  def call: (untyped event, ?untyped hint) -> untyped
+  def remove_empty_fingerprint: (untyped event) -> void
+  def scrub_exception: (untyped event) -> void
+  def scrub_request: (untyped event) -> void
+  def scrub_breadcrumbs: (untyped event) -> void
+end

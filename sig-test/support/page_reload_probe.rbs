@@ -1,0 +1,18 @@
+module PageReloadProbe
+  PROBE_EXPRESSION: String
+  PROBE_VALUE: String
+
+  # Capybara and RSpec methods this module calls on whatever includes it. Same
+  # arrangement as sig-test/support/admin_system_helpers.rbs: the host is an
+  # example group at run time, and steep sees only the module.
+  def page: -> untyped
+  def expect: (untyped) -> RSpec::Expectations::ExpectationTarget
+  def eq: (untyped) -> untyped
+
+  # Kernel method
+  def raise: (*untyped) -> void
+
+  # Methods defined by this module
+  def plant_reload_probe!: () -> void
+  def expect_no_full_page_load!: () -> void
+end

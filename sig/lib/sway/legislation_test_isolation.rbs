@@ -1,0 +1,6 @@
+# Hand-written RBS for lib/sway/legislation_test_isolation.rb.
+module Sway
+  module LegislationTestIsolation
+    def self.root_override: () -> Pathname?
+  end
+end

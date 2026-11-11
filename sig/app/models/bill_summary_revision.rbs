@@ -1,0 +1,86 @@
+class BillSummaryRevision < ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::BillSummaryRevision, ::BillSummaryRevision::ActiveRecord_Relation, ::Integer]
+
+  ORIGINS: Array[String]
+  PUBLICATION_ROLES: Array[String]
+  REVIEW_STATES: Array[String]
+
+  # Attributes
+  def id: () -> Integer
+  def id=: (Integer) -> Integer
+  def bill_id: () -> Integer
+  def bill_id=: (Integer) -> Integer
+  def summary_markdown: () -> String
+  def summary_markdown=: (String) -> String
+  def origin: () -> String
+  def origin=: (String) -> String
+  def actor_id: () -> Integer?
+  def actor_id=: (Integer?) -> Integer?
+  def llm_provider: () -> String?
+  def llm_provider=: (String?) -> String?
+  def llm_model: () -> String?
+  def llm_model=: (String?) -> String?
+  def publication_role: () -> String
+  def publication_role=: (String) -> String
+  def review_state: () -> String
+  def review_state=: (String) -> String
+  def restored_from_id: () -> Integer?
+  def restored_from_id=: (Integer?) -> Integer?
+  def news_source_snapshot_id: () -> Integer?
+  def news_source_snapshot_id=: (Integer?) -> Integer?
+  def created_at: () -> ActiveSupport::TimeWithZone
+  def created_at=: (ActiveSupport::TimeWithZone | Time) -> (ActiveSupport::TimeWithZone | Time)
+
+  # Associations
+  def bill: () -> Bill
+  def bill=: (Bill) -> Bill
+  def actor: () -> User?
+  def actor=: (User?) -> User?
+  def restored_from: () -> BillSummaryRevision?
+  def restored_from=: (BillSummaryRevision?) -> BillSummaryRevision?
+  def news_source_snapshot: () -> NewsArticleSourceSnapshot?
+  def news_source_snapshot=: (NewsArticleSourceSnapshot?) -> NewsArticleSourceSnapshot?
+
+  # Domain methods
+  def readonly?: () -> bool
+  def actor_name: () -> String?
+  def initial_baseline?: () -> bool
+
+  def self.create!: (?untyped) -> BillSummaryRevision
+  def self.ensure_baseline!: (Bill? bill, ?provisioning: BillLlmProvisioning?) -> (BillSummaryRevision | nil)
+  def self.record_revision!: (
+    bill: Bill?,
+    summary_markdown: String?,
+    origin: String | Symbol,
+    publication_role: String | Symbol,
+    review_state: String | Symbol,
+    ?actor: User?,
+    ?llm_provider: String?,
+    ?llm_model: String?,
+    ?restored_from: (BillSummaryRevision | Integer | nil),
+    ?created_at: (ActiveSupport::TimeWithZone | Time | nil),
+    ?news_source_snapshot: (NewsArticleSourceSnapshot | Integer | nil)
+  ) -> (BillSummaryRevision | nil)
+
+  private
+
+  def capture_initial_baseline: () -> void
+  def restored_from_belongs_to_same_bill: () -> void
+  def news_source_snapshot_belongs_to_same_bill: () -> void
+  def prevent_mutation: () -> void
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::BillSummaryRevision]
+    include ::ActiveRecord::Relation::Methods[::BillSummaryRevision, ::Integer]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::BillSummaryRevision]
+    include ::ActiveRecord::Relation::Methods[::BillSummaryRevision, ::Integer]
+
+    def first: () -> BillSummaryRevision?
+    def last: () -> BillSummaryRevision?
+    def exists?: (?untyped) -> bool
+    def none?: () -> bool
+  end
+end

@@ -1,0 +1,50 @@
+# RBS signature for Testimony::CampaignDraftFinder (Phase 67 Plan 04, Task 1) —
+# groups letters by the text they reuse, at phrase (one physical line) grain,
+# plus SHINGLE_WINDOW_WORDS-word sliding-window shingles.
+# Never reads a domain and never reads a timestamp; grouping is text only.
+module Testimony
+  class CampaignDraftFinder
+    MIN_PHRASE_CHARS: Integer
+    SHINGLE_WINDOW_WORDS: Integer
+    MIN_LETTERS_FOR_REUSE: Integer
+    CAMPAIGN_DRAFT_ID_LENGTH: Integer
+
+    class Result
+      attr_reader letters: Array[Hash[String, untyped]]
+      attr_reader campaign_drafts: Array[Hash[String, untyped]]
+
+      def initialize: (letters: Array[Hash[String, untyped]], campaign_drafts: Array[Hash[String, untyped]]) -> void
+      def self.new: (letters: Array[Hash[String, untyped]], campaign_drafts: Array[Hash[String, untyped]]) -> Testimony::CampaignDraftFinder::Result
+    end
+
+    def self.call: (text: String, letters: Array[Hash[String, untyped]]) -> Result
+
+    @text: String
+    @letters: Array[Hash[String, untyped]]
+
+    def initialize: (text: String, letters: Array[Hash[String, untyped]]) -> void
+    def call: () -> Result
+
+    private
+
+    def letter_text: (Hash[String, untyped] letter) -> String
+    def paragraphs_for: (Hash[String, untyped] letter) -> Array[String]
+    def normalize: (String line) -> String
+    def flowing_words: (String paragraph) -> Array[String]
+    def content_hash: (String normalized) -> String
+    def alpha_char_count: (String normalized) -> Integer
+    def each_candidate_line: (String paragraph) { (String normalized, String original) -> void } -> void
+    def each_candidate_shingle: (String paragraph) { (String shingle) -> void } -> void
+    def collect_phrase_occurrences: (Array[Array[String]] letter_paragraphs) -> Hash[String, Array[Integer]]
+    def collect_shingle_occurrences: (Array[Array[String]] letter_paragraphs) -> Hash[String, Array[Integer]]
+    def select_reused: (Hash[String, Array[Integer]] occurrences) -> Hash[String, bool]
+    def node!: (Hash[String, String] parent, String node) -> String
+    def find_root: (Hash[String, String] parent, String node) -> String
+    def union: (Hash[String, String] parent, String a, String b) -> void
+    def connect_shared_letters: (Array[Array[String]] letter_paragraphs, Hash[String, bool] reused_phrase_hashes, Hash[String, bool] reused_shingle_hashes, Hash[String, String] parent) -> void
+    def component_members: (Hash[String, bool] reused_hashes, String prefix, Hash[String, String] parent) -> Hash[String, Array[String]]
+    def build_drafts: (Array[Array[String]] letter_paragraphs, Hash[String, bool] reused_phrase_hashes, Hash[String, bool] reused_shingle_hashes, Hash[String, String] parent) -> [Array[Hash[String, untyped]], Hash[Integer, String]]
+    def added_words_for: (Array[String] paragraphs, Hash[String, bool] reused_phrase_hashes) -> String
+    def build_letters: (Array[Array[String]] letter_paragraphs, Hash[String, bool] reused_phrase_hashes, Hash[Integer, String] campaign_draft_id_by_letter_index) -> Array[Hash[String, untyped]]
+  end
+end

@@ -1,0 +1,11 @@
+class InboundSmsForwardingService
+  LINK_PATTERN: Regexp
+
+  @from: String
+
+  @body: String
+
+  def initialize: (from: untyped, body: untyped) -> void
+
+  def call: () -> void
+end

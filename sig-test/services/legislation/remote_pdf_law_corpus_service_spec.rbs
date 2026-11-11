@@ -1,0 +1,27 @@
+module RemotePdfLawCorpusSpecHelpers
+  def catalog_url: () -> String
+  def link_url: () -> String
+  def stub_request: (Symbol method, String uri) -> untyped
+  def remove_request_stub: (untyped request_stub) -> untyped
+  def service: (?locale: SwayLocale) -> Legislation::RemotePdfLawCorpusService
+  def stub_catalog: (?codes: Array[String]) -> untyped
+  def stub_link: (String article_code, pdf_url: String, ?status: Integer) -> untyped
+  def stub_link_sequence: (String article_code, *String pdf_urls) -> untyped
+  def stub_pdf: (String url, String body, ?status: Integer) -> untyped
+end
+
+class RemotePdfLawCorpusServiceSpecContext
+  include RemotePdfLawCorpusSpecHelpers
+
+  def maryland: () -> SwayLocale
+  def http: () -> Faraday::Connection
+  def law_root: () -> Pathname
+  def raw_root: () -> Pathname
+  def base_url: () -> String
+  def catalog_url: () -> String
+  def link_url: () -> String
+  def pdf_url: () -> String
+  def pdf_bytes: () -> String
+  def stub_request: (Symbol method, String uri) -> untyped
+  def remove_request_stub: (untyped request_stub) -> untyped
+end

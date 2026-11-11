@@ -1,0 +1,22 @@
+class NotificationsController < ApplicationController
+    # @lat: [[notifications-tab-url#Why switching a tab reaches no server]]
+    PUSH_TAB: String
+
+    SMS_TAB: String
+
+    ORGANIZATIONS_TAB: String
+
+    def index: -> untyped
+
+    def update_settings: -> untyped
+
+    # REQ-6 / D-15: Persist global org-notification defaults.
+    # Cascades event-type OFF to all follows (asymmetric); master is gate only.
+    def update_organization_defaults: -> untyped
+
+    private
+
+    def notification_params: -> untyped
+
+    def organization_defaults_params: -> untyped
+end

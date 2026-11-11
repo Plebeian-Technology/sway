@@ -1,0 +1,18 @@
+# The one home for the transition that frees a bill summary row whose writer is
+# gone. Both callers — GenerateBillSummaryService's click-time reclaim and
+# ReclaimAbandonedSummaryRunsJob's sweep — must state whether they re-arm the
+# row, because that answer decides whether the operator is told anything and
+# what a pasted body means. (B24-01, B24-02)
+class SummaryRunRelease
+  # Two messages, because one could not be true of both arms: a `pending` row
+  # never reached Llm::Client.build and a `generating` one is released from the
+  # status a run spends in. (BE26-01)
+  RELEASED_UNSTARTED_ERROR: String
+
+  RELEASED_IN_FLIGHT_ERROR: String
+
+  def self.call: (BillLlmProvisioning provisioning, rearmed_by_caller: bool)
+               -> (:not_reclaimable | :handed_off | :released)
+
+  def self.hand_off_paste!: (BillLlmProvisioning provisioning) -> :handed_off
+end

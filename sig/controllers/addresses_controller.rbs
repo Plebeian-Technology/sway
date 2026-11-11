@@ -1,0 +1,3 @@
+class AddressesController < ApplicationController
+  def autocomplete: () -> untyped
+end

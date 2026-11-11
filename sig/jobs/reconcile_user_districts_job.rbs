@@ -1,0 +1,8 @@
+# Phase 65 (R7, D-13/D-17/D-18): per-locale rescue-isolated reconcile batch
+# driver. Matches the sig/jobs/*.rbs convention (RefreshLegislatorsCacheJob)
+# — ActiveJob classes have no AR-generated accessor surface, so there is no
+# rbs_rails-generated counterpart under sig/rbs_rails/app/jobs/ (that
+# directory has zero precedent for jobs in this codebase).
+class ReconcileUserDistrictsJob < ApplicationJob
+  def perform: (Integer sway_locale_id) -> void
+end

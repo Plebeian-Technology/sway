@@ -1,0 +1,35 @@
+# Hand-written RBS for lib/sway/docs_index.rb.
+module Sway
+  class DocsIndex
+    class Malformed < StandardError
+    end
+
+    TITLE: String
+    GENERATED_NOTE: String
+    SECTIONS: Array[[String, String]]
+    EMPTY_SECTION: String
+    UNREVIEWED_STATUS: String
+
+    @root: String
+
+    def initialize: (untyped root) -> void
+
+    def render: () -> String
+
+    def path: () -> String
+
+    # true when the bytes on disk changed.
+    def write: () -> bool
+
+    private
+
+    def rows_for: (String directory) -> Array[String]
+
+    # [title, rendered line]
+    def entry: (String path) -> [String, String]
+
+    def front_matter: (String path, String text) -> Hash[String, untyped]
+
+    def relative: (String path) -> String
+  end
+end

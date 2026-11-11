@@ -1,0 +1,68 @@
+# @lat: [[llm-summaries#Runs are marked and reclaimable#The persist guard is extracted so a batch ingest can call it directly]]
+class SummaryBatchResultPersister
+  # What a batch-written row records as its provider. The batch API has no
+  # adapter object to ask.
+  PROVIDER_LABEL: String
+
+  # The guard's own answers.
+  type outcome = :persisted | :superseded | :evidence_withdrawn | :vanished | :grounding_refused
+
+  # :persisted, :superseded, :evidence_withdrawn or :vanished — the guard's
+  # own four answers, passed through unchanged.
+  def self.call: (
+    bill: Bill,
+    provisioning: BillLlmProvisioning,
+    answer_type: String,
+    result: Llm::ClaudeBatchService::Result,
+    batch_id: String,
+    ?active_categories: Array[Category]?,
+  ) -> SummaryBatchResultPersister::outcome
+
+  def initialize: (
+    bill: Bill,
+    provisioning: BillLlmProvisioning,
+    answer_type: String,
+    result: Llm::ClaudeBatchService::Result,
+    batch_id: String,
+    ?active_categories: Array[Category]?,
+  ) -> void
+
+  def call: () -> SummaryBatchResultPersister::outcome
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader provisioning: BillLlmProvisioning
+  attr_reader answer_type: String
+  attr_reader result: Llm::ClaudeBatchService::Result
+  attr_reader batch_id: String
+
+  @active_categories: Array[Category]?
+
+  # The bare marker, not SummaryRunMarker.run_claim — the purchase receipt the
+  # synchronous path writes as its own job id.
+  def receipt: () -> String
+
+  def pending_receipt: () -> String?
+
+  def resolve_snapshot: (String target_answer_type) -> NewsArticleSourceSnapshot?
+
+  def value: () -> untyped
+
+  def active_categories: () -> Array[Category]
+
+  def persist_summary: () -> SummaryBatchResultPersister::outcome
+
+  def persist_positions: () -> SummaryBatchResultPersister::outcome
+
+  # Same active-set enforcement, same narrow Llm::SchemaError rescue and the
+  # same two log channels as the synchronous job: a batch-summarised bill must
+  # not silently lose its categories.
+  def assign_categories!: () -> void
+
+  def report: (Symbol outcome) -> void
+
+  def report_superseded: () -> void
+
+  def report_evidence_withdrawn: () -> void
+end

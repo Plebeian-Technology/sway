@@ -1,0 +1,36 @@
+module Testimony
+  class StancePromptBuilder
+    type candidate = {position: Integer, text: String}
+
+    MAX_LETTER_CHARS: Integer
+    HEAD_LETTER_CHARS: Integer
+    TAIL_LETTER_CHARS: Integer
+    MAX_EXTERNAL_ID_CHARS: Integer
+    MAX_TITLE_CHARS: Integer
+    MAX_SUMMARY_CHARS: Integer
+    TEXT_TRUNCATION_NOTICE: String
+    DELIMITER_PREFIX: String
+    STANCES: Array[String]
+
+    @letters: Array[candidate | Hash[String | Symbol, untyped]]
+    @bill: Bill?
+    @boundary: Llm::UntrustedTextBlock
+
+    def initialize: (letters: Array[candidate | Hash[String | Symbol, untyped]], ?bill: Bill?) -> void
+    def system_prompt: () -> String
+    def user_message: () -> String
+
+    private
+
+    attr_reader letters: Array[candidate | Hash[String | Symbol, untyped]]
+    attr_reader bill: Bill?
+    attr_reader boundary: Llm::UntrustedTextBlock
+
+    def sanitize_text: (String text) -> String
+    def sanitize_bill_field: (untyped value, ?max_chars: Integer) -> String
+    def format_bill_context: () -> String?
+    def header: () -> String
+    def boundary_instruction: () -> String
+    def output_contract: () -> String
+  end
+end

@@ -1,0 +1,24 @@
+# @lat: [[explanation/llm-summaries#Batch summarisation#One reader decides whether a bill earns a batch item]]
+class SummaryItemEligibility
+  def self.for: (bill: Bill, provisioning: BillLlmProvisioning) -> SummaryItemEligibility
+
+  def initialize: (bill: Bill, provisioning: BillLlmProvisioning) -> void
+
+  def operator_paste?: () -> bool
+
+  def summary?: () -> bool
+
+  def positions?: () -> bool
+
+  def hearing_testimony?: () -> bool
+
+  def commentary_eligible?: (?Bill target_bill) -> bool
+ 
+  def news_reporting_eligible?: (?Bill target_bill) -> bool
+
+  private
+
+  attr_reader bill: Bill
+
+  attr_reader provisioning: BillLlmProvisioning
+end

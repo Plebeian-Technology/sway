@@ -1,0 +1,92 @@
+module Legistar
+  # Standalone Legistar Web API (OData v3) client. See app/services/legistar/client.rb.
+  class Client
+    # Legistar JSON is dynamic: a collection resource parses to an Array, a
+    # single resource to a Hash with String keys. Leaves are untyped.
+    type response = Array[untyped] | Hash[String, untyped]
+
+    # A1-WR-05: OData option VALUES, replacing `**untyped odata`. Every value
+    # this client actually carries is one of these two: $filter/$orderby (and
+    # any future $select/$expand) are OData expression Strings, $top/$skip are
+    # Integers, and Legistar's non-OData "Attachments" extension flag is 1.
+    # A nil value is dropped by #odata_params rather than sent empty, which is
+    # why the splats below take `odata_value?`.
+    type odata_value = String | Integer
+
+    # The two shapes callers build: a kwargs splat (Symbol keys, from #get) and
+    # a literal Hash (String keys, from #get_raw). Hash is `unchecked out` in
+    # rbs/core, so a Hash[Symbol, odata_value?] satisfies this.
+    type odata_options = Hash[Symbol | String, odata_value?]
+
+    DEFAULT_CLIENT: String
+    MAX_PAGE_SIZE: Integer
+    ID_MAX: Integer
+
+    class Error < StandardError
+    end
+
+    class ParseError < Error
+    end
+
+    class HttpError < Error
+      attr_reader status: Integer
+      attr_reader path: String
+
+      # A1-WR-05: `String?`, not untyped. A3-CR-01 spends 18 lines establishing
+      # that `body` MUST already be valid UTF-8 — untyped erased that contract
+      # from the type system entirely. The constructor still scrubs defensively
+      # (it is public, and an Encoding::CompatibilityError raised in here
+      # escapes every rescue between it and RunLegislationPipelineJob).
+      def initialize: (status: Integer, path: String, ?body: String?) -> void
+    end
+
+    attr_reader client: String
+    @conn: Faraday::Connection
+
+    def initialize: (?client: String, ?connection: Faraday::Connection?) -> void
+
+    def get: (String resource, **odata_value? odata) -> response
+
+    # Phase 63 Plan 05 Task 1 (REVIEWS C1): same HTTP/parse/error contract
+    # as #get, but takes the OData options as a literal Hash instead of a
+    # kwargs splat — the only way to pass a STRING-keyed (non-$-prefixed)
+    # extension param like Legistar's EventItems "Attachments" flag. RBS
+    # keyword splats require Symbol keys even though Ruby's runtime
+    # **kwargs collection accepts String keys too.
+    def get_raw: (String resource, odata_options odata) -> response
+
+    # Array[untyped] is honest rather than lazy here: #get_all only checks
+    # `page.is_a?(Array)` before concatenating, so the ELEMENTS really are
+    # unvalidated JSON leaves. Narrowing to Array[Hash[String, untyped]] would
+    # be the A1-WR-06 mistake — a sig asserting a narrowing no code performs.
+    def get_all: (String resource, ?page_size: Integer, ?max_pages: Integer, **odata_value? odata) -> Array[untyped]
+
+    # WS5.26: only the wrappers with real callers are kept.
+    def matters: (**odata_value? odata) -> response
+    def matter_attachments: (Integer | String matter_id, **odata_value? odata) -> response
+    def matter_histories: (Integer | String matter_id, **odata_value? odata) -> response
+    # A single-resource fetch by id (unlike the list/collection wrappers
+    # above): #get's own contract says a single resource always parses to a
+    # Hash, so this narrows past `response` rather than repeating the
+    # Array-tolerance those wrappers need.
+    def person: (Integer | String id) -> Hash[String, untyped]
+    def body_office_records: (Integer | String body_id, **odata_value? odata) -> response
+
+    private
+
+    def odata_params: (odata_options odata) -> Hash[String, odata_value]
+
+    # A1-WR-05: `untyped` is DELIBERATE on this one parameter and nowhere else
+    # in this file. #coerce_id! IS the validation boundary — its else branch
+    # raises for everything that is not an Integer or a digit-bounded String,
+    # and LegislatorsCache::BaltimoreRefresh feeds it raw JSON leaves
+    # (`legistar.person(record["OfficeRecordPersonId"])`). Narrowing the input
+    # to Integer | String would tell steep that raise is dead code, which is
+    # exactly the defect A1-WR-06 reports one file over.
+    def coerce_id!: (untyped value) -> Integer
+
+    # A1-WR-04: the pre-decoded Array/Hash tolerance moved up into #get_raw,
+    # above the scrub that used to stringify it. This takes a String.
+    def parse: (String body) -> response
+  end
+end

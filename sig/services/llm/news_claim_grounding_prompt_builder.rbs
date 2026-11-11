@@ -1,0 +1,30 @@
+module Llm
+  class NewsClaimGroundingPromptBuilder
+    PROMPT_VERSION: Integer
+    MAX_CONTEXT_CHARS: Integer
+    MAX_CANDIDATE_PROSE_CHARS: Integer
+    TEXT_TRUNCATION_NOTICE: String
+    LEADING_TRUNCATION_NOTICE: String
+
+    attr_reader claim_text: String
+    attr_reader evidence_excerpt: String
+    attr_reader source_context: String
+    attr_reader candidate_prose: String?
+    attr_reader boundary: Llm::UntrustedTextBlock
+
+    def initialize: (
+      claim_text: String,
+      evidence_excerpt: String,
+      source_context: String,
+      ?candidate_prose: String?
+    ) -> void
+
+    def build: () -> Llm::PromptPayload
+    def system_prompt: () -> String
+    def user_message: () -> String
+
+    private
+
+    def bounded_source_context: () -> String
+  end
+end

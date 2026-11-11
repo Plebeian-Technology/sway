@@ -1,0 +1,72 @@
+class NewsArticleRobotsPolicy
+  MAX_ROBOTS_BYTES: Integer
+  MAX_REDIRECTS: Integer
+  OPEN_TIMEOUT_SECONDS: Integer
+  READ_TIMEOUT_SECONDS: Integer
+  DEFAULT_CACHE_TTL: Float
+  MAX_CACHE_ENTRIES: Integer
+
+  class Verdict
+    attr_accessor allowed: bool
+    attr_accessor refusal_reason: Symbol?
+    attr_accessor message: String?
+    def initialize: (?allowed: bool, ?refusal_reason: Symbol?, ?message: String?) -> void
+    def allowed?: () -> bool
+    def reason: () -> Symbol?
+  end
+
+  CheckResult: singleton(Verdict)
+
+  class Rule
+    attr_accessor type: Symbol
+    attr_accessor pattern: String
+    attr_accessor regexp: Regexp
+    attr_accessor length: Integer
+    def initialize: (?type: Symbol, ?pattern: String, ?regexp: Regexp, ?length: Integer) -> void
+  end
+
+  class UserAgentGroup
+    attr_accessor agents: Array[String]
+    attr_accessor rules: Array[Rule]
+    def initialize: (?agents: Array[String], ?rules: Array[Rule]) -> void
+  end
+
+  class CacheEntry
+    attr_accessor policy: NewsArticleRobotsPolicy
+    attr_accessor cached_at: Float
+    attr_accessor expires_at: Float
+    def initialize: (?policy: NewsArticleRobotsPolicy, ?cached_at: Float, ?expires_at: Float) -> void
+    def expired?: (?Float now) -> bool
+  end
+
+  @cache: Hash[String, CacheEntry]
+  @cache_mutex: Thread::Mutex
+
+  def self.check: (URI::Generic | String uri, ?deadline: Float?, ?user_agent: String) -> Verdict
+  def self.allowed?: (URI::Generic | String uri, ?deadline: Float?, ?user_agent: String) -> bool
+  def self.reset_cache!: () -> void
+
+  attr_reader origin: String
+  attr_reader groups: Array[UserAgentGroup]
+  attr_reader absent: bool
+
+  def initialize: (origin: String, groups: Array[UserAgentGroup], ?absent: bool) -> void
+  def check_uri: (URI::Generic uri, ?user_agent: String) -> Verdict
+
+  private
+
+  def self.get_or_fetch_policy: (String origin, URI::Generic uri, deadline: Float?, user_agent: String) -> (NewsArticleRobotsPolicy | Verdict)
+  def self.fetch_origin_policy: (String origin, URI::Generic target_uri, deadline: Float?, user_agent: String) -> (NewsArticleRobotsPolicy | Verdict)
+  def self.fetch_http_robots: (URI::Generic uri, deadline: Float?, user_agent: String) -> [Faraday::Response?, String?]
+  def self.html_response?: (Faraday::Response response, String body) -> bool
+  def self.html_document?: (String body) -> bool
+  def self.paywall_or_login_barrier?: (String body) -> bool
+  def self.parse_robots_txt: (String content) -> Array[UserAgentGroup]
+  def self.normalize_robots_content: (String content) -> String
+  def self.compile_rule: (Symbol `type`, String pattern) -> Rule?
+  def self.normalize_percent_encoding: (String str) -> String
+
+  def resolve_rules_for: (String user_agent) -> Array[Rule]
+  def matches_token?: (String agent_pattern, String token) -> bool
+  def extract_product_token: (String user_agent) -> String
+end

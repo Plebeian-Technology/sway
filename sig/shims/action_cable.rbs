@@ -1,0 +1,7 @@
+module ActionCable
+    module Channel
+        class Base
+            def current_user: -> untyped
+        end
+    end
+end

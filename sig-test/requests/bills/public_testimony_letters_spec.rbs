@@ -1,0 +1,11 @@
+class PublicTestimonyLettersRequestSpecContext
+  def sway_locale_and_user: () -> [SwayLocale, User]
+  def sway_locale: () -> SwayLocale
+  def user: () -> User
+  def bill: () -> Bill
+  def token: () -> String
+  def bearer_headers: () -> Hash[String, String]
+  def letter_body: () -> String
+  def cleaned_testimony: () -> Hash[String, untyped]
+  def expected_letters: () -> Array[Hash[String, untyped]]
+end

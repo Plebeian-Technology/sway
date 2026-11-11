@@ -1,0 +1,8 @@
+<rsl xmlns="https://rslstandard.org/rsl">
+  <content url="/">
+    <license>
+      <permits type="usage">ai-all</permits>
+      <payment type="attribution"/>
+    </license>
+  </content>
+</rsl>

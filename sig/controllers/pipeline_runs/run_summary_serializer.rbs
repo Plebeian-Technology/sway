@@ -1,0 +1,24 @@
+module PipelineRuns
+  class RunSummarySerializer
+    type row = {
+      id: Integer,
+      status: String,
+      kind: String,
+      bill_id: Integer?,
+      bill_external_id: String?,
+      remote_run_id: String?,
+      started_at: String?,
+      completed_at: String?,
+      current_stage: String?,
+      bills_total: Integer,
+      bills_succeeded: Integer,
+      bills_failed: Integer,
+      failing_stage: String?,
+    }
+
+    ROW_KEYS: Array[Symbol]
+
+    def self.call: (untyped scope) -> Array[row]
+    def self.serialize: (LegislationPipelineRun run) -> row
+  end
+end

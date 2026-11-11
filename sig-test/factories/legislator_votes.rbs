@@ -1,0 +1,4 @@
+class LegislatorVoteFactoryContext < Object
+  def legislator_term_id: () -> Integer
+    | () { () -> Integer } -> untyped
+end

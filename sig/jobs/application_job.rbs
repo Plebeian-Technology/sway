@@ -1,0 +1,5 @@
+class ApplicationJob < ActiveJob::Base
+  private
+
+  def log_job_execution: { -> void } -> void
+end

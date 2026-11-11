@@ -1,0 +1,95 @@
+class ManualNewsSummaryPublicationService
+  class Result
+    attr_reader status: Symbol
+    attr_reader errors: Array[untyped]
+    attr_reader reasons: Array[untyped]
+    attr_reader revision: BillSummaryRevision?
+    attr_reader snapshot: NewsArticleSourceSnapshot?
+    attr_reader grounding_result: untyped
+    attr_reader eligibility_comparison: untyped
+
+    def initialize: (
+      status: Symbol,
+      ?errors: Array[untyped],
+      ?reasons: Array[untyped],
+      ?revision: BillSummaryRevision?,
+      ?snapshot: NewsArticleSourceSnapshot?,
+      ?grounding_result: untyped,
+      ?eligibility_comparison: untyped
+    ) -> void
+
+    def success?: () -> bool
+    def published?: () -> bool
+    def publishable?: () -> bool
+    def draft?: () -> bool
+  end
+
+  def self.publish!: (
+    bill: Bill,
+    ?summary_markdown: String?,
+    ?summary: String?,
+    ?actor: User?,
+    ?origin: String,
+    ?news_usage: String?,
+    ?source_uses: Array[untyped]?,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?snapshot_id: (Integer | String)?,
+    ?restored_from: BillSummaryRevision?,
+    ?review_state: String?,
+    ?dry_run: bool
+  ) -> Result
+
+  def self.call: (
+    bill: Bill,
+    ?summary_markdown: String?,
+    ?summary: String?,
+    ?actor: User?,
+    ?origin: String,
+    ?news_usage: String?,
+    ?source_uses: Array[untyped]?,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?snapshot_id: (Integer | String)?,
+    ?restored_from: BillSummaryRevision?,
+    ?review_state: String?,
+    ?dry_run: bool
+  ) -> Result
+
+  @bill: Bill
+  @summary_markdown: String
+  @actor: User?
+  @origin: String
+  @news_usage: String?
+  @source_uses: Array[untyped]?
+  @snapshot: NewsArticleSourceSnapshot?
+  @snapshot_id: (Integer | String)?
+  @restored_from: BillSummaryRevision?
+  @review_state: String?
+  @dry_run: bool
+
+  def initialize: (
+    bill: Bill,
+    summary_markdown: String?,
+    actor: User?,
+    ?origin: String,
+    ?news_usage: String?,
+    ?source_uses: Array[untyped]?,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?snapshot_id: (Integer | String)?,
+    ?restored_from: BillSummaryRevision?,
+    ?review_state: String?,
+    ?dry_run: bool
+  ) -> void
+
+  def publish!: () -> Result
+
+  private
+
+  def ensure_baseline!: () -> void
+  def publish_restoration!: () -> Result
+  def publish_manual_edit!: () -> Result
+  def commit_published!: (NewsArticleSourceSnapshot? snapshot) -> Result
+  def record_draft_revision: (NewsArticleSourceSnapshot? snapshot) -> BillSummaryRevision?
+  def extract_prose_news_urls: () -> Array[String]
+  def normalized_source_uses: () -> Array[untyped]
+  def resolve_cited_bill_news_articles: (Array[untyped] effective_uses, Array[String] prose_news_urls) -> Array[BillNewsArticle]
+end

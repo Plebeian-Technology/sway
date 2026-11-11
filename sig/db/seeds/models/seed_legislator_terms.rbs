@@ -1,0 +1,30 @@
+class SeedLegislatorTerms
+  TITLE_ALIASES: Hash[String, String]
+
+  type seat_context = {
+    identity: LegislatorIdentity,
+    office_identity: String,
+    chamber: String,
+    district: District,
+    ?seat_title: String
+  }
+
+  def self.fill_missing_title!: (LegislatorTerm, prepared: OfficialEvidence::PreparedServiceEntry) -> bool
+
+  private
+
+  def configured_seat_context: () -> seat_context?
+
+  def attach_configured_current_seat!: (seat_context) -> bool?
+
+  def overlapping_terms_for_configured_seat: (Seat, LegislatorTerm) -> Array[LegislatorTerm]
+
+  def configured_seat_interval: (LegislatorTerm) -> [Date, Date]
+
+  def warn_configured_seat_overlap: (
+    seat: Seat,
+    term: LegislatorTerm,
+    conflicting_term: LegislatorTerm,
+    office_identity: String
+  ) -> nil
+end

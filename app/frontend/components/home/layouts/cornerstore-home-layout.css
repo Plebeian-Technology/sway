@@ -1,0 +1,90 @@
+/* The Corner Store home layout: the flyer taped in a shop window. Flat blocks
+   with hard offsets, wood type confined to the headline and block titles —
+   matching cornerstore-bill-layout.css. */
+
+.csh-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+.csh-kicker {
+    display: inline-block;
+    background: var(--destructive);
+    color: var(--primary-foreground);
+    font-weight: var(--weight-display);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
+    transform: rotate(-1.5deg);
+    box-shadow: 4px 4px 0 var(--border);
+}
+
+/* Ink on a TINT of the primary, never the primary at full strength: at
+   letterform scale that pairing vibrates (owner, 2026-07-26). */
+.csh-headline {
+    margin-top: calc(var(--space-unit) * 5);
+    font-family: var(--font-display);
+    font-size: var(--type-display);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    text-transform: uppercase;
+    color: var(--foreground);
+    text-shadow: 4px 4px 0 var(--surface-3);
+}
+
+.csh-deck {
+    margin-top: calc(var(--space-unit) * 3);
+    max-width: 54ch;
+    font-size: var(--type-lede);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+.csh-signin {
+    margin-top: calc(var(--space-unit) * 6);
+    padding: calc(var(--space-unit) * 4);
+    background: var(--card);
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    box-shadow: var(--neo-shadow);
+}
+
+/* Sized so all three fit across the reading column rather than wrapping 2 + 1,
+   which leaves an orphan block hanging under a pair. */
+.csh-blocks {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+    margin-top: calc(var(--space-unit) * 6);
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
+.csh-block {
+    padding: calc(var(--space-unit) * 4);
+    background: var(--card);
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    box-shadow: var(--neo-shadow);
+}
+
+.csh-block__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--foreground);
+}
+
+.csh-block__text {
+    margin-top: calc(var(--space-unit) * 2);
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .csh-kicker {
+        transform: none;
+    }
+}

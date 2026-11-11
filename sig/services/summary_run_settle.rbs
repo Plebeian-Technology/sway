@@ -1,0 +1,12 @@
+# @lat: [[llm-summaries#Batch summarisation#One settle shared by the job and the ingest]]
+class SummaryRunSettle
+  # clear_generation_error is true only on the paths that settle a row without
+  # buying anything; recompute_score is false wherever the caller can prove
+  # neither paid answer landed. llm_generated_at is deliberately NOT written.
+  def self.completed!: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    ?clear_generation_error: bool,
+    ?recompute_score: bool,
+  ) -> void
+end

@@ -1,0 +1,9 @@
+module Scraper
+  module OpenStates
+    module House
+      class LegislatorVotes < Scraper::OpenStates::LegislatorVotes
+        def chamber_name: () -> String
+      end
+    end
+  end
+end

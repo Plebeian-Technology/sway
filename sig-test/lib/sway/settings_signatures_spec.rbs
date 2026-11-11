@@ -1,0 +1,5 @@
+# Declared outside RSpec.describe, not as a `def` inside one: Steep resolves
+# neither.
+module SettingsSignaturesSpecHelpers
+  def self.normalize: (String text) -> String
+end

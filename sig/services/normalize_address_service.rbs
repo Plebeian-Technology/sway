@@ -1,0 +1,13 @@
+class NormalizeAddressService
+  @address: untyped
+
+  def self.call: [T] (T target, **untyped attributes) -> T
+               | (?nil target, **untyped attributes) -> Hash[Symbol, untyped]
+               | (Hash[untyped, untyped] target, **untyped attributes) -> Hash[Symbol, untyped]
+  def self.normalize_attributes: (Hash[untyped, untyped] attrs) -> Hash[Symbol, untyped]
+  def self.normalize_region_code: (untyped region_code) -> String?
+  def self.normalize_city: (untyped city) -> String?
+
+  def initialize: (untyped address) -> void
+  def call: -> untyped
+end

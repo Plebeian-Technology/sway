@@ -1,0 +1,7 @@
+class Object
+  def unscheduled_bill: () -> Bill
+end
+
+class AdminBillCreatorSpecContext < Object
+  include BillScheduleBrowserHelpers
+end

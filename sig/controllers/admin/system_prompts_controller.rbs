@@ -1,0 +1,8 @@
+# Controller action return types are `() -> untyped` per Sway convention
+# (Phase 54 iter-1 M10 exception to [[feedback_rbs_avoid_untyped]]): render
+# returns Rails-internal types whose shape varies across versions.
+module Admin
+  class SystemPromptsController < ApplicationController
+    def show: () -> untyped
+  end
+end

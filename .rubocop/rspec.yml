@@ -1,0 +1,71 @@
+plugins:
+    - rubocop-rspec
+
+# Disable all cops by default,
+# only enable those defined explcitly in this configuration file
+RSpec:
+    Enabled: false
+
+RSpec/Focus:
+    Enabled: true
+
+RSpec/EmptyExampleGroup:
+    Enabled: true
+
+RSpec/EmptyLineAfterExampleGroup:
+    Enabled: true
+
+RSpec/EmptyLineAfterFinalLet:
+    Enabled: true
+
+RSpec/EmptyLineAfterHook:
+    Enabled: true
+
+RSpec/EmptyLineAfterSubject:
+    Enabled: true
+
+RSpec/HookArgument:
+    Enabled: true
+
+RSpec/HooksBeforeExamples:
+    Enabled: true
+
+RSpec/ImplicitExpect:
+    Enabled: true
+
+RSpec/IteratedExpectation:
+    Enabled: true
+
+RSpec/LetBeforeExamples:
+    Enabled: true
+
+RSpec/MissingExampleGroupArgument:
+    Enabled: true
+
+RSpec/ReceiveCounts:
+    Enabled: true
+
+# Custom cop (lib/cops/rspec/inertia_matcher_required.rb). Require'd
+# in .rubocop.yml. An example asserting Inertia props must pin the component.
+Sway/InertiaMatcherRequired:
+    Enabled: true
+    Include:
+        - "spec/requests/**/*_spec.rb"
+    Exclude:
+        # Mobile/bearer JSON endpoints render no Inertia component.
+        - "spec/requests/api/**/*_spec.rb"
+        # Cross-component shared inertia_share data — asserts have_props across
+        # every authenticated page, with no single owning component to pin.
+        - "spec/requests/shared_data_spec.rb"
+        # Flash-propagation contract (flash[:activity_log_entry] → usePage props)
+        # — asserts on the shared flash prop, not a specific component render.
+        - "spec/requests/pipeline_activity_logger_inertia_flash_spec.rb"
+
+Capybara/RSpec/CurrentPathExpectation:
+    Enabled: true
+
+FactoryBot/AttributeDefinedStatically:
+    Enabled: true
+
+FactoryBot/CreateList:
+    Enabled: true

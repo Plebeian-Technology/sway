@@ -1,0 +1,70 @@
+# Manual extensions for SwayLocale. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/sway_locale.rbs; this file holds
+# the hand-written class + instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28 — where SwayLocale was
+# declared twice; both blocks are merged here).
+#
+class SwayLocale < ApplicationRecord
+    @name: String
+    @name_key: [String?, String?, String?]
+    @geojson: RGeo::Cartesian::Geometry?
+    @document: SwayLocale::DocumentReader::Document?
+    @document_name_key: String
+    @declared_jurisdiction_rules: SwayLocale::JurisdictionRules?
+    @declared_jurisdiction_rules_name_key: String?
+    @at_large_district: District?
+    @nominatim_viewbox: String?
+    @nominatim_bounded: bool?
+    @nominatim_country_codes: String?
+
+    def self.declared: -> Array[SwayLocale]
+    def self.find_by_name: (String name) -> SwayLocale?
+    def self.find_by_name_parts: (String? name) -> SwayLocale?
+    def self.resolve_by_computed_name: (String name) -> SwayLocale?
+    def self.default_locale: -> SwayLocale?
+    def self.find_or_create_by_normalized!: (**String? kwargs) -> SwayLocale
+    def self.normalize_attributes: (Hash[Symbol, String?] attrs) -> Hash[Symbol, String?]
+    def self.format_name: (String name) -> String
+    def term_rules: -> SwayLocale::TermRules
+    def locale_wide_district_name: -> String?
+    def jurisdiction_rules: -> SwayLocale::JurisdictionRules
+    def declared?: -> bool
+    def declared_jurisdiction_rules: -> SwayLocale::JurisdictionRules?
+    def at_large_district: -> District?
+    def reload: (*untyped) -> self
+    def congress?: -> bool
+    def regional?: -> bool
+    def local?: -> bool
+    def tier: -> String
+    def name: -> String
+    def slug: -> String
+    def generic_portal_urls: -> Array[String]
+    def city_name: -> String
+
+    def region_name: -> String
+    def country_name: -> String
+    def region_code: -> String?
+    def state_code: -> String?
+    def has_geojson?: -> bool
+    def geojson_file_name: -> String
+    def load_geojson: -> RGeo::Cartesian::Geometry?
+
+    def legislators: (?bool active) -> Legislator::ActiveRecord_Relation
+    def reversed_name: -> String
+    def human_name: -> String
+    def to_select_option: -> { label: String, value: Integer }
+    def nameify_country: -> String
+    def nameify_region: -> String
+    def nameify_city: -> String
+    def current_session_start_date: -> Date?
+    def legislative_session_for_date: (Date | Time | ActiveSupport::TimeWithZone | String | nil date) -> LegislativeSession?
+
+    def document: -> SwayLocale::DocumentReader::Document?
+    def nominatim_viewbox: -> String?
+    def nominatim_viewbox=: (String?) -> String?
+    def nominatim_bounded: -> bool?
+    def nominatim_bounded=: (bool?) -> bool?
+    def nominatim_country_codes: -> String?
+    def nominatim_country_codes=: (String?) -> String?
+    def to_builder: -> Jbuilder
+end

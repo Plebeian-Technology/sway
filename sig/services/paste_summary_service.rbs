@@ -1,0 +1,81 @@
+# Business-logic extraction from BillsController#paste_summary.
+# Returns [outcome, errors] — outcome :persisted | :persisted_unsettled |
+# :invalid_json | :schema_invalid; errors an array of { path:, message: } hashes
+# (empty on success) the controller forwards to render_paste_summary_errors. RBS
+# kept narrow per feedback_update_rbs_with_code.md.
+#
+# B22-05: :persisted_unsettled is a success with one thing left undone — the
+# body and its audit entry committed, the status not moved, and no job coming
+# to move it. The controller turns it into a 200 with an alert.
+class PasteSummaryService
+  class InvalidNewsUsageError < StandardError
+    attr_reader errors: Array[Hash[Symbol, String]]
+
+    def initialize: (Array[Hash[Symbol, String]] errors) -> void
+  end
+
+  @bill: Bill
+
+  @actor: User
+
+  @summary_json: String
+
+  def initialize: (bill: Bill, actor: User, summary_json: untyped) -> void
+
+  def call: () -> [ Symbol, Array[Hash[Symbol, String]] ]
+
+  private
+
+  # B4-WR-03: drives the row to `completed` through the state machine's real
+  # edges so a pasted summary lands in a status the UI renders. No-op for a row
+  # with a generation in flight, or one already completed.
+  def settle_pasted_row!: (BillLlmProvisioning provisioning) -> void
+
+  # B22-05: asked only after the settle raised — is anything still going to move
+  # this row's status? `pending`/`generating` mean a job owns it (the deliberate
+  # hand-off) and `completed` means it is already there. Everything else has no
+  # job attached and none coming. A failed re-read answers false, which is the
+  # honest side to be wrong on.
+  def settlement_still_expected?: (BillLlmProvisioning provisioning) -> bool
+
+  # B4-CR-01 (REAS-01): {} leaves draft_org_positions untouched — the key was
+  # absent, or a non-empty array arrived for a bill with no testimony behind it.
+  # {draft_org_positions: ...} writes (or, with an empty array, clears).
+  # @lat: [[bill-creator-summary-tab#A wholesale paste keeps the marks it never carried]]
+  #
+  # The element type is BillLlmProvisioning::draft_entry, the column's own
+  # type, because the value passes straight through that method. The column
+  # is deserialized JSON, so an element is not guaranteed to be a Hash.
+  def draft_positions_attrs: (
+    Hash[String, untyped] body,
+    BillLlmProvisioning provisioning,
+  ) -> Hash[Symbol, Array[BillLlmProvisioning::draft_entry]?]
+
+  # Writes the pasted body. Takes the row lock first when the row exists, so the
+  # draft-mark merge inside decides from the list it is about to replace rather
+  # than from the copy loaded when the request arrived. A row that does not yet
+  # exist cannot be locked and nobody else can be writing to it, so that branch
+  # keeps a plain transaction.
+  def write_pasted_body!: (
+    BillLlmProvisioning provisioning,
+    Hash[Symbol, untyped] attrs,
+    Hash[String, untyped] body,
+  ) -> void
+
+  # The body of the write, run either under the lock or inside the transaction.
+  def commit_pasted_body!: (
+    BillLlmProvisioning provisioning,
+    Hash[Symbol, untyped] attrs,
+    Hash[String, untyped] body,
+  ) -> void
+
+  # A19-04 / A19-05: attaches the pasted category names, and never lets a
+  # failure of that optional work escape over a summary that is already
+  # committed. An empty list is logged rather than acted on — it does not clear
+  # the bill's categories.
+  def assign_pasted_categories: (Hash[String, untyped] body) -> void
+
+  def log_rejected: (Array[Hash[Symbol, String]] errors) -> void
+
+  def human_readable_schema_error: (Hash[String, untyped] schema_error) -> String
+end

@@ -1,0 +1,3 @@
+class OrgNotificationFanout
+  def self.deliver: (user: User, title: String, body: String, url: String) -> void
+end

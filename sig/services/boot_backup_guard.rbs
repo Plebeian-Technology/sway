@@ -1,0 +1,23 @@
+# @lat: [[standby-restore#Why a deploy makes at most one backup copy]]
+class BootBackupGuard
+  MARKER_FILENAME: String
+
+  @release_id: String
+  @storage_dir: String
+
+  def initialize: (?release_sha: String?, ?deployed_at: String?, ?storage_dir: String) -> void
+
+  def backup_needed?: () -> bool
+
+  def record_backup: () -> void
+
+  private
+
+  attr_reader release_id: String
+
+  attr_reader storage_dir: String
+
+  def recorded_release: () -> String
+
+  def marker_path: () -> String
+end

@@ -1,0 +1,14 @@
+module Geocoder
+    module Result
+        class Base
+            def street: -> String?
+            def city: -> String?
+            def postal_code: -> String?
+            def coordinates: -> [Float, Float]
+            def nil?: -> bool
+        end
+
+        class Test < Base
+        end
+    end
+end

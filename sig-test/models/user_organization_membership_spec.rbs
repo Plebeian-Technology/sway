@@ -1,0 +1,8 @@
+# Spec-only declaration for spec/models/user_organization_membership_spec.rb.
+# `_destroy_callbacks` is the ActiveSupport callback chain accessor that
+# Rails defines via `define_callbacks`; rbs_rails cannot introspect it.
+# The spec inspects the chain's Callback objects (`#kind`, `#filter`), whose
+# internals are opaque, so the element type stays untyped.
+class UserOrganizationMembership
+  def self._destroy_callbacks: () -> Array[untyped]
+end

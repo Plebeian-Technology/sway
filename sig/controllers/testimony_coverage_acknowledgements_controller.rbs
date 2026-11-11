@@ -1,0 +1,12 @@
+# Phase 67 Plan 08 (D-15): the single write behind Surface 3's acknowledge
+# button.
+class TestimonyCoverageAcknowledgementsController < ApplicationController
+  @bill: Bill
+
+  # POST /bills/:bill_id/testimony_coverage_acknowledgement
+  def create: -> void
+
+  private
+
+  def set_bill: -> void
+end

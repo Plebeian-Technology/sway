@@ -1,0 +1,7 @@
+class SkipPhoneVerificationProvisioner
+    def self.call: (phone: String) -> User
+
+    private
+
+    def self.sample_address_locale: () -> SwayLocale
+end

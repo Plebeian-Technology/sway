@@ -1,0 +1,19 @@
+module Scraper
+  class LegislatorVote
+    attr_reader external_id: String
+    attr_reader support: String
+    attr_reader first_name: String
+    attr_reader last_name: String
+    attr_reader party: String
+    attr_reader state_code: String
+
+    def initialize: (
+      external_id: String,
+      support: String,
+      first_name: String,
+      last_name: String,
+      party: String,
+      state_code: String
+    ) -> void
+  end
+end

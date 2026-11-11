@@ -1,0 +1,13 @@
+# Manual extensions for OrganizationBillPositionChange. Schema-derived
+# accessors live in the rbs_rails-generated
+# sig/rbs_rails/app/models/organization_bill_position_change.rbs; this file
+# holds the hand-written instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class OrganizationBillPositionChange < ApplicationRecord
+    # Composes the approved?/rejected? enum predicates — "row no longer open".
+    def finalized?: -> bool
+
+    private
+
+    def normalize_support_values: () -> void
+end

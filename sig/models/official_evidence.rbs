@@ -1,0 +1,177 @@
+class OfficialEvidence < ApplicationRecord
+  attr_accessor publisher: String
+  attr_accessor jurisdiction: String
+  attr_accessor sway_locale_id: Integer?
+  attr_accessor source_url: String
+  attr_accessor external_record_id: String?
+  attr_accessor retrieved_at: Time
+  attr_accessor payload: String
+  attr_accessor payload_hash: String
+  attr_accessor fact_type: String
+  attr_accessor fact_presence: String
+  attr_accessor parsed_values: Hash[String, untyped]
+  attr_accessor date_precision: String?
+  attr_accessor date_semantics: Hash[String, String]
+
+  module DatePrecision
+    EXACT: String
+    YEAR_ONLY: String
+    MONTH_YEAR: String
+    NONE: String
+    ALL: Array[String]
+  end
+
+  module FactPresence
+    PRESENT: String
+    ABSENT: String
+    PARTIAL: String
+    VACANT: String
+    ALL: Array[String]
+  end
+
+  class SourceProfile
+    def self.trusted?: (untyped profile) -> bool
+  end
+
+  class Fact
+    attr_reader person_identity: LegislatorIdentity?
+    attr_reader office_identity: String?
+    attr_reader evidence: OfficialEvidence
+    attr_reader first_name: String?
+    attr_reader last_name: String?
+    attr_reader party: String?
+    attr_reader chamber: String?
+    attr_reader district: String?
+    attr_reader title: String?
+    attr_reader start_date: Date?
+    attr_reader end_date: Date?
+    attr_reader start_year: Integer?
+    attr_reader end_year: Integer?
+    attr_reader date_precision: String?
+    attr_reader date_semantics: Hash[String, String]
+    attr_reader presence: String
+    attr_reader source_profile: Hash[Symbol, untyped]
+    attr_reader external_record_id: String?
+
+    def initialize: (
+      person_identity: LegislatorIdentity?,
+      office_identity: String?,
+      evidence: OfficialEvidence,
+      source_profile: Hash[Symbol, untyped],
+      external_record_id: String?,
+      ?first_name: String?, ?last_name: String?, ?party: String?, ?chamber: String?,
+      ?district: String?, ?title: String?, ?start_date: Date?, ?end_date: Date?,
+      ?start_year: Integer?, ?end_year: Integer?, ?date_precision: String?,
+      ?date_semantics: Hash[Symbol | String, String], ?presence: String,
+      ?sway_locale_id: Integer?, ?unsupported_reason: String?
+    ) -> void
+    def present?: () -> bool
+    def vacant?: () -> bool
+    def exact_dates?: () -> bool
+    def year_only?: () -> bool
+    def supported_title?: () -> bool
+    def supported_service?: () -> bool
+    def supported_vacancy?: () -> bool
+    def current_member?: (?on: Date) -> bool
+    def external_fact_key: () -> String
+    def normalized_values: () -> Hash[String, untyped]
+
+    private
+
+    def identity_and_title?: () -> bool
+    def evidence_matches_profile?: () -> bool
+    def parsed_values_match?: () -> bool
+    def evidence_summary_matches?: () -> bool
+  end
+
+  class Result
+    attr_reader facts: Array[Fact]
+    attr_reader coverage_gaps: Array[Hash[Symbol, untyped]]
+    attr_reader unsupported_reason: Symbol?
+    def initialize: (?facts: Array[Fact], ?coverage_gaps: Array[Hash[Symbol, untyped]], ?unsupported: bool, ?unsupported_reason: Symbol?) -> void
+    def unsupported?: () -> bool
+    def supported?: () -> bool
+    def facts_by_person_id: () -> Hash[String, Fact]
+  end
+
+  class PreparedServiceEntry
+    attr_reader official_fact: Fact
+    attr_reader official_service_result: Result
+    attr_reader district: District
+    def initialize: (official_fact: Fact, official_service_result: Result, district: District) -> void
+    def self.from_fact: (fact: Fact, result: Result, district: District) -> PreparedServiceEntry
+    def identity: () -> LegislatorIdentity
+    def external_id: () -> String
+    def first_name: () -> String?
+    def last_name: () -> String?
+    def party: () -> String?
+    def title: () -> String?
+    def chamber: () -> String?
+    def term_start_year: () -> Integer
+    def term_end_year: () -> Integer
+    def began_on: () -> Date
+    def ended_on: () -> Date
+    def proven_terms: () -> Array[Hash[Symbol, untyped]]
+    def current_member?: (?on: Date) -> bool
+    def terms_from_history?: () -> bool
+    def executive?: () -> bool
+  end
+
+  class SeedService
+    def initialize: (sway_locale: SwayLocale, result: Result) -> void
+    def call: () -> Result
+    attr_reader sway_locale: SwayLocale
+    attr_reader result: Result
+
+    private
+
+    class ConflictingTerm < StandardError
+    end
+
+    def facts_to_seed: () -> Array[Fact]
+    def ambiguous_offices: () -> Array[Array[String?]]
+    def intervals_overlap?: (Fact left, Fact right) -> bool
+    def same_fact?: (Fact left, Fact right) -> bool
+    def provenance_key: (Fact fact) -> Array[untyped]
+    def seedable?: (Fact fact, District? district) -> bool
+    def seed_fact!: (Fact fact, District district) -> void
+    def compatible_term?: (LegislatorTerm? term, Fact fact, District district) -> bool
+
+    @sway_locale: SwayLocale
+    @result: Result
+  end
+
+  module Readers
+    class ServiceReader
+      def initialize: (profile: untyped, ?sway_locale: SwayLocale?, ?connection: Faraday::Connection?, ?retrieved_at: Time) -> void
+      def call: () -> Result
+      attr_reader profile: Hash[Symbol, untyped]
+      attr_reader sway_locale: SwayLocale?
+      attr_reader retrieved_at: Time
+
+      private
+
+      def connection: () -> Faraday::Connection
+      def supported_profile?: () -> bool
+      def unsupported: (Symbol reason) -> Result
+      def source_gap: (Symbol reason, ?Hash[Symbol, untyped] detail) -> Result
+      def extract: (untyped value, untyped path) -> untyped
+      def normalize_record: (untyped record) -> Hash[Symbol, untyped]?
+      def exact_date: (untyped value) -> Date?
+      def persist_evidence: (String payload, Array[Hash[Symbol, untyped]] values) -> OfficialEvidence
+      def normalized_hash: (Hash[Symbol, untyped] values) -> Hash[String, untyped]
+      def fact_for: (Hash[Symbol, untyped] values, OfficialEvidence evidence) -> Fact
+
+      @profile: Hash[Symbol, untyped]
+      @sway_locale: SwayLocale?
+      @connection: Faraday::Connection?
+      @retrieved_at: Time
+    end
+  end
+
+  private
+
+  def payload_hash_matches_payload: () -> void
+  def compute_payload_hash: () -> void
+  def prevent_mutation!: () -> void
+end

@@ -1,0 +1,51 @@
+# Hand-authored RBS sigs for PipelineActivityLog payload value-objects.
+# Phase 49 D-02: per-event_type payload shapes used by PipelineActivityLogger.
+# All are plain Ruby classes with keyword-arg initializers and a to_h method.
+# LOW-5: free-form string fields truncated to 4000 chars at the Ruby layer.
+
+module PipelineActivityLog
+  class StageFailurePayload
+    attr_reader stage_name: String
+    attr_reader error_message: String
+
+    def initialize: (stage_name: String, error_message: String) -> void
+    def to_h: () -> { stage_name: String, error_message: String }
+  end
+
+  class IngestionFailurePayload
+    attr_reader bill_external_id: String
+    attr_reader error_message: String
+
+    def initialize: (bill_external_id: String, error_message: String) -> void
+    def to_h: () -> { bill_external_id: String, error_message: String }
+  end
+
+
+  class LlmProviderErrorPayload
+    attr_reader error_message: String
+
+    def initialize: (error_message: String) -> void
+    def to_h: () -> { error_message: String }
+  end
+
+  class LlmJsonParseFailurePayload
+    attr_reader error_message: String
+    attr_reader raw_excerpt: String
+
+    def initialize: (error_message: String, raw_excerpt: String) -> void
+    def to_h: () -> { error_message: String, raw_excerpt: String }
+  end
+
+
+
+
+  # Phase 50 D-13: payload for summary_regenerate_triggered events.
+  class SummaryRegenerateTriggeredPayload
+    attr_reader bill_external_id: String
+    attr_reader bill_id: Integer
+    attr_reader first_generation: bool
+
+    def initialize: (bill_external_id: String, bill_id: Integer, first_generation: bool) -> void
+    def to_h: () -> { bill_external_id: String, bill_id: Integer, first_generation: bool }
+  end
+end

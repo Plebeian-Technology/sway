@@ -1,0 +1,85 @@
+/* @lat: [[legislator-directory-layouts#MonochromeLegislatorsLayout.tsx]] */
+
+[data-theme="monochrome"] .monochrome-legislators {
+    max-width: 760px;
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__header {
+    padding-bottom: calc(var(--space-unit) * 4);
+    border-bottom: var(--rule-mid) var(--rule-style) var(--foreground);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__count {
+    margin-top: calc(var(--space-unit) * 1);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__term-range {
+    margin-top: calc(var(--space-unit) * 1);
+    font-variant-numeric: var(--font-numeric);
+    font-size: var(--type-micro);
+    color: var(--muted-foreground);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    padding: calc(var(--space-unit) * 4) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__field {
+    display: flex;
+    flex: 1 1 14rem;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    min-width: 0;
+    max-width: 100%;
+}
+
+[data-theme="monochrome"] .monochrome-legislators__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__roster {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-unit) * 4);
+    margin-top: calc(var(--space-unit) * 4);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__entry {
+    padding-top: calc(var(--space-unit) * 4);
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+[data-theme="monochrome"] .monochrome-legislators__entry:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+[data-theme="monochrome"] .monochrome-legislators__notice {
+    padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
+    text-align: center;
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    background-color: var(--surface-1);
+}

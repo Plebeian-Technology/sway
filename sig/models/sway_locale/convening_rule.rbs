@@ -1,0 +1,9 @@
+# The day a term of office begins, declared per locale. Two shapes exist:
+# FixedDayConvening (a day the law names) and NthWeekdayConvening (a weekday
+# the law counts to).
+class SwayLocale
+  class ConveningRule
+    def date_in: (Integer year) -> Date
+    def sql_date_expr: (String year_column) -> String
+  end
+end

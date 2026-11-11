@@ -1,0 +1,28 @@
+# RBS signature for Testimony::DuplicateLetterMarker — marks a
+# letter whose sender and own words already appeared earlier in the composed
+# bundle, so a later step can exclude the repeat from its counts.
+module Testimony
+  class DuplicateLetterMarker
+    class Result
+      attr_reader letters: Array[Hash[String, untyped]]
+
+      def initialize: (letters: Array[Hash[String, untyped]]) -> void
+      def self.new: (letters: Array[Hash[String, untyped]]) -> Testimony::DuplicateLetterMarker::Result
+    end
+
+    def self.call: (text: String, letters: Array[Hash[String, untyped]]) -> Result
+
+    @text: String
+    @letters: Array[Hash[String, untyped]]
+
+    def initialize: (text: String, letters: Array[Hash[String, untyped]]) -> void
+    def call: () -> Result
+
+    private
+
+    def letter_text: (Hash[String, untyped] letter) -> String
+    def body_paragraphs: (Hash[String, untyped] letter) -> Array[String]
+    def normalize: (String line) -> String
+    def body_hash: (Hash[String, untyped] letter) -> String?
+  end
+end

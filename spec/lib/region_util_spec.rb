@@ -1,0 +1,37 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+# @lat: [[region-util-dead-code-removal#Why from_country_name_to_code and COUNTRY_NAMES_CODES were deleted]]
+RSpec.describe RegionUtil do
+  describe ".from_region_name_to_region_code" do
+    it "maps a full state name to its two-letter code" do
+      expect(described_class.from_region_name_to_region_code("Maryland")).to eq("MD")
+    end
+
+    it "returns nil for a blank name and passes a 2-char code straight through (upcased)" do
+      expect(described_class.from_region_name_to_region_code(nil)).to be_nil
+      expect(described_class.from_region_name_to_region_code("md")).to eq("MD")
+    end
+  end
+
+  describe ".from_region_code_to_region_name" do
+    it "maps a two-letter code to its full state name" do
+      expect(described_class.from_region_code_to_region_name("MD")).to eq("Maryland")
+    end
+  end
+
+  describe ".from_country_code_to_name" do
+    it "maps US to United States" do
+      expect(described_class.from_country_code_to_name("US")).to eq("United States")
+    end
+  end
+
+  describe "constant hashes" do
+    it "are frozen" do
+      expect(described_class::COUNTRY_CODES_NAMES).to be_frozen
+      expect(described_class::STATE_NAMES_CODES).to be_frozen
+      expect(described_class::STATE_CODES_NAMES).to be_frozen
+    end
+  end
+end

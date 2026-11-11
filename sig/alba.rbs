@@ -1,0 +1,16 @@
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+module Alba
+  type serialized = Hash[Symbol, untyped] | Array[Hash[Symbol, untyped]]
+
+  module Resource
+    def initialize: (untyped object, ?params: Hash[Symbol | String, untyped]) -> void
+
+    # Read-back of the constructor's params: kwarg, available inside
+    # attribute blocks (alba instance_execs them against the resource).
+    def params: () -> Hash[Symbol | String, untyped]
+
+    def serializable_hash: () -> Alba::serialized
+
+    def serialize: (?root_key: (Symbol | String)?) -> String
+  end
+end

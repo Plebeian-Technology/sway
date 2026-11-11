@@ -1,0 +1,58 @@
+class NewsArticleDiscoveryRequest < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[NewsArticleDiscoveryRequest, NewsArticleDiscoveryRequest::ActiveRecord_Relation, Integer]
+
+  STATUSES: Array[String]
+  TERMINAL_STATUSES: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def bill: () -> Bill
+  def bill=: (Bill) -> Bill
+  def requested_by: () -> User
+  def requested_by=: (User) -> User
+
+  def bill_id: () -> Integer
+  def bill_id=: (Integer) -> Integer
+  def requested_by_id: () -> Integer
+  def requested_by_id=: (Integer) -> Integer
+  def status: () -> String
+  def status=: (String) -> String
+  def source_config_digest: () -> String
+  def source_config_digest=: (String) -> String
+  def provider: () -> String
+  def provider=: (String) -> String
+  def model: () -> String
+  def model=: (String) -> String
+  def query: () -> String?
+  def query=: (String?) -> String?
+  def match_counts: () -> Hash[String, untyped]
+  def match_counts=: (Hash[String, untyped]) -> Hash[String, untyped]
+  def diagnostics: () -> Array[Hash[String, untyped]]
+  def diagnostics=: (Array[Hash[String, untyped]]) -> Array[Hash[String, untyped]]
+  def completed_at: () -> ActiveSupport::TimeWithZone?
+  def completed_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+
+  def terminal?: () -> bool
+  def succeeded?: () -> bool
+  def no_matches?: () -> bool
+  def unsupported?: () -> bool
+  def failed?: () -> bool
+  def partial_failure?: () -> bool
+  def running?: () -> bool
+  def queued?: () -> bool
+
+  def self.terminal: () -> NewsArticleDiscoveryRequest::ActiveRecord_Relation
+  def self.active: () -> NewsArticleDiscoveryRequest::ActiveRecord_Relation
+
+  private
+
+  def validate_requested_by_is_sway_admin: () -> void
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    def terminal: () -> NewsArticleDiscoveryRequest::ActiveRecord_Relation
+    def active: () -> NewsArticleDiscoveryRequest::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+  end
+end

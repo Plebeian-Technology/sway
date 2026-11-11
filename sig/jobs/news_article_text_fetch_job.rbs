@@ -1,0 +1,5 @@
+class NewsArticleTextFetchJob < ApplicationJob
+  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> untyped, ?duration: untyped, ?on_conflict: Symbol) -> void
+
+  def perform: (Integer bill_news_article_id, ?force: bool) -> void
+end

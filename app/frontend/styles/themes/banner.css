@@ -1,0 +1,229 @@
+/* themes/banner — a contemporary local-newsroom skin modelled on The
+   Baltimore Banner (thebanner.com), light + dark. Flat white, one broad
+   grotesque (Mona Sans — an open stand-in for the site's licensed
+   GT-America), hairline rules, a cool blue-tinted neutral ramp, an editorial
+   blue primary, the signature orange section accent, and The Banner's own
+   first-party purple as the link colour. Realises mockups/banner.html.
+
+   Token-layer note: the canonical --accent here is the AA-safe deeper orange
+   (#c2430b, 5.1:1 on white) so component text/fills built on --accent stay
+   legible. The ultra-vivid kicker orange (#ff6207) is reserved for the
+   per-theme Banner layouts, where it is used decoratively (rules, underlines,
+   large numerals) rather than as small text. */
+
+[data-theme="banner"] {
+    color-scheme: light;
+
+    /* --- COLOR --- (their #fff ground, navy-charcoal ink, blue-tinted greys) */
+    --background: #ffffff;
+    --foreground: #232b39;
+    --card: #ffffff;
+    --card-foreground: #232b39;
+    --popover: #ffffff;
+    --popover-foreground: #232b39;
+    /* primary = editorial ink, NOT The Banner's underused #1458a9 blue token.
+       --primary drives app chrome (the sidebar's selected nav item is
+       bg-primary, plus buttons + focus rings), so a blue here makes the whole
+       app read blue — which the real site never does. Black-on-white chrome with
+       orange (--accent) + purple links carrying the colour matches thebanner.com. */
+    --primary: #232b39;
+    --primary-foreground: #ffffff;
+    --secondary: #eef4ff;
+    --secondary-foreground: #232b39;
+    --muted: #eef4ff;
+    --muted-foreground: #637086;
+    --accent: #c2430b;
+    --accent-foreground: #ffffff;
+    --destructive: #9c0000;
+    --border: #d3dceb;
+    --border-soft: #e2e8f2;
+    --border-strong: #8593aa;
+    --input: #f1f3f5;
+    --ring: #1e78cb;
+    --success: #0c4f00;
+    --success-foreground: #ebfce9;
+    --warning: #802500;
+    --warning-foreground: #fff4ea;
+    --info: #0c3d87;
+    --info-foreground: #f2f5ff;
+    --surface-1: #f7f9fc;
+    --surface-2: #eef4ff;
+    --surface-3: #f2f5ff;
+    --vote-for: #137d00;
+    --vote-against: #9c0000;
+    --muted-icon: #7a889f;
+    --avatar-border: #d3dceb;
+    --chart-muted: #7a889f;
+    --scrim: rgba(16, 21, 28, 0.55);
+
+    /* --- TYPE --- (one grotesque; headline weight capped at 700; tracked caps) */
+    --font-display:
+        "Mona Sans", "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        sans-serif;
+    --font-body:
+        "Mona Sans", "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        sans-serif;
+    --font-numeric: tabular-nums lining-nums;
+    --type-display: 3.25rem;
+    --type-h2: 2.25rem;
+    --type-h3: 1.5rem;
+    --type-lede: 1.3rem;
+    --type-body: 1.0625rem;
+    --type-small: 0.875rem;
+    --type-micro: 0.75rem;
+    --type-stat: 2.625rem;
+    --weight-body: 400;
+    --weight-medium: 500;
+    --weight-bold: 700;
+    --weight-display: 700;
+    --leading-display: 1.12;
+    --leading-heading: 1.15;
+    --leading-body: 1.6;
+    --tracking-display: -0.015em;
+    --tracking-body: 0em;
+    --tracking-caps: 0.06em;
+
+    /* --- DENSITY --- (4px base; wide newsroom grid, narrow reading column) */
+    --space-unit: 0.25rem;
+    --measure: 680px;
+    --content-max: 1200px;
+    --control-pad-x: 0.875rem;
+    --chart-label-gutter: 6rem;
+
+    /* --- SHAPE --- (their 4px radius + two smaller steps) */
+    --radius: 4px;
+    --radius-sm: 2px;
+    --radius-md: 4px;
+
+    /* --- RULE --- (1px hairlines do the structural work; 2px for emphasis) */
+    --rule-hair: 1px;
+    --rule-mid: 1px;
+    --rule-thick: 2px;
+    --rule-style: solid;
+
+    /* --- TEXTURE --- (flat. honest. no grain, no gradient.) */
+    --texture-page: none;
+
+    /* --- MOTION --- (restrained; hover underlines, no entrances) */
+    --dur-1: 120ms;
+    --dur-2: 200ms;
+    --dur-3: 320ms;
+    --ease-out: cubic-bezier(0.2, 0, 0.2, 1);
+
+    /* --- INTENSITY --- (flat-editorial, never neobrutalist) */
+    --neo-border-width: 1px;
+    --neo-shadow: 0 1px 2px rgba(16, 21, 28, 0.06);
+}
+
+[data-theme="banner"][data-intensity="bold"] {
+    --neo-border-width: 1px;
+    --neo-shadow: 0 1px 2px rgba(16, 21, 28, 0.08);
+}
+
+[data-theme="banner"][data-intensity="calm"] {
+    --neo-border-width: 1px;
+    --neo-shadow: none;
+}
+
+/* Dark — derived from The Banner's own navy neutral ramp (#10151c / #232b39).
+   The site ships no dark mode; this is a principled inversion. */
+[data-theme="banner"].dark {
+    color-scheme: dark;
+    --background: #10151c;
+    --foreground: #eef4ff;
+    --card: #1a2230;
+    --card-foreground: #eef4ff;
+    --popover: #1a2230;
+    --popover-foreground: #eef4ff;
+    --primary: #e6ecf5;
+    --primary-foreground: #10151c;
+    --secondary: #1f2a3b;
+    --secondary-foreground: #eef4ff;
+    --muted: #1a2230;
+    --muted-foreground: #9aa6bc;
+    --accent: #ff7a33;
+    --accent-foreground: #1a1006;
+    --destructive: #ee7d72;
+    --border: #2a3447;
+    --border-soft: #222c3b;
+    --border-strong: #6f7d94;
+    --input: #161d28;
+    --ring: #4a89d8;
+    --success: #7fdf9b;
+    --success-foreground: #14301c;
+    --warning: #ffb37a;
+    --warning-foreground: #3a2410;
+    --info: #8fb9ee;
+    --info-foreground: #16243a;
+    --surface-1: #161d28;
+    --surface-2: #1f2a3b;
+    --surface-3: #182234;
+    --vote-for: #4fb472;
+    --vote-against: #ee7d72;
+    --muted-icon: #6f7d94;
+    --avatar-border: #2a3447;
+    --chart-muted: #6f7d94;
+    --scrim: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="banner"].dark[data-intensity="bold"] {
+    --neo-border-width: 1px;
+    --neo-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="banner"].dark[data-intensity="calm"] {
+    --neo-border-width: 1px;
+    --neo-shadow: none;
+}
+
+/* Auto-mode follows the OS: the dark palette applies when the OS is dark. */
+@media (prefers-color-scheme: dark) {
+    [data-theme="banner"][data-theme-mode="auto"] {
+        color-scheme: dark;
+        --background: #10151c;
+        --foreground: #eef4ff;
+        --card: #1a2230;
+        --card-foreground: #eef4ff;
+        --popover: #1a2230;
+        --popover-foreground: #eef4ff;
+        --primary: #e6ecf5;
+        --primary-foreground: #10151c;
+        --secondary: #1f2a3b;
+        --secondary-foreground: #eef4ff;
+        --muted: #1a2230;
+        --muted-foreground: #9aa6bc;
+        --accent: #ff7a33;
+        --accent-foreground: #1a1006;
+        --destructive: #ee7d72;
+        --border: #2a3447;
+        --border-soft: #222c3b;
+        --border-strong: #6f7d94;
+        --input: #161d28;
+        --ring: #4a89d8;
+        --success: #7fdf9b;
+        --success-foreground: #14301c;
+        --warning: #ffb37a;
+        --warning-foreground: #3a2410;
+        --info: #8fb9ee;
+        --info-foreground: #16243a;
+        --surface-1: #161d28;
+        --surface-2: #1f2a3b;
+        --surface-3: #182234;
+        --vote-for: #4fb472;
+        --vote-against: #ee7d72;
+        --muted-icon: #6f7d94;
+        --avatar-border: #2a3447;
+        --chart-muted: #6f7d94;
+        --scrim: rgba(0, 0, 0, 0.6);
+    }
+
+    [data-theme="banner"][data-theme-mode="auto"][data-intensity="bold"] {
+        --neo-border-width: 1px;
+        --neo-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="banner"][data-theme-mode="auto"][data-intensity="calm"] {
+        --neo-border-width: 1px;
+        --neo-shadow: none;
+    }
+}

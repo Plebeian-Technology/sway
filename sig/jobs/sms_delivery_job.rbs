@@ -1,0 +1,12 @@
+class SmsDeliveryJob < ApplicationJob
+    class DeliveryError < StandardError
+    end
+
+    OPT_OUT_SUFFIX: String
+
+    def perform: (to: String, body: String) -> void
+
+    private
+
+    def append_opt_out_suffix: (String body) -> String
+end

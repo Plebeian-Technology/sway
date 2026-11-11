@@ -1,0 +1,27 @@
+# RBS signature for Pipeline::ArtifactPresence (Phase 55 Plan 02).
+#
+# Concrete arg types per feedback_rbs_avoid_untyped: no `untyped`. The
+# `bill:` kwarg is nullable (`Bill?`) because fetch-law is a run-level
+# stage and accepts nil; the other seven stages reject nil at runtime.
+#
+# RBS file lives at sig/models/pipeline/artifact_presence.rbs to mirror
+# the Zeitwerk path convention (app/models/pipeline/ ↔ sig/models/pipeline/).
+module Pipeline
+  module ArtifactPresence
+    def self.present?: (String stage_key, ?bill: Bill?, ?sway_locale: (SwayLocale | String)?) -> bool
+    def self.batch_for: (bills: ActiveRecord::Relation) -> Hash[String, Hash[String, bool]]
+
+    # Phase 55 UAT-2 (CR-04 Fix B) — secondary not-applicable signal for
+    # parse-sections. Returns true when any prior pipeline_run_bill for
+    # this bill recorded `parse_sections.status IN (succeeded, skipped)`
+    # in its stage_results JSON column.
+    def self.parse_sections_completed_for?: (Bill? bill) -> bool
+
+    # Phase 67 D-01/D-02: shared by #present? and #batch_for so the
+    # freshness rule (no older than testimony_fetched_at) cannot drift
+    # between the two call sites.
+    private
+
+    def self.clean_testimony_present?: (BillLlmProvisioning? provisioning) -> bool
+  end
+end

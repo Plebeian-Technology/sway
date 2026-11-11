@@ -1,0 +1,33 @@
+# Download sources
+sources:
+    - type: git
+      name: ruby/gem_rbs_collection
+      remote: https://github.com/ruby/gem_rbs_collection.git
+      revision: main
+      repo_dir: gems
+
+# You can specify local directories as sources also.
+# - type: local
+#   path: path/to/your/local/repository
+
+# A directory to install the downloaded RBSs
+path: .gem_rbs_collection
+
+gems:
+    # The rbs gem ships its own signature for Enumerable that names the element
+    # type `Elem`, while Ruby's own signature for the same module names it `E`.
+    # Steep then cannot work out which type a class means when it writes
+    # `include Enumerable[Bill]`, and every generated model signature fails with
+    # "Module self type constraint ... doesn't satisfy". That was 133 of this
+    # project's type errors. Nothing here uses RBS at run time, so we do not
+    # load its signatures at all.
+    - name: rbs
+      ignore: true
+
+    # The collection's geocoder signature returns Array[Geocoder::Result::_Base],
+    # an interface carrying none of the accessors Address#geocode reads off a
+    # real result -- street, city, postal_code. Its search is declared in
+    # sig/shims/external_auth_libs.rbs instead.
+    # @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+    - name: geocoder
+      ignore: true

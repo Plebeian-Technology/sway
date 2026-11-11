@@ -1,0 +1,30 @@
+# RBS signature for Testimony::SenderReader (Phase 67 Plan 02, Task 2) —
+# reads one letter's sender address and domain through a bounded window of
+# following lines. Runs on repaired text (CleanAndGroupService::STEP_ORDER).
+module Testimony
+  class SenderReader
+    SENDER_MARKER: Regexp
+    WINDOW_LINES: Integer
+    NEXT_HEADER_FIELD: Regexp
+    ADDRESS_TOKEN: Regexp
+
+    class Result
+      attr_reader address: String?
+      attr_reader domain: String?
+
+      def initialize: (address: String?, domain: String?) -> void
+      def self.new: (address: String?, domain: String?) -> Testimony::SenderReader::Result
+    end
+
+    def self.call: (String letter_text) -> Result
+
+    @text: String
+
+    def initialize: (String letter_text) -> void
+    def call: () -> Result
+
+    private
+
+    def window: (MatchData match) -> String
+  end
+end

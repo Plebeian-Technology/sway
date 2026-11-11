@@ -1,0 +1,13 @@
+# Spec-only constant for spec/models/legislation_pipeline_run_spec.rb.
+# Defined at describe block scope; Steep resolves it as top-level.
+STAGES_52_03: Array[Symbol]
+
+# Helper defined at describe-block scope in the same spec. Steep cannot see a
+# `def` written inside a describe block, so it is declared here.
+class Object
+  # A run left untouched long enough for the abandoned sweep to consider it.
+  def quiet_batch_run: (?quiet_for: ActiveSupport::Duration, **untyped attrs) -> LegislationPipelineRun
+
+  # The same, owning one summary batch per expiry given.
+  def quiet_awaiting_run: (Array[ActiveSupport::TimeWithZone?] expiries) -> LegislationPipelineRun
+end

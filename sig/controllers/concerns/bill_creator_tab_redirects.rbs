@@ -1,0 +1,7 @@
+module BillCreatorTabRedirects
+  extend ActiveSupport::Concern
+
+  BILL_CREATOR_TAB_TO_PATH_HELPER: Hash[String, Symbol]
+
+  def bill_creator_tab_path: (untyped bill_creator_tab, bill_id: untyped, default: Symbol, **untyped query) -> String
+end

@@ -1,0 +1,29 @@
+# The four prompt sections a modal shows: the recorded run's, or a fresh
+# rendering when no run has been recorded.
+class SummarySourceDocuments
+  RUN_ORIGIN: String
+  NOW_ORIGIN: String
+
+  class Result
+    attr_reader origin: String
+    attr_reader built_at: ActiveSupport::TimeWithZone?
+    attr_reader bill_details: String?
+    attr_reader source_text: String?
+    attr_reader citations: String?
+    attr_reader news: String?
+
+    def initialize: (
+      origin: String, built_at: ActiveSupport::TimeWithZone?, bill_details: String?,
+      source_text: String?, citations: String?, news: String?
+    ) -> void
+
+    def self.new: (
+      origin: String, built_at: ActiveSupport::TimeWithZone?, bill_details: String?,
+      source_text: String?, citations: String?, news: String?
+    ) -> SummarySourceDocuments::Result
+  end
+
+  def self.call: (bill: Bill) -> Result
+  def self.from_row: (BillSummaryPromptSnapshot row) -> Result
+  def self.from_builder: (Bill bill) -> Result
+end

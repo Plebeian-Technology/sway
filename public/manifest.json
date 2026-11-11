@@ -1,0 +1,20 @@
+{
+    "name": "Sway. Remember in November.",
+    "short_name": "Sway",
+    "description": "Vote on the same legislation as your elected representatives.",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff",
+    "icons": [
+        { "src": "images/logo300.png", "sizes": "64x64 32x32 24x24 16x16", "type": "image/png" },
+        { "src": "images/logo300.png", "type": "image/png", "sizes": "300x300" },
+        { "src": "images/logo512.png", "type": "image/png", "sizes": "512x512" },
+        { "src": "images/logo192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "images/logo512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        { "name": "Bill of the Month", "url": "/bill_of_the_month", "icons": [{ "src": "images/logo192-maskable.png", "sizes": "192x192" }] },
+        { "name": "My Votes", "url": "/votes", "icons": [{ "src": "images/logo192-maskable.png", "sizes": "192x192" }] }
+    ]
+}

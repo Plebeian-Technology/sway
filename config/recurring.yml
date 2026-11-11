@@ -1,0 +1,207 @@
+development:
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    daily_org_digest_job:
+        class: DailyOrgDigestJob
+        queue: background
+        args: []
+        schedule: "0 23 * * *"
+    weekly_org_digest_job:
+        class: WeeklyOrgDigestJob
+        queue: background
+        args: []
+        schedule: "0 23 * * 0"
+    notify_bill_of_the_month_users_job:
+        class: NotifyBillOfTheMonthUsersJob
+        queue: background
+        args: []
+        schedule: every day at 6pm
+    # remove_users_with_deactivate_phone_numbers:
+    #     class: OnDeactivatedPhoneDeleteUserJob
+    #     queue: background
+    #     args: []
+    #     schedule: every day at 4am
+    # Runs in dev too: the sway_storage named volume survives `dip provision`,
+    # so a long-lived dev DB would accumulate audit rows without bound. Safe to
+    # run here because it's a pure-SQL retention sweep with no external-API
+    # coupling (unlike the prod-only sweeps below).
+    pipeline_activity_log_cleanup:
+        class: PipelineActivityLogCleanupJob
+        queue: background
+        args: []
+        schedule: "0 4 * * *"
+    # @lat: [[attachment-attempts#Attachment download attempts#Later retry selection rules]]
+    retry_failed_attachments:
+        class: RetryFailedAttachmentsJob
+        queue: background
+        args: []
+        schedule: "0 2 * * *"
+    # @lat: [[attachment-attempts#Attachment download attempts#Retention sweep]]
+    trim_attachment_attempts:
+        class: TrimAttachmentAttemptsJob
+        queue: background
+        args: []
+        schedule: "30 4 * * *"
+    # @lat: [[bill-interesting-score#Why retention keeps the newest row for each bill]]
+    bill_interesting_score_retention:
+        class: BillInterestingScoreRetentionJob
+        queue: background
+        args: []
+        schedule: "20 4 * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    reclaim_abandoned_summary_runs:
+        class: ReclaimAbandonedSummaryRunsJob
+        queue: background
+        args: []
+        schedule: "*/15 * * * *"
+    # @lat: [[partial-reload-poll-lists#Partial reload poll lists#What the run-conflict banner counts as finished]]
+    reclaim_abandoned_pipeline_runs:
+        class: ReclaimAbandonedPipelineRunsJob
+        queue: background
+        args: []
+        schedule: "*/15 * * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    ingest_summary_batches:
+        class: IngestSummaryBatchesJob
+        queue: background
+        args: []
+        schedule: "*/5 * * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    solid_queue_retention:
+        class: SolidQueueRetentionJob
+        queue: background
+        args: []
+        schedule: "0 5 * * 0"
+    # @lat: [[query-plan-indexes#Statistics the planner reads]]
+    analyze_database:
+        class: AnalyzeDatabaseJob
+        queue: background
+        args: []
+        schedule: "0 6 * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Why a job that sends real messages is scheduled in production only]]
+
+production:
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    daily_org_digest_job:
+        class: DailyOrgDigestJob
+        queue: background
+        args: []
+        schedule: "0 23 * * *"
+    weekly_org_digest_job:
+        class: WeeklyOrgDigestJob
+        queue: background
+        args: []
+        schedule: "0 23 * * 0"
+    remove_users_with_deactivate_phone_numbers:
+        class: OnDeactivatedPhoneDeleteUserJob
+        queue: background
+        args: []
+        schedule: every day at 10am
+    notify_bill_of_the_month_users_job:
+        class: NotifyBillOfTheMonthUsersJob
+        queue: background
+        args: []
+        schedule: every day at 6pm
+    # Safety net: revokes UserDevices whose ApiKeys have already expired but
+    # whose revoked_at is still nil. Does NOT sweep dormant devices.
+    cleanup_revoked_devices:
+        class: CleanupRevokedDevicesJob
+        queue: background
+        args: []
+        schedule: every day at 3am
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    legislator_vote_sweep:
+        class: LegislatorVoteSweepJob
+        queue: background
+        args: []
+        schedule: "0 9 * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Why a job that sends real messages is scheduled in production only]]
+    voting_reminder:
+        class: VotingReminderJob
+        queue: default
+        args: []
+        schedule: "0 16 * * *"
+    # Deletes pipeline_activity_log_entries older than 30 days, except those
+    # linked to the 50 most-recent LegislationPipelineRun rows. Daily, off-peak.
+    pipeline_activity_log_cleanup:
+        class: PipelineActivityLogCleanupJob
+        queue: background
+        args: []
+        schedule: "0 4 * * *"
+    # @lat: [[attachment-attempts#Attachment download attempts#Later retry selection rules]]
+    retry_failed_attachments:
+        class: RetryFailedAttachmentsJob
+        queue: background
+        args: []
+        schedule: "0 2 * * *"
+    # @lat: [[attachment-attempts#Attachment download attempts#Retention sweep]]
+    trim_attachment_attempts:
+        class: TrimAttachmentAttemptsJob
+        queue: background
+        args: []
+        schedule: "30 4 * * *"
+    # @lat: [[bill-interesting-score#Why retention keeps the newest row for each bill]]
+    bill_interesting_score_retention:
+        class: BillInterestingScoreRetentionJob
+        queue: background
+        args: []
+        schedule: "20 4 * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    reclaim_abandoned_summary_runs:
+        class: ReclaimAbandonedSummaryRunsJob
+        queue: background
+        args: []
+        schedule: "*/15 * * * *"
+    # @lat: [[partial-reload-poll-lists#Partial reload poll lists#What the run-conflict banner counts as finished]]
+    reclaim_abandoned_pipeline_runs:
+        class: ReclaimAbandonedPipelineRunsJob
+        queue: background
+        args: []
+        schedule: "*/15 * * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    ingest_summary_batches:
+        class: IngestSummaryBatchesJob
+        queue: background
+        args: []
+        schedule: "*/5 * * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Why a job that sends real messages is scheduled in production only]]
+    replication_lag_check:
+        class: ReplicationLagCheckJob
+        queue: background
+        args: []
+        schedule: "*/15 * * * *"
+    # @lat: [[standby-restore#The standby copy of the production database#Why continuous replication and six-hourly copies both run]]
+    backup_database:
+        class: BackupDatabaseJob
+        queue: background
+        args: []
+        schedule: "0 */6 * * *"
+    # @lat: [[legislation-artifact-backup]]
+    backup_legislation_artifacts:
+        class: BackupLegislationArtifactsJob
+        queue: background
+        args: []
+        schedule: "0 7 * * *"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    refresh_legislators_cache:
+        class: RefreshLegislatorsCacheJob
+        queue: background
+        args: []
+        schedule: "0 3 * * 0"
+    # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Every entry names schedule, and every schedule is a UTC cron string]]
+    solid_queue_retention:
+        class: SolidQueueRetentionJob
+        queue: background
+        args: []
+        schedule: "0 5 * * 0"
+    # @lat: [[query-plan-indexes#Statistics the planner reads]]
+    analyze_database:
+        class: AnalyzeDatabaseJob
+        queue: background
+        args: []
+        schedule: "0 6 * * *"
+    # @lat: [[sway-google-cloud-storage#Sway Google Cloud Storage#What the bucket says about caching audio]]
+    audio_cache_control:
+        class: AudioCacheControlJob
+        queue: background
+        args: []
+        schedule: "30 5 * * 0"

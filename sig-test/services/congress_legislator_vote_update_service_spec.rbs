@@ -1,0 +1,7 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def seated_after_house_vote: () -> Legislator
+  def skipped_ballot: () -> Scraper::LegislatorVote
+  def off_topic_senate_record: () -> Scraper::Congress::RollCallIdentity
+  def off_topic_house_record: () -> Scraper::Congress::RollCallIdentity
+end

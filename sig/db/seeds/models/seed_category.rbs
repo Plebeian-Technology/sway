@@ -1,0 +1,3 @@
+class SeedCategory
+  def self.call: () -> void
+end

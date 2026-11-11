@@ -1,0 +1,17 @@
+module Seats
+    class OverlapValidator
+        class OverlapError < StandardError
+        end
+
+        class InvalidIntervalError < StandardError
+        end
+
+        def self.validate_term!: (LegislatorTerm term) -> void
+        def self.overlaps?: (Date start_a, Date end_a, Date start_b, Date end_b) -> bool
+
+        private
+
+        def self.validate_term_in_transaction!: (LegislatorTerm term) -> void
+        def self.interval_for: (LegislatorTerm term) -> [Date, Date]
+    end
+end

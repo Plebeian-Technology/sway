@@ -1,0 +1,8 @@
+# Spec-only declarations for spec/config/android_app_links_initializer_spec.rb.
+#
+# Steep cannot see a `def` inside a describe block. Named for this file rather
+# than `load_initializer`, which sig-test/object_spec_methods.rbs already
+# declares for the Sentry initializer spec.
+class Object
+  def load_android_app_links: (String env) -> void
+end

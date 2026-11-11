@@ -1,0 +1,13 @@
+module Api
+  module V1
+    class BootstrapController < BaseController
+      def self.expire_botm_cache: (Integer? sway_locale_id) -> untyped
+
+      def show: -> untyped
+
+      private
+
+      def current_user_payload: -> Hash[untyped, untyped]?
+    end
+  end
+end

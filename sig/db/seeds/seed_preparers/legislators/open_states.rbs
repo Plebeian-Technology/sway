@@ -1,0 +1,35 @@
+module SeedPreparers
+  module Legislators
+    class OpenStates
+      TITLE_ALIASES: Hash[String, String]
+
+      attr_reader json: Hash[String, untyped]
+
+      def self.cached_roster_for: (String | Pathname path) -> Array[Hash[String, untyped]]
+
+      def initialize: (Hash[String, untyped] json, SwayLocale sway_locale, ?roster: Array[Hash[String, untyped]]?) -> void
+
+      def district: () -> District
+      def address: () -> nil
+      def link: () -> String?
+      def external_id: () -> String
+      def identity: () -> LegislatorIdentity
+      def current_member?: () -> bool
+      def title: () -> String?
+      def canonical_title: (?String? raw) -> String?
+      def executive_office?: () -> bool
+      def party: () -> String
+      def first_name: () -> String
+      def last_name: () -> String
+      def country: () -> String
+      def region_code: () -> String
+      def postal_code: () -> String
+      def photo_url: () -> String
+      def term_start_year: () -> Integer
+      def term_end_year: () -> Integer
+      def authoritative_term?: () -> bool
+      def congress?: () -> false
+      def current_office_identity: () -> String?
+    end
+  end
+end

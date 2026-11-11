@@ -1,0 +1,206 @@
+/* @lat: [[theme-tokens#Why every theme is grounded in a real artifact]] */
+
+[data-theme="service-manual"] {
+    color-scheme: light;
+
+    /* --- COLOR --- */
+    --background: #ffffff;
+    --foreground: #0b0c0c;
+    --card: #ffffff;
+    --card-foreground: #0b0c0c;
+    --popover: #ffffff;
+    --popover-foreground: #0b0c0c;
+    --primary: #1a65a6;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f2f1;
+    --secondary-foreground: #0b0c0c;
+    --muted: #f3f2f1;
+    --muted-foreground: #4c5154;
+    --accent: #1a65a6;
+    --accent-foreground: #ffffff;
+    --destructive: #b82912;
+    --border: #b1b4b6;
+    --border-soft: #d8dde0;
+    --border-strong: #505a5f;
+    --input: #ffffff;
+    --ring: #1d70b8;
+    --success: #00703c;
+    --success-foreground: #ffffff;
+    --warning: #945200;
+    --warning-foreground: #ffffff;
+    --info: #1a65a6;
+    --info-foreground: #ffffff;
+    --surface-1: #f3f2f1;
+    --surface-2: #eceae8;
+    --surface-3: #e2dfdc;
+    --vote-for: #00703c;
+    --vote-against: #d4351c;
+    --muted-icon: #505a5f;
+    --avatar-border: #b1b4b6;
+    --chart-muted: #5a656b;
+    --scrim: rgba(11, 12, 12, 0.55);
+
+    /* --- TYPE --- */
+    --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-numeric: tabular-nums lining-nums;
+    --type-display: 2.75rem;
+    --type-h2: 1.75rem;
+    --type-h3: 1.375rem;
+    --type-lede: 1.1875rem;
+    --type-body: 1rem;
+    --type-small: 0.875rem;
+    --type-micro: 0.75rem;
+    --type-stat: 2.125rem;
+    --weight-body: 400;
+    --weight-medium: 500;
+    --weight-bold: 600;
+    --weight-display: 700;
+    --leading-display: 1.1;
+    --leading-heading: 1.25;
+    --leading-body: 1.5;
+    --tracking-display: -0.02em;
+    --tracking-body: 0em;
+    --tracking-caps: 0.05em;
+
+    /* --- DENSITY --- */
+    --space-unit: 0.25rem;
+    --measure: 660px;
+    --content-max: 1080px;
+    --control-pad-x: 0.875rem;
+    --chart-label-gutter: 6rem;
+
+    /* --- SHAPE --- */
+    --radius: 0px;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+
+    /* --- RULE --- */
+    --rule-hair: 1px;
+    --rule-mid: 2px;
+    --rule-thick: 4px;
+    --rule-style: solid;
+
+    /* --- TEXTURE --- */
+    --texture-page: none;
+
+    /* --- MOTION --- */
+    --dur-1: 100ms;
+    --dur-2: 200ms;
+    --dur-3: 300ms;
+    --ease-out: cubic-bezier(0.2, 0, 0.2, 1);
+
+    /* --- INTENSITY --- */
+    --neo-border-width: 1px;
+    --neo-shadow: none;
+}
+
+[data-theme="service-manual"][data-intensity="bold"] {
+    --neo-border-width: 2px;
+    --neo-shadow: none;
+}
+
+[data-theme="service-manual"][data-intensity="calm"] {
+    --neo-border-width: 1px;
+    --neo-shadow: none;
+}
+
+[data-theme="service-manual"].dark {
+    color-scheme: dark;
+    --background: #0b0c0c;
+    --foreground: #f3f2f1;
+    --card: #14171a;
+    --card-foreground: #f3f2f1;
+    --popover: #1d2226;
+    --popover-foreground: #f3f2f1;
+    --primary: #73b3e7;
+    --primary-foreground: #0b0c0c;
+    --secondary: #1d2226;
+    --secondary-foreground: #f3f2f1;
+    --muted: #161a1d;
+    --muted-foreground: #a6aeb2;
+    --accent: #73b3e7;
+    --accent-foreground: #0b0c0c;
+    --destructive: #f47738;
+    --border: #2e353b;
+    --border-soft: #20262b;
+    --border-strong: #858e96;
+    --input: #14171a;
+    --ring: #73b3e7;
+    --success: #5ccb8f;
+    --success-foreground: #061f12;
+    --warning: #ffbf47;
+    --warning-foreground: #1f1400;
+    --info: #73b3e7;
+    --info-foreground: #081929;
+    --surface-1: #14171a;
+    --surface-2: #1d2226;
+    --surface-3: #252b30;
+    --vote-for: #5ccb8f;
+    --vote-against: #f47738;
+    --muted-icon: #8a949c;
+    --avatar-border: #2e353b;
+    --chart-muted: #828c94;
+    --scrim: rgba(0, 0, 0, 0.72);
+}
+
+[data-theme="service-manual"].dark[data-intensity="bold"] {
+    --neo-border-width: 2px;
+    --neo-shadow: none;
+}
+
+[data-theme="service-manual"].dark[data-intensity="calm"] {
+    --neo-border-width: 1px;
+    --neo-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-theme="service-manual"][data-theme-mode="auto"] {
+        color-scheme: dark;
+        --background: #0b0c0c;
+        --foreground: #f3f2f1;
+        --card: #14171a;
+        --card-foreground: #f3f2f1;
+        --popover: #1d2226;
+        --popover-foreground: #f3f2f1;
+        --primary: #73b3e7;
+        --primary-foreground: #0b0c0c;
+        --secondary: #1d2226;
+        --secondary-foreground: #f3f2f1;
+        --muted: #161a1d;
+        --muted-foreground: #a6aeb2;
+        --accent: #73b3e7;
+        --accent-foreground: #0b0c0c;
+        --destructive: #f47738;
+        --border: #2e353b;
+        --border-soft: #20262b;
+        --border-strong: #858e96;
+        --input: #14171a;
+        --ring: #73b3e7;
+        --success: #5ccb8f;
+        --success-foreground: #061f12;
+        --warning: #ffbf47;
+        --warning-foreground: #1f1400;
+        --info: #73b3e7;
+        --info-foreground: #081929;
+        --surface-1: #14171a;
+        --surface-2: #1d2226;
+        --surface-3: #252b30;
+        --vote-for: #5ccb8f;
+        --vote-against: #f47738;
+        --muted-icon: #8a949c;
+        --avatar-border: #2e353b;
+        --chart-muted: #828c94;
+        --scrim: rgba(0, 0, 0, 0.72);
+    }
+
+    [data-theme="service-manual"][data-theme-mode="auto"][data-intensity="bold"] {
+        --neo-border-width: 2px;
+        --neo-shadow: none;
+    }
+
+    [data-theme="service-manual"][data-theme-mode="auto"][data-intensity="calm"] {
+        --neo-border-width: 1px;
+        --neo-shadow: none;
+    }
+}

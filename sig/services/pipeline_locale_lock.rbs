@@ -1,0 +1,8 @@
+class PipelineLocaleLock
+  class Busy < StandardError
+  end
+
+  def self.with_locale: [T] (Integer? sway_locale_id, ?wait: bool) { () -> T } -> T
+  def self.directory: () -> Pathname
+  def self.with_file_lock: [T] (String name, Integer operation, wait: bool) { () -> T } -> T
+end

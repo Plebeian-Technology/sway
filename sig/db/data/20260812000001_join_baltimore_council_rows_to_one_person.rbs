@@ -1,0 +1,3 @@
+class JoinBaltimoreCouncilRowsToOnePerson < ActiveRecord::Migration
+  def up: () -> void
+end

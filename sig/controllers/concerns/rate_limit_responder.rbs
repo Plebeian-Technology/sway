@@ -1,0 +1,14 @@
+# @lat: [[signature-placement#Why a concern declares the host whose helpers it reaches]]
+module RateLimitResponder : ActionController::Base, JsonErrorRenderable
+  extend ActiveSupport::Concern
+
+  REPEATED_BLOCK_WINDOW: ActiveSupport::Duration
+  REPEATED_BLOCK_THRESHOLD: Integer
+  SENTRY_ALERT_SAMPLE_RATIO: Integer
+
+  private
+
+  def render_rate_limited: () -> untyped
+  def report_repeated_rate_limit: () -> void
+  def current_user: () -> untyped
+end

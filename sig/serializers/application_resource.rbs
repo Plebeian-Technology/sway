@@ -1,0 +1,24 @@
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+class ApplicationResource
+  include Alba::Resource
+
+  def self.attributes: (*Symbol attrs) -> void
+
+  # `[self: instance]` matches alba's actual runtime semantics (Resource#
+  # attributes_to_hash calls `instance_exec(obj, &attribute)`) — the block
+  # executes with `self` bound to the resource INSTANCE (polymorphic per
+  # subclass), not the lexical class-body self steep would otherwise infer.
+  # Phase 65 (D-26): this is what lets LegislatorResource's title/district
+  # blocks call its own private instance method (#display_term).
+  def self.attribute: (Symbol name) { (untyped) [self: instance] -> untyped } -> void
+
+  # `source:` is a lambda alba instance_execs against the OBJECT being
+  # serialized, with the resource's params as its one argument. It is the only
+  # way to change where an association reads from when `resource:` is given:
+  # Association#initialize returns before assigning the block in that case.
+  def self.one: (Symbol name, resource: Class, ?source: ^(untyped) [self: untyped] -> untyped) -> void
+             | (Symbol name, resource: Class) { (untyped) [self: instance] -> untyped } -> void
+
+  def self.many: (Symbol name, resource: Class, ?source: ^(untyped) [self: untyped] -> untyped) -> void
+              | (Symbol name, resource: Class) { (untyped) [self: instance] -> untyped } -> void
+end

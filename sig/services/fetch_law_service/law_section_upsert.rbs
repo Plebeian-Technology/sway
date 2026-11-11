@@ -1,0 +1,17 @@
+# RBS signature for FetchLawService::LawSectionUpsert.
+class FetchLawService
+  class LawSectionUpsert
+    class LawSectionKeyCollisionError < StandardError
+    end
+
+    def self.call: (
+      sway_locale: SwayLocale,
+      key: String,
+      article: String,
+      section: String,
+      title: String,
+      body: String,
+      source_path: String,
+    ) -> LawSection
+  end
+end

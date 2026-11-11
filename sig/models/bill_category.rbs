@@ -1,0 +1,10 @@
+# Phase 60 Plan 01 — hand-authored extensions for BillCategory join model.
+# rbs_rails covers attribute readers and belongs_to readers under
+# sig/rbs_rails/app/models/bill_category.rbs.
+class BillCategory < ApplicationRecord
+  # I-06: ActiveRecord::Persistence predicate used by BillCategoryAssigner to count
+  # only rows newly created in the current #call (vs found by find_or_create_by!).
+  # rbs_rails generates per-attribute dirty methods but not this base-class
+  # predicate, so it is declared here on the model that consumes it.
+  def previously_new_record?: () -> bool
+end

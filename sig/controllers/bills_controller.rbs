@@ -1,0 +1,308 @@
+class BillsController < ApplicationController
+    # Cumulative page-window size for #index
+    BILLS_INDEX_PAGE_SIZE: Integer
+
+    @meta_title: String
+
+    @bill: Bill
+
+    @requested_legislative_session: LegislativeSession?
+
+    # CR-01 (Phase 55 review iter 1): memoized per-request to avoid double
+    # parsing when bill_creator_props calls pipeline_preview_for AND the
+    # state spread (**pipeline_controls_state) on the same render.
+    @pipeline_controls_state: {
+      selected_stages: Array[String],
+      bill_id: String,
+      download_missing_assets: bool
+    }?
+
+    include SwayGoogleCloudStorage
+
+    # GET /bills or /bills.json
+    def index: -> void
+
+    def past_of_the_month: -> void
+
+    # GET /bills/1 or /bills/1.json
+    def show: -> void
+
+    # GET /bills/new
+    def new: -> void
+
+    # GET /bills/1/edit
+    def edit: -> void
+
+    # POST /bills or /bills.json
+    def create: -> void
+
+    # PATCH/PUT /bills/1 or /bills/1.json
+    def update: -> void
+
+    # DELETE /bills/1 or /bills/1.json
+    def destroy: -> void
+
+    # POST /bills/1/generate_summary
+    def generate_summary: -> void
+
+    # POST /bills/1/regenerate_summary — Phase 50 D-13 / R23
+    def regenerate_summary: -> void
+
+    # PATCH /bills/:id/supplemental_testimony — persist/clear
+    # without generating.
+    def supplemental_testimony: -> void
+
+    # PATCH /bills/:id/testimony_letter_stance — manual stance override
+    def testimony_letter_stance: -> void
+
+    # POST /bills/1/approve_org_position
+    def approve_org_position: -> void
+
+    # Phase 62 review IN-02: reject_org_position removed — the action was
+    # deleted from BillsController in REVIEW-7 MEDIUM-1 (cycle 7); see the
+    # removal comment in bills_controller.rb.
+
+    # DELETE /bills/legislation_pipeline_runs/:id
+    def cancel_pipeline_run_bill: -> untyped
+
+    # POST /bills/legislation_pipeline_runs/:id/resume — Phase 47 D-06, D-07, R17
+    def resume_pipeline_run: -> void
+
+    # POST /bills/legislation_pipeline_runs/:id/restart — Phase 47 D-06, D-07, R17
+    def restart_pipeline_run: -> void
+
+    # POST /bills/run_pipeline
+    def run_pipeline: -> void
+
+    # POST /bills/sweep_stale_pipeline_runs
+    def sweep_stale_pipeline_runs: -> void
+
+    # POST /bills/:id/paste_summary — Phase 52 Plan 09 (D-21, D-23)
+    def paste_summary: -> void
+
+    # POST /bills/:id/restore_summary_revision
+    def restore_summary_revision: () -> void
+
+    # WS5.1: shared enqueue path for resume/restart/run_pipeline
+    def enqueue_pipeline_run!: (back_path: String, origin: String, notice: ^(LegislationPipelineRun) -> String) { () -> LegislationPipelineRun } -> void
+
+    # Search-filtered #index scope shared by bills_total + window
+    def bills_index_scope: -> Bill::ActiveRecord_Relation
+
+    def pipeline_back_path: (?untyped bill_or_id) -> String
+    def pipeline_start_back_path: (untyped bill_or_id, stages: Array[String], download_missing_assets: bool) -> String
+
+    # Phase 52 Plan 09 helpers (round 2 review): dual-surface response renderers
+    def render_pipeline_duplicate_run: (LegislationPipelineRun? existing, String back_path, ?flash_message: String?) -> void
+    def render_paste_summary_errors: (Bill bill, Array[Hash[Symbol, String]] errors, String back_path) -> void
+    # human_readable_schema_error moved to PasteSummaryService.
+    def paste_summary_bill_payload: (Bill bill) -> Hash[Symbol, untyped]
+
+    @activity_log_entries_prop: { entries: Array[Hash[Symbol, untyped]], next_cursor: String?, has_more: bool }?
+
+    # Phase 49 Plan 04 — activity-log prop adapter (delegates to
+    # BillCreator::ActivityLogPage — WS5.7)
+    def activity_log_entries_prop: -> { entries: Array[Hash[Symbol, untyped]], next_cursor: String?, has_more: bool }
+
+    def meta_title: -> String
+
+    include LegislationPipelineRunSourcing
+
+    private
+
+    # The operator's per-run model choice, narrowed to a String here and
+    # checked against AdminSetting.offered_models in the service.
+    def summarization_model_arg: () -> {summarization_model: String?}
+
+    def reasoning_effort_arg: () -> {reasoning_effort: String?}
+
+    def summary_instructions_arg: () -> Hash[Symbol, untyped]
+
+    # B2-WR-03 / B2-IN-04: the ONE reader for the supplemental-testimony
+    # params, shared by #generate_summary and #regenerate_summary so their
+    # contracts cannot drift again. `permit` is what keeps the String? honest —
+    # an unpermitted nested param used to arrive as an Array or
+    # ActionController::Parameters and get to_s-cast into the column.
+    def supplemental_testimony_args: () -> {
+      supplemental_testimony: String?,
+      clear_supplemental_testimony: bool,
+    }
+
+    # Shared prop hash for #edit.
+    def bill_creator_props: () -> Hash[Symbol, untyped]
+
+    # The LLM summary prompt, wrapped in InertiaRails.optional so it is built
+    # only when a request names it. TOP-LEVEL, never nested inside `bill`:
+    # Inertia merges a partial reload one level deep, and the Summary tab
+    # replaces `bill` every five seconds. Empty hash when there is no bill.
+    def summary_prompt_prop: () -> Hash[Symbol, untyped]
+
+    # The four prompt sections behind the ledger's modals, wrapped in
+    # InertiaRails.optional for the same reason summary_prompt_prop is: a
+    # recorded source text can reach the 300,000-character cap. Empty hash for
+    # JSON callers, who cannot ask for a prop by name.
+    def summary_source_documents_prop: () -> Hash[Symbol, untyped]
+
+    def summary_revisions_prop: () -> Hash[Symbol, untyped]
+
+    # The campaign letter bundles, wrapped in InertiaRails.optional so they are
+    # built only when a request names them. Empty hash when there is no bill,
+    # and for JSON callers, who cannot ask for a prop by name.
+    def testimony_campaign_letters_prop: () -> Hash[Symbol, untyped]
+
+    def public_testimony_letters_prop: () -> Hash[Symbol, untyped]
+
+    # Phase 67 Plan 06 (D-14/D-16): four TOP-LEVEL props built from the
+    # cleaned-testimony artifact by four serializers, for the same reason
+    # summary_prompt_prop is top level. Empty hash when there is no bill.
+    def testimony_report_props: () -> Hash[Symbol, untyped]
+
+    @browsable_testimony_entries: Array[Testimony::BrowsableLetters::Entry]?
+    def browsable_testimony_entries: () -> Array[Testimony::BrowsableLetters::Entry]
+
+    @testimony_report_campaigns: Campaign::ActiveRecord_Associations_CollectionProxy?
+    def testimony_report_campaigns: () -> Campaign::ActiveRecord_Associations_CollectionProxy
+
+    @testimony_report_panel_domains: SendingServiceDomain::ActiveRecord_Relation?
+    def testimony_report_panel_domains: () -> SendingServiceDomain::ActiveRecord_Relation
+
+    @cleaned_testimony_derivation: {
+      campaign_drafts: Array[untyped],
+      letters_by_position: Hash[untyped, untyped],
+      full_text: String,
+      claimed_letters: Array[untyped]
+    }?
+    def cleaned_testimony_derivation: () -> {
+      campaign_drafts: Array[untyped],
+      letters_by_position: Hash[untyped, untyped],
+      full_text: String,
+      claimed_letters: Array[untyped]
+    }
+    def compute_cleaned_testimony_derivation: () -> {
+      campaign_drafts: Array[untyped],
+      letters_by_position: Hash[untyped, untyped],
+      full_text: String,
+      claimed_letters: Array[untyped]
+    }
+
+    def campaign_organization_candidates: (untyped campaigns) -> Hash[Integer, untyped]
+
+    # The most recent FAILED run for the bill, as the three fields the summary
+    # tab's alert needs, or nil when there is none. The active-run prop cannot
+    # carry this: active_for_bill filters on ACTIVE_STATUSES, which excludes
+    # `failed` on purpose. run_id is the Integer; the other two are Strings.
+    def last_failed_pipeline_run_summary: () -> Hash[Symbol, Integer | String]?
+
+    # Narrow projection of Bill rows for the Bill Creator picker, the
+    # Pipeline & LLM "Limit to bill" filter, and the Schedule tab.
+    # Phase 62 review IN-06: title is plucked from a NOT NULL column and the
+    # frontend contract (IBillPickerOption.title: string) is non-nullable —
+    # concrete String, not String?.
+    # WS5.7: thin adapter delegating to BillCreator::PickerBillsSerializer.
+    def picker_bills: (Bill::ActiveRecord_Relation scope) -> Array[BillCreator::PickerBillsSerializer::row]
+
+    def vote_entry_legislators: () -> untyped
+
+    def nomination_bill?: (SwayLocale locale) -> bool
+
+    def senate_only_excluded?: (Legislator legislator) -> bool
+
+    @legislator_votes_refresh_toast: {refreshed_at: String, source: String}?
+    def legislator_votes_refresh_toast: () -> ({refreshed_at: String, source: String}?)
+
+    # Phase 39 D-35 — admin auto-refresh toast helper. Returns nil when no
+    # refresh occurred since admin's last visit, otherwise a Hash with
+    # :refreshed_at (HH:MM string) and :source (LegislatorVote source name).
+    def legislator_votes_refresh_toast_for: (Bill bill) -> ({refreshed_at: String, source: String}?)
+
+    # Phase 46-06 Task 3 / cycle-13 HIGH-13-2 — server-side computation of
+    # the auto-include preview via PipelinePreviewService (Rails-native).
+    # Returns nil when no ?stages= query param is present (initial page
+    # load) or when an unknown stage was requested (silent-swallow per
+    # UI-SPEC §Display rules). Return type is PipelinePreviewService's own
+    # `preview_response` alias rather than a hand-duplicated union.
+    def pipeline_preview_for: (Bill? bill) -> PipelinePreviewService::preview_response?
+
+    # Phase 49 UAT follow-up — URL-driven UI state for BillCreatorPipelineControls.
+    # Phase 55 Plan 06: PIPELINE_STAGE_KEYS expanded to 7 keys (fetch-law +
+    # summarize-bill added); show_restart_refresh_dialog removed (RM-05);
+    # download_missing_assets added (TG-01).
+    PIPELINE_STAGE_KEYS: Array[String]
+    DEFAULT_PIPELINE_STAGE_KEYS: Array[String]
+    # Picker submits the Bill FK as a string; serialized
+    # back to the frontend under `bill_id`.
+    def pipeline_controls_state: -> {
+      selected_stages: Array[String],
+      bill_id: String,
+      download_missing_assets: bool
+    }
+
+    # nil when the address names no stages at all — distinct from an address
+    # naming only unrecognised ones, which yields an empty array.
+    def requested_stage_names: -> Array[String]?
+
+    def selected_pipeline_stages: -> Array[String]
+
+    # CR-01 (Phase 55 review iter 1): per-request memoization helper.
+    # Same return shape as `pipeline_controls_state`; the public method
+    # `||=`s into the ivar so the param-parsing runs at most once per request.
+    def compute_pipeline_controls_state: -> {
+      selected_stages: Array[String],
+      bill_id: String,
+      download_missing_assets: bool
+    }
+
+    # jaro_winkler_similarity moved to ApproveOrgPositionService.
+
+    def set_bill_for_show: -> Bill
+
+    def set_bill: -> Bill
+
+    def remove_audio: (String? audio_path) -> void
+
+    def create_vote: (Bill b) -> void
+
+    # C21-06: where a successful #update sends the operator. PATCH /bills/:id is
+    # shared by the Creator tab's bill form and the Summary tab's Save summary
+    # button, and it always redirected to the creator tab. `return_tab` travels
+    # with the request and is matched against a fixed list, never interpolated —
+    # the value steers a redirect.
+    def update_return_path: -> String
+
+    # C22-06: nil on the summary path, where LlmSummaryEditableSummary raises
+    # its own "Summary saved." toast — a flash.notice there produced a second
+    # green toast naming the bill form the operator was not using. redirect_to
+    # sets no flash for a nil value.
+    def update_success_notice: -> String?
+
+    # The one reading of `return_tab`, shared by the two methods above so they
+    # cannot drift apart.
+    def saved_from_summary_tab?: -> bool
+
+    # Only allow a list of trusted parameters through.
+    def bill_params: -> ActionController::Parameters
+
+    def vote_params: -> ::Array[(:house_roll_call_vote_number | :senate_roll_call_vote_number)]
+
+    @admin_setting_for_creator: AdminSetting?
+    def admin_setting_for_creator: () -> AdminSetting
+
+    def summary_model_options: (?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[{id: String, label: String, supports_reasoning: bool}]
+
+    def summary_publication_params: -> ActionController::Parameters
+
+    def render_summary_publication_failure: (ManualNewsSummaryPublicationService::Result) -> void
+
+    def organizations_params: -> ActionController::Parameters
+
+    def bills_sort_param: -> untyped
+    def bills_direction_param: -> untyped
+    def bills_page_param: -> untyped
+    def bills_search_param: -> untyped
+    def bills_legislative_session_id_param: -> untyped
+    def requested_legislative_session: -> LegislativeSession?
+    def past_bills_of_the_month?: -> bool
+    def bills_list_mode: -> ("all_bills" | "past_bills_of_the_month")
+    def legislative_sessions_prop: -> untyped
+    def selected_legislative_session_id_prop: -> Integer?
+end

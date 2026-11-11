@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # Every Baltimore legislator row after the whole migration chain has run.
+  def baltimore_rows: () -> Array[Legislator]
+end

@@ -1,0 +1,32 @@
+# A2-WR-02: spec-only declarations for
+# spec/db/key_testimony_classifications_on_attachment_id_spec.rb.
+#
+# The Steepfile's :app target ignores db/migrate (migrations are one-shot
+# scripts, not app surface), so the migration class it `require`s has no
+# signature anywhere. The :test target DOES check spec/, so it needs one —
+# declared here rather than under sig/ so the :app target's ignore stays
+# meaningful.
+class KeyTestimonyClassificationsOnAttachmentId < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  # Collapses duplicate (attachment_id) rows by recency — updated_at DESC,
+  # then a `testimony` label, then id DESC — so a verdict UPDATED in place
+  # beats a later-INSERTED stale one.
+  def collapse_duplicate_attachment_ids!: () -> void
+end
+
+# Index names, held in a module so they are not constants defined inside an
+# RSpec block (Lint/ConstantDefinitionInBlock).
+module TestimonyClassificationMigrationSpecHelpers
+  ATTACHMENT_ID_INDEX: String
+  ENDPOINT_INDEX: String
+
+  # The unique index the table carries TODAY, on (sway_locale_id,
+  # attachment_id). Migration 20260810120000 put it there. The spec's hooks
+  # restore this one rather than the attachment_id-only index the migration
+  # under test created.
+  LOCALE_INDEX: String
+end

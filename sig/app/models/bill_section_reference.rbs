@@ -1,0 +1,10 @@
+# Phase 52 Plan 05 (D-47). Hand-written behavior overlay.
+# Supplements sig/rbs_rails/app/models/bill_section_reference.rbs.
+#
+# All enum predicate methods (#exact?, #fuzzy?, #unresolved?) and scope class
+# methods (.exact, .fuzzy, .unresolved, .resolutions) are introspected by
+# rbs_rails and already declared in the autogen sig — DO NOT re-declare them
+# here (Steep duplicate-method error). This file exists as a placeholder for
+# future hand-written behavior overlays.
+class BillSectionReference < ApplicationRecord
+end

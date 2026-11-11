@@ -1,0 +1,14 @@
+# Spec-only declaration for the per-term district examples in
+# spec/models/seed_legislator_spec.rb. See
+# sig-test/services/legislators_cache/congress_term_history_spec.rbs for why
+# spec-local helpers are declared rather than silenced.
+class Object
+  def moved_district_json: () -> Hash[String, untyped]
+  def district_us0: () -> District
+  def potus_legislator: () -> Legislator
+  def potus_identifier: () -> LegislatorIdentifier
+  def unevidenced_term: () -> LegislatorTerm
+  def district_score: () -> LegislatorDistrictScore
+  def locale_score: () -> LegislatorLocaleScore
+  def user_term_score: () -> UserLegislatorTermScore
+end

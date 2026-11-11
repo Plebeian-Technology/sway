@@ -1,0 +1,7 @@
+# Spec-only helper module (spec/support/query_plan_helpers.rb), included into
+# the example groups that require it.
+module QueryPlanHelpers
+  def query_plan_details: (untyped query) -> Array[String]
+
+  def select_statements_matching: (Regexp pattern) { () -> untyped } -> Array[String]
+end

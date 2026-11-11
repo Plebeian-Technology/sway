@@ -1,0 +1,13 @@
+/* @lat: [[theme-tokens#Why density and motion belong to the theme]] */
+@import "./themes/sway.css";
+@import "./themes/banner.css";
+@import "./themes/ballot.css";
+@import "./themes/cornerstore.css";
+@import "./themes/monochrome.css";
+@import "./themes/service-manual.css";
+@import "./themes/swiss-grid.css";
+
+/* @lat: [[theme-tokens#Why density and motion belong to the theme]] */
+:root {
+    --control-height: 2.75rem;
+}

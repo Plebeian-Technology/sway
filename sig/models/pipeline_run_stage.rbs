@@ -1,0 +1,42 @@
+# Hand-authored RBS sig for PipelineRunStage.
+# Covers state-machine helpers (D-21), JSON column return types (D-22),
+# and the atomic mark_bill_completed! helper (D-08/D-18).
+# Regenerate rbs_rails sig with: bundle exec rbs_rails all
+class PipelineRunStage < ApplicationRecord
+  # State predicates (state_machines-activerecord dynamic methods)
+  def pending?: () -> bool
+  def running?: () -> bool
+  def succeeded?: () -> bool
+  def failed?: () -> bool
+  def skipped?: () -> bool
+  def cancelled?: () -> bool
+
+  # Bang transitions — raise StateMachines::InvalidTransition on illegal paths (D-21)
+  def start_running!: () -> bool
+  def mark_succeeded!: () -> bool
+  def mark_failed!: () -> bool
+  def mark_skipped!: () -> bool
+  def mark_cancelled!: () -> bool
+
+  # Non-bang transitions
+  def start_running: () -> bool
+  def mark_succeeded: () -> bool
+  def mark_failed: () -> bool
+  def mark_skipped: () -> bool
+  def mark_cancelled: () -> bool
+
+  # can_*? predicates
+  def can_start_running?: () -> bool
+  def can_mark_succeeded?: () -> bool
+  def can_mark_failed?: () -> bool
+  def can_mark_skipped?: () -> bool
+  def can_mark_cancelled?: () -> bool
+
+  # JSON-serialized column helpers (D-22 — coder: JSON)
+  # rbs_rails sees raw ::String; helpers return the deserialized Ruby objects
+  def completed_bills: () -> Array[String]
+  def remaining_bills: () -> Array[String]
+
+  # Atomic bill-progress helper (D-08 monotonic invariant, D-18 with_lock)
+  def mark_bill_completed!: (String external_id) -> void
+end

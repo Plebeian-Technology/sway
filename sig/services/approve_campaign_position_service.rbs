@@ -1,0 +1,65 @@
+# Phase 67 Plan 09 (D-08). Returns a Symbol outcome (:summary_required |
+# :invalid_stance | :identity_required | :draft_not_found | :run_in_flight |
+# :no_testimony | :coverage_not_acknowledged | :approved |
+# :approved_replacing_draft); CampaignsController maps it to a redirect.
+# Kept narrow per feedback_update_rbs_with_code.md. support/content_hash
+# are params-sourced (untyped).
+class ApproveCampaignPositionService
+
+  class DraftNotFound < StandardError
+  end
+
+  class RunInFlight < StandardError
+  end
+
+  class CoverageNotAcknowledged < StandardError
+  end
+
+  class NoTestimony < StandardError
+  end
+
+  @bill: Bill
+
+  @actor: User
+
+  @name: String
+
+  @support_raw: untyped
+
+  @summary: String
+
+  @content_hash: untyped
+
+  @replaced_draft_hash: String?
+
+  def initialize: (bill: Bill, actor: User, name: String, support: untyped, summary: String, ?content_hash: untyped) -> void
+
+  def call: () -> Symbol
+
+  private
+
+  def approve: (String support) -> Symbol
+
+  def asserted_identity?: () -> bool
+
+  def bill_testimony_missing?: (?BillLlmProvisioning? provisioning) -> bool
+
+  def drafts: (?BillLlmProvisioning? provisioning) -> Array[Hash[String, untyped]]
+
+  def draft_by_hash: (Array[Hash[String, untyped]] list) -> Hash[String, untyped]?
+
+  def draft_missing?: (?Array[Hash[String, untyped]]? list) -> bool
+
+  def run_in_flight?: (?BillLlmProvisioning? provisioning) -> bool
+
+  def coverage_not_acknowledged?: (?BillLlmProvisioning? provisioning) -> bool
+
+  def reconfirm_guards: () -> void
+
+  def upsert_campaign: (String support) -> Symbol
+
+  def matched_campaign: () -> Campaign?
+
+  def log_decision: (Symbol outcome) -> void
+
+end

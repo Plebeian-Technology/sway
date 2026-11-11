@@ -1,0 +1,4 @@
+# Spec-only declarations for spec/support/dockerfile_run_blocks.rb.
+module DockerfileRunBlocks
+  def self.split: (String text) -> Array[String]
+end

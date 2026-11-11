@@ -1,0 +1,268 @@
+/* Corner Store bill layout: flat screen-printed blocks with hard offsets.
+   The wood type is confined to headline and block titles. */
+
+.cs-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+/* The masthead pairs the locale's flag with the kicker. Emblem-sized only —
+   the Calvert arms stretched into a strip degenerate into hazard-tape sawtooth
+   at every scale tested (owner, 2026-07-26). */
+.cs-masthead {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+}
+
+.cs-masthead__flag {
+    width: calc(var(--space-unit) * 9);
+    height: auto;
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    box-shadow: 4px 4px 0 var(--border);
+    flex: none;
+}
+
+.cs-kicker {
+    display: inline-block;
+    background: var(--destructive);
+    color: var(--primary-foreground);
+    font-weight: var(--weight-display);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
+    transform: rotate(-1.5deg);
+    box-shadow: 4px 4px 0 var(--border);
+}
+
+/* The headline sits in ink with a TINT of the primary behind it, never the
+   primary at full strength: ink-on-primary at letterform scale vibrates
+   (owner feedback, 2026-07-26). color-mix keeps the tint correct in dark mode. */
+.cs-headline {
+    font-family: "Alfa Slab One", var(--font-display);
+    font-weight: 400;
+    font-size: var(--type-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    margin: calc(var(--space-unit) * 5) 0 0;
+    max-width: 18ch;
+    text-shadow: 4px 4px 0 color-mix(in srgb, var(--primary) 30%, var(--background));
+}
+
+.cs-deck {
+    font-size: var(--type-lede);
+    font-weight: var(--weight-medium);
+    margin: calc(var(--space-unit) * 3) 0 0;
+    max-width: var(--measure);
+}
+
+.cs-longtitle {
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--muted-foreground);
+    max-width: var(--measure);
+    margin: calc(var(--space-unit) * 3) 0 0;
+}
+
+.cs-longtitle b {
+    color: var(--foreground);
+    font-weight: var(--weight-bold);
+}
+
+/* --- chips --------------------------------------------------------------- */
+
+.cs-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 5);
+}
+
+.cs-chip {
+    border: var(--rule-mid) var(--rule-style) var(--border);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: var(--weight-display);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
+    box-shadow: 3px 3px 0 var(--border);
+}
+
+/* The code chip carries the primary as TEXT on the card, not as a fill behind
+   ink — same non-vibration rule as the headline. */
+.cs-chip--code {
+    color: var(--primary);
+}
+
+.cs-followup {
+    margin-top: calc(var(--space-unit) * 4);
+}
+
+/* --- blocks -------------------------------------------------------------- */
+
+.cs-grid {
+    display: grid;
+    gap: calc(var(--space-unit) * 6);
+    margin-top: calc(var(--space-unit) * 7);
+}
+
+@media (min-width: 880px) {
+    .cs-grid {
+        grid-template-columns: 1.6fr 1fr;
+        align-items: start;
+    }
+}
+
+.cs-side {
+    display: grid;
+    gap: calc(var(--space-unit) * 6);
+}
+
+.cs-card {
+    border: var(--neo-border-width) var(--rule-style) var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--neo-shadow);
+    padding: calc(var(--space-unit) * 5) calc(var(--space-unit) * 5);
+}
+
+.cs-card--wide {
+    margin-top: calc(var(--space-unit) * 6);
+}
+
+.cs-card__title {
+    font-family: "Alfa Slab One", var(--font-display);
+    font-weight: 400;
+    font-size: var(--type-h3);
+    text-transform: uppercase;
+    margin: 0 0 calc(var(--space-unit) * 3);
+}
+
+.cs-prose {
+    line-height: var(--leading-body);
+    max-width: var(--measure);
+}
+
+.cs-sponsor {
+    display: inline-block;
+    font-weight: var(--weight-display);
+    font-size: var(--type-h3);
+    text-transform: uppercase;
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.cs-note {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    line-height: var(--leading-body);
+    margin: calc(var(--space-unit) * 2) 0 0;
+}
+
+/* --- tallies ------------------------------------------------------------- */
+
+.cs-tally {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--space-unit) * 2);
+}
+
+.cs-tally + .cs-tally {
+    margin-top: calc(var(--space-unit) * 2);
+}
+
+.cs-tally__n {
+    font-family: "Alfa Slab One", var(--font-display);
+    font-weight: 400;
+    font-size: var(--type-stat);
+    line-height: 1;
+    font-variant-numeric: var(--font-numeric);
+}
+
+.cs-tally__l {
+    font-size: var(--type-small);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+/* --- organizations ------------------------------------------------------- */
+
+.cs-orgs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cs-org {
+    display: flex;
+    gap: calc(var(--space-unit) * 4);
+    padding: calc(var(--space-unit) * 3) 0;
+}
+
+.cs-org + .cs-org {
+    border-top: var(--rule-hair) var(--rule-style) var(--border-soft);
+}
+
+.cs-org__stance {
+    flex: none;
+    align-self: flex-start;
+    border: var(--rule-mid) var(--rule-style) currentColor;
+    font-weight: var(--weight-display);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2);
+}
+
+.cs-org__stance--for {
+    color: var(--vote-for);
+}
+
+.cs-org__stance--against {
+    color: var(--vote-against);
+}
+
+.cs-org__name {
+    font-size: var(--type-body);
+    font-weight: var(--weight-bold);
+    margin: 0;
+}
+
+.cs-org__summary {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    line-height: var(--leading-body);
+    margin: calc(var(--space-unit) * 1) 0 0;
+}
+
+.cs-empty {
+    font-size: var(--type-small);
+    font-style: italic;
+    color: var(--muted-foreground);
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .cs-headline {
+        font-size: var(--type-h2);
+        text-shadow: 3px 3px 0 color-mix(in srgb, var(--primary) 30%, var(--background));
+    }
+
+    .cs-org {
+        flex-direction: column;
+        gap: calc(var(--space-unit) * 2);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cs-kicker {
+        transform: none;
+    }
+}

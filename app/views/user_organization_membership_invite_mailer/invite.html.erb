@@ -1,0 +1,8 @@
+<p>
+  <%= @inviter.full_name %> has invited you to join <%= @organization.name %> on Sway.
+</p>
+<p>
+  <%= link_to "Accept Invitation",
+        confirm_accept_organization_membership_invite_url(@invite.organization, @signed_token) %>
+</p>
+<p>This link expires <%= l(@invite.expires_at, format: :long) %>.</p>

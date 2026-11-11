@@ -1,0 +1,33 @@
+# @lat: [[llm-summaries#Runs are marked and reclaimable#One armer for both the synchronous run and the batch]]
+class SummaryRunArm
+  # armed: true when the caller may spend on the row, false when the decision
+  # declined it, nil when the row was deleted under the lock. decision is nil
+  # only in that last case, where the block never ran.
+  class Outcome
+    attr_reader armed: bool?
+    attr_reader decision: SummaryRunArmDecision?
+
+    def initialize: (armed: bool?, decision: SummaryRunArmDecision?) -> void
+    def self.new: (armed: bool?, decision: SummaryRunArmDecision?) -> SummaryRunArm::Outcome
+  end
+
+  # The block runs under the row's write lock, after the decision is taken and
+  # before any write, so a caller can log a reclaim against committed state.
+  def self.call: (
+    provisioning: BillLlmProvisioning,
+    job_id: String,
+    ?extra_columns: Hash[Symbol, untyped],
+  ) ?{ (SummaryRunArmDecision) -> void } -> SummaryRunArm::Outcome
+
+  # B20-01 / B22-01: the arm's one write — this execution's claim (skipped for
+  # the two markers that must survive the arm: an operator paste, and this
+  # enqueue's own purchase receipt) and the abandonment clock, which is written
+  # on EVERY case that proceeds because update_columns does not bump it and no
+  # state transition fires from `generating`.
+  def self.stamp: (
+    BillLlmProvisioning provisioning,
+    SummaryRunArmDecision decision,
+    job_id: String,
+    extra_columns: Hash[Symbol, untyped],
+  ) -> void
+end

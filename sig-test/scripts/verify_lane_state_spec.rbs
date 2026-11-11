@@ -1,0 +1,28 @@
+# Spec-only declarations for spec/scripts/verify_lane_state_spec.rb.
+#
+# Steep cannot see a `def` inside a describe block any more than it can see a
+# `let`, so both helpers are declared here. The names must stay unique across
+# every file in sig-test: they all reopen the same class Object, and a second
+# declaration of one name is a Steep error.
+class Object
+  # Calls lane_state in scripts/dip/verify-lib.sh and returns what it echoed:
+  # one of "green", "red" or "did-not-complete". examples and failures take an
+  # Integer for readability at the call site and a String for the "this lane
+  # prints no example count" case, which is the empty string.
+  def lane_state: (
+    exit_code: Integer,
+    ?docker_exit: String,
+    ?oom: String,
+    ?examples: (Integer | String),
+    ?failures: (Integer | String),
+    ?ok_codes: String?
+  ) -> String
+
+  # Writes log_body to a temporary file, hands it to rspec_lane_totals, and
+  # returns the "<examples> <failures>" pair it echoed.
+  def lane_totals: (String log_body) -> String
+
+  # Writes log_body to a temporary file, hands it to rake_gates_totals, and
+  # returns the "<gates that ran> <gates that failed>" pair it echoed.
+  def gate_totals: (String log_body) -> String
+end

@@ -1,0 +1,84 @@
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+module Sentry
+  def self.configuration: () -> untyped
+  def self.close: () -> void
+  def self.get_current_scope: () -> untyped
+  def self.initialized?: () -> bool
+  def self.add_breadcrumb: (untyped crumb, **untyped) -> void
+
+  class Breadcrumb
+    def initialize: (?category: untyped, ?data: untyped, ?message: untyped, ?timestamp: untyped, ?level: untyped, ?type: untyped) -> void
+    def message: () -> untyped
+    def message=: (untyped) -> untyped
+    def data: () -> untyped
+    def data=: (untyped) -> untyped
+  end
+
+  module TestHelper
+    def setup_sentry_test: (?untyped) ?{ (untyped) -> void } -> untyped
+    def teardown_sentry_test: () -> void
+    def sentry_events: () -> Array[untyped]
+  end
+end
+
+module RSpec
+  def self.current_example: () -> RSpec::Core::Example
+
+  module Core
+    class Example
+      def location: () -> String
+      def full_description: () -> String
+      # nil on a passing example — that IS the signal, so it must be nullable.
+      def exception: () -> Exception?
+      def run: () -> untyped
+    end
+
+    module Pending
+      class PendingExampleFixedError < StandardError
+      end
+    end
+
+    # Holds several failures at once: the example raised AND an after hook did.
+    class MultipleExceptionError < StandardError
+      def initialize: (*Exception exceptions) -> void
+      def all_exceptions: () -> Array[Exception]
+    end
+
+    class Configuration
+      def prepend_after: (*untyped, **untyped) ?{ (?untyped) -> void } -> void
+    end
+  end
+
+  module Expectations
+    # What aggregate_failures raises. Answers all_exceptions but shares no
+    # module with MultipleExceptionError above — measured, not assumed.
+    class MultipleExpectationsNotMetError < ExpectationNotMetError
+      def all_exceptions: () -> Array[Exception]
+    end
+  end
+end
+
+module Selenium
+  module WebDriver
+    class LogEntry
+      def initialize: (untyped level, untyped timestamp, untyped message) -> void
+      def level: () -> untyped
+      def message: () -> untyped
+    end
+
+    module Error
+      class WebDriverError < StandardError
+      end
+    end
+  end
+end
+
+module Selenium
+  module WebDriver
+    module Chrome
+      class Options
+        def initialize: (**untyped) -> void
+      end
+    end
+  end
+end

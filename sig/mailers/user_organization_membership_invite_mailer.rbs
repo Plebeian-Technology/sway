@@ -1,0 +1,9 @@
+class UserOrganizationMembershipInviteMailer < ApplicationMailer
+    @invite: untyped
+
+    @organization: untyped
+
+    @inviter: untyped
+
+    def invite: (untyped invite) -> untyped
+end

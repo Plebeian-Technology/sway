@@ -1,0 +1,4 @@
+module Llm
+  class SchemaError < StandardError
+  end
+end

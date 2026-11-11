@@ -1,0 +1,17 @@
+class ApiKeysController < ApplicationController
+    def index: -> untyped
+
+    def create: -> untyped
+
+    def update: -> untyped
+
+    def destroy: -> untyped
+
+    private
+
+    def developer_api_keys: -> untyped
+
+    def verify_is_sway_api_user: -> untyped
+
+    def api_key_params: -> untyped
+end

@@ -1,0 +1,14 @@
+# Spec-only declarations for spec/config/browser_preflight_spec.rb.
+#
+# Steep cannot see a `let`, so each helper is declared here. The spec reads
+# spec/support/system_driver.rb as text and asserts on it with regexes,
+# dropping comment lines the way dip_rspec_cleanup_spec.rb does — otherwise a
+# comment mentioning assert_available! or required? would satisfy the check
+# that looks for the real call.
+class Object
+  def system_driver_source: () -> String
+
+  def system_driver_runnable_lines: () -> String
+
+  def stub_require_browser: (String? value) { () -> void } -> void
+end

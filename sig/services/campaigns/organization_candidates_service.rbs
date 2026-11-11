@@ -1,0 +1,54 @@
+module Campaigns
+  # @lat: [[query-plan-indexes#A query-cost guard measures growth, not a ceiling]]
+  class OrganizationCandidatesService
+    SIGNATURE_BLOCK: String
+
+    BILL_POSITION: String
+
+    class Candidate
+      attr_reader organization_id: Integer
+      attr_reader organization_name: String?
+      attr_reader evidence_kind: String
+      attr_reader letter_count: Integer
+      attr_reader claimed_name: String?
+
+      def self.new: (organization_id: Integer, organization_name: String?, evidence_kind: String, letter_count: Integer, claimed_name: String?) -> Candidate
+    end
+
+    @bill: Bill
+
+    @artifact: untyped
+
+    @bill_position_candidates: Array[Candidate]?
+
+    @organizations_by_downcased_name: Hash[String, Organization]?
+
+    def self.call: (campaign: Campaign) -> Array[Candidate]
+
+    def self.call_all: (bill: Bill, campaigns: untyped) -> Hash[Integer, Array[Candidate]]
+
+    def initialize: (bill: Bill) -> void
+
+    def call: (Campaign campaign) -> Array[Candidate]
+
+    private
+
+    attr_reader bill: Bill
+
+    def evidence_rank: (String kind) -> Integer
+
+    def deduplicate: (Array[Candidate] candidates) -> Array[Candidate]
+
+    def signature_block_candidates: (Campaign campaign) -> Array[Candidate]
+
+    def bill_position_candidates: () -> Array[Candidate]
+
+    def claimed_organization_names: (Campaign campaign) -> Hash[String, Hash[Symbol, untyped]]
+
+    def campaign_letters: (Campaign campaign) -> Array[Hash[String, untyped]]
+
+    def artifact: () -> untyped
+
+    def organizations_by_downcased_name: () -> Hash[String, Organization]
+  end
+end

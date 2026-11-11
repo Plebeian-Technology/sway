@@ -1,0 +1,63 @@
+module Legislation
+  # Copies objects back out of the artifact bucket into a directory the caller
+  # names. It never guesses that directory and refuses the live tree.
+  class ArtifactRestoreService
+    # Raised when the destination overlaps the tree the pipeline writes to.
+    class LiveTreeRefused < StandardError
+    end
+
+    # How much of a download failure's message the report keeps.
+    FAILURE_REASON_LENGTH: Integer
+
+    @destination: Pathname
+    @bucket: Legislation::ArtifactBucket
+    @prefix: String
+    @only: String?
+    @effective_prefix: String
+    @report: Legislation::ArtifactRestoreReport
+
+    def initialize: (destination: (String | Pathname), ?bucket: Legislation::ArtifactBucket, ?prefix: String, ?only: String?, ?allow_live_tree: bool) -> void
+
+    attr_reader destination: Pathname
+
+    # The prefix the listing actually asks for: narrowed by `only` when given.
+    attr_reader effective_prefix: String
+
+    def call: () -> Legislation::ArtifactRestoreReport
+
+    private
+
+    attr_reader bucket: Legislation::ArtifactBucket
+    attr_reader prefix: String
+    attr_reader only: String?
+    attr_reader report: Legislation::ArtifactRestoreReport
+
+    def expand_destination: ((String | Pathname) value) -> Pathname
+
+    # Follows symlinks through the nearest existing ancestor, so a destination
+    # that links into the live tree cannot slip past the refusal.
+    def resolve_symlinks: (Pathname path) -> Pathname
+
+    # One of ArtifactBackupService::ROOTS' keys, or nil for the whole tree.
+    def normalize_only: ((String | Symbol)? value) -> String?
+
+    # The base root and the seven overridable ones, expanded.
+    def live_paths: () -> Array[Pathname]
+
+    def refuse_live_tree!: () -> void
+
+    # True when the destination is, holds, or sits inside the given root.
+    def overlaps?: (Pathname root) -> bool
+
+    # The listing, or nil when it failed.
+    def list_remote: () -> Array[SwayGoogleCloudStorage::ListedFile]?
+
+    def restore_object: (SwayGoogleCloudStorage::ListedFile file) -> void
+
+    # Where the object belongs under the destination, or nil when its name
+    # cannot be trusted to stay inside it.
+    def local_path_for: (String object_name) -> Pathname?
+
+    def finish: (Float started_at) -> Legislation::ArtifactRestoreReport
+  end
+end

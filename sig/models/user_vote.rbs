@@ -1,0 +1,10 @@
+# Manual extensions for UserVote. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/user_vote.rbs; this file holds
+# the hand-written instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class UserVote < ApplicationRecord
+    def for?: -> bool
+    def against?: -> bool
+    def upcase_support: -> String?
+    def update_scores: -> void
+end

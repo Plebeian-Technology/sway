@@ -1,0 +1,15 @@
+# @lat: [[rbs-signatures#Why Diff::LCS needs a project shim for sdiff]]
+module Diff
+end
+
+module Diff::LCS
+  def self.sdiff: (Array[String] seq1, Array[String] seq2) -> Array[Diff::LCS::ContextChange]
+
+  class ContextChange
+    attr_reader action: String
+    attr_reader old_position: Integer?
+    attr_reader new_position: Integer?
+    attr_reader old_element: String?
+    attr_reader new_element: String?
+  end
+end

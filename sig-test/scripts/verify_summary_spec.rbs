@@ -1,0 +1,25 @@
+# Spec-only declarations for spec/scripts/verify_summary_spec.rb.
+#
+# Steep cannot see a `def` inside a describe block. The names must stay unique
+# across sig-test: every file here reopens the same class Object.
+class Object
+  # Runs scripts/dip/verify-summary.mjs over one facts file and returns the
+  # parsed summary. The second argument maps a lane's log path to the text to
+  # plant there, so an example can supply rspec's own failure lines.
+  def build_summary: (Array[Array[String]] facts_rows, ?Hash[String, String] logs) -> Hash[String, untyped]
+
+  # One lane row in the tab-separated column order verify.sh writes.
+  def facts_row: (
+    name: String,
+    ?state: String,
+    ?duration: String,
+    ?exit_code: String,
+    ?oom: String,
+    ?log: String,
+    ?rerun: String,
+    ?examples: String,
+    ?failures: String,
+    ?checks_ran: String,
+    ?checks_failed: String
+  ) -> Array[String]
+end

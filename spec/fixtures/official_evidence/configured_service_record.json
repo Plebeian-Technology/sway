@@ -1,0 +1,16 @@
+{
+    "records": [
+        {
+            "id": "example-person-001",
+            "office_id": "us-president",
+            "first_name": "Alex",
+            "last_name": "Example",
+            "title": "President of the Example Republic",
+            "chamber": "Executive",
+            "district": "US0",
+            "start_date": "2024-01-20",
+            "end_date": "2028-01-20",
+            "presence": "present"
+        }
+    ]
+}

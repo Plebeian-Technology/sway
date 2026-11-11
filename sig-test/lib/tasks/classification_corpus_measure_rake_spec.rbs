@@ -1,0 +1,4 @@
+class Object
+  def corpus_root: () -> Pathname
+  def write_corpus_fixture: (String sway_locale, id: Integer | String, name: String, ?text: String?) -> void
+end

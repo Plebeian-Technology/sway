@@ -1,0 +1,179 @@
+name: Run RSpec tests
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  run-rspec-tests:
+    # @lat: [[continuous-integration#Why no workflow names its machine]]
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+
+    env:
+      RAILS_ENV: test
+      # config/boot.rb refuses to boot Rails outside dip unless this is set —
+      # the guard protects the shared dev SQLite volume, which does not exist
+      # on an ephemeral runner. Without it every rails/rake/rspec step aborts.
+      SWAY_ALLOW_HOST_RAILS: "1"
+      VAPID_PUBLIC_KEY: BCUWtDYeou4CLLwWUu44NylAkAkPYNobTJ7wuWhvjBb0YF4JhJAT_GeUrOjJvoXvcTO4ehmeCHyP0QH2mS5cyj4 # testing only
+      VAPID_PRIVATE_KEY: WE83Oc3c1GaC08gcEM2YKddtTpx0DdrjEfTHONVqR0s # testing only
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # A hosted machine has no mise and no runner-user home folder to read
+      # shims from. .ruby-version stays the one pin on either machine.
+      #
+      # This installs sqlite3 without the flags the next step wants, so that
+      # step rebuilds it. Correct, and slow on a machine that starts empty
+      # every time.
+      - name: Set up Ruby (hosted) and install gems
+        if: runner.environment == 'github-hosted'
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version-file: .ruby-version
+          bundler-cache: true
+
+      # @lat: [[continuous-integration#Why the runner's Ruby comes from the host toolchain]]
+      - name: Set up Ruby (host mise) and install gems
+        if: runner.environment == 'self-hosted'
+        run: |
+          # @lat: [[continuous-integration#Why the shim directory is proved before it is trusted]]
+          MISE_SHIMS="$HOME/.local/share/mise/shims"
+          test -x "$MISE_SHIMS/ruby" || {
+            echo "::error::mise shims not found at $MISE_SHIMS — is mise installed for the runner user?"
+            exit 1
+          }
+          echo "$MISE_SHIMS" >> "$GITHUB_PATH"
+          export PATH="$MISE_SHIMS:$PATH"
+          # Prove the resolved version matches the repo pin before spending a
+          # bundle install on it.
+          EXPECTED="$(tr -d '[:space:]' < .ruby-version)"
+          ACTUAL="$(ruby -e 'print RUBY_VERSION')"
+          test "$ACTUAL" = "$EXPECTED" || {
+            echo "::error::.ruby-version wants $EXPECTED but the toolchain gave $ACTUAL"
+            exit 1
+          }
+          ruby -v
+          bundle install --jobs 4
+
+      # @lat: [[toolchain-pins#Why the dockerfile gates read every file and then read the running library]]
+      - name: Compile SQLite with the same options as the images
+        run: |
+          CFLAGS_ARG="$(sed -n "s/.*\(--with-sqlite-cflags='[^']*'\).*/\1/p" docker/dockerfiles/production.alpine.dockerfile)"
+          test -n "$CFLAGS_ARG" || {
+            echo "::error::no --with-sqlite-cflags line in docker/dockerfiles/production.alpine.dockerfile — did the bundle config set line move?"
+            exit 1
+          }
+          echo "BUNDLE_BUILD__SQLITE3=$CFLAGS_ARG" >> "$GITHUB_ENV"
+          export BUNDLE_BUILD__SQLITE3="$CFLAGS_ARG"
+          # The check also fails when the gem does not load at all, which is the
+          # state a half-finished rebuild leaves behind. Same repair either way.
+          bundle exec rails docker:lint:sqlite_runtime || {
+            echo "Rebuilding sqlite3 with $CFLAGS_ARG"
+            bundle pristine sqlite3
+            bundle exec rails docker:lint:sqlite_runtime
+          }
+
+      # @lat: [[production-image#Why the package manager floats within its major]]
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+        with:
+          version: 12
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Chrome for Testing ships no linux/arm64 build, so this action can only
+      # run on x64 (GitHub-hosted or an x64 self-hosted runner). On arm64,
+      # pre-install chromium + chromium-driver on the runner instead; the
+      # system-spec preflight skips browser specs when neither is present.
+      - name: Install Chrome
+        if: runner.arch == 'X64'
+        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1.7.3
+        with:
+          chrome-version: stable
+
+      # @lat: [[testing-the-toolchain#One example lets the real converter run]]
+      - name: Install mutool
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends mupdf-tools golang-go
+
+      # RAILS_ENV=test makes this `vite build --mode test`, which writes
+      # public/vite-test — the directory the test environment reads. `pnpm run
+      # build` wrote public/vite instead, so the suite rebuilt the assets again
+      # on its first request and this step was wasted work.
+      - name: Precompile assets
+        run: RAILS_ENV=test SKIP_VITE_INSTALL=1 bundle exec rake vite:build
+
+      - name: Set up database
+        run:
+          | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
+          bundle exec rails db:create
+          bundle exec rails db:schema:load
+
+      - name: Prepare system test environment
+        run: mkdir -p spec/screenshots
+
+      - name: Lint admin controller guards
+        run: bundle exec rake sway:lint:admin_guards
+
+      - name: Lint org-admin controller guards (999.4 A3.2)
+        run: bundle exec rake sway:lint:org_admin_guards
+
+      - name: Lint — Inertia request specs pin their component
+        run: bundle exec rake sway:lint:inertia_matchers
+
+      - name: Lint — no ENV reads in app/ outside the credential door
+        run: bundle exec rake sway:lint:env_reads
+
+      - name: Lint — migrations name no model class
+        run: bundle exec rake sway:lint:migration_models
+
+      - name: Lint — no Inertia prop cache without an identity in its key
+        run: bundle exec rake sway:lint:inertia_prop_cache
+
+      - name: Run tests
+        env:
+          SCREENSHOT_DIR: spec/screenshots
+        run:
+          | # multi-line run command: https://stackoverflow.com/a/66809682/6410635
+          set -o pipefail
+          bundle exec rspec 2>&1 | tee tmp/rspec-ci.log
+
+      # Failing examples become check-run annotations, which are readable via
+      # the REST API even when the raw log/artifact blob endpoints are not.
+      - name: Surface failing examples as annotations
+        if: failure()
+        run: |
+          if [ -f tmp/rspec-ci.log ]; then
+            grep -E "^rspec \./spec" tmp/rspec-ci.log | head -10 | while read -r line; do echo "::error::${line}"; done
+            grep -E "examples, [0-9]+ failure" tmp/rspec-ci.log | tail -1 | while read -r line; do echo "::error::${line}"; done
+          fi
+
+      - name: Lint — tesseract language package parity across dockerfiles
+        run: bundle exec rails docker:lint:tessdata_parity
+
+      - name: Upload test screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots-${{ github.run_id }}
+          path: spec/screenshots/
+          retention-days: 7
+
+      - name: Install RBS collection
+        run: bundle exec rbs collection install
+
+      - name: Validate RBS
+        run: bundle exec rbs validate
+
+      - name: Run steep
+        # @lat: [[verification-gates]]
+        run: bin/steep check --severity-level=information

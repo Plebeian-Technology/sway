@@ -1,0 +1,29 @@
+{
+    "cli": {
+        "version": ">= 5.0.0",
+        "appVersionSource": "local",
+        "promptToConfigurePushNotifications": false
+    },
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal"
+        },
+        "preview": {
+            "distribution": "internal"
+        },
+        "production": {
+            "autoIncrement": true,
+            "env": {
+                "NODE_ENV": "production",
+                "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+            },
+            "ios": {
+                "credentialsSource": "local"
+            },
+            "android": {
+                "credentialsSource": "local"
+            }
+        }
+    }
+}

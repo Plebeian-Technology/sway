@@ -1,0 +1,64 @@
+# TermWindow is a pure PORO — not < ApplicationRecord, hand-maintained (RBS in
+# this repo is not rbs_rails-generated). `_TermLike` is a duck-typed interface
+# that LegislatorTerm satisfies.
+#
+# The per-locale convening and cycle constants that used to live here now sit
+# on each locale's declaration — see SwayLocale::TermRulesRegistry.
+class TermWindow
+  # #began_on is the real day the term started, where Sway watched somebody
+  # take the seat partway through a cycle. Nil means the locale's
+  # own handover day decides, which is what every term did before the column
+  # existed.
+  interface _TermLike
+    def term_start_year: () -> Integer
+
+    def began_on: () -> Date?
+
+    def sway_locale: () -> SwayLocale
+  end
+
+  # #running_on also needs the end year, which the migration-time
+  # CandidateTermYear Struct fed to #covering does not carry — so it is a
+  # separate interface rather than an extra method on _TermLike.
+  #
+  # @lat: [[current-legislator-term#A term carries the day it really began]]
+  interface _BoundedTermLike
+    def term_start_year: () -> Integer
+
+    def term_end_year: () -> Integer
+
+    def began_on: () -> Date?
+
+    def ended_on: () -> Date?
+
+    def sway_locale: () -> SwayLocale
+  end
+
+  def self.convening_date: (SwayLocale sway_locale, Integer term_start_year) -> Date
+
+  def self.begins_on: (_TermLike term) -> Date
+
+  def self.covering: ((Date | ActiveSupport::TimeWithZone) vote_date, Array[_TermLike] candidate_terms) -> _TermLike?
+
+  def self.ends_on: (_BoundedTermLike term) -> Date
+
+  def self.running_on: ((Date | ActiveSupport::TimeWithZone) date, Array[_BoundedTermLike] candidate_terms) -> _BoundedTermLike?
+
+  def self.running_term_start_year: (SwayLocale sway_locale, Integer first_year, Integer years_long, ?(Date | ActiveSupport::TimeWithZone) date) -> Integer
+
+  def self.cycle_start_year: (SwayLocale sway_locale, (Date | ActiveSupport::TimeWithZone) date) -> Integer
+
+  def self.cycle_ends_on: (SwayLocale sway_locale, Integer cycle_start_year) -> Date
+
+  def self.convening_date_sql: (String year_column) -> String
+
+  def self.begins_on_sql: (?String year_column, ?String began_on_column) -> String
+
+  def self.ends_on_sql: (?String year_column, ?String ended_on_column) -> String
+
+  def self.current_term_condition_sql: (?(Date | ActiveSupport::TimeWithZone | String) date) -> String
+
+  private
+
+  def self.cycle_anchor_and_years: (SwayLocale sway_locale) -> [Integer, Integer]
+end

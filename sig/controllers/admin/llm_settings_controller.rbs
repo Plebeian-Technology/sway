@@ -1,0 +1,160 @@
+# Phase 54 Plan 02 (SPEC R8) — Admin::LlmSettingsController.
+#
+# Controller action return types are `() -> untyped` per Sway convention
+# (iter-1 M10 explicit exception to [[feedback_rbs_avoid_untyped]]):
+# `render` / `redirect_to` return Rails-internal types whose shape varies
+# across versions; the existing top-level Sway controller sigs
+# (api_keys_controller.rbs, bills_controller.rbs, application_controller.rbs)
+# all use the same `untyped` return type for action methods. Steep treats
+# the value as "anything goes" at the call boundary, which is what we
+# want — actions are the framework's interface, not ours.
+module Admin
+  class LlmSettingsController < ApplicationController
+    SUPPORTED_MODEL_LABELS: Hash[String, String]
+
+    # The two allowlisted model-name columns.
+    MODEL_FIELDS: Array[Symbol]
+
+    # The boolean columns, whose submitted values arrive as
+    # "1"/"on"/"true" from a checkbox and as real booleans from a JSON client.
+    BOOLEAN_FIELDS: Array[Symbol]
+
+    # Page wording for a boolean column's stored value.
+    BOOLEAN_VALUE_LABELS: Hash[String, String]
+
+    REASONING_FIELDS: Array[Symbol]
+
+    # MODEL_FIELDS + BOOLEAN_FIELDS + REASONING_FIELDS — every column #update may write.
+    WRITABLE_FIELDS: Array[Symbol]
+
+    # Shown for a value outside AdminSetting::SUPPORTED_MODELS.
+    UNRECOGNIZED_MODEL_MESSAGE: String
+
+    # B2-IN-01: last resort for a save that failed for a reason the record did
+    # not describe. Says nothing about choosing a different model.
+    UNSAVEABLE_MESSAGE: String
+
+    # B6-IN-06: what a submit that moves no value is told, instead of
+    # "Model updated."
+    UNCHANGED_MESSAGE: String
+
+    # The notice for a save that moved a model column.
+    MODEL_UPDATED_MESSAGE: String
+
+    # The notice for a save that moved only a non-model column.
+    SETTINGS_UPDATED_MESSAGE: String
+
+    REFRESHED_MESSAGE: String
+    MODEL_ADDED_MESSAGE: String
+    MODEL_REMOVED_MESSAGE: String
+
+    # GET /admin/llm_settings — renders admin/LlmSettings Inertia page.
+    def show: () -> untyped
+
+    # PATCH /admin/llm_settings — applies allowlist-validated model
+    # change to AdminSetting.singleton with provenance capture.
+    def update: () -> untyped
+
+    def refresh_models: () -> untyped
+
+    def add_model: () -> untyped
+
+    def remove_model: () -> untyped
+
+    private
+
+    # Casts every BOOLEAN_FIELDS value to a real boolean, so the
+    # `.to_s` comparisons in #unchanged? and #stale_fields line up with the
+    # column's own "true"/"false" whichever surface the value came from.
+    def cast_booleans: (Hash[Symbol, untyped] fields) -> Hash[Symbol, (String | bool)]
+
+    # "Model updated." only when a model column was submitted.
+    def update_notice: (Hash[Symbol, (String | bool)] submitted) -> String
+
+    # B6-IN-06: read, decide and write inside one #with_lock transaction, so
+    # the value the compare-and-set checks is the value the write replaces.
+    # Returns [:stale | :unchanged | :updated, moved_fields], where the second
+    # slot is always "which submitted fields have moved since the page was
+    # rendered" — necessarily empty on the two non-:stale arms, never nil, so
+    # #render_stale_conflict can keep a non-nilable Hash parameter.
+    def apply_submitted_models: (Hash[Symbol, (String | bool)] submitted) -> [Symbol, Hash[Symbol, String]]
+
+    # B6-IN-06: true when every submitted field already holds the submitted
+    # value, including the vacuous case of no submitted fields at all.
+    def unchanged?: (AdminSetting setting, Hash[Symbol, (String | bool)] submitted) -> bool
+
+    # The dual-format success surface, shared by the updated and unchanged
+    # outcomes; only the operator-facing sentence differs.
+    def render_settings: (notice: String) -> untyped
+
+    # B2-WR-03: per-field compare-and-set. Returns the submitted fields whose
+    # `expected` value no longer matches the row, mapped to the value actually
+    # stored. Empty when the client sent no `expected` block — a JSON/bearer
+    # script has no page state to be stale relative to.
+    def stale_fields: (AdminSetting setting, Hash[Symbol, (String | bool)] submitted) -> Hash[Symbol, String]
+
+    # @lat: [[llm-summaries#Settings live in the database#A refused save names the field that moved]]
+    def render_stale_conflict: (Hash[Symbol, String] stale) -> untyped
+
+    # Names the stored value and the in-page way back to it. Asks
+    # for no browser refresh — no surface in this project may.
+    def stale_conflict_message: (Symbol field, String current_value, ?labels: Hash[String, String]?) -> String
+
+    # The script's twin, naming the column and the GET that returns
+    # the current row.
+    def json_stale_conflict_message: (Symbol field, String current_value) -> String
+
+    # Builds the props Hash the settings page reads, one current-model name per knob.
+    def show_props: () -> {
+      supported_models: Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}],
+      supported_decision_models: Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}],
+      supported_extraction_models: Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}],
+      available_openrouter_models: Array[{id: String, label: String, supports_reasoning: bool}],
+      current_summarization_model: String,
+      current_classification_model: String,
+      current_decision_model: String,
+      current_extraction_model: String,
+      current_summarization_reasoning_effort: String?,
+      current_classification_reasoning_effort: String?,
+      current_summary_batch_enabled: bool,
+      updated_by: {name: String}?,
+      updated_at: String
+    }
+
+    def offered_models: () -> Array[String]
+
+    def offered_models_list: (AdminSetting setting, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+    def offered_extraction_models_list: (AdminSetting setting, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?) -> Array[String]
+
+    def build_catalog_labels: (Array[Llm::OpenRouterModelsService::model] catalog_models, Array[Llm::OpenRouterModelsService::decision_model] decision_catalog_models) -> Hash[String, String]
+
+    def serialized_model_options_payload: (AdminSetting setting, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?labels: Hash[String, String]?) -> {
+      supported_models: Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}],
+      supported_decision_models: Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}],
+      supported_extraction_models: Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}]
+    }
+
+    def label_for_model: (String id, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?labels: Hash[String, String]?) -> String
+
+    def available_openrouter_models: (AdminSetting setting, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?labels: Hash[String, String]?) -> Array[{id: String, label: String, supports_reasoning: bool}]
+
+    # @lat: [[llm-summaries#Settings live in the database#A stored model that is no longer offered]]
+    def model_options: (AdminSetting setting, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?labels: Hash[String, String]?) -> Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}]
+
+    def decision_model_options: (AdminSetting setting, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?labels: Hash[String, String]?) -> Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}]
+
+    def extraction_model_options: (AdminSetting setting, ?catalog_models: Array[Llm::OpenRouterModelsService::model]?, ?decision_catalog_models: Array[Llm::OpenRouterModelsService::decision_model]?, ?labels: Hash[String, String]?) -> Array[{id: String, label: String, selectable: bool, supports_reasoning: bool}]
+
+    # @lat: [[llm-summaries#Settings live in the database]]
+    def rejected_model_errors: (AdminSetting record) -> Hash[Symbol, String]
+
+    # B2-IN-01 sibling: the same choice of sentence for the JSON surface,
+    # which has no field to attach an error to.
+    def json_rejection_message: (AdminSetting record) -> String
+
+    # F-iter1-005: returns a neutral fallback label for provenance when
+    # full_name is blank — never falls back to User#phone (PII).
+    def provenance_display_name: (User) -> String
+  end
+end

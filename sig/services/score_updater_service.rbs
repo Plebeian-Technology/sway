@@ -1,0 +1,27 @@
+class ScoreUpdaterService
+    @user_vote: UserVote
+
+    @user: User?
+
+    @bill: Bill?
+
+    @sway_locale: SwayLocale?
+
+    def self.broadcast_score_refresh: (User user) -> void
+
+    def initialize: (UserVote user_vote) -> void
+
+    def call: -> void
+
+    private
+
+    def user: -> User
+
+    def bill: -> Bill
+
+    def sway_locale: -> SwayLocale
+
+    def bill_anchor_date: -> ActiveSupport::TimeWithZone
+
+    def broadcast_score_refresh: -> void
+end

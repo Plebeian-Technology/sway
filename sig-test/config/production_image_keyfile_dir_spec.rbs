@@ -1,0 +1,13 @@
+# Spec-only declarations for spec/config/production_image_keyfile_dir_spec.rb.
+#
+# Steep cannot see a `let`, so each helper is declared here. `dockerfile` is
+# declared once for both Dockerfile specs, in
+# sig-test/config/sentry_sourcemap_guard_spec.rbs.
+class Object
+  # The Dockerfile's lines with comment-only lines dropped, so a directory
+  # named in prose cannot satisfy the check.
+  def runtime_lines: () -> Array[String]
+
+  # The keyfile's directory relative to Rails.root, e.g. "keys".
+  def keyfile_dir: () -> String
+end

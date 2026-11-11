@@ -1,0 +1,67 @@
+module Scraper
+  module FaradayConnector
+    # creating a Promise for async approach
+    @request: untyped
+
+    @process: untyped
+
+    @connection: untyped
+
+    class ServerError < RuntimeError
+      @response: untyped
+
+      attr_reader response: untyped
+
+      def initialize: (untyped response) -> void
+    end
+
+    class TimeoutError < RuntimeError
+    end
+
+    class ClientError < RuntimeError
+    end
+
+    def request: () -> untyped
+
+    def process: () -> untyped
+
+    def as_json: (?::Hash[untyped, untyped] _options) -> untyped
+
+    def do_request: () -> nil
+
+    def do_process: () -> untyped
+
+    def url: () -> untyped
+
+    def auth: () -> untyped
+
+    def additional_headers: () -> ::Hash[untyped, untyped]
+
+    def content_type: () -> "application/json"
+
+    def request_type: () -> :url_encoded
+
+    def get: (untyped path, ?::Hash[untyped, untyped] params) -> untyped
+
+    def post: (untyped path, ?::Hash[untyped, untyped] body) -> untyped
+
+    def delete: (untyped path, ?::Hash[untyped, untyped] params) -> untyped
+
+    def put: (untyped path, ?::Hash[untyped, untyped] body) -> untyped
+
+    def timeout: () -> 5
+
+    def connection: () -> untyped
+
+    def handle_request: () { (?) -> untyped } -> untyped
+
+    # just an easier way to handle HTTP errors
+    def handle_errors: () { () -> untyped } -> untyped
+
+    def parse_response: (untyped response) -> untyped
+
+    def json_content?: () -> untyped
+
+    def xml_content?: () -> untyped
+  end
+end

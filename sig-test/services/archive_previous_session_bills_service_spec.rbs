@@ -1,0 +1,7 @@
+class ArchivePreviousSessionBillsSpecContext
+  def locale: () -> SwayLocale
+  def session: () -> LegislativeSession
+  def prior_session: () -> LegislativeSession
+  def service: () -> ArchivePreviousSessionBillsService
+  def old_bill: () -> Bill
+end

@@ -1,0 +1,26 @@
+{
+    "data": [],
+    "page": {
+        "page": 1,
+        "last": 1,
+        "count": 0,
+        "limit": 1
+    },
+    "jurisdiction": {
+        "name": "Baltimore City Council",
+        "short_name": "Baltimore",
+        "time_zone": "America/New_York",
+        "locale": "en",
+        "legislation_noun": "ordinance",
+        "body_noun": "council",
+        "body_noun_plural": "councils",
+        "meeting_noun": "hearing",
+        "meeting_noun_plural": "hearings",
+        "person_noun": "councilmember",
+        "person_noun_plural": "councilmembers",
+        "agenda_item_noun": "bill",
+        "agenda_item_noun_plural": "bills",
+        "release_version": "1.0.0",
+        "schema_version": "1.0.0"
+    }
+}

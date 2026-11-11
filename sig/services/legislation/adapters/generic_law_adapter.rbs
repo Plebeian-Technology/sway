@@ -1,0 +1,69 @@
+module Legislation
+  module Adapters
+    class GenericLawAdapter
+      CHARTER_FILE: String
+      USLM_NAMESPACE: String
+      PDF_SECTION_DASHES: Regexp
+      PDF_SECTION_MARKER: Regexp
+      PDF_SECTION_SPACED_MARKER: Regexp
+      PDF_SECTION_START_REGEX: Regexp
+      PDF_STRUCTURAL_DIVIDER: Regexp
+      PDF_ARTICLE_DIVIDER: Regexp
+      STATUS_NOTE_REGEX: Regexp
+      EFFECTIVE_BANNER_REGEX: Regexp
+
+      @config: Hash[Symbol, untyped]
+      @engine: Symbol
+      @retrieval: Symbol
+      @parsing: Symbol
+      @base_url: String?
+      @connection: Faraday::Connection?
+      @service: untyped
+      @parsed_sections: Integer
+      @variant_titles: Hash[String, Array[String]]
+      @sway_locale: SwayLocale?
+
+      attr_reader config: Hash[Symbol, untyped]
+      attr_reader engine: Symbol
+      attr_reader retrieval: Symbol
+      attr_reader parsing: Symbol
+      attr_reader base_url: String?
+      attr_reader connection: Faraday::Connection?
+      attr_reader service: untyped
+
+      def initialize: (?(Hash[Symbol | String, untyped] | SwayLocale | SwayLocale::JurisdictionRules | untyped)? config_or_locale, ?connection: Faraday::Connection?, ?service: untyped, **untyped kwargs) -> void
+
+      def load_corpus: (
+        run: LegislationPipelineRun?,
+        sway_locale: SwayLocale,
+        law_root: Pathname,
+        ?service: FetchLawService?
+      ) -> FetchLawService::stats_payload
+
+      private
+
+      def load_pdf_corpus: (sway_locale: SwayLocale, law_root: Pathname) -> FetchLawService::stats_payload
+      def resolve_configured_local_dir: (Pathname law_root) -> Pathname
+      def configured_raw_root: (Pathname law_root) -> Pathname
+      def parse_pdf_article: (String text, String article, Pathname path) -> Array[Hash[Symbol, String]]
+      def strip_pdf_noise?: (String line) -> bool
+      def append_pdf_section: (Array[Hash[Symbol, String]] sections, Hash[Symbol, untyped]? current, String article, Pathname path, ?String? article_heading) -> bool
+      def canonical_pdf_section: (String value) -> String
+      def normalize_pdf_heading: (String? value) -> String
+      def normalize_pdf_body: (Array[String] lines) -> String
+      def persist_pdf_sections: (Array[Hash[Symbol, String]] sections, Set[String] article_codes, SwayLocale sway_locale, Pathname law_root) -> FetchLawService::stats_payload
+      def extract_config: (untyped input) -> Hash[Symbol, untyped]
+      def load_raw_corpus: (sway_locale: SwayLocale, law_root: Pathname) -> FetchLawService::stats_payload
+      def ingest_xml: (Pathname path, Pathname law_root, SwayLocale sway_locale, Hash[String, Integer] stats, Hash[String, Hash[String, String]] section_index, Set[String] seen_articles) -> void
+      def uslm_file?: (Pathname | String path) -> bool
+      def ingest_uslm_file: (Pathname path, Pathname law_root, SwayLocale sway_locale, Hash[String, Integer] stats, Hash[String, Hash[String, String]] section_index, Set[String] seen_titles) -> void
+      def statutory_body: (untyped section_node) -> String
+      def ingest_json: (Pathname path, Pathname law_root, SwayLocale sway_locale, Hash[String, Integer] stats, Hash[String, Hash[String, String]] section_index, Set[String] seen_articles) -> void
+      def record_section: (String article, String? section, String title, String body, Pathname law_root, SwayLocale sway_locale, Hash[String, Integer] stats, Hash[String, Hash[String, String]] section_index, ?status: String) -> void
+      def load_akoma_ntoso_corpus: (run: LegislationPipelineRun?, sway_locale: SwayLocale, law_root: Pathname, ?service: FetchLawService?) -> FetchLawService::stats_payload
+      def load_baltimore_corpus: (run: LegislationPipelineRun?, sway_locale: SwayLocale, law_root: Pathname, ?service: FetchLawService?) -> FetchLawService::stats_payload
+    end
+  end
+end
+
+GenericLawAdapter: singleton(Legislation::Adapters::GenericLawAdapter)

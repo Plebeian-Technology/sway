@@ -1,0 +1,25 @@
+# RBS sig for Sway::Release (SWAY release tracking).
+#
+# Mirrors lib/sway/release.rb. Reads the build-time ENV baked into the image by
+# the Dockerfile (values computed in scripts/deploy.sh). Every accessor is
+# nullable — dev/test leave the deploy-time ENV unset.
+module Sway
+  module Release
+    SHORT_SHA_CHARS: Integer
+    GIT_TIMEOUT_SECONDS: Integer
+
+    def self.version: () -> Integer?
+    def self.sha: () -> String?
+    def self.short_sha: () -> String?
+    def self.previous_sha: () -> String?
+    def self.previous_short_sha: () -> String?
+    def self.deployed_at: () -> Time?
+    # nil when the image was built from a clean tree.
+    def self.uncommitted_digest: () -> String?
+    # nil means no deploy recorded it, which is not the same as a clean tree.
+    def self.built_from_committed_tree?: () -> bool?
+    def self.to_sway_json: () -> Hash[Symbol, (Integer | String | bool | nil)]
+
+    def self.git: (*String args) -> String?
+  end
+end

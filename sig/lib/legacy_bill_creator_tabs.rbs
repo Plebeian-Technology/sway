@@ -1,0 +1,3 @@
+module LegacyBillCreatorTabs
+  URL_SEGMENT_FOR: Hash[String, String]
+end

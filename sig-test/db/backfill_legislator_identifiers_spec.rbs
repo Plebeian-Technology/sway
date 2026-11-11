@@ -1,0 +1,19 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class BackfillLegislatorIdentifiers < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  def locales_holding_legislators: () -> Array[SwayLocale]
+
+  def legislators_in: (SwayLocale sway_locale) -> Array[Legislator]
+
+  def identity_for: (Legislator legislator, Symbol identified_by) -> LegislatorIdentity?
+
+  def published_id_source: (SwayLocale sway_locale) -> String
+
+  def row_already_identified_as: (SwayLocale sway_locale, LegislatorIdentity identity, Legislator legislator) -> Legislator?
+
+  def legislator_already_holds: (SwayLocale sway_locale, LegislatorIdentity identity, Legislator legislator) -> bool
+end

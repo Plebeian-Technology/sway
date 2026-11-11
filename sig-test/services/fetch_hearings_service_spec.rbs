@@ -1,0 +1,18 @@
+# Spec-only helper module for FetchHearingsService specs (Phase 52 Plan 07).
+module FetchHearingsServiceSpecHelpers
+  HEARINGS_ROOT: String
+  BILLS_RAW_ROOT: String
+  ATTACHMENTS_ROOT: String
+  CASSETTE_DIR: String
+  LEGISTAR_BASE_URL: String
+  MATTER_ID: Integer
+
+  # Takes the BILL, not its external_id alone: metadata.json now sits at
+  # bills/raw/<sway_locale>/<external_id>/, because a Bill is unique on
+  # (external_id, sway_locale_id) together.
+  def self.write_bill_metadata: (Bill bill, Integer matter_id) -> void
+
+  # Where #write_artifact puts one bill's hearings JSON, under its own
+  # jurisdiction's directory.
+  def self.hearings_path: (Bill bill) -> Pathname
+end

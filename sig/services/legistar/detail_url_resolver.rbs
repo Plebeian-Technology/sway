@@ -1,0 +1,31 @@
+module Legistar
+  class DetailUrlResolver
+    type matter_id_input = Integer | String | nil
+
+    DEFAULT_HOST: String
+    GATEWAY_PATH: String
+    REDIRECT_STATUSES: Array[Integer]
+    ID_MAX: Integer
+    RETRY_METHODS: Array[Symbol]
+    RETRY_OPTIONS: Sway::FaradayStack::retry_options
+
+    @host: String
+    @connection: Faraday::Connection
+    @http_method: Symbol
+    @cache: Hash[Integer, String]
+
+    def self.resolve: (matter_id_input matter_id, ?host: String, ?connection: Faraday::Connection?, ?http_method: Symbol) -> String?
+
+    def initialize: (?host: String, ?connection: Faraday::Connection?, ?http_method: Symbol) -> void
+
+    def resolve: (matter_id_input matter_id) -> String?
+
+    private
+
+    def execute_resolution: (Integer coerced_id) -> String?
+    def coerce_id: (matter_id_input value) -> Integer?
+    def valid_host?: (String host) -> bool
+    def valid_destination_host?: (String? host) -> bool
+    def valid_detail_url?: (String url) -> bool
+  end
+end

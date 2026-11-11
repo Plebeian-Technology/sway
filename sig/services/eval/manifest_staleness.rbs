@@ -1,0 +1,35 @@
+# RBS sig for Eval::ManifestStaleness — see app/services/eval/manifest_staleness.rb.
+module Eval
+  class ManifestStaleness
+    type entry = Hash[String, untyped]
+
+    class StaleManifestError < StandardError
+    end
+
+    class Result
+      attr_reader checked_entries: Integer
+      attr_reader builder_content_digest: String
+
+      def initialize: (checked_entries: Integer, builder_content_digest: String) -> void
+    end
+
+    WATCHED_FILES: Array[String]
+    REDUMP_INSTRUCTION: String
+
+    def self.call: (manifest_path: Pathname) -> Result
+
+    @manifest_path: Pathname
+
+    def initialize: (manifest_path: Pathname) -> void
+    def call: () -> Result
+
+    private
+
+    attr_reader manifest_path: Pathname
+
+    def load_entries: () -> Hash[String, entry]
+    def assert_watch_list!: (String key, entry entry) -> void
+    def assert_digest!: (String key, entry entry, String current_digest) -> void
+    def moved_files: (entry entry) -> Array[String]
+  end
+end

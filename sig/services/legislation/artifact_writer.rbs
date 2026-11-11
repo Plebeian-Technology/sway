@@ -1,0 +1,5 @@
+module Legislation
+  class ArtifactWriter
+    def self.write: (String | Pathname path, String content, stage: String | Symbol, ?atomic: bool) -> void
+  end
+end

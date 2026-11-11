@@ -1,0 +1,7 @@
+# The vendored core RBS declares IO#internal_encoding and omits the real,
+# public IO#external_encoding. Sway::Subprocess.reencode reads it to restore a
+# drained pipe's encoding after IO#read(length) hands back ASCII-8BIT.
+# @lat: [[rbs-signatures#Why a hand-written signature can outrank the standard library's]]
+class IO
+    def external_encoding: () -> Encoding?
+end

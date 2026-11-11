@@ -1,0 +1,697 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PasskeyManagementScreen (Phase 37 Plan 05; add a passkey) renders empty state when API returns no passkeys 1`] = `
+<RCTScrollView
+  className="flex-1 bg-dominant-light dark:bg-dominant-dark"
+  contentInsetAdjustmentBehavior="automatic"
+  testID="passkey-mgmt-screen"
+>
+  <View>
+    <View
+      className="p-6"
+    >
+      <Text
+        className="text-2xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+      >
+        Passkey Management
+      </Text>
+      <Text
+        className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-2"
+      >
+        Passkeys let you sign in without typing a code.
+      </Text>
+    </View>
+    <View
+      className="px-4 pb-2"
+      testID="add-passkey"
+    >
+      <View
+        accessible={false}
+        className="bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark rounded-card px-4 py-4 gap-3"
+        style={
+          [
+            {
+              "elevation": 3,
+              "shadowColor": "#000000",
+              "shadowOffset": {
+                "height": 3,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 6,
+            },
+            null,
+            undefined,
+          ]
+        }
+      >
+        <View
+          className="p-4 gap-3"
+        >
+          <Text
+            className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+          >
+            Add this device so you can sign in on it without your phone. We'll text a code to confirm it's you.
+          </Text>
+          <View
+            accessibilityLabel="Add a passkey"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="rounded-xl px-4 py-2 items-center justify-center bg-accent-light dark:bg-accent-dark border border-accent-light dark:border-accent-dark"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "minHeight": 44,
+                  "opacity": 1,
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000000",
+                  "shadowOffset": {
+                    "height": 3,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.1,
+                  "shadowRadius": 6,
+                },
+                null,
+                undefined,
+              ]
+            }
+            testID="add-passkey-start"
+          >
+            <View
+              className="flex-row items-center justify-center gap-2"
+            >
+              <View
+                testID="lucide-keyround"
+              />
+              <Text
+                className="text-primary-foreground-light dark:text-primary-foreground-dark text-sm font-open-sans-semibold"
+              >
+                Add a passkey
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+    <View
+      accessibilityLabel="No passkeys on this account."
+      className="items-center py-12 gap-2"
+      testID="passkey-empty"
+    >
+      <View
+        className="mb-2"
+      >
+        <View
+          testID="lucide-inbox"
+        />
+      </View>
+      <Text
+        className="text-center text-xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+      >
+        No passkeys on this account.
+      </Text>
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`PasskeyManagementScreen (Phase 37 Plan 05; add a passkey) renders error state when API rejects 1`] = `
+<RCTScrollView
+  className="flex-1 bg-dominant-light dark:bg-dominant-dark"
+  contentInsetAdjustmentBehavior="automatic"
+  testID="passkey-mgmt-screen"
+>
+  <View>
+    <View
+      className="p-6"
+    >
+      <Text
+        className="text-2xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+      >
+        Passkey Management
+      </Text>
+      <Text
+        className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-2"
+      >
+        Passkeys let you sign in without typing a code.
+      </Text>
+    </View>
+    <View
+      className="px-4 pb-2"
+      testID="add-passkey"
+    >
+      <View
+        accessible={false}
+        className="bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark rounded-card px-4 py-4 gap-3"
+        style={
+          [
+            {
+              "elevation": 3,
+              "shadowColor": "#000000",
+              "shadowOffset": {
+                "height": 3,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 6,
+            },
+            null,
+            undefined,
+          ]
+        }
+      >
+        <View
+          className="p-4 gap-3"
+        >
+          <Text
+            className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+          >
+            Add this device so you can sign in on it without your phone. We'll text a code to confirm it's you.
+          </Text>
+          <View
+            accessibilityLabel="Add a passkey"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="rounded-xl px-4 py-2 items-center justify-center bg-accent-light dark:bg-accent-dark border border-accent-light dark:border-accent-dark"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "minHeight": 44,
+                  "opacity": 1,
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000000",
+                  "shadowOffset": {
+                    "height": 3,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.1,
+                  "shadowRadius": 6,
+                },
+                null,
+                undefined,
+              ]
+            }
+            testID="add-passkey-start"
+          >
+            <View
+              className="flex-row items-center justify-center gap-2"
+            >
+              <View
+                testID="lucide-keyround"
+              />
+              <Text
+                className="text-primary-foreground-light dark:text-primary-foreground-dark text-sm font-open-sans-semibold"
+              >
+                Add a passkey
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+    <Text
+      className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark p-6"
+      testID="passkey-error"
+    >
+      boom
+    </Text>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`PasskeyManagementScreen (Phase 37 Plan 05; add a passkey) renders loaded state with two rows (one with last_used_at, one without) 1`] = `
+<RCTScrollView
+  className="flex-1 bg-dominant-light dark:bg-dominant-dark"
+  contentInsetAdjustmentBehavior="automatic"
+  testID="passkey-mgmt-screen"
+>
+  <View>
+    <View
+      className="p-6"
+    >
+      <Text
+        className="text-2xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+      >
+        Passkey Management
+      </Text>
+      <Text
+        className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-2"
+      >
+        Passkeys let you sign in without typing a code.
+      </Text>
+    </View>
+    <View
+      className="px-4 pb-2"
+      testID="add-passkey"
+    >
+      <View
+        accessible={false}
+        className="bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark rounded-card px-4 py-4 gap-3"
+        style={
+          [
+            {
+              "elevation": 3,
+              "shadowColor": "#000000",
+              "shadowOffset": {
+                "height": 3,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 6,
+            },
+            null,
+            undefined,
+          ]
+        }
+      >
+        <View
+          className="p-4 gap-3"
+        >
+          <Text
+            className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+          >
+            Add this device so you can sign in on it without your phone. We'll text a code to confirm it's you.
+          </Text>
+          <View
+            accessibilityLabel="Add a passkey"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="rounded-xl px-4 py-2 items-center justify-center bg-accent-light dark:bg-accent-dark border border-accent-light dark:border-accent-dark"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "minHeight": 44,
+                  "opacity": 1,
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000000",
+                  "shadowOffset": {
+                    "height": 3,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.1,
+                  "shadowRadius": 6,
+                },
+                null,
+                undefined,
+              ]
+            }
+            testID="add-passkey-start"
+          >
+            <View
+              className="flex-row items-center justify-center gap-2"
+            >
+              <View
+                testID="lucide-keyround"
+              />
+              <Text
+                className="text-primary-foreground-light dark:text-primary-foreground-dark text-sm font-open-sans-semibold"
+              >
+                Add a passkey
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+    <View
+      className="px-4"
+    >
+      <View
+        accessible={false}
+        className="bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark rounded-card px-4 py-4 gap-3"
+        style={
+          [
+            {
+              "elevation": 3,
+              "shadowColor": "#000000",
+              "shadowOffset": {
+                "height": 3,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 6,
+            },
+            null,
+            undefined,
+          ]
+        }
+      >
+        <View
+          testID="passkey-row-1"
+        >
+          <View
+            accessibilityLabel="iPhone 15"
+            accessibilityRole="none"
+            className="bg-card-light dark:bg-card-dark border-b border-border-soft-light dark:border-border-soft-dark flex-row items-center justify-between px-4 py-3"
+            style={
+              {
+                "minHeight": 44,
+              }
+            }
+          >
+            <View
+              className="flex-row items-center gap-3 flex-1"
+            >
+              <View
+                className="flex-1"
+              >
+                <Text
+                  className="text-base font-open-sans text-foreground-light dark:text-foreground-dark"
+                >
+                  iPhone 15
+                </Text>
+              </View>
+            </View>
+            <View
+              className="flex-row items-center gap-2"
+            />
+          </View>
+          <View
+            className="px-4 pb-3"
+          >
+            <Text
+              className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+            >
+              Device: iCloud Keychain (Managed)
+            </Text>
+            <Text
+              className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+              style={
+                {
+                  "fontVariant": [
+                    "tabular-nums",
+                  ],
+                }
+              }
+            >
+              Created 1/15/2026
+            </Text>
+            <Text
+              className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+              style={
+                {
+                  "fontVariant": [
+                    "tabular-nums",
+                  ],
+                }
+              }
+            >
+              Last used 4/20/2026
+            </Text>
+          </View>
+        </View>
+        <View
+          testID="passkey-row-2"
+        >
+          <View
+            accessibilityLabel="MacBook Air"
+            accessibilityRole="none"
+            className="bg-card-light dark:bg-card-dark border-b border-border-soft-light dark:border-border-soft-dark flex-row items-center justify-between px-4 py-3"
+            style={
+              {
+                "minHeight": 44,
+              }
+            }
+          >
+            <View
+              className="flex-row items-center gap-3 flex-1"
+            >
+              <View
+                className="flex-1"
+              >
+                <Text
+                  className="text-base font-open-sans text-foreground-light dark:text-foreground-dark"
+                >
+                  MacBook Air
+                </Text>
+              </View>
+            </View>
+            <View
+              className="flex-row items-center gap-2"
+            />
+          </View>
+          <View
+            className="px-4 pb-3"
+          >
+            <Text
+              className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+            >
+              Device: Unknown device
+            </Text>
+            <Text
+              className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+              style={
+                {
+                  "fontVariant": [
+                    "tabular-nums",
+                  ],
+                }
+              }
+            >
+              Created 2/1/2026
+            </Text>
+            <Text
+              className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+              style={
+                {
+                  "fontVariant": [
+                    "tabular-nums",
+                  ],
+                }
+              }
+            >
+              Never used
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`PasskeyManagementScreen (Phase 37 Plan 05; add a passkey) renders loading indicator on mount 1`] = `
+<RCTScrollView
+  className="flex-1 bg-dominant-light dark:bg-dominant-dark"
+  contentInsetAdjustmentBehavior="automatic"
+  testID="passkey-mgmt-screen"
+>
+  <View>
+    <View
+      className="p-6"
+    >
+      <Text
+        className="text-2xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+      >
+        Passkey Management
+      </Text>
+      <Text
+        className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-2"
+      >
+        Passkeys let you sign in without typing a code.
+      </Text>
+    </View>
+    <View
+      className="px-4 pb-2"
+      testID="add-passkey"
+    >
+      <View
+        accessible={false}
+        className="bg-card-light dark:bg-card-dark border border-border-soft-light dark:border-border-soft-dark rounded-card px-4 py-4 gap-3"
+        style={
+          [
+            {
+              "elevation": 3,
+              "shadowColor": "#000000",
+              "shadowOffset": {
+                "height": 3,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 6,
+            },
+            null,
+            undefined,
+          ]
+        }
+      >
+        <View
+          className="p-4 gap-3"
+        >
+          <Text
+            className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+          >
+            Add this device so you can sign in on it without your phone. We'll text a code to confirm it's you.
+          </Text>
+          <View
+            accessibilityLabel="Add a passkey"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="rounded-xl px-4 py-2 items-center justify-center bg-accent-light dark:bg-accent-dark border border-accent-light dark:border-accent-dark"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "minHeight": 44,
+                  "opacity": 1,
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000000",
+                  "shadowOffset": {
+                    "height": 3,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.1,
+                  "shadowRadius": 6,
+                },
+                null,
+                undefined,
+              ]
+            }
+            testID="add-passkey-start"
+          >
+            <View
+              className="flex-row items-center justify-center gap-2"
+            >
+              <View
+                testID="lucide-keyround"
+              />
+              <Text
+                className="text-primary-foreground-light dark:text-primary-foreground-dark text-sm font-open-sans-semibold"
+              >
+                Add a passkey
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+    <View
+      className="p-6"
+    >
+      <ActivityIndicator
+        accessibilityLabel="Loading passkeys"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;

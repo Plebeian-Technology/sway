@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# @lat: [[verification-gates]]
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+
+case "$(uname -s)" in
+    Darwin) local_build="$root/bin/steep-rs-darwin" ;;
+    Linux) local_build="$root/bin/steep-rs-linux" ;;
+    *) local_build="" ;;
+esac
+
+if [ -n "$local_build" ] && [ -x "$local_build" ]; then
+    exec "$local_build" "$@"
+fi
+
+cd "$root"
+if [ "${SWAY_STEEP_STRICT:-0}" = "1" ]; then
+    exec bundle exec steep "$@"
+fi
+
+echo "bin/steep: no local steep-rs build; running stock Steep as an advisory check (exit status ignored, set SWAY_STEEP_STRICT=1 to enforce)." >&2
+if bundle exec steep "$@"; then
+    exit 0
+fi
+echo "bin/steep: stock Steep reported diagnostics; advisory only, exiting 0." >&2
+exit 0

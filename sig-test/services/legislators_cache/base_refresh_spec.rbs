@@ -1,0 +1,26 @@
+# Spec-only concrete subclass for testing the abstract BaseRefresh contract.
+# Lives in sig-test (not sig) because it is only used from spec files.
+module LegislatorsCache
+  class TestRefresh < BaseRefresh
+    def call: () -> BaseRefresh::Result
+  end
+end
+
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def baseline: () -> Tempfile
+
+  def baseline_path: () -> String
+
+  def baseline_file: () -> Tempfile
+
+  def output_file: () -> Tempfile
+
+  def stored_member: () -> Hash[String, untyped]
+
+  def refresh_service_under_test: () -> LegislatorsCache::BaseRefresh
+
+  def person: () -> Hash[String, String]
+
+  def stored: () -> Array[Hash[String, untyped]]
+end

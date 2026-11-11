@@ -1,0 +1,35 @@
+# RBS signature for FetchLawService::AkomaNtosoParser.
+class FetchLawService
+  class AkomaNtosoParser
+    type article_payload = { num: String, heading: String }
+    type section_payload = {
+      key: String,
+      article: String,
+      section: String,
+      title: String,
+      body: String,
+      source_path: String,
+    }
+    type parse_output = {
+      articles: Array[article_payload],
+      sections: Array[section_payload],
+    }
+
+    # ME3-04: 50MB defensive cap. The constructor raises StageError above this.
+    MAX_XML_BYTES: Integer
+
+    @xml_path: Pathname
+    @corpus_type: String
+    @doc: Nokogiri::XML::Document
+
+    def initialize: (Pathname xml_path, corpus_type: String) -> void
+    def parse: () -> parse_output
+
+    private
+
+    def slugify_article: (String num_text) -> String
+    def slugify_section: (String num_text) -> String
+    def render_section_md: (Nokogiri::XML::Node section_node, String article_label, String sec_num, String sec_heading) -> String
+    def text_of: (Nokogiri::XML::Node node, String name) -> String
+  end
+end

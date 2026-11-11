@@ -1,0 +1,5 @@
+# Spec-only declarations for spec/lib/sway_param_names_lint_spec.rb.
+class Object
+  def write_temp_registry: (String dir, String content) -> String
+  def write_feature_registry: (String dir, features: Hash[String, Array[String]], ?global_ambient: Array[String]) -> String
+end

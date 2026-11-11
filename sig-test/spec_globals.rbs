@@ -1,0 +1,547 @@
+GOOGLE_MAPS_API_KEY_REGEX: Regexp
+
+CONGRESS: Hash[Symbol, String]
+
+MARYLAND: Hash[Symbol, String]
+
+module ActionMailer
+    class Preview
+    end
+end
+
+class Preview < ActionMailer::Preview
+end
+
+class UserLegislatorEmailMailerPreview < ActionMailer::Preview
+end
+
+module Capybara
+    module Selenium
+        class Driver
+        end
+    end
+
+    def self.using_wait_time: (untyped) { () -> untyped } -> untyped
+end
+
+module StateMachines
+  class InvalidTransition < StandardError
+  end
+end
+
+class SeedBill
+  MAX_SEEDED_BILLS: Integer
+  DEFAULT_MAX_SEEDED_BILLS: Integer
+
+  class ServiceUnreachableError < StandardError
+  end
+
+  def self.run: (*untyped) -> untyped
+  def self.run_pipeline!: (*untyped) -> untyped
+  def self.sync_to_sway!: (*untyped) -> untyped
+  def self.await_terminal!: (*untyped) -> untyped
+  def self.resolve_max_seeded_bills: (untyped raw) -> Integer
+end
+
+class SeedLegislator
+  # db/seeds/models/legislator.rb is not under a `check` target (only
+  # db/seeds' consumers — specs — are checked), so its full instance API is
+  # declared here rather than relying on the real .rb source.
+  class MissingRegionCode < StandardError
+  end
+
+  class NonStateRegionCode < StandardError
+  end
+
+  # Raised when a single JSON row cannot be seeded (e.g. a required, NOT NULL
+  # field is missing). Carries the locale + external_id so the offending row
+  # is identifiable instead of aborting the run with an opaque DB/KeyError.
+  class SeedError < StandardError
+  end
+
+  attr_reader prepared: untyped
+  attr_reader sway_locale: untyped
+
+  def initialize: (untyped json, untyped sway_locale, ?force: bool, ?locale_had_legislators: bool, ?official_service_result: untyped) -> void
+  def self.run: (*untyped) -> untyped
+  def self.read_legislators: (untyped sway_locale) -> untyped
+  def self.district_name: (untyped region_code, untyped district) -> untyped
+  def self.official_service_result_for: (untyped sway_locale) -> untyped
+  def self.retire_unevidenced_executive_terms!: (untyped sway_locale, official_service_result: untyped, executive_preparers: untyped) -> untyped
+  def seed: () -> untyped
+  def legislator: () -> untyped
+end
+
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class SeedLegislatorTerms
+  @legislator: Legislator
+  @prepared: untyped
+  @first_sighting: bool
+  @observed_on: Date
+  @stored_terms: Array[LegislatorTerm]?
+  @proven_by_start_year: Hash[Integer, Hash[Symbol, untyped]]?
+
+  def initialize: (Legislator legislator, untyped prepared, ?first_sighting: bool, ?observed_on: Date) -> void
+  def call: () -> void
+
+  private
+
+  attr_reader legislator: Legislator
+  attr_reader prepared: untyped
+  attr_reader first_sighting: bool
+  attr_reader observed_on: Date
+
+  def add_missing_terms!: () -> void
+  def current_term_attrs: () -> Hash[Symbol, untyped]
+  def create_term!: (Hash[Symbol, untyped] term_attrs) -> void
+  def stamp_observed_start!: (LegislatorTerm term) -> void
+  def correct_terms!: () -> void
+  def retire_unproven_terms!: () -> void
+  def stored_terms: () -> Array[LegislatorTerm]
+  def proven_by_start_year: () -> Hash[Integer, Hash[Symbol, untyped]]
+end
+
+# db/seeds/seed_preparers/legislators/{base,congress_dot_gov,open_states,sway}.rb
+# — same not-under-`check` situation as SeedLegislator above. Declared
+# concretely (not `def self.new: (*untyped) -> untyped`) so
+# seed_legislator_spec.rb's direct preparer-level specs (term_start_year /
+# term_end_year / authoritative_term? / etc.) type-check against real return
+# shapes rather than swallowing everything into untyped.
+module SeedPreparers
+  module Legislators
+    class Base
+      attr_reader json: untyped
+      attr_reader sway_locale: untyped
+
+      def initialize: (untyped json, untyped sway_locale) -> void
+      def district: () -> untyped
+      def phone: () -> untyped
+      def email: () -> untyped
+      def twitter: () -> untyped
+      def link: () -> untyped
+      def external_id: () -> untyped
+      def identity: () -> LegislatorIdentity?
+      def current_member?: () -> bool
+      def title: () -> untyped
+      def party: () -> untyped
+      def first_name: () -> untyped
+      def last_name: () -> untyped
+      def country: () -> String
+      def region_code: () -> untyped
+      def postal_code: () -> untyped
+      def photo_url: () -> untyped
+      def term_start_year: () -> Integer
+      def term_end_year: () -> Integer
+      def authoritative_term?: () -> bool
+      def proven_terms: () -> Array[Hash[Symbol, untyped]]
+      def terms_from_history?: () -> bool
+      def executive?: () -> bool
+      def congress?: () -> bool
+    end
+
+    class CongressDotGov < Base
+      def potus?: () -> bool
+      def executive?: () -> bool
+      def current_member?: () -> bool
+      def terms_from_history?: () -> bool
+      def current_office_identity: () -> String?
+    end
+
+    class OpenStates < Base
+      MARYLAND_TERM_ANCHOR_YEAR: Integer
+      MARYLAND_TERM_CYCLE_LENGTH: Integer
+    end
+
+    class Sway < Base
+      BALTIMORE_TERM_ANCHOR_YEAR: Integer
+      BALTIMORE_TERM_CYCLE_LENGTH: Integer
+    end
+  end
+end
+
+# spec/config/recurring_spec.rb — the `fugit` gem parses solid_queue's
+# recurring.yml cron schedules. No RBS collection entry exists for it, so a
+# minimal shim covers the two call sites the spec exercises.
+module Fugit
+  class Cron
+    def next_time: (*untyped) -> untyped
+  end
+
+  # Returns untyped (not `Fugit::Cron?`) — the spec dereferences the parsed
+  # result directly after an `expect(...).not_to be_nil` assertion, with no
+  # narrowing annotation; a nilable return here would just relocate the
+  # NoMethod error onto `parsed.next_time` instead of resolving it.
+  def self.parse: (untyped) -> untyped
+end
+
+# spec/migrations/add_term_columns_to_legislators_spec.rb — migration class
+# constructed and run directly via .new.up/.new.down. Same pattern as
+# AddSourceToLegislatorVotes below.
+class AddTermColumnsToLegislators < ActiveRecord::Migration::Current
+  def up: () -> void
+  def down: () -> void
+end
+
+# spec/models/category_spec.rb — the curated 20-category name list is
+# assigned as a bare constant inside `describe "seed", :seed do ... end`,
+# which (per Ruby constant-lookup rules for `do...end` blocks) resolves to
+# the top-level lexical scope, not the RSpec example-group class.
+EXPECTED_CATEGORY_NAMES: Array[String]
+
+class SeedSwayLocale
+  SAMPLE_ADDRESSES: Hash[String, Hash[Symbol, untyped]]
+
+  def self.run: (*untyped) -> untyped
+  def self.read_locales: () -> untyped
+end
+
+class SeedLlmBillSummarizationInstruction
+  DESCRIPTIONS: Hash[String, String]
+
+  def self.run: (?untyped locales, ?force: bool) -> untyped
+  def seed: (SwayLocale locale, ?force: bool) -> LlmBillSummarizationInstruction?
+end
+
+class SeedSwayOrganization
+  NAME: String
+  ICON_URL: String
+
+  def self.run: (untyped locales) -> Array[Organization]
+end
+
+class SeedDevelopmentUserGraph
+  def self.run: (*untyped) -> untyped
+end
+
+module Seedable
+  # What the seeder's guard needs of a record: whether it has ever been saved,
+  # and the two times it compares — when a seed last wrote it, and when the row
+  # last changed. A row edited by hand since the last seed is left alone.
+  interface _Stampable
+    def new_record?: () -> bool
+
+    def last_seeded_at: () -> (Time | ActiveSupport::TimeWithZone)?
+
+    def updated_at: () -> (Time | ActiveSupport::TimeWithZone)?
+  end
+
+  def seed_or_skip?: (_Stampable record, ?force: bool) -> bool
+end
+
+module ProgressBar
+  class Base
+    attr_accessor total: untyped
+    attr_accessor progress: untyped
+    attr_accessor title: untyped
+
+    def increment: () -> untyped
+    def finish: () -> untyped
+    def stop: () -> untyped
+  end
+
+  def self.create: (**untyped kwargs) -> ProgressBar::Base
+end
+
+module VCR
+  def self.configure: () { (untyped) -> untyped } -> untyped
+  def self.use_cassette: (String name, **untyped opts) { () -> untyped } -> untyped
+  def self.insert_cassette: (String name, **untyped opts) -> untyped
+  def self.eject_cassette: () -> untyped
+
+  # B2-WR-07: live_llm_network_gate_spec.rb asserts the ignored-host half of
+  # the opt-in directly, because VCR refuses an uncassetted request BEFORE
+  # WebMock's allowlist is consulted — so WebMock's half alone proves nothing.
+  def self.request_ignorer: () -> VCR::RequestIgnorer
+
+  # E-W-5: vcr_credential_filter_spec.rb runs VCR's OWN before_record hook
+  # chain — `configuration.invoke_hook(:before_record, interaction.hook_aware,
+  # cassette)`, the same call VCR::Cassette makes on the way to disk — rather
+  # than a re-implementation of it, because a filter that is registered but
+  # never invoked passes a mock and leaks in production. So the structs and
+  # configuration surface that spec touches is declared here.
+  #
+  # Member names, order and arity follow vcr-6.4.0's lib/vcr/structs.rb (each
+  # of these is a Struct.new(...) subclass with a normalizing #initialize).
+  # Members no spec reads — Response#adapter_metadata, HTTPInteraction
+  # #recorded_at — are left undeclared rather than guessed at.
+  def self.configuration: () -> VCR::Configuration
+
+  # Struct.new(:method, :uri, :body, :headers) / (:status, :headers, :body,
+  # ...): a header set is a multimap, one Array of values per field name.
+  type header_map = Hash[String, Array[String]]
+
+  class Configuration
+    # VCR::Hooks#invoke_hook. Declared at the :before_record shape, which is
+    # the one the suite drives. `-> void`: the value is the collected return
+    # of every registered hook lambda — the hook author's business, and not
+    # part of the surface this shim exists to pin.
+    def invoke_hook: (Symbol hook_type, VCR::HTTPInteraction::HookAware interaction, VCR::Cassette cassette) -> void
+
+    # The registration half of the same feature: VcrCredentialFilter.apply!
+    # calls this once per provisioned credential. `filter_sensitive_data` is
+    # the documented spelling and an alias of #define_cassette_placeholder in
+    # the gem (configuration.rb:237), so both are declared.
+    #
+    # The block is optional-arity at runtime (VCR#call_block dispatches on
+    # Proc#arity), and our call sites take none; the yielded HookAware is
+    # declared optional to match. A nil return is inert — VCR gsubs on the
+    # stringified value and HookAware#filter! no-ops on "".
+    def define_cassette_placeholder: (String placeholder, ?Symbol? tag) { (?VCR::HTTPInteraction::HookAware interaction) -> String? } -> void
+
+    alias filter_sensitive_data define_cassette_placeholder
+  end
+
+  class Request
+    def initialize: (Symbol method, String uri, ?String? body, ?VCR::header_map? headers) -> void
+    def method: () -> Symbol
+    def uri: () -> String
+    def body: () -> String?
+    def headers: () -> VCR::header_map?
+  end
+
+  class ResponseStatus
+    def initialize: (Integer code, ?String? message) -> void
+    def code: () -> Integer
+    def message: () -> String?
+  end
+
+  class Response
+    def initialize: (VCR::ResponseStatus status, ?VCR::header_map? headers, ?String? body, ?String? http_version) -> void
+    def status: () -> VCR::ResponseStatus
+    def headers: () -> VCR::header_map?
+    def body: () -> String?
+  end
+
+  class HTTPInteraction
+    def initialize: (VCR::Request request, VCR::Response response, ?Time recorded_at) -> void
+    def request: () -> VCR::Request
+    def response: () -> VCR::Response
+    def hook_aware: () -> VCR::HTTPInteraction::HookAware
+
+    # At runtime this is `DelegateClass(HTTPInteraction)` plus ignore!/ignored?
+    # and #filter!. RBS cannot express DelegateClass, and a subclass is the
+    # closest true statement about the surface: every reader below resolves on
+    # it, by delegation rather than inheritance.
+    class HookAware < HTTPInteraction
+      def ignore!: () -> void
+      def ignored?: () -> bool
+      def filter!: (String? text, String? replacement_text) -> void
+    end
+  end
+
+  class Cassette
+    def name: () -> String
+    def tags: () -> Array[String]
+  end
+
+  class RequestIgnorer
+    def ignore?: (VCR::Request request) -> bool
+  end
+end
+
+# spec/lib/env_secret_call_sites_spec.rb boots config/boot.rb in a subprocess
+# with a dirty environment. The rbs shim for Bundler covers the lockfile API
+# only, so the env-scrubbing half is declared here.
+module Bundler
+  def self.with_unbundled_env: [T] () { () -> T } -> T
+end
+
+# gem_rbs_collection's net-smtp/0.5 signature is missing the two keywords
+# config/environments/production.rb actually passes. net-smtp 0.5.1's real
+# `SMTP.start` takes `secret:` and `authtype:` (smtp.rb:539-543); the
+# collection declares `password:` and `auth_type:`, the latter of which is not
+# a keyword at all — it is the name of the fourth POSITIONAL in its legacy
+# overload. A call spelled the way production spells it therefore matched no
+# keyword overload and fell through to the positional one, where the whole
+# kwargs Hash was read as `helo`.
+#
+# Declared to net-smtp 0.5.1's real keyword list, with `| ...` retaining the
+# collection's overloads for the positional callers. `ssl_context_params:` is
+# omitted rather than typed: its value is forwarded verbatim to
+# OpenSSL::SSL::SSLContext#set_params and nothing in this suite passes it.
+class Net::SMTP
+  def self.start: (String address, ?Integer port,
+                   ?helo: String?, ?user: String?, ?secret: String?, ?password: String?,
+                   ?authtype: Symbol?, ?tls: bool, ?starttls: (Symbol | bool),
+                   ?tls_verify: bool, ?tls_hostname: String?) -> instance
+                | [T] (String address, ?Integer port,
+                       ?helo: String?, ?user: String?, ?secret: String?, ?password: String?,
+                       ?authtype: Symbol?, ?tls: bool, ?starttls: (Symbol | bool),
+                       ?tls_verify: bool, ?tls_hostname: String?) { (instance) -> T } -> T
+                | ...
+end
+
+# newrelic_rpm ships no RBS and has no gem_rbs_collection entry. Declared to
+# the extent spec/lib/env_secret_call_sites_spec.rb exercises it: that spec
+# keeps "the agent reads NEW_RELIC_LICENSE_KEY out of ENV unstripped, and
+# orders that source above the yaml" as an executable claim rather than prose.
+module NewRelic
+  module Agent
+    module Configuration
+      # < ::Hash in the gem. Symbol-keyed (DottedHash.symbolize does that in
+      # the constructor); the values are whatever a config key is declared to
+      # hold — String, Integer, Float, bool, Array, Proc — so `top` states
+      # "some value, narrow it before use" without the blanket permission
+      # `untyped` would hand every caller.
+      class DottedHash < ::Hash[Symbol, top]
+      end
+
+      class EnvironmentSource < DottedHash
+        def initialize: () -> void
+      end
+
+      # Reached only through `instance_method(:config_stack)` — the spec reads
+      # the method's SOURCE to pin the source ordering, and never calls it. So
+      # the class is declared and its private innards are not.
+      class Manager
+      end
+    end
+  end
+end
+
+module ClimateControl
+  def self.modify: (**untyped env) { () -> untyped } -> untyped
+end
+
+module ServiceWorkerStub
+  SLOW_LINK_LATENCY_MS: Integer
+  SLOW_LINK_DOWNLOAD_BYTES_PER_SECOND: Integer
+  SLOW_LINK_UPLOAD_BYTES_PER_SECOND: Integer
+
+  @sway_stub_script_ids: Array[String]?
+
+  def clear_real_service_workers!: () -> untyped
+  def inject_service_worker_stub!: (?endpoint: untyped) -> untyped
+  def clear_service_worker_stub!: () -> untyped
+  def wait_for_sw!: (?timeout_seconds: Integer) -> untyped
+  def go_offline!: () -> untyped
+  def go_online!: () -> untyped
+  def go_slow_link!: () -> untyped
+
+  private
+
+  def set_network_conditions: (offline: bool, ?latency: Integer, ?download_throughput: Integer, ?upload_throughput: Integer) -> untyped
+end
+
+module RateLimitHelpers
+  def with_rate_limit_enabled: (untyped scope) { () -> untyped } -> untyped
+  def with_rate_limit_disabled: (untyped scope) { () -> untyped } -> untyped
+end
+
+# nil means the variable must be unset.
+module EnvHelpers
+  def with_env: (Hash[String, String?] pairs) { () -> untyped } -> untyped
+
+  # D-22: joins with_env for a setting already migrated to Sway::Settings.
+  def with_app_config: (Symbol group, **untyped overrides) { () -> untyped } -> untyped
+
+  # No block, no restore of its own -- a caller MUST pair this with
+  # after(:each) { Sway::Settings.reset! } in its own outer describe.
+  def stub_app_config: (Symbol group, **untyped overrides) -> Sway::Settings::Base
+
+  private
+
+  def write_env: (String key, String? value) -> void
+end
+
+module RequestSpecSessionHelpers
+  def sign_in: (untyped user) -> void
+  def sign_out: (?untyped) -> void
+
+  private
+
+  def _session_hash: () -> Hash[untyped, untyped]
+end
+
+module WebMock
+  def self.disable_net_connect!: (**untyped) -> void
+  # Phase 63 Plan 11 (fetch_hearings_service_spec.rb C12 two-run example):
+  # not in the vendored .gem_rbs_collection webmock sig.
+  def self.reset!: () -> void
+
+  # B2-WR-07: the readable half of .disable_net_connect!. LiveLlmGate writes
+  # `allow: [HOST]` only on the opted-in branch, so `allow` is nil in an
+  # ordinary run — which is exactly what the gate spec asserts.
+  class Config
+    def self.instance: () -> WebMock::Config
+    def allow: () -> Array[String]?
+    def allow_localhost: () -> bool
+  end
+
+  # Returned by stub_request; asserted on with have_been_requested.
+  class RequestStub
+  end
+
+  class RequestRegistry
+    def self.instance: () -> WebMock::RequestRegistry
+    def reset!: () -> void
+  end
+end
+
+# Ruby core RBS ships Kernel#spawn but not the Process.spawn form.
+# subprocess_spec.rb needs the latter for its pgroup: children.
+module Process
+  def self.spawn: (*String command, ?pgroup: bool | Integer) -> Integer
+end
+
+class IPAddr
+  def self.new: (String addr) -> IPAddr
+  def to_s: () -> String
+end
+
+module Rake
+  class Task
+    def self.task_defined?: (String name) -> bool
+    def self.[]: (String name) -> Rake::Task
+    def invoke: (*untyped) -> void
+    def execute: (*untyped) -> void
+    def reenable: () -> void
+  end
+end
+
+# Phase 39 plan 07 closing-gate stubs — Ruby stdlib + project migration
+# constants referenced by Phase 39 spec files. The real YAML lives in
+# stdlib's psych extension (already in collection); declare a minimal
+# shim here so Steep can resolve the constant when used inside specs.
+module YAML
+  def self.safe_load: (String yaml, ?aliases: bool, ?permitted_classes: Array[Class]) -> untyped
+  def self.safe_load_file: (String | Pathname path, ?aliases: bool, ?permitted_classes: Array[Class]) -> untyped
+  def self.load: (String yaml, ?aliases: bool, ?permitted_classes: Array[Class]) -> untyped
+  def self.load_file: (String | Pathname path, **untyped) -> untyped
+end
+
+# Migration class — defined under db/migrate/, ignored by Steep. The spec
+# constructs and runs the migration directly via .new.up, so declare the
+# minimal shape here.
+class AddSourceToLegislatorVotes < ActiveRecord::Migration::Current
+  def up: () -> void
+  def down: () -> void
+end
+
+# Data migration under db/data/, likewise ignored by Steep. Same reason: the
+# spec constructs it directly via .new and drives up/down.
+class RetireUntestifiedDraftOrgPositions < ActiveRecord::Migration::Current
+  def up: () -> void
+  def down: () -> void
+
+  # D-IN-03: the SQL half — rows that HOLD drafts. Still a Relation, because
+  # the spec asserts the exact `!= '[]'` byte through #to_sql; that byte is
+  # what the Rails/WhereNot autocorrect had rewritten away.
+  def self.draft_bearing_rows: () -> BillLlmProvisioning::ActiveRecord_Relation
+
+  # D-IN-03: the answer, and an Array rather than a Relation — the testimony
+  # half of the predicate is asked in Ruby (#reject(&:testimony_present?))
+  # because no portable SQL reproduces blank?'s whitespace handling. The spec
+  # reads it with ActiveSupport's Enumerable#pluck, not the Relation one.
+  def self.untestified_draft_rows: () -> Array[BillLlmProvisioning]
+end
+
+class Object
+  def having_attributes: (*untyped) -> untyped
+end
+
+module ProductionSnapshot
+  private
+
+  def self.sway_locales_region_column: () -> String
+end

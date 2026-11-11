@@ -1,0 +1,7 @@
+# spec/system/organization_position_approval_spec.rb — Steep resolves no `let`
+# written inside a describe block. Declared here rather than silenced.
+class Object
+  def member_user: () -> User
+  def member_membership: () -> UserOrganizationMembership
+  def admin_membership: () -> UserOrganizationMembership
+end

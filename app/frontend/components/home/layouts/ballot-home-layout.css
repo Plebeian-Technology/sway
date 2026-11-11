@@ -1,0 +1,115 @@
+/* The Ballot home layout: the sample ballot that arrives before an election.
+   One paper surface delimited by scanner rules — no cards, no shadows, matching
+   ballot-bill-layout.css. */
+
+.balh-sheet {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+/* --- certification header ----------------------------------------------- */
+
+.balh-header {
+    padding-bottom: calc(var(--space-unit) * 4);
+    border-bottom: var(--rule-thick) var(--rule-style) var(--foreground);
+}
+
+/* The kind of document, set as the small caps line a real ballot carries above
+   its title. */
+.balh-header__kind {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.balh-header__title {
+    margin-top: calc(var(--space-unit) * 2);
+    font-family: var(--font-display);
+    font-size: var(--type-display);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display);
+    color: var(--foreground);
+}
+
+.balh-header__deck {
+    margin-top: calc(var(--space-unit) * 2);
+    max-width: 54ch;
+    font-size: var(--type-body);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+/* --- ruled sections ------------------------------------------------------ */
+
+.balh-section {
+    padding: calc(var(--space-unit) * 5) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.balh-sectionlabel {
+    margin-bottom: calc(var(--space-unit) * 3);
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+/* --- numbered instructions ----------------------------------------------- */
+
+.balh-instructions {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+}
+
+.balh-instruction {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: calc(var(--space-unit) * 3);
+    align-items: start;
+}
+
+/* The step number in the ballot's own oval, so the mark the voter is being
+   taught to make is the same shape that numbers the instruction. */
+.balh-instruction__n {
+    display: grid;
+    place-items: center;
+    width: calc(var(--space-unit) * 7);
+    height: calc(var(--space-unit) * 7);
+    border: var(--rule-thick) var(--rule-style) var(--foreground);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-display);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--foreground);
+}
+
+.balh-instruction__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    color: var(--foreground);
+}
+
+.balh-instruction__text {
+    margin-top: calc(var(--space-unit) * 1);
+    max-width: 60ch;
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+/* --- certification footer ------------------------------------------------ */
+
+.balh-certification {
+    padding-top: calc(var(--space-unit) * 4);
+    font-size: var(--type-micro);
+    line-height: var(--leading-body);
+    color: var(--muted-foreground);
+}

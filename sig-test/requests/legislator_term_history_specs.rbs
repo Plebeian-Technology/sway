@@ -1,0 +1,29 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # FactoryBot attribute helpers for HistoricalScoreExplanation
+  # (spec/factories/historical_score_explanations.rb)
+  def score_type:
+      (*untyped args, **untyped kwargs) -> untyped
+      | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+  def delta:
+      (*untyped args, **untyped kwargs) -> untyped
+      | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+  def before_score:
+      (*untyped args, **untyped kwargs) -> untyped
+      | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+  def after_score:
+      (*untyped args, **untyped kwargs) -> untyped
+      | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+  def bills_summary:
+      (*untyped args, **untyped kwargs) -> untyped
+      | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+
+  # Spec let! helpers for legislator term history specs
+  # (spec/requests/legislators_controller_spec.rb and
+  #  spec/serializers/legislator_resource_spec.rb)
+  def active_term: () -> LegislatorTerm
+  def prior_term: () -> LegislatorTerm
+  def term_2021: () -> LegislatorTerm
+  def term_2023: () -> LegislatorTerm
+  def term_2025: () -> LegislatorTerm
+end

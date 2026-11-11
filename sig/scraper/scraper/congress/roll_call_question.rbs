@@ -1,0 +1,57 @@
+module Scraper
+    module Congress
+        class RollCallQuestion
+            HOUSE_OPENINGS: ::Array[String]
+
+            HOUSE_REFUSED_OPENINGS: ::Array[String]
+
+            SENATE_QUESTIONS: ::Array[String]
+
+            SENATE_REFUSED_QUESTIONS: ::Array[String]
+
+            MOTION: String
+
+            HOUSE_CONCURRENCE: String
+
+            CONCURRENCE: ::Regexp
+
+            WITH_AMENDMENT: ::Regexp
+
+            BRACKETED: ::Regexp
+
+            @chamber: Symbol
+
+            @question: String
+
+            @title: String
+
+            attr_reader chamber: Symbol
+
+            attr_reader question: String
+
+            attr_reader title: String
+
+            def initialize: (chamber: Symbol | String, question: String?, ?title: String?) -> void
+
+            def self.normalize: (String? value) -> String
+
+            def counts_as_position?: -> bool
+
+            def known?: -> bool
+
+            def to_s: -> String
+
+            private
+
+            def position_question?: -> bool
+
+            def concurrence_with_amendment?: -> bool
+
+            def senate_position?: -> bool
+
+            def refused: -> ::Array[String]
+
+            def refused_match?: (String phrase) -> bool
+        end
+    end
+end

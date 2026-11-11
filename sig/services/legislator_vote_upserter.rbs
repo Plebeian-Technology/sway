@@ -1,0 +1,26 @@
+module LegislatorVoteUpserter
+  extend ActiveSupport::Concern
+
+  # Phase 62 review WR-03: duck-type contract for the `vote` param —
+  # anything exposing #support. Satisfied by Scraper::LegislatorVote (real
+  # roll-call rows) and by the locale services' memoized sponsor-inference
+  # Struct (synthetic all-FOR rows).
+  interface _SupportVote
+    def support: () -> String
+  end
+
+  # WS5.5: shared synthetic all-FOR sponsor-inference vote.
+  SPONSOR_INFERENCE_VOTE: _SupportVote
+
+  @bill: Bill
+
+  private
+
+  def infer_from_sponsors: () -> void
+
+  def upsert_legislator_vote: (Integer? legislator_id, _SupportVote vote, ?source: String, ?inferred: bool, ?legislator_term_id: Integer?) -> (bool | :skipped | :kept_manual)
+
+  def vote_covered?: (bool | :skipped | :kept_manual outcome) -> bool
+
+  def service_source: () -> String
+end

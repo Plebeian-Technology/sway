@@ -1,0 +1,16 @@
+# Hand-authored RBS sig for PipelineRunBill.
+# Phase 52 Plan 03: state-machine method sigs moved to
+# sig/state_machines/pipeline_run_bill.rbs per D-40 (hand-written overlay
+# pattern). This file retains the constants + non-state-machine surface.
+class PipelineRunBill < ApplicationRecord
+  # Phase 48 WR-01 (iter2): terminal-status set used by webhook receiver to
+  # detect "row already counted" without depending on row existence.
+  TERMINAL_BILL_STATUSES: Array[String]
+
+  private
+
+  # Phase 55 WR-08 — sort_order monotonic invariant. Fires `on: :update`
+  # via the AR validation framework; appends to `errors` when a persisted
+  # record attempts to change its `sort_order` column.
+  def sort_order_monotonic: () -> void
+end

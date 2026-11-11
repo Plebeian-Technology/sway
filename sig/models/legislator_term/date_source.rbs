@@ -1,0 +1,7 @@
+class LegislatorTerm < ApplicationRecord
+    module DateSource
+        PUBLISHED: String
+        OBSERVED: String
+        ALL: Array[String]
+    end
+end

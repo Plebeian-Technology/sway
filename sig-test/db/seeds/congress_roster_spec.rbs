@@ -1,0 +1,8 @@
+# Spec-only declarations for spec/db/seeds/congress_roster_spec.rb.
+# See sig-test/services/legislators_cache/congress_term_history_spec.rbs for
+# why spec-local helpers are declared rather than silenced.
+class Object
+  def members: () -> Array[Hash[String, untyped]]
+
+  def terms_of: (Hash[String, untyped] member) -> Array[Hash[String, untyped]]
+end

@@ -1,0 +1,10 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class AdminBillCreatorFormStateSpecContext < Object
+  def admin_phone: () -> String
+  def sway_locale: () -> SwayLocale
+  def district: () -> District
+  def legislator: () -> Legislator
+  def bill: () -> Bill
+  def organization: () -> Organization
+  def position: () -> OrganizationBillPosition
+end

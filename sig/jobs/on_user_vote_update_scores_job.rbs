@@ -1,0 +1,5 @@
+class OnUserVoteUpdateScoresJob < ApplicationJob
+    def self.limits_concurrency: (?to: Integer, ?key: ^(UserVote user_vote) -> String, ?on_conflict: Symbol) -> void
+
+    def perform: (UserVote user_vote) -> void
+end

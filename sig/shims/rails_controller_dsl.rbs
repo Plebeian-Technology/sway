@@ -1,0 +1,77 @@
+class ActionController::Base
+    def self.rate_limit: (*untyped args, **untyped kwargs) -> untyped
+    def self.inertia_config: (*untyped args, **untyped kwargs) -> untyped
+    def self.inertia_share:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.helper_method: (*Symbol methods) -> untyped
+    def self.before_action:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.after_action:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def self.protect_from_forgery: (*untyped args, **untyped kwargs) -> untyped
+    def self.rescue_from: (*untyped args, **untyped kwargs) -> untyped
+                        | (*untyped args, **untyped kwargs) { (untyped exception) -> untyped } -> untyped
+
+    def self.request: -> untyped
+    def self.flash: -> untyped
+    def self.params: -> untyped
+    def self.current_user: -> untyped
+    def self.current_sway_locale: -> untyped
+    def self.current_user_legislator_photo_urls: -> untyped
+    def self.perform_caching: -> bool
+    def self.perform_caching=: (bool value) -> bool
+    # Phase 32: CSRF regression specs read/restore this class attribute.
+    def self.allow_forgery_protection: -> bool
+    def self.allow_forgery_protection=: (bool value) -> bool
+    # Singleton-context stubs for rate_limit with:/by: lambda bodies.
+    # Rails evaluates these via instance_exec; Steep sees them in singleton scope.
+    def self.render_rate_limited: () -> untyped
+
+    def redirect_back_or_to: (*untyped args, **untyped kwargs) -> untyped
+
+    # Permissive override — Rails' actual signature accepts any flash kwargs
+    # (notice:, alert:, status:, etc.). The rbs_collection signature is too
+    # strict (positional Hash only) and rejects `redirect_to path, notice: x`.
+    def redirect_to: (*untyped args, **untyped kwargs) -> untyped
+end
+
+
+class Object
+    def rails_storage_proxy_url: (*untyped args, **untyped kwargs) -> String
+end
+
+module Kernel
+    def self?.require: (Pathname path) -> bool
+                     | ...
+    def self?.load: (Pathname path, ?boolish wrap) -> bool
+                  | ...
+end
+
+module ActiveSupport
+    class EncryptedConfiguration
+        def dig: (*Symbol keys) -> untyped
+    end
+
+    class OrderedOptions
+        def auth_key_p8: () -> untyped
+        def bundle_id: () -> untyped
+        def env: () -> untyped
+        def key_id: () -> untyped
+        def team_id: () -> untyped
+        def default_url_options: () -> untyped
+        def default_url_options=: (untyped) -> untyped
+    end
+end
+
+module Rails
+    class Application
+        class Configuration
+            attr_accessor apns: ActiveSupport::OrderedOptions
+            attr_accessor fcm: ActiveSupport::OrderedOptions
+            def action_mailer: () -> ActiveSupport::OrderedOptions
+        end
+    end
+end

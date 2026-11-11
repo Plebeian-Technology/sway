@@ -1,0 +1,5 @@
+# Phase 67 Plan 08 (D-15). rbs_rails covers the attribute readers and the
+# bill/acknowledged_by/legislation_pipeline_run associations under
+# sig/rbs_rails/app/models/testimony_coverage_acknowledgement.rbs.
+class TestimonyCoverageAcknowledgement < ApplicationRecord
+end

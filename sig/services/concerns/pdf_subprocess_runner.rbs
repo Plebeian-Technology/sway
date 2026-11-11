@@ -1,0 +1,3 @@
+module PdfSubprocessRunner
+  def run_subprocess_translated: (*String command, ?label: String?, ?target: String?, ?error_class: Class) ?{ (String, Symbol) -> Class } -> String
+end

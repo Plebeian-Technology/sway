@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def count_queries: () { () -> void } -> Integer
+  def add_published_testimony: (bill: Bill, index: Integer, ?stance: String) -> [BillNewsArticle, NewsArticleTestimony]
+end

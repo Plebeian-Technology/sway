@@ -1,0 +1,73 @@
+class NewsArticleSourceSnapshot < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[NewsArticleSourceSnapshot, NewsArticleSourceSnapshot::ActiveRecord_Relation, Integer]
+
+  PURPOSES: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def bill: () -> Bill
+  def bill=: (Bill) -> Bill
+  def actor: () -> User?
+  def actor=: (User?) -> User?
+  def source_uses: () -> NewsArticleSourceUse::ActiveRecord_Associations_CollectionProxy
+  def news_article_source_uses: () -> NewsArticleSourceUse::ActiveRecord_Associations_CollectionProxy
+  def bill_summary_revisions: () -> BillSummaryRevision::ActiveRecord_Associations_CollectionProxy
+  def news_article_testimonies: () -> NewsArticleTestimony::ActiveRecord_Associations_CollectionProxy
+
+  def bill_id: () -> Integer
+  def bill_id=: (Integer) -> Integer
+  def purpose: () -> String
+  def purpose=: (String) -> String
+  def run_receipt: () -> String?
+  def run_receipt=: (String?) -> String?
+  def actor_id: () -> Integer?
+  def actor_id=: (Integer?) -> Integer?
+  def source_entries: () -> Array[Hash[String, untyped]]
+  def source_entries=: (Array[Hash[String, untyped]]) -> Array[Hash[String, untyped]]
+  def digest: () -> String
+  def digest=: (String) -> String
+
+  def readonly?: () -> bool
+  def summary?: () -> bool
+  def testimony?: () -> bool
+  def captured_source_entries: () -> Array[Hash[String, untyped]]
+  def captured_text_version_ids: () -> Array[Integer]
+  def captured_text_versions: () -> NewsArticleTextVersion::ActiveRecord_Relation
+  def current_eligibility_comparison: () -> NewsArticleSourceSnapshot::EligibilityComparison
+  def check_current_eligibility: () -> NewsArticleSourceSnapshot::EligibilityComparison
+  def compare_current_eligibility: () -> NewsArticleSourceSnapshot::EligibilityComparison
+  def current_eligibility_matches?: () -> bool
+
+  def self.for_summary: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+  def self.for_testimony: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+  def self.recent_first: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+
+  private
+
+  def compute_digest: () -> void
+  def validate_source_entries_belong_to_bill: () -> void
+  def prevent_mutation: () -> void
+
+  class EligibilityComparison
+    attr_reader eligible: bool
+    attr_reader mismatches: Array[String]
+    attr_reader stale_reasons: Array[Symbol]
+    attr_reader details: Array[Hash[Symbol, untyped]]
+
+    def initialize: (eligible: bool, ?mismatches: Array[String], ?stale_reasons: Array[Symbol], ?details: Array[Hash[Symbol, untyped]]) -> void
+    def eligible?: () -> bool
+    def matches?: () -> bool
+  end
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    def for_summary: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+    def for_testimony: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+    def recent_first: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+    def for_summary: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+    def for_testimony: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+    def recent_first: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
+  end
+end

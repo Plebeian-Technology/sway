@@ -1,0 +1,62 @@
+# Hand-written RBS for lib/env_read_check.rb (D-18/D-19/D-20).
+class EnvReadCheck
+  ALLOWED_PATHS: Array[String]
+  RUBY_LIKE_EXTENSIONS: Array[String]
+  NON_SOURCE_EXTENSIONS: Array[String]
+
+  # One ENV read, at the place it was found.
+  class Offence
+    attr_reader path: String
+    attr_reader line: Integer
+
+    def initialize: (path: String, line: Integer) -> void
+
+    def to_s: () -> String
+  end
+
+  # Raised when one of ALLOWED_PATHS no longer exists on disk (D-20).
+  class MissingAllowlistedPathError < StandardError
+  end
+
+  # Collects the start line of every read of the bare or top-level-qualified
+  # ENV constant it visits.
+  class EnvConstantVisitor < Prism::Visitor
+    @lines: Array[Integer]
+
+    def initialize: (Array[Integer] lines) -> void
+
+    def visit_constant_read_node: (Prism::ConstantReadNode node) -> void
+
+    def visit_constant_path_node: (Prism::ConstantPathNode node) -> void
+  end
+
+  @root: String
+  @scanned_paths: Array[String]?
+  @skipped_paths: Array[String]?
+
+  def initialize: (String root) -> void
+
+  def offences: () -> Array[Offence]
+
+  def allowed_paths: () -> Array[String]
+
+  def scanned_paths: () -> Array[String]
+
+  def skipped_paths: () -> Array[String]
+
+  private
+
+  attr_reader root: String
+
+  def assert_allowed_paths_exist!: () -> void
+
+  def git_tracked_app_files: () -> Array[String]
+
+  def offences_in: (String relative_path) -> Array[Offence]
+
+  def offences_from_ruby: (String relative_path, String source) -> Array[Offence]
+
+  def offences_from_erb: (String relative_path, String absolute) -> Array[Offence]
+
+  def lines_with_env: (String source) -> Array[Integer]
+end

@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # How many sending_service_domain_bills queries the given block issues.
+  def sending_service_domain_queries_during: () { () -> void } -> Integer
+end

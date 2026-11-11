@@ -1,0 +1,10 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # Builds a Baltimore legislator that cast votes on the given dates. Rows
+  # default to being created inside the 2020 cycle, as production's
+  # 2020-generation rows were.
+  def baltimore_legislator_voting_on: (
+    *ActiveSupport::TimeWithZone dates,
+    ?created_on: ActiveSupport::TimeWithZone
+  ) -> Legislator
+end

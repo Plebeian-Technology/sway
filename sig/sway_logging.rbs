@@ -1,0 +1,32 @@
+module SwayLogging
+  SENSITIVE_KEYS: Array[String]
+  SENSITIVE_KEY_PATTERN: Regexp
+  MAX_VALUE_CHARS: Integer
+  ANTHROPIC_KEY_REGEXP: Regexp
+
+  def self.debug: (untyped event, **untyped metadata) -> void
+  def self.info: (untyped event, **untyped metadata) -> void
+  def self.warn: (untyped event, **untyped metadata) -> void
+  def self.error: (untyped event, **untyped metadata) -> void
+  def self.log_exception: (untyped event, exception: Exception, ?level: Symbol, **untyped metadata) -> void
+  def self.summarize: (untyped value) -> untyped
+  def self.sensitive_key?: (Symbol | String key) -> bool
+  def self.format_event: (untyped event, untyped metadata) -> String
+  def self.format_metadata: (untyped metadata) -> Array[String]
+  def self.sanitize_value: (Symbol | String key, untyped value) -> String
+  def self.compact_message: (untyped message) -> String
+  def self.redact_anthropic_key: (untyped text) -> String
+
+  def debug: (untyped event, **untyped metadata) -> void
+  def info: (untyped event, **untyped metadata) -> void
+  def warn: (untyped event, **untyped metadata) -> void
+  def error: (untyped event, **untyped metadata) -> void
+  def log_exception: (untyped event, exception: Exception, ?level: Symbol, **untyped metadata) -> void
+  def summarize: (untyped value) -> untyped
+  def sensitive_key?: (Symbol | String key) -> bool
+  def format_event: (untyped event, untyped metadata) -> String
+  def format_metadata: (untyped metadata) -> Array[String]
+  def sanitize_value: (Symbol | String key, untyped value) -> String
+  def compact_message: (untyped message) -> String
+  def redact_anthropic_key: (untyped text) -> String
+end

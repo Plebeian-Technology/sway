@@ -1,0 +1,10 @@
+# RBS sig for the bill-positions schema constants (Phase 63 D-01).
+#
+# The constants are the canonical testimony-only positions validator
+# consumed by Llm::ClaudeAdapter and Llm::LlamacppAdapter#generate_bill_positions.
+
+# Parsed JSON Schema document (opaque schema shape).
+BILL_POSITIONS_SCHEMA_HASH: Hash[String, untyped]
+
+# Compiled validator built from BILL_POSITIONS_SCHEMA_HASH.
+BILL_POSITIONS_SCHEMA: JSONSchemer::Schema

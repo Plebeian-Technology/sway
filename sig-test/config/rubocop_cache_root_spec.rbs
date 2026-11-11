@@ -1,0 +1,13 @@
+# Spec-only declarations for spec/config/rubocop_cache_root_spec.rb.
+#
+# cache_root_from is a plain `def` inside a describe block, which steep cannot
+# see for the same reason it cannot see any RSpec example-group method: the
+# block builds an anonymous class while the suite runs, and nothing about that
+# exists in the source a type checker reads.
+class Object
+  # Resolves AllCops::CacheRootDirectory out of .rubocop.yml the way rubocop
+  # does — evaluating the ERB with the working directory set to the given path,
+  # because rubocop reads this file twice from two different directories and
+  # the value has to survive both. Returns nil when the key is absent.
+  def cache_root_from: (untyped working_directory) -> String?
+end

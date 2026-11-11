@@ -1,0 +1,44 @@
+class Organizations::BaseController < ApplicationController
+    @organization: Organization?
+
+    # AR collection ivars/returns use the per-model concrete relation
+    # classes that rbs_rails generates (`<Model>::ActiveRecord_Relation`
+    # and `<Model>::ActiveRecord_Associations_CollectionProxy`). The
+    # ruby/gem_rbs_collection `ActiveRecord::Relation` class is NOT generic,
+    # so `ActiveRecord::Relation[T]` is invalid; the per-model subclasses
+    # carry the element type via `Enumerable[Model]` instead. `#members`
+    # and `#positions` chain `includes`/`eager_load` (which return `self`)
+    # off association readers, so they stay CollectionProxy; `#pending_changes`
+    # is a class scope, so it is an ActiveRecord_Relation.
+    @members: UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy?
+
+    @positions: OrganizationBillPosition::ActiveRecord_Associations_CollectionProxy?
+
+    @pending_changes: OrganizationBillPositionChange::ActiveRecord_Relation?
+
+    @current_user_membership: UserOrganizationMembership?
+
+    def organization: () -> Organization
+
+    def members: () -> UserOrganizationMembership::ActiveRecord_Associations_CollectionProxy
+
+    def positions: () -> OrganizationBillPosition::ActiveRecord_Associations_CollectionProxy
+
+    def pending_changes: () -> OrganizationBillPositionChange::ActiveRecord_Relation
+
+    def current_user_membership: () -> UserOrganizationMembership?
+
+    def redirect_to_current_user_membership: (**(String | Integer) kwargs) -> void
+
+    def membership_as_props: () -> Hash[Symbol, untyped]
+
+    private
+
+    def organization_tab_param: -> untyped
+
+    def verify_is_organization_admin!: () -> void
+
+    # Per-role-filtered pending changes as a JSON-serializable Array.
+    # `to_sway_json` (ApplicationRecord) returns Hash keyed by String|Symbol.
+    def pending_changes_props: () -> Array[Hash[(String | Symbol), untyped]]
+end

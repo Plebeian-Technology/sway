@@ -1,0 +1,6 @@
+# Spec-only helper module (spec/support/testimony_spec_helpers.rb), included
+# into example groups that test testimony coverage and acknowledgements.
+module TestimonySpecHelpers
+  def max_chars: () -> Integer
+  def current_digest: () -> String
+end

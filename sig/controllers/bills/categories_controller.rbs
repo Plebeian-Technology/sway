@@ -1,0 +1,28 @@
+# Phase 60 Plan 10 (SPEC R8) — Bills::CategoriesController.
+#
+# Controller action return types are `() -> untyped` per Sway convention
+# (iter-1 M10 explicit exception to [[feedback_rbs_avoid_untyped]]):
+# `render` / `redirect_to` return Rails-internal types whose shape varies
+# across versions; existing top-level Sway controller sigs all use the same
+# `untyped` return type for action methods. Steep treats the value as
+# "anything goes" at the call boundary — actions are the framework's interface.
+module Bills
+  class CategoriesController < ApplicationController
+    # POST /bills/:bill_id/categories
+    # Adds an active category to the bill via the bill_categories join.
+    # Guards: active-set only (find_by, not find — nil → 422); cap-3 (R2).
+    def create: () -> untyped
+
+    # DELETE /bills/:bill_id/categories/:id
+    # Removes a category join row. The category may be soft-inactive —
+    # destroy looks up the JOIN directly so inactive-but-assigned categories
+    # are still removable (T-60-17 remove exception).
+    def destroy: () -> untyped
+
+    private
+
+    # Dual-format 422 / redirect-back for validation failures (inactive/unknown
+    # category id; cap-3 ceiling exceeded).
+    def redirect_back_with_error: (Bill, String) -> untyped
+  end
+end

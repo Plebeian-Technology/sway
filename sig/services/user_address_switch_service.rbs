@@ -1,0 +1,29 @@
+class UserAddressSwitchService
+  COOLDOWN_PERIOD: ActiveSupport::Duration
+
+  def self.cooldown_active_for?: (User user) -> bool
+
+  @user: User
+  @previous_address: Address
+  @new_address: Address
+
+  def initialize: (User user, previous_address: Address, new_address: Address) -> void
+
+  def call: () -> UserAddressChange?
+
+  private
+
+  def resolve_legislators_for_new_address: () -> Array[Legislator]
+
+  def activate_user_legislator!: (Legislator legislator) -> UserLegislator
+
+  def activate_user_district!: (District district) -> void
+
+  def recompute_scores: (
+    active_uls: Array[UserLegislator],
+    resolved_legislators: Array[Legislator],
+    stale_legislator_ids: Array[Integer],
+    new_legislator_ids: Array[Integer],
+    new_uls: Array[UserLegislator]
+  ) -> void
+end

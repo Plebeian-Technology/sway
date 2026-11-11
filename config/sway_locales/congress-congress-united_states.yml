@@ -1,0 +1,137 @@
+# Schema specification version.
+schema_version: 1
+
+# Citation: United States Constitution, Art. I, Sec. 1
+# Source: https://www.archives.gov/founding-docs/constitution-transcript
+city: congress
+region: congress
+region_code: ""
+country: united_states
+name: congress-congress-united_states
+
+legislative_sessions:
+    - name: "118th Congress"
+      start_date: "2023-01-03"
+      end_date: "2025-01-03"
+      active: false
+      upstream_name: "118"
+    - name: "119th Congress"
+      start_date: "2025-01-03"
+      end_date: "2027-01-03"
+      active: true
+      upstream_name: "119"
+
+# Citation: IANA Time Zone Database
+# Source: https://data.iana.org/time-zones/tz-link.html
+time_zone: America/New_York
+
+# Citation: United States Capitol Building (Architect of the Capitol)
+# Source: https://www.aoc.gov/explore-capitol-campus/buildings-grounds/capitol-building
+icon_url: public/images/flags/congress-congress-united_states.svg
+
+# @lat: [[locale-extension#Nominatim geographic configuration]]
+# Citation: ISO 3166-1 alpha-2 United States Country Code Constraint # lat:ignore
+# Source: https://www.iso.org/obp/ui/#iso:code:3166:US # lat:ignore
+nominatim_viewbox: null
+nominatim_bounded: false
+nominatim_country_codes: "us"
+
+source_rules:
+    # Citation: Congress.gov Roll Call Voting Records
+    # Source: https://api.congress.gov/
+    publishes_legislator_votes: true
+
+    # Citation: United States Constitution, Art. I, Sec. 1 ("The Congress of the United States")
+    # Source: https://www.archives.gov/founding-docs/constitution-transcript
+    chamber_label: Congress
+
+    # Citation: US House of Representatives Legislative Numbering & Sessions
+    # Source: https://www.house.gov/legislative-activity
+    session_numbering: congress_ordinal
+
+    # Citation: United States Constitution, Art. I, Sec. 1 (Senate and House of Representatives)
+    # Source: https://www.archives.gov/founding-docs/constitution-transcript
+    default_bill_chamber: house
+    bill_chambers:
+        - house
+        - senate
+        - both
+
+    legislation_rules:
+        retrieval: congress_dot_gov
+        parsing: congress_dot_gov
+        base_url: "https://api.congress.gov/v3"
+        generic_portal_urls:
+            - "https://congress.gov"
+            - "https://www.congress.gov"
+        api_key_secret: CONGRESS_GOV_API_KEY
+
+        metadata_mapping:
+            external_id: "$.number"
+            title: "$.title"
+            chamber: "$.originChamber"
+    hearings_rules:
+        retrieval: generic_rest
+        parsing: generic_rest
+        base_url: "https://api.congress.gov/v3"
+        api_key_secret: CONGRESS_GOV_API_KEY
+    vote_rules:
+        retrieval: congress_dot_gov
+        parsing: congress_dot_gov
+        base_url: "https://api.congress.gov/v3"
+        api_key_secret: CONGRESS_GOV_API_KEY
+        enable_historical_fallback: false
+        timezone: "America/New_York"
+    roster_rules:
+        retrieval: congress_dot_gov
+        parsing: congress_dot_gov
+        base_url: "https://api.congress.gov/v3"
+        evidence_publisher: "congress.gov"
+        evidence_jurisdiction: "us_congress"
+        evidence_source_url: "https://api.congress.gov/v3/member"
+    law_rules:
+        retrieval: uslm_xml
+        parsing: uslm_xml
+        base_url: "https://uscode.house.gov"
+
+term_rules:
+    # Citation: United States Constitution, Amendment XX, Sec. 2 (Convenes at noon on January 3rd)
+    # Source: https://www.archives.gov/founding-docs/amendments-11-27
+    convening:
+        kind: fixed_day
+        month: 1
+        day: 3
+
+    # Citation: United States Constitution, Art. I, Sec. 2, Cl. 1 (2-Year Biennial Cycles)
+    # Source: https://www.archives.gov/founding-docs/constitution-transcript
+    cycle_anchor_year: 1991
+    cycle_years: 2
+
+    # Citation: Congress.gov API (Historical rosters, service history, and exact dates)
+    # Source: https://api.congress.gov/
+    roster_lists_only_current_legislators: false
+    publishes_term_history: true
+    publishes_exact_term_dates: true
+
+    # Citation: Congress.gov Bioguide Member Identity System
+    # Source: https://api.congress.gov/
+    identified_by: person
+
+    # @lat: [[representative-resolution#Congress seat identity conventions]]
+    seat_chambers:
+        "Sen.": Senate
+        "Rep.": House of Representatives
+
+# @lat: [[news-source-configuration#News source configuration contract]]
+representative_resolution:
+    locale_wide_district_name: "US0"
+
+news_sources:
+    - url: "https://thehill.com/"
+      path_policy: search_hint
+    - url: "https://www.politico.com/"
+      path_policy: search_hint
+    - url: "https://apnews.com/"
+      path_policy: search_hint
+    - url: "https://ground.news/"
+      path_policy: search_hint

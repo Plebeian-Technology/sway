@@ -1,0 +1,10 @@
+class ExecutiveTitleFillService
+  @sway_locale: SwayLocale
+  @official_service_result: OfficialEvidence::Result
+
+  attr_reader sway_locale: SwayLocale
+  attr_reader official_service_result: OfficialEvidence::Result
+
+  def initialize: (SwayLocale, official_service_result: OfficialEvidence::Result) -> void
+  def call: () -> untyped
+end

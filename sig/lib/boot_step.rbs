@@ -1,0 +1,6 @@
+class BootStep
+  # Hands back whatever the step returned, so a caller can keep using it.
+  def self.run: [T] (String name) { () -> T } -> T
+
+  def self.report: (String name, Exception exception) -> void
+end

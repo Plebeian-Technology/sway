@@ -1,0 +1,13 @@
+module ApiV1Helpers
+  # Methods defined by this module
+  def authenticate_as: (untyped user, ?platform: String) -> Hash[String, String]
+  def json_body: -> untyped
+  def expect_error_envelope: (code: String | Symbol, ?status: Symbol?) -> void
+
+  # RSpec / Rails request-spec methods used internally
+  def response: -> untyped
+  def expect: (untyped) -> RSpec::Expectations::ExpectationTarget
+  def have_http_status: (*untyped) -> untyped
+  def match: (*untyped) -> untyped
+  def hash_including: (*untyped, **untyped) -> untyped
+end

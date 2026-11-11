@@ -1,0 +1,8 @@
+# Rails' `attr_readonly` raises ActiveRecord::ReadonlyAttributeError when a
+# readonly attribute is written after create (Category#slug — A-I-01). This
+# constant is real in Rails 7.1+ but missing from the vendored
+# .gem_rbs_collection/activerecord snapshot, so it's backfilled here.
+module ActiveRecord
+  class ReadonlyAttributeError < ActiveRecordError
+  end
+end

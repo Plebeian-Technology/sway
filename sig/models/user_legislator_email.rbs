@@ -1,0 +1,13 @@
+# Manual extensions for UserLegislatorEmail. Schema-derived accessors live in
+# the rbs_rails-generated sig/rbs_rails/app/models/user_legislator_email.rbs;
+# this file holds the hand-written instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class UserLegislatorEmail < ApplicationRecord
+    def user: -> User
+    def legislator: -> Legislator
+    def sway_locale: -> SwayLocale
+    def user_vote: -> UserVote?
+    def sendable?: -> bool
+    def queue_send_legislator_email: -> void
+    def send_email: -> bool
+end

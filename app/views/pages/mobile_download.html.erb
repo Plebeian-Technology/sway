@@ -1,0 +1,21 @@
+<%# @lat: [[public-marketing-and-meta-pages#Why MarketingController.mobile_download renders plain ERB, not Inertia]] %>
+
+<section class="mx-auto max-w-3xl px-6 py-16 text-center">
+  <h1 class="text-4xl font-bold tracking-tight">Get Sway on your phone</h1>
+
+  <p class="mt-4 text-lg text-gray-700">
+    Vote on the same bills your representatives see. Track accountability,
+    bill by bill, vote by vote.
+  </p>
+
+  <%= render partial: "layouts/marketing_mobile_badges",
+        locals: {
+          apple_app_store_id: @apple_app_store_id,
+          android_package: @android_package,
+        } %>
+
+  <p class="mt-8 text-sm text-gray-500">
+    Sway is free, ad-free, and never sells your data.
+    <a href="/privacy" class="underline">Read our privacy policy</a>.
+  </p>
+</section>

@@ -1,0 +1,22 @@
+# Helpers defined at describe-block scope in spec/requests/bills_spec.rb,
+# prefixed so they cannot collide on ::Object.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # The two letter bodies the campaign artifact is built from.
+  def campaign_letter_first_body: () -> String
+  def campaign_letter_second_body: () -> String
+
+  # The cleaned-testimony text those two bodies make up.
+  def campaign_letters_artifact_text: () -> String
+
+  # A cleaned-testimony artifact holding one campaign draft over both letters.
+  def campaign_letters_artifact: () -> Hash[String, untyped]
+
+  # The Inertia headers a partial reload of the Bill Creator carries.
+  def bill_creator_partial_headers: () -> Hash[String, untyped]
+
+  # The prop tuples the two Bill Creator tabs poll on, as the browser sends
+  # them: one comma-separated X-Inertia-Partial-Data value.
+  def pipeline_tab_poll: () -> String
+  def summary_tab_poll: () -> String
+end

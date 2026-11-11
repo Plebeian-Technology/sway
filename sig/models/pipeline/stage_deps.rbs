@@ -1,0 +1,18 @@
+# RBS signature for the Ruby mirror of legislation/orchestration/stage_registry.py
+# STAGE_DEPS. No untyped — concrete Hash[String, Array[String]] per
+# feedback_rbs_avoid_untyped.md.
+module Pipeline
+  EMPTY_DEPS: Array[String]
+  STAGE_DEPS: Hash[String, Array[String]]
+
+  # Zeitwerk-required namespace module (file path is
+  # app/models/pipeline/stage_deps.rb — the constant Pipeline::StageDeps
+  # exists solely so Zeitwerk's path-to-class inflection succeeds; the
+  # mirror payload is the Pipeline::STAGE_DEPS constant above).
+  module StageDeps
+    # Phase 55 Plan 02 — BFS transitive closure over Pipeline::STAGE_DEPS.
+    # Returns the visited set as an Array[String] (caller imposes DAG
+    # order downstream via DAG_ORDER). No untyped.
+    def self.transitive_closure: (Array[String] requested_keys) -> Array[String]
+  end
+end

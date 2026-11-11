@@ -1,0 +1,10 @@
+module Api
+  module V1
+    class RegistrationsController < BaseController
+      include RelyingParty
+
+      def create: -> untyped
+      def callback: -> untyped
+    end
+  end
+end

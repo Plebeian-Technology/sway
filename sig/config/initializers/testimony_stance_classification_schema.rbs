@@ -1,0 +1,5 @@
+# Parsed JSON Schema document for testimony stance classification.
+TESTIMONY_STANCE_CLASSIFICATION_SCHEMA_HASH: Hash[String, untyped]
+
+# Compiled validator built from TESTIMONY_STANCE_CLASSIFICATION_SCHEMA_HASH.
+TESTIMONY_STANCE_CLASSIFICATION_SCHEMA: JSONSchemer::Schema

@@ -1,0 +1,17 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # TrimAttachmentAttemptsJob spec helpers
+  def create_attempt_entry: (
+    bill: Bill,
+    created_at: (Time | ActiveSupport::TimeWithZone),
+    ?outcome: String,
+    ?error: String,
+    ?attachment_id: (Integer | String),
+    ?url: String,
+    ?filename: String
+  ) -> PipelineActivityLogEntry
+
+  def download_url: () -> String
+
+  def recurring_config: () -> Hash[String, untyped]
+end

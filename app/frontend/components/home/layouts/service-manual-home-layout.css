@@ -1,0 +1,64 @@
+.smh-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
+    font-family: var(--font-body);
+    color: var(--foreground);
+    border-top: var(--rule-thick) var(--rule-style) var(--accent);
+}
+
+.smh-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(var(--space-unit) * 8);
+}
+
+@media (min-width: 768px) {
+    .smh-grid {
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+        align-items: start;
+    }
+}
+
+.smh-masthead {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.smh-wordmark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.smh-headline {
+    margin-top: calc(var(--space-unit) * 3);
+    font-family: var(--font-display);
+    font-size: var(--type-display);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display);
+    color: var(--foreground);
+}
+
+.smh-callout {
+    margin-top: calc(var(--space-unit) * 6);
+    padding: calc(var(--space-unit) * 4) calc(var(--space-unit) * 5);
+    border-left: var(--rule-thick) var(--rule-style) var(--accent);
+    background-color: var(--surface-1);
+}
+
+.smh-callout__paragraph {
+    max-width: var(--measure);
+    font-size: var(--type-lede);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+.smh-signin {
+    padding-top: calc(var(--space-unit) * 2);
+}

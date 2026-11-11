@@ -1,0 +1,44 @@
+name: Missing Spec Reminder
+
+on:
+    pull_request:
+        branches: [main, padawan, claude]
+
+permissions:
+    contents: read
+    # dorny/paths-filter on pull_request events lists changed files via the
+    # GitHub API (pulls.listFiles) and documents "Requires pull-requests: read";
+    # with an explicit permissions block, unlisted scopes are zeroed and the
+    # call 403s without it.
+    pull-requests: read
+
+jobs:
+    check-spec-coverage:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Detect changed paths
+              id: filter
+              uses: dorny/paths-filter@d1c1ffe0248fe513906c8e24db8ea791d46f8590 # v3.0.3
+              with:
+                  filters: |
+                      app_source:
+                        - 'app/models/**'
+                        - 'app/services/**'
+                        - 'app/jobs/**'
+                        - 'app/channels/**'
+                        - 'app/controllers/**'
+                      spec_changes:
+                        - 'spec/**'
+
+            - name: Reminder add specs for source changes
+              if: steps.filter.outputs.app_source == 'true' && steps.filter.outputs.spec_changes == 'false'
+              run: |
+                  echo "## Missing Spec Reminder" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "This PR modifies app source files (models/services/jobs/channels/controllers)" >> $GITHUB_STEP_SUMMARY
+                  echo "but does not touch any \`spec/\` files." >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "Consider adding or updating specs to cover these changes." >> $GITHUB_STEP_SUMMARY
+                  echo "(Non-blocking reminder — CI still passes)" >> $GITHUB_STEP_SUMMARY

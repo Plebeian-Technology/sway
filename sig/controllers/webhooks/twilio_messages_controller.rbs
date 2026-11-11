@@ -1,0 +1,9 @@
+module Webhooks
+  class TwilioMessagesController < ApplicationController
+    def create: () -> untyped
+
+    private
+
+    def valid_signature?: (String auth_token) -> bool
+  end
+end

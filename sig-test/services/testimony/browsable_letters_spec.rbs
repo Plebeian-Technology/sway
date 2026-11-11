@@ -1,0 +1,9 @@
+class Object
+  def full_text: () -> String
+  def base_letters: () -> Array[Hash[String, untyped]]
+  def text_with_envelope: () -> String
+  def letters: () -> Array[Hash[String, untyped]]
+  def unordered_letters: () -> Array[Hash[String, untyped]]
+  def entries: () -> Array[Testimony::BrowsableLetters::Entry]
+  def campaign_drafts: () -> Array[Hash[String, untyped]]
+end

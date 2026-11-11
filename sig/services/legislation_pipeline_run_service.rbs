@@ -1,0 +1,57 @@
+class LegislationPipelineRunService
+  # Phase 55 Plan 04 (D-05, Pitfall 5): renamed from FULL_NON_SUMMARY_STAGES.
+  ALLOWED_PIPELINE_STAGES: Array[String]
+
+  class StageAllowlistError < ArgumentError
+  end
+
+  class LocaleError < ArgumentError
+  end
+
+  class LocaleMismatchError < LocaleError
+  end
+
+  class MissingLocaleError < LocaleError
+  end
+
+  # Phase 47 D-07, REVIEWS.md iteration 1 HIGH (T-47-04-08): server-side
+  # guard error raised by #resume when the parent run is not eligible.
+  class ResumeNotAllowed < StandardError
+    def initialize: (String reason) -> void
+  end
+
+  # `bill_filter:` kwarg removed; callers pass `bill:` directly.
+  # Phase 55 Plan 03 (D-13 direct replacement, B-4 fix): legacy 'refresh'
+  # kwarg REPLACED with `download_missing_assets:` — no back-compat shim.
+  # Type is bool? because nil signals "use the DB-default of true" in
+  # #initialize and "inherit parent_run.download_missing_assets" in #restart.
+  @stages: Array[String]
+  @bill: Bill?
+  @sway_locale: SwayLocale?
+  @download_missing_assets: bool
+
+  def initialize: (?stages: Array[String]?, ?bill: Bill?, ?sway_locale: SwayLocale?, ?download_missing_assets: bool?) -> void
+  # Phase 52 Plan 09: `skip_enqueue:` lets BillsController call
+  # RunLegislationPipelineJob.perform_later itself after row creation.
+  def call: (?skip_enqueue: bool) -> LegislationPipelineRun
+  # Phase 47 D-06, D-07, R17: Resume + Restart instance methods.
+  # Phase 52 Plan 09: `skip_enqueue:` mirrors the call kwarg.
+  # Phase 55 Plan 03 (D-11): resume has NO operator override — inherits
+  # parent_run.download_missing_assets verbatim.
+  def resume: (LegislationPipelineRun parent_run, ?skip_enqueue: bool) -> LegislationPipelineRun
+  # Phase 55 Plan 03 (D-12, D-13): restart accepts an optional dma override
+  # that defaults to parent_run.download_missing_assets (when nil).
+  def restart: (LegislationPipelineRun parent_run, ?download_missing_assets: bool?, ?skip_enqueue: bool) -> LegislationPipelineRun
+
+  # WR-NEW3-01 (Phase 55 review iter 3): `.concurrency_blocked?` removed
+  # (no production callers; controller uses inline `active_any.lock("").first`).
+  # See the service source file for the rationale.
+
+  private
+
+  def validate_locale!: () -> void
+  def validate_stages!: () -> void
+  # Phase 47 Plan 04 Task 1: shared stage-allowlist enforcement used by
+  # #resume / #restart (which receive stages from parent_run, not @stages).
+  def validate_stages_for!: (Array[String] | nil stages) -> void
+end

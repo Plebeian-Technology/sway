@@ -1,0 +1,20 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "NewsClaimGroundingPayload",
+    "description": "Structured assessment of whether an evidence excerpt and source context logically entail a cited claim.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["verdict", "reason"],
+    "properties": {
+        "verdict": {
+            "type": "string",
+            "enum": ["supported", "unsupported", "indeterminate"],
+            "description": "Assessment verdict: supported if the claim is logically entailed by the excerpt and source context; unsupported if contradicted, invented, or misattributed; indeterminate if ambiguous, truncated, or unresolvable."
+        },
+        "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Concise explanation of the verdict referencing evidence specifics."
+        }
+    }
+}

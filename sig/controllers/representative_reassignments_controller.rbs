@@ -1,0 +1,7 @@
+class RepresentativeReassignmentsController < ApplicationController
+  def dismiss: () -> void
+
+  private
+
+  def authenticate_user!: () -> void
+end

@@ -1,0 +1,13 @@
+# Business-logic extraction from
+# Organizations::PositionChangesController#destroy (soft-reject). Returns a
+# Symbol outcome (:rejected | :already_finalized); the controller maps it to an
+# HTTP response. RBS kept narrow per feedback_update_rbs_with_code.md.
+class RejectPositionChangeService
+  @change: OrganizationBillPositionChange
+
+  @rejecter: User
+
+  def initialize: (change: OrganizationBillPositionChange, rejecter: User) -> void
+
+  def call: () -> Symbol
+end

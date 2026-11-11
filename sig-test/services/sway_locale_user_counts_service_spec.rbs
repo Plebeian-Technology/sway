@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a repeated name stops the whole check]]
+class Object
+  # How many ActiveRecord rows the given block turns into objects.
+  def rows_instantiated_by: () { () -> void } -> Integer
+end

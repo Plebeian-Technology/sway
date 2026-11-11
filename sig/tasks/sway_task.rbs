@@ -1,0 +1,17 @@
+class SwayTask
+    include SwayGoogleCloudStorage
+
+    extend Rake::DSL
+
+    EMAIL_BLOCKLIST_TIMEOUT_SECONDS: Integer
+
+    def self.run: -> untyped
+
+    def self.download_email_blocklist: -> untyped
+
+    def run_task: -> untyped
+
+    def backup_db: (?::Integer attempt) -> void
+
+    def root_path: -> ("/rails" | ".")
+end

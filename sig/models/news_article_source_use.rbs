@@ -1,0 +1,68 @@
+class NewsArticleSourceUse < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[NewsArticleSourceUse, NewsArticleSourceUse::ActiveRecord_Relation, Integer]
+
+  GROUNDING_STATUSES: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def news_article_source_snapshot: () -> NewsArticleSourceSnapshot
+  def news_article_source_snapshot=: (NewsArticleSourceSnapshot) -> NewsArticleSourceSnapshot
+  def bill_news_article: () -> BillNewsArticle
+  def bill_news_article=: (BillNewsArticle) -> BillNewsArticle
+  def text_version: () -> NewsArticleTextVersion
+  def text_version=: (NewsArticleTextVersion) -> NewsArticleTextVersion
+  def bill: () -> Bill?
+  def news_article: () -> NewsArticle?
+
+  def snapshot: () -> NewsArticleSourceSnapshot
+  def snapshot=: (NewsArticleSourceSnapshot) -> NewsArticleSourceSnapshot
+
+  def news_article_source_snapshot_id: () -> Integer
+  def news_article_source_snapshot_id=: (Integer) -> Integer
+  def bill_news_article_id: () -> Integer
+  def bill_news_article_id=: (Integer) -> Integer
+  def text_version_id: () -> Integer
+  def text_version_id=: (Integer) -> Integer
+  def claim_text: () -> String
+  def claim_text=: (String) -> String
+  def evidence_excerpt: () -> String
+  def evidence_excerpt=: (String) -> String
+  def verbatim_excerpt: () -> String
+  def verbatim_excerpt=: (String) -> String
+  def citation_url: () -> String
+  def citation_url=: (String) -> String
+  def grounding_status: () -> String
+  def grounding_status=: (String) -> String
+  def grounding_verdict: () -> String
+  def grounding_verdict=: (String) -> String
+  def grounding_reason: () -> String?
+  def grounding_reason=: (String?) -> String?
+  def created_at: () -> ActiveSupport::TimeWithZone
+  def created_at=: (ActiveSupport::TimeWithZone) -> ActiveSupport::TimeWithZone
+  def updated_at: () -> ActiveSupport::TimeWithZone
+  def updated_at=: (ActiveSupport::TimeWithZone) -> ActiveSupport::TimeWithZone
+
+  def readonly?: () -> bool
+
+  def self.supported: () -> NewsArticleSourceUse::ActiveRecord_Relation
+  def self.unsupported: () -> NewsArticleSourceUse::ActiveRecord_Relation
+  def self.indeterminate: () -> NewsArticleSourceUse::ActiveRecord_Relation
+  def self.pending: () -> NewsArticleSourceUse::ActiveRecord_Relation
+
+  private
+
+  def validate_cross_bill_isolation: () -> void
+  def validate_cross_article_isolation: () -> void
+  def validate_verbatim_excerpt_in_text: () -> void
+  def prevent_mutation: () -> void
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    def supported: () -> NewsArticleSourceUse::ActiveRecord_Relation
+    def unsupported: () -> NewsArticleSourceUse::ActiveRecord_Relation
+    def indeterminate: () -> NewsArticleSourceUse::ActiveRecord_Relation
+    def pending: () -> NewsArticleSourceUse::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+  end
+end

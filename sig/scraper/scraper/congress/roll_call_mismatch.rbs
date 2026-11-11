@@ -1,0 +1,6 @@
+module Scraper
+    module Congress
+        class RollCallMismatch < StandardError
+        end
+    end
+end

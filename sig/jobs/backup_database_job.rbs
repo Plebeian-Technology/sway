@@ -1,0 +1,10 @@
+# Copies the main SQLite database on a schedule, using DatabaseBackupService.
+# Errors are logged rather than raised. The background-job database is
+# deliberately left out.
+class BackupDatabaseJob < ApplicationJob
+  def perform: () -> void
+
+  private
+
+  def database_names: () -> Array[String]
+end

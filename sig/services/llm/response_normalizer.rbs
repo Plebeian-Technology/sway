@@ -1,0 +1,18 @@
+# B3-WR-02: degrades a repairable schema overshoot instead of discarding a
+# paid-for LLM response. See app/services/llm/response_normalizer.rb for
+# exactly which overshoots qualify and why the rest still fail.
+#
+# JSON Schema and the payloads it describes are recursive JSON, so `top` and
+# `untyped` here are the same exception the rest of sig/services/llm/ documents.
+module Llm
+  module ResponseNormalizer
+    # @lat: [[untrusted-text-in-prompts#Why an overshooting key list is deduped rather than refused]]
+    NO_TRIM_FIELDS: Array[String]
+
+    def self?.call: (top value, Hash[String, untyped]? schema, ?String? field_name) -> top
+    def self?.normalize_object: (Hash[String, untyped] value, Hash[String, untyped] schema) -> Hash[String, untyped]
+    def self?.normalize_array: (Array[untyped] value, Hash[String, untyped] schema, ?String? field_name) -> Array[untyped]
+    def self?.cap_items: (Array[untyped] value, Hash[String, untyped] schema, ?String? field_name) -> Array[untyped]
+    def self?.dedupe: (Array[untyped] value, String? field_name) -> Array[untyped]
+  end
+end

@@ -1,0 +1,7 @@
+# Phase 32 Plan 11 (H2): NativePushDispatcher signatures.
+class NativePushDispatcher
+  class DeviceNotRegisteredError < StandardError
+  end
+
+  def self.deliver: (untyped device, Hash[Symbol, untyped] payload) -> untyped
+end

@@ -1,0 +1,37 @@
+class HistoricalElectedOfficialImporter
+  class Result
+    attr_reader status: Symbol
+    attr_reader legislator: Legislator?
+    attr_reader term: LegislatorTerm?
+    attr_reader created: bool
+    attr_reader reason: Symbol?
+    attr_reader details: String?
+
+    def initialize: (status: Symbol, ?legislator: Legislator?, ?term: LegislatorTerm?, ?created: bool, ?reason: Symbol?, ?details: String?) -> void
+    def success?: () -> bool
+    def held_for_repair?: () -> bool
+    def unresolved?: () -> bool
+    def self.success: (legislator: Legislator?, term: LegislatorTerm?, ?created: bool) -> Result
+    def self.held_for_repair: (Symbol reason, ?details: String?) -> Result
+    def self.unresolved: (Symbol reason, ?details: String?) -> Result
+  end
+
+  @sway_locale: SwayLocale?
+
+  def initialize: (?sway_locale: SwayLocale?) -> void
+  def call: (jurisdiction: (String | SwayLocale), identity_clues: Hash[Symbol, untyped], vote_day: Date, ?evidence_provider: untyped) -> Result
+
+  private
+
+  def resolve_locale: (String | SwayLocale) -> untyped
+  def resolve_official_facts: (SwayLocale, Hash[Symbol, untyped], Date, ?evidence_provider: untyped) -> Array[untyped]
+  def parse_facts_from_provider: (untyped, SwayLocale) -> Array[untyped]
+  def reader_for: (SwayLocale) -> untyped
+  def official_jurisdiction_for: (SwayLocale) -> String
+  def fact_matches_clues?: (untyped, Hash[Symbol, untyped]) -> bool
+  def fact_covers_date?: (untyped, Date) -> bool
+  def find_existing_legislator: (SwayLocale, untyped, untyped) -> Legislator?
+  def resolve_district: (SwayLocale, untyped) -> District
+  def create_legislator!: (SwayLocale, untyped) -> Legislator
+  def create_term!: (Legislator?, District, untyped, untyped) -> LegislatorTerm
+end

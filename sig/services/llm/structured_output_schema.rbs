@@ -1,0 +1,45 @@
+# B-WR-07 / B2-WR-04: the structured-outputs-safe copy of a JSON Schema.
+#
+# JSON Schema is recursive JSON, so the value type is `untyped` for the same
+# reason Llm::ClaudeAdapter's `schema:` parameter is — see the header of
+# sig/services/llm/claude_adapter.rbs and the [[feedback_rbs_avoid_untyped]]
+# exception clause. #strip walks arbitrary JSON, so its parameter and return
+# are genuinely `top`.
+module Llm
+  module StructuredOutputSchema
+    UNSUPPORTED_KEYWORDS: Array[String]
+
+    # B3-WR-03: keywords whose value is a map keyed by PROPERTY NAME, so the
+    # keys inside them are not keywords and must not be stripped.
+    SCHEMA_MAP_KEYWORDS: Array[String]
+
+    # B2-WR-04: keywords whose value is an arbitrary JSON INSTANCE rather than
+    # a subschema, so #strip must not descend into it at all.
+    DATA_VALUE_KEYWORDS: Array[String]
+
+    # B3-IN-03: compare_by_identity — exact for the frozen boot constants the
+    # four callers pass, and free on the hot path.
+    #
+    # B2-WR-05: identity keying does NOT stop a per-request schema
+    # accumulating; a miss is followed by an insert under a fresh identity,
+    # every call. MAX_CACHE_ENTRIES is what bounds it. This comment used to
+    # restate the false claim, which is why it is corrected here and not only
+    # in the source.
+    CACHE: Hash[Symbol, Hash[Hash[String, untyped], Hash[String, untyped]]]
+
+    # Clear-and-refill bound on CACHE. Four boot constants; the headroom is for
+    # a caller that builds schemas per request, which now thrashes rather than
+    # leaks.
+    MAX_CACHE_ENTRIES: Integer
+
+    MUTEX: Thread::Mutex
+
+    def self.for_request: (Hash[String, untyped] schema, ?dialect: Symbol) -> Hash[String, untyped]
+
+    # Deep copy with UNSUPPORTED_KEYWORDS removed from KEYWORD position only.
+    # Accepts any JSON node.
+    def self.strip: (Hash[String, untyped] node) -> Hash[String, untyped]
+                  | (Array[untyped] node) -> Array[untyped]
+                  | (top node) -> top
+  end
+end

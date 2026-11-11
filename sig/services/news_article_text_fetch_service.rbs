@@ -1,0 +1,61 @@
+class NewsArticleTextFetchService
+  MAX_REDIRECTS: Integer
+  MAX_DOWNLOAD_BYTES: Integer
+  MAX_EXTRACTED_TEXT_CHARS: Integer
+  OPEN_TIMEOUT_SECONDS: Integer
+  READ_TIMEOUT_SECONDS: Integer
+  MAX_ELAPSED_SECONDS: Integer
+  MIN_TEXT_CHARS: Integer
+  USER_AGENT: String
+  BLOCKED_CIDR_RANGES: Array[IPAddr]
+  DISALLOWED_HOST_SUFFIXES: Array[String]
+  DISALLOWED_EXACT_HOSTS: Array[String]
+  CHALLENGE_SELECTORS: String
+  CHALLENGE_TITLE_PATTERNS: Regexp
+  CHALLENGE_PHRASES: Regexp
+  PAYWALL_SELECTORS: String
+  PAYWALL_PHRASES: Regexp
+  LOGIN_TITLE_PATTERNS: Regexp
+
+  @bill_news_article: BillNewsArticle?
+  @news_article: NewsArticle
+  @requested_url: String
+  @force: bool
+
+  def self.call: (?bill_news_article: BillNewsArticle?, ?news_article: NewsArticle?, ?requested_url: String?, ?force: bool) -> NewsArticleTextVersion
+  def self.safe_destination?: (URI::Generic uri) -> bool
+  def self.challenge_indicator?: (untyped first_arg, ?untyped second_arg) -> bool
+  def initialize: (?bill_news_article: BillNewsArticle?, ?news_article: NewsArticle?, ?requested_url: String?, ?force: bool) -> void
+  def call: () -> NewsArticleTextVersion
+
+  private
+
+  attr_reader bill_news_article: BillNewsArticle?
+  attr_reader news_article: NewsArticle
+  attr_reader requested_url: String
+  attr_reader force: bool
+
+  def execute_retrieval: () -> [Symbol, String?, String]
+  def parse_uri: (String url_str) -> URI::Generic?
+  def valid_uri?: (URI::Generic uri) -> bool
+  def safe_destination?: (URI::Generic uri) -> bool
+  def ip_literal?: (String host) -> bool
+  def ip_safe?: (String host) -> bool
+  def resolve_host: (String host) -> Array[String]
+  def blocked_address?: (String addr) -> bool
+  def allowed_by_path_policy?: (URI::Generic uri) -> bool
+  def resolve_redirect_url: (String base_url, String location) -> String?
+  def fetch_http: (URI::Generic uri, Float deadline) -> [Faraday::Response?, String?]
+  def extract_text_and_enrich_metadata: (String raw_body) -> [Symbol, String?]
+  def remove_peripheral_chrome: (untyped doc) -> untyped
+  def challenge_indicator?: (untyped first_arg, ?untyped second_arg) -> bool
+  def paywall_indicator?: (untyped first_arg, ?untyped second_arg) -> bool
+  def microdata_paywalled?: (untyped doc) -> bool
+  def login_gate?: (untyped doc, String raw_body) -> bool
+  def normalize_doc_and_body: (untyped first_arg, untyped second_arg) -> [untyped, String]
+  def extract_article_metadata: (untyped doc) -> Hash[Symbol, untyped]
+  def apply_article_metadata_updates: (Hash[Symbol, untyped] meta_updates) -> void
+  def enrich_article_metadata: (untyped doc) -> void
+  def persist_version: (status: Symbol | String, text: String?, final_url: String) -> NewsArticleTextVersion
+  def link_association: (NewsArticleTextVersion version) -> void
+end

@@ -1,0 +1,13 @@
+# B23-02: the server-side exit for a bill summary row a dead worker left
+# `pending` or `generating`. The service-side reclaim is reachable only from a
+# control that is disabled in exactly those statuses.
+class ReclaimAbandonedSummaryRunsJob < ApplicationJob
+  MAX_ROWS_PER_SWEEP: Integer
+
+  # How many rows were reclaimed.
+  def perform: () -> Integer
+
+  private
+
+  def reclaim: (BillLlmProvisioning provisioning) -> bool
+end

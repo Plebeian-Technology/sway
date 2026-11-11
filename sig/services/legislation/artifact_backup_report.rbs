@@ -1,0 +1,64 @@
+module Legislation
+  # What one backup pass did, in a form a person can read and a test can check.
+  class ArtifactBackupReport
+    # :ok is a completed pass. :listing_failed is a pass that stopped before it
+    # walked anything because the bucket could not be listed. :floor_not_met is a
+    # pass that walked and found less than the database says must exist.
+    type status = (:ok | :listing_failed | :floor_not_met)
+
+    # A log line has to stay readable, so only this many failures are kept.
+    FAILURE_SAMPLE_LIMIT: Integer
+
+    @status: status
+    @files_found_by_root: Hash[String, Integer]
+    @failed: Hash[String, String]
+    @listed_count: Integer
+    @uploaded_count: Integer
+    @uploaded_bytes: Integer
+    @skipped_present_count: Integer
+    @skipped_identical_count: Integer
+    @skipped_temp_count: Integer
+    @skipped_vanished_count: Integer
+    @floor: Integer
+    @elapsed_seconds: Float
+
+    attr_accessor status: status
+
+    # Objects the one listing returned, before any local comparison.
+    attr_accessor listed_count: Integer
+
+    attr_accessor uploaded_count: Integer
+    attr_accessor uploaded_bytes: Integer
+
+    # Local files whose stored object carries no MD5, at the same size and no older.
+    attr_accessor skipped_present_count: Integer
+
+    # Local files whose MD5 matches the stored object's.
+    attr_accessor skipped_identical_count: Integer
+
+    # Atomic-write temporary files passed over by name.
+    attr_accessor skipped_temp_count: Integer
+
+    # Files that disappeared between the glob and the stat.
+    attr_accessor skipped_vanished_count: Integer
+
+    # The smallest believable bills/text count, from the database. 0 asserts nothing.
+    attr_accessor floor: Integer
+
+    attr_accessor elapsed_seconds: Float
+
+    # Bucket key of a root => how many files the walk found under it.
+    attr_reader files_found_by_root: Hash[String, Integer]
+
+    # Object name => class and message of the failure, capped.
+    attr_reader failed: Hash[String, String]
+
+    def initialize: () -> void
+    def record_found: (String root_key) -> void
+    def record_uploaded: (Integer bytes) -> void
+    def record_failure: (String object_name, String reason) -> void
+    def files_found: () -> Integer
+    def ok?: () -> bool
+    def to_log_metadata: () -> Hash[Symbol, (Symbol | Integer | Float | Hash[String, Integer])]
+  end
+end

@@ -1,0 +1,6 @@
+# Hand-written extensions to the rbs_rails-generated Passkey
+# sig (sig/rbs_rails/app/models/passkey.rbs). Keep schema-derived
+# accessors there; keep app-defined methods here.
+class Passkey
+  def device_name: -> String?
+end

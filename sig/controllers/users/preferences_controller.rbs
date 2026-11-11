@@ -1,0 +1,11 @@
+module Users
+  class PreferencesController < ApplicationController
+    def update: -> untyped
+
+    private
+
+    def preference_params: -> ActionController::Parameters
+    def render_preference_errors: (untyped errors) -> untyped
+    def render_preference_errors_from_message: (String message, status: Symbol, code: String) -> untyped
+  end
+end

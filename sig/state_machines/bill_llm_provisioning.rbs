@@ -1,0 +1,53 @@
+# Hand-written RBS overlay for BillLlmProvisioning's state machine per
+# D-40. state_machines-activerecord generates these dynamically; this
+# file enumerates them concretely so Steep can resolve callsites without
+# `untyped` (project memory: feedback_rbs_avoid_untyped).
+#
+# Graph (defined in app/models/bill_llm_provisioning.rb):
+#   nil → pending (via enqueue, also completed→pending / failed→pending / skipped→pending)
+#   pending → generating
+#   generating → completed
+#   generating → failed
+#   pending → failed (an error before the run started still settles)
+#   pending → skipped (via mark_skipped — the stale-job gate)
+#
+# Consumers in this phase: GenerateBillSummaryJob (Plan 08),
+# BillsController#regenerate_summary (Phase 50), and the paste_summary
+# controller (Plan 09).
+class BillLlmProvisioning < ApplicationRecord
+  # REVIEW-7 LOW-5 (cycle 7): the `generation_status` column reader/writer
+  # is the underlying value the state-machine predicates dispatch on.
+  # GenerateBillSummaryJob#record_failure reads it directly to guard the
+  # `mark_failed!` transition; without this overlay Steep falls back to
+  # `untyped` for that call.
+  def generation_status: () -> String?
+  def generation_status=: (String?) -> String?
+
+  # State predicates (state_machines-activerecord dynamic methods)
+  def pending?: () -> bool
+  def generating?: () -> bool
+  def completed?: () -> bool
+  def failed?: () -> bool
+  def skipped?: () -> bool
+
+  # Bang transitions — raise StateMachines::InvalidTransition on illegal paths
+  def enqueue!: () -> bool
+  def start_generating!: () -> bool
+  def mark_completed!: () -> bool
+  def mark_failed!: () -> bool
+  def mark_skipped!: () -> bool
+
+  # Non-bang transitions
+  def enqueue: () -> bool
+  def start_generating: () -> bool
+  def mark_completed: () -> bool
+  def mark_failed: () -> bool
+  def mark_skipped: () -> bool
+
+  # can_*? predicates
+  def can_enqueue?: () -> bool
+  def can_start_generating?: () -> bool
+  def can_mark_completed?: () -> bool
+  def can_mark_failed?: () -> bool
+  def can_mark_skipped?: () -> bool
+end

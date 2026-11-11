@@ -1,0 +1,28 @@
+module ReportApplicationErrors
+  # Only what the hook calls, so the captured module is described rather than
+  # left untyped. A spec's Sentry double is deliberately not this.
+  interface _Reporter
+    def initialized?: () -> bool
+    def with_scope: [T] () { (untyped scope) -> T } -> T
+    def capture_exception: (Exception exception) -> untyped
+  end
+
+  SENTRY: _Reporter?
+  TEST_FAILURES: Array[Class]
+
+  # module_function makes each of these both a singleton and an instance method.
+  def self.test_failure?: (Exception exception) -> bool
+  def test_failure?: (Exception exception) -> bool
+
+  def self.application_errors: (Exception? exception) -> Array[Exception]
+  def application_errors: (Exception? exception) -> Array[Exception]
+
+  def self.reporting?: () -> bool
+  def reporting?: () -> bool
+
+  def self.live_sentry_constant: () -> untyped
+  def live_sentry_constant: () -> untyped
+
+  def self.tags_for: (RSpec::Core::Example example) -> Hash[String, String]
+  def tags_for: (RSpec::Core::Example example) -> Hash[String, String]
+end

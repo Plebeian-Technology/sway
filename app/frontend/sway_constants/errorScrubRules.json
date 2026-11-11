@@ -1,0 +1,44 @@
+{
+    "_comment": "The one table the Ruby, web and mobile error scrubbers read. Patterns are regex SOURCE, compiled by each language. Lives here because Metro already watches app/frontend, which is how mobile reaches shared constants. Docs: docs/operations.md.",
+
+    "maxStringLength": 2000,
+    "maxDepth": 12,
+
+    "_redactionsComment": "Most specific first, so digits inside a key are not replaced before the key.",
+    "redactions": [
+        { "label": "[FILTERED_KEY]", "pattern": "sk-ant-[A-Za-z0-9_-]+" },
+        { "label": "[FILTERED_EMAIL]", "pattern": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}" },
+        {
+            "label": "[FILTERED_PHONE]",
+            "pattern": "(?<!\\d)(?:\\+?1[\\s.-]?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}(?!\\d)"
+        }
+    ],
+
+    "_droppedComment": "Dropped whole: these carry a session or credential and help nobody debug.",
+    "droppedKeys": [
+        "cookie",
+        "cookies",
+        "headers",
+        "authorization",
+        "auth",
+        "token",
+        "bearer_token",
+        "refresh_token",
+        "push_token",
+        "sms_verified_token",
+        "webauthn_challenge",
+        "password",
+        "secret",
+        "street",
+        "street2",
+        "street3",
+        "postal_code",
+        "latitude",
+        "longitude",
+        "full_name",
+        "code"
+    ],
+
+    "_preservedComment": "Left exactly as they are. The phone pattern matches a 10-digit run inside a 32-char hex id about 3.5% of the time, and a rewritten event_id is not valid, so the collector drops the envelope and the error is lost without a word.",
+    "preservedKeys": ["event_id", "trace_id", "span_id", "parent_span_id", "timestamp", "start_timestamp"]
+}

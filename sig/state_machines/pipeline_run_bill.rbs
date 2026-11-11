@@ -1,0 +1,35 @@
+# Hand-written RBS overlay for PipelineRunBill's state machine per D-40.
+# state_machines-activerecord generates these dynamically; this file
+# enumerates them concretely so Steep can resolve callsites without
+# `untyped` (project memory: feedback_rbs_avoid_untyped).
+#
+# Phase 52 Plan 03: extends the existing pending → running → {succeeded,
+# failed, skipped} graph with the after_transition + after_commit hooks
+# (defined in app/models/pipeline_run_bill.rb).
+
+class PipelineRunBill < ApplicationRecord
+  # State predicates (state_machines-activerecord dynamic methods)
+  def pending?: () -> bool
+  def running?: () -> bool
+  def succeeded?: () -> bool
+  def failed?: () -> bool
+  def skipped?: () -> bool
+
+  # Bang transitions — raise StateMachines::InvalidTransition on illegal paths
+  def start_running!: () -> bool
+  def mark_succeeded!: () -> bool
+  def mark_failed!: () -> bool
+  def mark_skipped!: () -> bool
+
+  # Non-bang transitions
+  def start_running: () -> bool
+  def mark_succeeded: () -> bool
+  def mark_failed: () -> bool
+  def mark_skipped: () -> bool
+
+  # can_*? predicates
+  def can_start_running?: () -> bool
+  def can_mark_succeeded?: () -> bool
+  def can_mark_failed?: () -> bool
+  def can_mark_skipped?: () -> bool
+end

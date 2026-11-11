@@ -1,0 +1,27 @@
+class Organizations::MembershipInvitesController < Organizations::BaseController
+  @invite: UserOrganizationMembershipInvite
+
+  class InviteAlreadyAccepted < StandardError
+  end
+
+  class InviteRevoked < StandardError
+  end
+
+  class InviteExpired < StandardError
+  end
+
+  class InviteEmailMismatch < StandardError
+  end
+
+  def confirm_accept: () -> void
+  def accept: () -> void
+  def destroy: () -> void
+  def create: () -> void
+
+  private
+
+  def email_matches?: (UserOrganizationMembershipInvite, User?) -> bool
+  def respond_invite_failure: (String, status: Symbol) -> void
+  def invite_params: () -> ActionController::Parameters
+  def members_tab_path: () -> String
+end

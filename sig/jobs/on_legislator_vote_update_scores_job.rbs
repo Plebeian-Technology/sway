@@ -1,0 +1,5 @@
+class OnLegislatorVoteUpdateScoresJob < ApplicationJob
+    def self.limits_concurrency: (?to: Integer, ?key: ^(Integer legislator_id, ?Integer? legislator_term_id) -> String, ?on_conflict: Symbol) -> void
+
+    def perform: (Integer legislator_id, ?Integer? legislator_term_id) -> void
+end

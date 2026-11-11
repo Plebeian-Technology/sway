@@ -1,0 +1,54 @@
+class SummaryCitationValidator
+  class Result
+    attr_accessor invalid_citations: Array[String]
+
+    # The keyword is REQUIRED, matching the one construction site in #call.
+    # It used to be optional here while the attr_accessor claimed non-nil, and
+    # Struct.new(:invalid_citations) really does accept Result.new with no
+    # argument — leaving the field nil, so #valid? raises NoMethodError on
+    # nil.empty?. Steep passed a call that crashes at run time.
+    def self.new: (invalid_citations: Array[String]) -> Result
+
+    def valid?: () -> bool
+  end
+
+  MAX_PROSE_NEWS_URLS: Integer
+
+  def self.verdict_attrs: (
+    bill: Bill,
+    payload: Hash[String, untyped],
+  ) -> {citations_valid: bool?, invalid_citations: Array[String]?, news_urls_valid: bool?, invalid_news_urls: Array[String]?}
+
+  def self.section_verdict_attrs: (
+    bill: Bill,
+    payload: Hash[String, untyped],
+  ) -> {citations_valid: bool?, invalid_citations: Array[String]?}
+
+  def self.news_verdict_attrs: (
+    bill: Bill,
+    payload: Hash[String, untyped],
+  ) -> {news_urls_valid: bool?, invalid_news_urls: Array[String]?}
+
+  def self.official_bill_url: (Bill bill) -> String?
+
+  def self.generic_search_url?: (String? url) -> bool
+
+  def self.official_url?: (String? url, String? official_url) -> bool
+
+  def self.normalize_path: (String? path) -> String
+
+  def self.allowed_news_urls: (Bill bill) -> Set[String]
+
+  def self.extract_structured_urls: (Hash[String, untyped] payload) -> Array[String]
+
+  def self.normalize_markdown_label: (String? label) -> String
+
+  def self.extract_prose_urls: (String? text) -> Array[String]
+
+  @bill: Bill
+  @cited_section_keys: Array[String]?
+
+  def initialize: (bill: Bill, cited_section_keys: Array[String]?) -> void
+
+  def call: () -> Result
+end

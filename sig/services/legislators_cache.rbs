@@ -1,0 +1,3 @@
+module LegislatorsCache
+  POTUS_BIOGUIDE_ID: String
+end

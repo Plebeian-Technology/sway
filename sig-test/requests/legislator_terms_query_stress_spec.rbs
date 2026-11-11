@@ -1,0 +1,10 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def capture_sql_queries: () { () -> untyped } -> Array[Hash[Symbol, untyped]]
+  def create_legislator_with_terms: (
+    term_count: Integer,
+    ?has_user_scores: bool,
+    ?has_explanations: bool,
+    ?user_override: User?
+  ) -> [Legislator, UserLegislator]
+end

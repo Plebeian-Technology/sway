@@ -1,0 +1,35 @@
+# Phase 39 D-01 — supplemental declarations for LegislatorVote.
+# Column accessors live in sig/rbs_rails/app/models/legislator_vote.rbs
+# (auto-generated). This file holds the hand-written additions: the SOURCES
+# constant (Phase 39 D-01), the Support enum class, and the support
+# predicate/serializer/scoring methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class ::LegislatorVote < ::ApplicationRecord
+  # Source enum (D-01): values written by services / admin UI.
+  SOURCES: ::Array[::String]
+
+  class Support
+    FOR: String
+    AGAINST: String
+    ABSTAIN: String
+    FOR_AGAINST: Array[String?]
+    ALL: Array[String]
+  end
+
+  def for?: -> bool
+  def against?: -> bool
+  def abstain?: -> bool
+  def upcase_support: -> String?
+  def transform_support_to_for_against_abstain: -> String?
+  def update_scores: -> void
+
+  def legislator_term_id: () -> Integer?
+  def legislator_term_id=: (Integer?) -> Integer?
+
+  def self.create!: (?untyped attributes) ?{ () -> untyped } -> LegislatorVote
+
+  private
+
+  # Phase 62 Plan 04 (D-14): sibling to :update_scores.
+  def enqueue_interesting_score_recompute: () -> void
+end

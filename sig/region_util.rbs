@@ -1,0 +1,13 @@
+module RegionUtil
+    def self.from_country_code_to_name: (untyped code) -> (nil | untyped)
+
+    COUNTRY_CODES_NAMES: Hash[Symbol, String]
+
+    def self.from_region_name_to_region_code: (untyped name) -> (nil | untyped)
+
+    def self.from_region_code_to_region_name: (untyped code) -> (nil | untyped)
+
+    STATE_NAMES_CODES: Hash[Symbol, String]
+
+    STATE_CODES_NAMES: Hash[Symbol, String]
+end

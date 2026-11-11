@@ -1,0 +1,24 @@
+# RBS sig for Eval::ScoreReport::Renderer — see app/services/eval/score_report/renderer.rb.
+module Eval
+  class ScoreReport
+    class Renderer
+      @result: Eval::ScoreReport::Result
+
+      def initialize: (Eval::ScoreReport::Result result) -> void
+      def render: () -> String
+
+      private
+
+      attr_reader result: Eval::ScoreReport::Result
+
+      def dimension_table: () -> String
+      def header_row: () -> String
+      def separator_row: () -> String
+      def dimension_row: (Eval::ScoreReport::DimensionDistribution distribution) -> String
+      def shares_cell: () -> String
+      def schema_failure_section: () -> String
+      def exclusion_section: () -> String
+      def latency_section: () -> String
+    end
+  end
+end

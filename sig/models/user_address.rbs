@@ -1,0 +1,2 @@
+class UserAddress < ApplicationRecord
+end

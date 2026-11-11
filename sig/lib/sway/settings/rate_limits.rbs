@@ -1,0 +1,41 @@
+module Sway::Settings
+  interface _RateLimitsConfig
+    def sign_in_enabled: () -> bool
+    def sign_in_enabled=: (bool) -> void
+    def sign_in_enabled?: () -> bool
+    def sign_up_enabled: () -> bool
+    def sign_up_enabled=: (bool) -> void
+    def sign_up_enabled?: () -> bool
+    def phone_verify_enabled: () -> bool
+    def phone_verify_enabled=: (bool) -> void
+    def phone_verify_enabled?: () -> bool
+    def email_verify_enabled: () -> bool
+    def email_verify_enabled=: (bool) -> void
+    def email_verify_enabled?: () -> bool
+    def legislator_email_enabled: () -> bool
+    def legislator_email_enabled=: (bool) -> void
+    def legislator_email_enabled?: () -> bool
+    def csp_report_enabled: () -> bool
+    def csp_report_enabled=: (bool) -> void
+    def csp_report_enabled?: () -> bool
+    def org_invite_enabled: () -> bool
+    def org_invite_enabled=: (bool) -> void
+    def org_invite_enabled?: () -> bool
+    def device_push_token_enabled: () -> bool
+    def device_push_token_enabled=: (bool) -> void
+    def device_push_token_enabled?: () -> bool
+    def bootstrap_enabled: () -> bool
+    def bootstrap_enabled=: (bool) -> void
+    def bootstrap_enabled?: () -> bool
+    def preferences_enabled: () -> bool
+    def preferences_enabled=: (bool) -> void
+    def preferences_enabled?: () -> bool
+    def bill_summary_report_enabled: () -> bool
+    def bill_summary_report_enabled=: (bool) -> void
+    def bill_summary_report_enabled?: () -> bool
+  end
+
+  class RateLimits < Sway::Settings::Base
+    include _RateLimitsConfig
+  end
+end

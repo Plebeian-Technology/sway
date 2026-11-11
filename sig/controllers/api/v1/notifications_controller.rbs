@@ -1,0 +1,8 @@
+# Phase 37 Plan 04 — Api::V1::NotificationsController signatures.
+module Api
+  module V1
+    class NotificationsController < BaseController
+      def test_push: () -> untyped
+    end
+  end
+end

@@ -1,0 +1,24 @@
+module QueryParameterRedirectCarry : ActionController::Base
+
+  INTENTIONAL_EMPTY_LIST_PARAMETERS: Array[String]
+  BILL_CREATOR_ID_PATHS: Array[Regexp]
+
+  extend ActiveSupport::Concern
+  extend AbstractController::Callbacks::ClassMethods
+
+  private
+
+  def carry_query_parameters_across_redirect: -> void
+  def eligible_redirect_pairs: (QueryParameterCheck, String?, String?, String?, URI::Generic, Array[Hash[Symbol, String]], Array[String]) -> Array[Hash[Symbol, String]]
+  def valid_same_bill_run_pin?: (String?, String?, String?, String?, Array[Hash[Symbol, String]], Array[String]) -> bool
+  def past_bills_of_the_month_path?: (String?) -> bool
+  def cross_bills_surface_redirect?: (String?, String?, String?) -> bool
+  def bill_creator_bill_id: (String?) -> String?
+  def first_empty_ordinary_names: (Array[Hash[Symbol, String]], QueryParameterCheck, String?) -> Array[String]
+  def registered_target_name?: (String, QueryParameterCheck, String?) -> bool
+  def same_origin_redirect_uri: (String?) -> URI::Generic?
+  def same_origin_referer_uri: -> URI::Generic?
+  def same_origin_uri?: (URI::Generic) -> bool
+  def raw_query_pairs: (String?) -> Array[Hash[Symbol, String]]
+
+end

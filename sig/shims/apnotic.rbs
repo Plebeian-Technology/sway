@@ -1,0 +1,37 @@
+module Apnotic
+    class Notification
+        def initialize: (untyped device_token) -> void
+
+        attr_accessor alert: untyped
+        attr_accessor topic: untyped
+        attr_accessor priority: untyped
+        attr_accessor custom_payload: untyped
+        attr_accessor sound: untyped
+        attr_accessor badge: untyped
+        attr_accessor content_available: untyped
+        attr_accessor mutable_content: untyped
+        attr_accessor expiration: untyped
+        attr_accessor apns_id: untyped
+        attr_accessor collapse_id: untyped
+        attr_accessor push_type: untyped
+    end
+
+    class Response
+        def status: -> untyped
+        def body: -> String
+        def ok?: -> bool
+        def headers: -> Hash[String, String]
+    end
+
+    class Connection
+        def push: (Notification notification) -> Response?
+        def close: -> void
+    end
+
+    class ConnectionPool
+        # Real signature: ConnectionPool.new(options_hash, size: N) { |conn| ... }
+        def self.new: (Hash[Symbol, untyped] options, **untyped pool_opts) ?{ (Connection conn) -> untyped } -> ConnectionPool
+        def with: () { (Connection conn) -> untyped } -> untyped
+        def close: -> void
+    end
+end

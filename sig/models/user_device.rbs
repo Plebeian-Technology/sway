@@ -1,0 +1,5 @@
+class UserDevice < ApplicationRecord
+    PLATFORMS: Array[String]
+
+    def revoke!: () -> void
+end

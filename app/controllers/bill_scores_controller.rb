@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+class BillScoresController < ApplicationController
+  skip_before_action :authenticate_sway_user!, only: %i[show]
+
+  def show
+    render json:
+             BillScore
+               .includes(:bill_score_districts, bill: {sway_locale: :districts})
+               .find_by(bill_id: params[:id])
+               &.to_builder_with_user(current_user)
+               &.attributes!,
+      status: :ok
+  end
+end

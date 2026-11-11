@@ -1,0 +1,7 @@
+class PipelineArchiveExclusionSpecContext < Object
+  def locale: () -> SwayLocale
+  def current_session: () -> LegislativeSession
+  def prior_session: () -> LegislativeSession
+  def old_bill: () -> Bill
+  def service: () -> ArchivePreviousSessionBillsService
+end

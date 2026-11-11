@@ -1,0 +1,255 @@
+# Hand-authored RBS sig for BillLlmProvisioning (Phase 48 BL-01).
+# Supplements the auto-generated sig at sig/rbs_rails/app/models/bill_llm_provisioning.rbs.
+# When rbs_rails regenerates, this file's summary_run_id should be moved into the
+# generated file (the column is real) and this hand-authored file removed.
+class BillLlmProvisioning < ApplicationRecord
+  # Phase 48 D-14 (BL-01 fix) originally made this the canonical lookup key for
+  # the FastAPI summary_generated webhook receiver. That webhook was removed
+  # with the Python sidecar in Phase 52, which left the column vestigial —
+  # B4-IN-02 found it never written with a non-nil value anywhere, only cleared.
+  #
+  # B4-CR-03 gives it a live meaning rather than retiring it: it now holds the
+  # ActiveJob job_id of the enqueue that bought the summary currently on the
+  # row. GenerateBillSummaryJob writes it in the same update! as llm_summary and
+  # reads it back at the top of #perform, so a retry of that enqueue settles the
+  # row instead of re-issuing both paid adapter calls. Still cleared by
+  # GenerateBillSummaryService and by the job's own fresh-generate path, and
+  # still uniquely indexed where non-null (one enqueue, one row).
+  def summary_run_id: () -> String?
+  def summary_run_id=: (String?) -> String?
+
+  # Phase 63 Plan 01 (D-06/D-07/D-11/D-15): new columns; not yet in the
+  # rbs_rails-generated sig (regenerate to move these there once run).
+  def extracted_testimony: () -> String?
+  def extracted_testimony=: (String?) -> String?
+  def testimony_fetched_at: () -> ActiveSupport::TimeWithZone?
+  def testimony_fetched_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+  def testimony_attachments: () -> Array[Hash[String, untyped]]?
+  def testimony_attachments=: (Array[Hash[String, untyped]]?) -> Array[Hash[String, untyped]]?
+  def citations_valid: () -> bool?
+  def citations_valid=: (bool?) -> bool?
+  def invalid_citations: () -> Array[String]?
+  def invalid_citations=: (Array[String]?) -> Array[String]?
+
+  def news_articles: () -> Array[Hash[String, String]]?
+  def news_articles=: (Array[Hash[String, String]]?) -> Array[Hash[String, String]]?
+  def news_articles_fetched_at: () -> ActiveSupport::TimeWithZone?
+  def news_articles_fetched_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+  def news_urls_valid: () -> bool?
+  def news_urls_valid=: (bool?) -> bool?
+  def invalid_news_urls: () -> Array[String]?
+  def invalid_news_urls=: (Array[String]?) -> Array[String]?
+  def news_articles_list: () -> Array[Hash[String, String]]
+  def invalid_news_urls_list: () -> Array[String]
+
+
+  # Phase 67 Plan 01 (D-01): cleaned_testimony is a Hash in every path that
+  # writes it — Testimony::CleanAndGroupService::ARTIFACT_VERSION under
+  # "version", the repaired-and-banner-free bundle under "text", the repair
+  # and removal counts under "counts", and an empty array under "letters"
+  # until a later plan fills it in. `untyped` here for the same reason
+  # draft_entry is: operator-mutable JSON with no DB-layer schema.
+  def cleaned_testimony: () -> Hash[String, untyped]?
+  def cleaned_testimony=: (Hash[String, untyped]?) -> Hash[String, untyped]?
+  def cleaned_testimony_at: () -> ActiveSupport::TimeWithZone?
+  def cleaned_testimony_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
+
+  # What kind of change overtook a summary. Spelled once here for
+  # the server and once in llm-summary/staleChange.ts for the browser, the same
+  # arrangement OPERATOR_PASTE_PROVIDER uses.
+  TESTIMONY_CHANGE: String
+  PIPELINE_DATA_CHANGE: String
+
+  # @lat: [[bill-creator-summary-tab#What the staleness marker quotes]]
+  def stale_change: () -> [String, ActiveSupport::TimeWithZone]?
+
+  # @lat: [[bill-creator-summary-tab#What the staleness marker quotes]]
+  def stale?: () -> bool
+
+  # B23-02: the one definition of "this row is stuck with no live writer".
+  # Read by GenerateBillSummaryService's reclaim, by
+  # ReclaimAbandonedSummaryRunsJob, and by the provisioning prop — because
+  # #stale? cannot cover a row that never produced a summary (it needs
+  # llm_generated_at) and that is exactly the row with no exit.
+  def reclaimable?: () -> bool
+
+  # @lat: [[llm-summaries#Batch summarisation#Why the per-bill exemption needs its own ceiling]]
+  def summary_batch_awaited?: () -> bool
+
+  # Phase 63 D-01/D-12: true when extracted_testimony OR supplemental_testimony
+  # is present.
+  def testimony_present?: () -> bool
+
+  # B20-03: a fingerprint of both testimony columns, taken by
+  # GenerateBillSummaryJob under the lock that decides to buy the positions
+  # call. Its persist declines the wholesale draft_org_positions write when the
+  # committed value no longer matches, which is a question about THIS RUN's
+  # evidence rather than the bill-level one #testimony_present? answers.
+  def testimony_digest: () -> String
+
+  # True when the positions call is still owed: testimony is present and the
+  # drafts column is nil. A successful call always writes the column, an empty
+  # list included, so nil means the call never landed.
+  def positions_owed?: () -> bool
+
+  def to_builder: () -> Jbuilder
+
+  # B2-IN-01: how much of the SHA-256 the draft identity token keeps.
+  DRAFT_TOKEN_HEX_CHARS: Integer
+
+  # One element of the serialized draft_org_positions array. A Hash in every
+  # path that writes it, but the column is operator-mutable JSON with no
+  # DB-layer schema, so the full JSON value universe is the honest domain of
+  # anything that reads an element back out. Mirrors the identically-named type
+  # in sig/controllers/bill_draft_org_positions_controller.rbs.
+  type draft_entry = Hash[String, untyped] | Array[untyped] | String | Integer | Float | bool | nil
+
+  # rbs_rails infers ::String? from the underlying text column, but the model
+  # declares `serialize :draft_org_positions, coder: JSON` — so every reader
+  # gets the deserialized array back, never the raw JSON string. Overriding the
+  # generated accessor here is what lets callers be typed at all.
+  # @lat: [[rbs-signatures#Why a serialized column's generated signature is wrong]]
+  def rejected_campaign_draft_hashes: () -> Array[String]?
+
+  def rejected_campaign_draft_hashes=: (Array[String]?) -> Array[String]?
+
+  def rejected_campaign_draft_hash_list: () -> Array[String]
+
+  def campaign_draft_rejected?: (untyped content_hash) -> bool
+
+  def reject_campaign_draft!: (untyped content_hash) -> bool
+
+  def individual_campaign_draft_hashes: () -> Array[String]?
+
+  def individual_campaign_draft_hashes=: (Array[String]?) -> Array[String]?
+
+  def individual_campaign_draft_hash_list: () -> Array[String]
+
+  def campaign_draft_individual?: (untyped content_hash) -> bool
+
+  def mark_campaign_draft_individual!: (untyped content_hash) -> bool
+
+  def restore_campaign_draft!: (untyped content_hash) -> bool
+
+  def draft_org_positions: () -> Array[draft_entry]?
+
+  # The writer needs the same override for the same reason: `coder: JSON`
+  # serializes on the way in, so assignment takes the array, not the raw JSON
+  # string rbs_rails infers from the text column. Overriding only the reader
+  # left FetchHearingsService's B4-CR-02 retraction write unassignable.
+  def draft_org_positions=: (Array[draft_entry]?) -> Array[draft_entry]?
+
+  # B2-IN-01: content-derived identity for ONE draft_org_positions entry.
+  # nil for a non-Hash element, which has no identity. See the model for why a
+  # content digest is sufficient (equal tokens => byte-identical entries =>
+  # interchangeable).
+  def self.draft_token: (draft_entry entry) -> String?
+
+  # C2-IN-03: the ONE definition of "this caller named a draft". An empty
+  # string asserts nothing — it is what an unfilled form field and an absent
+  # param both look like by the time they reach here.
+  def self.draft_identity_asserted?: (?name: String?, ?token: String?) -> bool
+
+  # The stance words config/schemas/bill_positions.json allows, read
+  # from the schema at boot rather than typed out again. The edit branch of
+  # BillDraftOrgPositionsController is the one writer of draft_org_positions
+  # that the schema does not check, so it checks itself against this.
+  DRAFT_POSITIONS: Array[String]
+  DRAFT_STANCES: Array[String]
+
+  def self.draft_support_valid?: (untyped value) -> bool
+  def self.draft_stance_valid?: (untyped value) -> bool
+
+  # The org-name and summary character caps, read off the same
+  # schema for the same reason as DRAFT_STANCES. Keyed by the entry key, so a
+  # caller can name the field it refused and the cap it broke.
+  DRAFT_TEXT_MAX_CHARS: Hash[String, Integer]
+
+  # True when a request wants to store more text than the schema
+  # allows for that field. A field with no cap is never too long.
+  def self.draft_text_too_long?: (Symbol | String field, untyped value) -> bool
+
+  # C2-IN-03: the ONE definition of "the caller named a draft and this entry
+  # is not it", shared by BillDraftOrgPositionsController's reject/edit branch
+  # and ApproveOrgPositionService. False when the caller asserted nothing; the
+  # callers decide whether that is permitted.
+  def self.draft_identity_mismatch?: (draft_entry entry, ?name: String?, ?token: String?) -> bool
+
+  # B4-CR-02: the per-draft key recording that the testimony these conclusions
+  # were drawn from was withdrawn. A key inside the existing JSON payload, not
+  # a column — see the model for why (per-entry addressability, no migration).
+  DRAFT_EVIDENCE_RETRACTED_KEY: String
+
+  # @lat: [[rbs-signatures#Why a serialized column's generated signature is wrong]]
+  def self.drafts_with_evidence_retracted: (Array[draft_entry]? raw, ?at: Time | ActiveSupport::TimeWithZone) -> Array[draft_entry]?
+
+  # @lat: [[evidence-retraction#Reading the mark]]
+  def self.draft_news_sourced?: (draft_entry entry) -> bool
+
+  # @lat: [[evidence-retraction#Reading the mark]]
+  def self.news_sourced_draft?: (draft_entry entry) -> bool
+
+  # @lat: [[evidence-retraction#The frontend's IOrgPosition.evidence_retracted_at]]
+  def self.drafts_with_news_evidence_retracted: (
+    Array[draft_entry]? raw,
+    bill_news_article_id: Integer | String,
+    ?text_version_id: (Integer | String)?,
+    ?at: Time | ActiveSupport::TimeWithZone
+  ) -> Array[draft_entry]?
+
+  # B4-CR-02: the read side of the mark — shared by ApproveOrgPositionService's
+  # pre-transaction check and its in-lock re-check so the two cannot drift.
+  def self.draft_evidence_retracted?: (draft_entry entry) -> bool
+
+  # @lat: [[bill-creator-summary-tab#A wholesale paste keeps the marks it never carried]]
+  def self.draft_org_positions_preserving_marks: (
+    Array[draft_entry]? stored,
+    Array[draft_entry]? pasted
+  ) -> Array[draft_entry]?
+
+  # What llm_provider holds when a person, not a model, wrote the
+  # body on this row. Spelled once here for the server and once in
+  # llm-summary/provenance.ts for the browser.
+  OPERATOR_PASTE_PROVIDER: String
+
+  # The per-draft key recording that a person rewrote this draft's
+  # summary. Approving copies a draft's text into
+  # organization_bill_positions.ai_summary, which means "the model's own
+  # words"; this mark is what keeps that column from being handed a person's.
+  DRAFT_SUMMARY_EDITED_KEY: String
+
+  # Every key this class stamps onto a draft_org_positions entry to record an
+  # internal fact. .draft_org_positions_preserving_marks reads this list so a
+  # wholesale paste-replace ignores all of them for matching and carries all
+  # of them forward.
+  INTERNAL_DRAFT_MARKS: Array[String]
+
+  # `entry` with the mark applied, but only when the summary text
+  # actually moved — a rename or a stance correction leaves it untouched.
+  # Idempotent on the timestamp, like .drafts_with_evidence_retracted.
+  # A Hash in answers a Hash: past the is_a?(Hash) guard every arm returns
+  # `entry` itself or `entry.merge`.
+  def self.draft_with_summary_edited: (
+    Hash[String, untyped] entry,
+    previous_summary: String?,
+    ?at: Time | ActiveSupport::TimeWithZone
+  ) -> Hash[String, untyped]
+    | (
+    draft_entry entry,
+    previous_summary: String?,
+    ?at: Time | ActiveSupport::TimeWithZone
+  ) -> draft_entry
+
+  # The read side of that mark, used by ApproveOrgPositionService to
+  # decide whether the text it is publishing is the model's own words.
+  def self.draft_summary_edited?: (draft_entry entry) -> bool
+
+  # B2-IN-01: draft_org_positions with each Hash element's derived
+  # `draft_token` merged in. Derived at serialization time, never persisted.
+  #
+  # C2-WR-04: see .drafts_with_evidence_retracted above for why the `untyped`
+  # here was unnecessary. This method's value IS #draft_org_positions' value
+  # with a key merged into each Hash element, so it has that reader's declared
+  # type — the one already overridden at the top of this file.
+  def draft_org_positions_for_client: () -> Array[draft_entry]?
+end

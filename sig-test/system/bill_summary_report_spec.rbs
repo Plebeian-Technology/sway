@@ -1,0 +1,7 @@
+class Object
+  def report_pending: () -> BillSummaryReport
+  def report_reviewed: () -> BillSummaryReport
+  def bill_with_link: () -> Bill
+  def bill_without_link: () -> Bill
+  def provisioning_air: () -> untyped
+end

@@ -1,0 +1,9 @@
+class UserBillShare < ApplicationRecord
+  def redeemed?: () -> bool
+  def share_path: () -> ::String
+  def redeem!: (?opener: ::User?) -> bool
+
+  private
+
+  def assign_share_uuid: () -> ::String?
+end

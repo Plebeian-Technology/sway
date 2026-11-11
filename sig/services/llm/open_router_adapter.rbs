@@ -1,0 +1,111 @@
+module Llm
+  class OpenRouterAdapter
+    class UnpinnedUpstreamError < Llm::TransportError
+    end
+
+    DECISIONS_ENDPOINT: String
+
+    TEMPERATURE: Float
+    MAX_TOKENS: Integer
+    ALLOWED_REASONING_EFFORTS: Array[String]
+    REASONING_MAX_TOKENS: Integer
+
+    attr_reader last_response: untyped
+    attr_reader last_usage: untyped
+    attr_reader last_upstream_company: String?
+
+    def self.request_timeout_seconds: () -> Integer
+    def self.api_key: () -> String
+
+    @client: untyped
+
+    def provider_label: () -> String
+    def generate_bill_summary: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+    def generate_bill_categories: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+    def generate_bill_positions: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+    def generate_testimony_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+    def generate_source_kind_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+    def generate_testimony_stance_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+
+    def generate_news_claim_grounding: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+
+    def generate_decisions: (
+      model: String,
+      state: Hash[String, untyped],
+      questions: Hash[String, untyped]
+    ) -> Hash[String, untyped]
+
+    def generate_entity_extraction: (
+      model: String,
+      content: String,
+      entities: Hash[(String | Symbol), String],
+      ?max_tokens: Integer?
+    ) -> Hash[String, untyped]
+
+    private
+
+    def generate_structured: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      schema_name: String,
+      validation_schema: untyped,
+      ?reasoning_effort: String?
+    ) -> Hash[String, untyped]
+
+    def execute_chat_completion: [T] (
+      parameters: Hash[Symbol, untyped],
+      max_tokens: Integer
+    ) { (String content, Hash[String, untyped] response) -> T } -> T
+
+    def verify_serving_upstream!: (untyped response) -> void
+    def verify_decisions_serving_upstream!: (untyped response) -> void
+    def validate_decisions_answers!: (untyped answers, Hash[String, untyped] questions) -> void
+    def validate_entities_hash!: (untyped entities) -> void
+    def decisions_endpoint: () -> String
+    def decisions_connection: () -> untyped
+    def extract_serving_upstream: (untyped response) -> String?
+    def add_attribution_claim!: (Array[String] claims, untyped provider) -> void
+    def valid_response_envelope?: (untyped response) -> bool
+    def classify_failure_side: (untyped error) -> String
+    def transport_error_detail: (untyped error) -> String
+    def client: () -> untyped
+  end
+
+  UnpinnedUpstreamError: singleton(OpenRouterAdapter::UnpinnedUpstreamError)
+end

@@ -1,0 +1,12 @@
+# RBS sig for Llm::PromptLabel.
+#
+# Mirrors app/services/llm/prompt_label.rb. Single module function: the
+# scrub-collapse-strip rendering every prompt builder applies to a third-party
+# scalar before interpolating it as a LABEL. The bound is the caller's.
+module Llm
+  module PromptLabel
+    # Total, and never nil: nil collapses to "", which is what lets the callers
+    # chain `[0, MAX].to_s` and keep a String.
+    def self.collapse: (String? value) -> String
+  end
+end

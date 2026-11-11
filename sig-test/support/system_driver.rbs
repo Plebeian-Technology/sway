@@ -1,0 +1,33 @@
+# Spec-only signature for spec/support/system_driver.rb — the module itself
+# lives under spec/support/, which Steep type-checks through the :test
+# target's "spec" path, so a new module method with no signature here is an
+# error, and browser_preflight_spec.rb calls one before it exists in Ruby.
+module SystemBrowserPreflight
+  self.@status_logged: bool?
+
+  def self.required?: () -> bool
+end
+
+module SystemBrowserSessionManager
+  DEAD_DRIVER_EXCEPTIONS: Array[Class]
+  UNKNOWN_ERROR_MATCHERS: Array[String]
+
+  # nil answers false: RSpec hands the after-hook a passing example's nil exception.
+  def self.dead_driver_error?: (Exception? error) -> bool
+  def self.purge_dead_browser_sessions!: () -> void
+end
+
+# Prepended onto Capybara's ChromeDriver, Session and Selenium::Driver at the
+# foot of spec/support/system_driver.rb.
+# @lat: [[rbs-signatures#Why a concern that calls super declares its host]]
+module ChromeDriverResetGuard : Capybara::Selenium::Driver::ChromeDriver
+  def reset!: () -> void
+end
+
+module SessionResetGuard : Capybara::Session
+  def reset!: () -> void
+end
+
+module ChromeDriverScreenshotGuard : Capybara::Selenium::Driver
+  def save_screenshot: (*untyped args, **untyped kwargs) ?{ (*untyped args) -> untyped } -> untyped
+end

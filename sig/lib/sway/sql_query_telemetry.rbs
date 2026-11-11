@@ -1,0 +1,36 @@
+# Hand-written RBS for lib/sway/sql_query_telemetry.rb.
+module Sway
+  module SqlQueryTelemetry
+    N_PLUS_ONE_WARN_THRESHOLD: Integer
+    MAX_SQL_INPUT_LENGTH: Integer
+    MAX_SQL_FINGERPRINT_LENGTH: Integer
+    IGNORED_PAYLOAD_NAMES: Regexp
+
+    class Result
+      attr_reader queries: Integer
+      attr_reader cached_queries: Integer
+      attr_reader max_repeats: Integer
+      attr_reader top_fingerprint: String?
+      attr_reader fingerprints: Hash[String, Integer]
+
+      def initialize: (
+        queries: Integer,
+        cached_queries: Integer,
+        max_repeats: Integer,
+        top_fingerprint: String?,
+        fingerprints: Hash[String, Integer]
+      ) -> void
+
+      def self.new: (
+        queries: Integer,
+        cached_queries: Integer,
+        max_repeats: Integer,
+        top_fingerprint: String?,
+        fingerprints: Hash[String, Integer]
+      ) -> Sway::SqlQueryTelemetry::Result
+    end
+
+    def self.fingerprint: (String sql) -> String
+    def self.measure: (?on_complete: (^(Sway::SqlQueryTelemetry::Result) -> void)?) { () -> void } -> Sway::SqlQueryTelemetry::Result
+  end
+end

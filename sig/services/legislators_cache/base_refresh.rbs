@@ -1,0 +1,53 @@
+module LegislatorsCache
+  class BaseRefresh
+    include SwayGoogleCloudStorage
+
+    BUCKET_NAME: String
+
+    class Result
+      attr_reader changed_files: Hash[String, String]
+
+      def initialize: (changed_files: Hash[String, String]) -> void
+      def self.new: (changed_files: Hash[String, String]) -> Result
+    end
+
+    @sway_locale: SwayLocale
+    @force: bool
+    @adapter: Legislation::Adapters::GenericRosterAdapter?
+    @connection: Faraday::Connection?
+
+    def initialize: (SwayLocale sway_locale, ?force: bool, ?adapter: Legislation::Adapters::GenericRosterAdapter?, ?connection: Faraday::Connection?) -> void
+
+    def call: () -> Result
+
+    private
+
+    attr_reader sway_locale: SwayLocale
+
+    attr_reader force: bool
+
+    def merge_stored_fields: (Array[Hash[String, untyped]] incoming) -> Array[Hash[String, untyped]]
+
+    def roster_identity: (Hash[String, untyped] entry) -> LegislatorIdentity?
+
+    def stored_fields_for: (Hash[String, untyped] previous, Hash[String, untyped] incoming) -> Hash[String, untyped]
+
+    def upload_json_to_gcs: (String local_json_path) -> void
+
+    def changed?: (String new_json_path, String existing_json_path) -> bool
+
+    def roster_parsing: () -> Symbol?
+
+    def normalize_for_diff: (untyped parsed) -> untyped
+
+    def freshness_check_passes?: () -> bool
+
+    def save_scrape_failure: (String source, String raw_html) -> void
+
+    def canonical_seed_path: () -> String
+
+    def seed_relative_path: () -> String
+
+    def output_json_path: () -> String
+  end
+end

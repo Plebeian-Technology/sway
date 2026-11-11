@@ -1,0 +1,9 @@
+module Users
+    class OrganizationMembershipsController < ApplicationController
+        def index: -> untyped
+
+        private
+
+        def organization_tab_param: -> untyped
+    end
+end

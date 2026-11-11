@@ -1,0 +1,47 @@
+# @lat: [[open-router-models#OpenRouter models catalog]]
+module Llm
+  class OpenRouterModelsService
+    type model = {
+      id: String,
+      label: String,
+      supports_reasoning: bool
+    }
+
+    type decision_model = {
+      id: String,
+      label: String,
+      supports_reasoning: bool,
+      mode: Symbol
+    }
+
+    MODELS_ENDPOINT: String
+    DECISION_MODELS_ENDPOINT: String
+    CACHE_KEY: String
+    DECISION_CACHE_KEY: String
+    CACHE_TTL: ActiveSupport::Duration
+    OPEN_TIMEOUT_SECONDS: Integer
+    READ_TIMEOUT_SECONDS: Integer
+    SLUG_PATTERN: Regexp
+
+    def self.call: (?force_refresh: bool) -> Array[model]
+    def self.decision_models: (?force_refresh: bool) -> Array[decision_model]
+    def self.lookup: ((String | Symbol)? model_id, ?models: (Array[model] | Array[decision_model])?) -> (model | decision_model)?
+    def self.lookup_decision_model: ((String | Symbol)? model_id, ?models: Array[decision_model]?) -> decision_model?
+    def self.valid_slug?: ((String | Symbol)? model_id) -> bool
+
+    private
+
+    def self.fetch_data_from_endpoint: (String endpoint) -> Array[untyped]?
+    def self.fetch_from_api: () -> Array[model]?
+    def self.fetch_decision_models_from_api: () -> Array[decision_model]?
+    def self.normalize_models: (Array[untyped] raw_items) -> Array[model]
+    def self.normalize_decision_models: (Array[untyped] raw_items) -> Array[decision_model]
+    def self.extract_reasoning_support: (Hash[String, untyped] item) -> bool
+    def self.read_cache: () -> Array[model]?
+    def self.write_cache: (Array[model] models) -> void
+    def self.read_decision_cache: () -> Array[decision_model]?
+    def self.write_decision_cache: (Array[decision_model] models) -> void
+    def self.connection: () -> Faraday::Connection
+    def self.api_key: () -> String?
+  end
+end

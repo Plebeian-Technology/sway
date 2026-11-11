@@ -1,0 +1,12 @@
+class SwayLocale
+  class FixedDayConvening < ConveningRule
+    attr_reader month: Integer
+
+    attr_reader day: Integer
+
+    def initialize: (month: Integer, day: Integer) -> void
+
+    def date_in: (Integer year) -> Date
+    def sql_date_expr: (String year_column) -> String
+  end
+end

@@ -1,0 +1,108 @@
+# The summary tab's ledger of inputs, in two readings: the run that produced
+# the summary, and the bill as it stands now.
+class SummarySourcesReport
+  CLAUDE_PROVIDER: String
+
+  class Record
+    attr_reader source_kind: Symbol
+    attr_reader source_chars: Integer
+    attr_reader source_cap: Integer
+    attr_reader source_reached_chars: Integer
+    attr_reader source_truncated: bool
+    attr_reader extracted_text_chars: Integer
+    attr_reader diff_target: String?
+    attr_reader diff_sections_modified: Integer?
+    attr_reader diff_sections_referenced: Integer?
+    attr_reader diff_sections_not_found: Integer?
+    attr_reader diff_generated_at: ActiveSupport::TimeWithZone?
+    attr_reader citation_keys_offered: Integer
+    attr_reader citation_keys_total: Integer
+    attr_reader citation_sample_titles: Array[String]
+    attr_reader news_search_available: bool
+    attr_reader news_fetched_at: ActiveSupport::TimeWithZone?
+    attr_reader newsroom_domains: Array[String]
+    attr_reader news_articles_offered: Integer
+    attr_reader news_articles_total: Integer
+    attr_reader news_articles: Array[Hash[Symbol, String]]
+
+    def initialize: (
+      source_kind: Symbol, source_chars: Integer, source_cap: Integer, source_reached_chars: Integer, source_truncated: bool, extracted_text_chars: Integer,
+      diff_target: String?, diff_sections_modified: Integer?, diff_sections_referenced: Integer?, diff_sections_not_found: Integer?, diff_generated_at: ActiveSupport::TimeWithZone?,
+      citation_keys_offered: Integer, citation_keys_total: Integer, citation_sample_titles: Array[String],
+      news_search_available: bool, news_fetched_at: ActiveSupport::TimeWithZone?, newsroom_domains: Array[String],
+      news_articles_offered: Integer, news_articles_total: Integer, news_articles: Array[Hash[Symbol, String]]
+    ) -> void
+
+    def self.new: (
+      source_kind: Symbol, source_chars: Integer, source_cap: Integer, source_reached_chars: Integer, source_truncated: bool, extracted_text_chars: Integer,
+      diff_target: String?, diff_sections_modified: Integer?, diff_sections_referenced: Integer?, diff_sections_not_found: Integer?, diff_generated_at: ActiveSupport::TimeWithZone?,
+      citation_keys_offered: Integer, citation_keys_total: Integer, citation_sample_titles: Array[String],
+      news_search_available: bool, news_fetched_at: ActiveSupport::TimeWithZone?, newsroom_domains: Array[String],
+      news_articles_offered: Integer, news_articles_total: Integer, news_articles: Array[Hash[Symbol, String]]
+    ) -> SummarySourcesReport::Record
+
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  # nil where no run has been recorded for the bill.
+  class Read
+    attr_reader built_at: ActiveSupport::TimeWithZone?
+    attr_reader llm_model: String?
+    attr_reader llm_provider: String?
+    attr_reader record: SummarySourcesReport::Record
+
+    def initialize: (
+      built_at: ActiveSupport::TimeWithZone?, llm_model: String?, llm_provider: String?,
+      record: SummarySourcesReport::Record
+    ) -> void
+
+    def self.new: (
+      built_at: ActiveSupport::TimeWithZone?, llm_model: String?, llm_provider: String?,
+      record: SummarySourcesReport::Record
+    ) -> SummarySourcesReport::Read
+  end
+
+  class Result
+    attr_reader read: SummarySourcesReport::Read?
+    attr_reader now: SummarySourcesReport::Record
+    attr_reader summary_generated_at: ActiveSupport::TimeWithZone?
+    attr_reader summary_model: String?
+    attr_reader summary_provider: String?
+
+    def initialize: (
+      read: SummarySourcesReport::Read?, now: SummarySourcesReport::Record,
+      summary_generated_at: ActiveSupport::TimeWithZone?, summary_model: String?, summary_provider: String?
+    ) -> void
+
+    def self.new: (
+      read: SummarySourcesReport::Read?, now: SummarySourcesReport::Record,
+      summary_generated_at: ActiveSupport::TimeWithZone?, summary_model: String?, summary_provider: String?
+    ) -> SummarySourcesReport::Result
+  end
+
+  def self.call: (bill: Bill) -> Result
+  def self.record: (bill: Bill, ?sources: BillSummaryPromptBuilder::Sources?) -> Record
+
+  @bill: Bill
+
+  def initialize: (bill: Bill) -> void
+  def call: () -> Result
+
+  # sources: nil builds them from the bill as it stands now.
+  def record: (?sources: BillSummaryPromptBuilder::Sources?) -> Record
+
+  private
+
+  attr_reader bill: Bill
+
+  def read_of: (BillSummaryPromptSnapshot? snapshot) -> Read?
+  def record_from_facts: (Hash[String, untyped] facts) -> Record
+  def reached_chars: (Integer chars, Integer cap) -> Integer
+  def count_of: (untyped value) -> Integer
+  def integer_or_nil: (untyped value) -> Integer?
+  def time_or_nil: (untyped value) -> ActiveSupport::TimeWithZone?
+  def stored_news_articles: (untyped value) -> Array[Hash[Symbol, String]]
+  def newsroom_domains: () -> Array[String]
+  def news_articles: (BillLlmProvisioning? provisioning) -> Array[Hash[Symbol, String]]
+  def host_of: (String url) -> String
+end

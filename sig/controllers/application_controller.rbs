@@ -1,0 +1,148 @@
+class ApplicationController < ActionController::Base
+    class SwappableCacheStore
+        @backend: untyped
+
+        def initialize: (untyped backend) -> void
+
+        def backend=: (untyped backend) -> untyped
+
+        def method_missing: (Symbol name, *untyped args, **untyped kwargs) -> untyped
+
+        def respond_to_missing?: (Symbol name, ?bool include_private) -> bool
+
+        def clear: () -> void
+    end
+
+    RATE_LIMIT_STORE: SwappableCacheStore
+
+    @current_user: untyped
+
+    @current_sway_locale: untyped
+
+    @requested_sway_locale: SwayLocale?
+
+    @pending_representative_reassignments_prop: untyped
+    @locales_for_current_user: Array[SwayLocale]?
+    @sql_query_telemetry: Sway::SqlQueryTelemetry::Result?
+
+    include DefaultMetaTaggable
+
+    include RelyingParty
+
+    include ApiKeyAuthenticatable
+
+    include MobileFormatNegotiation
+
+    include Pages
+
+    include RateLimitResponder
+
+    include JsonErrorRenderable
+
+    include BillCreatorRunPinRedirects
+
+    include QueryParameterRedirectCarry
+
+    def render_routed_json: (String? route, ?Hash[Symbol, untyped] new_params) -> void
+
+    def sign_in: (User user) -> void
+
+    def sign_out: -> void
+
+    def authenticated_bearer_request?: -> bool
+
+    def current_user: -> untyped
+
+    def current_sway_locale: -> untyped
+
+    def invited_by_id: -> String?
+
+    def authenticate_with_cookies: -> untyped
+
+    def is_api_request_and_is_route_api_accessible?: -> void
+
+    def authenticate_sway_user!: -> void
+
+    def verify_is_sway_admin: -> void
+
+    def enrich_with_first_legislator!: (untyped to_render) -> void
+
+    # Phase 32+: callable from inertia_share lambda; steep treats lambda body
+    # as singleton context so this must be public for type resolution.
+    def current_user_legislator_photo_urls: -> Array[String]
+
+    # C2-WR-03 dropped InertiaRails.once from the sway_locales /
+    # sway_locale_options share props, so both lambdas now recompute per
+    # request by calling this helper directly in the inertia_share block.
+    # Rails instance_exec's those lambdas at request time, but Steep checks the
+    # block body with `self` = singleton(ApplicationController), where the
+    # private instance method below is not in scope. Declared on the singleton
+    # for the same reason — and with the same concrete return type — as the
+    # `def self.current_user_legislator_photo_urls` stub in
+    # sig/shims/rails_controller_dsl.rbs.
+    def self.locales_for_current_user: () -> Array[SwayLocale]
+
+    # @lat: [[signature-placement#Why a controller restates the helpers a concern mixes in]]
+    def flash_with_id: -> Hash[String, untyped]
+
+    def self.flash_with_id: () -> Hash[String, untyped]
+
+    def pending_representative_reassignments_prop: () -> untyped
+
+    def self.pending_representative_reassignments_prop: () -> untyped
+
+    # ThemeHelper's methods, included into ApplicationController.
+    def theme_preference: -> String
+    def theme_html_class: -> String?
+    def theme_id: -> String
+    def theme_font_stylesheet_href: -> String?
+    def current_attribution_key: () -> String?
+
+    private
+
+    def reset_user_memoization: (User? user) -> void
+
+    def set_sway_locale_id_in_session: -> void
+
+    # The jurisdiction ?sway_locale_id named, or nil when it named none or named
+    # one that does not exist. Memoized for the request.
+    def requested_sway_locale: -> SwayLocale?
+
+    def locales_for_current_user: -> Array[SwayLocale]
+
+    def find_current_sway_locale: -> untyped
+
+    def own_active_legislator_ids: (User user, Integer locale_id) -> Array[Integer]
+
+    def photo_urls_for: (Array[Integer] legislator_ids) -> Array[String]
+
+    def inertia_page_expired_error: -> void
+
+    # https://rslstandard.org/guide/http
+    # https://arstechnica.com/tech-policy/2025/09/pay-per-output-ai-firms-blindsided-by-beefed-up-robots-txt-instructions/
+    def add_rsl_license_header: -> void
+
+    # Flash keys whose value is a one-time secret, so the response carrying them
+    # must not be stored by the browser.
+    ONE_TIME_SECRET_FLASH_KEYS: Array[String]
+
+    def forbid_storing_a_one_time_secret: -> void
+
+    # Cache-Control for a response built for one signed-in reader.
+    PRIVATE_CACHE_CONTROL: String
+
+    def mark_authenticated_response_private: -> void
+
+    REPEATED_BLOCK_WINDOW: ActiveSupport::Duration
+    REPEATED_BLOCK_THRESHOLD: Integer
+    SENTRY_ALERT_SAMPLE_RATIO: Integer
+
+    def render_rate_limited: () -> untyped
+    def report_repeated_rate_limit: () -> void
+
+    def capture_attribution_param: () -> void
+    def current_visitor_token: () -> String
+    def bill_creator_tab_param: (?ActionController::Parameters source) -> untyped
+    def track_sql_query_telemetry: () { () -> void } -> void
+    def reject_js_request_format: () -> untyped
+end

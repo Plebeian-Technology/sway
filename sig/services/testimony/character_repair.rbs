@@ -1,0 +1,57 @@
+# RBS signature for Testimony::CharacterRepair (Phase 67 Plan 01, D-04;
+# extended ) — a pure-text repair for the broken
+# ligature TestimonyTextExtractor leaves behind (see BREAK_GLYPHS), bounded
+# to where an ASCII letter sits on both sides.
+module Testimony
+  class CharacterRepair
+    BREAK_GLYPHS: Array[String]
+    CANDIDATE_PAIRS: Array[String]
+    FALLBACK_PAIR: String
+    PER_POSITION_BREAK_CAP: Integer
+    WORD_OR_BREAK_RUN: Regexp
+    CLEAN_WORD_RUN: Regexp
+    SEED_VOCABULARY: Set[String]
+
+    class Result
+      attr_reader text: String
+      attr_reader broken_words: Integer
+      attr_reader resolved_from_bundle: Integer
+      attr_reader resolved_by_fallback: Integer
+      attr_reader left_unresolved: Integer
+
+      def initialize: (
+        text: String,
+        broken_words: Integer,
+        resolved_from_bundle: Integer,
+        resolved_by_fallback: Integer,
+        left_unresolved: Integer
+      ) -> void
+
+      def self.new: (
+        text: String,
+        broken_words: Integer,
+        resolved_from_bundle: Integer,
+        resolved_by_fallback: Integer,
+        left_unresolved: Integer
+      ) -> Testimony::CharacterRepair::Result
+    end
+
+    def self.call: (String text) -> Result
+
+    @text: String
+    @vocabulary: Set[String]
+
+    def initialize: (String text) -> void
+    def call: () -> Result
+
+    private
+
+    # nil when the run has no reparable break — see the implementation for
+    # what "reparable" means.
+    type repair_outcome = {text: String, kind: :from_bundle} | {text: String, kind: :fallback} | {text: String, kind: :unresolved}
+
+    def repair_run: (String run) -> repair_outcome?
+    def reparable_indices: (Array[String] chars) -> Array[Integer]
+    def substitute: (Array[String] chars, Array[Integer] indices, Array[String] pairs) -> String
+  end
+end

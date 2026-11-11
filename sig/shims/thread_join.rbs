@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a hand-written signature can outrank the standard library's]]
+class Thread
+  def join: (Numeric limit) -> Thread?
+          | ...
+end

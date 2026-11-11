@@ -1,0 +1,58 @@
+class NewsSummaryManifestValidator
+  class Result
+    attr_reader valid: bool
+    attr_reader news_usage: String?
+    attr_reader errors: Array[String]
+    attr_reader reasons: Array[Symbol]
+    attr_reader structured_refusal: NewsClaimGroundingService::Result?
+
+    def initialize: (
+      valid: bool,
+      ?news_usage: String?,
+      ?errors: Array[String],
+      ?reasons: Array[Symbol],
+      ?structured_refusal: NewsClaimGroundingService::Result?
+    ) -> void
+
+    def valid?: () -> bool
+  end
+
+  def self.call: (
+    bill: Bill,
+    summary_markdown: untyped,
+    news_usage: untyped,
+    source_uses: untyped,
+    ?snapshot: NewsArticleSourceSnapshot?
+  ) -> Result
+
+  @bill: Bill
+  @summary_markdown: String
+  @news_usage: untyped
+  @source_uses: untyped
+  @snapshot: NewsArticleSourceSnapshot?
+  @errors: Array[String]
+  @reasons: Array[Symbol]
+
+  def initialize: (
+    bill: Bill,
+    summary_markdown: untyped,
+    news_usage: untyped,
+    source_uses: untyped,
+    ?snapshot: NewsArticleSourceSnapshot?
+  ) -> void
+
+  def call: () -> Result
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader summary_markdown: String
+  attr_reader news_usage: untyped
+  attr_reader source_uses: untyped
+  attr_reader snapshot: NewsArticleSourceSnapshot?
+
+  def extract_prose_news_urls: () -> Array[String]
+  def validate_prose_url_against_snapshot: (String url) -> void
+  def validate_use_entry: (untyped use_payload, Array[String] prose_news_urls) -> void
+  def build_result: (valid: bool, news_usage: String?) -> Result
+end

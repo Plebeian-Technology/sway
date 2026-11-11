@@ -1,0 +1,6 @@
+# Phase 61 D-17 — job wrapper for NotifyOrganizationFollowersService.
+# Reconstructs the service from serializable primitives to avoid AR-object
+# serialization issues across job boundaries.
+class NotifyOrganizationFollowersJob < ApplicationJob
+  def perform: (Integer organization_id, Integer bill_id, Array[String] change_type_strings, ?String? delivery_token) -> void
+end

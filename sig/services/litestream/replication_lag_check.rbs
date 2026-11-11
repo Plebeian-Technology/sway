@@ -1,0 +1,54 @@
+# Phase 66 Plan 02. A pure decision: no clock, no database, no
+# environment, no network, no Sentry. See the class comment in
+# app/services/litestream/replication_lag_check.rb for why.
+module Litestream
+  class ReplicationLagCheck
+    FORGIVENESS_THRESHOLD: Integer
+
+    @status: Symbol
+    @position: Integer?
+    @previous_position: Integer?
+    @consecutive_stalls: Integer
+    @consecutive_read_failures: Integer
+    @consecutive_empty_listings: Integer
+    @stalled_since: ActiveSupport::TimeWithZone?
+    @now: ActiveSupport::TimeWithZone
+
+    def initialize: (
+      status: (:ok | :empty | :unreadable),
+      position: Integer?,
+      previous_position: Integer?,
+      consecutive_stalls: Integer,
+      consecutive_read_failures: Integer,
+      consecutive_empty_listings: Integer,
+      stalled_since: ActiveSupport::TimeWithZone?,
+      now: ActiveSupport::TimeWithZone
+    ) -> void
+
+    def call: () -> Litestream::LagDecision
+
+    private
+
+    # Widened where the constructor's union is not: see the lat.md pointer on
+    # the else branch in app/services/litestream/replication_lag_check.rb.
+    attr_reader status: Symbol
+    attr_reader position: Integer?
+    attr_reader previous_position: Integer?
+    attr_reader consecutive_stalls: Integer
+    attr_reader consecutive_read_failures: Integer
+    attr_reader consecutive_empty_listings: Integer
+    attr_reader stalled_since: ActiveSupport::TimeWithZone?
+    attr_reader now: ActiveSupport::TimeWithZone
+
+    def ok_decision: () -> Litestream::LagDecision
+    def required_position: () -> Integer
+    def moved_decision: (Integer current_position) -> Litestream::LagDecision
+    def healthy_decision: (Integer current_position) -> Litestream::LagDecision
+    def recovered_decision: (Integer current_position) -> Litestream::LagDecision
+    def recovered_outage_seconds: () -> Integer?
+    def first_run_decision: (Integer current_position) -> Litestream::LagDecision
+    def stall_decision: (Integer stored_position) -> Litestream::LagDecision
+    def read_failure_decision: () -> Litestream::LagDecision
+    def empty_listing_decision: () -> Litestream::LagDecision
+  end
+end

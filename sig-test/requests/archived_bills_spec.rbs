@@ -1,0 +1,6 @@
+class ArchivedBillsRequestSpecContext
+  def locale_and_user: () -> [SwayLocale, User]
+  def locale: () -> SwayLocale
+  def visible_bill: () -> Bill
+  def archived_bill: () -> Bill
+end

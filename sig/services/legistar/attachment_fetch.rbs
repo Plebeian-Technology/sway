@@ -1,0 +1,35 @@
+# A-WR-08 (+ A-WR-02): allowlist-enforcing, bounded-redirect attachment
+# fetcher. The allowlist and the redirect walk live together on purpose —
+# see the class body.
+module Legistar
+  class AttachmentFetch
+    class Rejected < StandardError
+    end
+
+    class TooLarge < Rejected
+    end
+
+    class TooSlow < Rejected
+    end
+
+    MAX_REDIRECTS: Integer
+    REDIRECT_STATUSES: Range[Integer]
+    MAX_ATTACHMENT_BYTES: Integer
+    MAX_ELAPSED_SECONDS: Integer
+
+    @connection: Faraday::Connection
+    @max_elapsed: Integer
+
+    def initialize: (connection: Faraday::Connection, ?max_elapsed: Integer) -> void
+    def call: (String url) -> Faraday::Response
+
+    private
+
+    def check_deadline!: (Float deadline) -> void
+    def reject_disallowed!: (String url) -> void
+    def next_hop: (String current, Faraday::Response response) -> String
+    def absolute_target: (String current, String location, Integer status) -> String
+    def get_bounded: (String url, deadline: Float) -> Faraday::Response
+    def enforce_advertised_size!: (Faraday::Response response) -> void
+  end
+end

@@ -1,0 +1,27 @@
+# deep_link_bill — universal-link entry into Bill detail.
+#
+# Verifies that opening https://sway.vote/bills/<id> routes through
+# linking.ts and lands on the BillDetail screen with bill content rendered.
+# Confirms the AASA / assetlinks plumbing actually drives in-app navigation.
+# The app also claims the app.sway.vote host; this flow opens only sway.vote.
+# @lat: [[submit-the-mobile-app#Association files on both hostnames]]
+#
+# Prereqs:
+#   - Simulator/device with the dev build installed.
+#   - TEST_BILL_ID env var set (any visible bill id from the seeded locale).
+#
+# Run: maestro test -e TEST_BILL_ID=42 mobile/.maestro/deep_link_bill.yaml
+#
+# The openLink command uses Maestro's deep-link primitive, which on iOS
+# delegates to xcrun simctl openurl and on Android to am start -a VIEW.
+# Both go through the same path the OS uses for a tapped link in Mail /
+# Messages, so AASA + intent-filter coverage is exercised.
+appId: ${APP_ID}
+---
+- launchApp:
+      clearState: true
+- openLink: "https://sway.vote/bills/${TEST_BILL_ID}"
+- assertVisible:
+      id: "bill-detail-scroll"
+- assertNotVisible:
+      id: "bill-detail-error"

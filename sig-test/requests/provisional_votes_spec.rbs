@@ -1,0 +1,3 @@
+class Object
+  def decrypted_pending_vote: () -> untyped
+end

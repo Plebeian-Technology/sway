@@ -1,0 +1,18 @@
+# Solid Cable ships no signatures. rbs_rails generates the parts it can read off
+# the table — the columns and the `broadcastable` scope — but `broadcast` is an
+# ordinary class method in the gem's own source, so nothing generates it.
+#
+# It is the write half of Action Cable on this project: the adapter calls it for
+# every broadcast, and spec/config/cable_spec.rb calls it to prove the messages
+# table really sits on the primary database.
+module SolidCable
+  class Message
+    # Writes one row. `insert` skips validations and callbacks, which is why the
+    # gem uses it, and hands back the result of the INSERT.
+    def self.broadcast: (String | Symbol channel, String payload) -> ActiveRecord::Result
+
+    # SHA-256 of the channel name, read as a signed 64-bit integer because
+    # neither SQLite nor Postgres stores unsigned ones.
+    def self.channel_hash_for: (String | Symbol channel) -> Integer
+  end
+end

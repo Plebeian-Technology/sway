@@ -1,0 +1,21 @@
+# Hand-written, in the style of sig/sway_deploy_config.rbs: Base declares no
+# attributes of its own, so generating this from the class would produce an
+# empty interface. Its behaviour lives entirely in caster registration and
+# load-callback ordering, both class-body side effects with no new public
+# method a caller would name.
+module Sway
+  module Settings
+    class Base < Anyway::Config
+      # Renames the generated interface from _Config to _<ClassName>Config,
+      # so two group classes under Sway::Settings can each commit a
+      # signature without an RBS::DuplicatedDeclaration. See the comment on
+      # the Ruby definition.
+      def self.to_rbs: () -> String
+
+      # WR-06: freezes every String/Array attribute on `instance`. A group
+      # calls this itself, from its own on_load, rather than Base doing it
+      # automatically -- see the comment on the Ruby definition for why.
+      def self.freeze_mutable_attributes!: (Base instance) -> void
+    end
+  end
+end

@@ -1,0 +1,16 @@
+class SmsOptOutService
+  STOP_KEYWORDS: Array[String]
+  START_KEYWORDS: Array[String]
+
+  @from: untyped
+
+  @body: untyped
+
+  def initialize: (from: untyped, body: untyped) -> void
+
+  def call: () -> void
+
+  private
+
+  def target_state: () -> bool?
+end

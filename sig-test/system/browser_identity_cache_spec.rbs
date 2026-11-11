@@ -1,0 +1,4 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def identity_worker_fetch: () -> Hash[String, untyped]
+end

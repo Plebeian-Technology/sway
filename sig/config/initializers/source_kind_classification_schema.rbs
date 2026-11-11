@@ -1,0 +1,11 @@
+# RBS sig for the kind-of-source classification schema constants (Phase 67
+# Plan 05, D-05).
+#
+# Consumed by Llm::ClaudeAdapter and
+# Llm::LlamacppAdapter#generate_source_kind_classification.
+
+# Parsed JSON Schema document (opaque schema shape).
+SOURCE_KIND_CLASSIFICATION_SCHEMA_HASH: Hash[String, untyped]
+
+# Compiled validator built from SOURCE_KIND_CLASSIFICATION_SCHEMA_HASH.
+SOURCE_KIND_CLASSIFICATION_SCHEMA: JSONSchemer::Schema

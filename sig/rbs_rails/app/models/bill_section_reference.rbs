@@ -1,0 +1,655 @@
+# resolve-type-names: false
+
+class ::BillSectionReference < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::BillSectionReference, ::BillSectionReference::ActiveRecord_Relation, ::Integer]
+
+  module ::BillSectionReference::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def bill_id: () -> ::Integer
+
+    def bill_id=: (::Integer) -> ::Integer
+
+    def bill_id?: () -> bool
+
+    def bill_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def bill_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def bill_id_will_change!: () -> void
+
+    def bill_id_was: () -> ::Integer?
+
+    def bill_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def bill_id_previous_change: () -> ::Array[::Integer?]?
+
+    def bill_id_previously_was: () -> ::Integer?
+
+    def bill_id_before_last_save: () -> ::Integer?
+
+    def bill_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def bill_id_in_database: () -> ::Integer?
+
+    def saved_change_to_bill_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_bill_id!: () -> void
+
+    def clear_bill_id_change: () -> void
+
+    def bill_id_before_type_cast: () -> ::Integer
+
+    def bill_id_for_database: () -> ::Integer
+
+    def authoritative: () -> bool
+
+    def authoritative=: (bool) -> bool
+
+    def authoritative?: () -> bool
+
+    def authoritative_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def authoritative_change: () -> [ bool?, bool? ]
+
+    def authoritative_will_change!: () -> void
+
+    def authoritative_was: () -> bool?
+
+    def authoritative_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def authoritative_previous_change: () -> ::Array[bool?]?
+
+    def authoritative_previously_was: () -> bool?
+
+    def authoritative_before_last_save: () -> bool?
+
+    def authoritative_change_to_be_saved: () -> ::Array[bool?]?
+
+    def authoritative_in_database: () -> bool?
+
+    def saved_change_to_authoritative: () -> ::Array[bool?]?
+
+    def saved_change_to_authoritative?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_authoritative?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_authoritative!: () -> void
+
+    def clear_authoritative_change: () -> void
+
+    def authoritative_before_type_cast: () -> bool?
+
+    def authoritative_for_database: () -> bool?
+
+    def key: () -> ::String
+
+    def key=: (::String) -> ::String
+
+    def key?: () -> bool
+
+    def key_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def key_change: () -> [ ::String?, ::String? ]
+
+    def key_will_change!: () -> void
+
+    def key_was: () -> ::String?
+
+    def key_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def key_previous_change: () -> ::Array[::String?]?
+
+    def key_previously_was: () -> ::String?
+
+    def key_before_last_save: () -> ::String?
+
+    def key_change_to_be_saved: () -> ::Array[::String?]?
+
+    def key_in_database: () -> ::String?
+
+    def saved_change_to_key: () -> ::Array[::String?]?
+
+    def saved_change_to_key?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_key?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_key!: () -> void
+
+    def clear_key_change: () -> void
+
+    def key_before_type_cast: () -> ::String
+
+    def key_for_database: () -> ::String
+
+    def article: () -> ::String
+
+    def article=: (::String) -> ::String
+
+    def article?: () -> bool
+
+    def article_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def article_change: () -> [ ::String?, ::String? ]
+
+    def article_will_change!: () -> void
+
+    def article_was: () -> ::String?
+
+    def article_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def article_previous_change: () -> ::Array[::String?]?
+
+    def article_previously_was: () -> ::String?
+
+    def article_before_last_save: () -> ::String?
+
+    def article_change_to_be_saved: () -> ::Array[::String?]?
+
+    def article_in_database: () -> ::String?
+
+    def saved_change_to_article: () -> ::Array[::String?]?
+
+    def saved_change_to_article?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_article?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_article!: () -> void
+
+    def clear_article_change: () -> void
+
+    def article_before_type_cast: () -> ::String
+
+    def article_for_database: () -> ::String
+
+    def section: () -> ::String
+
+    def section=: (::String) -> ::String
+
+    def section?: () -> bool
+
+    def section_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def section_change: () -> [ ::String?, ::String? ]
+
+    def section_will_change!: () -> void
+
+    def section_was: () -> ::String?
+
+    def section_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def section_previous_change: () -> ::Array[::String?]?
+
+    def section_previously_was: () -> ::String?
+
+    def section_before_last_save: () -> ::String?
+
+    def section_change_to_be_saved: () -> ::Array[::String?]?
+
+    def section_in_database: () -> ::String?
+
+    def saved_change_to_section: () -> ::Array[::String?]?
+
+    def saved_change_to_section?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_section?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_section!: () -> void
+
+    def clear_section_change: () -> void
+
+    def section_before_type_cast: () -> ::String
+
+    def section_for_database: () -> ::String
+
+    def title: () -> ::String?
+
+    def title=: (::String?) -> ::String?
+
+    def title?: () -> bool
+
+    def title_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def title_change: () -> [ ::String?, ::String? ]
+
+    def title_will_change!: () -> void
+
+    def title_was: () -> ::String?
+
+    def title_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def title_previous_change: () -> ::Array[::String?]?
+
+    def title_previously_was: () -> ::String?
+
+    def title_before_last_save: () -> ::String?
+
+    def title_change_to_be_saved: () -> ::Array[::String?]?
+
+    def title_in_database: () -> ::String?
+
+    def saved_change_to_title: () -> ::Array[::String?]?
+
+    def saved_change_to_title?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_title?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_title!: () -> void
+
+    def clear_title_change: () -> void
+
+    def title_before_type_cast: () -> ::String?
+
+    def title_for_database: () -> ::String?
+
+    def anchor: () -> ::String?
+
+    def anchor=: (::String?) -> ::String?
+
+    def anchor?: () -> bool
+
+    def anchor_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def anchor_change: () -> [ ::String?, ::String? ]
+
+    def anchor_will_change!: () -> void
+
+    def anchor_was: () -> ::String?
+
+    def anchor_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def anchor_previous_change: () -> ::Array[::String?]?
+
+    def anchor_previously_was: () -> ::String?
+
+    def anchor_before_last_save: () -> ::String?
+
+    def anchor_change_to_be_saved: () -> ::Array[::String?]?
+
+    def anchor_in_database: () -> ::String?
+
+    def saved_change_to_anchor: () -> ::Array[::String?]?
+
+    def saved_change_to_anchor?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_anchor?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_anchor!: () -> void
+
+    def clear_anchor_change: () -> void
+
+    def anchor_before_type_cast: () -> ::String?
+
+    def anchor_for_database: () -> ::String?
+
+    def resolution: () -> ::String
+
+    def resolution=: (::Integer | ::String | ::Symbol) -> ::String
+
+    def resolution?: () -> bool
+
+    def resolution_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def resolution_change: () -> [ ::String?, ::String? ]
+
+    def resolution_will_change!: () -> void
+
+    def resolution_was: () -> ::String?
+
+    def resolution_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def resolution_previous_change: () -> ::Array[::String?]?
+
+    def resolution_previously_was: () -> ::String?
+
+    def resolution_before_last_save: () -> ::String?
+
+    def resolution_change_to_be_saved: () -> ::Array[::String?]?
+
+    def resolution_in_database: () -> ::String?
+
+    def saved_change_to_resolution: () -> ::Array[::String?]?
+
+    def saved_change_to_resolution?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_resolution?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_resolution!: () -> void
+
+    def clear_resolution_change: () -> void
+
+    def resolution_before_type_cast: () -> ::Integer
+
+    def resolution_for_database: () -> ::Integer
+
+    def fuzzy_score: () -> ::Integer?
+
+    def fuzzy_score=: (::Integer?) -> ::Integer?
+
+    def fuzzy_score?: () -> bool
+
+    def fuzzy_score_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def fuzzy_score_change: () -> [ ::Integer?, ::Integer? ]
+
+    def fuzzy_score_will_change!: () -> void
+
+    def fuzzy_score_was: () -> ::Integer?
+
+    def fuzzy_score_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def fuzzy_score_previous_change: () -> ::Array[::Integer?]?
+
+    def fuzzy_score_previously_was: () -> ::Integer?
+
+    def fuzzy_score_before_last_save: () -> ::Integer?
+
+    def fuzzy_score_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def fuzzy_score_in_database: () -> ::Integer?
+
+    def saved_change_to_fuzzy_score: () -> ::Array[::Integer?]?
+
+    def saved_change_to_fuzzy_score?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_fuzzy_score?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_fuzzy_score!: () -> void
+
+    def clear_fuzzy_score_change: () -> void
+
+    def fuzzy_score_before_type_cast: () -> ::Integer?
+
+    def fuzzy_score_for_database: () -> ::Integer?
+
+    def ordinal: () -> ::Integer
+
+    def ordinal=: (::Integer) -> ::Integer
+
+    def ordinal?: () -> bool
+
+    def ordinal_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def ordinal_change: () -> [ ::Integer?, ::Integer? ]
+
+    def ordinal_will_change!: () -> void
+
+    def ordinal_was: () -> ::Integer?
+
+    def ordinal_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def ordinal_previous_change: () -> ::Array[::Integer?]?
+
+    def ordinal_previously_was: () -> ::Integer?
+
+    def ordinal_before_last_save: () -> ::Integer?
+
+    def ordinal_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def ordinal_in_database: () -> ::Integer?
+
+    def saved_change_to_ordinal: () -> ::Array[::Integer?]?
+
+    def saved_change_to_ordinal?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_ordinal?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_ordinal!: () -> void
+
+    def clear_ordinal_change: () -> void
+
+    def ordinal_before_type_cast: () -> ::Integer
+
+    def ordinal_for_database: () -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+  end
+  include ::BillSectionReference::GeneratedAttributeMethods
+  module ::BillSectionReference::GeneratedAliasAttributeMethods
+    include ::BillSectionReference::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::BillSectionReference::GeneratedAliasAttributeMethods
+  def bill_amendment_operations: () -> ::BillAmendmentOperation::ActiveRecord_Associations_CollectionProxy
+  def bill_amendment_operations=: (::BillAmendmentOperation::ActiveRecord_Associations_CollectionProxy | ::Array[::BillAmendmentOperation]) -> (::BillAmendmentOperation::ActiveRecord_Associations_CollectionProxy | ::Array[::BillAmendmentOperation])
+  def bill_amendment_operation_ids: () -> ::Array[::Integer]
+  def bill_amendment_operation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  def bill: () -> ::Bill
+  def bill=: (::Bill?) -> ::Bill?
+  def reload_bill: () -> ::Bill?
+  def build_bill: (?untyped) -> ::Bill
+  def create_bill: (?untyped) -> ::Bill
+  def create_bill!: (?untyped) -> ::Bill
+
+  module ::BillSectionReference::GeneratedAssociationMethods
+  end
+  include ::BillSectionReference::GeneratedAssociationMethods
+
+  def exact!: () -> bool
+  def exact?: () -> bool
+  def fuzzy!: () -> bool
+  def fuzzy?: () -> bool
+  def unresolved!: () -> bool
+  def unresolved?: () -> bool
+  def self.resolutions: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+  def self.exact: () -> ::BillSectionReference::ActiveRecord_Relation
+  def self.not_exact: () -> ::BillSectionReference::ActiveRecord_Relation
+  def self.fuzzy: () -> ::BillSectionReference::ActiveRecord_Relation
+  def self.not_fuzzy: () -> ::BillSectionReference::ActiveRecord_Relation
+  def self.unresolved: () -> ::BillSectionReference::ActiveRecord_Relation
+  def self.not_unresolved: () -> ::BillSectionReference::ActiveRecord_Relation
+  def self.authoritative: () -> ::BillSectionReference::ActiveRecord_Relation
+
+  module ::BillSectionReference::GeneratedRelationMethods
+    def resolutions: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::Integer]
+
+    def exact: () -> ::BillSectionReference::ActiveRecord_Relation
+
+    def not_exact: () -> ::BillSectionReference::ActiveRecord_Relation
+
+    def fuzzy: () -> ::BillSectionReference::ActiveRecord_Relation
+
+    def not_fuzzy: () -> ::BillSectionReference::ActiveRecord_Relation
+
+    def unresolved: () -> ::BillSectionReference::ActiveRecord_Relation
+
+    def not_unresolved: () -> ::BillSectionReference::ActiveRecord_Relation
+
+    def authoritative: () -> ::BillSectionReference::ActiveRecord_Relation
+  end
+
+  class ::BillSectionReference::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::BillSectionReference]
+    include ::BillSectionReference::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillSectionReference, ::Integer]
+  end
+
+  class ::BillSectionReference::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::BillSectionReference]
+    include ::BillSectionReference::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillSectionReference, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillSectionReference
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillSectionReference]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillSectionReference
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillSectionReference]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillSectionReference
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillSectionReference]
+    def reload: () -> ::Array[::BillSectionReference]
+
+    def replace: (::Array[::BillSectionReference]) -> void
+    def delete: (*::BillSectionReference | ::Integer) -> ::Array[::BillSectionReference]
+    def destroy: (*::BillSectionReference | ::Integer) -> ::Array[::BillSectionReference]
+    def <<: (*::BillSectionReference | ::Array[::BillSectionReference]) -> self
+    def prepend: (*::BillSectionReference | ::Array[::BillSectionReference]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::BillAmendmentOperation < ::ApplicationRecord
+end
+class ::BillAmendmentOperation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Bill < ::ApplicationRecord
+end

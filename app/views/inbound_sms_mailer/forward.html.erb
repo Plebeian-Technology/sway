@@ -1,0 +1,8 @@
+<p>A text message was sent to the Sway number.</p>
+
+<p>
+  <strong>From:</strong> <%= @from %><br>
+  <strong>Sender:</strong> <%= @known_sender ? "a registered Sway user" : "not a Sway user" %>
+</p>
+
+<blockquote><%= @body %></blockquote>

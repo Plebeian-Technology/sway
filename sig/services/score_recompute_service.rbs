@@ -1,0 +1,25 @@
+class ScoreRecomputeService
+    CLASS_TO_COUNT_COLUMN: Hash[Symbol, Symbol]
+
+    def self.recompute_bill!: (Bill bill) -> void
+
+    def self.recompute_legislator!: (LegislatorTerm legislator_term) -> void
+
+    def self.recompute_legislator_district!: (LegislatorTerm legislator_term) -> void
+
+    def self.recompute_legislator_locale!: (LegislatorTerm legislator_term) -> void
+
+    def self.recompute_user_legislator!: ((UserLegislator | User) user_legislator, LegislatorTerm legislator_term) -> void
+
+    def self.covering_term_for: ((Date | ActiveSupport::TimeWithZone)? vote_date, Array[LegislatorTerm] terms) -> LegislatorTerm?
+
+    def self.classify: (String? user_support, String? legislator_support) -> Symbol
+
+    def self.recompute_bill_score_districts!: (Bill bill, BillScore bill_score) -> void
+
+    def self.tally_agreement: (
+        Array[Integer] user_ids,
+        LegislatorTerm legislator_term,
+        SwayLocale sway_locale
+    ) -> Hash[Symbol, Integer]
+end

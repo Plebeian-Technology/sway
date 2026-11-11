@@ -1,0 +1,16 @@
+# Spec-only declarations for spec/services/bill_title_spec.rb.
+#
+# Steep cannot see a `let` — it builds an anonymous class while the suite
+# runs, and nothing about that shape exists in the source a type checker
+# reads.
+class Object
+  # Titles the browser helper's own tests use, each mapped to the headline
+  # both sides have to produce.
+  def shared_cases: () -> Hash[String, String]
+
+  # The text of app/frontend/components/bill/sway_utils/billTitle.ts.
+  def helper_source: () -> String
+
+  # The text of that helper's vitest file.
+  def helper_test_source: () -> String
+end

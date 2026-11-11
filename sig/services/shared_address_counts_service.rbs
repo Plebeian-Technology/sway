@@ -1,0 +1,13 @@
+class SharedAddressCountsService
+  MIN_SHARED_USERS: Integer
+
+  def self.rows: -> Array[Hash[Symbol, untyped]]
+
+  def rows: -> Array[Hash[Symbol, untyped]]
+
+  private
+
+  def groups_by_key: -> Hash[String, Hash[Symbol, Array[Integer]]]
+
+  def address_user_rows: -> Array[Array[untyped]]
+end

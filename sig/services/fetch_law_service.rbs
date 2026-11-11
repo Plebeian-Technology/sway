@@ -1,0 +1,31 @@
+# RBS signature for FetchLawService (Phase 52 Plan 07 — D-45 + RESEARCH-REPLAN §Q5).
+# Zero `untyped` per project memory feedback_rbs_avoid_untyped.
+class FetchLawService
+  type stats_payload = {
+    "sections_upserted" => Integer,
+    "files_written" => Integer,
+    "articles_processed" => Integer,
+  }
+
+  type section_index_value = Hash[String, String]
+
+  CHARTER_FILE: String
+
+  @run: LegislationPipelineRun
+  @sway_locale: SwayLocale
+
+  def initialize: (run: LegislationPipelineRun) -> void
+  def call: () -> stats_payload
+
+  private
+
+  def resolve_sway_locale: (LegislationPipelineRun run) -> SwayLocale?
+  def resolve_default_sway_locale: () -> SwayLocale
+  def law_root: () -> Pathname
+  def ingest_corpus: (Pathname xml_path, String corpus_type, stats_payload stats, Hash[String, section_index_value] section_index) -> void
+  def locate_xml: (String filename) -> Pathname?
+  def locate_code_xmls: () -> Array[Pathname]
+  def write_section_file: (FetchLawService::AkomaNtosoParser::section_payload sec) -> void
+  def write_section_index: (Hash[String, section_index_value] section_index) -> void
+  def detect_status: (String title) -> String
+end

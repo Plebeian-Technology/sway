@@ -1,0 +1,64 @@
+class LegislativeVoteCoverage < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[LegislativeVoteCoverage, LegislativeVoteCoverage::ActiveRecord_Relation, Integer]
+
+  module Status
+    COMPLETE: String
+    PARTIAL: String
+    UNRESOLVED: String
+    MISSING_VOTE_DATE: String
+    FETCH_FAILED: String
+    ZERO_PUBLISHED: String
+    ALL: Array[String]
+  end
+
+  def bill: () -> Bill
+  def bill=: (Bill) -> Bill
+  def chamber: () -> String
+  def chamber=: (String) -> String
+  def roll_call_number: () -> String
+  def roll_call_number=: (String) -> String
+  def eligible_count: () -> Integer
+  def eligible_count=: (Integer) -> Integer
+  def matched_count: () -> Integer
+  def matched_count=: (Integer) -> Integer
+  def unresolved_tokens: () -> Array[untyped]
+  def unresolved_tokens=: (Array[untyped]) -> Array[untyped]
+  def status: () -> String
+  def status=: (String) -> String
+
+  def self.record_coverage!: (
+    bill: Bill,
+    chamber: String | Symbol,
+    roll_call_number: String | Integer,
+    eligible_count: Integer,
+    matched_count: Integer,
+    ?unresolved_tokens: Array[untyped],
+    ?status: String?
+  ) -> LegislativeVoteCoverage
+
+  def self.derive_status: (Integer, Integer) -> String
+  def self.unresolved: () -> ActiveRecord_Relation
+  def self.for_bill: (Bill bill) -> ActiveRecord_Relation
+  def self.find_or_initialize_by: (?untyped attributes) ?{ (LegislativeVoteCoverage) -> void } -> LegislativeVoteCoverage
+  def self.where: (*untyped) -> ActiveRecord_Relation
+
+  def gap_count: () -> Integer
+  def complete?: () -> bool
+  def unresolved?: () -> bool
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    include _ActiveRecord_Relation[LegislativeVoteCoverage, Integer]
+    include Enumerable[LegislativeVoteCoverage]
+
+    def unresolved: () -> ActiveRecord_Relation
+    def for_bill: (Bill bill) -> ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+    include _ActiveRecord_Relation[LegislativeVoteCoverage, Integer]
+    include Enumerable[LegislativeVoteCoverage]
+
+    def unresolved: () -> ActiveRecord_Relation
+    def for_bill: (Bill bill) -> ActiveRecord_Relation
+  end
+end

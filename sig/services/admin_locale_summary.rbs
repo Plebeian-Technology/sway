@@ -1,0 +1,15 @@
+class AdminLocaleSummary
+  TIER_LABELS: Hash[String, String]
+
+  def as_props: -> {tiers: Array[Hash[Symbol, untyped]]}
+
+  private
+
+  def tiers: -> Array[Hash[Symbol, untyped]]
+
+  def rows_for: (Array[SwayLocale] locales) -> Array[Hash[Symbol, untyped]]
+
+  def configured_news_sources: (SwayLocale locale, LlmBillSummarizationInstruction? instruction) -> Array[Hash[String, untyped]]
+
+  def counts: -> Hash[Integer, Integer]
+end

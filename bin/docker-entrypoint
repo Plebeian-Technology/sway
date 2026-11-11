@@ -1,0 +1,52 @@
+#!/bin/bash -e
+
+echo "docker-entrypoint.sh SENTRY_ORG -> $SENTRY_ORG"
+echo "docker-entrypoint.sh SENTRY_PROJECT -> $SENTRY_PROJECT"
+
+# @lat: [[production-snapshot-deploy-rehearsal-harness#Why the entrypoint runs sway:deploy and database setup only on web server startup]]
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+  echo "docker-entrypoint.sh -> Copying files to volume"
+  ./bin/rake sway:deploy
+  echo "docker-entrypoint.sh -> Finished copying files to volume"
+
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails db:migrate:with_data"
+  echo "####################################################"
+  # @lat: [[production-snapshot-deploy-rehearsal-harness#Production snapshot: a deploy rehearsal harness]]
+  ./bin/rails db:migrate:with_data
+
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails db:prepare"
+  echo "####################################################"
+  # @lat: [[auxiliary-databases#Why cable and cache are provisioned by a migrations path]]
+  ./bin/rails db:prepare
+
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails sway:setup_queue_database"
+  echo "####################################################"
+  # @lat: [[production-snapshot-deploy-rehearsal-harness#Why the entrypoint also runs db:prepare and sway:setup_queue_database]]
+  ./bin/rails sway:setup_queue_database
+
+  echo "####################################################"
+  echo "docker-entrypoint -> Running rails db:seed"
+  echo "####################################################"
+  ./bin/rails db:seed
+fi
+
+echo ""
+echo ""
+echo ""
+echo ""
+echo '███████╗██╗    ██╗ █████╗ ██╗   ██╗'
+echo '██╔════╝██║    ██║██╔══██╗╚██╗ ██╔╝'
+echo '███████╗██║ █╗ ██║███████║ ╚████╔╝ '
+echo '╚════██║██║███╗██║██╔══██║  ╚██╔╝  '
+echo '███████║╚███╔███╔╝██║  ██║   ██║   '
+echo '╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   '
+echo "Remember in November."                            
+echo ""
+echo ""
+echo ""
+echo ""
+
+exec "${@}"

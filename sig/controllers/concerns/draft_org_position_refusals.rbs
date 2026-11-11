@@ -1,0 +1,3 @@
+module DraftOrgPositionRefusals
+  LIST_CHANGED: String
+end

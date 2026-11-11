@@ -1,0 +1,14 @@
+# Spec-only helper module for FetchLawService specs (Phase 52 Plan 07).
+# Lives in sig-test (not sig) because it's only referenced from spec files.
+# Mirrors Plan 04's FetchBillsServiceSpecHelpers pattern.
+module FetchLawServiceSpecHelpers
+  TMP_LAW_ROOT: String
+
+  type section_fixture = { num: String, heading: String, text: String }
+
+  def self.minimal_law_xml: (container_num: String, sections: Array[section_fixture]) -> String
+  def self.minimal_charter_xml: (sections: Array[section_fixture]) -> String
+  def self.baltimore_raw_dir: () -> Pathname
+  def self.write_raw_charter: (String content) -> void
+  def self.write_raw_code: (String filename, String content) -> void
+end

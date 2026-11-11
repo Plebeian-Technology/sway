@@ -1,0 +1,497 @@
+# resolve-type-names: false
+
+class ::AdminSetting < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::AdminSetting, ::AdminSetting::ActiveRecord_Relation, ::Integer]
+
+  module ::AdminSetting::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def summarization_model: () -> ::String
+
+    def summarization_model=: (::String) -> ::String
+
+    def summarization_model?: () -> bool
+
+    def summarization_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summarization_model_change: () -> [ ::String?, ::String? ]
+
+    def summarization_model_will_change!: () -> void
+
+    def summarization_model_was: () -> ::String?
+
+    def summarization_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summarization_model_previous_change: () -> ::Array[::String?]?
+
+    def summarization_model_previously_was: () -> ::String?
+
+    def summarization_model_before_last_save: () -> ::String?
+
+    def summarization_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def summarization_model_in_database: () -> ::String?
+
+    def saved_change_to_summarization_model: () -> ::Array[::String?]?
+
+    def saved_change_to_summarization_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_summarization_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_summarization_model!: () -> void
+
+    def clear_summarization_model_change: () -> void
+
+    def summarization_model_before_type_cast: () -> ::String
+
+    def summarization_model_for_database: () -> ::String
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+
+    def updated_by_id: () -> ::Integer?
+
+    def updated_by_id=: (::Integer?) -> ::Integer?
+
+    def updated_by_id?: () -> bool
+
+    def updated_by_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def updated_by_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def updated_by_id_will_change!: () -> void
+
+    def updated_by_id_was: () -> ::Integer?
+
+    def updated_by_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def updated_by_id_previous_change: () -> ::Array[::Integer?]?
+
+    def updated_by_id_previously_was: () -> ::Integer?
+
+    def updated_by_id_before_last_save: () -> ::Integer?
+
+    def updated_by_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def updated_by_id_in_database: () -> ::Integer?
+
+    def saved_change_to_updated_by_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_updated_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_updated_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_updated_by_id!: () -> void
+
+    def clear_updated_by_id_change: () -> void
+
+    def updated_by_id_before_type_cast: () -> ::Integer?
+
+    def updated_by_id_for_database: () -> ::Integer?
+
+    def classification_model: () -> ::String
+
+    def classification_model=: (::String) -> ::String
+
+    def classification_model?: () -> bool
+
+    def classification_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def classification_model_change: () -> [ ::String?, ::String? ]
+
+    def classification_model_will_change!: () -> void
+
+    def classification_model_was: () -> ::String?
+
+    def classification_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def classification_model_previous_change: () -> ::Array[::String?]?
+
+    def classification_model_previously_was: () -> ::String?
+
+    def classification_model_before_last_save: () -> ::String?
+
+    def classification_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def classification_model_in_database: () -> ::String?
+
+    def saved_change_to_classification_model: () -> ::Array[::String?]?
+
+    def saved_change_to_classification_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_classification_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_classification_model!: () -> void
+
+    def clear_classification_model_change: () -> void
+
+    def classification_model_before_type_cast: () -> ::String
+
+    def classification_model_for_database: () -> ::String
+
+    def decision_model: () -> ::String
+
+    def decision_model=: (::String) -> ::String
+
+    def decision_model?: () -> bool
+
+    def decision_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def decision_model_change: () -> [ ::String?, ::String? ]
+
+    def decision_model_will_change!: () -> void
+
+    def decision_model_was: () -> ::String?
+
+    def decision_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def decision_model_previous_change: () -> ::Array[::String?]?
+
+    def decision_model_previously_was: () -> ::String?
+
+    def decision_model_before_last_save: () -> ::String?
+
+    def decision_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def decision_model_in_database: () -> ::String?
+
+    def saved_change_to_decision_model: () -> ::Array[::String?]?
+
+    def saved_change_to_decision_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_decision_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_decision_model!: () -> void
+
+    def clear_decision_model_change: () -> void
+
+    def decision_model_before_type_cast: () -> ::String
+
+    def decision_model_for_database: () -> ::String
+
+    def extraction_model: () -> ::String
+
+    def extraction_model=: (::String) -> ::String
+
+    def extraction_model?: () -> bool
+
+    def extraction_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def extraction_model_change: () -> [ ::String?, ::String? ]
+
+    def extraction_model_will_change!: () -> void
+
+    def extraction_model_was: () -> ::String?
+
+    def extraction_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def extraction_model_previous_change: () -> ::Array[::String?]?
+
+    def extraction_model_previously_was: () -> ::String?
+
+    def extraction_model_before_last_save: () -> ::String?
+
+    def extraction_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def extraction_model_in_database: () -> ::String?
+
+    def saved_change_to_extraction_model: () -> ::Array[::String?]?
+
+    def saved_change_to_extraction_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_extraction_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_extraction_model!: () -> void
+
+    def clear_extraction_model_change: () -> void
+
+    def extraction_model_before_type_cast: () -> ::String
+
+    def extraction_model_for_database: () -> ::String
+
+    def summary_batch_chunk_size: () -> ::Integer
+
+    def summary_batch_chunk_size=: (::Integer) -> ::Integer
+
+    def summary_batch_chunk_size?: () -> bool
+
+    def summary_batch_chunk_size_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def summary_batch_chunk_size_change: () -> [ ::Integer?, ::Integer? ]
+
+    def summary_batch_chunk_size_will_change!: () -> void
+
+    def summary_batch_chunk_size_was: () -> ::Integer?
+
+    def summary_batch_chunk_size_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def summary_batch_chunk_size_previous_change: () -> ::Array[::Integer?]?
+
+    def summary_batch_chunk_size_previously_was: () -> ::Integer?
+
+    def summary_batch_chunk_size_before_last_save: () -> ::Integer?
+
+    def summary_batch_chunk_size_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def summary_batch_chunk_size_in_database: () -> ::Integer?
+
+    def saved_change_to_summary_batch_chunk_size: () -> ::Array[::Integer?]?
+
+    def saved_change_to_summary_batch_chunk_size?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_summary_batch_chunk_size?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_summary_batch_chunk_size!: () -> void
+
+    def clear_summary_batch_chunk_size_change: () -> void
+
+    def summary_batch_chunk_size_before_type_cast: () -> ::Integer
+
+    def summary_batch_chunk_size_for_database: () -> ::Integer
+
+    def summary_batch_enabled: () -> bool
+
+    def summary_batch_enabled=: (bool) -> bool
+
+    def summary_batch_enabled?: () -> bool
+
+    def summary_batch_enabled_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def summary_batch_enabled_change: () -> [ bool?, bool? ]
+
+    def summary_batch_enabled_will_change!: () -> void
+
+    def summary_batch_enabled_was: () -> bool?
+
+    def summary_batch_enabled_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def summary_batch_enabled_previous_change: () -> ::Array[bool?]?
+
+    def summary_batch_enabled_previously_was: () -> bool?
+
+    def summary_batch_enabled_before_last_save: () -> bool?
+
+    def summary_batch_enabled_change_to_be_saved: () -> ::Array[bool?]?
+
+    def summary_batch_enabled_in_database: () -> bool?
+
+    def saved_change_to_summary_batch_enabled: () -> ::Array[bool?]?
+
+    def saved_change_to_summary_batch_enabled?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_summary_batch_enabled?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_summary_batch_enabled!: () -> void
+
+    def clear_summary_batch_enabled_change: () -> void
+
+    def summary_batch_enabled_before_type_cast: () -> bool
+
+    def summary_batch_enabled_for_database: () -> bool
+  end
+  include ::AdminSetting::GeneratedAttributeMethods
+  module ::AdminSetting::GeneratedAliasAttributeMethods
+    include ::AdminSetting::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::AdminSetting::GeneratedAliasAttributeMethods
+
+  def updated_by: () -> ::User?
+  def updated_by=: (::User?) -> ::User?
+  def reload_updated_by: () -> ::User?
+  def build_updated_by: (?untyped) -> ::User
+  def create_updated_by: (?untyped) -> ::User
+  def create_updated_by!: (?untyped) -> ::User
+
+  module ::AdminSetting::GeneratedAssociationMethods
+  end
+  include ::AdminSetting::GeneratedAssociationMethods
+
+  module ::AdminSetting::GeneratedRelationMethods
+  end
+
+  class ::AdminSetting::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::AdminSetting]
+    include ::AdminSetting::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::AdminSetting, ::Integer]
+  end
+
+  class ::AdminSetting::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::AdminSetting]
+    include ::AdminSetting::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::AdminSetting, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::AdminSetting
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::AdminSetting]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::AdminSetting
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::AdminSetting]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::AdminSetting
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::AdminSetting]
+    def reload: () -> ::Array[::AdminSetting]
+
+    def replace: (::Array[::AdminSetting]) -> void
+    def delete: (*::AdminSetting | ::Integer) -> ::Array[::AdminSetting]
+    def destroy: (*::AdminSetting | ::Integer) -> ::Array[::AdminSetting]
+    def <<: (*::AdminSetting | ::Array[::AdminSetting]) -> self
+    def prepend: (*::AdminSetting | ::Array[::AdminSetting]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::User < ::ApplicationRecord
+end

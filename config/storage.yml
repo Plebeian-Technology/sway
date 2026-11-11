@@ -1,0 +1,13 @@
+test:
+    service: Disk
+    root: <%= Rails.root.join("tmp/storage/assets") %>
+
+local:
+    service: Disk
+    root: <%= Rails.root.join("storage/assets") %>
+
+google:
+    service: GCS
+    project: <%= SwayGoogleCloudStorage::GOOGLE_CLOUD_PROJECT_ID %>
+    credentials: <%= SwayGoogleCloudStorage.credentials %>
+    bucket: <%= SwayGoogleCloudStorage::BUCKETS[:ASSETS] %>

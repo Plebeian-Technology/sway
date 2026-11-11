@@ -1,0 +1,48 @@
+# Phase 61 D-17 — notify followers of a position change.
+# Analogous to sig/services/approve_org_position_service.rbs in style:
+# concrete types, @ivar declarations, private helpers.
+class NotifyOrganizationFollowersService
+  # Valid change type symbols.
+  type change_type = :new_position | :support_change | :summary_change
+
+  CHANGE_TYPE_COPY: Hash[change_type, String]
+
+  @position: OrganizationBillPosition
+
+  @change_types: Array[Symbol]
+
+  @organization: Organization
+
+  @bill: Bill
+
+  # Per-event idempotency token (the triggering change's updated_at, iso8601).
+  @delivery_token: String
+
+  def initialize: (OrganizationBillPosition position, change_types: Array[change_type | Symbol], ?delivery_token: String?) -> void
+
+  # Enqueue rather than fan-out synchronously (keeps approval request fast).
+  def call_later: () -> void
+
+  # Synchronous fan-out to all enabled channels for notifiable followers.
+  def call: () -> void
+
+  private
+
+  def notifiable_user_ids: () -> Array[[Integer, String]]
+
+  def dispatch_immediate: (User user, String title, String body) -> void
+
+  def enqueue_digest: (User user, String cadence, String title, String body) -> void
+
+  # WR-04: durable idempotency guard — true on first delivery, false on a replay.
+  def mark_delivered_once!: (User user) -> bool
+
+  def delivery_change_key: () -> String
+
+  # Per-event idempotency token derived from the position's updated_at.
+  def event_token_for: (OrganizationBillPosition position) -> String
+
+  def notification_title: () -> String
+
+  def notification_body: () -> String
+end

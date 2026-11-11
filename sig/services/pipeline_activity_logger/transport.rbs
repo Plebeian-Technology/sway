@@ -1,0 +1,30 @@
+# @lat: [[activity-log-flash-transport#Why the dispatch lives outside the logger]]
+#
+# Type notes:
+#   - `req` on dispatch_inertia / inertia_request? is narrowed to
+#     ActionDispatch::Request (the caller `dispatch` guards with `if req && ...`
+#     before invoking, narrowing Current.request's ActionDispatch::Request?
+#     return to non-nil).
+#   - dispatch_inertia / dispatch_async / inertia_request? / resolve_stream_id
+#     are marked private at runtime via `private_class_method` in transport.rb.
+#     RBS's bare `private` keyword does NOT enforce singleton-method visibility
+#     in steep (it applies to instance methods), so the `private` block below
+#     is structural/documentary rather than load-bearing for typechecking.
+class PipelineActivityLogger
+  module Transport
+    # PUBLIC entry point — called from PipelineActivityLogEntry's
+    # after_commit on: :create hook. Owns branch selection (Inertia
+    # flash vs ActionCable broadcast) and defensive rescue layers.
+    def self.dispatch: (PipelineActivityLogEntry entry) -> void
+
+    private
+
+    def self.dispatch_inertia: (PipelineActivityLogEntry entry, ActionDispatch::Request req) -> void
+
+    def self.dispatch_async: (PipelineActivityLogEntry entry) -> void
+
+    def self.inertia_request?: (ActionDispatch::Request req) -> bool
+
+    def self.resolve_stream_id: (PipelineActivityLogEntry entry) -> String
+  end
+end

@@ -1,0 +1,11 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def base_url: () -> String
+
+  def member: (String bioguide, Array[Hash[String, untyped]] terms) -> Hash[String, untyped]
+
+  def stub_files: (
+    current: Array[Hash[String, untyped]],
+    ?historical: Array[Hash[String, untyped]]
+  ) -> void
+end

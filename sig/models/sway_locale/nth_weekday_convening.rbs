@@ -1,0 +1,17 @@
+class SwayLocale
+  class NthWeekdayConvening < ConveningRule
+    attr_reader month: Integer
+
+    # Date#cwday convention: Monday is 1, Sunday is 7.
+    attr_reader weekday: Integer
+
+    attr_reader ordinal: Integer
+
+    attr_reader offset_days: Integer
+
+    def initialize: (month: Integer, weekday: Integer, ordinal: Integer, ?offset_days: Integer) -> void
+
+    def date_in: (Integer year) -> Date
+    def sql_date_expr: (String year_column) -> String
+  end
+end

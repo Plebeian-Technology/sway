@@ -1,0 +1,27 @@
+# Collects a response body as it arrives and refuses it the moment
+# it passes a byte cap, so an oversized download is never fully resident.
+# Handed to Faraday as an `on_data` handler by Legistar::AttachmentFetch and
+# FetchLawCorpusService.
+class BoundedResponseBody
+  class TooLarge < StandardError
+  end
+
+  class TimeoutTooSlow < StandardError
+  end
+
+  @limit: Integer
+  @deadline: Float?
+  @max_elapsed: (Integer | Float)?
+  @description: String
+  @received: Integer
+  @buffer: String
+
+  attr_reader buffer: String
+
+  def initialize: (limit: Integer, ?deadline: Float?, ?max_elapsed: (Integer | Float)?, ?description: String) -> void
+  def receive: (String chunk, Integer overall_received_bytes, ?keep: bool) -> void
+
+  private
+
+  def restart: () -> void
+end

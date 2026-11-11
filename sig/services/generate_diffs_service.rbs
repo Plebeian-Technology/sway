@@ -1,0 +1,97 @@
+# Phase 52 Plan 06 — RBS sig for GenerateDiffsService (Task 2 final).
+#
+# Covers: orchestrator + ApplyOperations + DiffRenderer + MarkdownRenderer +
+# ResultWriter + the DiffResult Hash payload type aliases.
+#
+# Zero `untyped` tokens — all polymorphic value unions are spelled out as
+# concrete unions of (String | Integer | bool | Array[String] | nil) so Steep
+# can narrow at every access site.
+class GenerateDiffsService
+  # Augmented per-section payload variant carried inside the service before
+  # the strip_helper_keys pass writes the on-disk JSON. The `_*` helper keys
+  # are optional — Steep accepts missing keys because the value union admits
+  # nil.
+  type section_value = String | Integer | bool | Array[String] | nil
+
+  type diff_section_augmented = Hash[String, section_value]
+
+  type diff_stats = Hash[String, Integer]
+
+  type diff_result_value = String | nil | Array[diff_section_augmented] | diff_stats
+
+  type diff_result_disk = Hash[String, diff_result_value]
+
+  class Result
+    # diff paths are nil for the zero-result returned when a bill has no
+    # section references / amendment operations (non-amending bill).
+    attr_accessor diff_result_path:   Pathname?
+    attr_accessor diff_markdown_path: Pathname?
+    attr_accessor sections_modified:  Integer
+    attr_accessor sections_not_found: Integer
+    attr_accessor total_operations:   Integer
+
+    def self.new: (
+      ?diff_result_path:   Pathname?,
+      ?diff_markdown_path: Pathname?,
+      ?sections_modified:  Integer,
+      ?sections_not_found: Integer,
+      ?total_operations:   Integer,
+    ) -> Result
+  end
+
+  HELPER_KEYS: Array[String]
+
+  @bill: Bill
+  @bill_run: PipelineRunBill?
+  @run: LegislationPipelineRun?
+
+  def initialize: (bill: Bill, ?bill_run: PipelineRunBill?, ?run: LegislationPipelineRun?) -> void
+  def call: () -> Result
+
+  private
+
+  def strip_helper_keys: (diff_section_augmented section_hash) -> diff_section_augmented
+  def lookup_law_section: (BillSectionReference ref, SwayLocale? sway_locale) -> LawSection?
+  def build_section_payloads: () -> [Array[diff_section_augmented], diff_stats]
+
+  # @lat: [[legislation-pipeline#The legislation pipeline#Diff artifacts describe changes to existing law#Non-amending bills conclude successfully]]
+  def empty_sentinel_payload: () -> diff_result_disk
+  def persist_diff_artifact!: (diff_result_disk payload) -> void
+  def extract_section_text: (String bill_text, BillSectionReference ref, Array[BillAmendmentOperation] ops) -> String
+
+  public
+
+  class ApplyOperations
+    class ApplyResult
+      attr_accessor after_text: String
+      attr_accessor warnings:   Array[String]
+
+      def self.new: (after_text: String, warnings: Array[String]) -> ApplyResult
+    end
+
+    def self.call: (String before_text, Array[BillAmendmentOperation] operations) -> ApplyResult
+  end
+
+  module DiffRenderer
+    def self?.make_diff_block: (String before_text, String after_text) -> String
+  end
+
+  class MarkdownRenderer
+    @bill:        Bill
+    @diff_result: diff_result_disk
+
+    def initialize: (Bill bill, diff_result_disk diff_result) -> void
+    def render: () -> String
+
+    private
+
+    def content_parts: () -> Array[String]
+    def render_section: (diff_section_augmented sec) -> Array[String]
+  end
+
+  class ResultWriter
+    def self.root: () -> Pathname
+    def self.write_json: (Bill bill, diff_result_disk payload) -> Pathname
+    def self.write_markdown: (Bill bill, Object body) -> Pathname
+  end
+end

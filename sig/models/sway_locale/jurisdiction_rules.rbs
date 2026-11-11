@@ -1,0 +1,94 @@
+class SwayLocale
+  class JurisdictionRules
+    class Undeclared < StandardError
+    end
+
+    class OrderedRules < Hash[Symbol, untyped]
+      def []: (Symbol | String key) -> untyped
+      def evidence_publisher: () -> String?
+      def evidence_jurisdiction: () -> String?
+      def evidence_source_url: () -> String?
+      def enable_historical_fallback: () -> bool
+      def timezone: () -> String?
+      def retrieval: () -> String?
+      def parsing: () -> String?
+    end
+
+    attr_reader publishes_legislator_votes: bool
+    attr_reader chamber_label: String
+    attr_reader session_numbering: Symbol
+    attr_reader default_bill_chamber: String
+    attr_reader bill_chambers: Array[String]
+    attr_reader accepted_matter_types: Array[String]
+    attr_reader final_passage_action_ids: Array[Integer]?
+
+    RULE_DOMAINS: Array[Symbol]
+
+    attr_reader legislation_rules: OrderedRules?
+    attr_reader hearings_rules: OrderedRules?
+    attr_reader vote_rules: OrderedRules?
+    attr_reader roster_rules: OrderedRules?
+    attr_reader law_rules: OrderedRules?
+    attr_reader testimony_rules: OrderedRules?
+
+    def legacy_path_fallback?: () -> bool
+    def testimony_classification_enabled?: () -> bool
+    def generic_portal_urls: () -> Array[String]
+    def evidence_publisher: () -> String?
+    def evidence_jurisdiction: () -> String?
+    def evidence_source_url: () -> String?
+    def enable_historical_fallback?: () -> bool
+    def enable_historical_fallback: () -> bool
+    def vote_timezone: () -> String?
+
+
+    def retrieval_for: (Symbol | String domain) -> String?
+    def parsing_for: (Symbol | String domain) -> String?
+    def retrieval: (Symbol | String domain) -> String?
+    def parsing: (Symbol | String domain) -> String?
+
+    def legislation_retrieval: () -> String?
+    def legislation_parsing: () -> String?
+    def hearings_retrieval: () -> String?
+    def hearings_parsing: () -> String?
+    def vote_retrieval: () -> String?
+    def vote_parsing: () -> String?
+    def roster_retrieval: () -> String?
+    def roster_parsing: () -> String?
+    def law_retrieval: () -> String?
+    def law_parsing: () -> String?
+
+    def legislation_rules_retrieval: () -> String?
+    def legislation_rules_parsing: () -> String?
+    def hearings_rules_retrieval: () -> String?
+    def hearings_rules_parsing: () -> String?
+    def vote_rules_retrieval: () -> String?
+    def vote_rules_parsing: () -> String?
+    def roster_rules_retrieval: () -> String?
+    def roster_rules_parsing: () -> String?
+    def law_rules_retrieval: () -> String?
+    def law_rules_parsing: () -> String?
+
+    def initialize: (
+      publishes_legislator_votes: bool,
+      chamber_label: String,
+      session_numbering: Symbol,
+      default_bill_chamber: String,
+      bill_chambers: Array[String],
+      ?accepted_matter_types: Array[String]?,
+      ?final_passage_action_ids: Array[Integer]?,
+      ?legislation_rules: Hash[Symbol | String, untyped]?,
+      ?hearings_rules: Hash[Symbol | String, untyped]?,
+      ?vote_rules: Hash[Symbol | String, untyped]?,
+      ?roster_rules: Hash[Symbol | String, untyped]?,
+      ?law_rules: Hash[Symbol | String, untyped]?,
+      ?testimony_rules: Hash[Symbol | String, untyped]?
+    ) -> void
+
+    private
+
+    def rule_hash_for: (Symbol | String domain) -> OrderedRules?
+    def deep_freeze_rules: (Hash[Symbol | String, untyped] rules) -> untyped
+    def to_frozen_ordered_options: (untyped value) -> untyped
+  end
+end

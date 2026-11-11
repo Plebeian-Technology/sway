@@ -1,0 +1,103 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+# @lat: [[address-place-classification#Nominatim place classification and usage constraints]]
+RSpec.describe NominatimService do
+  search_url = "https://nominatim.openstreetmap.org/search"
+  sample_place = {
+    "place_id" => 100149,
+    "osm_type" => "node",
+    "osm_id" => 107775,
+    "lat" => "39.29038",
+    "lon" => "-76.61219",
+    "display_name" => "100 Holliday St, Baltimore, MD 21202, USA",
+    "address" => {
+      "house_number" => "100",
+      "road" => "Holliday St",
+      "city" => "Baltimore",
+      "state" => "Maryland",
+      "postcode" => "21202",
+      "country" => "United States"
+    }
+  }
+
+  describe ".search" do
+    it "queries Nominatim search endpoint with formatted query params and Sway User-Agent" do
+      memory_cache = ActiveSupport::Cache::MemoryStore.new
+      allow(Rails).to receive(:cache).and_return(memory_cache)
+
+      stub = stub_request(:get, search_url)
+        .with(
+          query: {
+            "q" => "100 Holliday St",
+            "format" => "jsonv2",
+            "addressdetails" => "1",
+            "limit" => "5",
+            "viewbox" => "-76.7114,39.3720,-76.5297,39.1972",
+            "bounded" => "1",
+            "countrycodes" => "us"
+          },
+          headers: {
+            "User-Agent" => "Sway/1.0 (civic-tech-app; https://sway.vote)",
+            "Accept" => "application/json"
+          }
+        )
+        .to_return(status: 200, body: [sample_place].to_json, headers: {"Content-Type" => "application/json"})
+
+      results = described_class.search(
+        query: "100 Holliday St",
+        viewbox: "-76.7114,39.3720,-76.5297,39.1972",
+        bounded: true,
+        countrycodes: "us"
+      )
+
+      expect(stub).to have_been_requested.once
+      expect(results).to eq([sample_place])
+    end
+
+    it "caches successful responses for identical parameters in Rails.cache" do
+      memory_cache = ActiveSupport::Cache::MemoryStore.new
+      allow(Rails).to receive(:cache).and_return(memory_cache)
+
+      stub = stub_request(:get, search_url)
+        .with(query: hash_including("q" => "100 Holliday St"))
+        .to_return(status: 200, body: [sample_place].to_json, headers: {"Content-Type" => "application/json"})
+
+      results1 = described_class.search(query: "100 Holliday St")
+      results2 = described_class.search(query: "100 Holliday St")
+
+      expect(stub).to have_been_requested.once
+      expect(results1).to eq([sample_place])
+      expect(results2).to eq([sample_place])
+    end
+
+    it "returns empty array immediately for blank queries without making an HTTP request" do
+      expect(described_class.search(query: "")).to eq([])
+      expect(described_class.search(query: "   ")).to eq([])
+    end
+
+    it "clamps limit between 1 and 10" do
+      stub = stub_request(:get, search_url)
+        .with(query: hash_including("limit" => "10"))
+        .to_return(status: 200, body: [].to_json, headers: {"Content-Type" => "application/json"})
+
+      described_class.search(query: "Main St", limit: 50)
+      expect(stub).to have_been_requested.once
+    end
+
+    it "handles HTTP 429 rate limit or 5xx upstream responses gracefully by returning empty array" do
+      stub_request(:get, search_url)
+        .to_return(status: 429, body: "Too Many Requests")
+
+      expect(described_class.search(query: "Crash Test")).to eq([])
+    end
+
+    it "handles Faraday connection errors gracefully by returning empty array" do
+      stub_request(:get, search_url)
+        .to_raise(Faraday::ConnectionFailed.new("Failed to connect"))
+
+      expect(described_class.search(query: "Offline Test")).to eq([])
+    end
+  end
+end

@@ -1,0 +1,314 @@
+# ==============================================================================
+# SwayLocale Configuration Reference & Example
+# ==============================================================================
+#
+# This file documents all schema fields, configuration options, allowlists, and
+# default behaviors for declarative SwayLocale definitions in Sway.
+#
+# Active locale configuration files are placed in config/sway_locales/*.yml.
+# Each active file defines a jurisdiction (city, state, or federal level).
+# Files ending in `.example.yml` or starting with `_` are ignored by
+# SwayLocale::DocumentReader.discover and SwayLocale::ReadinessPreflight.
+#
+# CITATION CONVENTION:
+# Every field in a concrete YAML file should have an authoritative citation
+# documented as a comment immediately above the field. Citations must include:
+# 1. The title or statutory authority (e.g., City Charter, State Constitution, API doc).
+# 2. A persistent, publicly accessible HTTP URL that resolves to a 2xx status code.
+# Example:
+#   # Citation: Constitution of Maryland, Art. III, Sec. 14
+#   # Source: https://msa.maryland.gov/msa/mdmanual/43const/html/03art3.html
+#   #
+# ------------------------------------------------------------------------------
+# 1. TOP-LEVEL IDENTITY & METADATA
+# ------------------------------------------------------------------------------
+
+# Schema specification version. Currently must be 1.
+# Type: Integer (Required)
+schema_version: 1
+
+# City or municipal jurisdiction token (normalized lowercase, underscores).
+# - Municipal/local jurisdiction: "baltimore", "annapolis"
+# - State-level jurisdiction: matches region name, e.g. "maryland"
+# - Federal/national jurisdiction: "congress"
+# Type: String (Required)
+city: example_city
+
+# State, province, or primary administrative subdivision (normalized lowercase).
+# - E.g. "maryland", "virginia", or "congress" for federal level.
+# Type: String (Required)
+region: maryland
+
+# Two-letter postal region code (uppercase).
+# - E.g. "MD", "VA", "DC"
+# - Use empty string "" for national/federal jurisdictions.
+# Type: String (Optional, defaults to "")
+region_code: MD
+
+# Country name (normalized lowercase, underscores).
+# - E.g. "united_states"
+# Type: String (Required, defaults to "united_states")
+country: united_states
+
+# Canonical unique name of the SwayLocale.
+# MUST match "{city}-{region}-{country}".
+# MUST match the YAML filename without the `.yml` extension.
+# E.g. "example_city-maryland-united_states" -> file "example_city-maryland-united_states.yml"
+# Type: String (Required)
+name: example_city-maryland-united_states
+
+# Convening date of the current active legislative session (ISO 8601 YYYY-MM-DD).
+# Used to determine active bills vs historic legislation: bills introduced on
+# or after this date are considered active in the current session.
+# Type: String / Date (Required)
+
+# Convening date of the next legislative session (ISO 8601 YYYY-MM-DD).
+# If known or determined in advance, declare it here.
+# When omitted, DocumentReader determines this date automatically using the
+# term_rules.convening rule and session cadence.
+# Type: String / Date (Optional)
+
+# @lat: [[locale-extension#Legislative session schema and validations]]
+legislative_sessions:
+    - name: "2024 Regular Session"
+      start_date: "2024-01-10"
+      end_date: "2025-01-08"
+      active: false
+      upstream_name: "2024RS"
+    - name: "2025 Regular Session"
+      start_date: "2025-01-08"
+      end_date: "2026-01-14"
+      active: true
+      upstream_name: "2025RS"
+
+# Standard IANA time zone identifier for the jurisdiction.
+# E.g. "America/New_York", "America/Chicago", "America/Los_Angeles"
+# Type: String (Required)
+time_zone: America/New_York
+
+# Path to the locale's flag or emblem SVG/image relative to the project root.
+# E.g. "public/images/flags/baltimore-maryland-united_states.svg"
+# Must NOT start with a leading slash ("/").
+# Type: String (Optional, defaults to "public/icon.svg")
+icon_url: public/images/flags/maryland-maryland-united_states.svg
+
+# Designates whether this locale is the fallback default when a visitor has no
+# geolocated address or stored session selection.
+# Type: Boolean (Optional, defaults to false)
+default: false
+
+# @lat: [[locale-extension#Nominatim geographic configuration]]
+# Geographic boundaries for OpenStreetMap Nominatim address autocomplete search. # lat:ignore
+# Format: "<left>,<top>,<right>,<bottom>" (<min_lon>,<max_lat>,<max_lon>,<min_lat>). # lat:ignore
+# Set to null or omit when jurisdiction cannot be bounded by a single box. # lat:ignore
+# Type: String (Optional) # lat:ignore
+nominatim_viewbox: "-76.7114,39.3720,-76.5297,39.1972"
+
+# Whether to strictly restrict Nominatim search results within nominatim_viewbox. # lat:ignore
+# - true : Only addresses strictly inside the viewbox are returned. # lat:ignore
+# - false : Viewbox acts as a preference/bias, or viewbox is omitted. # lat:ignore
+# Type: Boolean (Optional, defaults to false) # lat:ignore
+nominatim_bounded: true
+
+# Two-letter ISO 3166-1 alpha-2 country codes for search filtering (comma-separated). # lat:ignore
+# E.g. "us" # lat:ignore
+# Type: String (Optional, defaults to "us") # lat:ignore
+nominatim_country_codes: "us"
+
+# ------------------------------------------------------------------------------
+# 2. SAMPLE ADDRESS (STAND-IN ACCOUNT & VERIFICATION)
+# ------------------------------------------------------------------------------
+# A valid physical address within the jurisdiction used for onboarding test
+# accounts, boundary verification, and geocoding fallbacks.
+# Type: Mapping (Optional)
+sample_address:
+    # Street address line
+    street: 100 Main St
+    # Postal code / ZIP code
+    postal_code: "21401"
+    # Latitude coordinate in decimal degrees
+    latitude: 38.9784
+    # Longitude coordinate in decimal degrees
+    longitude: -76.4922
+
+# ------------------------------------------------------------------------------
+# 3. SOURCE RULES (LEGISLATURE, ROSTERS, VOTES, LAWS)
+# ------------------------------------------------------------------------------
+# Governs where Sway pulls legislator rosters, roll calls, bill texts, and legal code.
+# Type: Mapping (Required)
+source_rules:
+    # Whether individual roll-call votes cast by legislators are published and scored.
+    # - true  : Members have voting records; Sway computes constituent alignment scores.
+    # - false : Only final chamber passage or outcomes are recorded (no individual scoring).
+    # Type: Boolean (Required)
+    publishes_legislator_votes: true
+
+    # Human-readable title for the legislative body or chamber.
+    # E.g. "City Council", "General Assembly", "Congress", "Board of Aldermen"
+    # Type: String (Required)
+    chamber_label: General Assembly
+
+    # Session labeling scheme displayed in legislator term history.
+    # Allowed values:
+    #   - "congress_ordinal" : Ordinal count from 1st Congress (e.g. "119th Congress")
+    #   - "term_years"       : Spanning years with chamber label (e.g. "2024-2028 City Council")
+    # Type: String (Required)
+    session_numbering: term_years
+
+    # Default chamber selected when creating or ingesting bills.
+    # MUST be one of the values in `bill_chambers`.
+    # Type: String (Required)
+    default_bill_chamber: house
+
+    # Complete list of valid legislative chambers for bill introduction.
+    # E.g. ["council"] for unicameral city councils,
+    #      ["house", "senate", "both"] for bicameral state/federal legislatures.
+    # Type: Array of Strings (Required)
+    bill_chambers:
+        - house
+        - senate
+        - both
+
+    # Optional filter on matter types ingested from Legistar (Legistar jurisdictions only).
+    # E.g. ["Ordinance", "Resolution"]
+    # Type: Array of Strings (Optional)
+    accepted_matter_types:
+        - Bill
+        - Joint Resolution
+
+    # Optional action IDs representing final passage in Legistar (Legistar jurisdictions only).
+    # Type: Array of Integers (Optional)
+    final_passage_action_ids:
+        - 1
+        - 14
+        - 32
+
+    # Structured endpoint and mapping configuration schemas.
+    # These declarative blocks configure generic integration adapters without jurisdiction-specific code.
+
+    # Legislation adapter configuration:
+    legislation_rules:
+        retrieval: generic_rest
+        parsing: generic_rest
+        base_url: "https://mgaleg.maryland.gov"
+        # Generic portal root URLs or search page URLs to filter from public display
+        # when a bill lacks a specific direct bill link.
+        # Type: Array of Strings (Optional)
+        generic_portal_urls:
+            - "https://mgaleg.maryland.gov"
+            - "https://mgaleg.maryland.gov/mgawebsite"
+        # Optional regex patterns to resolve bill chamber from external_id
+
+        chamber_patterns:
+            house: "^H[BJ]"
+            senate: "^S[BJ]"
+        metadata_mapping:
+            external_id: "$.matterId"
+            title: "$.billTitle"
+            chamber: "$.chamber"
+            session: "$.session"
+
+    # Hearings adapter configuration:
+    hearings_rules:
+        retrieval: generic_html
+        parsing: generic_html
+        base_url: "https://mgaleg.maryland.gov"
+
+    # Roll-call vote adapter configuration:
+    vote_rules:
+        retrieval: open_states
+        parsing: open_states
+        base_url: "https://v3.openstates.org"
+        jurisdiction: Maryland
+        api_key_secret: OPENSTATES_API_KEY
+        enable_historical_fallback: false
+        timezone: "America/New_York"
+
+    # Roster synchronization adapter configuration:
+    roster_rules:
+        retrieval: open_states
+        parsing: open_states
+        base_url: "https://v3.openstates.org"
+        jurisdiction: Maryland
+        api_key_secret: OPENSTATES_API_KEY
+        evidence_publisher: "openstates.org"
+        evidence_jurisdiction: "maryland-maryland-united_states"
+        evidence_source_url: "https://v3.openstates.org/people"
+
+    # Legal code statutory adapter configuration:
+    law_rules:
+        retrieval: local_raw
+        parsing: generic_xml
+        base_url: "https://mgaleg.maryland.gov/mgawebsite/Laws/Statutes"
+
+# ------------------------------------------------------------------------------
+# 4. TERM RULES (CALENDARS, CYCLES, ELECTIONS)
+# ------------------------------------------------------------------------------
+# Defines when terms of office start, how long they last, and upstream roster capabilities.
+# Type: Mapping (Required)
+term_rules:
+    # Convening rule defining the calendar day a new term or session begins.
+    # Kind 1: "fixed_day" - convenes on the exact same month and day each cycle.
+    #   kind: fixed_day
+    #   month: 1   # 1..12
+    #   day: 3     # 1..31
+    #
+    # Kind 2: "nth_weekday" - convenes on a relative weekday of a given month.
+    #   kind: nth_weekday
+    #   month: 1       # 1..12
+    #   weekday: 3     # 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, ..., 6=Saturday
+    #   ordinal: 2     # 1=first, 2=second, 3=third, 4=fourth, 5=fifth
+    #   offset_days: 0 # Number of days added to the nth weekday (e.g. 3 for Thursday after first Monday)
+    # Type: Mapping (Required)
+    convening:
+        kind: nth_weekday
+        month: 1
+        weekday: 3
+        ordinal: 2
+        offset_days: 0
+
+    # Reference election/convening year that anchors the multi-year cycle.
+    # Used with cycle_years to compute past and future term start years.
+    # E.g. 2023 for MD General Assembly, 2024 for Baltimore, 1991 for Congress.
+    # Type: Integer (Required)
+    cycle_anchor_year: 2023
+
+    # Duration of one full legislative term in years.
+    # E.g. 2 for US House of Representatives, 4 for Baltimore Council & Maryland GA.
+    # Type: Integer (Required, positive)
+    cycle_years: 4
+
+    # Whether the upstream roster source only lists currently serving legislators.
+    # - true  : Upstream only lists current legislators; past terms are inferred.
+    # - false : Upstream retains historical legislator records.
+    # Type: Boolean (Required)
+    roster_lists_only_current_legislators: true
+
+    # Whether the upstream source publishes past term history for legislators.
+    # Type: Boolean (Required)
+    publishes_term_history: false
+
+    # Whether the upstream source provides exact day-level start and end dates.
+    # - true  : Exact day-level dates are provided (e.g. Congress.gov).
+    # - false : Dates are calculated using convening rules and cycle years.
+    # Type: Boolean (Required)
+    publishes_exact_term_dates: false
+
+    # Legislator identity tracking strategy across terms and redistricting.
+    # Allowed values:
+    #   - "person" : Legislators are tracked as unique individuals across terms.
+    #   - "seat"   : Legislators are tracked primarily by seat/district position.
+    # Type: String (Required)
+    identified_by: person
+
+# @lat: [[news-source-configuration#News source configuration contract]]
+# Type: Array of Mappings (Required)
+# Optional exact districts.name whose seats belong to every reader in this locale.
+representative_resolution:
+    locale_wide_district_name: null
+
+news_sources:
+    - url: "https://example.com/news/"
+      path_policy: search_hint
+    - url: "https://example.com/city-hall/"
+      path_policy: restrict

@@ -1,0 +1,34 @@
+class SwayLocale
+  class TermRules
+    class Undeclared < StandardError
+    end
+
+    attr_reader convening: ConveningRule
+
+    attr_reader cycle_anchor_year: Integer
+
+    attr_reader cycle_years: Integer
+
+    attr_reader roster_lists_only_current_legislators: bool
+
+    attr_reader publishes_term_history: bool
+
+    attr_reader publishes_exact_term_dates: bool
+
+    # :person or :seat
+    attr_reader identified_by: Symbol
+
+    attr_reader seat_chambers: Hash[String, String]
+
+    def initialize: (
+      convening: ConveningRule,
+      cycle_anchor_year: Integer,
+      cycle_years: Integer,
+      roster_lists_only_current_legislators: bool,
+      publishes_term_history: bool,
+      publishes_exact_term_dates: bool,
+      identified_by: Symbol,
+      ?seat_chambers: Hash[String, String]
+    ) -> void
+  end
+end

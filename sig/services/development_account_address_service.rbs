@@ -1,0 +1,5 @@
+class DevelopmentAccountAddressService
+    SAMPLE_ADDRESS_COLUMNS: Array[Symbol]
+
+    def self.resolve: (sway_locale: SwayLocale) -> Address
+end

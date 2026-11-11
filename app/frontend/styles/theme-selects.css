@@ -1,0 +1,76 @@
+/* @lat: [[theme-tokens#Theme tokens#Why native select chrome is defined once, globally]] */
+
+.ball-select {
+    max-width: 100%;
+    min-width: 0;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+    background: var(--card);
+    border: var(--rule-hair) var(--rule-style) var(--foreground);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: var(--type-small);
+    color: var(--foreground);
+}
+
+.bnl-select {
+    max-width: 100%;
+    min-width: 0;
+    font: inherit;
+    font-size: var(--type-small);
+    height: var(--control-height);
+    padding: 0 var(--control-pad-x);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--background);
+    color: var(--foreground);
+}
+
+.csl-select {
+    max-width: 100%;
+    min-width: 0;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+    background: var(--background);
+    border: var(--rule-thick) var(--rule-style) var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: var(--type-small);
+    color: var(--foreground);
+}
+
+.monochrome-select {
+    max-width: 100%;
+    min-width: 0;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+    background: var(--background);
+    border: var(--rule-mid) var(--rule-style) var(--border-strong);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: var(--type-small);
+    color: var(--foreground);
+}
+
+.service-manual-select {
+    max-width: 100%;
+    min-width: 0;
+    font: inherit;
+    font-size: var(--type-small);
+    height: var(--control-height);
+    padding: 0 var(--control-pad-x);
+    border: var(--rule-mid) var(--rule-style) var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--background);
+    color: var(--foreground);
+}
+
+.swiss-grid-select {
+    max-width: 100%;
+    min-width: 0;
+    font: inherit;
+    font-size: var(--type-small);
+    height: var(--control-height);
+    padding: 0 var(--control-pad-x);
+    border: var(--rule-hair) var(--rule-style) var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--background);
+    color: var(--foreground);
+}

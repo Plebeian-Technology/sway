@@ -1,0 +1,42 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class MergeBaltimoreSeatRows < ActiveRecord::Migration
+  @baltimore_legislators: Array[Legislator]
+
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  def empty_seat_rows: () -> Array[Legislator]
+
+  def seat_key?: (String? external_id) -> bool
+
+  def row_holding_the_data_for: (Legislator empty_row) -> Legislator?
+
+  def full_name: (Legislator legislator) -> String
+
+  def carries_nothing?: (Legislator legislator) -> bool
+
+  def carry_title_over: (Legislator empty_row, Legislator keeper) -> void
+
+  def delete_row: (Legislator legislator) -> void
+
+  def baltimore_legislators: () -> Array[Legislator]
+end
+
+# Steep does not resolve RSpec `let` or a `def` inside a describe block.
+class Object
+  # The stand-in district MD0, which both citywide offices sit under.
+  def citywide: () -> District
+
+  # Builds the pair Baltimore holds for one seat: a row named after the seat
+  # that carries nothing, and the row named after the person that carries the
+  # votes and the user links. Returns both, plus the keeper's own term.
+  def seat_pair: (
+    first_name: String,
+    last_name: String,
+    seat_key: String,
+    district: District,
+    title: String?
+  ) -> [Legislator, Legislator, LegislatorTerm]
+end

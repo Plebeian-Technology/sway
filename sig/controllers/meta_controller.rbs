@@ -1,0 +1,7 @@
+# RBS sig for MetaController (SWAY release tracking).
+# Mirrors app/controllers/meta_controller.rb. Public meta pages: build/release
+# info (/version) and open-source attribution (/licenses).
+class MetaController < ApplicationController
+  def version: () -> untyped
+  def licenses: () -> untyped
+end

@@ -1,0 +1,13 @@
+# Helpers defined at describe-block scope in
+# spec/system/reader_tab_strips_narrow_spec.rb. Steep cannot see a `def`
+# written inside a describe block, so they are declared here.
+class Object
+  # The rightmost edge the tab strip reaches, in CSS pixels.
+  def tab_strip_right_edge: () -> Integer
+
+  def viewport_width: () -> Integer
+
+  def expect_tab_strip_inside_viewport!: (String context) -> void
+
+  def expect_controls_inside_parent!: (String context) -> void
+end

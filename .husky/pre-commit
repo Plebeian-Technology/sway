@@ -1,0 +1,59 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+# NOTE: mobile/ uses its own pnpm lint (see mobile/package.json) — do not lint
+# from root. The mobile workspace pins oxlint-config-expo + a separate tsconfig;
+# root oxlint/TS configs do not own mobile/ and will fail on its files.
+# The web hooks below filter mobile/ out of the staged-file list.
+changed_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -v '^mobile/' | sed 's| |\\ |g')
+
+echo "Run oxlint"
+if [ -n "$changed_files" ]; then
+  pnpm run lint
+else
+  echo "No web files to lint (mobile-only or deletion-only commit)"
+fi
+
+echo "Run tsc on project (root tsconfig — excludes mobile/ via its own include block)"
+node_modules/.bin/tsc --project tsconfig.json
+
+echo "Run oxfmt on project"
+pnpm run fmt
+
+# @lat: [[testing-the-toolchain#A safe autocorrect is still a change to read]]
+ruby_changed=$(git diff --cached --name-only --diff-filter=ACMR -- '*.rb' | grep -v '^mobile/' || true)
+echo "Run rubocop on staged Ruby files"
+if [ -n "$ruby_changed" ]; then
+  echo "$ruby_changed" | xargs bundle exec rubocop --force-exclusion --autocorrect
+else
+  echo "No Ruby files staged"
+fi
+
+git update-index --again
+
+# --- Secret scanning (runs on the final staged index) ----------------------
+
+echo "Assert the .kamal secret files hold no literal values"
+# The single highest-consequence file in the repo: a literal value here commits
+# a live credential. Every assignment must be a command substitution or var ref
+# ($(...) / ${...} / $VAR), never a literal. Only checked when it's staged.
+#
+# Checks EVERY .kamal/secrets* file, not one fixed name. Kamal splits these by
+# deploy target: .kamal/secrets-common is read every time, and it also reads
+# .kamal/secrets.<target> when you deploy with `-d <target>`. This check used to
+# match the exact name ".kamal/secrets", so renaming that file to secrets-common
+# turned the check off without failing — it just stopped matching and passed.
+for secret_file in $(git diff --cached --name-only --diff-filter=ACMR | grep -E '^\.kamal/secrets'); do
+  literal=$(git show ":$secret_file" \
+    | grep -nE '^[A-Za-z_][A-Za-z0-9_]*=' \
+    | grep -vE '^[0-9]+:[A-Za-z_][A-Za-z0-9_]*=(\$|$)' || true)
+  if [ -n "$literal" ]; then
+    echo "ERROR: $secret_file must contain only \$(...) / \$VAR references, not literals:" >&2
+    echo "$literal" | sed -E 's/=.*/=<REDACTED>/' >&2
+    exit 1
+  fi
+done
+
+echo "Run gitleaks on staged changes"
+bin/secret-scan.sh staged

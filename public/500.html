@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Something went wrong (500) · Sway</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="robots" content="noindex" />
+        <link rel="icon" href="/favicon.ico" />
+        <style>
+            :root {
+                --background: #f4f0e6;
+                --foreground: #363636;
+                --card: #fbf7ef;
+                --primary: #1739fc;
+                --border: #60584d;
+                --muted-foreground: #645d52;
+                --accent: #ffd600;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --background: #141210;
+                    --foreground: #f4f0e6;
+                    --card: #1b1915;
+                    --primary: #7aa8ff;
+                    --border: #544d42;
+                    --muted-foreground: #c5bfae;
+                    --accent: #ffd600;
+                }
+            }
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                min-height: 100%;
+            }
+            body {
+                font-family: "Open Sans", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+                background: var(--background);
+                color: var(--foreground);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem 1rem;
+            }
+            main {
+                width: 100%;
+                max-width: 32rem;
+                background: var(--card);
+                border: 1.5px solid var(--border);
+                border-radius: 1rem;
+                box-shadow: 3px 3px 0 0 var(--border);
+                padding: 2.5rem 2rem;
+                text-align: center;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+                border-radius: 0.75rem;
+                object-fit: cover;
+                margin: 0 auto 1.25rem;
+                display: block;
+                border: 1.5px solid var(--border);
+            }
+            .code {
+                display: inline-block;
+                font-size: 0.875rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                background: var(--accent);
+                color: #363636;
+                padding: 0.25rem 0.625rem;
+                border: 1.5px solid var(--border);
+                border-radius: 0.5rem;
+                font-variant-numeric: tabular-nums lining-nums;
+            }
+            h1 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin: 1rem 0 0.5rem;
+                line-height: 1.2;
+            }
+            p {
+                color: var(--muted-foreground);
+                font-size: 1rem;
+                line-height: 1.55;
+                margin: 0 0 1.5rem;
+            }
+            .actions {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            a.btn,
+            button.btn {
+                display: inline-block;
+                font-family: inherit;
+                font-weight: 600;
+                font-size: 0.95rem;
+                padding: 0.625rem 1.125rem;
+                border-radius: 0.625rem;
+                border: 1.5px solid var(--border);
+                text-decoration: none;
+                background: var(--primary);
+                color: #ffffff;
+                box-shadow: 3px 3px 0 0 var(--border);
+                cursor: pointer;
+                transition: transform 140ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            a.btn.secondary,
+            button.btn.secondary {
+                background: var(--card);
+                color: var(--foreground);
+            }
+            a.btn:hover,
+            button.btn:hover {
+                transform: translate(-1px, -1px);
+                box-shadow: 4px 4px 0 0 var(--border);
+            }
+            a.btn:active,
+            button.btn:active {
+                transform: translate(2px, 2px);
+                box-shadow: 1px 1px 0 0 var(--border);
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <img class="logo" src="/images/sway-us-light.png" alt="Sway" />
+            <span class="code">500 · Server error</span>
+            <h1>Something broke on our end.</h1>
+            <p>This isn't your fault. Our team has been notified — please try again in a moment.</p>
+            <div class="actions">
+                <button class="btn" type="button" onclick="window.location.reload()">Try again</button>
+                <a class="btn secondary" href="/">Back home</a>
+            </div>
+        </main>
+    </body>
+</html>

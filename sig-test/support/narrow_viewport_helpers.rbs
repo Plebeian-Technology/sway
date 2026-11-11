@@ -1,0 +1,30 @@
+# spec/support/narrow_viewport_helpers.rb, included into every `type: :system`
+# example group. Self-typed to ::Object so the Capybara and RSpec surface
+# sig-test/object_spec_methods.rbs and sig-test/rspec_dsl.rbs already declare
+# resolves inside the module body.
+module NarrowViewportHelpers : ::Object
+  NARROW_VIEWPORT_WIDTH: Integer
+
+  NARROW_VIEWPORT_HEIGHT: Integer
+
+  OVERFLOW_TOLERANCE_PX: Integer
+
+  # AdminSystemHelpers', called from choose_theme! — both modules are included
+  # into the same example groups.
+  def browser_json_request: (untyped method, untyped path, untyped payload) -> untyped
+
+  def with_narrow_viewport: (?width: Integer, ?height: Integer) { () -> untyped } -> untyped
+  def visit_narrow: (untyped path, ?width: Integer) -> void
+  def shipped_theme_ids: () -> untyped
+  def choose_theme!: (untyped theme_id) -> void
+  def rendered_theme_id: () -> untyped
+  def page_horizontal_extent: () -> untyped
+  def expect_no_horizontal_page_scroll!: (untyped context) -> untyped
+  def overflowing_elements: (?limit: Integer) -> untyped
+  def clipped_cells: (untyped selector) -> untyped
+  def clipped_elements: (untyped selector) -> untyped
+  def text_block_metrics: (untyped selector) -> untyped
+  def rendered_text_within: (untyped selector) -> untyped
+  def served_page_carries: (untyped path, *untyped needles) -> untyped
+  def paste_into: (untyped selector, untyped value) -> untyped
+end

@@ -1,0 +1,9 @@
+# spec/db/seeds/legislator_photo_addresses_spec.rb — Steep resolves no `def`
+# written inside a describe block. Declared here rather than silenced, the same
+# way every other spec-local helper is.
+#
+# Yields one stored photo address at a time as (who, address, which file).
+class Object
+  def each_seeded_photo: () -> Enumerator[[String, String, Pathname], void]
+                       | () { (String, String, Pathname) -> void } -> void
+end

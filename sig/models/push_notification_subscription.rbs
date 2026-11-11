@@ -1,0 +1,14 @@
+class PushNotificationSubscription < ApplicationRecord
+    ALLOWED_ENDPOINT_DOMAINS: Array[String]
+    TEST_ENDPOINT_DOMAINS: Array[String]
+
+    def send_web_push_notification: (String | Hash[Symbol, untyped] message) -> nil
+    def to_builder: () -> Jbuilder
+
+    private
+
+    def validate_endpoint_url: () -> void
+    def allowed_endpoint_host?: (String? host) -> bool
+    def vapid: -> Hash[Symbol, String?]
+    def endpoint_host: -> String?
+end

@@ -1,0 +1,16 @@
+class Object
+  def supported_claim: () -> String
+  def summary_prose: () -> String
+  def source_uses: () -> Array[Hash[String, untyped]]
+  def source_context: () -> String
+  def article_text: () -> String
+
+
+  def mock_route: () -> Llm::RouteResolver::Route
+  def be_supported: () -> untyped
+
+  def be_unsupported: () -> untyped
+  def be_indeterminate: () -> untyped
+  def valid_grounding_json: () -> String
+  def grounding_schema: () -> Hash[String, untyped]
+end

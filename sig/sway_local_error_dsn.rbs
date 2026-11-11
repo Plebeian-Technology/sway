@@ -1,0 +1,9 @@
+module SwayLocalErrorDsn
+  LOCAL_HOSTS: Array[String]
+
+  def self.local?: (String? dsn) -> bool
+  def local?: (String? dsn) -> bool
+
+  def self.browser_origin: (String? dsn) -> String?
+  def browser_origin: (String? dsn) -> String?
+end

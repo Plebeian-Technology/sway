@@ -1,0 +1,10 @@
+module Legislation
+  # The smallest number of files a backup walk must find under the bills/text
+  # root before its result is believable.
+  module ArtifactFloor
+    # Bills whose extracted text is in the database. RunLegislationPipelineJob
+    # writes the matching bills/text file in the same method that sets the
+    # column, so each row counted implies one file.
+    def self.bills_text_floor: () -> Integer
+  end
+end

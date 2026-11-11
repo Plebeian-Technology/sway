@@ -1,0 +1,21 @@
+# Weekly orchestrator with per-locale error isolation.
+# The refresher classes are untyped: Steep does not model class references.
+class RefreshLegislatorsCacheJob < ApplicationJob
+  ALL_LOCALES_FAILED_ALARM: String
+
+  MONITOR_SLUG: String
+  MONITOR_CRONTAB: String
+  MONITOR_CHECKIN_MARGIN_MINUTES: Integer
+  MONITOR_CONFIG: Sentry::Cron::MonitorConfig
+
+  # @lat: [[signature-placement#Why the Sentry cron class methods are declared by hand]]
+  def self.sentry_monitor_check_ins: (slug: String, monitor_config: Sentry::Cron::MonitorConfig) -> void
+  def self.sentry_monitor_slug: (?name: String) -> String
+  def self.sentry_monitor_config: () -> Sentry::Cron::MonitorConfig?
+
+  def perform: (?force: bool) -> void
+
+  private
+
+  def refresher_for: (SwayLocale locale) -> singleton(LegislatorsCache::BaseRefresh)?
+end

@@ -1,0 +1,2 @@
+# Drop the Kamal SSH private key here as `kamal` (chmod 600). Gitignored.
+# Created so the directory exists; the key + known_hosts never get committed.

@@ -1,0 +1,14 @@
+# Hand-authored RBS sig for Current.
+# Phase 49 D-07: per-request thread-local store for PipelineActivityLogger transport selection.
+# HIGH-R2-2: canonical location is sig/models/ (NOT sig/app/models/).
+class Current < ActiveSupport::CurrentAttributes
+  def self.request: () -> ActionDispatch::Request?
+  def self.current_legislator_term_ids: () -> Hash[Symbol, untyped]?
+  def self.current_legislator_term_ids=: (Hash[Symbol, untyped]?) -> Hash[Symbol, untyped]?
+  # The setter accepts untyped so test doubles (FakeRequest structs) can be
+  # injected without a type error. The getter contract (ActionDispatch::Request?)
+  # is preserved for production callers.
+  def self.request=: (untyped) -> untyped
+  # Inherited from ActiveSupport::CurrentAttributes — resets all attributes.
+  def self.reset: () -> void
+end

@@ -1,0 +1,9 @@
+# Spec-only helper module for Legislation::Paths specs. Lives in sig-test (not
+# sig) because it's only referenced from spec files. Mirrors the
+# FetchBillsServiceSpecHelpers pattern.
+module LegislationPathsSpecHelpers
+  # The two test-harness isolation variables .root still reads directly
+  # (68-05) -- SWAY_TEST_DATABASE_DIR and TEST_ENV_NUMBER, not one of the
+  # eight names Sway::Settings::Legislation declares.
+  HARNESS_ENV_KEYS: Array[String]
+end

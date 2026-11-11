@@ -1,0 +1,18 @@
+class SwayLocale
+  module OpenStatesExecutivesRegistry
+    # One declared executive, in the shape the OpenStates seed preparer reads.
+    # Every value is a string, a nested string-keyed hash (current_role,
+    # jurisdiction), or nil — start_date is written nil for these offices.
+    type executive_field = String | Hash[String, String?] | nil
+
+    type executive = Hash[String, executive_field]
+
+    DECLARATIONS: Hash[String, Array[executive]]
+
+    def self.for: (String locale_name) -> Array[executive]
+
+    def self.declared?: (String locale_name) -> bool
+
+    def self.declared_locale_names: () -> Array[String]
+  end
+end

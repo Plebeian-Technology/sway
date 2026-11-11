@@ -1,0 +1,45 @@
+module Legislation
+  # What one restore pass did, in a form a person can read and a test can check.
+  class ArtifactRestoreReport
+    # :ok is a completed pass. :listing_failed is a pass that stopped before it
+    # wrote anything because the bucket could not be listed.
+    type status = (:ok | :listing_failed)
+
+    # A log line has to stay readable, so only this many failures are kept.
+    FAILURE_SAMPLE_LIMIT: Integer
+
+    @status: status
+    @destination: Pathname
+    @failed: Hash[String, String]
+    @listed_count: Integer
+    @downloaded_count: Integer
+    @downloaded_bytes: Integer
+    @skipped_unsafe_count: Integer
+    @elapsed_seconds: Float
+
+    attr_accessor status: status
+
+    # Objects the one listing returned, before any of them were written.
+    attr_accessor listed_count: Integer
+
+    attr_accessor downloaded_count: Integer
+    attr_accessor downloaded_bytes: Integer
+
+    # Objects whose name could not be turned into a path inside the destination.
+    attr_accessor skipped_unsafe_count: Integer
+
+    attr_accessor elapsed_seconds: Float
+
+    # The directory the pass was told to write into, expanded.
+    attr_reader destination: Pathname
+
+    # Object name => class and message of the failure, capped.
+    attr_reader failed: Hash[String, String]
+
+    def initialize: (destination: Pathname) -> void
+    def record_downloaded: (Integer? bytes) -> void
+    def record_failure: (String object_name, String reason) -> void
+    def ok?: () -> bool
+    def to_log_metadata: () -> Hash[Symbol, (Symbol | String | Integer | Float)]
+  end
+end

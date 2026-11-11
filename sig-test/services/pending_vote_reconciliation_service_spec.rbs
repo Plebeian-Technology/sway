@@ -1,0 +1,14 @@
+class PendingVoteMockCookieJar
+  attr_reader encrypted_store: Hash[untyped, untyped]
+  attr_reader regular_store: Hash[untyped, untyped]
+
+  def initialize: () -> void
+  def encrypted: () -> Hash[untyped, untyped]
+  def []: (untyped key) -> untyped
+  def []=: (untyped key, untyped value) -> untyped
+  def delete: (untyped key) -> untyped
+end
+
+class Object
+  def cookie_jar: () -> PendingVoteMockCookieJar
+end

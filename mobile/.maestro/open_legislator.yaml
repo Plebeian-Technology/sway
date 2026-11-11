@@ -1,0 +1,18 @@
+# open_legislator — Legislators drawer item → list → detail screen.
+#
+# Prereq: a signed-in session left by voter_login_and_vote on the same device.
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn:
+      id: "brand-header-menu"
+- tapOn:
+      id: "drawer-item-legislators"
+- assertVisible:
+      id: "legislators-list"
+- tapOn:
+      id: "legislator-card-.*"
+- assertVisible:
+      id: "legislator-detail-header"
+- assertNotVisible:
+      id: "legislator-detail-error"

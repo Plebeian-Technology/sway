@@ -1,0 +1,4 @@
+module Seats
+    class UnresolvedSeatError < StandardError
+    end
+end

@@ -1,0 +1,24 @@
+# Lists Litestream's LTX segment names under
+# SWAY_LITESTREAM_PATH and returns the highest one found. Everything
+# SwayGoogleCloudStorage returns is untyped, so the listing and the name
+# handed to #parse_position are untyped too — see
+# sig/sway_google_cloud_storage.rbs.
+module Litestream
+  class ReplicaPosition
+    include SwayGoogleCloudStorage
+
+    SEGMENT_NAME_PATTERN: Regexp
+
+    def call: () -> Litestream::ReplicaReading
+
+    private
+
+    def path: () -> String
+
+    def bucket_name: () -> String
+
+    def object_names: (bucket_name: String, path: String) -> Array[untyped]
+
+    def parse_position: (untyped name) -> Integer?
+  end
+end

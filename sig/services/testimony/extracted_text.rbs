@@ -1,0 +1,50 @@
+module Testimony
+  module ExtractedText
+    ENVELOPE_FIELD_NAMES: Array[String]
+    RECIPIENT_HEADER_NAMES: Array[String]
+    RECIPIENT_CONTINUATION_LINE: Regexp
+    BODY_OPENING: Regexp
+    FORWARD_OR_REPLY_LINE_MARKERS: Array[Regexp]
+    QUOTE_OPENING_MARKER: Regexp
+    MAX_CONSTITUENT_PAGES: Integer
+    TRAILING_PRINT_HEADER_MAX_CHARS: Integer
+    TRAILING_PRINT_HEADER_MAX_LINES: Integer
+    ZERO_WIDTH_CHAR_PATTERN: Regexp
+    LINE_SEPARATOR_PATTERN: Regexp
+    STANDALONE_PAGE_NUMBER_LINE: Regexp
+    TERMINAL_SENTENCE_PUNCTUATION: Regexp
+    LIST_ITEM_LINE_PATTERN: Regexp
+    METADATA_HEADER_LINE_PATTERN: Regexp
+    ALL_CAPS_HEADING_LINE_PATTERN: Regexp
+    OPENING_SALUTATION_LINE_PATTERN: Regexp
+    CLOSING_SIGNOFF_LINE_PATTERN: Regexp
+    MAX_FIRST_LINE_SALUTATION_CHARS: Integer
+
+    def self.phrase_source: (String? phrase) -> String
+    def self.phrase_pattern: (String? phrase) -> Regexp
+    def self.header_line_pattern: (String phrase) -> Regexp
+    def self.header_line?: (String? text, String phrase) -> bool
+    def self.starts_with_from_header?: (String? text) -> bool
+    def self.envelope_field_line?: (String? line) -> bool
+    def self.envelope_continuation_line?: (String line, String? current_field, bool field_line_was_empty, ?bool previous_ended_with_separator) -> bool
+    def self.strip_envelope: (String? text) -> String
+    def self.strip_recipient_headers: (String? text) -> String
+    def self.forward_or_reply_marker?: (Array[String] lines) -> bool
+    def self.print_header_stub?: (String? text) -> bool
+    def self.clerk_print_header_stub?: (String? text) -> bool
+    def self.effective_page_count: (String? text) -> Integer
+    def self.over_constituent_page_limit?: (String? text) -> bool
+    def self.unwrap_body_paragraphs: (String? text) -> String
+    private def self.unwrap_page_breaks: (String text) -> String
+    private def self.collapse_artificial_double_spacing: (String text) -> String
+    private def self.artificial_blank_line_between?: (String prev_line, String next_line, ?first_line_of_text: bool) -> bool
+    private def self.unwrap_paragraph_lines: (Array[String] lines, first_paragraph: bool) -> String
+    private def self.keep_line_break_between?: (String prev_line, String curr_line, is_very_first_line: bool, in_signoff_block: bool) -> bool
+    private def self.closing_signoff_transition?: (String prev_line, String curr_line) -> bool
+    private def self.metadata_or_heading_line?: (String line) -> bool
+    private def self.opening_salutation_line?: (String prev_line, String curr_line, is_very_first_line: bool) -> bool
+    private def self.strip_edge_print_header_stubs: (String text) -> String
+    private def self.leading_envelope_start_index: (Array[String] lines) -> Integer
+    private def self.recipient_header_start?: (Array[String] lines, Integer index, bool in_envelope) -> bool
+  end
+end

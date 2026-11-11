@@ -1,0 +1,5 @@
+module Admin
+  class RegistrationFunnelController < ApplicationController
+    def index: () -> untyped
+  end
+end

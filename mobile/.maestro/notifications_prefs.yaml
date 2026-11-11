@@ -1,0 +1,20 @@
+# notifications_prefs — Profile → Notification preferences toggle.
+#
+# Prereq: a signed-in session left by voter_login_and_vote on the same device.
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn:
+      id: "brand-header-menu"
+- tapOn:
+      id: "drawer-item-profile"
+- tapOn:
+      id: "profile-row-notification-preferences"
+- assertVisible:
+      id: "notification-prefs-screen"
+# PARITY_COPY.notifications.botmAnnouncement.label
+- tapOn: "Bill of the Month announcements"
+# Optimistic UI updates immediately; round-trip to PUT
+# /api/v1/notification_preferences confirms server state.
+- assertNotVisible:
+      id: "notification-prefs-error"

@@ -1,0 +1,18 @@
+{
+  "textVersions": [
+    {
+      "date": "2023-01-09T05:00:00Z",
+      "formats": [
+        {
+          "type": "PDF",
+          "url": "https://www.govinfo.gov/content/pkg/BILLS-118hr1ih/pdf/BILLS-118hr1ih.pdf"
+        },
+        {
+          "type": "Formatted Text",
+          "url": "https://www.govinfo.gov/content/pkg/BILLS-118hr1ih/html/BILLS-118hr1ih.htm"
+        }
+      ],
+      "type": "Introduced in House"
+    }
+  ]
+}

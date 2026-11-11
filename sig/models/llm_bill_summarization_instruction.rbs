@@ -1,0 +1,10 @@
+class LlmBillSummarizationInstruction < ApplicationRecord
+  def allowed_domains: () -> Array[String]
+  def news_sources: () -> Array[Hash[String, String]]
+  def source_config_digest: () -> String?
+
+  private
+
+  def resolve_locale_document: () -> SwayLocale::DocumentReader::Document?
+end
+

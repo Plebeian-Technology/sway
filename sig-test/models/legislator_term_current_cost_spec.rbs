@@ -1,0 +1,11 @@
+# @lat: [[rbs-signatures#Why a repeated name stops the whole check]]
+class Object
+  # A legislator serving a term that is running today.
+  def serving_legislator: (external_id: String) -> Legislator
+
+  # Terms for the same legislator that ended before the running one began.
+  def add_terms_that_ended_years_ago: (count: Integer, legislator: Legislator, ?from: Integer) -> void
+
+  def running_start_year: () -> Integer
+  def running_end_year: () -> Integer
+end

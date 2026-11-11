@@ -1,0 +1,448 @@
+# resolve-type-names: false
+
+class ::ReplicationHeartbeat < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::ReplicationHeartbeat, ::ReplicationHeartbeat::ActiveRecord_Relation, ::Integer]
+
+  module ::ReplicationHeartbeat::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def checked_at: () -> ::ActiveSupport::TimeWithZone
+
+    def checked_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def checked_at?: () -> bool
+
+    def checked_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def checked_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def checked_at_will_change!: () -> void
+
+    def checked_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def checked_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def checked_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def checked_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def checked_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def checked_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def checked_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_checked_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_checked_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_checked_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_checked_at!: () -> void
+
+    def clear_checked_at_change: () -> void
+
+    def checked_at_before_type_cast: () -> ::Time
+
+    def checked_at_for_database: () -> ::Time
+
+    def last_replica_txid: () -> ::Integer?
+
+    def last_replica_txid=: (::Integer?) -> ::Integer?
+
+    def last_replica_txid?: () -> bool
+
+    def last_replica_txid_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def last_replica_txid_change: () -> [ ::Integer?, ::Integer? ]
+
+    def last_replica_txid_will_change!: () -> void
+
+    def last_replica_txid_was: () -> ::Integer?
+
+    def last_replica_txid_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def last_replica_txid_previous_change: () -> ::Array[::Integer?]?
+
+    def last_replica_txid_previously_was: () -> ::Integer?
+
+    def last_replica_txid_before_last_save: () -> ::Integer?
+
+    def last_replica_txid_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def last_replica_txid_in_database: () -> ::Integer?
+
+    def saved_change_to_last_replica_txid: () -> ::Array[::Integer?]?
+
+    def saved_change_to_last_replica_txid?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_last_replica_txid?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_last_replica_txid!: () -> void
+
+    def clear_last_replica_txid_change: () -> void
+
+    def last_replica_txid_before_type_cast: () -> ::Integer?
+
+    def last_replica_txid_for_database: () -> ::Integer?
+
+    def consecutive_stalls: () -> ::Integer
+
+    def consecutive_stalls=: (::Integer) -> ::Integer
+
+    def consecutive_stalls?: () -> bool
+
+    def consecutive_stalls_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def consecutive_stalls_change: () -> [ ::Integer?, ::Integer? ]
+
+    def consecutive_stalls_will_change!: () -> void
+
+    def consecutive_stalls_was: () -> ::Integer?
+
+    def consecutive_stalls_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def consecutive_stalls_previous_change: () -> ::Array[::Integer?]?
+
+    def consecutive_stalls_previously_was: () -> ::Integer?
+
+    def consecutive_stalls_before_last_save: () -> ::Integer?
+
+    def consecutive_stalls_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def consecutive_stalls_in_database: () -> ::Integer?
+
+    def saved_change_to_consecutive_stalls: () -> ::Array[::Integer?]?
+
+    def saved_change_to_consecutive_stalls?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_consecutive_stalls?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_consecutive_stalls!: () -> void
+
+    def clear_consecutive_stalls_change: () -> void
+
+    def consecutive_stalls_before_type_cast: () -> ::Integer
+
+    def consecutive_stalls_for_database: () -> ::Integer
+
+    def consecutive_read_failures: () -> ::Integer
+
+    def consecutive_read_failures=: (::Integer) -> ::Integer
+
+    def consecutive_read_failures?: () -> bool
+
+    def consecutive_read_failures_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def consecutive_read_failures_change: () -> [ ::Integer?, ::Integer? ]
+
+    def consecutive_read_failures_will_change!: () -> void
+
+    def consecutive_read_failures_was: () -> ::Integer?
+
+    def consecutive_read_failures_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def consecutive_read_failures_previous_change: () -> ::Array[::Integer?]?
+
+    def consecutive_read_failures_previously_was: () -> ::Integer?
+
+    def consecutive_read_failures_before_last_save: () -> ::Integer?
+
+    def consecutive_read_failures_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def consecutive_read_failures_in_database: () -> ::Integer?
+
+    def saved_change_to_consecutive_read_failures: () -> ::Array[::Integer?]?
+
+    def saved_change_to_consecutive_read_failures?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_consecutive_read_failures?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_consecutive_read_failures!: () -> void
+
+    def clear_consecutive_read_failures_change: () -> void
+
+    def consecutive_read_failures_before_type_cast: () -> ::Integer
+
+    def consecutive_read_failures_for_database: () -> ::Integer
+
+    def consecutive_empty_listings: () -> ::Integer
+
+    def consecutive_empty_listings=: (::Integer) -> ::Integer
+
+    def consecutive_empty_listings?: () -> bool
+
+    def consecutive_empty_listings_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def consecutive_empty_listings_change: () -> [ ::Integer?, ::Integer? ]
+
+    def consecutive_empty_listings_will_change!: () -> void
+
+    def consecutive_empty_listings_was: () -> ::Integer?
+
+    def consecutive_empty_listings_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def consecutive_empty_listings_previous_change: () -> ::Array[::Integer?]?
+
+    def consecutive_empty_listings_previously_was: () -> ::Integer?
+
+    def consecutive_empty_listings_before_last_save: () -> ::Integer?
+
+    def consecutive_empty_listings_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def consecutive_empty_listings_in_database: () -> ::Integer?
+
+    def saved_change_to_consecutive_empty_listings: () -> ::Array[::Integer?]?
+
+    def saved_change_to_consecutive_empty_listings?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_consecutive_empty_listings?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_consecutive_empty_listings!: () -> void
+
+    def clear_consecutive_empty_listings_change: () -> void
+
+    def consecutive_empty_listings_before_type_cast: () -> ::Integer
+
+    def consecutive_empty_listings_for_database: () -> ::Integer
+
+    def stalled_since: () -> ::ActiveSupport::TimeWithZone?
+
+    def stalled_since=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def stalled_since?: () -> bool
+
+    def stalled_since_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def stalled_since_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def stalled_since_will_change!: () -> void
+
+    def stalled_since_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def stalled_since_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def stalled_since_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def stalled_since_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def stalled_since_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def stalled_since_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def stalled_since_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_stalled_since: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_stalled_since?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_stalled_since?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_stalled_since!: () -> void
+
+    def clear_stalled_since_change: () -> void
+
+    def stalled_since_before_type_cast: () -> ::Time?
+
+    def stalled_since_for_database: () -> ::Time?
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+  end
+  include ::ReplicationHeartbeat::GeneratedAttributeMethods
+  module ::ReplicationHeartbeat::GeneratedAliasAttributeMethods
+    include ::ReplicationHeartbeat::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::ReplicationHeartbeat::GeneratedAliasAttributeMethods
+
+  module ::ReplicationHeartbeat::GeneratedAssociationMethods
+  end
+  include ::ReplicationHeartbeat::GeneratedAssociationMethods
+
+  module ::ReplicationHeartbeat::GeneratedRelationMethods
+  end
+
+  class ::ReplicationHeartbeat::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::ReplicationHeartbeat]
+    include ::ReplicationHeartbeat::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ReplicationHeartbeat, ::Integer]
+  end
+
+  class ::ReplicationHeartbeat::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::ReplicationHeartbeat]
+    include ::ReplicationHeartbeat::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ReplicationHeartbeat, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ReplicationHeartbeat
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ReplicationHeartbeat]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ReplicationHeartbeat
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ReplicationHeartbeat]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ReplicationHeartbeat
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ReplicationHeartbeat]
+    def reload: () -> ::Array[::ReplicationHeartbeat]
+
+    def replace: (::Array[::ReplicationHeartbeat]) -> void
+    def delete: (*::ReplicationHeartbeat | ::Integer) -> ::Array[::ReplicationHeartbeat]
+    def destroy: (*::ReplicationHeartbeat | ::Integer) -> ::Array[::ReplicationHeartbeat]
+    def <<: (*::ReplicationHeartbeat | ::Array[::ReplicationHeartbeat]) -> self
+    def prepend: (*::ReplicationHeartbeat | ::Array[::ReplicationHeartbeat]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end

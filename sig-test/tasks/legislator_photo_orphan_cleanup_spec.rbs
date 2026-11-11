@@ -1,0 +1,8 @@
+# Spec-only declarations for spec/tasks/legislator_photo_orphan_cleanup_spec.rb.
+module LegislatorPhotoCleanupSpecHelpers
+  def attach_cleanup_photo: (Legislator legislator) -> ActiveStorage::Blob
+end
+
+class Object
+  def attach_cleanup_photo: (Legislator legislator) -> ActiveStorage::Blob
+end

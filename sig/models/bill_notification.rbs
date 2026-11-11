@@ -1,0 +1,13 @@
+# Manual extensions for BillNotification. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/bill_notification.rbs; this file
+# holds the hand-written instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class BillNotification < ApplicationRecord
+    def notify: -> void
+
+    private
+
+    def eligible_web_push_subscriptions: -> Array[PushNotificationSubscription]
+
+    def botm_enabled_for_web_push?: (User? user) -> bool
+end

@@ -1,0 +1,23 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class CorrectTermYearsFromVotes < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+
+  private
+
+  # Slides a legislator's single term onto the cycle their votes prove, or
+  # leaves it alone. Returns how many terms it changed (0 or 1).
+  def correct_terms_for: (Legislator legislator, Integer proven_year) -> Integer
+
+  def years_the_term_runs: (LegislatorTerm term) -> Integer
+end
+
+# Steep does not resolve RSpec `let` or a `def` inside a describe block.
+class Object
+  def departed_member_with: (
+    votes: Array[ActiveSupport::TimeWithZone],
+    ?term_start_year: Integer,
+    ?term_end_year: Integer,
+    ?created_on: ActiveSupport::TimeWithZone
+  ) -> [Legislator, LegislatorTerm]
+end

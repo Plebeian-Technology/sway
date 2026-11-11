@@ -1,0 +1,22 @@
+class Address < ApplicationRecord
+    def self.from_string: (String address_string) -> Address?
+
+    COORDINATE_KEY_PRECISION: Integer
+    UNIT_PREFIX: ::Regexp
+
+    def self.normalized_key_for: (latitude: (Float | Integer | String)?, longitude: (Float | Integer | String)?, ?street2: String?, ?street3: String?) -> String?
+    def self.normalized_unit_part: (String? value) -> String
+    def computed_normalized_key: -> String?
+
+    def full_address: -> String
+    def sway_locales: -> Array[SwayLocale]
+    def self.sway_locale_attribute_sets_for: (city: String?, region_code: String?, country: String?) -> Array[Hash[Symbol, String?]]
+    def sway_locale_attribute_sets: -> Array[Hash[Symbol, String?]]
+    def to_cartesian: -> untyped
+    def to_builder: -> Jbuilder
+
+    private
+
+    def geocode: -> void
+    def normalize_address: -> Address
+end

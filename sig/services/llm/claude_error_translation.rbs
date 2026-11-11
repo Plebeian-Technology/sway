@@ -1,0 +1,9 @@
+# The one place Anthropic SDK exceptions become Sway's own taxonomy, shared by
+# Llm::ClaudeAdapter (sync) and Llm::ClaudeBatchService (batch).
+module Llm
+  module ClaudeErrorTranslation
+    MAX_TRANSLATED_ERROR_LENGTH: Integer
+
+    def self.translate: [T] () { () -> T } -> T
+  end
+end

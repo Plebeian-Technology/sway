@@ -1,0 +1,21 @@
+# Spec-only declarations for spec/config/test_database_isolation_spec.rb.
+#
+# database_config_for is a plain `def` inside a describe block, and test_config
+# and rspec_service_tmpfs are `let`s — steep cannot see either shape, for the
+# same reason it cannot see any RSpec example-group method: the block builds an
+# anonymous class while the suite runs, and nothing about it exists in the
+# source a type checker reads.
+class Object
+  # The parsed `test:` block from config/database.yml, read fresh (no ENV
+  # overrides) so it reflects whatever is ambient when the example runs.
+  def test_config: () -> Hash[String, untyped]
+
+  # Re-reads config/database.yml under the given ENV overrides (a nil value
+  # means force-unset) and returns the resolved test.database path. Restores
+  # every overridden variable before returning, in an ensure.
+  def database_config_for: (Hash[String, String?] overrides) -> String
+
+  # The rspec service's `tmpfs:` list from .dockerdev/compose.yml, or nil if
+  # the service declares no such key.
+  def rspec_service_tmpfs: () -> Array[String]?
+end

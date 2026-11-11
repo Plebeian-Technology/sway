@@ -1,0 +1,9 @@
+# The five arguments ActiveSupport hands a subscribe block whose arity is not
+# exactly one; the vendored activesupport signature declares the block as
+# taking none.
+module ActiveSupport
+  module Notifications
+    def self.subscribe: (String pattern) { (String name, Time start, Time finish, String id, Hash[Symbol, untyped] payload) -> untyped } -> untyped
+                      | ...
+  end
+end

@@ -1,0 +1,36 @@
+#!/bin/sh
+# Kamal pre-build hook — static invariants that keep secrets OUT of the image.
+# Runs before every `kamal build` (deploy/redeploy). Fail-closed: a violation
+# aborts the deploy before anything is built or shipped.
+#
+# The production image's secret-safety rests on two properties, asserted here so
+# a future Dockerfile edit can't silently undo them:
+#   1. .dockerignore excludes the secret + sensitive paths.
+#   2. No secret-shaped ARG/ENV bakes a value into a layer (secrets must arrive
+#      via BuildKit --mount=type=secret, which never lands in the image).
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+
+fail() { echo "pre-build: SECRET-SAFETY ASSERTION FAILED — $1" >&2; exit 1; }
+
+DF=docker/dockerfiles/production.alpine.dockerfile
+[ -f "$DF" ] || fail "$DF not found"
+
+# 1. The dockerignore that governs the shipped image still excludes secrets +
+#    dev data. BuildKit prefers "<dockerfile>.dockerignore" over root
+#    .dockerignore, so that adjacent file is authoritative for the Kamal build.
+DI="${DF}.dockerignore"
+[ -f "$DI" ] || fail "$DI missing"
+for pat in 'master.key' '.env' 'storage' '/keys/'; do
+  grep -q "$pat" "$DI" || fail "$DI no longer excludes '$pat'"
+done
+
+# 2. No secret-shaped ARG/ENV with an inline literal value. A var reference
+#    (=$FOO / =${FOO}) or empty (=) is fine; a literal after '=' is not.
+#    (Docker's legacy space-form `ENV KEY value` is not used in this repo.)
+if grep -nE '^[[:space:]]*(ARG|ENV)[[:space:]]+[A-Za-z0-9_]*(KEY|TOKEN|SECRET|PASSWORD)[A-Za-z0-9_]*=[^$[:space:]]' "$DF"; then
+  fail "secret-shaped ARG/ENV with an inline value in $DF (use --mount=type=secret)"
+fi
+
+echo "pre-build: secret-safety assertions passed."

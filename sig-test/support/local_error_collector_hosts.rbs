@@ -1,0 +1,9 @@
+module LocalErrorCollectorHosts
+  DSN_VARIABLES: Array[String]
+
+  def self.allowed: () -> Array[String]
+  def allowed: () -> Array[String]
+
+  def self.host_of: (String? dsn) -> String?
+  def host_of: (String? dsn) -> String?
+end

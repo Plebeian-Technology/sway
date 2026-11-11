@@ -1,0 +1,243 @@
+/* The Ballot bill layout: one continuous paper surface delimited by scanner
+   rules. No cards, no shadows — structure comes from the rules alone. */
+
+.bal-sheet {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+/* --- locale strip ------------------------------------------------------- */
+
+.bal-locale {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    flex-wrap: wrap;
+    padding-bottom: calc(var(--space-unit) * 2);
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+    font-size: var(--type-small);
+}
+
+/* Emblem-sized only. Every thin-strip treatment of the Calvert arms was tested
+   at 36/48/72/180px plus a discrete-bunting rhythm and all degenerate into
+   sawtooth that reads as hazard tape (owner, 2026-07-26) — so the flag stays a
+   chip beside the jurisdiction, never a repeating band. */
+.bal-locale__flag {
+    width: calc(var(--space-unit) * 6);
+    height: auto;
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    flex: none;
+}
+
+.bal-locale__link {
+    margin-left: auto;
+    color: var(--ring);
+    text-decoration: underline;
+}
+
+/* --- the measure head: the CODE is the headline (audit F5) --------------- */
+
+.bal-measure {
+    padding-top: calc(var(--space-unit) * 5);
+}
+
+.bal-measure__code {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--space-unit) * 4);
+    flex-wrap: wrap;
+}
+
+.bal-code {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--type-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    font-variant-numeric: var(--font-numeric);
+}
+
+.bal-kind {
+    font-family: var(--font-display);
+    font-weight: var(--weight-medium);
+    font-size: var(--type-small);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    border: var(--rule-mid) var(--rule-style) var(--border-strong);
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2);
+}
+
+.bal-shorttitle {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--type-h2);
+    line-height: var(--leading-heading);
+    margin: calc(var(--space-unit) * 2.5) 0 0;
+    max-width: 24ch;
+}
+
+.bal-deck {
+    font-size: var(--type-lede);
+    color: var(--muted-foreground);
+    margin: calc(var(--space-unit) * 1.5) 0 0;
+    max-width: var(--measure);
+}
+
+/* --- meta row ------------------------------------------------------------ */
+
+.bal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 7);
+    margin: calc(var(--space-unit) * 5) 0 0;
+    padding: calc(var(--space-unit) * 3) 0;
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.bal-meta__cell dt {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.bal-meta__cell dd {
+    margin: calc(var(--space-unit) * 1) 0 0;
+    font-size: var(--type-small);
+}
+
+.bal-sponsor {
+    color: var(--ring);
+    text-decoration: underline;
+}
+
+.bal-followup {
+    margin-top: calc(var(--space-unit) * 4);
+}
+
+/* --- ruled sections ------------------------------------------------------ */
+
+.bal-section {
+    border-top: var(--rule-thick) var(--rule-style) var(--border-strong);
+    margin-top: calc(var(--space-unit) * 7);
+    padding-top: calc(var(--space-unit) * 3);
+}
+
+.bal-sectionlabel {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--type-h3);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    margin: 0 0 calc(var(--space-unit) * 3);
+}
+
+.bal-prose {
+    max-width: var(--measure);
+    line-height: var(--leading-body);
+}
+
+/* --- the count ----------------------------------------------------------- */
+
+.bal-count {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 10);
+}
+
+.bal-count__cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.bal-count__n {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--type-stat);
+    line-height: 1;
+    font-variant-numeric: var(--font-numeric);
+}
+
+.bal-count__l {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    margin-top: calc(var(--space-unit) * 1);
+}
+
+/* --- organizations ------------------------------------------------------- */
+
+.bal-orgs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: var(--measure);
+}
+
+.bal-org {
+    display: flex;
+    gap: calc(var(--space-unit) * 4);
+    padding: calc(var(--space-unit) * 3) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.bal-org__stance {
+    flex: none;
+    width: 5.5rem;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding-top: 2px;
+}
+
+.bal-org__name {
+    font-size: var(--type-body);
+    font-weight: var(--weight-bold);
+    margin: 0;
+}
+
+.bal-org__summary {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    margin: calc(var(--space-unit) * 1) 0 0;
+    line-height: var(--leading-body);
+}
+
+.bal-empty,
+.bal-longtitle {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    max-width: var(--measure);
+    line-height: var(--leading-body);
+    margin: 0;
+}
+
+.bal-empty {
+    font-style: italic;
+}
+
+@media (max-width: 640px) {
+    .bal-code {
+        font-size: var(--type-h2);
+    }
+
+    .bal-meta {
+        gap: calc(var(--space-unit) * 4);
+    }
+
+    .bal-org {
+        flex-direction: column;
+        gap: calc(var(--space-unit) * 1);
+    }
+
+    .bal-org__stance {
+        width: auto;
+    }
+}

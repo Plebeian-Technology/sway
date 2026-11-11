@@ -1,0 +1,28 @@
+# RBS signature for Testimony::SourceKindPromptBuilder (Phase 67 Plan 05,
+# Task 2, D-05).
+module Testimony
+  class SourceKindPromptBuilder
+    type candidate = {position: Integer, text: String}
+
+    MAX_LETTER_CHARS: Integer
+    TEXT_TRUNCATION_NOTICE: String
+    DELIMITER_PREFIX: String
+
+    @candidates: Array[candidate]
+    @boundary: Llm::UntrustedTextBlock
+
+    def initialize: (Array[candidate] candidates) -> void
+    def system_prompt: () -> String
+    def user_message: () -> String
+
+    private
+
+    attr_reader candidates: Array[candidate]
+    attr_reader boundary: Llm::UntrustedTextBlock
+
+    def sanitize_text: (String text) -> String
+    def header: () -> String
+    def boundary_instruction: () -> String
+    def output_contract: () -> String
+  end
+end

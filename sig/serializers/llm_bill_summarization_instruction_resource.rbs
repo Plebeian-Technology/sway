@@ -1,0 +1,3 @@
+class LlmBillSummarizationInstructionResource < ApplicationResource
+  def serializable_hash: () -> Hash[Symbol, untyped]
+end

@@ -1,0 +1,13 @@
+# Spec-only declarations for spec/scripts/dip_rake_gates_spec.rb.
+#
+# Steep cannot see a `let` or a `def` inside a describe block, so each helper
+# is declared here. verify_runnable_lines is NOT declared again: it already
+# has the same signature in sig-test/scripts/dip_verify_cleanup_spec.rbs, and
+# a second declaration of one name on class Object is a Steep error.
+class Object
+  def rake_gates_script: () -> Pathname
+
+  def run_gates: (*String tasks) -> [String, String, Process::Status]
+
+  def sway_lint_tasks: () -> Array[String]
+end

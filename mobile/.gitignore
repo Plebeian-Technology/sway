@@ -1,0 +1,22 @@
+node_modules/
+ios/
+android/
+.expo/
+dist/
+web-build/
+build-output/
+*.aab
+*.apk
+*.ipa
+*.log
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+# Signing material and the generated credentials.json that names it
+credentials/
+credentials.json
+.env.local
+.env*.local
+.DS_Store

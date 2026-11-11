@@ -1,0 +1,23 @@
+# Phase 55 Plan 08 (FINDING-1 — GREEN) — RBS sig for the auto-include
+# context carrier consumed by the orchestrator and the activity logger.
+#
+# `Hash[Symbol, untyped]?` is the ONE permitted `untyped` exception per
+# feedback_rbs_avoid_untyped: the values are heterogeneous (String stage,
+# String reason, Array[String] bill_external_ids) and a custom record type
+# for a 3-key transient Hash is overkill. The shape is documented in
+# app/models/pipeline/current.rb and the RESEARCH.md §Surfaced Fact 4 region.
+#
+# Class-method accessors come from ActiveSupport::CurrentAttributes'
+# `attribute :current_auto_include_context` DSL; expressed here via
+# `attr_accessor self.` so steep resolves the reader + writer call sites.
+module Pipeline
+  class Current < ActiveSupport::CurrentAttributes
+    attr_accessor self.current_auto_include_context: Hash[Symbol, untyped]?
+
+    # Inherited from ActiveSupport::CurrentAttributes — resets all attributes on
+    # the current thread back to their initial (nil) state. Declared explicitly
+    # so steep call-site resolution succeeds without relying on the (un-vendored)
+    # ActiveSupport::CurrentAttributes RBS sig. Mirrors sig/models/current.rbs.
+    def self.reset: () -> void
+  end
+end

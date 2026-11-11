@@ -1,0 +1,28 @@
+# Phase 67 Plan 09 (D-08): the single write behind Surface 4's "Approve as
+# this campaign" button.
+class CampaignsController < ApplicationController
+  @bill: Bill
+
+  # POST /bills/:bill_id/campaigns
+  def create: -> void
+
+  # POST /bills/:bill_id/campaigns/reject_draft
+  def reject_draft: -> void
+
+  # POST /bills/:bill_id/campaigns/restore_draft
+  def restore_draft: -> void
+
+  # POST /bills/:bill_id/campaigns/mark_individual_draft
+  def mark_individual_draft: -> void
+
+  # POST /bills/:bill_id/campaigns/:id/link_organization
+  def link_organization: -> void
+
+  private
+
+  def apply_draft_decision: (Symbol decision) -> void
+
+  def log_draft_decision: (Symbol decision, String content_hash) -> void
+
+  def set_bill: -> void
+end

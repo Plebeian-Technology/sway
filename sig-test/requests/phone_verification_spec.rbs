@@ -1,0 +1,3 @@
+class Object
+  def verification_not_found_error: () -> Twilio::REST::RestError
+end

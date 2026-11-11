@@ -1,0 +1,16 @@
+# Daily full sweep — enqueues one LegislatorVoteFetchJob per qualifying Bill across all SwayLocales.
+# Pre-vote bills are filtered out (Congress/MD: needs roll-call vote; Baltimore: needs external_id).
+class LegislatorVoteSweepJob < ApplicationJob
+  WAIT_CEILING_SECONDS: Integer
+  ROLL_CALL_RETRIEVALS: Array[String]
+  EXTERNAL_ID_RETRIEVALS: Array[String]
+  ROLL_CALL_ENGINES: Array[String]
+  EXTERNAL_ID_ENGINES: Array[String]
+
+  def perform: () -> void
+
+  private
+
+  def filter_scope_for_engine: (ActiveRecord::Relation scope, String engine, sway_locale: SwayLocale) -> ActiveRecord::Relation
+  def settled?: (Bill bill) -> bool
+end

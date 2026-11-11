@@ -1,0 +1,536 @@
+# RBS signature for FetchHearingsService (Phase 52 Plan 07 Task 2 — SPEC R7).
+#
+# `untyped` appears in one place only, and always as Hash[String, untyped]:
+# the four signatures that read BillLlmProvisioning#testimony_attachments as it
+# is STORED. That JSON column predates the current key set and can hold
+# anything a prior build wrote, so typing those parameters as attachment_status
+# would state a guarantee the database does not make. Every value this class
+# WRITES is typed as attachment_status. This header used to read "Zero
+# `untyped`", which stopped being true when those four arrived (B20-07).
+class FetchHearingsService
+  type legistar_scalar = String | Integer | Float | bool | nil
+  type legistar_event = Hash[String, legistar_scalar | Array[legistar_scalar]]
+  type hearing_hash = {
+    "EventId" => Integer?,
+    "EventDate" => String?,
+    "EventTime" => String?,
+    "EventLocation" => String?,
+    "EventBodyName" => String?,
+  }
+
+  # Phase 63 Plan 05 Task 2 (Req 1; REVIEWS C1): a raw Legistar attachment
+  # row, from either Matters/<id>/Attachments or an EventItem's
+  # EventItemMatterAttachments entry — same dynamic-JSON shape as
+  # legistar_event.
+  type raw_attachment = Hash[String, legistar_scalar | Array[legistar_scalar]]
+
+  # A raw Events/<id>/EventItems row. Wider than legistar_event: its
+  # EventItemMatterAttachments key holds an ARRAY OF NESTED raw_attachment
+  # hashes, not a flat scalar/array-of-scalar value.
+  type event_item_row = Hash[String, legistar_scalar | Array[legistar_scalar] | Array[raw_attachment]]
+
+  # Intermediate tuple carrying an attachment's Legistar provenance before
+  # normalization.
+  type attachment_entry = {
+    raw: raw_attachment,
+    source_endpoint: String,
+    event_id: Integer?,
+    event_item_id: Integer?,
+  }
+
+  # Endpoint-agnostic normalized attachment record — the shape Plan 11
+  # downloads, extracts, and mirrors into BillLlmProvisioning.testimony_attachments.
+  type attachment_record = {
+    "id" => Integer?,
+    # A-WR-04: "filename" is the upstream MatterAttachmentFileName, which is a
+    # GUID on every row of the reference cassette; "name" is
+    # MatterAttachmentName, the label an operator can recognise. The status
+    # mirror displays "name"; the artifact keeps both.
+    "filename" => String,
+    "name" => String,
+    "url" => String?,
+    "source_endpoint" => String,
+    "event_id" => Integer?,
+    "event_item_id" => Integer?,
+    # A4-WR-03: "primary" is gone. It flagged "the attachment the bill-text
+    # stage will take", was written at two sites and read at none, and
+    # measured the wrong thing for the REAS-01 control it looked like — see
+    # FetchHearingsService#discover_attachments.
+    "download_status" => String,
+    "extraction_status" => String,
+    "error" => String?,
+  }
+
+  # HI2-03: private upper bound on matter_id (2^31 - 1 is well above
+  # production Baltimore Legistar Matter IDs, which are 6-7 digits).
+  MATTER_ID_MAX: Integer
+
+  # A2-IN-04: sort key for an absent event_item_id — strictly greater than any
+  # id #coerce_attachment_id will return, so missing provenance sorts last.
+  PROVENANCE_RANK_MISSING: Integer
+
+  # Phase 63 Plan 05 Task 2 / Plan 11: source_endpoint vocabulary + status
+  # vocabulary + the candidate-array bound (T-63-07).
+  MATTER_ATTACHMENTS_SOURCE: String
+  EVENT_ITEM_ATTACHMENTS_SOURCE: String
+  DOWNLOAD_STATUS_PENDING: String
+  DOWNLOAD_STATUS_FAILED: String
+  DOWNLOAD_STATUS_SUCCEEDED: String
+  # A-IN-04: synthetic status on the candidate-truncation mirror entry —
+  # nothing was attempted, so it is not a "failed" download.
+  DOWNLOAD_STATUS_NOT_ATTEMPTED: String
+  # A4-CR-01: the download-axis twin of EXTRACTION_STATUS_SKIPPED_BUDGET —
+  # "the per-bill download budget ran out before this attachment was reached".
+  DOWNLOAD_STATUS_SKIPPED_BUDGET: String
+  EXTRACTION_STATUS_PENDING: String
+  EXTRACTION_STATUS_SUCCEEDED: String
+  EXTRACTION_STATUS_FAILED: String
+  # A-WR-07: the two terminal states for a record #extract_attachments! never
+  # extracts. REUSED means a prior run's sidecar is still feeding the prompt;
+  # SKIPPED means nothing is on disk and nothing was contributed.
+  EXTRACTION_STATUS_REUSED: String
+  EXTRACTION_STATUS_SKIPPED: String
+
+  # A3-WR-07: "the per-bill budget ran out before this attachment", which is
+  # work still to do rather than a dead attachment.
+  EXTRACTION_STATUS_SKIPPED_BUDGET: String
+
+  # A4-IN-02: "nothing was attempted, and nothing failed" — the
+  # extraction-axis twin of DOWNLOAD_STATUS_NOT_ATTEMPTED, for the two
+  # synthetic mirror rows and for an attachment the download budget never
+  # reached. Distinct from EXTRACTION_STATUS_SKIPPED, which means a download
+  # was attempted and failed.
+  EXTRACTION_STATUS_NOT_ATTEMPTED: String
+
+  # Stage 3 read the document and judged it not testimony; the
+  # mirror row keeps the denial visible while the text stays out.
+  EXTRACTION_STATUS_CONTENT_DENIED: String
+
+  # The two statuses that mean "this attachment's text reached
+  # extracted_testimony", single-sourced for #contributing_entries and
+  # #carried_forward_mirror_entries.
+  CONTRIBUTING_EXTRACTION_STATUSES: Array[String]
+  MAX_ATTACHMENT_CANDIDATES: Integer
+
+  # A3-WR-07: aggregate deadline for one bill's extraction loop. The per-call
+  # Sway::Subprocess bound alone left a ~34-hour per-bill worst case.
+  EXTRACTION_BUDGET_SECONDS: Numeric
+
+  # A4-CR-01: aggregate deadline for one bill's DOWNLOAD loop — the sibling
+  # loop, with the larger network surface, that A3-WR-07 did not reach.
+  DOWNLOAD_BUDGET_SECONDS: Numeric
+
+  # A-WR-03 / A2-WR-04: one size bound per layer — response body, per-attachment
+  # extracted text, composed per-bill testimony. The Faraday profile's 30s
+  # timeout is a TIME bound and none of these existed.
+  #
+  # A3-WR-02: the response-body bound moved to
+  # Legistar::AttachmentFetch::MAX_ATTACHMENT_BYTES — it belongs wherever the
+  # download happens, and there are two of those.
+  MAX_ATTACHMENT_TEXT_CHARS: Integer
+  MAX_TESTIMONY_ATTACHMENT_TEXT_CHARS: Integer
+  MAX_COMPOSED_TESTIMONY_CHARS: Integer
+  # How many bytes stage 3 reads of each sidecar — the model is
+  # shown at most ClassificationPromptBuilder::MAX_DOCUMENT_CHARS of it.
+  CLASSIFICATION_READ_BYTES: Integer
+  TEXT_TRUNCATION_NOTICE: String
+  COMPOSED_TRUNCATION_NOTICE: String
+
+  # D-11: compact per-attachment status mirror persisted to
+  # BillLlmProvisioning#testimony_attachments. Keys are "filename",
+  # "attachment_id", "download_status", "extraction_status" and "error"; every
+  # value is a String except "error", which is nilable. "attachment_id" is the
+  # one that matters most: #evidence_withdrawn? compares it across runs to
+  # decide whether a draft's evidence was pulled out from under it. "filename"
+  # is a display label only and cannot stand in for it — see
+  # #evidence_withdrawn? for why.
+  #
+  # @lat: [[signature-placement#Why a string-keyed record is written as a Hash]]
+  type attachment_status = Hash[String, String?]
+
+  # A-IN-04: the discovery census, recorded so a truncated candidate set is
+  # visible after the fact instead of living only in a log line.
+  #
+  # All four are set to 0 in #initialize, so none is nilable and no reader
+  # needs a `.to_i` to cope with one.
+  @discovery_found: Integer
+
+  # A1-IN-01: the PDF-candidate count, between the pre-filter union
+  # (@discovery_found) and what survived the bound (@discovery_kept). The
+  # census's `truncated` flag and the operator-facing mirror row are both
+  # computed against THIS, because only a dropped PDF is lost testimony.
+  @discovery_pdf_candidates: Integer
+  @discovery_kept: Integer
+
+  # WR-05: the count that matches the artifact's `attachments` array —
+  # candidates that survived the name rules and the verdict cache and became
+  # records. @discovery_kept is assigned before that filter, so it is larger
+  # on any bill carrying bill text or hearing logistics.
+  @discovery_recorded: Integer
+
+  # @lat: [[hearing-testimony-census#Event ids come only from a matter's histories]]
+  @event_ids: Hash[Integer, Array[Integer]]
+
+  # A1-WR-01: per-matter existence memo (see #matter_exists?). Same shape and
+  # lifetime as @event_ids — one entry per bill in practice.
+  @matter_exists: Hash[Integer, bool]
+
+  # @lat: [[hearing-testimony-census#A run that could not read something is not authoritative]]
+  @unswept_event_ids: Array[Integer]
+
+  # A-CR-01: the COLLECTION half of the same question. Route strings, because
+  # a collection is named by its endpoint (Matters/<id>/Attachments,
+  # Matters/<id>/Histories) rather than by an id. Built in #initialize for the
+  # same reason as the memos above: an invariant, not a lazily-built maybe.
+  @unswept_collections: Array[String]
+
+  # @lat: [[untrusted-text-in-prompts#Why the model judges the document rather than its name]]
+  @content_pending_ids: Array[Integer]
+
+  # Pending ids whose sidecar could not be read when stage 3
+  # asked. #compose_testimony_from_disk skips these, so a file readable
+  # again by composition time still contributes no unclassified text.
+  @content_unreadable_ids: Array[Integer]
+
+  # Records stage 3 removed on a not-testimony verdict, kept so
+  # #attachment_status_mirror can still show the denial with its reason.
+  @content_denied_records: Array[attachment_record]
+
+  @bill: Bill?
+  @bill_run: PipelineRunBill?
+  @run: LegislationPipelineRun?
+  # Phase 55 Plan 04 (D-23): :discover (default — today's per-bill path)
+  # or :backfill_missing (iterate run.pipeline_run_bills, fetch only
+  # missing hearings.json artifacts).
+  @mode: Symbol
+  @faraday_conn: Faraday::Connection
+  @adapter: Legislation::Adapters::GenericHearingsAdapter
+  @attachment_fetch: Legistar::AttachmentFetch
+  @testimony_classifier: Testimony::AttachmentClassifier
+
+  # Phase 55 Plan 04: `bill:` is now optional — :backfill_missing mode
+  # iterates run.pipeline_run_bills itself and does not take a single
+  # bill at construction.
+  def initialize: (
+    ?bill: Bill?,
+    ?bill_run: PipelineRunBill?,
+    ?run: LegislationPipelineRun?,
+    ?mode: Symbol,
+    ?faraday_conn: Faraday::Connection?,
+    ?attachment_conn: Faraday::Connection?,
+  ) -> void
+
+  # @raise [StageError] on an unknown @mode.
+  def call: () -> Array[hearing_hash]?
+
+  def retry_single_attachment!: (attachment_id: Integer | String, url: String?, filename: String) -> bool
+
+  private
+
+  def adapter: () -> Legislation::Adapters::GenericHearingsAdapter
+
+  # A-WR-02 / A-WR-08: allowlist-enforcing, bounded-redirect seam for
+  # attachment BODY fetches. Separate from #legistar_client because an
+  # attachment hyperlink is an absolute url that overrides the connection's
+  # url_prefix, while the API seam builds relative paths under it.
+  def attachment_fetch: () -> Legistar::AttachmentFetch
+  def call_discover: () -> Array[hearing_hash]
+  # A1-IN-02: legistar_event, not Object. #fetch_hearing_event returns
+  # legistar_event? and the caller's #filter_map drops the nils, so `Object`
+  # was keeping an unreachable non-Hash guard alive inside the method.
+  def event_to_hearing_hash: (legistar_event event) -> hearing_hash
+  # HI2-04 fix: now raises BillProcessingError on a non-object payload
+  # instead of returning nil. The return type can drop the `?` suffix.
+  # Phase 55 Plan 04 (D-23): bill arg threaded through so call_backfill_missing
+  # can reuse the lookup with the bill it iterates over.
+  def lookup_matter_id_from_metadata: (Bill bill) -> (Integer | String)
+  def legistar_jurisdiction?: () -> bool
+
+  # Phase 63 Plan 11 (D-08 amendment): attachment_records is a BILL-LEVEL
+  # array alongside the event metadata.
+  def write_artifact: (Bill bill, Array[hearing_hash] hearings, Array[attachment_record] attachment_records) -> void
+
+  # Phase 63 Plan 11 Task 1 (Req 1; D-07): downloads every PENDING candidate,
+  # mutating each record's download_status/error in place.
+  def download_attachments!: (Array[attachment_record] records, sway_locale: String?, ?bill: Bill?) -> void
+
+  def record_download_attempt: (attachment_record record, ?bill: Bill?) -> void
+
+  # Phase 63 Plan 11 Task 2 (Req 2; D-04): one-retry extraction over every
+  # downloaded candidate. Text goes to the per-attachment .txt sidecar.
+  #
+  # A-WR-07: also settles extraction_status for every record it does NOT
+  # extract, so the field is total and honest rather than stranding a
+  # download-failed record at "pending" while its prior-run sidecar keeps
+  # feeding the prompt.
+  #
+  # A-WR-06: returns nothing. The accumulated texts were threaded through
+  # three frames and never read (PROD-CR-04 moved composition to the on-disk
+  # sidecars), while holding every extracted text in memory for the loop.
+  def extract_attachments!: (Array[attachment_record] records, sway_locale: String?) -> void
+  def extract_one_attachment: (attachment_record record, sway_locale: String?) -> String?
+  def attempt_extraction: (attachment_record record, sway_locale: String?) -> String?
+
+  # A-WR-03: returns the capped text plus a note describing the truncation,
+  # or nil when nothing was truncated.
+  def cap_extracted_text: (String text, ?Integer char_cap) -> [String, String?]
+
+  # MAX_TESTIMONY_ATTACHMENT_TEXT_CHARS when the record's name
+  # classifies as testimony, else MAX_ATTACHMENT_TEXT_CHARS.
+  def attachment_text_char_cap: (attachment_record record, sway_locale: String?) -> Integer
+
+  # A-WR-07 / A4-IN-01: does this record have a sidecar that will ACTUALLY
+  # contribute text to extracted_testimony? Delegates to #read_attachment_txt
+  # and applies #compose_testimony_from_disk's own skip condition, so the
+  # predicate and its consumer cannot disagree about a blank sidecar.
+  def attachment_txt_present?: (attachment_record record, sway_locale: String?) -> bool
+
+  # Phase 63 Plan 11 Task 2 (D-06/D-10/D-11; REVIEWS C12): self-provisions
+  # BillLlmProvisioning and writes testimony_attachments unconditionally.
+  # PROD-CR-04: extracted_testimony is composed from the on-disk .txt
+  # sidecars, and testimony_fetched_at moves only when the composed text
+  # differs from what is already persisted (WR-06).
+  #
+  # A-WR-06: the third parameter is gone — it was never read.
+  # A3-IN-01: the reuse branch's replacement for this run's failure message.
+  def reuse_error: (String? prior_error) -> String
+
+  def reconcile_records_for_retry: (Hash[String, untyped] retried_record) -> Array[attachment_record]
+
+  def persist_testimony!: (Bill bill, Array[attachment_record] records) -> void
+
+  # The four outcomes are the contract, so they are spelled out rather than
+  # collapsed to `Symbol` — a caller adding a fifth arm has to declare it here.
+  def testimony_write_decision: (
+    Array[attachment_record] records,
+    BillLlmProvisioning provisioning,
+    String? composed
+  ) -> (:replace | :retract | :retain_with_notice | :none)
+
+  # @lat: [[hearing-testimony-census#Losing some testimony is not the same as losing all of it]]
+  #
+  # `previous_mirror` takes the PERSISTED column type (BillLlmProvisioning
+  # #testimony_attachments) rather than attachment_status, because the JSON
+  # column predates this key set and can hold anything a prior build wrote.
+  def evidence_withdrawn?: (
+    Array[Hash[String, untyped]]? previous_mirror,
+    Array[attachment_status] mirror
+  ) -> bool
+
+  # The mirror entries whose text reached the composition. The status filter is
+  # also what excludes the synthetic mirror rows, which all carry
+  # EXTRACTION_STATUS_NOT_ATTEMPTED.
+  #
+  # Hash[String, untyped] rather than attachment_status because the JSON column
+  # predates this key set and can hold anything a prior build wrote.
+  def contributing_entries: (Array[untyped]? mirror) -> Array[Hash[String, untyped]]
+
+  # @lat: [[hearing-testimony-census#Losing some testimony is not the same as losing all of it]]
+  def comparable_by_id?: (
+    Array[Hash[String, untyped]] previous,
+    Array[Hash[String, untyped]] current
+  ) -> bool
+
+  # The previous run's contributing entries, re-stamped
+  # EXTRACTION_STATUS_REUSED, so :retain_with_notice keeps the census it needs
+  # to detect a later withdrawal instead of replacing it with a lone notice.
+  def carried_forward_mirror_entries: (
+    Array[untyped]? previous_mirror
+  ) -> Array[attachment_status]
+
+  # A3-WR-08: true only when discovery ran, found attachments, and the filters
+  # kept none — the one blank-composition case authoritative enough to clear
+  # extracted_testimony.
+  def nothing_qualified?: (Array[attachment_record] records) -> bool
+
+  # A4-WR-02: the exact negation of #nothing_qualified?'s second clause —
+  # discovery produced no candidates AND saw no attachments at all, the
+  # ambiguous state in which the column is retained and the mirror must say so.
+  def discovery_returned_nothing?: (Array[attachment_record] records) -> bool
+
+  # True when at least one of the matter's events went unread, so
+  # the candidate set is a floor rather than a census and no decision drawn
+  # from its emptiness may delete evidence.
+  def sweep_incomplete?: (Array[attachment_record] records) -> bool
+
+  # A4-WR-02: synthetic mirror row explaining that this run established
+  # nothing and the displayed testimony is from a prior fetch.
+  def retained_testimony_mirror_entry: () -> attachment_status
+
+  # The same shape for the fourth route — candidates in hand, none
+  # of them contributing, so the row counts them instead of claiming discovery
+  # came back empty.
+  def no_contributing_candidates_mirror_entry: (Array[attachment_record] records) -> attachment_status
+
+  # The same shape for the other non-authoritative reason — it
+  # names the event ids the operator can check in Legistar.
+  def unswept_events_mirror_entry: () -> attachment_status
+
+  # A-CR-01: the collection-level sibling of the entry above — no ids to
+  # check, but a named endpoint that did not answer.
+  def unswept_collections_mirror_entry: () -> attachment_status
+
+  # A-CR-01: picks between the two entries above (events win, being the more
+  # actionable) or nil when the sweep was complete and the caller falls back
+  # to #retained_testimony_mirror_entry.
+  def incomplete_sweep_mirror_entry: (Array[attachment_record] records) -> attachment_status?
+
+  # PROD-CR-04: recovery composition over the per-attachment .txt sidecars.
+  def compose_testimony_from_disk: (Array[attachment_record] records, sway_locale: String?) -> String
+  def read_attachment_txt: (attachment_record record, sway_locale: String?, ?max_bytes: Integer) -> String?
+  # A-IN-04: appends one synthetic entry when discovery truncated, so the
+  # operator surface that explains missing testimony says so.
+  def attachment_status_mirror: (Array[attachment_record] records) -> Array[attachment_status]
+
+  # A-IN-04: how many candidates discovery found vs kept.
+  # Plus the event ids this run could not read, so the durable
+  # artifact stops asserting a complete sweep it did not perform.
+  # WR-05: plus `recorded`, the only one of the counts that matches the
+  # `attachments` array beside it.
+  def discovery_census: () -> {
+    "found" => Integer,
+    "kept" => Integer,
+    "recorded" => Integer,
+    "truncated" => bool,
+    "events_unswept" => Array[Integer],
+    "collections_unswept" => Array[String],
+  }
+  def truncation_mirror_entry: () -> attachment_status?
+
+  # A2-IN-04 (supersedes the T-63-08 note that stood here): the basename
+  # carries the coerced integer id ONLY. T-63-08 assumed the two Legistar
+  # attachment collections occupied different id spaces and put
+  # source_endpoint in the name to separate them; A-CR-01 disproved that
+  # against the live recording, and an endpoint-keyed name orphaned the
+  # PDF/TXT pair whenever a per-event fetch degraded.
+  def attachment_basename: (attachment_record record, String extension) -> String
+  def attachment_pdf_path: (attachment_record record, sway_locale: String?) -> Pathname
+  def attachment_txt_path: (attachment_record record, sway_locale: String?) -> Pathname
+
+  # HI-04 fix (cycle-1, RBS sig added in cycle-2 BL2-04 fix): coerce a
+  # potentially-untrusted matter_id input to a strict positive Integer.
+  # Accepts Integer or digit-only String; any other shape raises
+  # BillProcessingError so the per-bill failure is recorded explicitly.
+  def coerce_matter_id!: (Integer | String | nil value) -> Integer
+
+  # Phase 63 Plan 05 Task 2 (Req 1; REVIEWS C1): dual-collection testimony
+  # attachment discovery. See app/services/fetch_hearings_service.rb for
+  # the full contract; Plan 11 wires this into call_discover's persisted
+  # flow.
+  def discover_attachments: (Integer matter_id_int, sway_locale_id: Integer) -> Array[attachment_record]
+  def fetch_matter_attachments: (Integer matter_id_int) -> Array[raw_attachment]
+
+  # @lat: [[hearing-testimony-census#Event ids come only from a matter's histories]]
+  def event_ids_for_matter!: (Integer matter_id_int) -> Array[Integer]
+
+  # Single writer of the "no reachable events" memo.
+  # A-CR-01: `reason` is required. Both callers are failure paths, so reaching
+  # here always means the matter's event set was not established, and this
+  # method records the Histories collection unswept as well as memoizing.
+  def memoize_no_events: (Integer matter_id_int, String reason) -> Array[Integer]
+
+  # A1-WR-01: the evidence gate. Raises BillProcessingError unless the matter
+  # is proven to exist, so an empty collection can never become an
+  # authoritative "no hearings, no testimony" artifact on a stale matter_id.
+  def verify_matter_exists!: (Bill bill, Integer matter_id_int) -> void
+
+  # Probes the PARENT entity — the only route that 404s for an unknown id (a
+  # collection sub-resource answers 200 []). A probe that cannot answer raises
+  # rather than resolving either way.
+  def matter_exists?: (Integer matter_id_int) -> bool
+
+  # Attachment-discovery policy over the above: never fails the bill.
+  def event_ids_for_matter: (Integer matter_id_int) -> Array[Integer]
+
+  # One hearing's display metadata from Events/<id>. nil when that
+  # single event is unreadable, so a bad event drops one row rather than the
+  # whole bill's hearings.
+  def fetch_hearing_event: (Integer event_id) -> legistar_event?
+
+  # The single writer of @unswept_event_ids, so the two paths that
+  # reach that conclusion cannot disagree about whether they recorded it.
+  def mark_event_unswept: (Integer event_id, String reason) -> void
+
+  # A-CR-01: the single writer of @unswept_collections, for the same reason —
+  # several paths reach "this collection produced nothing" and must not
+  # disagree about whether they recorded it. Idempotent on the route.
+  def mark_collection_unswept: (String route, String reason) -> void
+
+  # A-CR-01: the two collection routes, single-sourced — #mark_collection_unswept
+  # dedupes on the route prefix, so two spellings would record one collection twice.
+  def matter_attachments_route: (Integer matter_id_int) -> String
+  def matter_histories_route: (Integer matter_id_int) -> String
+  def fetch_event_item_matter_attachments: (Integer matter_id_int) -> Array[attachment_entry]
+  def event_item_attachment_entries: (event_item_row item, Integer event_id) -> Array[attachment_entry]
+  def dedupe_attachment_entries: (Array[attachment_entry] entries) -> Array[attachment_entry]
+
+  # A2-IN-02: the grouping key — the COERCED attachment id, matching the
+  # verdict map, the cache row and the sidecar basename. An id that will not
+  # coerce gets a per-object tuple key instead of sharing a `nil` bucket with
+  # its uncoercible siblings.
+  def dedupe_key: (attachment_entry entry) -> (Integer | [Symbol, Integer])
+
+  # A-CR-01: total order over a dedupe group — event-associated first, then
+  # lowest event id, then lowest event-item id — so the recorded provenance
+  # does not depend on the order Legistar returned Histories in.
+  def entry_provenance_rank: (attachment_entry entry) -> [Integer, Integer, Integer]
+
+  # PROD-CR-01: structural .pdf gate only — the testimony judgment moved to
+  # Testimony::AttachmentClassifier (the old combined filter passed 87% of
+  # all attachments).
+  def pdf_attachment?: (raw_attachment raw) -> bool
+
+  # @return coerced attachment id => keep-as-testimony
+  #
+  # @lat: [[untrusted-text-in-prompts#Why the model judges the document rather than its name]]
+  def testimony_verdicts: (Array[attachment_entry] entries, sway_locale_id: Integer) -> Hash[Integer, bool]
+
+  # @lat: [[untrusted-text-in-prompts#Why the model judges the document rather than its name]]
+  def classify_attachment_contents!: (
+    Array[attachment_record] records,
+    sway_locale: String?,
+    sway_locale_id: Integer,
+  ) -> Array[attachment_record]
+
+  # The disposition of ONE record after stage 3. Reads @content_pending_ids
+  # and @content_unreadable_ids rather than taking them as parameters.
+  def content_verdict_keeps?: (
+    attachment_record record,
+    Hash[Integer, bool] verdicts
+  ) -> bool
+
+  # Records the UNREADABLE disposition — remembers the id so
+  # #compose_testimony_from_disk withholds the record's text, and rewrites a
+  # still-contributing extraction status so the admin mirror agrees.
+  def mark_content_unreadable: (attachment_record record, Integer id) -> void
+
+  # Stamps the CONTENT-DENIED status and reason on a record the
+  # working set is dropping, so its mirror row explains the denial.
+  def mark_content_denied: (attachment_record record) -> void
+
+  # An entry whose id will not coerce carries no verdict and is KEPT, so
+  # #normalize_attachment_entry can still record it as a failed download
+  # (REVIEWS C11).
+  def keep_entry?: (attachment_entry entry, Hash[Integer, bool] keep) -> bool
+  def testimony_classifier: () -> Testimony::AttachmentClassifier
+
+  # A4-WR-03: #primary_attachment_id and its #scalar_attachment_id narrower
+  # (A-IN-05) are deleted along with the `primary:` kwarg — the flag they fed
+  # was never read, and rejecting on it deleted real testimony.
+  def normalize_attachment_entry: (attachment_entry entry) -> attachment_record
+
+  # Non-raising sibling of coerce_matter_id! (REVIEWS C11) — returns nil
+  # instead of raising on a malformed id, so one bad attachment (or event,
+  # T-63-06) id degrades instead of failing the bill.
+  def coerce_attachment_id: (legistar_scalar | Array[legistar_scalar] value) -> Integer?
+
+  # T-63-06: narrows one dynamic Legistar JSON value to the String the
+  # artifact's hearing_hash promises. nil for anything else — these render to
+  # users as hearing date/time/location, so a stringified stand-in would read
+  # as evidence.
+  def legistar_string: (legistar_scalar | Array[legistar_scalar] value) -> String?
+  def default_faraday_conn: () -> Faraday::Connection
+  def default_attachment_faraday_conn: () -> Faraday::Connection
+  def resolve_default_sway_locale: () -> SwayLocale
+  def sway_locale: () -> SwayLocale?
+end

@@ -1,0 +1,39 @@
+# Hand-authored RBS sig for PipelineActivityLogEntry.
+# Phase 49 D-01..D-04: append-only activity log table.
+# HIGH-R2-2: canonical location is sig/models/ (NOT sig/app/models/).
+#
+# NOTE: rbs_rails generates the association readers (subject, actor_user),
+# attribute readers, and scope class methods in
+# sig/rbs_rails/app/models/pipeline_activity_log_entry.rbs.
+# This file adds ONLY what rbs_rails cannot introspect:
+#   - constants (EVENT_TYPES, SEVERITIES)
+#   - readonly? (dynamic method, not introspectable)
+#   - subject_label (computed instance method, not introspectable)
+class PipelineActivityLogEntry < ApplicationRecord
+  EVENT_TYPES: Array[String]
+
+  # NOTE: severities are lower-case strings. PipelineActivityLogger sets them
+  # from SEVERITY_FOR_EVENT; do not pass mixed case at any caller boundary.
+  SEVERITIES: Array[String]
+
+  # D-04: append-only — raises ActiveRecord::ReadOnlyRecord on update of persisted row
+  def readonly?: () -> bool
+
+  # D-16: computed subject label (never stored)
+  def subject_label: () -> String?
+
+  # `serialize :payload, coder: JSON` (app/models/pipeline_activity_log_entry.rb)
+  # overrides rbs_rails' raw-column `String` type (introspected from the
+  # underlying :text column) with the actual Ruby-level deserialized shape.
+  # Column is `text default({}) not null` — never actually nil at runtime.
+  def payload: () -> Hash[String, untyped]
+  def payload=: (Hash[untyped, untyped]) -> Hash[untyped, untyped]
+
+  # Copy-paste AR query string per event_type
+  def inspect_query: () -> String
+
+  private
+
+  # @lat: [[activity-log-flash-transport#Why the dispatch lives outside the logger]]
+  def dispatch_pipeline_activity_transport: () -> void
+end

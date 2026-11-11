@@ -1,0 +1,193 @@
+/* The Ballot bill-list layout: contests printed down a ballot. Structure comes
+   from scanner rules alone — no cards, no shadows. Matches
+   ballot-bill-layout.css. */
+
+.ball-sheet {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+/* --- certification header ----------------------------------------------- */
+
+.ball-header {
+    padding-bottom: calc(var(--space-unit) * 3);
+    border-bottom: var(--rule-thick) var(--rule-style) var(--foreground);
+}
+
+.ball-header__locale {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+}
+
+/* Emblem-sized only — never a repeating band. */
+.ball-header__flag {
+    width: calc(var(--space-unit) * 8);
+    height: auto;
+    border: var(--rule-hair) var(--rule-style) var(--border);
+    flex: none;
+}
+
+.ball-header__kind {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.ball-header__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+/* --- controls ------------------------------------------------------------ */
+
+.ball-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 4);
+    padding: calc(var(--space-unit) * 4) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+/* @lat: [[bills-filter-header#Why the categories control gets its own line]] */
+.ball-field--wide {
+    flex-basis: 100%;
+}
+
+.ball-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    max-width: 100%;
+    gap: calc(var(--space-unit) * 1);
+}
+
+.ball-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+/* @lat: [[theme-tokens#Theme tokens#Why native select chrome is defined once, globally]] */
+
+.ball-input {
+    cursor: text;
+}
+
+.ball-more {
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 3);
+    background: transparent;
+    border: var(--rule-hair) var(--rule-style) var(--foreground);
+    border-radius: 999px;
+    font-size: var(--type-micro);
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+/* --- the contests -------------------------------------------------------- */
+
+.ball-count {
+    padding: calc(var(--space-unit) * 3) 0;
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.ball-contests {
+    display: grid;
+}
+
+.ball-contest {
+    padding: calc(var(--space-unit) * 4) 0;
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.ball-contest__id {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: calc(var(--space-unit) * 3);
+}
+
+/* The identifier is BOXED, not a pill: it names the contest and cannot be
+   pressed, so it must not take a control's shape (audit F3). */
+.ball-code {
+    padding: calc(var(--space-unit) * 0.5) calc(var(--space-unit) * 2);
+    border: var(--rule-thick) var(--rule-style) var(--foreground);
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-display);
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: var(--tracking-caps);
+    color: var(--foreground);
+}
+
+/* The chamber is running text — a third kind of information, a third shape. */
+.ball-kind {
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.ball-contest__title {
+    display: block;
+    margin-top: calc(var(--space-unit) * 2);
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.ball-contest__title:hover,
+.ball-contest__title:focus-visible {
+    text-decoration: underline;
+}
+
+.ball-contest__brief {
+    margin-top: calc(var(--space-unit) * 1.5);
+    max-width: 68ch;
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}
+
+.ball-contest__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 2);
+}
+
+.ball-tally {
+    font-size: var(--type-micro);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--muted-foreground);
+}
+
+.ball-voted {
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--vote-for);
+}
+
+/* The segment that distinguishes this bill from the four other "Rezoning"
+   entries. Lighter than the category it follows, so the row still scans by
+   subject first. */
+.ball-contest__qualifier {
+    font-weight: var(--weight-body);
+    color: var(--muted-foreground);
+}

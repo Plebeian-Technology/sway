@@ -1,0 +1,20 @@
+class CspReportsController < ApplicationController
+  # Any value JSON.parse can produce for a report body.
+  type json_value = Hash[String, untyped] | Array[untyped] | String | Integer | Float | bool | nil
+
+  ACCEPTED_TYPES: Array[String]
+  MAX_BODY_BYTES: Integer
+  SAMPLE_RATIO: Integer
+  EXTENSION_URI_PATTERN: Regexp
+
+  def create: () -> untyped
+
+  private
+
+  def read_bounded_body: () -> String
+  def parse_report: (String raw) -> json_value
+  def normalize_report: (json_value report) -> Hash[String, untyped]
+  def extract_fields: (json_value report) -> Hash[Symbol, untyped]
+  def extension_violation?: (Hash[Symbol, untyped] fields) -> bool
+  def forward_to_sentry_sampled: (json_value report) -> void
+end

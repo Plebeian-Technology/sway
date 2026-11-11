@@ -1,0 +1,4 @@
+class Object
+  def build_term: (began_on: Date, ended_on: Date, ?legislator: Legislator?, ?term_district: District, ?term_locale: SwayLocale, ?start_year: Integer) -> LegislatorTerm
+  def other_district: () -> District
+end

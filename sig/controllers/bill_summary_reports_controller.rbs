@@ -1,0 +1,7 @@
+class BillSummaryReportsController < ApplicationController
+  def create: () -> untyped
+
+  private
+
+  def report_params: () -> Hash[Symbol, untyped]
+end

@@ -1,0 +1,11 @@
+# Manual extensions for UserLegislator. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/user_legislator.rbs; this file
+# holds the hand-written instance methods (migrated from the former
+# sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+class UserLegislator < ApplicationRecord
+  def self.active: () -> ::UserLegislator::ActiveRecord_Relation
+
+  module ::UserLegislator::GeneratedRelationMethods
+    def active: () -> ::UserLegislator::ActiveRecord_Relation
+  end
+end

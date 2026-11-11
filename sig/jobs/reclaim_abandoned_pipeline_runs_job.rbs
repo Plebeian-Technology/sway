@@ -1,0 +1,13 @@
+# @lat: [[legislation-pipeline#Runs, resume and restart]]
+class ReclaimAbandonedPipelineRunsJob < ApplicationJob
+  MAX_ROWS_PER_SWEEP: Integer
+
+  # How many runs were closed.
+  def perform: () -> Integer
+
+  private
+
+  def close: (LegislationPipelineRun run) -> bool
+
+  def abandonment_message: (String status_before, ActiveSupport::TimeWithZone quiet_since) -> String
+end

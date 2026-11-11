@@ -1,0 +1,64 @@
+module SwayGoogleCloudStorage
+    @storage: untyped
+
+    @credentials: untyped
+
+    extend ActiveSupport::Concern
+
+    class ListedFile
+      attr_reader name: String
+      attr_reader size: Integer
+      attr_reader created_at: Time?
+      attr_reader md5: String?
+
+      def initialize: (name: String, size: Integer, created_at: Time?, ?md5: String?) -> void
+
+      def self.new: (name: String, size: Integer, created_at: Time?, ?md5: String?) -> SwayGoogleCloudStorage::ListedFile
+    end
+
+    GOOGLE_CLOUD_PROJECT_ID: String
+
+    BUCKETS: { ASSETS: String }
+
+    AUDIO_CACHE_CONTROL: String
+
+    BUCKET_CORS_ORIGINS: Array[String]
+
+    def self.bucket_cors_origins: -> Array[String]
+
+    def self.configure: (bucket_name: untyped) -> untyped
+
+    def self.storage: -> untyped
+
+    def self.credentials: -> String
+
+    def self.keyfile_path: -> String
+
+    def self.write_keyfile: (String path, String payload) -> void
+
+    def generate_get_signed_url_v4: (bucket_name: untyped, file_name: untyped) -> (nil | untyped)
+
+    def generate_put_signed_url_v4: (bucket_name: untyped, file_name: untyped, content_type: untyped) -> (nil | untyped)
+
+    def upload_file: (bucket_name: untyped, bucket_file_path: untyped, local_file_path: untyped, ?cache_control: String?) -> (nil | untyped)
+
+    def download_file: (bucket_name: untyped, bucket_file_path: untyped, local_file_path: untyped) -> (nil | untyped)
+
+    def download_directory: (
+        bucket_name: untyped,
+        bucket_directory_name: untyped,
+        local_directory_name: untyped
+    ) -> (nil | untyped)
+
+    def list_files: (bucket_name: untyped, prefix: untyped) -> Array[SwayGoogleCloudStorage::ListedFile]
+
+    def delete_file: (bucket_name: untyped, file_name: untyped) -> (nil | untyped)
+
+    private
+
+    def download_to_path: (untyped file, String local_path) -> Pathname
+
+    def storage: -> untyped
+
+    def credentials: -> untyped
+end

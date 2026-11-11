@@ -1,0 +1,68 @@
+# Hand-written RBS for lib/migration_model_check.rb.
+class MigrationModelCheck
+  MIGRATION_DIRECTORIES: Array[String]
+  MODEL_DIRECTORY: String
+  ALLOWED_REFERENCES: Hash[String, Array[String]]
+
+  class Offence
+    attr_reader path: String
+    attr_reader line: Integer
+    attr_reader constant_name: String
+
+    def initialize: (path: String, line: Integer, constant_name: String) -> void
+
+    def to_s: () -> String
+  end
+
+  class MissingAllowlistedPathError < StandardError
+  end
+
+  class ConstantVisitor < Prism::Visitor
+    attr_reader definitions: Array[String]
+    attr_reader references: Array[[String, Integer]]
+
+    @nesting: Array[String]
+
+    def initialize: () -> void
+
+    def visit_class_node: (Prism::ClassNode node) -> void
+
+    def visit_module_node: (Prism::ModuleNode node) -> void
+
+    def visit_constant_read_node: (Prism::ConstantReadNode node) -> void
+
+    def visit_constant_path_node: (Prism::ConstantPathNode node) -> void
+
+    private
+
+    def record_definition: (untyped node) { () -> void } -> void
+
+    def qualified_name: (untyped node) -> String?
+  end
+
+  @root: String
+  @scanned_paths: Array[String]?
+  @model_constant_names: Array[String]?
+
+  def initialize: (String root) -> void
+
+  def offences: () -> Array[Offence]
+
+  def scanned_paths: () -> Array[String]
+
+  def model_constant_names: () -> Array[String]
+
+  private
+
+  attr_reader root: String
+
+  def assert_named_paths_exist!: () -> void
+
+  def offences_in: (String relative_path) -> Array[Offence]
+
+  def definitions_in: (String source) -> Array[String]
+
+  def visit: (String source) -> ConstantVisitor
+
+  def relative: (String path) -> String
+end

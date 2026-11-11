@@ -1,0 +1,146 @@
+# RBS signature for RunLegislationPipelineJob (Phase 52 Plan 07).
+# Zero `untyped` per project memory feedback_rbs_avoid_untyped.
+class RunLegislationPipelineJob < ApplicationJob
+  # THE FOUR VALUES #record_stage_result WRITES, and the alias is USED by that
+  # method's signature rather than left beside it. It listed two of the four
+  # and was referenced nowhere, so Steep reported nothing while "skipped" and
+  # then "not_run" were added to the code — and the first signature that did
+  # use it would have inherited a two-value status and a missing "reason" key.
+  # Now a fifth status is a type error at the call site, which is the only
+  # place the constraint can bite. (BE25-04)
+  #
+  # The `stage_outcome` and `stage_results_payload` aliases beside it are gone.
+  # They were referenced only by each other, so nothing checked them, and the
+  # content had already drifted: #record_stage_result writes "error" and
+  # "reason" only when present, which is `?"error" => String`, not
+  # `"error" => String?`. A signature that ever consumed the alias would have
+  # rejected an ordinary {"status" =>, "at" =>} entry. There is no natural
+  # consumer to wire them to either — PipelineRunBill#stage_results is `untyped`
+  # in the rbs_rails-generated file — so they are deleted rather than corrected
+  # into a second dead claim. (BE26-07)
+  #
+  # @lat: [[llm-summaries#Batch summarisation#Why a submitted item is a verdict, not a silence]]
+  type stage_status = "succeeded" | "failed" | "skipped" | "not_run" | "awaiting_batch"
+
+  STAGE_SERVICES: Hash[Symbol, String?]
+  RUN_LEVEL_STAGES: Array[Symbol]
+  BILL_LEVEL_STAGES: Array[Symbol]
+  INLINE_DISPATCH_STAGES: Array[Symbol]
+  DAG_ORDER: Array[Symbol]
+  CONSECUTIVE_FAILURE_BUDGET: Integer
+
+  @origin: String
+
+  # What #run_bill_level_stage answers when the summarize stage
+  # submitted batches instead of walking bills, so #perform transitions the run
+  # to :awaiting_summary_batch and stops rather than finalizing it.
+  AWAITING_SUMMARY_BATCH: Symbol
+  # CR-02 (Phase 55 review iter 1): explicit allowlist for the perform
+  # method's `origin:` kwarg. Unknown values are accepted at runtime
+  # (forward-compat) but logged via the unknown_origin warn channel.
+  ORIGIN_VALUES: Array[String]
+
+  # SolidQueue concurrency-control DSL — declared at class scope; same shape
+  # as LegislatorVoteFetchJob's RBS (untyped key/duration tolerated for the
+  # DSL boundary).
+  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> String, ?duration: untyped, ?on_conflict: Symbol) -> void
+
+  # CR-02: the origin parameter narrows to one of ORIGIN_VALUES via a
+  # literal union for Steep narrowing at call sites that pass a literal
+  # string; pass-through callers (controllers reading String from
+  # ActionController::Parameters) still type-check via the union's
+  # widening to String at the boundary.
+  def perform: (Integer pipeline_run_id, ?origin: ("fresh" | "resume" | "restart" | "seed" | String)) -> void
+
+  private
+
+  def check_run_active!: (LegislationPipelineRun run, stage: Symbol, ?processed_count: Integer) -> void
+
+  # Phase 55 Plan 04: stages_to_run now honors run.stages + download_missing_assets
+  # via Pipeline::StageDeps.transitive_closure. See the method body for the
+  # full contract.
+  def stages_to_run: (LegislationPipelineRun run, String origin) -> Array[Symbol]
+
+  # @lat: [[legislation-pipeline#Runs, resume and restart]]
+  def succeeded_stage_names_before: (LegislationPipelineRun run) -> Set[String]
+  # FINDING-1: enumerate bill_external_ids triggering auto-include for a stage;
+  # returns [] for run-level stages.
+  def bills_triggering_auto_include: (LegislationPipelineRun run, Symbol stage_sym) -> Array[String]
+  # Phase 55 Plan 04 (Task 5): auto_included: selects fetch-bills mode dispatch.
+  def run_level_service_kwargs: (LegislationPipelineRun run, Symbol stage, auto_included: bool) -> Hash[Symbol, untyped]
+  # Phase 55 Plan 04 (Task 5, D-04): operator-checked → :discover; auto-included → :backfill_missing.
+  def service_mode_for: (bool auto_included) -> Symbol
+  def execute_stage!: (LegislationPipelineRun run, Symbol stage, ?auto_included: bool) -> bool
+  def run_run_level_stage: (LegislationPipelineRun run, Symbol stage, ?auto_included: bool) -> void
+  # AWAITING_SUMMARY_BATCH when the summarize stage submitted at least one
+  # Message Batch; nil otherwise, including a summarize stage every one of whose
+  # bills earned no item.
+  def run_bill_level_stage: (LegislationPipelineRun run, Symbol stage, ?auto_included: bool) -> Symbol?
+
+  # @lat: [[llm-summaries#Batch summarisation#Submitting a run's summarisation as chunked batches]]
+  def submit_summary_batches!: (LegislationPipelineRun run, SummaryBatchSubmission submission) -> void
+
+  def record_batch_verdict: (SummaryBatchSubmission::Verdict verdict) -> void
+  # Cycle-13 MEDIUM-13-1: execute_extract_text returns :skipped_no_pdf
+  # when the bill has no PDF on disk (legitimate Legistar skip — not a
+  # failure). execute_bill_level_service is a dispatcher; its return
+  # value is forwarded to the caller for status-routing. `Symbol?` —
+  # nil signals "no skip, treat as success"; :skipped_no_pdf signals
+  # the no-PDF skip path. Other return values are ignored by callers.
+  def execute_bill_level_service: (LegislationPipelineRun run, Symbol stage, PipelineRunBill bill_run) -> Symbol?
+  def execute_extract_text: (PipelineRunBill bill_run) -> Symbol?
+  def execute_pipeline_run: (LegislationPipelineRun run, String origin) -> void
+  def resolve_bill: (PipelineRunBill bill_run) -> Bill?
+
+  # A-WR-04: the one refusal for all three bill-level dispatch arms. A nil from
+  # #resolve_bill is the lookup declining an ambiguous external_id (A1-WR-03),
+  # which is a per-bill fact — so it raises BillProcessingError and the run
+  # continues, instead of recording a stage that did no work as "succeeded".
+  def resolve_bill!: (PipelineRunBill bill_run) -> Bill
+  # Delegates to PipelineStageResult, which the batch ingest also
+  # calls. The positional shape is kept for this job's own call sites.
+  def record_stage_result: (PipelineRunBill bill_run, Symbol stage, stage_status status, ?error: String?, ?reason: String?) -> void
+  def record_bill_stage_failure: (PipelineRunBill bill_run, Symbol stage, Exception exception, ?recovery_label: String?) -> void
+  def stage_already_succeeded?: (PipelineRunBill bill_run, Symbol stage) -> bool
+  # Takes the RESOLVED bill: the PDF's path carries the bill's sway_locale, and
+  # a PipelineRunBill holds only bill_external_id, which does not identify one
+  # bill. nil means the FILE is missing — a row that names no bill is refused by
+  # the caller before this runs.
+  def locate_pdf: (Bill bill) -> Pathname?
+  def preflight_stage_environment!: (Symbol stage) -> void
+
+  def finalize_pipeline_run!: (LegislationPipelineRun run) -> void
+
+  # Delegates to PipelineRunFinalizer, which the batch ingest
+  # also calls — it finishes a run hours after this job returned.
+  def finalize_run_terminal_state: (LegislationPipelineRun run) -> void
+
+  def handle_run_failure: (LegislationPipelineRun? run, Exception error) -> void
+
+  # HI-01 + BL2-02: stuck-stage resume normalization. Soft-resets the run's
+  # status column from a `*ing_*` state back to :running AND re-opens any
+  # non-succeeded pipeline_run_stages row for the stuck stage so a fresh
+  # start_X! event finds the stage row in :pending.
+  # Returns true when the run's summary batch can still return
+  # results, so the caller must leave it waiting rather than proceed.
+  def normalize_for_resume: (LegislationPipelineRun? run) -> bool
+
+  # BL2-02 helper: map "fetching_law" → "fetch_law" etc. Returns nil when
+  # the status string is not one of PHASE_52_STAGE_STATES.
+  def stage_name_for_status: (String | Symbol status) -> String?
+
+  def find_pipeline_run: (Integer pipeline_run_id) -> LegislationPipelineRun?
+  def prepare_pipeline_run!: (LegislationPipelineRun run, ?origin: String? | Symbol?) -> bool
+
+  # Phase 55 UAT-2 /: pre-seed a PipelineRunBill row from
+  # run.bill_id for single-bill runs. No-op when run.bill_id is nil
+  # (all-bills mode; FetchBillsService#seed_ar_rows handles discovery).
+  # Idempotent via find_or_create_by! — resume + restart + fresh
+  # single-bill paths all converge through this helper.
+  def pre_seed_single_bill_pipeline_run_bill!: (LegislationPipelineRun run) -> void
+
+  # All-bills disk-cache hydration guard (mirrors the single-bill
+  # pre-seed). No-op'd for single-bill runs, operator-checked fetch-bills,
+  # or runs that already have pipeline_run_bills rows.
+  def hydrate_pipeline_run_bills_from_disk!: (LegislationPipelineRun run) -> void
+end

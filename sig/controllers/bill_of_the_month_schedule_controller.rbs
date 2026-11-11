@@ -1,0 +1,15 @@
+class BillOfTheMonthScheduleController < ApplicationController
+  include BillCreatorTabRedirects
+
+  @bill: untyped
+
+  def update: -> untyped
+
+  private
+
+  def schedule_params: -> untyped
+
+  def bill_of_the_month_schedule_params: -> untyped
+
+  def set_bill: -> untyped
+end

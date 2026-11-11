@@ -1,0 +1,36 @@
+name: Vitest
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  vitest:
+    # Whoever runs this picks the machine: set a CI_RUNNER variable to name one,
+    # or leave it unset for a GitHub-hosted runner.
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+
+    env:
+      RAILS_ENV: test
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # @lat: [[production-image#Why the package manager floats within its major]]
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+        with:
+          version: 12
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest
+        run: pnpm test

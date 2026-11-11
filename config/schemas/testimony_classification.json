@@ -1,0 +1,22 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "TestimonyClassificationPayload",
+    "description": "Batch classification of the bill attachments the deterministic name rules left undecided, judged on the text of each document. Items are keyed by INDEX, never by name — a model that paraphrases or truncates a name would otherwise silently misalign the verdicts.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["classifications"],
+    "properties": {
+        "classifications": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["index", "label"],
+                "properties": {
+                    "index": { "type": "integer", "minimum": 0 },
+                    "label": { "enum": ["testimony", "not_testimony"] }
+                }
+            }
+        }
+    }
+}

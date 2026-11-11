@@ -1,0 +1,4 @@
+class LegislatorVoteSweepSpecContext < Object
+  def historical_term: () -> LegislatorTerm
+  def current_term: () -> LegislatorTerm
+end

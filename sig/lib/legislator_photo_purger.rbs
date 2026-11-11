@@ -1,0 +1,21 @@
+class LegislatorPhotoPurger
+  PHOTO_RECORD_TYPE: String
+  PHOTO_ATTACHMENT_NAME: String
+
+  type owner_state = :missing | :present
+
+  class SweepTooLarge < StandardError
+  end
+
+  def self.purge_orphans: (?force: bool) -> Hash[Symbol, Integer]
+
+  def self.purge_for_ids: (Array[Integer] legislator_ids, owner_state: owner_state) -> Integer
+
+  private
+
+  def self.photo_attachments: () -> ActiveStorage::Attachment::ActiveRecord_Relation
+
+  def self.orphaned_photo_attachments: () -> ActiveStorage::Attachment::ActiveRecord_Relation
+
+  def self.owner_matches_state?: (ActiveStorage::Attachment attachment, owner_state) -> bool
+end

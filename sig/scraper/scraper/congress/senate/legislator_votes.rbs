@@ -1,0 +1,81 @@
+module REXML
+  class ParseException < ::RuntimeError
+  end
+end
+
+module Scraper
+    module Congress
+        module Senate
+            # https://github.com/LibraryOfCongress/api.congress.gov/issues/64#issuecomment-1403894201
+            # https://senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00421.xml
+            class LegislatorVotes
+                VOTEVIEW_BASE_URL: ::String
+                VOTEVIEW_CACHE_TTL: ActiveSupport::Duration
+                VOTEVIEW_CACHE_FRESHNESS_WINDOW: ActiveSupport::Duration
+
+                PARTY_MAP: ::Hash[::String, ::String]
+
+                @congress: Integer
+
+                @session: Integer
+
+                @roll_call_number: (Integer | String)?
+
+                @result: ::Hash[::String, untyped]?
+
+                @primary_error: ::String?
+
+                @fallback_error: ::String?
+
+                @failure_exception: Scraper::Congress::RollCallUnavailable?
+
+                @voteview_conn: Faraday::Connection?
+
+                include ApiConnector
+
+                def initialize: (year: Integer | String, roll_call_number: (Integer | String)?) -> void
+
+                def identity: -> Scraper::Congress::RollCallIdentity
+
+                def content_type: -> "text/xml"
+
+                def vote_number: -> ::String?
+
+                # r = Faraday.get('https://www.senate.gov/legislative/LIS/roll_call_lists/vote_menu_118_2.xml')
+                # r = Faraday.get('https://www.senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00421.xml')
+                def do_request: -> (nil | untyped)
+
+                # [{"member_full"=>"Casey (D-PA)", "last_name"=>"Casey", "first_name"=>"Bob", "party"=>"D", "state"=>"PA", "vote_cast"=>"Yea", "lis_member_id"=>"S309"},]
+                def do_process: -> ::Array[Scraper::LegislatorVote]
+
+                private
+
+                def result: -> ::Hash[::String, untyped]?
+
+                def fetch_primary_xml: -> ::Hash[::String, untyped]?
+
+                def html_response?: (untyped raw) -> bool
+
+                def fetch_voteview_fallback: -> ::Hash[::String, untyped]?
+
+                def resolve_voteview_entry: -> ::Hash[::String, untyped]?
+
+                def fetch_and_cache_voteview_index: (::String cache_key) -> ::Hash[::String, untyped]?
+
+                def compact_index_entries: (untyped index_data) -> ::Array[::Hash[::String, Integer]]
+
+                def find_rollcall_in_index: (untyped index_entries) -> ::Hash[::String, untyped]?
+
+                def voteview_conn: -> Faraday::Connection
+
+                def normalize_voteview_rollcall: (untyped rollcall) -> ::Hash[::String, untyped]?
+
+                def handle_fallback_failure: (::String error_details) -> void
+
+                def endpoint: -> ::String
+
+                def parse_date: (String? text) -> Date?
+            end
+        end
+    end
+end

@@ -1,0 +1,24 @@
+class LocalErrorCollector
+  # Anything JSON can hold, spelled out rather than left untyped, since every
+  # value here came out of JSON.parse.
+  type jsonValue = String | Integer | Float | bool | nil | Array[jsonValue] | Hash[String, jsonValue]
+
+  # One stored error, as the collector's API describes it.
+  type issue = Hash[String, jsonValue]
+
+  PROJECT_FILE: String
+  TOKEN_FILE: String
+  DEFAULT_TIMEOUT_SECONDS: Integer
+
+  def self.unavailable_reason: () -> String?
+  def self.dsn: () -> String
+  def self.base_url: () -> String
+  def self.project_id: () -> String?
+  def self.file?: (String path) -> bool
+  def self.read: (String path) -> String
+  def self.answering?: () -> bool
+  def self.get: [T] (String path) { (Net::HTTPResponse response) -> T } -> T?
+
+  def wait_for_issue: (String marker, ?timeout_seconds: Integer) -> issue?
+  def issues: (?limit: Integer) -> Array[issue]
+end

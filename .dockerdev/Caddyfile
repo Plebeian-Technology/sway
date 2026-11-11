@@ -1,0 +1,77 @@
+:{$CADDY_PORT:3333} {
+	log default {
+		output stdout
+		format console
+		# Default to WARN locally so upstream failures are obvious in `docker logs`.
+		level {$CADDY_LOG_LEVEL:WARN}
+	}
+	tls /root/certs/localhost-cert.pem /root/certs/localhost-key.pem
+
+	# Proxy Vite HMR WebSocket and dev server assets.
+	#
+	# THIS IS ON PURPOSE, AND rails_vite's OWN ADVICE IS THE OPPOSITE. That gem
+	# says "no proxy": it means the browser to fetch source files straight from
+	# the Vite server, and the Rails server never to see them. Measured, that
+	# does work here — the page loads clean, hot reloading and all.
+	#
+	# It only works for a browser on THIS machine, though, because the address
+	# it hands out is a local one. The dev tunnel host is how this project is opened
+	# on a phone and on other machines, for the testing that cannot be done
+	# locally at all. Those browsers cannot reach a local address. Sending the
+	# files through here gives them one address that works from anywhere.
+	#
+	# The price is the list below: it has to name every path Vite answers on,
+	# and it has already been wrong twice. If it is ever wrong again, the fix is
+	# to widen the list — NOT to delete this and let the browser go direct,
+	# which would quietly leave every non-local browser with a blank page.
+	#
+	# rails_vite serves dev modules at their real source path, so the first
+	# entry is the source directory rather than an output directory.
+	#
+	# The second entry is every path that starts with "/@". That is the whole
+	# family of names Vite and its plugins own — /@vite/client, /@react-refresh,
+	# /@id/ for virtual modules, /@fs/ for files outside the project, and one
+	# per plugin such as /@vite-plugin-pwa/. Listing them one by one left
+	# /@vite-plugin-pwa/ out, and Rails answered that request with a redirect to
+	# the production site. Rails has no route beginning with "@", so the whole
+	# family is safe to send here and no future plugin needs a new line.
+	#
+	# The third entry is the whole of node_modules, not just its .vite cache.
+	# pnpm keeps the real files under /node_modules/.pnpm/<name>@<version>/, and
+	# @vite/client imports its own runtime from there by absolute path.
+	#
+	# The last entry is the hot-reload WebSocket, which vite.config.ts puts on a
+	# path of its own. The two values must stay equal. On "/" the handshake
+	# reached Rails instead and hot reloading failed while the page still
+	# loaded — a failure that only shows up in the browser console.
+	@vite_client {
+		path /@vite/client
+	}
+	@vite {
+		path /app/frontend/* /@* /node_modules/* /vite-hmr
+	}
+	# ONE file gets its caching turned off, and only this one.
+	#
+	# Vite builds the hot-reload client's ETag from the file's source, then adds
+	# a fresh connection token to the body afterwards. So the ETag is the same
+	# after a restart even though the body must change. The browser asks "still
+	# the same?", is told yes, and keeps a body holding last session's token.
+	# Hot reloading then fails to connect, while the page still loads — so
+	# nothing looks broken.
+	#
+	# THIS BLOCK MUST STAY NARROW. It first covered every path below, which is
+	# every source file of the app. That turned each page load into a full
+	# download of all of them: 83 requests and 18 MB, nothing reused, 8 seconds.
+	# Vite's own answer for every other file is "keep it, but ask me first",
+	# which costs one small question per file and no body at all.
+	reverse_proxy @vite_client vite:{$VITE_PORT:3036} {
+		header_down Cache-Control "no-store"
+		header_down -ETag
+	}
+	reverse_proxy @vite vite:{$VITE_PORT:3036}
+
+	# Everything else goes to Rails
+	reverse_proxy {$APP_UPSTREAM} {
+		header_up -Forwarded
+	}
+}

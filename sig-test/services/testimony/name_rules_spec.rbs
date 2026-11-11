@@ -1,0 +1,11 @@
+# Spec-only declarations for spec/services/testimony/name_rules_spec.rb.
+#
+# Steep does not resolve RSpec `let`, so the spec's own names are declared
+# here rather than suppressed.
+class Object
+  # A20-07: one attachment name per entry in
+  # Testimony::NameRules::PROCEDURAL_PATTERNS, read by the example that
+  # classifies them and by the guard that each pattern owns a name no sibling
+  # also decides.
+  def procedural_names: () -> Array[String]
+end

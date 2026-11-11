@@ -1,0 +1,9 @@
+# Spec-only declarations for spec/config/auxiliary_databases_spec.rb.
+#
+# Steep cannot see a `let` — it builds an anonymous class while the suite
+# runs, and nothing about that shape exists in the source a type checker
+# reads.
+class Object
+  # The parsed config/cache.yml, aliases already expanded.
+  def cache_config: () -> Hash[String, untyped]
+end

@@ -1,0 +1,65 @@
+# Phase 60 Plan 09 (SPEC R7) — Admin::CategoriesController.
+#
+# Controller action return types are `() -> untyped` per Sway convention
+# (iter-1 M10 explicit exception to [[feedback_rbs_avoid_untyped]]):
+# `render` / `redirect_to` return Rails-internal types whose shape varies
+# across versions; existing top-level Sway controller sigs all use the same
+# `untyped` return type for action methods. Steep treats the value as
+# "anything goes" at the call boundary — actions are the framework's interface.
+module Admin
+  class CategoriesController < ApplicationController
+    # The single source of truth for the deactivated-collision reactivate hint
+    # (60-UI-SPEC Copywriting Contract D-08 row).
+    DEACTIVATED_COLLISION_COPY: String
+
+    # GET /admin/categories — renders admin/Categories Inertia page with full
+    # category list + per-category bill counts.
+    def index: () -> untyped
+
+    # POST /admin/categories — adds a new category with name + derived slug.
+    # Returns 422 on blank/taken/deactivated-collision with mapped copy.
+    def create: () -> untyped
+
+    # PATCH /admin/categories/:id — rename (name only, slug frozen) or
+    # soft-deactivate/reactivate. Preserves bill_categories JOIN rows on deactivate.
+    def update: () -> untyped
+
+    # DELETE /admin/categories/:id — permanently delete a DEACTIVATED category
+    # Rejects an active category with a 422; cascades to
+    # bill_categories JOIN rows on success.
+    def destroy: () -> untyped
+
+    private
+
+    # R5-B-W-01: true when this PATCH flips active false→true (reactivation).
+    def reactivating?: (Category, ActionController::Parameters) -> bool
+
+    # R5-B-W-01: true when reactivating this category would push any bill it is
+    # assigned to over the ≤3-active per-bill cap.
+    def reactivation_would_exceed_cap?: (Category) -> bool
+
+    # C2-IN-05: the bill_id subquery relation for bills already holding
+    # Category::MAX_ACTIVE_PER_BILL active categories. Extracted from
+    # #reactivation_would_exceed_cap? so the raw Arel threshold is assertable.
+    def bills_at_active_cap: () -> BillCategory::ActiveRecord_Relation
+
+    # Builds the categories + bill_count props Hash for the index Inertia page.
+    def index_props: () -> Hash[Symbol, untyped]
+
+    # Returns the appropriate flash notice based on which field changed.
+    def notice_for: (Category) -> String
+
+    # Maps AR validation error details on :name to the exact 60-UI-SPEC
+    # Copywriting Contract strings — never raw e.message.
+    def name_error_copy: (Category) -> String
+
+    # Emits a dual-format (JSON 422 / Inertia-errors redirect) response for
+    # name validation failures.
+    def respond_with_name_error: (String) -> untyped
+
+    # Clears every categories_unmatched_at stamp after a taxonomy
+    # write. The stamp means "unmatchable against the taxonomy AS IT WAS", so
+    # adding/renaming/reactivating a category re-arms the backfill.
+    def rearm_unmatched_categorization!: () -> void
+  end
+end

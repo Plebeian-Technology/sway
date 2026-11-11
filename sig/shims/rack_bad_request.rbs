@@ -1,0 +1,10 @@
+# The collection carries rack 2.2, which predates Rack::BadRequest; rack 3.2.7
+# defines it as a bare marker module mixed into the exceptions it raises for an
+# unparsable request.
+# @lat: [[bad-request-responses#Rack's own bad-request family answers 400]]
+module Rack
+  module BadRequest : ::Exception
+    # A value typed as a module carries no Object methods.
+    def class: () -> Class
+  end
+end

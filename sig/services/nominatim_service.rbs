@@ -1,0 +1,39 @@
+class NominatimService
+  CACHE_EXPIRY: ActiveSupport::Duration
+  DEFAULT_LIMIT: Integer
+  MAX_LIMIT: Integer
+
+  @conn: Faraday::Connection
+
+  def self.search: (
+    query: String,
+    ?viewbox: String?,
+    ?bounded: (bool | String | Integer)?,
+    ?countrycodes: String?,
+    ?limit: (Integer | String)?
+  ) -> Array[Hash[String, untyped]]
+
+  def initialize: (?connection: Faraday::Connection?) -> void
+
+  def search: (
+    query: String,
+    ?viewbox: String?,
+    ?bounded: (bool | String | Integer)?,
+    ?countrycodes: String?,
+    ?limit: (Integer | String)?
+  ) -> Array[Hash[String, untyped]]
+
+  private
+
+  def build_params: (
+    query: String,
+    viewbox: String?,
+    bounded: (bool | String | Integer)?,
+    countrycodes: String?,
+    limit: Integer
+  ) -> Hash[Symbol, untyped]
+
+  def build_cache_key: (Hash[Symbol, untyped] params) -> String
+
+  def fetch_from_nominatim: (Hash[Symbol, untyped] params) -> Array[Hash[String, untyped]]
+end

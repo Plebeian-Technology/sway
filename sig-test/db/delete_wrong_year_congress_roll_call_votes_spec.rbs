@@ -1,0 +1,15 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class DeleteWrongYearCongressRollCallVotes < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+end
+
+# Steep does not resolve a `def` inside a describe block. The sweep-job spec's
+# similar builder is named roll_call_bill (declared in object_spec_methods.rbs)
+# because one Object declaration cannot hold two keyword signatures.
+class Object
+  def congress_bill: (external_id: String, vote_date: Time?, release_days_ago: Integer) -> Bill
+
+  # A legislator_vote row with its timestamps pinned to the given moments.
+  def row: (Bill bill, ?source: String, ?inferred: bool, ?created: Time?, ?updated: Time?) -> LegislatorVote
+end

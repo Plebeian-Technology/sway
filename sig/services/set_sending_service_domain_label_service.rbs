@@ -1,0 +1,22 @@
+# Phase 67 Plan 11 (D-12, D-13). Returns a Symbol outcome
+# (:invalid_label | :confirmed | :removed); see the class docstring in
+# app/ for what each means.
+class SetSendingServiceDomainLabelService
+  SETTABLE_LABELS: Array[String]
+
+  @domain: SendingServiceDomain
+
+  @actor: User
+
+  @label: String
+
+  def initialize: (domain: SendingServiceDomain, actor: User, label: untyped) -> void
+
+  def call: () -> Symbol
+
+  private
+
+  def confirm!: () -> Symbol
+
+  def remove!: () -> Symbol
+end

@@ -1,0 +1,3 @@
+module BillsControllerSpecHelpers
+  def self.seat_legislator: (District district, String first_name, String last_name, **untyped term_dates) -> Legislator
+end

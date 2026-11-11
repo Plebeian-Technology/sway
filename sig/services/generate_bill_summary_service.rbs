@@ -1,0 +1,101 @@
+# Business logic extracted from BillsController#generate_summary /
+# #regenerate_summary. Returns a Symbol outcome
+# (:invalid_summary_instructions | :unsupported_model | :unsupported_reasoning_effort | :no_pipeline_data | :already_in_progress | :enqueue_failed | :enqueued); the
+# controller maps it to the per-action redirect. RBS kept narrow per
+# feedback_update_rbs_with_code.md.
+#
+# B22-03: :enqueue_failed is the queue write failing after the row was armed.
+# The arm is undone before it is returned, so the row is not left `pending` with
+# no job coming and every control that could free it disabled.
+class GenerateBillSummaryService
+  @bill: Bill
+
+  @actor: User
+
+  @regenerate: bool
+
+  # B2-IN-04: coerced to nil in #initialize unless it really is a String —
+  # an unpermitted param arrives as an Array or ActionController::Parameters.
+  @supplemental_testimony: String?
+
+  # B2-WR-03: the explicit clear. Blankness is NOT an instruction.
+  @clear_supplemental_testimony: bool
+
+  # The operator's per-run model choice, or nil for the standing default.
+  # Stripped to nil in #initialize unless it really is a non-blank String.
+  @summarization_model: String?
+  @reasoning_effort: String?
+
+  @summary_instructions: String?
+  @invalid_summary_instructions: bool
+
+  MAX_SUMMARY_INSTRUCTIONS_LENGTH: Integer
+
+  def initialize: (
+    bill: Bill,
+    actor: User,
+    ?regenerate: bool,
+    # BillsController#supplemental_testimony_args runs params.permit first, so
+    # a nested Hash/Array param is already filtered to nil by the time it gets
+    # here. The is_a?(::String) guard in #initialize is defence in depth at a
+    # trust boundary, matching FetchHearingsService's own url_raw check.
+    ?supplemental_testimony: String?,
+    ?clear_supplemental_testimony: bool,
+    ?summarization_model: String?,
+    ?summary_instructions: untyped,
+    ?reasoning_effort: String?,
+  ) -> void
+
+  def call: () -> Symbol
+
+  RECLAIM_ABANDONED_AFTER: ActiveSupport::Duration
+
+  # What a row #release_unqueued_row! put back carries, so the Bill Creator does
+  # not fall back to the stale gate's sentence about a queue this job never
+  # reached. (BE25-01 sweep)
+  UNQUEUED_ERROR: String
+
+  private
+
+  # B22-03: puts the row back to `skipped` — terminal and re-armable — when the
+  # queue write fails after the arm has committed. Takes its own lock and
+  # re-checks `pending?`, so an inline perform_now that picked the row up in the
+  # meantime is not knocked back. Never raises: the operator is already getting
+  # a plain refusal.
+  #
+  # B23-04: restore_marker is the summary_run_id the arm cleared. Put back only
+  # when it was an operator paste and the row still carries no marker — clearing
+  # it is the supersede itself, so undoing the arm has to undo it too.
+  def release_unqueued_row!: (
+    BillLlmProvisioning provisioning,
+    StandardError error,
+    ?restore_marker: String?
+  ) -> void
+
+  # B4-WR-02: the edge out of `pending`/`generating` that is not owned by the
+  # process that died. Mutates the row (mark_failed! / mark_skipped!) when it
+  # has sat untouched past RECLAIM_ABANDONED_AFTER; no-op otherwise. Must be
+  # called inside the caller's with_lock.
+  def reclaim_abandoned_run!: (BillLlmProvisioning provisioning) -> void
+
+  # Announces that this arm is about to erase an operator-paste
+  # marker, i.e. that the requested generation will replace hand-written work.
+  # No-op on a row nobody pasted onto. Runs inside the caller's with_lock.
+  def log_operator_paste_superseded: (BillLlmProvisioning provisioning) -> void
+
+  # B4-WR-04: true when at least ONE of the job's two paid calls has its
+  # inputs — source text for the summary call, or testimony (stored OR the
+  # paste arriving on this request) for the REAS-01 positions call. Counting
+  # the incoming paste is what stops the guard from dropping it.
+  def runnable?: () -> bool
+
+  # B2-WR-03: {} to leave the column untouched, {supplemental_testimony: ...}
+  # to write or clear it.
+  #
+  # D-WR-01: the locked, reloaded row goes with the request — a paste that
+  # REPLACES stored testimony also retracts the drafts standing on it, and the
+  # returned hash then carries draft_org_positions as well.
+  def supplemental_testimony_attrs: (BillLlmProvisioning provisioning) -> Hash[Symbol, SupplementalTestimonyWrite::write_value]
+
+  def normalize_summary_instructions: (untyped value) -> String?
+end

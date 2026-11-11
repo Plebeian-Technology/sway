@@ -1,0 +1,38 @@
+# Audits departures from a roster that lists only people holding office right now.
+# Logs missing official departure date evidence without mutating term dates.
+class RetireDepartedLegislatorsService
+  UNREPLACED_DEPARTURE_FLOOR: Integer
+  UNREPLACED_DEPARTURE_SHARE: Float
+
+  def initialize: (
+    SwayLocale sway_locale,
+    Array[String] seen_identity_values,
+    ?unidentified_entries: Array[String?],
+    ?observed_on: Date
+  ) -> void
+
+  def call: () -> Array[Legislator]
+
+  private
+
+  attr_reader sway_locale: SwayLocale
+  attr_reader seen_identity_values: Set[String]
+  attr_reader unidentified_entries: Set[String]
+  attr_reader observed_on: Date
+
+  def departed: () -> Array[Legislator]
+
+  def accounted_for?: (Legislator legislator) -> bool
+
+  def every_entry_was_understood?: () -> bool
+
+  def arrivals: () -> Integer
+
+  def unreplaced_limit: () -> Integer
+
+  def departures_are_believable?: () -> bool
+
+  def refuse: (String event, **untyped metadata) -> void
+
+  def end_current_term!: (Legislator legislator) -> void
+end

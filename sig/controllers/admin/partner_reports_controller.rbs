@@ -1,0 +1,6 @@
+module Admin
+  class PartnerReportsController < ApplicationController
+    def index: () -> untyped
+    def show: () -> untyped
+  end
+end

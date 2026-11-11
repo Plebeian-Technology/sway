@@ -1,0 +1,185 @@
+# Schema specification version.
+schema_version: 1
+
+# Citation: Baltimore City Charter, Art. I, Sec. 1 (General Corporate Powers & Name)
+# Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/I/1
+city: baltimore
+region: maryland
+region_code: MD
+country: united_states
+name: baltimore-maryland-united_states
+
+legislative_sessions:
+    - name: "72nd City Council"
+      start_date: "2020-12-10"
+      end_date: "2024-12-05"
+      active: false
+      upstream_name: "72nd City Council"
+    - name: "73rd City Council"
+      start_date: "2024-12-05"
+      end_date: "2028-12-07"
+      active: true
+      upstream_name: "73rd City Council"
+
+# Citation: IANA Time Zone Database
+# Source: https://data.iana.org/time-zones/tz-link.html
+time_zone: America/New_York
+
+# Citation: Baltimore City Flag Ordinance (Baltimore City Code, General Provisions Art. 1, Sec. 14-1)
+# Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/code/1/14-1
+icon_url: public/images/flags/baltimore-maryland-united_states.svg
+
+# @lat: [[locale-extension#Nominatim geographic configuration]]
+# Citation: OpenStreetMap Relation 112108 (City of Baltimore Bounding Box) # lat:ignore
+# Source: https://www.openstreetmap.org/relation/112108 # lat:ignore
+nominatim_viewbox: "-76.7114,39.3720,-76.5297,39.1972"
+nominatim_bounded: true
+nominatim_country_codes: "us"
+
+# Citation: Baltimore City Hall (Official Municipal Headquarters)
+# Source: https://www.baltimorecity.gov/
+sample_address:
+    street: 100 N Holliday St
+    postal_code: "21202"
+    latitude: 39.29105
+    longitude: -76.61069
+
+source_rules:
+    # Citation: Baltimore City Council Legistar Feed Capabilities
+    # Source: https://baltimore.legistar.com/Legislation.aspx
+    publishes_legislator_votes: false
+
+    # Citation: Baltimore City Charter, Art. III, Sec. 1 (Legislative Department - City Council)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/1
+    chamber_label: City Council
+
+    # Citation: Baltimore City Charter, Art. III, Sec. 2 (Quadrennial Council Terms)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/2
+    session_numbering: term_years
+
+    # Citation: Baltimore City Charter, Art. III, Sec. 1 (Unicameral Legislative Body)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/1
+    default_bill_chamber: council
+    bill_chambers:
+        - council
+
+    # Citation: Baltimore City Charter, Art. III, Sec. 14 (Ordinances and Resolutions)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/14
+    accepted_matter_types:
+        - Ordinance
+
+    # Citation: Baltimore City Council Legistar Action Registry
+    # Source: https://baltimore.legistar.com/Legislation.aspx
+    final_passage_action_ids:
+        - 1
+        - 14
+        - 19
+        - 32
+        - 39
+        - 43
+        - 59
+        - 66
+        - 69
+
+    legislation_rules:
+        retrieval: legistar
+        parsing: legistar
+        jurisdiction: baltimore
+        base_url: "https://webapi.legistar.com/v1"
+        legacy_path_fallback: true
+        accepted_matter_types:
+            - Ordinance
+        generic_portal_urls:
+            - "https://baltimore.legistar.com"
+            - "https://baltimore.legistar.com/legislationsearch.aspx"
+        metadata_mapping:
+            external_id: "$.MatterFile"
+            matter_id: "$.MatterId"
+            title: "$.MatterTitle"
+            chamber: "$.MatterBodyName"
+            introduced_date: "$.MatterIntroDate"
+    hearings_rules:
+        retrieval: legistar
+        parsing: legistar
+        jurisdiction: baltimore
+        base_url: "https://webapi.legistar.com/v1"
+    vote_rules:
+        retrieval: legistar
+        parsing: legistar
+        base_url: "https://webapi.legistar.com/v1"
+        enable_historical_fallback: false
+        timezone: "America/New_York"
+    roster_rules:
+        retrieval: curated
+        parsing: curated
+        curated_readiness_check: true
+        evidence_publisher: "baltimorecity.gov"
+        evidence_jurisdiction: "baltimore_city"
+        evidence_source_url: "https://baltimorecity.gov"
+    law_rules:
+        retrieval: akoma_ntoso
+        parsing: akoma_ntoso
+        base_url: "https://codes.baltimorecity.gov"
+        repo: "baltimore-legref/law-xml"
+        branch: "main"
+    testimony_rules:
+        enable_classification: true
+
+term_rules:
+    # Citation: Baltimore City Charter, Art. III, Sec. 7 (Council Inaugural Meeting on Thursday after first Monday in December)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/7
+    convening:
+        kind: nth_weekday
+        month: 12
+        weekday: 1
+        ordinal: 1
+        offset_days: 3
+
+    # Citation: Baltimore City Charter, Art. III, Sec. 2 (4-Year Election Cycles Anchored in 2024, 2028)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/2
+    cycle_anchor_year: 2024
+    cycle_years: 4
+
+    # Citation: Baltimore City Council Legistar Feed (lists currently seated members only)
+    # Source: https://baltimore.legistar.com/Legislation.aspx
+    roster_lists_only_current_legislators: true
+    publishes_term_history: false
+    publishes_exact_term_dates: false
+
+    # Citation: Baltimore City Charter, Art. III, Sec. 2 (14 single-member council districts and 1 Council President)
+    # Source: https://codes.baltimorecity.gov/us/md/cities/baltimore/charter/III/2
+    identified_by: seat
+
+    # @lat: [[current-legislator-term#Which term a legislator is serving now#Roster identity during seeding#Configured office metadata for current seat-keyed rosters]]
+    seat_chambers:
+        Mayor: Executive
+        Council President: City Council
+        Council Member: City Council
+
+# @lat: [[news-source-configuration#News source configuration contract]]
+representative_resolution:
+    locale_wide_district_name: "MD0"
+
+news_sources:
+    - url: "https://www.thebanner.com/baltimore/"
+      path_policy: search_hint
+    - url: "https://www.wypr.org/"
+      path_policy: search_hint
+    - url: "https://www.baltimoresun.com/location/maryland/baltimore/"
+      path_policy: search_hint
+    - url: "https://www.thebanner.com/topic/politics-power/"
+      path_policy: search_hint
+    - url: "https://baltimorebrew.com/"
+      path_policy: search_hint
+    - url: "https://www.cbsnews.com/baltimore/"
+      path_policy: search_hint
+    - url: "https://www.wmar2news.com/"
+      path_policy: search_hint
+    - url: "https://foxbaltimore.com/"
+      path_policy: search_hint
+    - url: "https://www.southbmore.com/"
+      path_policy: search_hint
+    - url: "https://baltimorebeat.com/"
+      path_policy: search_hint
+    - url: "https://baltimorefishbowl.com/"
+      path_policy: search_hint

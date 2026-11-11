@@ -1,0 +1,224 @@
+# Whitelist resources — attribute lists live in the .rb class
+# bodies (alba DSL); the classes carry no additional Ruby surface to type.
+class DistrictResource < ApplicationResource
+end
+
+class LegislativeSessionResource < ApplicationResource
+end
+
+class EmbedBillResource < ApplicationResource
+end
+
+class UserVoteResource < ApplicationResource
+end
+
+class UserBillShareResource < ApplicationResource
+end
+
+class UserLegislatorResource < ApplicationResource
+end
+
+class OrganizationBillPositionResource < ApplicationResource
+end
+
+class UserLegislatorEmailResource < ApplicationResource
+end
+
+# Phase 65 (D-28/D-26): #display_term is a private helper called from
+# attribute blocks (title/district) — declared so steep resolves the
+# receiverless call within the class body.
+class LegislatorResource < ApplicationResource
+  @display_term_by_id: Hash[Integer, LegislatorTerm?]?
+
+  def display_term: (Legislator legislator) -> LegislatorTerm?
+
+  # Class-level helper delegated to by #display_term.
+  def self.display_term: (untyped legislator) -> LegislatorTerm?
+  def self.terms_for: (Legislator legislator, ?untyped params) -> Array[Hash[Symbol, untyped]]
+  def self.session_label: (LegislatorTerm term) -> String
+  def self.congress_number: (Integer term_start_year) -> Integer
+end
+
+class LegislatorTermResource < ApplicationResource
+end
+
+class LegislatorBillOfTheMonthVoteResource < ApplicationResource
+  private
+
+  def legislator_vote_for: (Bill bill) -> String?
+  def user_vote_for: (Bill bill) -> String?
+  def alignment_for: (Bill bill) -> ("agreed" | "disagreed")?
+end
+
+# Phase 67 Plan 06 (D-14/D-16). No Ruby beyond the alba DSL — every
+# attribute block reads Testimony::CoverageReport::Result's own accessors.
+class TestimonyCoverageResource < ApplicationResource
+end
+
+# Wraps SummarySourcesReport::Result; every attribute block reads an accessor.
+class SummarySourcesResource < ApplicationResource
+end
+
+# Wraps SummarySourcesReport::Record — the one shape both the recorded run and
+# the live reading are serialized through.
+class SummarySourcesRecordResource < ApplicationResource
+end
+
+# Wraps SummarySourceDocuments::Result — the four prompt sections a modal shows.
+class SummarySourceDocumentsResource < ApplicationResource
+end
+
+# Phase 67 Plan 06. Wraps one Hash entry from the cleaned artifact's
+# "campaign_drafts" array.
+class TestimonyCampaignDraftResource < ApplicationResource
+end
+
+# Wraps one campaign_drafts entry as that draft's letters
+# alone, so the text can be fetched separately from the draft summary.
+class TestimonyCampaignLettersResource < ApplicationResource
+end
+
+# Phase 67 Plan 06 (D-07). Wraps one Hash letter entry from the cleaned
+# artifact, filtered to source_kind == "person_speaking_for_org" before it
+# ever reaches this resource.
+class TestimonyClaimedAffiliationResource < ApplicationResource
+end
+
+# Wraps a Campaign row already approved on the bill being
+# viewed, so a draft card can read its own decision back.
+class CampaignResource < ApplicationResource
+end
+
+# Wraps a Campaigns::OrganizationCandidatesService::Candidate —
+# one organization that might be behind a campaign, with its evidence.
+class CampaignOrganizationCandidateResource < ApplicationResource
+end
+
+# Phase 67 Plan 06 (D-11/D-12). Wraps a SendingServiceDomain row.
+class SendingServiceDomainResource < ApplicationResource
+end
+
+# Phase 65 (D-02/D-26): carries custom class methods (lifetime_hash_for,
+# counters, aggregate) beyond the alba DSL — declared explicitly since
+# they're called from LegislatorsController and LegislatorHistoryResource
+# (counters), and from within this class's own attribute blocks.
+class UserLegislatorTermScoreResource < ApplicationResource
+  def self.lifetime_hash_for: (UserLegislator user_legislator) -> Hash[Symbol, untyped]
+
+  def self.counters: (Array[untyped] rows) -> Hash[Symbol, Integer]
+
+  def self.aggregate: (Array[untyped] rows, Integer legislator_id) -> Hash[Symbol, untyped]?
+end
+
+# Phase 65 (D-27/D-26): the grouping implementation — every method here is a
+# private class method (class << self); each is declared since steep resolves
+# receiverless singleton-method calls against the RBS interface, not Ruby
+# source inference alone.
+class LegislatorHistoryResource < ApplicationResource
+  @history_sessions_by_user: Hash[User, Array[Hash[Symbol, untyped]]]?
+
+  def history_sessions: (User user) -> Array[Hash[Symbol, untyped]]
+
+  def self.sessions_for: (User user, SwayLocale sway_locale) -> Array[Hash[Symbol, untyped]]
+
+  # WR-02 (65-REVIEW): active_district_ids is hoisted ONCE in sessions_for
+  # and threaded through entry_for/ended_reason instead of each re-querying
+  # user.user_districts.active.pluck(:district_id) per history entry.
+  def self.entry_for: (UserLegislator user_legislator, Array[Integer] active_district_ids) -> Hash[Symbol, untyped]?
+
+  def self.term_for: (UserLegislator user_legislator) -> LegislatorTerm?
+
+  def self.ended_reason: (Array[Integer] active_district_ids, LegislatorTerm term) -> ("term_ended" | "district_changed" | "link_inactive")
+
+  def self.session_label: (LegislatorTerm term) -> String
+
+  def self.congress_number: (Integer term_start_year) -> Integer
+end
+
+class BillSummaryReportResource < ApplicationResource
+end
+
+class RegistrationFunnelResource < ApplicationResource
+end
+
+class RegistrationOutcomeResource < ApplicationResource
+end
+
+class RegistrationErrorResource < ApplicationResource
+end
+
+class RepresentativeReassignmentResource < ApplicationResource
+  def serializable_hash: () -> Hash[Symbol, untyped]
+end
+
+class BillSummaryRevisionResource < ApplicationResource
+end
+
+class PartnerEngagementReportResource < ApplicationResource
+end
+
+class SwayLocaleResource < ApplicationResource
+end
+
+class NewsArticleResource < ApplicationResource
+end
+
+class NewsArticleTestimonyResource < ApplicationResource
+end
+
+class BillPageOrganizationBillPositionResource < ApplicationResource
+end
+
+class BillPageOrganizationResource < ApplicationResource
+end
+
+class BillPageLegislatorResource < ApplicationResource
+end
+
+class BillPageDistrictResource < ApplicationResource
+end
+
+class LegislatorVoteResource < ApplicationResource
+end
+
+class RollCallResource < ApplicationResource
+end
+
+class BillScoreResource < ApplicationResource
+  private
+
+  def legislator_names_by_district_id: (BillScoreDistrict::ActiveRecord_Associations_CollectionProxy district_scores) -> Hash[Integer, Array[String]]
+end
+
+class BillScoreDistrictResource < ApplicationResource
+end
+
+class BillScoreDistrictWithLegislatorNamesResource < BillScoreDistrictResource
+end
+
+class BillPageResource < ApplicationResource
+  @organization_positions_cache: Hash[Integer, Array[Alba::serialized]]?
+  @browsable_letters_cache: Hash[Integer, Array[Testimony::BrowsableLetters::Entry]]?
+
+  def self.fetch_organization_positions: (Bill bill, Hash[Integer, Array[Alba::serialized]] cache) -> Array[Alba::serialized]
+
+  def serializable_hash: () -> Hash[String, untyped]
+
+  private
+
+  def organization_positions_cache: () -> Hash[Integer, Array[Alba::serialized]]
+  def browsable_letters_cache: () -> Hash[Integer, Array[Testimony::BrowsableLetters::Entry]]
+end
+
+class PublicTestimonyLetterResource < ApplicationResource
+end
+
+class BillResource < ApplicationResource
+  def self.page_props: (Bill bill, current_user: User?, current_sway_locale: SwayLocale, ?district_legislator_names: bool) -> Hash[Symbol, untyped]
+end
+
+class UserAddressChangeResource < ApplicationResource
+  private
+
+  def locale_names_for: (Array[Integer] locale_ids) -> Array[String]
+end

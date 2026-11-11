@@ -1,0 +1,19 @@
+class RetryFailedAttachmentsJob < ApplicationJob
+  LOOKBACK_WINDOW: ActiveSupport::Duration
+  MAX_LOOKBACK: ActiveSupport::Duration
+  WAIT_WINDOW: ActiveSupport::Duration
+  MAX_ATTEMPTS: Integer
+  PERMANENT_ERROR_PATTERNS: Array[Regexp]
+
+  def perform: () -> Hash[Symbol, Integer]
+
+  def self.permanent_rejection?: (String? error) -> bool
+
+  def self.retryable_outcome?: (outcome: String?, error: String?) -> bool
+
+  private
+
+  def select_retry_candidates: () -> Array[Hash[Symbol, untyped]]
+
+  def retry_attachment: (Hash[Symbol, untyped] candidate) -> bool
+end

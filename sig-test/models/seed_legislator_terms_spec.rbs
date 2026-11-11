@@ -1,0 +1,53 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # One roster entry shaped the way LegislatorsCache::CongressRefresh writes it.
+  def roster_entry: (
+    terms: Array[Hash[String, untyped]],
+    ?current_member: bool,
+    ?from_history: bool
+  ) -> Hash[String, untyped]
+
+  def house_term: (Integer start_year, Integer end_year) -> Hash[String, untyped]
+
+  # Seeds one entry and hands back the person row it wrote.
+  def seed_entry!: (Hash[String, untyped] entry, ?locale_had_legislators: bool) -> Legislator
+
+  def official_service_result: (records: Array[Hash[Symbol, String]], sway_locale: SwayLocale) -> OfficialEvidence::Result
+  def supported_service_prepared: (records: Array[Hash[Symbol, String]], district: District, sway_locale: SwayLocale) -> OfficialEvidence::PreparedServiceEntry
+  def service_record: (
+    ?identity_value: String,
+    ?office_identity: String,
+    ?district: String,
+    ?title: String,
+    ?start_date: String,
+    ?end_date: String,
+    ?chamber: String,
+    ?presence: String
+  ) -> Hash[Symbol, String]
+  def blank_term: (
+    legislator: Legislator,
+    district: District,
+    ?start_date: Date,
+    ?end_date: Date,
+    ?title: String?
+  ) -> LegislatorTerm
+
+  def configure_seat_chambers!: (SwayLocale locale, Hash[String, String] mapping) -> void
+  def seat_chambers: () -> Hash[String, String]
+  def curated_seat_entry: (
+    title: String,
+    office_key: String,
+    district: String,
+    ?first_name: String,
+    ?last_name: String
+  ) -> Hash[String, untyped]
+  def curated_legislator_and_prepared: (
+    SwayLocale locale,
+    Hash[String, untyped] entry,
+    ?identity: LegislatorIdentity?
+  ) -> [Legislator, SeedPreparers::Legislators::Sway, District]
+  def record_prepared_identity!: (
+    Legislator legislator,
+    SeedPreparers::Legislators::Base prepared
+  ) -> LegislatorIdentifier
+end

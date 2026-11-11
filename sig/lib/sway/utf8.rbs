@@ -1,0 +1,11 @@
+# RBS sig for Sway::Utf8 (B-CR-02).
+#
+# Mirrors lib/sway/utf8.rb. Single module function: bytes from a subprocess,
+# a file, or a legacy column in, guaranteed-valid UTF-8 out.
+module Sway
+  module Utf8
+    REPLACEMENT: String
+
+    def self.scrub: (String? text) -> String
+  end
+end

@@ -1,0 +1,16 @@
+# The run's terminal-state resolution, extracted from
+# RunLegislationPipelineJob so the batch ingest — which finishes a run hours
+# after that job returned — reaches the same :partial / :succeeded decision.
+# `origin` is carried only into the bills_not_run log line; nil is what the
+# ingest passes, which has no operator origin to name.
+class PipelineRunFinalizer
+  def self.call: (run: LegislationPipelineRun, ?origin: String?) -> void
+
+  # Reads failure from stage_results JSON, not the coarse status column: a bill
+  # can fail a later stage after succeeding an earlier one.
+  def self.count_failed_bills: (LegislationPipelineRun run) -> Integer
+
+  private def self.report_bills_nothing_ran_for: (LegislationPipelineRun run, String? origin) -> void
+
+  def self.count_not_run_bills: (LegislationPipelineRun run) -> Integer
+end

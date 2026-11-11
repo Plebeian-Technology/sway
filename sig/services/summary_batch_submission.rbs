@@ -1,0 +1,95 @@
+# @lat: [[llm-summaries#Batch summarisation#Submitting a run's summarisation as chunked batches]]
+class SummaryBatchSubmission
+  # The one provider whose API has batches. A run configured for llama.cpp
+  # keeps walking bills through GenerateBillSummaryJob.
+  CLAUDE_PROVIDER: String
+
+  # The three verdicts a bill can earn here, all recorded by the caller onto
+  # pipeline_run_bills.stage_results.
+  AWAITING_BATCH: Symbol
+  NOT_CLAIMED: Symbol
+  SKIPPED: Symbol
+
+  # One bill's contribution. `items` is empty for a bill that earned nothing —
+  # an operator's paste owns it, or it has neither source text nor testimony.
+  class Candidate
+    attr_reader bill_run: PipelineRunBill
+    attr_reader bill: Bill
+    attr_reader provisioning: BillLlmProvisioning
+    attr_reader items: Array[Llm::ClaudeBatchService::Item]
+
+    def initialize: (
+      bill_run: PipelineRunBill,
+      bill: Bill,
+      provisioning: BillLlmProvisioning,
+      items: Array[Llm::ClaudeBatchService::Item],
+    ) -> void
+    def self.new: (
+      bill_run: PipelineRunBill,
+      bill: Bill,
+      provisioning: BillLlmProvisioning,
+      items: Array[Llm::ClaudeBatchService::Item],
+    ) -> SummaryBatchSubmission::Candidate
+  end
+
+  class Verdict
+    attr_reader bill_run: PipelineRunBill
+    attr_reader outcome: Symbol
+
+    def initialize: (bill_run: PipelineRunBill, outcome: Symbol) -> void
+    def self.new: (bill_run: PipelineRunBill, outcome: Symbol) -> SummaryBatchSubmission::Verdict
+  end
+
+  # @lat: [[llm-summaries#Batch summarisation#Which runs submit a batch at all]]
+  def self.for: (run: LegislationPipelineRun) -> SummaryBatchSubmission?
+
+  def initialize: (run: LegislationPipelineRun, ?route: Llm::RouteResolver::Route?) -> void
+
+  attr_reader batches: Array[PipelineRunSummaryBatch]
+
+  # Returns how many items this bill earned: 0, 1 or 2.
+  def accumulate: (PipelineRunBill bill_run, Bill bill) -> Integer
+
+  def submit!: () -> Array[PipelineRunSummaryBatch]
+
+  def verdicts: () -> Array[SummaryBatchSubmission::Verdict]
+
+  def item_count: () -> Integer
+
+  private
+
+  attr_reader run: LegislationPipelineRun
+
+  @candidates: Array[SummaryBatchSubmission::Candidate]
+
+  @claimed_provisioning_ids: Set[Integer]
+  @route: Llm::RouteResolver::Route
+  @model: String
+
+  def submittable: () -> Array[SummaryBatchSubmission::Candidate]
+
+  # The candidates whose rows this submission actually holds, which is what
+  # item_count reports: items accumulated but never claimed were never bought.
+  def claimed_candidates: () -> Array[SummaryBatchSubmission::Candidate]
+
+  def claimed?: (SummaryBatchSubmission::Candidate candidate) -> bool
+
+  def outcome_for: (SummaryBatchSubmission::Candidate candidate) -> Symbol
+
+  # Claims every row in the chunk BEFORE spending, submits only what it claimed,
+  # then stamps the batch identity onto those rows.
+  def submit_chunk: (Array[SummaryBatchSubmission::Candidate] group) -> void
+
+  def claim_row!: (SummaryBatchSubmission::Candidate candidate) -> bool
+
+  def stamp_batch!: (SummaryBatchSubmission::Candidate candidate, PipelineRunSummaryBatch record) -> void
+
+  def build_items: (Bill bill, SummaryItemEligibility eligibility) -> Array[Llm::ClaudeBatchService::Item]
+
+  # Bills per batch, from the AdminSetting singleton.
+  def chunk_size: () -> Integer
+
+  def model: () -> String
+
+  def active_categories: () -> Array[Category]
+end

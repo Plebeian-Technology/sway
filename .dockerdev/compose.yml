@@ -1,0 +1,356 @@
+x-app: &app
+    build:
+        context: .
+        args:
+            RUBY_VERSION: "4.0.9"
+            NODE_MAJOR: "24"
+    image: sway-dev:1.0.0
+    environment: &env
+        NODE_ENV: ${NODE_ENV:-development}
+        RAILS_ENV: ${RAILS_ENV:-development}
+    tmpfs:
+        - /tmp
+        - /app/tmp/pids
+
+x-backend: &backend
+    <<: *app
+    stdin_open: true
+    tty: true
+    volumes:
+        - ..:/app:cached
+        # mkcert's CA directory; the default is macOS's. Elsewhere export
+        # MKCERT_CAROOT="$(mkcert -CAROOT)" in the shell that runs dip.
+        - ${MKCERT_CAROOT:-${HOME}/Library/Application Support/mkcert}:/app/tmp/cache/mkcert:ro
+        - bundle:/usr/local/bundle
+        - rails_cache:/app/tmp/cache
+        - assets:/app/public/assets
+        - node_modules:/app/node_modules
+        - history:/usr/local/hist
+        - vite_build:/app/public/vite
+        - vite_test:/app/public/vite-test
+        # Named volume for SQLite databases. Keeps storage/ off the macOS
+        # bind mount, where VirtioFS fcntl locking is unreliable and causes
+        # SQLITE_CORRUPT under concurrent writers (see SWAY backups phase).
+        - storage:/app/storage
+        # @lat: [[development-container-settings#Why the geojson directory is mounted through the storage volume]]
+        - ../storage/geojson:/app/storage/geojson:cached
+        # @lat: [[run-the-stack#Working in a phase worktree]]
+        - ${SWAY_DEPLOY_CONFIG_SRC:-../deploy/config/sway.env}:/app/deploy/config/sway.env:ro
+        # @lat: [[run-the-stack#Git inside a worktree's container]]
+        - ${SWAY_GIT_COMMON_SRC:-../.git}:${SWAY_GIT_COMMON_AT:-/sway-git-common}:ro
+    environment: &backend_environment
+        <<: *env
+        # The address the BROWSER is on. rails_vite writes it into every script
+        # tag, so a wrong value sends the page somewhere that serves nothing.
+        #
+        # The default is where Caddy answers on this machine, and nothing sets
+        # these — not dev.sh, not dip.yml. Set them by hand, both together, only
+        # to open the dev app from somewhere else:
+        #
+        #   SWAY_DEV_BROWSER_HOST=<your tunnel host> SWAY_DEV_BROWSER_PORT=443 dip dev
+        #
+        # Then browse that host and no other. One address cannot serve two.
+        SWAY_DEV_BROWSER_HOST: ${SWAY_DEV_BROWSER_HOST:-localhost}
+        SWAY_DEV_BROWSER_PORT: ${SWAY_DEV_BROWSER_PORT:-3333}
+        # Set when running your own Cloudflare tunnel (scripts/dip/dev.sh).
+        # development.rb appends it to config.hosts; empty means "no extra host",
+        # which is the previous behavior.
+        DEV_TUNNEL_HOST: ${DEV_TUNNEL_HOST:-}
+        # @lat: [[deploy-values-boot-check#Keeping one installation's values out of the tracked repository]]
+        VITE_SWAY_ASSETS_BUCKET: ${VITE_SWAY_ASSETS_BUCKET:-}
+        # @lat: [[error-reporting-in-tests#Where a browser's error reports go during a spec run]]
+        RUSTRAK_DSN: ${RUSTRAK_DSN:-}
+        VITE_RUSTRAK_DSN: ${VITE_RUSTRAK_DSN:-}
+        SWAY_DATABASE_NAME: ${SWAY_DATABASE_NAME:-storage/development.sqlite3}
+        SWAY_QUEUE_DATABASE_NAME: ${SWAY_QUEUE_DATABASE_NAME:-storage/development_queue.sqlite3}
+        SWAY_CABLE_DATABASE_NAME: ${SWAY_CABLE_DATABASE_NAME:-storage/development_cable.sqlite3}
+        SWAY_CACHE_DATABASE_NAME: ${SWAY_CACHE_DATABASE_NAME:-storage/development_cache.sqlite3}
+        MALLOC_ARENA_MAX: 2
+        WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
+        BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
+        XDG_DATA_HOME: /app/tmp/cache
+        PNPM_CACHE_FOLDER: /app/node_modules/.pnpm-cache
+        HISTFILE: /usr/local/hist/.bash_history
+        IRB_HISTFILE: /usr/local/hist/.irb_history
+        PORT: "3000"
+        EDITOR: vi
+        IS_DOCKER: 1
+        # @lat: [[development-container-settings#What the container declares about the pipeline's tools]]
+        TESSDATA_PREFIX: /usr/share/tesseract-ocr/5/tessdata
+        # @lat: [[run-the-stack#Git inside a worktree's container]]
+        GIT_CONFIG_COUNT: "1"
+        GIT_CONFIG_KEY_0: safe.directory
+        GIT_CONFIG_VALUE_0: "*"
+
+services:
+    rails:
+        <<: *backend
+        # @lat: [[verification-gates#The frontend test bundle a spec run reads]]
+        entrypoint: /app/.dockerdev/entrypoint.sh
+        command: bundle exec rails
+        # @lat: [[legislation-pipeline#Why it runs inside Rails]]
+        environment:
+            <<: *backend_environment
+            # @lat: [[development-container-settings#Why an opt-in flag has to be declared to reach the container]]
+            RUN_PROD_DB_TESTS: ${RUN_PROD_DB_TESTS:-}
+            RUN_LIVE_LLM_TESTS: ${RUN_LIVE_LLM_TESTS:-}
+        # @lat: [[run-the-stack#Working in a phase worktree]]
+        env_file:
+            - ${SWAY_SECRETS_ROOT:-..}/.env.development
+
+    rspec:
+        <<: *backend
+        # @lat: [[verification-gates#The frontend test bundle a spec run reads]]
+        entrypoint: /app/.dockerdev/entrypoint.sh
+        command: bundle exec rspec --format documentation
+        environment:
+            <<: *backend_environment
+            NODE_ENV: test
+            RAILS_ENV: test
+            SCREENSHOT_DIR: /app/spec/screenshots
+        env_file:
+            - ${SWAY_SECRETS_ROOT:-..}/.env.test
+        # Re-lists the two entries the x-app anchor already gives every backend
+        # service — a YAML merge key replaces the inherited list rather than
+        # merging it (same hazard as the volumes: copy-paste below). /testdb is
+        # new: `docker compose run` has no --tmpfs flag, so a per-run database
+        # mount can only be declared here. SWAY_TEST_DATABASE_DIR opts a run
+        # into it; unset, config/database.yml still writes to storage/.
+        tmpfs:
+            - /tmp
+            - /app/tmp/pids
+            # Bounded on purpose. Unbounded it takes the kernel default, half
+            # the VM's RAM — measured 7.9 GiB of 15.7 — and everything written
+            # there is RAM: six worker databases with their WAL files, plus
+            # every legislation fixture and pipeline artifact, which used to
+            # land on disk. A full run already peaks 10.3 GiB.
+            - /testdb:size=1g
+        volumes:
+            # We need to copy + paste duplicate volumes here because YAML doesn't *really* support merging lists - https://github.com/yaml/yaml/issues/35
+            # and if we want the capybara log volume then we need all the other volumes as well.
+            # Tried solutions from - https://stackoverflow.com/questions/61178058/docker-compose-merge-arrays-for-yaml-aliases-and-anchors
+            # And from - https://stackoverflow.com/questions/24090177/how-to-merge-yaml-arrays
+            - ${PWD}/spec/screenshots/:/app/spec/screenshots:rw
+            - ${PWD}/spec/puffing_billy_request_cache/:/app/spec/puffing_billy_request_cache:rw
+            - ..:/app:cached
+            - bundle:/usr/local/bundle
+            - rails_cache:/app/tmp/cache
+            - assets:/app/public/assets
+            - node_modules:/app/node_modules
+            - history:/usr/local/hist
+            - vite_build:/app/public/vite
+            - vite_test:/app/public/vite-test
+            - storage:/app/storage
+            # Bind override for static reference data — see x-backend anchor.
+            - ../storage/geojson:/app/storage/geojson:cached
+            # @lat: [[run-the-stack#Working in a phase worktree]]
+            - ${SWAY_DEPLOY_CONFIG_SRC:-../deploy/config/sway.env}:/app/deploy/config/sway.env:ro
+            # @lat: [[run-the-stack#Git inside a worktree's container]]
+            - ${SWAY_GIT_COMMON_SRC:-../.git}:${SWAY_GIT_COMMON_AT:-/sway-git-common}:ro
+
+    web:
+        <<: *backend
+        command: bundle exec rails server -b 0.0.0.0 -p ${PORT:-3000}
+        ports:
+            - "${PORT:-3000}:${PORT:-3000}"
+        depends_on:
+            - vite
+        environment:
+            <<: *backend_environment
+            RAILS_LOG_LEVEL: debug
+            PORT: ${PORT:-3000}
+            RAILS_ENV: ${RAILS_ENV:-development}
+            NODE_ENV: ${NODE_ENV:-development}
+            VITE_PORT: ${VITE_PORT:-3036}
+            # scripts/dip/dev.sh derives both from DEV_TUNNEL_HOST and exports
+            # them; the defaults below are the values it produces with no tunnel.
+            WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
+            WEBAUTHN_ALLOWED_ORIGINS: ${WEBAUTHN_ALLOWED_ORIGINS:-https://localhost:3333,http://localhost:3333,https://localhost}
+
+    # Dev tunnel — exposes the dev stack (caddy → web Rails) at https://$DEV_TUNNEL_HOST
+    # so iOS Simulator / native passkey UAT works against a real TLS hostname that
+    # matches the mobile app's associated domain. Token-based; ingress configured in
+    # the Cloudflare dashboard (your tunnel → caddy:3333, No TLS Verify ON).
+    # Started by scripts/dip/dev.sh alongside web/caddy/vite/jobs.
+    dev_cloudflared:
+        image: "cloudflare/cloudflared:latest"
+        depends_on:
+            - caddy
+            - web
+        command:
+            tunnel --no-autoupdate run --token ${CLOUDFLARED_DEV_TOKEN} --protocol
+            http2
+        environment:
+            CLOUDFLARED_DEV_TOKEN: ${CLOUDFLARED_DEV_TOKEN}
+        restart: unless-stopped
+
+    jobs:
+        <<: *backend
+        command: bin/jobs
+        restart: on-failure
+        env_file:
+            - ${SWAY_SECRETS_ROOT:-..}/.env.development
+        environment:
+            <<: *backend_environment
+            RAILS_ENV: ${RAILS_ENV:-development}
+
+    # @lat: [[error-reporting-in-tests#Why the collector's own database is a named volume]]
+    rustrak:
+        image: rustrak/rustrak-server@sha256:cf7238d312e007ec1bac0a07c078216c191c6fcb846d0fbe67a2379110200091
+        ports:
+            # Loopback only. Rustrak's own HOST default is 0.0.0.0.
+            - "127.0.0.1:${RUSTRAK_PORT:-8482}:8080"
+        environment:
+            PORT: "8080"
+            RUST_LOG: ${RUSTRAK_LOG_LEVEL:-warn}
+            DATABASE_URL: sqlite:///data/rustrak.db
+            # Refuses to start without this: an empty value panics on the cookie
+            # key, it does not fall back to random. dev.sh makes one. 2026-08-10.
+            SESSION_SECRET_KEY: ${RUSTRAK_SESSION_SECRET_KEY:-}
+            # Absent means no admin user, so no dashboard login.
+            CREATE_SUPERUSER: ${RUSTRAK_SUPERUSER:-}
+            # Builds the DSN shown in the dashboard, so it must be the address a
+            # browser on this machine can reach.
+            PUBLIC_URL: http://localhost:${RUSTRAK_PORT:-8482}
+            RUSTRAK_VERSION_CHECK_ENABLED: "false"
+        volumes:
+            # Named, never a bind mount: it holds copies of whatever an error
+            # carried, so it must not be committable.
+            - rustrak_data:/data
+        # Bounded, so a missing session key stops rather than loops forever.
+        restart: on-failure:3
+
+    # Dashboard. Separate image; without it the collector is write-only.
+    rustrak_ui:
+        image: rustrak/rustrak-ui@sha256:409c1a5db79f8e9682626b8dc3bec18be3b259fcaf61e574dd157fedcc61e501
+        ports:
+            - "127.0.0.1:${RUSTRAK_UI_PORT:-8483}:3000"
+        environment:
+            RUSTRAK_API_URL: http://rustrak:8080
+            RUSTRAK_VERSION_CHECK_ENABLED: "false"
+        depends_on:
+            - rustrak
+        restart: unless-stopped
+
+    preview:
+        image: ${PREVIEW_IMAGE:-sway-preview:latest}
+        entrypoint: /bin/bash
+        command: -lc "exec ./bin/rails server -b 0.0.0.0 -p ${PORT:-3333} -e production"
+        # Use the same named volume as the backend services so preview, dev,
+        # rspec, jobs all share one source-of-truth on-disk SQLite. Avoids
+        # the macOS bind-mount (VirtioFS fcntl → SQLITE_CORRUPT) AND prevents
+        # silently diverging databases between dip and host workflows.
+        volumes:
+            - storage:/rails/storage
+        env_file:
+            - ${SWAY_SECRETS_ROOT:-..}/.env.preview
+        environment:
+            <<: *backend_environment
+            TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-"xxx"}
+            TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-"xxx"}
+            TWILIO_VERIFY_SERVICE_SID: ${TWILIO_VERIFY_SERVICE_SID:-"xxx"}
+            RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
+            RAILS_ENV: production
+            PORT: "3333"
+            SECRET_KEY_BASE: ${SECRET_KEY_BASE:-}
+            RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
+            APP_HOST: ${APP_HOST:-localhost}
+            APP_PORT: ${APP_PORT:-3334}
+            APP_PROTOCOL: ${APP_PROTOCOL:-https}
+            APP_BASE_URL: ${APP_BASE_URL:-https://localhost:3334}
+            RAILS_ALLOWED_HOSTS: ${RAILS_ALLOWED_HOSTS:-localhost,127.0.0.1}
+            SWAY_DATABASE_NAME: ${SWAY_DATABASE_NAME:-storage/preview.sqlite3}
+            SWAY_QUEUE_DATABASE_NAME: ${SWAY_QUEUE_DATABASE_NAME:-storage/preview_queue.sqlite3}
+            SWAY_CABLE_DATABASE_NAME: ${SWAY_CABLE_DATABASE_NAME:-storage/preview_cable.sqlite3}
+            SWAY_CACHE_DATABASE_NAME: ${SWAY_CACHE_DATABASE_NAME:-storage/preview_cache.sqlite3}
+            # @lat: [[legislation-pipeline#Artifacts are files, not rows]]
+            LEGISLATION_ROOT: /rails/storage/legislation
+            WEBAUTHN_RP_ID: localhost
+            WEBAUTHN_ALLOWED_ORIGINS: https://localhost:3334,http://localhost:3334
+            # WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-$PREVIEW_HOST}
+            # WEBAUTHN_ALLOWED_ORIGINS: ${WEBAUTHN_ALLOWED_ORIGINS:-https://localhost:3334,http://localhost:3334,https://$PREVIEW_HOST}
+            DISABLE_DATABASE_ENVIRONMENT_CHECK: 1
+            IS_PREVIEW: "1"
+            CLOUDFLARED_DEV_TOKEN: ${CLOUDFLARED_DEV_TOKEN:-"cannot-be-blank"}
+            CLOUDFLARED_PREVIEW_TOKEN: ${CLOUDFLARED_PREVIEW_TOKEN:-"cannot-be-blank"}
+
+    vite:
+        <<: *backend
+        command: pnpm vite
+        env_file:
+            - ${SWAY_SECRETS_ROOT:-..}/.env.development
+        ports:
+            - "3036:3036"
+        # @lat: [[run-the-stack#If edits stop reaching the browser]]
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "curl",
+                    "-fsS",
+                    "-o",
+                    "/dev/null",
+                    "http://localhost:${VITE_PORT:-3036}/@vite/client",
+                ]
+            interval: 30s
+            timeout: 5s
+            retries: 2
+            start_period: 90s
+
+    caddy:
+        container_name: caddy
+        image: "caddy:latest"
+        environment:
+            CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL:-WARN}
+            CADDY_PORT: ${CADDY_PORT:-3333}
+            PORT: ${PORT:-3000}
+            VITE_PORT: ${VITE_PORT:-3036}
+            APP_UPSTREAM: ${APP_UPSTREAM:-web:3000}
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ./caddy/certs:/root/certs # to sync mkcert certificates to Caddy
+            - ./Caddyfile:/etc/caddy/Caddyfile # to mount custom Caddyfile
+        ports:
+            # host:container
+            - "${CADDY_PORT:-3333}:${CADDY_PORT:-3333}"
+
+    preview_caddy:
+        image: "caddy:latest"
+        depends_on:
+            - preview
+        environment:
+            CADDY_LOG_LEVEL: ${CADDY_LOG_LEVEL:-INFO}
+            CADDY_PORT: ${CADDY_PORT:-3334}
+            PORT: "3333"
+            VITE_PORT: ${VITE_PORT:-3036}
+            APP_UPSTREAM: preview:3333
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ./caddy/certs:/root/certs
+            - ./Caddyfile:/etc/caddy/Caddyfile
+        ports:
+            - "${CADDY_PORT:-3334}:${CADDY_PORT:-3334}"
+
+    preview_cloudflared:
+        image: "cloudflare/cloudflared:latest"
+        depends_on:
+            - preview
+        command: tunnel --no-autoupdate run --token ${CLOUDFLARED_PREVIEW_TOKEN}
+            --protocol http2
+        environment:
+            CLOUDFLARED_PREVIEW_TOKEN: ${CLOUDFLARED_PREVIEW_TOKEN}
+        restart: unless-stopped
+
+volumes:
+    bundle:
+    node_modules:
+    history:
+    rails_cache:
+    assets:
+    vite_build:
+    vite_test:
+    storage:
+    # @lat: [[error-reporting-in-tests#Why the collector's own database is a named volume]]
+    rustrak_data:

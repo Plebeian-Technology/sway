@@ -1,0 +1,217 @@
+class BillPositionsPromptBuilder
+  DEFAULT_MAX_TESTIMONY_CHARS: Integer
+  DEFAULT_MAX_TESTIMONY_TOKENS: Integer
+
+  # 68-06 Task 3: read per call off Sway::Settings.llm rather than frozen
+  # into a constant, so a test can vary llm_max_testimony_tokens.
+  def self.max_testimony_tokens: () -> Integer
+
+  # @lat: [[untrusted-text-in-prompts#Why character caps stand in for token budgets]]
+  TESTIMONY_CHARS_PER_TOKEN_FLOOR: Float
+
+  def self.bounded_testimony_chars: (Integer chars, Integer tokens, Float chars_per_token_floor) -> Integer
+
+  # 68-06 Task 3: read per call off Sway::Settings.llm rather than frozen
+  # into a constant, so a test can vary llm_max_testimony_chars. Computes
+  # the clamp against .max_testimony_tokens on every call, same order as
+  # before.
+  def self.max_testimony_chars: () -> Integer
+
+  # A19-01: names for the two testimony sources, and the join order. The
+  # operator's paste is joined FIRST because the cut takes the tail.
+  SUPPLEMENTAL_SOURCE_NAME: String
+  EXTRACTED_SOURCE_NAME: String
+
+  # Phase 67 D-01: the cleaned artifact's name, used instead of
+  # EXTRACTED_SOURCE_NAME when a fresh cleaned artifact exists.
+  CLEANED_SOURCE_NAME: String
+
+  # Phase 67 Plan 05 (D-05, D-06): fixed per-letter headings inserted into
+  # the labeled cleaned testimony text.
+  INDIVIDUAL_LETTER_HEADING: String
+  NAMEABLE_LETTER_HEADING: String
+
+  SOURCE_SEPARATOR: String
+
+  MAX_SINGLE_LETTER_CHARS: Integer
+  LETTER_HEAD_CHARS: Integer
+  LETTER_TAIL_CHARS: Integer
+  LETTER_WINDOW_NOTICE: String
+
+  LETTER_REBUILD_KEYS: Array[String]
+
+  # Phase 67 CR-01: #testimony_reach's return shape — what of the primary
+  # testimony source reaches the model, in that source's own stored units.
+  class TestimonyReach
+    attr_reader source: Symbol
+    attr_reader total_chars: Integer
+    attr_reader reached_chars: Integer
+    attr_reader total_letters: Integer?
+    attr_reader reached_letters: Integer?
+
+    def initialize: (source: Symbol, total_chars: Integer, reached_chars: Integer, total_letters: Integer?, reached_letters: Integer?) -> void
+    def self.new: (source: Symbol, total_chars: Integer, reached_chars: Integer, total_letters: Integer?, reached_letters: Integer?) -> BillPositionsPromptBuilder::TestimonyReach
+  end
+
+  # A19-01: a format template carrying %{cut}, not a fixed string.
+  TRUNCATION_NOTICE: String
+
+  # PROD-WR-11: prefix of the per-instance random delimiter that wraps
+  # publicly-submitted testimony. The suffix is SecureRandom.hex(8), fresh per
+  # instance, so a payload cannot forge the closing tag. B4-CR-05 moved the
+  # mechanism itself (replacements, patterns, wrapping) to
+  # Llm::UntrustedTextBlock, shared with BillSummaryPromptBuilder.
+  TESTIMONY_DELIMITER_PREFIX: String
+
+  # @lat: [[untrusted-text-in-prompts#Why every third-party value sits inside an enclosure]]
+  CONTEXT_DELIMITER_PREFIX: String
+  OPINION_DELIMITER_PREFIX: String
+
+  DEFAULT_MAX_SUMMARY_CONTEXT_CHARS: Integer
+
+  # 68-06 Task 3: read per call off Sway::Settings.llm rather than frozen
+  # into a constant, so a test can vary llm_max_summary_context_chars.
+  def self.max_summary_context_chars: () -> Integer
+
+  def self.max_positions_chunks: () -> Integer
+
+  SUMMARY_TRUNCATION_NOTICE: String
+
+  # A19-02: bounds for the two bill-identity labels, restated here rather than
+  # borrowed from the sibling builder (see Llm::PromptLabel).
+  MAX_BILL_NUMBER_CHARS: Integer
+  MAX_BILL_TITLE_CHARS: Integer
+
+  # A19-15: the bounds config/schemas/bill_positions.json checks the answer
+  # against, read off that file so the prompt cannot state a limit other than
+  # the one enforced.
+  MAX_DRAFT_POSITIONS: Integer
+  MAX_ORG_NAME_CHARS: Integer
+  MAX_POSITION_SUMMARY_CHARS: Integer
+
+  MAX_OPINION_SECTION_CHARS: Integer
+  MAX_OPINION_ARTICLES: Integer
+
+  MAX_REPORTING_ARTICLES: Integer
+  MAX_NEWS_REPORTING_ARTICLES: Integer
+  MAX_REPORTING_SECTION_CHARS: Integer
+  MAX_NEWS_REPORTING_SECTION_CHARS: Integer
+  MAX_REPORTING_ARTICLE_CHARS: Integer
+  MAX_NEWS_REPORTING_ARTICLE_CHARS: Integer
+
+  @bill: Bill
+  @provisioning: BillLlmProvisioning?
+  @news_source_snapshot: NewsArticleSourceSnapshot?
+  @reporting_source_snapshot: NewsArticleSourceSnapshot?
+  @testimony_reach: TestimonyReach?
+  @boundary: Llm::UntrustedTextBlock
+  @context_boundary: Llm::UntrustedTextBlock
+  @opinion_boundary: Llm::UntrustedTextBlock
+  @reporting_boundary: Llm::UntrustedTextBlock
+  @user_message_chunks: Array[String]?
+
+  def initialize: (Bill bill, ?provisioning: BillLlmProvisioning?, ?news_source_snapshot: NewsArticleSourceSnapshot?, ?reporting_source_snapshot: NewsArticleSourceSnapshot?) -> void
+
+  # Joined output: [#system_prompt, #user_message].join("\n\n").
+  def call: () -> String
+
+  # Cache-eligible prefix (header + output_contract). Served as the
+  # Anthropic "system" block with cache_control: {type: "ephemeral"}.
+  def system_prompt: () -> String
+
+  # Per-bill content: the bill-context section followed by the
+  # combined, capped testimony. Not cache-eligible.
+  def user_message: () -> String
+
+  def user_message_chunks: () -> Array[String]
+  def prompt_payloads: () -> Array[Llm::PromptPayload]
+
+  def testimony_reach: () -> TestimonyReach
+
+  attr_reader reporting_boundary: Llm::UntrustedTextBlock
+  attr_reader opinion_boundary: Llm::UntrustedTextBlock
+  attr_reader reporting_source_snapshot: NewsArticleSourceSnapshot?
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader provisioning: BillLlmProvisioning?
+  attr_reader news_source_snapshot: NewsArticleSourceSnapshot?
+  attr_reader boundary: Llm::UntrustedTextBlock
+  attr_reader context_boundary: Llm::UntrustedTextBlock
+
+  def header: () -> String
+
+  # B4-CR-05: the delimiter explanation, cache-safe (constant prefix only).
+  def boundary_instruction: () -> String
+
+  # The second delimiter explanation, cache-safe the same way.
+  def context_boundary_instruction: () -> String
+  def opinion_boundary_instruction: () -> String
+  def reporting_boundary_instruction: () -> String
+  def published_opinion_section: () -> String?
+  def published_opinion_body: () -> String?
+  def opinion_articles: () -> Array[BillNewsArticle]
+  def format_opinion_article: (BillNewsArticle bna) -> String?
+  def news_reporting_section: () -> String?
+  def reporting_articles: () -> Array[BillNewsArticle]
+  def format_reporting_article: (BillNewsArticle bna) -> String?
+  def sanitize: (untyped value) -> String
+  def sanitize_extracted_org_hint: (untyped value) -> String
+  def testimony_section: () -> String
+
+  # A19-02: always rendered. The bill identity is unconditional; the summary
+  # is added to the same enclosure when the row holds one.
+  def bill_context_section: () -> String
+  def bill_context_body: () -> String
+  def bill_number_label: () -> String
+  def bill_title_label: () -> String
+
+  # A21-04: llm_summary collapsed to ONE LINE and then neutralized, the way
+  # every other value in this enclosure is rendered. It shares the block with
+  # the two markers the prompt steers by, so with its newlines intact it could
+  # forge a second bill identity and a second `## Testimony` heading.
+  # BillCategoryPromptBuilder#bounded_summary collapses the same column.
+  def summary_label: () -> String
+  def truncate_summary_context: (String text) -> String
+
+  # A20-01: scrub for invalid bytes, then neutralize, so every bound below is
+  # measured on what the enclosure will actually send rather than on text it
+  # has yet to rewrite. A21-04: NO collapse — this serves the testimony
+  # sources, where the document is the structure.
+  def neutralized: (String? value) -> String
+
+  # A19-01: [name, text] pairs in join order, blanks dropped.
+  def testimony_sources: () -> Array[[String, String]]
+
+  # Phase 67 D-01: the cleaned artifact, or nil when it should not be
+  # trusted (absent, its text blank, or older than testimony_fetched_at).
+  def cleaned_testimony_artifact: () -> Hash[String, untyped]?
+
+  # Phase 67 Plan 05 (D-05, D-06): the cleaned bundle reconstructed one
+  # letter at a time, each preceded by a fixed heading naming its kind.
+  # Falls back to the artifact's plain text unchanged when any letter
+  # carries no source_kind (an older cleaned artifact).
+  def labeled_letters: (Hash[String, untyped] artifact) -> Array[Hash[String, untyped]]?
+  def labeled_cleaned_text: (Hash[String, untyped] artifact) -> String
+  def letter_heading: (Hash[String, untyped] letter) -> String
+  def letter_body: (String full_text, Hash[String, untyped] letter) -> String
+  def window_letter_body: (String? body) -> String
+  def labeled_letter_text: (String full_text, Hash[String, untyped] letter) -> String
+  def primary_char_budget: () -> Integer
+  def build_testimony_reach: () -> TestimonyReach
+  def extracted_reach: () -> TestimonyReach
+  def unlabeled_cleaned_reach: (Hash[String, untyped] artifact, Integer budget) -> TestimonyReach
+  def labeled_reach: (Hash[String, untyped] artifact, Array[Hash[String, untyped]] letters, Integer budget) -> TestimonyReach
+  def user_message_single: () -> String
+  def build_user_message_chunks: () -> Array[String]
+  def partition_letter_chunks: (Array[Hash[String, untyped]] letters, String full_text) -> Array[Hash[Symbol, untyped]]
+  def assemble_chunk_messages: (Array[Hash[Symbol, untyped]] chunks) -> Array[String]
+  def combined_testimony: () -> String
+  def truncate_testimony: (String text) -> String
+  def truncate_chunk_testimony: (String text, ?cut: String) -> String
+
+  # A19-01: the sources the cut fell in, joined for the notice.
+  def cut_source_names: () -> String
+  def output_contract: () -> String
+end

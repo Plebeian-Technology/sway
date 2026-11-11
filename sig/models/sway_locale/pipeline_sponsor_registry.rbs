@@ -1,0 +1,9 @@
+class SwayLocale
+  module PipelineSponsorRegistry
+    type declaration = { role: String, term_title: String, external_id: String? }
+
+    DECLARATIONS: Hash[String, Hash[String, declaration]]
+
+    def self.for: (String locale_name, String chamber) -> declaration?
+  end
+end

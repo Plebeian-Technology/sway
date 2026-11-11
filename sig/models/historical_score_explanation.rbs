@@ -1,0 +1,42 @@
+class HistoricalScoreExplanation < ApplicationRecord
+  def self.where: (*untyped) -> untyped
+
+  def user: -> User
+  def user=: (User) -> User
+  def user_id: -> Integer
+  def user_id=: (Integer) -> Integer
+
+  def legislator: -> Legislator?
+  def legislator=: (Legislator?) -> Legislator?
+  def legislator_id: -> Integer?
+  def legislator_id=: (Integer?) -> Integer?
+
+  def historical_repair_candidate: -> untyped?
+  def historical_repair_candidate_id: -> Integer?
+  def historical_repair_preview: -> untyped?
+  def historical_repair_preview_id: -> Integer?
+
+  def score_type: -> String
+  def score_type=: (String) -> String
+
+  def title: -> String
+  def title=: (String) -> String
+
+  def body: -> String
+  def body=: (String) -> String
+
+  def delta: -> Float?
+  def delta=: (Float?) -> Float?
+
+  def before_score: -> Float?
+  def before_score=: (Float?) -> Float?
+
+  def after_score: -> Float?
+  def after_score=: (Float?) -> Float?
+
+  def bills_summary: -> untyped
+  def bills_summary=: (untyped) -> untyped
+
+  def notified_at: -> ActiveSupport::TimeWithZone?
+  def dismissed_at: -> ActiveSupport::TimeWithZone?
+end

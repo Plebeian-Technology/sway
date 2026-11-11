@@ -1,0 +1,7 @@
+class PipelineRunChannel < ApplicationCable::Channel
+    def self.broadcasting_for: (untyped model) -> String
+
+    def subscribed: -> untyped
+
+    def unsubscribed: -> nil
+end

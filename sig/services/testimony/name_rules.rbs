@@ -1,0 +1,22 @@
+module Testimony
+  module NameRules
+    type label = :bill_text | :ambiguous_bill_text | :testimony | :procedural | :undecided
+
+    LABELS: Array[label]
+
+    SEPARATORS: Regexp
+
+    TESTIMONY_PATTERNS: Array[Regexp]
+    BILL_TEXT_PATTERNS: Array[Regexp]
+
+    AMBIGUOUS_BILL_TEXT_PATTERNS: Array[Regexp]
+    PROCEDURAL_PATTERNS: Array[Regexp]
+
+    def self.classify: (String? name, sway_locale: (String | SwayLocale)?) -> label
+    def self.classification_enabled?: ((String | SwayLocale)?) -> bool
+
+    private
+
+    def self.normalize: (String? name) -> String
+  end
+end

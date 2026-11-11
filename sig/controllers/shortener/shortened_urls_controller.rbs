@@ -1,0 +1,6 @@
+module Shortener
+  class ShortenedUrlsController < ActionController::Metal
+    def redirect_to: (untyped location, ?status: untyped, **untyped) -> untyped
+    def show: () -> void
+  end
+end

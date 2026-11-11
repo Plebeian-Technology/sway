@@ -1,0 +1,94 @@
+# RBS sig for FetchBillsService (Phase 52 Plan 04, SPEC R3).
+# Canonical sig path: sig/services/ (HIGH-R2-2 convention).
+#
+# All polymorphic JSON values (Integer MatterId, String MatterFile, etc.) are
+# typed via the `legistar_value` union — no `untyped` per project memory
+# feedback_rbs_avoid_untyped.
+class FetchBillsService
+  type json_scalar_value = String | Integer | Float | bool | nil | Array[String | Integer | Float | bool | nil]
+
+  type metadata = {
+    external_id: String,
+    matter_id: Integer,
+    title: String,
+    introduction_date: json_scalar_value,
+    bill_number: String,
+    matter_type: String,
+    pdf_url: String?,
+    pdf_filename: String?,
+    ?legislator_external_id: String?,
+    ?chamber: String?,
+    ?status: String?,
+    ?link: String?,
+  }
+
+  PAGE_SIZE: Integer
+  PDF_MAGIC_BYTES: String
+  READER_NAME_PATTERN: Regexp
+
+  # Start-by deadlines for the two discover-path loops that reach the network
+  # once per bill. Both are private_constant.
+  DISCOVERY_BUDGET_SECONDS: Integer
+  DOWNLOAD_BUDGET_SECONDS: Integer
+
+  @run: LegislationPipelineRun
+  @bill_run: PipelineRunBill?
+  @mode: Symbol
+  @conn: Faraday::Connection
+
+  def initialize: (run: LegislationPipelineRun, ?bill_run: PipelineRunBill?, ?mode: Symbol, ?faraday_conn: Faraday::Connection?, ?detail_url_resolver: untyped) -> void
+
+  def call: () -> Array[metadata]?
+  def seed_from_disk: () -> Integer
+
+  private
+
+  def adapter_for: (?(SwayLocale | String)? locale) -> Legislation::Adapters::GenericLegislationAdapter
+  def artifact_root: () -> Pathname
+  def read_disk_metadatas: () -> Array[metadata]
+
+  def call_discover: () -> Array[metadata]
+  def call_backfill_missing: () -> nil
+
+  def refuse_when_nothing_was_produced: (
+    Array[[String, String?, Integer | String]] ready,
+    Array[[String, String?]] undiscovered,
+    Array[[String, String?]] unrepaired
+  ) -> nil
+
+  def bill_id_list: (Array[[String, String?]] pairs, ?limit: Integer) -> String
+
+  @sway_locale_name: String?
+
+  attr_reader conn: Faraday::Connection
+
+  def resolve_target_locale: (?SwayLocale | String | nil target_locale) -> SwayLocale?
+
+  def scope_to_run_bill: (Array[metadata] metadatas) -> Array[metadata]
+
+  def persist: (metadata metadata, ?download: bool) -> void
+  def persist_within_budget: (Array[metadata] metadatas) -> void
+
+  def download_pdf: (Pathname dir, String? pdf_url, String? pdf_filename) -> void
+
+  def resolve_sway_locale: () -> SwayLocale
+  def resolve_default_sway_locale: () -> SwayLocale
+
+  def sway_locale_name: () -> String
+
+  def seed_ar_rows: (Array[metadata] metadatas, SwayLocale sway_locale) -> void
+
+  def bill_data_from_metadata: (metadata metadata, SwayLocale sway_locale) -> Hash[String, String | nil]
+
+  def coerce_introduction_date: (String external_id, json_scalar_value raw) -> String?
+
+  def warn_intro_date: (String external_id, json_scalar_value raw, String reason) -> nil
+
+  def default_years: () -> Array[Integer]
+  def select_primary_attachment: (Array[Hash[String, untyped]] attachments, ?locale: (SwayLocale | String)?) -> Hash[String, untyped]?
+  def build_metadata: (Hash[String, untyped] matter, ?locale: (SwayLocale | String)?) -> Hash[Symbol, untyped]?
+  def fetch_all_matters: (?locale: (SwayLocale | String)?) -> Array[Hash[String, untyped]]
+
+  def jurisdiction_rules_for: (String? locale_name) -> SwayLocale::JurisdictionRules
+  def default_faraday_conn: () -> Faraday::Connection
+end

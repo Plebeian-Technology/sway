@@ -1,0 +1,162 @@
+/* @lat: [[bill-list-layouts-design#MonochromeBillListLayout.tsx]] */
+
+.mcl-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+.mcl-header {
+    padding-bottom: calc(var(--space-unit) * 4);
+    border-bottom: var(--rule-thick) var(--rule-style) var(--foreground);
+}
+
+.mcl-header__kind {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.mcl-header__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+.mcl-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 4);
+    padding: calc(var(--space-unit) * 4) 0;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.mcl-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    max-width: 100%;
+    gap: calc(var(--space-unit) * 1);
+}
+
+.mcl-field--wide {
+    flex-basis: 100%;
+}
+
+.mcl-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.mcl-input {
+    cursor: text;
+}
+
+.mcl-count {
+    padding: calc(var(--space-unit) * 3) 0;
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.mcl-entries {
+    display: grid;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mcl-entry {
+    padding: calc(var(--space-unit) * 4) 0;
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.mcl-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: calc(var(--space-unit) * 3);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+.mcl-code {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-weight: var(--weight-bold);
+    color: var(--foreground);
+}
+
+.mcl-entry__title {
+    display: block;
+    margin-top: calc(var(--space-unit) * 2);
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+.mcl-entry__title:hover,
+.mcl-entry__title:focus-visible {
+    text-decoration: underline;
+}
+
+.mcl-entry__qualifier {
+    font-weight: var(--weight-body);
+    color: var(--muted-foreground);
+}
+
+.mcl-entry__brief {
+    margin-top: calc(var(--space-unit) * 1.5);
+    max-width: var(--measure);
+    font-size: var(--type-small);
+    line-height: var(--leading-body);
+    color: var(--muted-foreground);
+}
+
+.mcl-entry__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 2);
+}
+
+.mcl-tally {
+    font-size: var(--type-micro);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--muted-foreground);
+}
+
+.mcl-voted {
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--foreground);
+}
+
+.mcl-more {
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 3);
+    background: transparent;
+    border: var(--rule-hair) var(--rule-style) var(--foreground);
+    border-radius: var(--radius);
+    font-size: var(--type-micro);
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+.mcl-more:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

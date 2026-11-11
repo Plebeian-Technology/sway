@@ -1,0 +1,16 @@
+# RBS sig for OpenSourceLicensesService (SWAY release tracking).
+#
+# Mirrors app/services/open_source_licenses_service.rb. Aggregates non-MIT,
+# directly-depended-on JavaScript (build-time pnpm snapshot) dependency
+# attribution for the public /licenses page. Each dependency is a plain,
+# Inertia-serializable Hash.
+class OpenSourceLicensesService
+  FRONTEND_JSON_PATH: Pathname
+  MIT: String
+
+  type dependency = Hash[Symbol, String?]
+
+  def self.call: () -> Array[dependency]
+  def call: () -> Array[dependency]
+  def javascript_dependencies: () -> Array[dependency]
+end

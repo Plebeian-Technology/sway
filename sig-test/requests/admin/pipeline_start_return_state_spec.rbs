@@ -1,0 +1,4 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def pipeline_start_params: () -> {stages: Array[String], sway_locale_id: Integer, download_missing_assets: bool}
+end

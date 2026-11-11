@@ -1,0 +1,20 @@
+module MirrorsExternalAsset
+  extend ActiveSupport::Concern
+
+  # steep evaluates the `class_methods do ... end` block as instance-method
+  # definitions on the concern (self = concern instance), so mirrors_external_asset
+  # and the after_commit DSL it reaches are declared here purely to satisfy the
+  # type-checker. At runtime ActiveSupport::Concern extends these onto the
+  # including class as singleton methods; the per-model sigs
+  # (sig/models/sway_locale.rbs, legislator.rbs, organization.rbs) declare
+  # mirrors_external_asset on each model's singleton for the call sites.
+  def mirrors_external_asset: (attachment_name: String, url_column: String) -> void
+  def after_commit: (?if: Symbol) ?{ () -> void } -> void
+
+  # Provided by the including ActiveRecord model.
+  def id: () -> Integer?
+
+  def internal_asset_url?: (String? url) -> bool
+
+  def enqueue_external_asset_mirroring: (attachment_name: String, url_column: String) -> void
+end

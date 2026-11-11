@@ -1,0 +1,39 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+module FetchLawCorpusServiceSpecHelpers
+  TMP_LAW_ROOT: String
+  FIXTURE_TARBALL: String
+  CHARTER_REL: String
+
+  # The three stand-ins for what Faraday hands a streaming caller. Each is a
+  # Struct in the spec; only the members the helper reads are declared.
+  class StubRequestOptions
+    attr_accessor on_data: Proc?
+    def initialize: (Proc? on_data) -> void
+  end
+
+  class StubRequest
+    attr_accessor options: StubRequestOptions
+    def initialize: (StubRequestOptions options) -> void
+  end
+
+  class StubChunkEnv
+    attr_accessor status: Integer
+    def initialize: (Integer status) -> void
+  end
+
+  def self.raw_root: () -> Pathname
+  def self.tarball_bytes: () -> String
+  def self.write_cached_charter: (?String content) -> void
+  def self.write_commit_sha: (String sha) -> void
+
+  # Answers a `get` the way the real transport does now: the block is called
+  # with a request to configure, and the body arrives a chunk at a time
+  # The returned proc is what `allow(conn).to receive(:get, &...)`
+  # takes, so its own shape is whatever Faraday's caller passes.
+  def self.tarball_stream: (
+    bytes: String,
+    ?status: Integer,
+    ?headers: Hash[String, String],
+    ?chunk_size: Integer
+  ) -> Proc
+end

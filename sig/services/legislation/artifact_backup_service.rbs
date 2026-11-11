@@ -1,0 +1,59 @@
+module Legislation
+  # Copies the legislation artifact tree into the bucket, adding only what the
+  # bucket does not already hold at the same size and no older.
+  class ArtifactBackupService
+    # An object name, the local file it is copied from, and that file's size.
+    type candidate = [String, Pathname, Integer]
+
+    # Bucket key => the Legislation::Paths method that answers where that root
+    # is. Ordered, and the order is the order files are walked and uploaded in.
+    ROOT_KEY_BILLS_TEXT: String
+
+    ROOTS: Hash[String, Symbol]
+
+    # Legislation::AtomicWrite.write's temporary name: a dot, the destination's
+    # name, ".tmp-", the process id and hex characters.
+    TEMP_FILE_PATTERN: Regexp
+
+    # How much of an upload failure's message the report keeps.
+    FAILURE_REASON_LENGTH: Integer
+
+    @bucket: Legislation::ArtifactBucket
+    @prefix: String
+    @report: Legislation::ArtifactBackupReport
+
+    # A method rather than a constant, so Rails.env is not frozen at load time.
+    def self.default_prefix: () -> String
+
+    def initialize: (?bucket: Legislation::ArtifactBucket, ?prefix: String) -> void
+    def call: () -> Legislation::ArtifactBackupReport
+
+    private
+
+    attr_reader bucket: Legislation::ArtifactBucket
+    attr_reader prefix: String
+    attr_reader report: Legislation::ArtifactBackupReport
+
+    # Object name => the listed object, or nil when the listing failed.
+    def list_remote: () -> Hash[String, SwayGoogleCloudStorage::ListedFile]?
+
+    def collect_candidates: (Hash[String, SwayGoogleCloudStorage::ListedFile] remote) -> Array[candidate]
+
+    # Appends to candidates, or counts the entry as skipped.
+    def collect_entry: (Pathname entry, root: Pathname, root_key: String, remote: Hash[String, SwayGoogleCloudStorage::ListedFile], seen: Set[Pathname], candidates: Array[candidate]) -> void
+
+    # :present and :identical leave the stored object alone; :stale copies.
+    def freshness: (SwayGoogleCloudStorage::ListedFile? listed, Pathname entry, Integer size) -> (:present | :identical | :stale)
+
+    def identical?: (String remote_md5, Pathname entry) -> bool
+
+    def modified_since_stored?: (SwayGoogleCloudStorage::ListedFile listed, Pathname entry) -> bool
+
+    # False when the walk found less under bills/text than the database implies,
+    # having set the status and reported it.
+    def floor_met?: () -> bool
+
+    def upload_candidates: (Array[candidate] candidates) -> void
+    def finish: (Float started_at) -> Legislation::ArtifactBackupReport
+  end
+end

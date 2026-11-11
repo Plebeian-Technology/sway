@@ -1,0 +1,13 @@
+module Scraper
+  module Congress
+    class RollCallUnavailable < StandardError
+      attr_reader chamber: Symbol
+      attr_reader congress: Integer
+      attr_reader session: Integer
+      attr_reader roll_call_number: Integer?
+      attr_reader reason: String
+
+      def initialize: (chamber: Symbol, congress: Integer, session: Integer, roll_call_number: Integer?, reason: String) -> void
+    end
+  end
+end

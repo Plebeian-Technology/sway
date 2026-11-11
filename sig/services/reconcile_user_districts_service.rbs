@@ -1,0 +1,19 @@
+class ReconcileUserDistrictsService
+    @user: User
+
+    @sway_locale: SwayLocale
+
+    def initialize: (User user, SwayLocale sway_locale) -> void
+
+    def call: -> void
+
+    private
+
+    def registration_service: (Address address) -> SwayRegistrationService
+
+    def apply_diff: (::Array[Legislator] resolved_legislators) -> void
+
+    def activate_user_legislator!: (Legislator legislator) -> UserLegislator
+
+    def activate_user_district!: (District district) -> void
+end

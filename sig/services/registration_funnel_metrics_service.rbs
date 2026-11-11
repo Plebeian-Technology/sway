@@ -1,0 +1,53 @@
+class RegistrationFunnelMetricsService
+  STEPS: Array[String]
+  STEP_LABELS: Hash[String, String]
+  TIME_RANGES: Array[Hash[Symbol, String]]
+  TRAFFIC_OPTIONS: Array[Hash[Symbol, String]]
+
+  class Result < Struct[untyped]
+    attr_accessor time_range: String
+    attr_accessor filter_attribution_key: String?
+    attr_accessor steps: Array[Hash[Symbol, untyped]]
+    attr_accessor overall_conversion_rate: Float
+    attr_accessor friction_points: Array[Hash[Symbol, untyped]]
+    attr_accessor attributions: Array[Hash[Symbol, untyped]]
+    attr_accessor latency: Hash[Symbol, untyped]
+    attr_accessor time_ranges: Array[Hash[Symbol, String]]
+    attr_accessor traffic: String
+    attr_accessor traffic_options: Array[Hash[Symbol, String]]
+    attr_accessor bot_visitor_count: Integer
+
+    def self.new: (
+      time_range: String,
+      filter_attribution_key: String?,
+      steps: Array[Hash[Symbol, untyped]],
+      overall_conversion_rate: Float,
+      friction_points: Array[Hash[Symbol, untyped]],
+      attributions: Array[Hash[Symbol, untyped]],
+      latency: Hash[Symbol, untyped],
+      time_ranges: Array[Hash[Symbol, String]],
+      traffic: String,
+      traffic_options: Array[Hash[Symbol, String]],
+      bot_visitor_count: Integer
+    ) -> Result
+  end
+
+  @time_range: String
+  @attribution_key: String?
+  @traffic: String
+
+  def initialize: (?time_range: String, ?attribution_key: String?, ?traffic: String) -> void
+  def call: () -> Result
+
+  private
+
+  def window_scope: () -> untyped
+  def base_scope: () -> untyped
+  def apply_time_filter: (untyped scope) -> untyped
+  def calculate_step_counts: (untyped scope) -> Hash[String, Integer]
+  def build_step_metrics: (Hash[String, Integer] counts) -> Array[Hash[Symbol, untyped]]
+  def build_friction_points: (Array[Hash[Symbol, untyped]] step_data) -> Array[Hash[Symbol, untyped]]
+  def calculate_attribution_breakdown: (untyped scope) -> Array[Hash[Symbol, untyped]]
+  def calculate_latency_metrics: (untyped scope) -> Hash[Symbol, untyped]
+  def empty_latency: () -> Hash[Symbol, untyped]
+end

@@ -1,0 +1,33 @@
+module Scraper
+    module Congress
+        class RollCallIdentity
+            TIME_ZONES: ::Array[String]
+
+            @document_name: String?
+
+            @question: String?
+
+            @title: String?
+
+            @voted_on: Date?
+
+            attr_reader document_name: String?
+
+            attr_reader question: String?
+
+            attr_reader title: String?
+
+            attr_reader voted_on: Date?
+
+            def initialize: (document_name: String?, question: String?, voted_on: Date?, ?title: String?) -> void
+
+            def self.normalize: (String? value) -> String
+
+            def names?: (String? external_id) -> bool
+
+            def taken_on?: (::ActiveSupport::TimeWithZone? time) -> bool
+
+            def to_h: -> {document_name: String?, question: String?, title: String?, voted_on: String?}
+        end
+    end
+end

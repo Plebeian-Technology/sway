@@ -1,0 +1,15 @@
+module BillCreator
+  class ActivityLogPage
+    type result = { entries: Array[Hash[Symbol, untyped]], next_cursor: String?, has_more: bool }
+
+    PAGE_SIZE: Integer
+
+    def self.call: (bill: Bill?, subject: String?, severity: String?, window: String?, cursor: untyped) -> result
+
+    def self.filters_from: (subject: String?, severity: String?, window: String?) -> { subject: String, severity: String, window: String }
+
+    def self.encode_cursor: (PipelineActivityLogEntry entry) -> String
+
+    def self.decode_cursor: (untyped token) -> [ Time?, Integer? ]
+  end
+end

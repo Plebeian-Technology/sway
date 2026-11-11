@@ -1,0 +1,6 @@
+# Spec-only declarations for spec/config/sway_settings_initializer_spec.rb.
+#
+# Steep cannot see a `def` inside a describe block.
+class Object
+  def run_sway_settings_initializer: () -> untyped
+end

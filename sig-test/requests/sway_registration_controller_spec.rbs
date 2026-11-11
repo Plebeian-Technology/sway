@@ -1,0 +1,3 @@
+class Object
+  def reg_user: () -> User
+end

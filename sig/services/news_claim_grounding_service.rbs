@@ -1,0 +1,118 @@
+class NewsClaimGroundingService
+  class ClaimAssessment
+    attr_reader claim_text: String
+    attr_reader evidence_excerpt: String
+    attr_reader citation_url: String
+    attr_reader bill_news_article_id: Integer?
+    attr_reader text_version_id: Integer?
+    attr_reader verdict: String
+    attr_reader reason: String
+    attr_reader phase: Symbol
+    attr_reader source_use_record: NewsArticleSourceUse?
+
+    def initialize: (
+      claim_text: String,
+      evidence_excerpt: String,
+      citation_url: String,
+      bill_news_article_id: Integer?,
+      text_version_id: Integer?,
+      verdict: String,
+      reason: String,
+      phase: Symbol,
+      ?source_use_record: NewsArticleSourceUse?
+    ) -> void
+
+    def supported?: () -> bool
+    def unsupported?: () -> bool
+    def indeterminate?: () -> bool
+    def status: () -> String
+  end
+
+  class Result
+    attr_reader verdict: String
+    attr_reader claim_assessments: Array[ClaimAssessment]
+    attr_reader deterministic_errors: Array[String]
+    attr_reader route: String?
+    attr_reader prompt_version: Integer?
+
+    def initialize: (
+      verdict: String,
+      ?claim_assessments: Array[ClaimAssessment],
+      ?deterministic_errors: Array[String],
+      ?route: String?,
+      ?prompt_version: Integer?
+    ) -> void
+
+    def supported?: () -> bool
+    def unsupported?: () -> bool
+    def indeterminate?: () -> bool
+    def none?: () -> bool
+    def valid?: () -> bool
+    def errors: () -> Array[String]
+    def status: () -> String
+    def grounding_status: () -> String
+    def claim_results: () -> Array[ClaimAssessment]
+    def verdicts: () -> Array[ClaimAssessment]
+  end
+
+  def self.call: (
+    bill: Bill,
+    ?content: String?,
+    ?text: String?,
+    ?source_uses: untyped,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?news_usage: String?,
+    ?persist: bool,
+    ?route: Llm::RouteResolver::Route?,
+    ?adapter: untyped,
+    ?model: String?
+  ) -> Result
+
+  def self.assess: (
+    bill: Bill,
+    ?content: String?,
+    ?text: String?,
+    ?source_uses: untyped,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?news_usage: String?,
+    ?persist: bool,
+    ?route: Llm::RouteResolver::Route?,
+    ?adapter: untyped,
+    ?model: String?
+  ) -> Result
+
+  def initialize: (
+    bill: Bill,
+    content: String,
+    ?source_uses: untyped,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?news_usage: String?,
+    ?persist: bool,
+    ?route: Llm::RouteResolver::Route?,
+    ?adapter: untyped,
+    ?model: String?
+  ) -> void
+
+  def call: () -> Result
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader content: String
+  attr_reader raw_source_uses: untyped
+  attr_reader snapshot: NewsArticleSourceSnapshot?
+  attr_reader news_usage: String?
+  attr_reader persist: bool
+  attr_reader route: Llm::RouteResolver::Route?
+  attr_reader adapter: untyped
+  attr_reader model: String?
+
+  def extract_normalized_source_uses: () -> Array[Hash[Symbol, untyped]]
+  def extract_prose_news_urls: () -> Array[String]
+  def validate_prose_url_deterministically: (String url) -> String?
+  def validate_claim_deterministically: (Hash[Symbol, untyped] item) -> ClaimAssessment?
+  def evaluate_claim_semantically: (item: Hash[Symbol, untyped], adapter: untyped, model: String, ?reasoning_effort: String?) -> ClaimAssessment
+  def aggregate_verdict: (Array[String] deterministic_errors, Array[ClaimAssessment] assessments) -> String
+  def candidate_news_prose_for_url: (String target_url) -> Array[String]
+  def extract_attributed_sentences_for_url: (String target_url) -> Array[String]
+end

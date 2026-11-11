@@ -1,0 +1,114 @@
+module Legislation
+  module Adapters
+    class GenericLegislationAdapter
+      @config: Hash[Symbol, untyped]
+      @engine: Symbol
+      @retrieval: Symbol
+      @parsing: Symbol
+      @base_url: String?
+      @endpoints: Hash[Symbol, untyped]
+      @metadata_mapping: Hash[Symbol, untyped]
+      @connection: Faraday::Connection?
+      @service: untyped
+      @legistar_clients: Hash[String, Legistar::Client]
+      @detail_url_resolver: Legistar::DetailUrlResolver
+
+      DEFAULT_MATTER_TYPE: String
+      PAGE_SIZE: Integer
+      READER_NAME_PATTERN: Regexp
+      FALLBACK_CLASSIFICATION_PREFERENCE: Array[Symbol]
+
+      attr_reader config: Hash[Symbol, untyped]
+      attr_reader engine: Symbol
+      attr_reader retrieval: Symbol
+      attr_reader parsing: Symbol
+      attr_reader base_url: String?
+      attr_reader endpoints: Hash[Symbol, untyped]
+      attr_reader metadata_mapping: Hash[Symbol, untyped]
+      attr_reader connection: Faraday::Connection?
+      attr_reader service: untyped
+
+      def initialize: (?(Hash[Symbol | String, untyped] | SwayLocale | SwayLocale::JurisdictionRules)? config_or_locale, ?connection: Faraday::Connection?, ?service: untyped) -> void
+
+      def legistar_client: (?SwayLocale? sway_locale) -> Legistar::Client
+      def accepted_matter_types: (?SwayLocale? sway_locale) -> Array[String]
+      def detail_url_resolver: () -> Legistar::DetailUrlResolver
+      def resolve_detail_url: (Integer | String matter_id) -> String?
+      def map_status: (String? raw_status) -> String?
+      def repair_missing_metadata: (String external_id, SwayLocale? sway_locale, ?Faraday::Connection? connection) -> bool
+      def fetch_attachments: (Integer | String matter_id, ?SwayLocale? sway_locale) -> Array[Hash[String, untyped]]
+      def fetch_attachments_safely: (Integer | String matter_id, String external_id, ?SwayLocale? sway_locale, Faraday::Connection conn) -> Array[Hash[String, untyped]]
+      def select_primary_attachment: (Array[Hash[String, untyped]] attachments, ?(SwayLocale | String)? sway_locale) -> Hash[String, untyped]?
+      def pdf_attachment?: (Hash[String, untyped] attachment) -> bool
+      def best_non_testimony_pdf: (Array[Hash[String, untyped]] pdfs, ?(SwayLocale | String)? sway_locale) -> Hash[String, untyped]?
+      def build_metadata: (Hash[String, untyped] matter, ?SwayLocale? sway_locale, ?Faraday::Connection? conn) -> Hash[Symbol, untyped]?
+      def fetch_all_matters: (?SwayLocale? sway_locale, ?Faraday::Connection? conn) -> Array[Hash[String, untyped]]
+
+      def discover: (
+        sway_locale: SwayLocale,
+        ?start_time: (Float | Time)?,
+        ?budget_seconds: (Integer | Float)?,
+        ?run_bill: untyped?,
+        ?service: FetchBillsService?
+      ) -> Array[Hash[Symbol, untyped]]
+
+      def backfill_bill: (
+        Bill bill,
+        ?ready: Array[Array[untyped]]?,
+        ?undiscovered: Array[Array[untyped]]?,
+        ?service: FetchBillsService?
+      ) -> void
+
+      def download_pdf: (
+        Pathname dir,
+        String pdf_url,
+        String pdf_filename,
+        ?connection: Faraday::Connection?
+      ) -> Integer?
+
+      def self.introduced_pdf_url: (String | Integer congress, String type, String | Integer number) -> String
+      def introduced_pdf_url: (String | Integer congress, String type, String | Integer number) -> String
+
+      def self.matter_id_for: (String | Integer external_id) -> Integer
+      def matter_id_for: (String | Integer external_id) -> Integer
+
+      def pdf_response?: (Faraday::Response? response) -> bool
+      def update_metadata_pdf_url: (Pathname dir, String url) -> void
+      def published_pdf_urls: (Faraday::Connection conn, String congress, String type, String number) -> Array[String]
+
+      private
+
+      def extract_config: (untyped input) -> Hash[Symbol, untyped]
+      def default_connection: () -> Faraday::Connection
+      def budget_exceeded?: ((Float | Time)? start_time, (Integer | Float)? budget_seconds) -> bool
+      def discover_rest_bills: (Faraday::Connection conn, SwayLocale sway_locale, ?start_time: (Float | Time)?, ?budget_seconds: (Integer | Float)?, ?run_bill: untyped?) -> Array[Hash[Symbol, untyped]]
+      def discover_legistar: (Faraday::Connection conn, SwayLocale sway_locale, ?start_time: (Float | Time)?, ?budget_seconds: (Integer | Float)?, ?run_bill: untyped?, ?svc: untyped?) -> Array[Hash[Symbol, untyped]]
+      def fetch_all_legistar_matters: (Faraday::Connection conn, SwayLocale? sway_locale) -> Array[Hash[String, untyped]]
+      def build_legistar_metadatas_within_budget: (Array[Hash[String, untyped]] matters, SwayLocale? sway_locale, Faraday::Connection conn, (Float | Time)? start_time, (Integer | Float)? budget_seconds) -> Array[Hash[Symbol, untyped]]
+      def build_legistar_metadata: (Hash[String, untyped] matter, SwayLocale? sway_locale, Faraday::Connection conn) -> Hash[Symbol, untyped]?
+      def discover_html_bills: (Faraday::Connection conn, SwayLocale sway_locale, ?start_time: (Float | Time)?, ?budget_seconds: (Integer | Float)?, ?run_bill: untyped?) -> Array[Hash[Symbol, untyped]]
+      def determine_session: (SwayLocale? sway_locale) -> String?
+      def discover_single_html_bill: (Faraday::Connection conn, untyped run_bill, session: String) -> Array[Hash[Symbol, untyped]]
+      def discover_all_html_bills: (Faraday::Connection conn, session: String, start_time: (Float | Time)?, budget_seconds: (Integer | Float)?) -> Array[Hash[Symbol, untyped]]
+      def parse_html_index_row: (untyped row, String session) -> Hash[Symbol, untyped]?
+      def parse_html_details_page: (untyped doc, String ext_id, String session) -> Hash[Symbol, untyped]?
+      def format_bill_number: (String external_id) -> String
+      def discover_congress_bills: (Faraday::Connection conn, SwayLocale sway_locale, ?start_time: (Float | Time)?, ?budget_seconds: (Integer | Float)?, ?run_bill: untyped?) -> Array[Hash[Symbol, untyped]]
+      def fetch_congress_bill_detail: (Faraday::Connection conn, String congress, String type, String number) -> Hash[String, untyped]
+      def current_congress: (SwayLocale sway_locale) -> Integer
+      def api_params: () -> Hash[Symbol, untyped]
+      def normalize_congress_bill_data: (Hash[String, untyped] b, ?congress: String?, ?type: String?, ?number: String?) -> Hash[Symbol, untyped]?
+      def load_metadata: (Pathname meta_file, Bill bill, String? locale_name) -> Hash[Symbol, untyped]?
+      def extract_field: (untyped record, untyped path_expr) -> untyped
+      def interpolate_endpoint: (String template, SwayLocale sway_locale, ?untyped? run_bill) -> String
+      def extract_raw_bill_items: (untyped parsed) -> Array[untyped]
+      def single_bill_item?: (untyped hash) -> bool
+      def process_bill_items: (Array[untyped] raw_items, SwayLocale sway_locale, ?untyped? run_bill) -> Array[Hash[Symbol, untyped]]
+      def extract_next_link: (untyped parsed, Faraday::Response response) -> String?
+      def update_query_param: (String path, Symbol | String key, untyped value) -> String
+      def require_base_url!: () -> String
+    end
+  end
+end
+
+GenericLegislationAdapter: singleton(Legislation::Adapters::GenericLegislationAdapter)

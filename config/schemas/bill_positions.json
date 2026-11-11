@@ -1,0 +1,57 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BillPositionsPayload",
+    "description": "Testimony-only positions contract, split out of BillSummaryPayload so the summary and positions LLM calls validate independently. Extended to accept optional draft_news_testimonies for published opinion commentary from approved op-eds and editorials.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["draft_org_positions"],
+    "properties": {
+        "draft_org_positions": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["org_name", "stance", "summary"],
+                "properties": {
+                    "org_name": { "type": "string", "minLength": 1, "maxLength": 200 },
+                    "support": { "enum": ["support", "oppose", "neutral"] },
+                    "stance": { "enum": ["support", "oppose", "neutral"] },
+                    "summary": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "bill_news_article_id": { "type": "integer" },
+                    "text_version_id": { "type": "integer" },
+                    "evidence_excerpt": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "speaker_name": { "type": ["string", "null"], "maxLength": 200 },
+                    "speaker_role": { "type": ["string", "null"], "maxLength": 200 }
+                }
+            }
+        },
+        "draft_news_testimonies": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "bill_news_article_id",
+                    "text_version_id",
+                    "outlet_name",
+                    "canonical_url",
+                    "stance",
+                    "argument",
+                    "evidence_excerpt"
+                ],
+                "properties": {
+                    "bill_news_article_id": { "type": "integer" },
+                    "text_version_id": { "type": "integer" },
+                    "author_name": { "type": ["string", "null"], "maxLength": 200 },
+                    "outlet_name": { "type": "string", "minLength": 1, "maxLength": 200 },
+                    "canonical_url": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "stance": { "enum": ["support", "oppose"] },
+                    "argument": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "evidence_excerpt": { "type": "string", "minLength": 1 }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,5 @@
+class Invite < ApplicationRecord
+  private
+
+  def prevent_self_invite: () -> void
+end

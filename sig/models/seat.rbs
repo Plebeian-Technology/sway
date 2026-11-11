@@ -1,0 +1,27 @@
+class Seat < ApplicationRecord
+    def id: -> Integer?
+    def district: -> District
+    def district=: (District) -> District
+    def district_id: -> Integer
+    def district_id=: (Integer) -> Integer
+    def seat_identifier: -> String
+    def seat_identifier=: (String) -> String
+    def title: -> String
+    def title=: (String) -> String
+    def chamber: -> String
+    def chamber=: (String) -> String
+    def legislator_terms: -> ActiveRecord::Associations::CollectionProxy
+    def lock!: () -> Seat
+
+    def self.find_or_create_by_identity!: (district: District, office_identity: String, title: String, chamber: String) -> Seat
+    def self.count: (?untyped column_name) -> Integer
+    def self.where: (*untyped) -> ActiveRecord::Relation
+
+    def current_terms: (?Date date) -> Array[LegislatorTerm]
+    def active_term: (?Date date) -> LegislatorTerm?
+    def current_occupant: (?Date date) -> Legislator?
+    def sway_locale_id: -> Integer
+end
+
+class Seat::IdentityConflictError < StandardError
+end

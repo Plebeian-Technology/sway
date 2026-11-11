@@ -1,0 +1,8 @@
+class Object
+  def chat_adapter: () -> untyped
+  def chat_route: () -> Llm::RouteResolver::Route
+  def classifier: () -> untyped
+  def org_letter_text: () -> String
+  def named_org_letter_text: () -> String
+  def spokesperson_letter_text: () -> String
+end

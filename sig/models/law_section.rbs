@@ -1,0 +1,9 @@
+# Phase 52 Plan 05 (D-45). Hand-authored summary placeholder.
+#
+# The full autogen-shaped sig is at sig/rbs_rails/app/models/law_section.rbs
+# (rbs_rails introspection — includes `by_sway_locale` scope, columns,
+# associations, and AR macros). This file exists for plan-acceptance
+# parity (`test -f sig/models/law_section.rbs`) and as the location for
+# future hand-written extensions that rbs_rails does not introspect.
+class LawSection < ApplicationRecord
+end

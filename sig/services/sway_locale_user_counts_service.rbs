@@ -1,0 +1,19 @@
+class SwayLocaleUserCountsService
+  def self.by_sway_locale_id: -> Hash[Integer, Integer]
+
+  def by_sway_locale_id: -> Hash[Integer, Integer]
+
+  private
+
+  def address_components_by_sway_locale_id: -> Hash[Integer, Array[Hash[Symbol, String?]]]
+
+  def address_components_in_use: -> Array[Array[String?]]
+
+  def user_count_for: (Array[Hash[Symbol, String?]] components) -> Integer
+
+  def addresses_with: (Array[Hash[Symbol, String?]] components) -> Address::ActiveRecord_Relation
+
+  def sway_locales_by_key: -> Hash[[String, String, String], SwayLocale]
+
+  def sway_locale_for_address: (Hash[Symbol, String?] attrs) -> SwayLocale?
+end

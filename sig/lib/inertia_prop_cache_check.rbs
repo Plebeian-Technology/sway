@@ -1,0 +1,58 @@
+# Hand-written RBS for lib/inertia_prop_cache_check.rb.
+class InertiaPropCacheCheck
+  SCANNED_DIRECTORY: String
+  EXCLUDED_PREFIX: String
+  RUBY_LIKE_EXTENSIONS: Array[String]
+  CACHING_METHODS: Array[Symbol]
+  CACHING_KEYWORDS: Array[String]
+  DISCRIMINATOR: Regexp
+  ALLOWED_PATHS: Array[String]
+
+  class Offence
+    attr_reader path: String
+    attr_reader line: Integer
+    attr_reader source: String
+
+    def initialize: (path: String, line: Integer, source: String) -> void
+
+    def to_s: () -> String
+  end
+
+  class MissingAllowlistedPathError < StandardError
+  end
+
+  class InertiaCallVisitor < Prism::Visitor
+    attr_reader calls: Array[Prism::CallNode]
+
+    def initialize: () -> void
+
+    def visit_call_node: (Prism::CallNode node) -> void
+
+    private
+
+    def inertia_prop_cache?: (Prism::CallNode node) -> bool
+
+    def receiver_name: (untyped node) -> String?
+  end
+
+  @root: String
+  @scanned_paths: Array[String]?
+
+  def initialize: (String root) -> void
+
+  def offences: () -> Array[Offence]
+
+  def allowed_paths: () -> Array[String]
+
+  def scanned_paths: () -> Array[String]
+
+  private
+
+  attr_reader root: String
+
+  def assert_allowed_paths_exist!: () -> void
+
+  def offences_in: (String relative_path) -> Array[Offence]
+
+  def relative: (String path) -> String
+end

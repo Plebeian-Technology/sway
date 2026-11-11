@@ -1,0 +1,16 @@
+module Api
+  module V1
+    class PasskeysController < BaseController
+      include RelyingParty
+
+      DEFAULT_PASSKEY_LABELS: Array[String]
+
+      def create: -> untyped
+      def callback: -> untyped
+
+      private
+
+      def disambiguate_passkey_label: (User user, untyped raw_label) -> String
+    end
+  end
+end

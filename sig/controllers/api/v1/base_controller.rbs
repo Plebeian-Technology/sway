@@ -1,0 +1,23 @@
+module Api
+  module V1
+    class BaseController < ApplicationController
+      def authenticate_mobile_user!: -> untyped
+      def current_user: -> untyped
+      # render_error is inherited from JsonErrorRenderable (WS5.14). Only the
+      # singleton mirror below is kept here for the rescue_from-block context.
+      def public_endpoint?: -> bool
+
+      # WS5.3: shared mobile-auth helpers hoisted from Sessions/Registrations.
+      def credential_for_verify: (untyped credential) -> Hash[untyped, untyped]
+      def log_passkey_client_origin: (untyped credential) -> void
+      def build_bearer_token_payload: (User user, ?platform: String?) -> Hash[Symbol, untyped]
+
+      # Steep tracks `rescue_from ... do ... end` blocks and `rate_limit
+      # ..., with: -> { ... }` lambdas as singleton-class context, even
+      # though Rails dispatches them on the instance at runtime. Mirror the
+      # instance signature on the singleton so the type checker stays
+      # quiet without a per-call # steep:ignore comment storm.
+      def self.render_error: (code: String, message: String, status: Symbol | Integer, ?details: Hash[untyped, untyped]?) -> untyped
+    end
+  end
+end

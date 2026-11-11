@@ -1,0 +1,15 @@
+# Phase 67 Plan 11 (D-12, T-67-51): the single write behind Surface 6's two
+# buttons — "Confirm as a sending service" and "Remove this label" / "Not a
+# sending service".
+class SendingServiceDomainsController < ApplicationController
+  @domain: SendingServiceDomain
+
+  # PATCH /sending_service_domains/:id
+  def update: -> void
+
+  private
+
+  def set_domain: -> void
+
+  def redirect_target: -> String
+end

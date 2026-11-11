@@ -1,0 +1,8 @@
+module PipelineRunBroadcast
+  def self.deliver: (
+    String stream_id,
+    Hash[Symbol, untyped] payload,
+    log_event: String,
+    **untyped context
+  ) -> bool
+end

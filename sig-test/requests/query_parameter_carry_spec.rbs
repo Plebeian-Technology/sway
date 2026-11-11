@@ -1,0 +1,7 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def post_redirect: (String path, ?query: String?, ?referer: String?, ?body: Hash[untyped, untyped]) -> untyped
+  def decoded_response_redirect_query_pairs: () -> Array[[String, String]]
+  def check: () -> QueryParameterCheck
+  def frontend_registry_content: () -> String
+end

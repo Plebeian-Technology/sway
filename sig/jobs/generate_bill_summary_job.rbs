@@ -1,0 +1,282 @@
+# Provider-agnostic bill summarization orchestrator. See
+# app/jobs/generate_bill_summary_job.rb for the full contract.
+class GenerateBillSummaryJob < ApplicationJob
+  # The operator's per-run model choice, set at the top of #perform. nil leaves
+  # #resolve_model_for on AdminSetting.singleton.summarization_model.
+  @summarization_model: String?
+
+  # Wire shape for one draft org position. `org_name` is the canonical key — do
+  # NOT rename to `organization_name`; BillCreatorOrgPositionCard.tsx reads it
+  # directly.
+  type draft_org_position = {
+    "org_name" => String,
+    "stance" => ("support" | "oppose" | "neutral"),
+    "summary" => String,
+    ?"bill_news_article_id" => Integer?,
+    ?"text_version_id" => Integer?,
+    ?"evidence_excerpt" => String?,
+    ?"speaker_name" => String?,
+    ?"speaker_role" => String?,
+    ?"source_url" => String?,
+    ?"outlet_name" => String?,
+    ?"article_title" => String?,
+    ?"excerpt_offset" => Integer?,
+    ?"excerpt_length" => Integer?,
+    ?"excerpt_paragraph" => Integer?,
+    ?"excerpt_page" => Integer?,
+  }
+
+  # JSON payload returned by the summary adapter call (shared with the
+  # paste_summary controller via BILL_SUMMARY_SCHEMA); full_breakdown_markdown
+  # and cited_section_keys are optional. draft_org_positions no longer
+  # appears here — Plan 06 dropped it from the summary output contract;
+  # positions now come from bill_positions_payload via the gated second call.
+  type bill_summary_payload = {
+    "summary_markdown" => String,
+    "full_breakdown_markdown" => String?,
+    "cited_section_keys" => Array[String]?,
+  }
+
+  # JSON payload returned by the testimony-gated positions adapter call
+  # (BILL_POSITIONS_SCHEMA — Plan 03/06).
+  type bill_positions_payload = {
+    "draft_org_positions" => Array[draft_org_position],
+    ?"draft_news_testimonies" => Array[Hash[String, untyped]]?,
+  }
+
+  MAX_GENERATION_ERROR_LENGTH: Integer
+
+  # B1-WR-03: the generation_error written when neither paid call had its
+  # inputs, so the `failed` branch can tell the operator what is missing.
+  NOTHING_TO_GENERATE_ERROR: String
+
+  # The sibling message for a run that DID buy positions from testimony but
+  # bought no summary, because the bill had no text. Says both halves, since
+  # the positions below the message are real.
+  NO_SOURCE_TEXT_ERROR: String
+
+  # F16-02: the same run when the positions call FAILED, so no positions are
+  # below the message at all. Carries a %{reason} placeholder for the scrubbed
+  # adapter message; compose with `format`.
+  NO_SOURCE_TEXT_POSITIONS_FAILED_ERROR: String
+
+  # F17-01: how many characters of the adapter message fit inside
+  # MAX_GENERATION_ERROR_LENGTH once the template's own words are counted.
+  # Subtracted from the template, so the wording and this number cannot drift.
+  MAX_POSITIONS_FAILED_REASON_LENGTH: Integer
+
+  # B19-04: the positions call landed, but the testimony behind it was
+  # withdrawn while it was in flight, so its answer was discarded. Written
+  # under POSITIONS_DISCARDED_PREFIX, and carried into
+  # NO_SOURCE_TEXT_POSITIONS_FAILED_ERROR's %{reason} slot on a
+  # testimony-only bill.
+  POSITIONS_EVIDENCE_WITHDRAWN_REASON: String
+
+  POSITIONS_DISCARDED_PREFIX: String
+
+  # F16-02: the same run when the positions call landed and named no
+  # organization, so there are no positions below the message either.
+  NO_SOURCE_TEXT_NO_POSITIONS_ERROR: String
+
+  # Skip a summary job that sat in the queue past this since its
+  # latest (re-)enqueue.
+  STALE_AFTER: ActiveSupport::Duration
+
+  # Rescue handle for callers that catch summary failures broadly (notably
+  # RunLegislationPipelineJob#perform_bill).
+  class BillSummaryError < StandardError
+  end
+
+  # Wraps Llm::TransportError; retried with backoff.
+  class TransientBillSummaryError < BillSummaryError
+  end
+
+  # Wraps Llm::SchemaError; discarded without retry.
+  class DeterministicBillSummaryError < BillSummaryError
+  end
+
+  # The statuses settle_failure! may stamp terminal.
+  SETTLEABLE_ON_FAILURE: Array[String]
+
+  # Seconds allowed for the local model-server probe.
+  HEALTH_PROBE_TIMEOUT_SECONDS: Integer
+
+  # How long one "endpoint down" warning stands for.
+  HEALTH_WARN_INTERVAL: ActiveSupport::Duration
+
+  # Nil until the first warning is written.
+  self.@llm_endpoint_warned_at: ActiveSupport::TimeWithZone?
+
+  def self.llm_endpoint_down?: (?Llm::RouteResolver::Route? route) -> bool
+
+  def self.probe_llm_endpoint: () -> bool
+
+  def self.warn_llm_endpoint_down: (Integer bill_id) -> void
+
+  # B23-03: what #perform says it did, because the pipeline's inline
+  # perform_now cannot tell from the outside and used to record every normal
+  # return as "succeeded" — including the paths that produced nothing, after
+  # which resume skipped the bill forever.
+  NOT_RUN: Symbol
+  SETTLED: Symbol
+  STOOD_DOWN: Symbol
+
+  @summary_instructions: String?
+  @reasoning_effort: String?
+
+  def perform: (Integer bill_id, ?summarization_model: String?, ?summary_instructions: String?, ?reasoning_effort: String?) -> Symbol
+
+  private
+
+  # Puts a failed model call in the operator's Activity Log. The bill is handed
+  # to the block so the nil guard inside is what the block's argument type comes
+  # from; a nil bill yields nothing. Swallows its own failures, because the
+  # caller is about to re-raise the error that decides whether the job retries
+  # and a log write must never replace it.
+  def log_llm_failure: (Bill? bill) { (Bill) -> void } -> void
+
+  def record_failure: (BillLlmProvisioning? provisioning, BillSummaryError error) -> void
+
+  # The settle half of #record_failure. Swallows its own failures so the error
+  # the caller is about to raise stays the job's outcome. (BE25-01)
+  def settle_failure!: (BillLlmProvisioning provisioning, BillSummaryError error) -> void
+
+  # B4-CR-03: true when a previous execution of THIS enqueue already bought and
+  # persisted a summary (summary_run_id == job_id). A regenerate carries a
+  # different job_id and is therefore never short-circuited.
+  def resumed_after_purchase?: (BillLlmProvisioning provisioning) -> bool
+
+  # The settle for a retry that arrives with nothing left to buy. Carries the
+  # log and the clear_generation_error decision that used to sit inline.
+  def settle_resumed_run: (Bill bill, BillLlmProvisioning provisioning) -> void
+
+  # Writes the bill's prompt snapshot after a :persisted summary. A failure is
+  # logged and dropped: a paid call that landed must not be undone by
+  # bookkeeping.
+  def record_prompt_snapshot: (
+    bill: Bill, snapshot: BillSummaryPromptBuilder::Snapshot?,
+    built_at: ActiveSupport::TimeWithZone?, facts: Hash[untyped, untyped]?,
+    llm_model: String?, llm_provider: String?
+  ) -> void
+
+  # Logs SummaryRunPersistGuard's :vanished outcome.
+  def bail_on_vanished_row: (Bill bill, BillLlmProvisioning provisioning) -> void
+
+  # The completion tail, shared by the ordinary path and by B4-CR-03's re-entry
+  # path so the two cannot drift. clear_generation_error is for the paths that
+  # settle a row without buying anything — see the method comment for why the
+  # ordinary path must not clear. B20-04 added one more such path: a
+  # positions-only resume whose evidence went away before the locked read, so
+  # it made no call and reached no persist to clear the column on its way.
+  #
+  # F18-02: recompute_score is false only where the caller can prove the run
+  # made neither paid call, which is the same rule the two no-summary settles
+  # below state — a run that bought nothing moved no score signal.
+  def settle_completed: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    ?clear_generation_error: bool,
+    ?recompute_score: bool,
+  ) -> void
+
+  # B1-WR-03: the terminal settle for a run in which NEITHER paid call fired.
+  # Marks the row `failed` with NOTHING_TO_GENERATE_ERROR rather than letting
+  # settle_completed claim a summary that was never bought.
+  def settle_nothing_to_generate: (BillLlmProvisioning provisioning) -> void
+
+  # The other arm of the same hole: a run with testimony but no bill text
+  # bought no summary. Marks the row `failed`, so no green "Ready" badge is
+  # stamped over an empty summary. Only reached when the row holds no summary
+  # at all — a regeneration that kept an earlier one is genuinely complete.
+  #
+  # F16-02: positions_failed_reason is the scrubbed adapter message when THIS
+  # execution's positions call failed, and nil otherwise. The stored message
+  # is chosen from it and from the row's own drafts.
+  def settle_no_source_text: (
+    BillLlmProvisioning provisioning,
+    ?positions_failed_reason: String?,
+  ) -> void
+
+  # F16-02: which of the three no-summary messages the row has earned. Already
+  # capped at MAX_GENERATION_ERROR_LENGTH.
+  def no_source_text_message: (BillLlmProvisioning provisioning, String? positions_failed_reason) -> String
+
+  # @lat: [[llm-summaries#Output is validated, not trusted#Multi-chunk positions generation and deduplication]]
+  def deduplicate_draft_news_testimonies: (Array[untyped] raw_testimonies) -> Array[Hash[String | Symbol, untyped]]
+
+  # B19-04: logs the discarded positions purchase, records the reason on the
+  # row, and returns that reason so the no-summary settle can carry it.
+  # B21-04: also stamps the purchase receipt, because this is the one paid
+  # path that discards its own answer and SummaryRunPersistGuard.call returns
+  # before its update!. B22-07: the WHOLE write is skipped over an
+  # operator-paste marker, both columns — neither is this run's to write once a
+  # human owns the row.
+  def discard_withdrawn_positions!: (Bill bill, BillLlmProvisioning provisioning) -> String
+
+  # B19-01: the arm, held to the same committed-state re-check under the write
+  # lock as every settle — a compare-and-swap on the generation_status #perform
+  # loaded. false when another execution moved the row while this one waited,
+  # in which case this one makes no paid calls.
+  #
+  # B20-01 added the second question the swap was silent about: a row already
+  # `generating` reads the same at load and under the lock, so the swap passed
+  # for a row another execution was already spending money on. The arm now also
+  # declines a `generating` row it does not own, and CLAIMS the row it arms.
+  #
+  # Two exceptions, both of which proceed rather than declining. B21-02: an
+  # operator paste, so the pre-call clear can complete the hand-off
+  # PasteSummaryService deferred. B21-01: a row no writer has touched for
+  # RECLAIM_ABANDONED_AFTER, which has no live owner — without it an execution
+  # killed on the inline pipeline path wedges the row forever, because the
+  # service-side reclaim cannot be reached from any enabled control.
+  #
+  # B22-01: the decision itself moved to SummaryRunArmDecision, one table with
+  # a row per case. This method carries the answer out.
+  #
+  # @lat: [[llm-summaries#Runs are marked and reclaimable#One armer for both the synchronous run and the batch]]
+  def arm_row_unless_owned!: (Bill bill, BillLlmProvisioning provisioning) -> bool
+
+  # B21-01: the durable record that a worker died, since the run that found
+  # the abandoned row carries on regardless.
+  def log_reclaimed_abandoned_run: (Bill bill, BillLlmProvisioning provisioning) -> void
+
+  # B23-01: what the declining row of the table MEANS, since an on-call reader
+  # reads the message before the decision field beside it.
+  def decline_message: (Symbol? decision_name) -> String
+
+  # D-WR-02: the pre-call clear of generation_error, held to the marker
+  # re-check because a paste can land between the supersede gate and this line.
+  # It no longer clears summary_run_id: B20-01's claim is written by the arm one
+  # statement above and has to stand for the whole paid region.
+  #
+  # B23-03: :proceed, SETTLED (stood down onto an operator's paste — the bill
+  # HAS a summary) or NOT_RUN (the row is gone — nothing was produced). Those
+  # last two were one `false`, so the second wore the first's stage outcome.
+  def clear_stale_run_state_unless_superseded!: (Bill bill, BillLlmProvisioning provisioning) -> Symbol
+
+  # D-WR-02: the shared tail of both marker re-checks — log the discard, settle
+  # the row onto the pasted body.
+  #
+  # B22-02: recompute_score comes from the caller, because only the caller knows
+  # whether the run spent anything. The pre-call re-check sits above
+  # Llm::Client.build and passes false; the persist-site one made both calls and
+  # takes the default.
+  def stand_down_mid_run: (
+    Bill bill,
+    BillLlmProvisioning provisioning,
+    ?recompute_score: bool,
+  ) -> void
+
+  # D-IN-01: completes the hand-off PasteSummaryService defers for an in-flight
+  # row, and does NOTHING for a row it already settled. The gate now runs
+  # before enqueue!/start_generating!, so a settled row is no longer walked
+  # through `generating` on its way to being left alone. B19-01 moved the
+  # in-flight check under the write lock, so it reads committed state.
+  def settle_superseded_row: (Bill bill, BillLlmProvisioning provisioning) -> void
+
+  def mark_stale_skipped!: (BillLlmProvisioning? provisioning) -> void
+
+  # The shared reader every gate that moves this row to a terminal status goes
+  # through. Callers must already hold the write lock. (BE25-01)
+  def finish_deferred_paste!: (BillLlmProvisioning provisioning) -> bool
+end

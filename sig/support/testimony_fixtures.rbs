@@ -1,0 +1,15 @@
+# The two local-only testimony fixture loaders. Paths are frozen String
+# constants (Rails.root.join(...).to_s), not Pathname, matching
+# spec/support/testimony_fixtures.rb.
+module TestimonyFixtures
+  CAMPAIGN_BUNDLE: String
+  NO_CAMPAIGN_BUNDLE: String
+
+  def self.campaign_bundle: () -> String
+  def self.no_campaign_bundle: () -> String
+  WRAPPED_ADDRESS: Regexp
+
+  def self.wrapped_sender_address: () -> String
+  def self.read:(String path) -> String
+  def self.missing_message: (String path) -> String
+end

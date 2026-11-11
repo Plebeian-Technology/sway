@@ -1,0 +1,29 @@
+class OrganizationBillPositionsController < ApplicationController
+    include BillCreatorTabRedirects
+
+    # Phase 52 REVIEW-10 MEDIUM-1 (cycle 10): STANCE_TO_SUPPORT lives on
+    # OrganizationBillPosition now (see
+    # sig/models/organization_bill_position.rbs). Controllers call
+    # OrganizationBillPosition.normalize_support(value).
+
+    # The two fields PipelineActivityLogger reads off a draft.
+    class LoggedPosition
+      attr_reader id: String
+      attr_reader organization_name: String
+
+      def self.new: (String, String) -> LoggedPosition
+    end
+
+    def index: -> untyped
+
+    def show: -> untyped
+
+    def create: -> untyped
+
+    def destroy: -> untyped
+
+    private
+
+    def organization_bill_positions_params: -> untyped
+
+end

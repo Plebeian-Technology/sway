@@ -1,0 +1,25 @@
+# Reads a legislator's served cycle off their own votes rather than
+# off a timestamp on the row. Hand-maintained (RBS here is not
+# rbs_rails-generated).
+class TermYearFromVotes
+  @legislator: Legislator
+
+  @sway_locale: SwayLocale
+
+  def initialize: (Legislator legislator) -> void
+
+  def call: () -> Integer?
+
+  private
+
+  attr_reader legislator: Legislator
+
+  # Non-nil: legislators.sway_locale_id is NOT NULL with a foreign key.
+  def sway_locale: () -> SwayLocale
+
+  def cycle_years: () -> Array[Integer]
+
+  def voted_while_this_row_existed?: (Integer cycle_start_year) -> bool
+
+  def vote_dates: () -> Array[ActiveSupport::TimeWithZone]
+end

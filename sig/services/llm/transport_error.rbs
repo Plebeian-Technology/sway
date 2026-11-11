@@ -1,0 +1,4 @@
+module Llm
+  class TransportError < StandardError
+  end
+end

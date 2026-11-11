@@ -1,0 +1,248 @@
+/* BANNER bill-list layout — the bill list set as a local-newsroom section
+   front: an orange-kicker masthead carrying the session + category filters,
+   then bills as headline cards in a hairline-ruled grid. Mona Sans is loaded by
+   application.html.erb when the Banner theme is active. Colour comes from the
+   banner theme tokens. Realizes mockups/banner.html. */
+
+.bnl-stage {
+    --bn-link: #520bc4; /* The Banner's first-party headline-hover purple */
+    max-width: var(--content-max);
+    margin: 0 auto;
+    color: var(--foreground);
+    font-family: var(--font-body);
+    line-height: var(--leading-body);
+}
+html.dark .bnl-stage {
+    --bn-link: #b9a3ff;
+}
+@media (prefers-color-scheme: dark) {
+    html[data-theme-mode="auto"] .bnl-stage {
+        --bn-link: #b9a3ff;
+    }
+}
+
+.bnl-kicker {
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.bnl-cat {
+    font-size: 0.8125rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+.bnl-sep {
+    color: var(--border-strong);
+}
+
+.bnl-topbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+.bnl-wordmark {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+}
+.bnl-edition {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.bnl-main {
+    padding: 2rem 0 3rem;
+}
+.bnl-crumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.bnl-title {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: clamp(1.9rem, 1.3rem + 2.2vw, 2.75rem);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--foreground);
+    margin-bottom: 1.5rem;
+    text-wrap: balance;
+}
+
+/* filter bar -------------------------------------------------------------- */
+.bnl-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-top: 2px solid var(--foreground);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+/* @lat: [[bills-filter-header#Why the categories control gets its own line]] */
+.bnl-field--wide {
+    flex-basis: 100%;
+}
+
+.bnl-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    gap: 0.5rem;
+}
+.bnl-field__label {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+/* @lat: [[theme-tokens#Theme tokens#Why native select chrome is defined once, globally]] */
+.bnl-more {
+    font: inherit;
+    font-size: var(--type-small);
+    font-weight: var(--weight-medium);
+    padding: 0.3125rem 0.75rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+    transition:
+        background var(--dur-1) var(--ease-out),
+        border-color var(--dur-1) var(--ease-out),
+        color var(--dur-1) var(--ease-out);
+}
+.bnl-more:hover {
+    border-color: var(--foreground);
+}
+.bnl-count {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+    margin-bottom: 1.25rem;
+}
+
+/* the card grid ----------------------------------------------------------- */
+.bnl-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--border);
+}
+.bnl-card {
+    padding: 1.25rem 1.5rem 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+}
+.bnl-card:nth-child(odd) {
+    border-right: 1px solid var(--border);
+    padding-right: 1.5rem;
+}
+.bnl-card:nth-child(even) {
+    padding-left: 1.5rem;
+}
+.bnl-card__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.bnl-billno {
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+}
+.bnl-headline {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: 1.3rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+    text-decoration: none;
+    text-wrap: balance;
+    transition: color var(--dur-1) var(--ease-out);
+}
+.bnl-headline:hover {
+    color: var(--bn-link);
+}
+.bnl-brief {
+    margin-top: 0.5rem;
+    font-size: var(--type-small);
+    line-height: 1.5;
+    color: var(--muted-foreground);
+}
+.bnl-cardfoot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    margin-top: 0.875rem;
+    font-size: var(--type-micro);
+    color: var(--muted-foreground);
+}
+.bnl-bar {
+    width: 84px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+}
+.bnl-bar > span {
+    display: block;
+    height: 100%;
+    background: var(--vote-for);
+}
+.bnl-tally {
+    font-variant-numeric: tabular-nums;
+}
+.bnl-voted {
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--vote-for);
+}
+.bnl-empty {
+    padding: 1.5rem 0;
+    font-size: var(--type-body);
+    color: var(--muted-foreground);
+}
+
+@media (max-width: 720px) {
+    .bnl-grid {
+        grid-template-columns: 1fr;
+    }
+    .bnl-card,
+    .bnl-card:nth-child(odd),
+    .bnl-card:nth-child(even) {
+        padding: 1.25rem 0;
+        border-right: none;
+    }
+}
+
+/* The segment that distinguishes this bill from its neighbours. */
+.bnl-qualifier {
+    font-weight: var(--weight-body);
+    color: var(--muted-foreground);
+}

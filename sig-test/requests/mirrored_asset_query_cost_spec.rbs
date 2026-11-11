@@ -1,0 +1,26 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # Counts Active Storage attachment and blob reads for one request.
+  def asset_row_reads: () { () -> void } -> Integer
+
+  # Returns attachment reads and response-body bytes for one request.
+  def mirrored_asset_response_measurement: () { () -> void } -> Hash[Symbol, Integer]
+
+  # Returns database queries and response bytes for one request.
+  def sql_response_measurement: () { () -> void } -> Hash[Symbol, Integer]
+
+  # Returns measurements for two collection sizes.
+  def reads_at_two_sizes: (add: ^(Integer, Integer) -> void) { () -> void } -> [Hash[Symbol, Integer], Hash[Symbol, Integer]]
+
+  def add_organizations: (count: Integer, from: Integer, sway_locale: SwayLocale, user: User, bill: Bill) -> void
+  def organization_adder: (sway_locale: SwayLocale, user: User, bill: Bill) -> (^(Integer, Integer) -> void)
+  def add_past_legislators: (count: Integer, from: Integer, sway_locale: SwayLocale, user: User) -> void
+  def add_session_roster_members: (count: Integer, from: Integer, sway_locale: SwayLocale, session: LegislativeSession) -> void
+  def add_stored_roster_members: (count: Integer, from: Integer, sway_locale: SwayLocale, ?session: LegislativeSession?) -> void
+  # The roster entries an example seated itself, picked out by the external-id prefix its
+  # add_* helper stamps.
+  def seated_roster_entries: (Hash[String, untyped] payload, String external_id_prefix) -> Array[Hash[String, untyped]]
+  def bill_score_district_query_counts: () { () -> void } -> Hash[Symbol, Integer]
+  def add_bill_score_districts: (count: Integer, from: Integer, sway_locale: SwayLocale, bill_score: BillScore) -> void
+  def add_correlated_bill_votes: (count: Integer, from: Integer, sway_locale: SwayLocale, bill: Bill) -> void
+end

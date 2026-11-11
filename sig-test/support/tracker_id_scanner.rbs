@@ -1,0 +1,49 @@
+# spec/support/tracker_id_scanner.rb.
+#
+# A real class rather than a spec-DSL helper, so it gets a real signature --
+# same reasoning as PersonalDetailScanner's own sig-test signature.
+class TrackerIdScanner
+  # One cited tracker id, at the place it was found.
+  class Finding
+    attr_reader path: String
+    attr_reader line: Integer
+    attr_reader id: String
+    attr_reader exempt: bool
+
+    def initialize: (path: String, line: Integer, id: String, exempt: bool) -> void
+
+    def to_s: () -> String
+  end
+
+  ID_PATTERN: Regexp
+  SKIPPED_PREFIXES: Array[String]
+  SKIPPED_EXTENSIONS: Array[String]
+
+  TRACKER_INTEGRATION: String
+
+  # path => the evidence for accepting that path's findings.
+  EXEMPT_PATHS: Hash[String, String]
+
+  @findings: Array[Finding]?
+  @unexempt: Array[Finding]?
+
+  def initialize: (?root: Pathname) -> void
+
+  def findings: () -> Array[Finding]
+
+  # The citations nothing has vouched for.
+  def unexempt: () -> Array[Finding]
+
+  private
+
+  attr_reader root: Pathname
+
+  def raw_paths: () -> Array[String]
+
+  def scannable_paths: () -> Array[String]
+
+  # Whether the path is a real file rather than a directory or a symlink.
+  def scannable_file?: (Pathname full_path) -> bool
+
+  def findings_in: (String path) -> Array[Finding]
+end

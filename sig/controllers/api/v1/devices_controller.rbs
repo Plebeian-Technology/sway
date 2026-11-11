@@ -1,0 +1,8 @@
+module Api
+  module V1
+    class DevicesController < BaseController
+      def update_push_token: -> untyped
+      def destroy: -> untyped
+    end
+  end
+end

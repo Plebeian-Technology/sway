@@ -1,0 +1,17 @@
+# Phase 66 Plan 01. Steep enforces the status is one of the three
+# symbols at type-check time; #initialize adds a runtime ArgumentError guard
+# at the boundary for dynamic callers that bypass Steep.
+module Litestream
+  class ReplicaReading
+    STATUSES: Array[Symbol]
+
+    attr_reader status: :ok | :empty | :unreadable
+    attr_reader position: Integer?
+    attr_reader bucket_name: String
+    attr_reader path: String
+    attr_reader error: Exception?
+
+    def initialize: (status: :ok | :empty | :unreadable, position: Integer?, bucket_name: String, path: String, error: Exception?) -> void
+    def self.new: (status: :ok | :empty | :unreadable, position: Integer?, bucket_name: String, path: String, error: Exception?) -> Litestream::ReplicaReading
+  end
+end

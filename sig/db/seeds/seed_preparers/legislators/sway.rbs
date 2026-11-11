@@ -1,0 +1,16 @@
+module SeedPreparers
+  module Legislators
+    class Sway
+      def initialize: (Hash[String, untyped] json, SwayLocale sway_locale) -> void
+
+      def district: () -> District?
+      def identity: () -> LegislatorIdentity?
+      def current_member?: () -> bool
+      def title: () -> String
+      def term_start_year: () -> Integer
+      def term_end_year: () -> Integer
+      def first_name: () -> String?
+      def last_name: () -> String?
+    end
+  end
+end

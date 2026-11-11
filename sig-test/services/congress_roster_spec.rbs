@@ -1,0 +1,13 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # A throwaway roster file. spec/data/correct_congress_term_lengths_spec.rb
+  # builds one under the same name, so it is declared once for both.
+  def roster_file: () -> Tempfile
+
+  def roster_json: () -> Array[Hash[String, untyped]]
+
+  def roster: () -> CongressRoster
+
+  # The reader pointed at the roster Sway actually ships.
+  def committed: () -> CongressRoster
+end

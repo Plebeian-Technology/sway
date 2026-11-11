@@ -1,0 +1,22 @@
+class BaltimoreBillLinkBackfillService
+  class PersistenceError < StandardError
+  end
+
+  GENERIC_SEARCH_URL: String
+  DEFAULT_LOCALE: String
+
+  @sway_locale: SwayLocale?
+  @client: Legistar::Client
+  @detail_url_resolver: untyped
+  @logger: untyped
+  @raise_on_failure: bool
+
+  def self.call: (?sway_locale: SwayLocale?, ?locale: SwayLocale?, ?client: Legistar::Client?, ?legistar_client: Legistar::Client?, ?detail_url_resolver: untyped, ?resolver: untyped, ?logger: untyped, ?raise_on_failure: bool, **untyped) -> Hash[Symbol, Integer]
+  def initialize: (?sway_locale: SwayLocale?, ?locale: SwayLocale?, ?client: Legistar::Client?, ?legistar_client: Legistar::Client?, ?detail_url_resolver: untyped, ?resolver: untyped, ?logger: untyped, ?raise_on_failure: bool, **untyped) -> void
+  def call: () -> Hash[Symbol, Integer]
+
+  private
+
+  def process_bill: (Bill bill, Hash[Symbol, Integer] stats) -> void
+  def find_matter_id: (Bill bill) -> Integer?
+end

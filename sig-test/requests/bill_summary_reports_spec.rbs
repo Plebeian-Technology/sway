@@ -1,0 +1,5 @@
+class Object
+  def regular_user: () -> User
+  def second_user: () -> User
+  def existing_report: () -> BillSummaryReport
+end

@@ -1,0 +1,42 @@
+class RepresentativeReassignmentObserver
+  def self.observe_diff!: (
+    user: User,
+    stale_district_ids: Array[Integer],
+    new_district_ids: Array[Integer],
+    stale_legislator_ids: Array[Integer],
+    new_legislator_ids: Array[Integer],
+    stored_uls: Array[untyped],
+    resolved_legislators: Array[Legislator],
+    stored_user_districts: Array[untyped],
+    resolved_districts: Array[District]
+  ) -> void
+  def observe_diff!: (
+    user: User,
+    stale_district_ids: Array[Integer],
+    new_district_ids: Array[Integer],
+    stale_legislator_ids: Array[Integer],
+    new_legislator_ids: Array[Integer],
+    stored_uls: Array[untyped],
+    resolved_legislators: Array[Legislator],
+    stored_user_districts: Array[untyped],
+    resolved_districts: Array[District]
+  ) -> void
+
+  def district_for: (Legislator legislator) -> District?
+
+  def seat_id_for: (Legislator legislator) -> Integer?
+
+  def pair_legislators: (
+    Array[Legislator] stale_legs,
+    Array[Legislator] new_legs
+  ) -> [Array[[Legislator, Legislator]], Array[Legislator], Array[Legislator]]
+
+  def persist_reassignment: (
+    user: User,
+    reassignment_type: Symbol,
+    district: District?,
+    previous_district: District?,
+    legislator: Legislator?,
+    previous_legislator: Legislator?
+  ) -> RepresentativeReassignment?
+end

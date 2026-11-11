@@ -1,0 +1,34 @@
+# Phase 65 Task 1 (65-01) — Steep sig for the TermWindow spec.
+# TermWindowCandidate is a minimal Struct-based term-like double (no
+# LegislatorTerm model exists yet — it lands in 65-03).
+class TermWindowCandidate
+  def initialize: (Integer term_start_year, SwayLocale sway_locale, ?Date? began_on) -> void
+  def term_start_year: () -> Integer
+  def sway_locale: () -> SwayLocale
+  # The real day the term began, when Sway watched it start.
+  def began_on: () -> Date?
+end
+
+# @lat: [[current-legislator-term#Which term a legislator is serving now]]
+class BoundedTermWindowCandidate
+  def initialize: (Integer term_start_year, Integer term_end_year, SwayLocale sway_locale, ?Date? ended_on, ?Date? began_on) -> void
+  def term_start_year: () -> Integer
+  def term_end_year: () -> Integer
+  def sway_locale: () -> SwayLocale
+  # The real day the term ended, when one is known.
+  def ended_on: () -> Date?
+  # The real day the term began, when Sway watched it start.
+  def began_on: () -> Date?
+end
+
+# Steep does not resolve RSpec `let`, so the .running_on candidates are
+# declared here.
+class Object
+  def congress_2023: () -> BoundedTermWindowCandidate
+  def congress_2025: () -> BoundedTermWindowCandidate
+  def senate_2025: () -> BoundedTermWindowCandidate
+  def balt_2020: () -> BoundedTermWindowCandidate
+  def balt_2024: () -> BoundedTermWindowCandidate
+  def graham_left_early: () -> BoundedTermWindowCandidate
+  def arrived_mid_cycle: () -> TermWindowCandidate
+end

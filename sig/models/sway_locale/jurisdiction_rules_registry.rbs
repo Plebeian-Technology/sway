@@ -1,0 +1,11 @@
+class SwayLocale
+  module JurisdictionRulesRegistry
+    DECLARATIONS: Hash[String, JurisdictionRules]
+
+    def self.fetch: (String locale_name) -> JurisdictionRules
+
+    def self.declared?: (String locale_name) -> bool
+
+    def self.declared_locale_names: () -> Array[String]
+  end
+end

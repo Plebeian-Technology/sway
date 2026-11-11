@@ -1,0 +1,32 @@
+class OrganizationsController < ApplicationController
+    include BillCreatorTabRedirects
+
+    @bill: untyped
+
+    @organization: Organization?
+
+    def index: -> untyped
+
+    def show: -> untyped
+
+    def create: -> untyped
+
+    # Admin-only PATCH /organizations/:id — name-only rename.
+    def update: -> untyped
+
+    private
+
+    def set_bill: -> untyped
+
+    def set_organization: -> Organization?
+
+    def organizations_params: -> untyped
+
+    def organization_update_params: -> untyped
+
+    # True for a blank address and for one pointing at a file we already hold,
+    # neither of which belongs in icon_url.
+    def our_own_asset_url?: (untyped url) -> bool
+
+    def find_or_initialize_organization_from_param: (untyped param) -> untyped
+end

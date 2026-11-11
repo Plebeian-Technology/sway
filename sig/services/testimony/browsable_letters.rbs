@@ -1,0 +1,42 @@
+module Testimony
+  class BrowsableLetters
+    ALLOWED_STANCES: Array[String]
+    GOVERNMENT_SENDER_DOMAIN_PATTERN: Regexp
+    GOVERNMENT_ADMIN_CORRESPONDENCE_PATTERN: Regexp
+
+    class Entry
+      attr_reader position: Integer
+      attr_reader label: String
+      attr_reader stance: String
+      attr_reader body_text: String
+
+      def initialize: (position: Integer, label: String, stance: String, body_text: String) -> void
+                    | (Integer, String, String, String) -> void
+      def self.new: (position: Integer, label: String, stance: String, body_text: String) -> Testimony::BrowsableLetters::Entry
+                  | (Integer, String, String, String) -> Testimony::BrowsableLetters::Entry
+    end
+
+    def self.for_bill: (Bill? bill) -> Array[Entry]
+    def self.counts_for_bill: (Bill? bill) -> Hash[Symbol, Integer]
+    def self.counts_from_entries: (Array[Entry]? entries) -> Hash[Symbol, Integer]
+
+    @bill: Bill?
+
+    def initialize: (Bill? bill) -> void
+    def for_bill: () -> Array[Entry]
+    def counts_for_bill: () -> Hash[Symbol, Integer]
+
+    private
+
+    def parse_int: (untyped val) -> Integer?
+    def extract_clean_body: (untyped raw_body, ?untyped sender_address, ?untyped sender_domain) -> String
+    def internal_correspondence_body?: (String cleaned, untyped sender_address, untyped sender_domain) -> bool
+    def government_sender?: (untyped sender_address, untyped sender_domain) -> bool
+    def strip_leading_wrappers_and_envelopes: (String text) -> String
+    def forward_divider_line?: (untyped line) -> bool
+    def build_draft_id_by_position: (untyped campaign_drafts) -> Hash[Integer, String]
+    def letter_eligible?: (untyped letter, Hash[Integer, String] draft_id_by_position, Set[String] individual_hashes, Set[String] rejected_hashes, Set[String] approved_hashes) -> bool
+    def approved_campaign_draft_hashes: () -> Set[String]
+    def normalize_stance: (untyped raw) -> String
+  end
+end

@@ -1,0 +1,13 @@
+# Phase 61 merge steep remediation — spec/requests/notifications_controller_spec.rb
+# builds its X-Inertia-Version header from InertiaRails.configuration.version.
+# The inertia_rails gem ships no RBS; sig/shims/external_auth_libs.rbs declares
+# the module without the configuration accessor, so declare it test-side only.
+module InertiaRails
+  class Configuration
+    # `version` is a user-supplied config value (String | Proc | nil in the
+    # gem); the spec only calls #to_s on it.
+    def version: () -> untyped
+  end
+
+  def self.configuration: () -> Configuration
+end

@@ -1,0 +1,16 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BillCategoriesPayload",
+    "description": "Categorize-only LLM pass contract. No enum for category names — active-set membership enforced in BillCategoryAssigner after parse. The categories array is bounded in both directions: the item bound is Category::MAX_NAME_CHARS (100), the longest name a Category record can hold, so a longer name could never match an active category anyway, and no honest answer is refused. The same bound and the same reason apply to the categories array in bill_summary.json.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["categories"],
+    "properties": {
+        "categories": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+        }
+    }
+}

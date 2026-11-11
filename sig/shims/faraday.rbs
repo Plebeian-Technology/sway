@@ -1,0 +1,36 @@
+# Methods Faraday really has that its published signatures leave out. Every one
+# of them is needed to read a response a chunk at a time, which is how both
+# download paths bound their memory now.
+#
+# Checked against the installed gem rather than guessed:
+#   Request  is `Struct.new(:http_method, :path, :params, :headers, :body, :options)`,
+#            so it has an `options` READER; the collection declares only `options=`.
+#   Response is `attr_reader :env`, and `def initialize(env = nil)`.
+#   Env      defines `self.from` (inherited from Options and extended) and its own
+#            `body` / `body=`, which read or write the request body before a status
+#            arrives and the response body afterwards.
+#
+# Nothing here weakens a declared type. Each entry adds a method the collection
+# omits; where the collection already says something, it is left alone.
+module Faraday
+  class Request
+    def options: () -> RequestOptions
+  end
+
+  class Response
+    # `def initialize(env = nil)`. Without this, building a real response in a
+    # test falls back to Object.new and every argument is rejected.
+    def initialize: (?Env? env) -> void
+
+    def env: () -> Env
+  end
+
+  class Env
+    # Builds an Env from a plain hash of member names, another Env, or nothing.
+    def self.from: (Hash[Symbol, untyped] | Faraday::Env | nil value) -> Faraday::Env
+
+    # Writes whichever body the current status selects. `nil` is how Faraday
+    # says "no body", so it is allowed here too.
+    def body=: (String? value) -> String?
+  end
+end

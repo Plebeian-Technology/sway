@@ -1,0 +1,4 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def congress_discovery_response_status: () -> Integer
+end

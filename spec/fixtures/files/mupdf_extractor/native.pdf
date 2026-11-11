@@ -1,0 +1,7 @@
+%PDF-1.4
+% Minimal placeholder fixture for MupdfExtractor unit specs. Open3 is stubbed
+% in those specs so the file contents are irrelevant — the path just needs to
+% exist. Do not rely on this being a valid PDF beyond the magic bytes.
+1 0 obj<</Type/Catalog>>endobj
+trailer<</Root 1 0 R>>
+%%EOF

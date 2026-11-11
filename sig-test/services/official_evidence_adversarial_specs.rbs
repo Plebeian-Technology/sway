@@ -1,0 +1,10 @@
+class Object
+  def profile: () -> Hash[Symbol, untyped]
+  def seat: () -> Seat
+  def term_for: (Legislator, began_on: Date, ended_on: Date) -> LegislatorTerm
+  def provenance_record: (?id: String, ?start_date: String, ?end_date: String) -> Hash[Symbol, untyped]
+  def reader_connection: (String, ?base_url: String) -> Faraday::Connection
+  def consumer_record: (?id: String, ?title: String, ?start_date: String, ?end_date: String) -> Hash[Symbol, untyped]
+  def read_result: (Array[Hash[Symbol, untyped]]) -> OfficialEvidence::Result
+  def seed_result: (OfficialEvidence::Result) -> OfficialEvidence::Result
+end

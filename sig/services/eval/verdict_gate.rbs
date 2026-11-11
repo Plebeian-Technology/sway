@@ -1,0 +1,12 @@
+# RBS sig for Eval::VerdictGate — see app/services/eval/verdict_gate.rb.
+module Eval
+  module VerdictGate
+    class SelfGradedError < StandardError
+    end
+
+    class StaleAnswerError < StandardError
+    end
+
+    def self?.admit!: (verdict: Hash[String, untyped], answer: Hash[String, untyped], manifest_entry: Hash[String, untyped]) -> true
+  end
+end

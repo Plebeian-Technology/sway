@@ -1,0 +1,7 @@
+class NotifyBillOfTheMonthUsersJob < ApplicationJob
+    def perform: -> void
+
+    private
+
+    def fan_out_native_push: (Bill bill) -> void
+end

@@ -1,0 +1,220 @@
+class BillSummaryPromptBuilder
+  DEFAULT_MAX_SOURCE_CHARS: Integer
+
+  # 68-06 Task 3: read per call off Sway::Settings.llm rather than frozen
+  # into a constant, so a test can vary llm_max_source_chars.
+  def self.max_source_chars: () -> Integer
+
+  TRUNCATION_NOTICE: String
+
+  # B4-CR-05 / PROD-WR-11: prefix of the per-instance random delimiter that
+  # encloses the bill source text.
+  SOURCE_DELIMITER_PREFIX: String
+
+  # @lat: [[untrusted-text-in-prompts#Why every third-party value sits inside an enclosure]]
+  METADATA_DELIMITER_PREFIX: String
+
+  # Prefix of the THIRD enclosure, around the citation allow list.
+  # The one registered :citation_keys class — a new registry line, which does
+  # move Testimony::ClassificationPromptBuilder::PROMPT_VERSION.
+  CITATION_DELIMITER_PREFIX: String
+
+  # Prefix of the FOURTH enclosure, around the news articles allow list.
+  NEWS_DELIMITER_PREFIX: String
+  MAX_NEWS_ARTICLES: Integer
+  MAX_NEWS_SECTION_CHARS: Integer
+  SAMPLE_TITLE_COUNT: Integer
+
+  # What one #user_message reads, as counts. The summary tab's ledger is
+  # built from this so it cannot disagree with the prompt.
+  class Sources
+    attr_reader source_kind: Symbol
+    attr_reader source_chars: Integer
+    attr_reader source_cap: Integer
+    attr_reader source_truncated: bool
+    attr_reader extracted_text_chars: Integer
+    attr_reader diff_target: String?
+    attr_reader diff_sections_modified: Integer?
+    attr_reader diff_sections_referenced: Integer?
+    attr_reader diff_sections_not_found: Integer?
+    attr_reader citation_keys_offered: Integer
+    attr_reader citation_keys_total: Integer
+    attr_reader citation_sample_titles: Array[String]
+    attr_reader news_articles_offered: Integer
+    attr_reader news_articles_total: Integer
+
+    def initialize: (
+      source_kind: Symbol, source_chars: Integer, source_cap: Integer, source_truncated: bool, extracted_text_chars: Integer,
+      diff_target: String?, diff_sections_modified: Integer?, diff_sections_referenced: Integer?, diff_sections_not_found: Integer?,
+      citation_keys_offered: Integer, citation_keys_total: Integer, citation_sample_titles: Array[String],
+      news_articles_offered: Integer, news_articles_total: Integer
+    ) -> void
+
+    def self.new: (
+      source_kind: Symbol, source_chars: Integer, source_cap: Integer, source_truncated: bool, extracted_text_chars: Integer,
+      diff_target: String?, diff_sections_modified: Integer?, diff_sections_referenced: Integer?, diff_sections_not_found: Integer?,
+      citation_keys_offered: Integer, citation_keys_total: Integer, citation_sample_titles: Array[String],
+      news_articles_offered: Integer, news_articles_total: Integer
+    ) -> BillSummaryPromptBuilder::Sources
+  end
+
+  # The four sections #user_message joins, with the counts beside them.
+  class Snapshot
+    attr_reader bill_details_text: String
+    attr_reader source_text: String
+    attr_reader citations_text: String?
+    attr_reader news_text: String?
+    attr_reader sources: BillSummaryPromptBuilder::Sources
+
+    def initialize: (
+      bill_details_text: String, source_text: String, citations_text: String?,
+      news_text: String?, sources: BillSummaryPromptBuilder::Sources
+    ) -> void
+
+    def self.new: (
+      bill_details_text: String, source_text: String, citations_text: String?,
+      news_text: String?, sources: BillSummaryPromptBuilder::Sources
+    ) -> BillSummaryPromptBuilder::Snapshot
+  end
+
+  # Bound on the third-party scalar LABELS (bill.title,
+  # bill.external_id, a parsed section's title). Not a bound on bill text —
+  # that is .max_source_chars.
+  MAX_METADATA_FIELD_CHARS: Integer
+
+  # B6-WR-03: bound on the NUMBER of citation allow-list rows rendered, as
+  # distinct from the per-row bound above. Rows derive from a regex sweep over
+  # bill.extracted_text, which carries the public testimony bundle.
+  MAX_CITATION_KEYS: Integer
+
+  # The bound on the assembled allow-list section — the product
+  # bound the row count and per-row limits leave open.
+  MAX_CITATION_SECTION_CHARS: Integer
+
+  # A20-05: the cap on `categories`, read from bill_summary.json's maxItems so
+  # the prompt cannot ask for more than the schema accepts. A reply past it is
+  # rejected whole, after the call has been paid for.
+  MAX_CATEGORIES: Integer
+
+  @bill: Bill
+  @active_categories: Array[Category]?
+  @news_source_snapshot: NewsArticleSourceSnapshot?
+  @summary_instructions: String?
+  @boundary: Llm::UntrustedTextBlock
+  @metadata_boundary: Llm::UntrustedTextBlock
+  @citation_boundary: Llm::UntrustedTextBlock
+  @news_boundary: Llm::UntrustedTextBlock
+
+  # active_categories: is a nilable defaulting kwarg — lazy memo resolves when nil.
+  # All four existing one-arg .new(bill) call sites keep compiling.
+  def initialize: (Bill bill, ?active_categories: Array[Category]?, ?summary_instructions: String?, ?news_source_snapshot: NewsArticleSourceSnapshot?) -> void
+
+  # Phase 54 D-05/D-08: joined output preserves the original six-section
+  # order for BillsController#paste_summary byte-stability.
+  def call: () -> String
+
+  # Phase 54 D-05: cache-eligible prefix (header + jurisdictional_context +
+  # output_contract). Served as the Anthropic "system" block with
+  # cache_control: {type: "ephemeral"}.
+  def system_prompt: () -> String
+
+  # Phase 54 D-05: per-bill content (bill_metadata + source_text_section +
+  # citation_allow_list_section, compact-joined). Not cache-eligible.
+  # Carries no testimony — supplemental_testimony belongs to
+  # BillPositionsPromptBuilder alone.
+  def user_message: () -> String
+
+  # True when there is real source material to summarize: an on-disk diff
+  # markdown, or bill.extracted_text. B1-CR-01: the BillLlmProvisioning
+  # diff_content column is deliberately NOT counted — #source_text_section
+  # never rendered it, so counting it bought a paid summary of a prompt with no
+  # bill text in it.
+  def source_present?: () -> bool
+
+  def sources: () -> Sources
+
+  # Byte-identical to what #user_message sent, because both render through the
+  # same private section methods on the same instance.
+  def snapshot: () -> Snapshot
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader boundary: Llm::UntrustedTextBlock
+  attr_reader metadata_boundary: Llm::UntrustedTextBlock
+  attr_reader citation_boundary: Llm::UntrustedTextBlock
+  attr_reader news_boundary: Llm::UntrustedTextBlock
+  attr_reader summary_instructions: String?
+
+  # Lazy memo — resolves to Category.where(active: true).to_a when @active_categories is nil.
+  def active_categories: () -> Array[Category]
+
+  # Phase 63 D-13: bill's parsed-section allow-list (key, nullable title) for
+  # citation grounding.
+  def allowed_citation_keys: () -> Array[[String, String?]]
+
+  # B2-CR-01: the two externally-sourced source-text reads, each scrubbed to
+  # valid UTF-8 before any String#present?/#blank? touches it. "" when the
+  # underlying value is nil. B1-CR-01 deleted a third (#scrubbed_diff_content)
+  # along with its only caller.
+  def scrubbed_diff_markdown: () -> String
+  def scrubbed_extracted_text: () -> String
+
+  def header: () -> String
+
+  # B4-CR-05: the delimiter explanation, cache-safe (constant prefix only).
+  def boundary_instruction: () -> String
+
+  # The second content class's paragraph, cache-safe the same way.
+  def metadata_boundary_instruction: () -> String
+
+  # @lat: [[untrusted-text-in-prompts#What a cacheable prefix needs]]
+  def citation_boundary_instruction: () -> String
+
+  # The news articles delimiter instruction.
+  def news_boundary_instruction: () -> String
+
+  def bill_metadata: () -> String
+
+  # One line-safe rendering for every third-party LABEL this class
+  # interpolates. Llm::PromptLabel.collapse is the shared scrub-collapse-strip;
+  # this adds THIS class's bound, MAX_METADATA_FIELD_CHARS.
+  def sanitize: (String? value) -> String
+
+  # @lat: [[untrusted-text-in-prompts#Why the enclosure rewrites what it wraps, and what that costs]]
+  def renderable_citation_key?: (String key) -> bool
+  def source_text_section: () -> String
+  def on_disk_diff_markdown: () -> String?
+  def truncate_source: (String? text) -> String
+  def jurisdictional_context: () -> String?
+  def output_contract: () -> String
+  def output_contract_schema: () -> String
+
+  # B1-WR-04: the two halves of the `categories` contract, both a function of
+  # the active taxonomy. An empty taxonomy renders "do NOT emit categories"
+  # and drops the key from the example object, instead of interpolating an
+  # empty join and then forbidding an empty answer.
+  def categories_requirement_note: () -> String
+  def output_contract_keys_json: () -> String
+
+  def citation_requirement_note: () -> String
+  def news_citation_requirement_note: () -> String
+  def citation_rows: () -> [Array[[String, String?]], Array[String], Array[String]]
+  def citation_allow_list_section: () -> String?
+  def synthesis_eligible_articles: () -> Array[BillNewsArticle]
+  def format_news_article: (BillNewsArticle bna) -> String?
+  def news_rows: () -> [Array[BillNewsArticle], Array[String], Array[String]]
+  def news_articles_section: () -> String?
+  def operator_instructions_section: () -> String?
+
+  # B6-WR-03: "" when nothing was dropped, so a bill that fits renders exactly
+  # what it rendered before the cap existed. A19-07 added the second cause —
+  # the rows #renderable_citation_key? refuses — counted and named apart from
+  # the length cap.
+  def omission_note: (capped: Integer, unshowable: Integer) -> String
+  def news_omission_note: (capped: Integer, unshowable: Integer) -> String
+  def renderable_news_url?: (String? url) -> bool
+  def output_contract_worked_example: () -> String?
+  def output_contract_voice_and_tone: () -> String
+  def output_contract_style_guidance: () -> String
+end

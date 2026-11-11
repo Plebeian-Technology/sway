@@ -1,0 +1,31 @@
+module AdminSystemHelpers
+  # Capybara / CapybaraHelpers methods used internally
+  def visit: (*untyped) -> untyped
+  def find: (*untyped, **untyped) -> untyped
+  def page: -> untyped
+  def wait_until_loaded: -> untyped
+
+  # RSpec methods used internally
+  def expect: (untyped) -> RSpec::Expectations::ExpectationTarget
+  def eq: (untyped) -> untyped
+  def allow: (untyped) -> RSpec::Mocks::AllowanceTarget
+  def instance_double: (*untyped, **untyped) -> untyped
+
+  # URL helpers used internally
+  def root_path: (*untyped) -> untyped
+
+  # Kernel method
+  def raise: (*untyped) -> void
+
+  # Methods defined by this module
+  def sign_in_as: (untyped user) -> void
+  def navigate_to_llm_accordion: (untyped bill) -> void
+  def navigate_to_summary_tab: (untyped bill) -> void
+  def navigate_to_positions_tab: (untyped bill) -> void
+  def navigate_to_pipeline_llm_tab: (untyped bill) -> untyped
+  def click_testid: (untyped testid, **untyped find_opts) -> untyped
+  def stub_pipeline_success: (untyped bill, ?summary_text: String, ?org_positions: Array[untyped]) -> void
+  def stub_pipeline_failure: -> void
+  def cleanup_summary_files: (untyped bill) -> void
+  def browser_json_request: (untyped method, untyped path, untyped payload) -> untyped
+end

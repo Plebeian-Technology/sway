@@ -1,0 +1,19 @@
+module Legislation
+  module BillMetadata
+    # Nil-tolerant read of matter_id from a bill's metadata.json. Callers apply
+    # their own missing-metadata policy (WS5.12).
+    #
+    # A1-WR-06: this return type was previously a claim the implementation did
+    # not back — it returned parsed["matter_id"] unchecked from an
+    # operator-editable file, so a Float/Array/Hash/bool could arrive at a
+    # caller whose sig said it could not. The narrowing now lives in the
+    # implementation, which is what keeps this type and
+    # FetchHearingsService#coerce_matter_id!'s (Integer | String | nil) honest
+    # instead of widening either to untyped.
+    # sway_locale is the SwayLocale NAME, and it is required: metadata.json
+    # lives at bills/raw/<sway_locale>/<external_id>/, because a Bill is unique
+    # on (external_id, sway_locale_id) together and the external_id alone never
+    # named one file.
+    def self.matter_id: (String external_id, sway_locale: String?) -> (Integer | String)?
+  end
+end

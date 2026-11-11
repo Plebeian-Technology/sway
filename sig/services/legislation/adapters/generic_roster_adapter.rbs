@@ -1,0 +1,86 @@
+module Legislation
+  module Adapters
+    class GenericRosterAdapter
+      @config: Hash[Symbol, untyped]
+      @engine: String
+      @retrieval: Symbol
+      @parsing: Symbol
+      @base_url: String?
+      @endpoints: Hash[Symbol, untyped]
+      @metadata_mapping: Hash[Symbol, untyped]
+      @api_key_secret: String?
+      @client: String?
+      @jurisdiction: String?
+      @connection: Faraday::Connection?
+      @sway_locale: SwayLocale?
+      @legistar_clients: Hash[String, Legistar::Client]
+      @evidence_publisher: String?
+      @evidence_jurisdiction: String?
+      @evidence_source_url: String?
+      @official_service: Hash[Symbol, untyped]?
+
+      attr_reader config: Hash[Symbol, untyped]
+      attr_reader engine: String
+      attr_reader retrieval: Symbol
+      attr_reader parsing: Symbol
+      attr_reader base_url: String?
+      attr_reader endpoints: Hash[Symbol, untyped]
+      attr_reader metadata_mapping: Hash[Symbol, untyped]
+      attr_reader api_key_secret: String?
+      attr_reader client: String?
+      attr_reader jurisdiction: String?
+      attr_reader connection: Faraday::Connection?
+      attr_reader evidence_publisher: String?
+      attr_reader evidence_jurisdiction: String?
+      attr_reader evidence_source_url: String?
+      attr_reader official_service: Hash[Symbol, untyped]?
+
+      def initialize: (?(Hash[Symbol | String, untyped] | SwayLocale | SwayLocale::JurisdictionRules | untyped)? config_or_locale, ?connection: Faraday::Connection?, **untyped kwargs) -> void
+
+      def fetch_roster: (
+        sway_locale: SwayLocale,
+        ?connection: Faraday::Connection?
+      ) -> Array[Hash[Symbol, untyped]]
+
+      def fetch_official_service: (
+        sway_locale: SwayLocale,
+        ?connection: Faraday::Connection?
+      ) -> OfficialEvidence::Result
+
+      def legistar_client: (?SwayLocale? sway_locale) -> Legistar::Client
+
+      def build_official_evidence: (
+        untyped payload,
+        ?retrieved_at: (Time | DateTime | ActiveSupport::TimeWithZone),
+        ?fact_type: String,
+        ?fact_presence: String,
+        ?date_precision: String,
+        **untyped extra
+      ) -> untyped
+
+      private
+
+      def extract_config: (untyped input) -> Hash[Symbol, untyped]
+      def default_connection: () -> Faraday::Connection
+      def retrieve_roster_payload: (SwayLocale sway_locale, Faraday::Connection conn) -> untyped
+      def parse_roster_payload: (untyped payload, SwayLocale sway_locale) -> Array[Hash[Symbol, untyped]]
+      def retrieve_congress_payload: (Faraday::Connection conn) -> untyped
+      def parse_congress_members: (untyped parsed) -> Array[Hash[Symbol, untyped]]
+      def retrieve_open_states_payload: (Faraday::Connection conn) -> untyped
+      def parse_open_states_people: (untyped parsed) -> Array[Hash[Symbol, untyped]]
+      def parse_open_states_members: (untyped parsed) -> Array[Hash[Symbol, untyped]]
+      def retrieve_generic_rest_payload: (Faraday::Connection conn) -> untyped
+      def parse_generic_items: (untyped parsed) -> Array[Hash[Symbol, untyped]]
+      def retrieve_legistar_payload: (SwayLocale sway_locale) -> untyped
+      def parse_legistar_persons: (untyped parsed) -> Array[Hash[Symbol, untyped]]
+      def fetch_congress_roster: (SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[Symbol, untyped]]
+      def fetch_open_states_roster: (SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[Symbol, untyped]]
+      def fetch_generic_roster: (SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[Symbol, untyped]]
+      def fetch_curated_roster: (SwayLocale sway_locale) -> Array[Hash[Symbol, untyped]]
+      def single_roster_item?: (untyped hash) -> bool
+      def extract_field: (untyped record, untyped path_expr) -> untyped
+    end
+  end
+end
+
+GenericRosterAdapter: singleton(Legislation::Adapters::GenericRosterAdapter)

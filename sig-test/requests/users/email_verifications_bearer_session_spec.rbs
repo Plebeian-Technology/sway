@@ -1,0 +1,8 @@
+class EmailVerificationsBearerSessionRequestSpecContext
+  def headers: () -> Hash[String, String]
+  def session_cookie_name: () -> String
+  def start_over_message: () -> String
+  def request_code: () -> void
+  def check_code: () -> void
+  def expect_start_over_failure: () -> void
+end

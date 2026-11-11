@@ -1,0 +1,5 @@
+# Phase 52 Plan 05 (D-46). Hand-authored summary placeholder.
+# The full autogen-shaped sig is at
+# sig/rbs_rails/app/models/bill_amendment_operation.rbs.
+class BillAmendmentOperation < ApplicationRecord
+end

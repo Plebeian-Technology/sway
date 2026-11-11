@@ -1,0 +1,26 @@
+module BillCreator
+  class ResourceCachePanelSerializer
+    type tier_name = "pdf" | "extracted_text" | "parsed_sections" | "diff" | "summary"
+
+    type row = {
+      tier: tier_name,
+      last_generated_at: Time | ActiveSupport::TimeWithZone,
+      version_id: String?,
+      stale: bool,
+      source_artifact_id: String?,
+    }
+
+    TIERS: Array[tier_name]
+    TIER_TO_STAGE: Hash[String, String]
+
+    def self.call: (Bill? bill) -> Array[row]
+
+    def self.bills_raw_root: () -> Pathname
+
+    def self.build_row: (tier_name tier, Bill bill, PipelineRunBill? latest_run_bill, BillLlmProvisioning? provisioning) -> row?
+
+    def self.pdf_path_for: (Bill bill) -> Pathname?
+
+    def self.parse_time: (untyped value) -> (Time | ActiveSupport::TimeWithZone)?
+  end
+end

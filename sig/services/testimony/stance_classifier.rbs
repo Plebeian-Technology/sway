@@ -1,0 +1,63 @@
+module Testimony
+  class StanceClassifier
+    STANCES: Array[String]
+    MAX_LETTERS_PER_BATCH: Integer
+    MIN_DECISION_CONFIDENCE: Float
+    CLASSIFIER_MODEL: String
+
+    @llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+    @enabled: bool
+    @classification_model: String?
+    @route: Llm::RouteResolver::Route?
+    @purpose: Symbol?
+
+    def self.build: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | nil | :default),
+      ?purpose: Symbol
+    ) -> Testimony::StanceClassifier
+
+    def initialize: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?,
+      ?enabled: bool?,
+      ?route: Llm::RouteResolver::Route?,
+      ?purpose: Symbol
+    ) -> void
+
+    def call: (text: String, letters: Array[Hash[String, untyped]], ?bill: Bill?) -> [Array[Hash[String, untyped]], Hash[String, Integer]]
+
+    private
+
+    attr_reader llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+
+    def enabled?: () -> bool
+    def empty_counts: () -> Hash[String, Integer]
+    def stance_counts: (Array[Hash[String, untyped]] augmented) -> Hash[String, Integer]
+    def manual_override?: (Hash[String, untyped] letter) -> bool
+    def excluded_letter?: (Hash[String, untyped] letter) -> bool
+    def raw_letter_slice: (String full_text, Hash[String, untyped] letter) -> String
+    def rule_stance_for: (String full_text, Hash[String, untyped] letter) -> String?
+    def letter_text_for: (String full_text, Hash[String, untyped] letter) -> String
+    def sanitize_letter_text: (String text) -> String
+    def sanitize_bill_field: (untyped value, ?max_chars: Integer) -> String
+
+    interface _DecisionAdapter
+      def generate_decisions: (
+        model: String,
+        state: Hash[String, untyped],
+        questions: Hash[String, untyped]
+      ) -> Hash[String, untyped]
+      def provider_label: () -> String
+    end
+
+    def decision_model_route?: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter) -> bool
+    def model_results: (String full_text, Array[Hash[String, untyped]] batch, (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter, Bill? bill) -> Hash[Integer, String]
+    def model_results_via_decisions: (String full_text, Array[Hash[String, untyped]] batch, (Llm::OpenRouterAdapter | _DecisionAdapter) adapter, Bill? bill) -> Hash[Integer, String]
+    def model_results_via_chat: (String full_text, Array[Hash[String, untyped]] batch, (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter, Bill? bill) -> Hash[Integer, String]
+    def apply_chat_classifications: (Array[Hash[String, untyped]] batch, untyped classifications, ?String full_text) -> Hash[Integer, String]
+    def warn_duplicate_position: (Integer position) -> void
+    def fallback_batch: (Array[Hash[String, untyped]] batch, ?String full_text) -> Hash[Integer, String]
+    def model_for: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _DecisionAdapter) adapter) -> String
+    def classification_model: () -> String
+    def resolve_classification_model: () -> String
+  end
+end

@@ -1,0 +1,52 @@
+class GenericLegislatorVoteUpdateService
+  include LegislatorVoteUpserter
+
+  SERVICE_SOURCE: String
+  MATTER_FILE_PATTERN: Regexp
+
+  class Result
+    attr_reader written_count: Integer
+    attr_reader unmatched_count: Integer
+    attr_reader inferred: bool
+
+    def initialize: (written_count: Integer, unmatched_count: Integer, inferred: bool) -> void
+  end
+
+  @bill: Bill?
+  @legistar_client: Legistar::Client?
+  @open_legislator_client: OpenLegislator::Client?
+  @source: (Symbol | String)?
+
+  attr_reader bill: Bill?
+  attr_reader source: (Symbol | String)?
+  attr_writer legistar_client: Legistar::Client?
+  attr_writer open_legislator_client: OpenLegislator::Client?
+
+  def self.call: (?bill: (Bill | Integer)?, ?votes: Array[Hash[Symbol | String, untyped]]?, ?infer_sponsors_if_empty: bool, ?source: (Symbol | String)?) -> Result
+
+  def initialize: (?(Bill | Integer)? bill_or_id, ?source: (Symbol | String)?) -> void
+
+  def call: (?bill: (Bill | Integer)?, ?votes: Array[Hash[Symbol | String, untyped]]?, ?infer_sponsors_if_empty: bool, ?source: (Symbol | String)?) -> Result
+
+  private
+
+  def service_source: () -> String
+  def configured_timezone: () -> ActiveSupport::TimeZone?
+  def resolve_vote_date: (untyped raw_date) -> Date?
+  def historical_fallback_enabled?: () -> bool
+  def attempt_historical_import: (Hash[Symbol, untyped] vote_hash, Date voted_on) -> bool
+  def record_vote_coverage: (eligible_count: Integer, matched_count: Integer, unresolved_tokens: Array[untyped], ?status: String?) -> void
+  def resolve_legislator_id: (Hash[Symbol, untyped] vote_hash, Hash[Date, untyped] roster_cache, ?voted_on: Date?) -> Integer?
+  def normalize_support: (untyped raw) -> String
+  def log_unmatched_votes: (Array[Hash[Symbol, untyped]] unmatched, Integer total) -> void
+  def should_apply_final_passage?: () -> bool
+  def apply_final_passage_outcome: () -> void
+  def write_final_passage_date: (Integer matter_id, Hash[String, untyped] row) -> void
+  def resolve_matter_id: () -> Integer?
+  def latest_final_passage_row: (untyped histories) -> Hash[String, untyped]?
+  def legistar_client: () -> Legistar::Client
+  def open_legislator_client: () -> OpenLegislator::Client
+  def open_legislator_source?: () -> bool
+  def apply_open_legislator_final_passage: () -> bool
+  def apply_legistar_final_passage: () -> void
+end

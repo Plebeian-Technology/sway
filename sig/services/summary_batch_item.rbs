@@ -1,0 +1,44 @@
+# @lat: [[llm-summaries#Batch summarisation#What a custom_id has to carry]]
+class SummaryBatchItem
+  # The two answer types, as docs/terminology.md fixes them.
+  SUMMARY: String
+  POSITIONS: String
+  ANSWER_TYPES: Array[String]
+
+  # The structured-output schema sent with a request, keyed by answer type.
+  SCHEMA_HASHES: Hash[String, Hash[String, untyped]]
+
+  # The schema a result is validated against once it comes back, keyed the same.
+  VALIDATION_SCHEMAS: Hash[String, JSONSchemer::Schema]
+
+  # Stable across submission and read-back: the ingest rebuilds it from the
+  # database rather than from anything it kept in memory.
+  def self.custom_id: (bill_id: Integer, answer_type: String) -> String
+
+  def self.validation_schema: (String answer_type) -> JSONSchemer::Schema
+
+  def self.build: (
+    bill: Bill,
+    answer_type: String,
+    model: String,
+    active_categories: Array[Category],
+    ?run_receipt: String?
+  ) -> Llm::ClaudeBatchService::Item
+
+  # 0, 1 or 2 items, per the bill's eligibility.
+  def self.build_all: (
+    bill: Bill,
+    eligibility: SummaryItemEligibility,
+    model: String,
+    active_categories: Array[Category],
+    ?run_receipt: String?
+  ) -> Array[Llm::ClaudeBatchService::Item]
+
+  private def self.builder_for: (
+    Bill bill,
+    String answer_type,
+    Array[Category] active_categories,
+    ?news_source_snapshot: NewsArticleSourceSnapshot?,
+    ?reporting_source_snapshot: NewsArticleSourceSnapshot?
+  ) -> (BillSummaryPromptBuilder | BillPositionsPromptBuilder)
+end

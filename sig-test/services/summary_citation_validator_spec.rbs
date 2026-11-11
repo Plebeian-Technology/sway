@@ -1,0 +1,4 @@
+class Object
+  def official_url: () -> String
+  def bill_with_official_link: () -> Bill
+end

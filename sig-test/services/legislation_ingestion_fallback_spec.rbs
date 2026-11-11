@@ -1,0 +1,6 @@
+class Object
+  def maryland_house_district: () -> District
+  def maryland_senate_district: () -> District
+  def maryland_speaker: () -> Legislator
+  def maryland_president: () -> Legislator
+end

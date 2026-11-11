@@ -1,0 +1,5 @@
+class Object
+  def other_legislator: () -> Legislator
+  def run_1: () -> LegislationPipelineRun
+  def run_2: () -> LegislationPipelineRun
+end

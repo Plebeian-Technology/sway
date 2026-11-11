@@ -1,0 +1,8 @@
+# RBS sig for OperatorAbortError (Phase 52 Plan 11 follow-up, UAT Test 3).
+class OperatorAbortError < StandardError
+  attr_reader stage: Symbol | String
+  attr_reader processed_count: Integer
+  attr_reader terminal_status: String
+
+  def initialize: (stage: Symbol | String, processed_count: Integer, terminal_status: String) -> void
+end

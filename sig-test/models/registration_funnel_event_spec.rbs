@@ -1,0 +1,5 @@
+class Object
+  def event1: () -> RegistrationFunnelEvent
+  def event2: () -> RegistrationFunnelEvent
+  def event3: () -> RegistrationFunnelEvent
+end

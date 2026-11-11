@@ -1,0 +1,77 @@
+module Legislation
+  module Adapters
+    class GenericHearingsAdapter
+      MATTER_ID_MAX: Integer
+
+      @config: Hash[Symbol, untyped]
+      @engine: Symbol
+      @retrieval: Symbol
+      @parsing: Symbol
+      @base_url: String?
+      @endpoints: Hash[Symbol, untyped]
+      @connection: Faraday::Connection?
+      @attachment_connection: Faraday::Connection?
+      @service: untyped
+      @legistar_client: Legistar::Client
+      @legistar_clients: Hash[String, Legistar::Client]
+      @attachment_fetch: Legistar::AttachmentFetch
+      @sway_locale: SwayLocale?
+
+      attr_reader config: Hash[Symbol, untyped]
+      attr_reader engine: Symbol
+      attr_reader retrieval: Symbol
+      attr_reader parsing: Symbol
+      attr_reader base_url: String?
+      attr_reader endpoints: Hash[Symbol, untyped]
+      attr_reader connection: Faraday::Connection?
+      attr_reader attachment_connection: Faraday::Connection?
+      attr_reader service: untyped
+
+      def initialize: (?(Hash[Symbol | String, untyped] | SwayLocale | SwayLocale::JurisdictionRules)? config_or_locale, ?connection: Faraday::Connection?, ?attachment_connection: Faraday::Connection?, ?service: untyped) -> void
+
+      def discover_hearings: (
+        bill: Bill,
+        sway_locale: SwayLocale,
+        ?faraday_conn: Faraday::Connection?,
+        ?service: FetchHearingsService?
+      ) -> Array[Hash[String, untyped]]
+
+      def discover_legistar_hearings: (
+        Bill bill,
+        SwayLocale sway_locale,
+        ?Faraday::Connection? conn
+      ) -> Array[Hash[String, untyped]]
+
+      def legistar_client: (?SwayLocale? sway_locale) -> Legistar::Client
+      def matter_attachments: (Integer | String matter_id) -> untyped
+      def matter_histories: (Integer | String matter_id) -> untyped
+      def matter_exists?: (Integer | String matter_id) -> bool
+      def hearing_event: (Integer | String event_id) -> Hash[String, untyped]?
+      def event_items: (Integer | String event_id) -> untyped
+      def attachment_fetch: () -> Legistar::AttachmentFetch
+      def fetch_attachment: (String url) -> Faraday::Response
+
+      private
+
+      def extract_config: (untyped input) -> Hash[Symbol, untyped]
+      def default_connection: () -> Faraday::Connection
+      def default_attachment_connection: () -> Faraday::Connection
+      def discover_html_hearings: (Bill bill, SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[String, untyped]]
+      def parse_html_entries: (Nokogiri::HTML::Document doc) -> Array[Hash[String, untyped]]
+      def discover_rest_hearings: (Bill bill, SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[String, untyped]]
+      def parse_hearings_payload: (String body) -> Array[Hash[String, untyped]]
+      def parse_rest_entries: (untyped body_or_parsed) -> Array[Hash[String, untyped]]
+      def single_hearing_item?: (untyped hash) -> bool
+      def write_hearings_artifact: (Bill bill, SwayLocale sway_locale, Array[Hash[String, untyped]] hearings) -> void
+      def update_bill_provisioning: (Bill bill) -> void
+      def coerce_matter_id!: (untyped value) -> Integer
+      def coerce_attachment_id: (untyped value) -> Integer?
+      def legistar_string: (untyped value) -> String?
+      def event_to_hearing_hash: (Hash[String, untyped] event) -> Hash[String, untyped]
+      def verify_matter_exists!: (Bill bill, Integer matter_id_int) -> void
+      def lookup_matter_id_from_metadata: (Bill bill, ?SwayLocale? sway_locale) -> (Integer | String)
+    end
+  end
+end
+
+GenericHearingsAdapter: singleton(Legislation::Adapters::GenericHearingsAdapter)

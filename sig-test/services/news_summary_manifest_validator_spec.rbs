@@ -1,0 +1,17 @@
+class Object
+  def grounding_adapter: () -> untyped
+  def approved_bna: () -> BillNewsArticle
+  def excerpt: () -> String
+  def valid_source_uses: () -> Array[Hash[Symbol, untyped]]
+  def legacy_revision: () -> BillSummaryRevision
+  def build_custom_batch_result: (Bill, Hash[String, untyped]) -> Llm::ClaudeBatchService::Result
+  def receipt: () -> String
+end
+
+class NilClass
+  def restored_from_id: () -> Integer?
+  def news_source_snapshot: () -> NewsArticleSourceSnapshot?
+  def news_source_snapshot_id: () -> Integer?
+  def bill_id: () -> Integer?
+  def id: () -> Integer?
+end

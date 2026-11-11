@@ -1,0 +1,18 @@
+# Spec-only declarations for spec/tasks/sway_test_shards_spec.rb.
+#
+# Steep cannot see a `let` or a plain `def` inside a describe block. `tmp_dir`
+# and `preparer` are NOT declared here — both already exist in
+# sig-test/object_spec_methods.rbs (shared across many specs), and RBS raises
+# RBS::DuplicatedMethodDefinitionError on a second declaration of the same
+# method on ::Object. described_klass is typed `untyped` on purpose: it reaches
+# Sway::TestShardDatabases through Object.const_get, which RBS core types as
+# untyped, so the spec keeps checking clean whether or not the class exists yet.
+class Object
+  def template_path: () -> String
+
+  def described_klass: () -> untyped
+
+  def destination: () -> String
+
+  def create_fixture_db: (String path, ?seed: String) -> void
+end

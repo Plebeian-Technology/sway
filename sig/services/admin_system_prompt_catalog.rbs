@@ -1,0 +1,40 @@
+class AdminSystemPromptCatalog
+  ENTRIES: Array[Hash[Symbol, untyped]]
+  MODEL_SETTING_LABELS: Hash[Symbol, String]
+  EMPTY_TAXONOMY_REASON: String
+
+  @llm_settings_path: String
+  @models: Hash[Symbol, String]?
+  @placeholder_bill: Bill?
+  @active_categories: Array[Category]?
+  @setting: AdminSetting?
+  @sway_locales: Array[SwayLocale]?
+
+  def initialize: (llm_settings_path: String) -> void
+
+  def as_props: () -> Hash[Symbol, untyped]
+
+  private
+
+  attr_reader llm_settings_path: String
+
+  def entry_props: (Hash[Symbol, untyped] entry) -> Hash[Symbol, untyped]
+  def locale_entry_props: (Hash[Symbol, untyped] entry, SwayLocale locale) -> Hash[Symbol, untyped]
+
+  # nil unless this id's prompt is the categories one and the taxonomy is empty.
+  def unavailable_reason_for: (untyped id) -> String?
+  def unavailable_reason_for_locale: (untyped id, SwayLocale locale) -> String?
+
+  def system_prompt_for: (untyped id) -> String
+  def system_prompt_for_locale: (untyped id, SwayLocale locale) -> String
+
+  def models: () -> Hash[Symbol, String]
+
+  def placeholder_bill: () -> Bill
+  def placeholder_bill_for: (SwayLocale locale) -> Bill
+
+  def active_categories: () -> Array[Category]
+  def sway_locales: () -> Array[SwayLocale]
+
+  def setting: () -> AdminSetting
+end

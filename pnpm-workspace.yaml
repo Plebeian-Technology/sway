@@ -1,0 +1,20 @@
+# Sway uses pnpm at the root for the Rails+React monolith. The `mobile/` directory
+# is a STANDALONE Expo project (D-18: no pnpm workspaces). Excluding mobile/ keeps
+# root pnpm-lock.yaml clean and forces mobile/ install to use its own pnpm-lock.yaml.
+packages:
+  - "!mobile"
+
+# @lat: [[dependency-build-scripts#Why a pending entry is not a harmless one]]
+allowBuilds:
+  '@parcel/watcher': true
+  '@playwright/browser-chromium': false
+  '@sentry/cli': true
+  '@swc/core': false
+  esbuild: true
+  msw: true
+  onnxruntime-node: false
+  protobufjs: false
+  sharp: true
+  unrs-resolver: true
+
+minimumReleaseAge: 1440

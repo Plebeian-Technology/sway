@@ -1,0 +1,382 @@
+# @lat: [[deploy-configuration]]
+#
+#     SWAY_HOST=<old machine> SWAY_STORAGE_DIR=<its storage folder> kamal app boot
+#
+# <% require "pathname" %>
+# <% sway_root = Pathname.new(Dir.pwd).ascend.find { |dir| dir.join("lib", "sway_deploy_config.rb").exist? } %>
+# <% raise "config/deploy.yml cannot find lib/sway_deploy_config.rb. Run kamal from the top of the repository." if sway_root.nil? %>
+# <% require sway_root.join("lib", "sway_deploy_config.rb").to_s %>
+# <% sway_host = SwayDeployConfig.fetch("SWAY_HOST") %>
+# <% sway_tailscale_ip = SwayDeployConfig["SWAY_TAILSCALE_IP"].to_s.strip; sway_tailscale_ip = nil if sway_tailscale_ip.empty? %>
+# <% sway_android_cert_sha256_fingerprints = SwayDeployConfig["SWAY_ANDROID_CERT_SHA256_FINGERPRINTS"].to_s.strip %>
+# <% sway_apple_app_store_id = SwayDeployConfig["SWAY_APPLE_APP_STORE_ID"].to_s.strip %>
+# <% sway_storage_dir = SwayDeployConfig.fetch("SWAY_STORAGE_DIR") %>
+# <% sway_registry = SwayDeployConfig.fetch("SWAY_REGISTRY") %>
+# <% sway_keyfile_path = SwayDeployConfig.fetch("SWAY_KEYFILE_PATH") %>
+# <% sway_deploy_user = SwayDeployConfig.fetch("SWAY_DEPLOY_USER") %>
+# <% sway_ssh_key = SwayDeployConfig.fetch("SWAY_SSH_KEY") %>
+#
+# @lat: [[deploy-configuration#What the deploy file decides#Why the same values are read twice]]
+# <% sway_gcp_project_id = SwayDeployConfig.fetch("SWAY_GCP_PROJECT_ID") %>
+# <% sway_gcs_bucket_assets = SwayDeployConfig.fetch("SWAY_GCS_BUCKET_ASSETS") %>
+# <% sway_gcs_bucket_db = SwayDeployConfig.fetch("SWAY_GCS_BUCKET_DB") %>
+# <% sway_gcs_bucket_legislation = SwayDeployConfig.fetch("SWAY_GCS_BUCKET_LEGISLATION") %>
+# <% sway_litestream_path = SwayDeployConfig.fetch("SWAY_LITESTREAM_PATH") %>
+# <% rails_allowed_hosts = SwayDeployConfig.fetch("RAILS_ALLOWED_HOSTS") %>
+# @lat: [[well-known-controller-notes#Why the served hosts are configuration]]
+# <% sway_public_hostnames = rails_allowed_hosts.split(",").map(&:strip).grep_v(/\A[\d.]*\z|:/).join(",") %>
+# @lat: [[webauthn-settings-consolidation#Why production names its origins and domain in the deploy file]]
+# <% sway_public_origins = sway_public_hostnames.split(",").map { |host| "https://#{host}" }.join(",") %>
+
+service: sway
+
+image: sway
+
+servers:
+    web:
+        hosts:
+            # Set at the top of this file. Do not write a machine here.
+            - <%= sway_host %>
+        # @lat: [[deploy-configuration#What the deploy file decides#Why the CPU ceilings stayed where they were]]
+        # @lat: [[deploy-configuration#What the deploy file decides#Why application containers drop all capabilities]]
+        options:
+            cpus: "2.0"
+            cap-drop: ["ALL"]
+            security-opt: ["no-new-privileges:true"]
+    # @lat: [[deploy-configuration#What the deploy file decides#Why exactly one host runs jobs]]
+    job:
+        hosts:
+            - <%= sway_host %>
+        cmd: bin/jobs
+        # @lat: [[deploy-configuration#What the deploy file decides#Why the CPU ceilings stayed where they were]]
+        # @lat: [[deploy-configuration#What the deploy file decides#Why application containers drop all capabilities]]
+        options:
+            cpus: "1.0"
+            cap-drop: ["ALL"]
+            security-opt: ["no-new-privileges:true"]
+
+# ssl: false — TLS terminates at the Cloudflare tunnel, not here. Cloudflare's
+# SSL/TLS mode must be "Full" for CF-to-app encryption to work.
+proxy:
+    app_port: 3333
+    hosts:
+        - bill.sway.vote
+        - www.sway.vote
+        - app.sway.vote
+        - sway.vote
+    ssl: false
+    forward_headers: true # cloudflare-rails needs forwarded headers: https://github.com/modosc/cloudflare-rails
+
+registry:
+    # @lat: [[deploy-configuration#What the deploy file decides#Why the registry is plain HTTP and how accessory images are tagged]]
+    #     docker info --format {{json .RegistryConfig.IndexConfigs}}
+    server: <%= sway_registry %>
+    username: anonymous
+
+    # @lat: [[deploy-configuration#What the deploy file decides#Why the registry is plain HTTP and how accessory images are tagged]]
+    password:
+        - KAMAL_REGISTRY_PASSWORD
+
+builder:
+    arch: arm64
+    context: .
+    dockerfile: docker/dockerfiles/production.alpine.dockerfile
+    secrets:
+        - RAILS_MASTER_KEY
+        - SENTRY_AUTH_TOKEN
+        - VITE_GOOGLE_MAPS_API_KEY
+        # @lat: [[browser-error-reporting#Why the browser DSN is a build secret]]
+        - VITE_SENTRY_DSN
+        - SENTRY_ORG
+        - SENTRY_PROJECT
+    local: true
+
+    # scripts/deploy.sh exports these before invoking kamal; the Dockerfile
+    # bakes them into the image as ENV, read by Sway::Release. Fallbacks let a
+    # bare `kamal deploy` work without deploy.sh (version 0, SHA from git).
+    # Single quotes are load-bearing: ERB renders before YAML parses, and
+    # unquoted YAML would coerce SWAY_DEPLOYED_AT into a Time that
+    # Time.iso8601 can't re-parse, and an empty SWAY_PREVIOUS_SHA into nil.
+    args:
+        SWAY_RELEASE_VERSION: '<%= ENV["SWAY_RELEASE_VERSION"] || "0" %>'
+        SWAY_RELEASE_SHA: '<%= ENV["SWAY_RELEASE_SHA"] || %x(git rev-parse HEAD 2>/dev/null).strip %>'
+        SWAY_PREVIOUS_SHA: '<%= ENV["SWAY_PREVIOUS_SHA"] || "" %>'
+        SWAY_DEPLOYED_AT: '<%= ENV["SWAY_DEPLOYED_AT"] || "" %>'
+        # Empty means the tree was clean. Non-empty names a build carrying
+        # changes the commit above does not.
+        SWAY_UNCOMMITTED_DIGEST: '<%= ENV["SWAY_UNCOMMITTED_DIGEST"] || "" %>'
+        # @lat: [[deploy-configuration#What the deploy file decides#Why a bucket name is a build-time setting]]
+        VITE_SWAY_ASSETS_BUCKET: "<%= sway_gcs_bucket_assets %>"
+        # The four the BUILD itself asks for. See the note at the top of this
+        # file, and the matching ARG block in the build stage of
+        # docker/dockerfiles/production.alpine.dockerfile. They stay in that
+        # stage and never reach the final image; the container reads its own
+        # copies from `env: clear:` below.
+        RAILS_ALLOWED_HOSTS: "<%= rails_allowed_hosts %>"
+        SWAY_GCP_PROJECT_ID: "<%= sway_gcp_project_id %>"
+        SWAY_GCS_BUCKET_ASSETS: "<%= sway_gcs_bucket_assets %>"
+        SWAY_GCS_BUCKET_DB: "<%= sway_gcs_bucket_db %>"
+        SWAY_GCS_BUCKET_LEGISLATION: "<%= sway_gcs_bucket_legislation %>"
+        # @lat: [[deploy-configuration#What the deploy file decides#Why the same values are read twice]]
+        SWAY_LITESTREAM_PATH: "<%= sway_litestream_path %>"
+
+# Secrets come from .kamal/secrets-common.
+env:
+    clear:
+        # @lat: [[deploy-configuration#What the deploy file decides#Why exactly one host runs jobs]]
+        RAILS_ENV: "production"
+        RAILS_LOG_LEVEL: "info"
+        # Rails rejects any request whose Host header isn't on this list,
+        # before app code runs. Only the public names — not your own network
+        # address for reaching this machine.
+        RAILS_ALLOWED_HOSTS: "<%= rails_allowed_hosts %>"
+        # config/initializers/deploy_values.rb requires all three at boot.
+        # Not secrets — a bucket name appears in every asset URL the browser
+        # fetches; what protects a bucket is write access, not name secrecy.
+        # Living here (not baked into the image) makes changing one a
+        # redeploy, not a rebuild.
+        SWAY_GCP_PROJECT_ID: "<%= sway_gcp_project_id %>"
+        SWAY_GCS_BUCKET_ASSETS: "<%= sway_gcs_bucket_assets %>"
+        SWAY_GCS_BUCKET_DB: "<%= sway_gcs_bucket_db %>"
+        SWAY_GCS_BUCKET_LEGISLATION: "<%= sway_gcs_bucket_legislation %>"
+        # Read again by Litestream::ReplicaPosition on every scheduled check
+        # (config/recurring.yml, replication_lag_check). Not a secret — see the
+        # comment on builder.args above.
+        SWAY_LITESTREAM_PATH: "<%= sway_litestream_path %>"
+        BUNDLE_WITHOUT: "development:test"
+        # @lat: [[deploy-configuration#What the deploy file decides#Why the CPU ceilings stayed where they were]]
+        WEB_CONCURRENCY: 2
+        # @lat: [[deploy-configuration#What the deploy file decides#Why Solid Queue runs in async supervisor mode with single-thread OpenMP]]
+        SOLID_QUEUE_SUPERVISOR_MODE: "async"
+        OMP_THREAD_LIMIT: "1"
+        # @lat: [[production-image#Why the allocator is replaced, and how that can be undone silently]]
+        MALLOC_CONF: "dirty_decay_ms:1000,muzzy_decay_ms:1000,narenas:2,background_thread:true"
+        # Legislation pipeline artifacts must live on the persistent SSD
+        # volume, not /rails (root-owned, wiped each deploy). storage/ is the
+        # Kamal volume mount below; Legislation::Paths roots here. Without
+        # this, fetch_bills raises Errno::EACCES on /rails/legislation.
+        LEGISLATION_ROOT: "/rails/storage/legislation"
+        # Routes GenerateBillSummaryJob to Claude in production.
+        # Llm::Client.build defaults LLM_PROVIDER to "llamacpp" per perform,
+        # and the Pi runs no llama.cpp server, so omitting this fails every
+        # perform with connection refused. Hot-swap recovery: set to
+        # "llamacpp" and redeploy to drain Claude.
+        LLM_PROVIDER: "claude"
+        # @lat: [[content-security-policy#The CSP_ENFORCE staging switch]]
+        CSP_ENFORCE: "true"
+        BESZEL_URL: "http://<%= sway_host %>:8090"
+        # @lat: [[admin-hub-index#Who sees the monitoring link]]
+        BESZEL_ADMIN_EMAIL_DOMAINS: "sway.vote"
+        # @lat: [[deploy-configuration#What the deploy file decides#Why PDF_EXTRACTOR_URL points at the host extractor port]]
+        PDF_EXTRACTOR_URL: "http://<%= sway_host %>:8085"
+        # LEGISLATION_SERVICE_BASE_URL is NOT injected: the Python sidecar is
+        # evicted from production. PipelinePreviewService computes the preview
+        # in-process; no production path depends on that service.
+        # @lat: [[android-app-links#Why the fingerprints are per-installation configuration]]
+        ANDROID_CERT_SHA256_FINGERPRINTS: "<%= sway_android_cert_sha256_fingerprints %>"
+        # @lat: [[public-marketing-and-meta-pages#Why the Apple App Store id is a placeholder]]
+        APPLE_APP_STORE_ID: "<%= sway_apple_app_store_id %>"
+        # @lat: [[well-known-controller-notes#Why the served hosts are configuration]]
+        APP_ASSOCIATION_HOSTS: "<%= sway_public_hostnames %>"
+        WEBAUTHN_RELATED_HOSTS: "<%= sway_public_hostnames %>"
+        # @lat: [[webauthn-settings-consolidation#Why production names its origins and domain in the deploy file]]
+        WEBAUTHN_ALLOWED_ORIGINS: "<%= sway_public_origins %>"
+        WEBAUTHN_RP_ID: "app.sway.vote"
+        APNS_ENV: "production"
+        FCM_PROJECT_ID: "<%= sway_gcp_project_id %>"
+    secret:
+        - RAILS_MASTER_KEY
+        - SECRET_KEY_BASE
+        # Signs and checks the mobile app's bearer tokens; rotating it invalidates every issued key.
+        - API_KEY_HMAC_SECRET_KEY
+        # @lat: [[phone-cache-hashing]]
+        - PHONE_CACHE_HMAC_SECRET_KEY
+        - GOOGLE_CLOUD_PROJECT
+        - GOOGLE_MAPS_API_KEY
+        - VITE_GOOGLE_MAPS_API_KEY
+        - VITE_GOOGLE_RECAPTCHA_SITE_KEY
+        - VITE_SENTRY_DSN
+        - VITE_CLOUDFLARE_TURNSTILE_SITE_KEY
+        - NEW_RELIC_USER_KEY
+        - NEW_RELIC_API_KEY
+        - NEW_RELIC_LICENSE_KEY
+        - NEW_RELIC_ACCOUNT_ID
+        - TWILIO_ACCOUNT_SID
+        - TWILIO_AUTH_TOKEN
+        - TWILIO_VERIFY_SERVICE_SID
+        # Delivered but blocked: the Twilio Messaging API cannot send until
+        # A2P 10DLC campaign registration completes.
+        # @lat: [[deploy-credential-delivery-gap#Delivered does not mean usable: TWILIO_FROM_PHONE]]
+        - TWILIO_FROM_PHONE
+        - SENTRY_DSN
+        - SENTRY_ORG
+        - SENTRY_PROJECT
+        - SENTRY_AUTH_TOKEN
+        - CONGRESS_GOV_API_KEY
+        - OPEN_STATES_API_KEY
+        - ADMIN_PHONES
+        # @lat: [[settings-and-secrets#Phone lists that decide access]]
+        - API_USER_PHONES
+        - RESEND_EMAIL_API_KEY
+        - VAPID_PRIVATE_KEY
+        - VAPID_PUBLIC_KEY
+        # Claude API key for Llm::ClaudeAdapter. Bitwarden: ANTHROPIC_API_KEY.
+        - ANTHROPIC_API_KEY
+        # OpenRouter API key for Llm::OpenRouterAdapter. Bitwarden: OPEN_ROUTER_API_KEY.
+        - OPENROUTER_API_KEY
+        - BRAVE_SEARCH_API_KEY
+        # GitHub fine-grained PAT for RefreshLegislatorsCacheJob. Scope:
+        # contents:write + pull-requests:write on the Sway repo only (ASVS V4).
+        # Bitwarden: GITHUB_TOKEN. See docs/kamal-secrets.md.
+        - GITHUB_TOKEN
+        # Repo slug for GitHubPrService — not a secret, but must be a Kamal
+        # env value: the production image excludes .git/ (.dockerignore), so
+        # the git-config fallback returns "". See docs/kamal-secrets.md.
+        - GITHUB_REPO
+        # @lat: [[active-record-encryption-keys]]
+        - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY
+        - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY
+        - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT
+        - APNS_AUTH_KEY_P8
+        - APNS_KEY_ID
+        - APPLE_TEAM_ID
+        - APPLE_BUNDLE_ID
+        - FCM_SERVICE_ACCOUNT_JSON
+
+# https://kamal-deploy.org/docs/configuration/ssh/
+ssh:
+    user: <%= sway_deploy_user %>
+    keys_only: true
+    keys: ["<%= sway_ssh_key %>"]
+    config: true
+    # @lat: [[deploy-configuration#What the deploy file decides#Why the same values are read twice]]
+
+volumes:
+    - <%= sway_storage_dir %>:/rails/storage
+
+deploy_timeout: 600
+
+# @lat: [[deploy-configuration#What the deploy file decides#Why Docker logging uses the local driver with rotation caps]]
+logging:
+    driver: "local"
+    options:
+        max-size: "10m"
+        max-file: "3"
+
+accessories:
+    cloudflare_tunnel:
+        service: cloudflared
+        # @lat: [[deploy-configuration#What the deploy file decides#Why the registry is plain HTTP and how accessory images are tagged]]
+        image: cloudflare/cloudflared:latest
+        cmd: tunnel run
+        host: <%= sway_host %>
+        options:
+            cap-drop: ["ALL"]
+            security-opt: ["no-new-privileges:true"]
+        env:
+            secret:
+                - TUNNEL_TOKEN
+
+    # Continuous replication of the primary SQLite db to GCS,
+    # alongside the app against the same storage volume — Litestream reads
+    # the WAL of a live database, its designed use.
+    litestream:
+        service: litestream
+        # @lat: [[deploy-configuration#What the deploy file decides#Why the registry is plain HTTP and how accessory images are tagged]]
+        image: litestream/litestream:0.5.15
+        host: <%= sway_host %>
+        cmd: replicate -config /etc/litestream.yml
+        # Same host path web/job bind at `volumes:` above. Litestream needs
+        # write access to the database's directory, not just the file.
+        volumes:
+            - <%= sway_storage_dir %>:/data
+            # Written by scripts/provision-litestream-key.sh (via deploy.sh),
+            # deliberately not a Kamal `files:` upload, so the credential
+            # never enters the working tree — that script reads this line to
+            # know where to write it. Lives under the deploy user's home, not
+            # /etc: that account has no passwordless sudo and no TTY to
+            # prompt on over SSH. 0600 in a 0700 dir; the container runs as
+            # root, so it still reads through this mount.
+            - <%= sway_keyfile_path %>:/etc/litestream/gcs-key.json:ro
+        files:
+            - config/litestream/litestream.yml.erb:/etc/litestream.yml
+        env:
+            clear:
+                # A path, not a secret — the native gs client reads Google's
+                # standard credential chain, which looks at this variable.
+                GOOGLE_APPLICATION_CREDENTIALS: /etc/litestream/gcs-key.json
+        options:
+            cap-drop: ["ALL"]
+            security-opt: ["no-new-privileges:true"]
+
+    # @lat: [[deploy-configuration#What the deploy file decides#Why the monitoring accessories are capped and bound to private addresses]]
+    beszel:
+        service: beszel
+        image: henrygd/beszel:0.21.0
+        host: <%= sway_host %>
+        volumes:
+            - <%= sway_storage_dir %>/beszel:/beszel_data
+        options:
+            publish:
+                - "<%= sway_host %>:8090:8090"
+                # <% if sway_tailscale_ip && sway_tailscale_ip != sway_host %>
+                - "<%= sway_tailscale_ip %>:8090:8090"
+            # <% end %>
+            cpus: "0.25"
+            memory: "128m"
+            cap-drop: ["ALL"]
+            security-opt: ["no-new-privileges:true"]
+
+    beszel_agent:
+        service: beszel-agent
+        image: henrygd/beszel-agent:0.21.0
+        host: <%= sway_host %>
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - <%= sway_storage_dir %>:/extra-filesystems/sda1:ro
+        env:
+            clear:
+                LISTEN: "45876"
+            secret:
+                - BESZEL_AGENT_KEY
+        options:
+            cpus: "0.25"
+            memory: "64m"
+            cap-drop: ["ALL"]
+            security-opt: ["no-new-privileges:true"]
+
+    # @lat: [[deploy-configuration#What the deploy file decides#Why the auditd accessory audits the app user and never blocks]]
+    auditd:
+        service: sway-auditd
+        image: alpine:3.21
+        host: <%= sway_host %>
+        network: "host"
+        options:
+            cpus: "0.10"
+            memory: "32m"
+            cap-add: ["AUDIT_CONTROL", "AUDIT_READ"]
+            pid: "host"
+            security-opt: ["no-new-privileges:true"]
+        env:
+            clear:
+                SWAY_AUDIT_STORAGE_DIR: "<%= sway_storage_dir %>"
+                SWAY_AUDIT_KEYFILE_PATH: "<%= sway_keyfile_path %>"
+                SWAY_AUDIT_DEPLOY_HOME: "/home/<%= sway_deploy_user %>"
+            secret:
+                - SENTRY_DSN
+        cmd: >-
+            sh -c 'apk add --no-cache audit curl >/dev/null && (auditctl -b 8192 || true) && (auditctl --backlog_wait_time 0 || true) && (auditctl -f 1 || true) && (auditctl -e 1 || true) &&
+            for key in sway_storage_routine sway_storage_access sway_keyfile_access sway_docker_sock_access sway_secrets_access; do auditctl -D -k "$key" >/dev/null 2>&1 || true; done &&
+            for db in production production_queue production_cable production_cache; do for suffix in "" -wal -shm -journal; do auditctl -a never,exit -F path="$SWAY_AUDIT_STORAGE_DIR/$db.sqlite3$suffix" -F uid=100 -k sway_storage_routine || true; done; done &&
+            (auditctl -a never,exit -F dir="$SWAY_AUDIT_STORAGE_DIR/legislation" -F uid=100 -k sway_storage_routine || true) &&
+            (auditctl -w "$SWAY_AUDIT_STORAGE_DIR" -p rwa -k sway_storage_access || true) &&
+            (auditctl -w "$SWAY_AUDIT_KEYFILE_PATH" -p rwa -k sway_keyfile_access || true) &&
+            (auditctl -w /var/run/docker.sock -p rwa -k sway_docker_sock_access || true) &&
+            (auditctl -w "$SWAY_AUDIT_DEPLOY_HOME/.kamal" -p rwa -k sway_secrets_access || true) &&
+            (auditctl -w "$SWAY_AUDIT_DEPLOY_HOME/.ssh" -p rwa -k sway_secrets_access || true) &&
+            mkdir -p /var/log/audit && (auditd || true) && touch /var/log/audit/audit.log && tail -n 0 -F /var/log/audit/audit.log | while read -r line; do case "$line" in *sway_storage_access*|*sway_keyfile_access*|*sway_docker_sock_access*|*sway_secrets_access*) echo "$line"; dsn=$(printenv SENTRY_DSN | tr -d "[:space:]"); if [ -n "$dsn" ]; then (rest=${dsn#https://}; key=${rest%%@*}; host_proj=${rest#*@}; host=${host_proj%%/*}; proj=${host_proj#*/}; curl -fsS -m 5 -X POST "https://${host}/api/${proj}/store/" -H "Content-Type: application/json" -H "X-Sentry-Auth: Sentry sentry_version=7, sentry_key=${key}, sentry_client=sway-auditd/1.0" -d "{\"message\":\"auditd exfiltration alert\",\"level\":\"warning\"}" >/dev/null 2>&1 || true); fi ;; esac; done'
+
+    # The Python `legislation_service` accessory is evicted from production
+    # All pipeline stages run inside the Rails process via
+    # RunLegislationPipelineJob; PipelinePreviewService computes the preview
+    # in-process. No production code path calls out to it.

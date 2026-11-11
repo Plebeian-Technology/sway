@@ -1,0 +1,34 @@
+# RBS sig for Legislation::PipelineBillLookup — the one place the legislation
+# pipeline turns a PipelineRunBill#bill_external_id back into a Bill.
+# See app/services/legislation/pipeline_bill_lookup.rb.
+#
+# Zero untyped, per project memory feedback_rbs_avoid_untyped.
+module Legislation
+  module PipelineBillLookup
+    # nil when there is no match OR more than one — external_id is not a key
+    # (the bills unique index is (external_id, sway_locale_id)), and there is
+    # no correct arbitrary winner because Legislation::Paths keys every
+    # artifact on external_id alone.
+    def self.find: (String external_id, ?sway_locale_id: Integer?) -> Bill?
+
+    # Bulk title resolution for the admin per-bill grid. An ambiguous
+    # external_id is omitted from the map rather than resolved arbitrarily.
+    def self.title_map: (Array[String] external_ids, ?sway_locale_id: Integer?) -> Hash[String, String]
+
+    # The ruby/gem_rbs_collection `ActiveRecord::Relation` is NOT generic, so
+    # `ActiveRecord::Relation[Bill, Bill]` crashed steep outright
+    # (InvalidSubstitutionError: vars.size=0, types.size=2) and left this file
+    # silently unchecked. The rbs_rails per-model subclass carries the element
+    # type via Enumerable[Bill] instead.
+    def self.scope_for: (Array[String] external_ids, Integer? sway_locale_id) -> Bill::ActiveRecord_Relation
+
+    # The reverse direction: rows that can only be this bill's. An all-bills
+    # run keys its rows on external_id alone, so it counts only while no other
+    # locale shares that id.
+    def self.run_bills_for: (Bill bill) -> PipelineRunBill::ActiveRecord_Relation
+
+    def self.unique_external_id?: (Bill bill) -> bool
+
+    def self.warn_ambiguous: (String external_id) -> void
+  end
+end

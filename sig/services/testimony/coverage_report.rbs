@@ -1,0 +1,126 @@
+module Testimony
+  # Phase 67 Plan 06 (D-14/D-16). The one place every coverage number is
+  # worked out; see the class docstring in app/ for why.
+  class CoverageReport
+    STATES: Array[Symbol]
+
+    class Result
+      attr_reader state: Symbol
+      attr_reader total_chars: Integer
+      attr_reader reached_chars: Integer
+      attr_reader removed_chars: Integer
+      attr_reader repair_added_chars: Integer
+      attr_reader left_out_chars: Integer
+      attr_reader total_letters: Integer?
+      attr_reader reached_letters: Integer?
+      attr_reader removed_letters: Integer?
+      attr_reader left_out_letters: Integer?
+      attr_reader individual_letter_count: Integer?
+
+      attr_reader model_fallback_letter_count: Integer?
+      attr_reader repeat_letter_count: Integer?
+      attr_reader attachment_cut_count: Integer
+      attr_reader attachment_cut_cap: Integer?
+      attr_reader paste_present: bool
+      attr_reader paste_chars: Integer
+      attr_reader paste_share_of_limit: Float?
+      attr_reader displaced_letter_count: Integer?
+      attr_reader digest: String
+      attr_reader acknowledged: bool
+      attr_reader acknowledged_by_email: String?
+      attr_reader acknowledged_at: ActiveSupport::TimeWithZone?
+
+      def initialize: (
+        state: Symbol,
+        total_chars: Integer, reached_chars: Integer, removed_chars: Integer, repair_added_chars: Integer, left_out_chars: Integer,
+        total_letters: Integer?, reached_letters: Integer?, removed_letters: Integer?, left_out_letters: Integer?,
+        individual_letter_count: Integer?,
+        model_fallback_letter_count: Integer?,
+        repeat_letter_count: Integer?,
+        attachment_cut_count: Integer, attachment_cut_cap: Integer?,
+        paste_present: bool, paste_chars: Integer, paste_share_of_limit: Float?, displaced_letter_count: Integer?,
+        digest: String, acknowledged: bool, acknowledged_by_email: String?, acknowledged_at: ActiveSupport::TimeWithZone?
+      ) -> void
+
+      def self.new: (
+        state: Symbol,
+        total_chars: Integer, reached_chars: Integer, removed_chars: Integer, repair_added_chars: Integer, left_out_chars: Integer,
+        total_letters: Integer?, reached_letters: Integer?, removed_letters: Integer?, left_out_letters: Integer?,
+        individual_letter_count: Integer?,
+        model_fallback_letter_count: Integer?,
+        repeat_letter_count: Integer?,
+        attachment_cut_count: Integer, attachment_cut_cap: Integer?,
+        paste_present: bool, paste_chars: Integer, paste_share_of_limit: Float?, displaced_letter_count: Integer?,
+        digest: String, acknowledged: bool, acknowledged_by_email: String?, acknowledged_at: ActiveSupport::TimeWithZone?
+      ) -> Testimony::CoverageReport::Result
+    end
+
+    def self.call: (bill: Bill, ?provisioning: BillLlmProvisioning?) -> Result
+
+    # D-15: true when a result's numbers are ones the operator must
+    # acknowledge before Approve is usable — a real cut, or a stage that
+    # failed or never ran at all.
+    def self.coverage_gap?: (Result result) -> bool
+
+    @bill: Bill
+    @provisioning: BillLlmProvisioning?
+    @reach: BillPositionsPromptBuilder::TestimonyReach?
+    @last_clean_testimony_stage_status: String?
+
+    def initialize: (bill: Bill, ?provisioning: BillLlmProvisioning?) -> void
+
+    def call: () -> Result
+
+    private
+
+    attr_reader bill: Bill
+    attr_reader provisioning: BillLlmProvisioning?
+
+    def state: () -> Symbol
+    def no_testimony?: () -> bool
+    def running?: () -> bool
+    def last_clean_testimony_stage_status: () -> String?
+    def failed?: () -> bool
+    def artifact_present?: () -> bool
+    def fresh_artifact_present?: () -> bool
+    def stale?: () -> bool
+    def artifact: () -> Hash[String, untyped]?
+    def cleaned_counts: () -> Hash[String, untyped]
+    def letters: () -> Array[Hash[String, untyped]]
+    def raw_text_length: () -> Integer
+    def total_chars: () -> Integer
+    def reach: () -> BillPositionsPromptBuilder::TestimonyReach
+    def cleaned_chars: () -> Integer
+    def removed_chars: () -> Integer
+    def repair_added_chars: () -> Integer
+    def reached_chars: () -> Integer
+    def left_out_chars: () -> Integer
+    def total_letters: () -> Integer?
+    def reached_letters: () -> Integer?
+    def removed_letters: () -> Integer?
+    def left_out_letters: () -> Integer?
+    def individual_letter_count: () -> Integer?
+
+    def model_fallback_letter_count: () -> Integer?
+    def repeat_letter_count: () -> Integer?
+    def cut_attachment_entries: () -> Array[Hash[String, untyped]]
+    def attachment_cut_count: () -> Integer
+    def attachment_cut_cap: () -> Integer?
+    def paste_present?: () -> bool
+    def paste_chars: () -> Integer
+    def paste_share_of_limit: () -> Float?
+    def displaced_letter_count: () -> Integer?
+
+    @digest: String?
+
+    def digest: () -> String
+    def digest_fields: () -> Hash[Symbol, untyped]
+
+    @acknowledgement: TestimonyCoverageAcknowledgement?
+
+    def acknowledgement: () -> TestimonyCoverageAcknowledgement?
+    def acknowledged?: () -> bool
+    def acknowledged_by_email: () -> String?
+    def acknowledged_at: () -> ActiveSupport::TimeWithZone?
+  end
+end

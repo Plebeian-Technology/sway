@@ -1,0 +1,7 @@
+# Spec-only controller, spec/support/inertia_flash_probe_controller.rb; routed
+# inside the Rails.env.test? block of config/routes.rb.
+class InertiaFlashProbeController < ApplicationController
+  def trigger: -> void
+
+  def trigger_flash_error: -> void
+end

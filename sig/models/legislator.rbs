@@ -1,0 +1,27 @@
+# Manual extensions for Legislator. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/legislator.rbs; this file holds
+# the hand-written constants, class methods, and instance methods (migrated
+# from the former sig/shims/model_runtime_methods.rbs monolith, WS7.28).
+#
+# `self.mirrors_external_asset` is load-bearing: sig/models/concerns/
+# mirrors_external_asset.rbs delegates the singleton call sites to this decl.
+class Legislator < ApplicationRecord
+    PARTY_BY_CHAR: Hash[Symbol, String]
+
+    def self.to_party_name_from_char: (String party) -> String?
+    def self.to_party_char_from_name: (String party) -> String
+    def self.mirrors_external_asset: (attachment_name: String, url_column: String) -> void
+
+    def congress?: -> bool
+    def full_name: -> String
+    def at_large?: -> bool
+    def serving?: -> bool
+    def current_district_score: -> LegislatorDistrictScore?
+    def historical_score_explanations: -> untyped
+    def self.with_term_history: () -> ::Legislator::ActiveRecord_Relation
+    alias terms legislator_terms
+
+    private
+
+    def destroy_historical_score_explanations: () -> untyped
+end

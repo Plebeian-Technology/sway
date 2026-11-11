@@ -1,0 +1,14 @@
+# rswag adds these accessors to RSpec::Core::Configuration when included
+# in spec/swagger_helper.rb. Declare them so steep accepts the assignments.
+module RSpec
+  module Core
+    class Configuration
+      def openapi_root=: (untyped) -> untyped
+      def openapi_root: -> untyped
+      def openapi_specs=: (untyped) -> untyped
+      def openapi_specs: -> untyped
+      def openapi_format=: (untyped) -> untyped
+      def openapi_format: -> untyped
+    end
+  end
+end

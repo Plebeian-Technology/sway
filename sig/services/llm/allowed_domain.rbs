@@ -1,0 +1,10 @@
+module Llm
+  module AllowedDomain
+    MAX_ALLOWED_DOMAINS: Integer
+    VALID_HOST_REGEX: Regexp
+
+    def self.from_url: (String? url) -> String?
+    def self.filter_list: (Array[String]? urls) -> Array[String]
+    def self.ip_address?: (String host) -> bool
+  end
+end

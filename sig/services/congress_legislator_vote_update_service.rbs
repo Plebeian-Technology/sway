@@ -1,0 +1,51 @@
+class CongressLegislatorVoteUpdateService
+  include LegislatorVoteUpserter
+
+  SERVICE_SOURCE: String
+
+  @bill: Bill
+  @senate_upstream_count: Integer?
+  @senate_written_count: Integer?
+  @house_upstream_count: Integer?
+  @house_written_count: Integer?
+
+  def self.call: (Bill | Integer | String bill_or_id) -> void
+
+  def initialize: (Bill | Integer | String bill_or_id) -> void
+
+  def call: () -> void
+
+  private
+
+  def senate: () -> Integer
+
+  def house: () -> Integer
+
+  def verify_record!: (Scraper::Congress::RollCallIdentity identity, chamber: Symbol, voted_on: ::ActiveSupport::TimeWithZone?) -> void
+
+  def verify_question!: (Scraper::Congress::RollCallIdentity identity, chamber: Symbol) -> void
+
+  def log_missing_vote_date: (Symbol chamber) -> void
+
+  def roster_on: (Scraper::Congress::RollCallIdentity identity) -> LegislatorRoster
+
+  def representative: (Scraper::LegislatorVote vote, LegislatorRoster roster) -> Integer?
+
+  def senator: (Scraper::LegislatorVote vote, LegislatorRoster roster) -> Integer?
+
+  def log_unmatched_voters: (Symbol chamber, Array[Scraper::LegislatorVote] unmatched, Integer published) -> void
+
+  def eligible_for_sponsor_inference?: (Exception? senate_error, Exception? house_error) -> bool
+
+  def chamber_outcome: (Symbol chamber, Exception? error, Integer? written_count) -> String
+
+  def propagate_errors!: (Exception? senate_error, Exception? house_error) -> void
+
+  def derive_coverage_status: (Integer total_count, Integer covered_count) -> String
+
+  def coverage_status_missing_vote_date: () -> String
+
+  def coverage_status_fetch_failed: () -> String
+
+  def record_vote_coverage: (chamber: String | Symbol, roll_call_number: String | Integer, eligible_count: Integer, matched_count: Integer, unresolved_tokens: Array[untyped], ?status: String?) -> void
+end

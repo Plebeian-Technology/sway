@@ -1,0 +1,3 @@
+# RBS sig for StageError (Phase 52 D-19).
+class StageError < StandardError
+end

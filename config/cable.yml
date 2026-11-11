@@ -1,0 +1,23 @@
+# @lat: [[auxiliary-databases#Why Action Cable runs on Solid Cable, not Redis]]
+# @lat: [[auxiliary-databases#Why cable messages don't live on the primary database]]
+# @lat: [[auxiliary-databases#Why test keeps cable on the primary database and gives cache none at all]]
+# @lat: [[auxiliary-databases#The four SQLite databases#What sets the cable polling interval and its retention]]
+development:
+    adapter: solid_cable
+    connects_to:
+        database:
+            writing: cable
+    polling_interval: 0.5.seconds
+    message_retention: 10.minutes
+
+test:
+    adapter: test
+
+production:
+    adapter: solid_cable
+    connects_to:
+        database:
+            writing: cable
+    polling_interval: 0.5.seconds
+    message_retention: 10.minutes
+    channel_prefix: sway_rails_production

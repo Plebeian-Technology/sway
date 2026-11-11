@@ -1,0 +1,21 @@
+class AdminDatabaseHealth
+  def self.as_props: () -> {
+    databases: Array[{name: String, database_bytes: Integer, wal_bytes: Integer}],
+    solid_queue_ready: Integer,
+    solid_queue_failed: Integer
+  }
+
+  def as_props: () -> {
+    databases: Array[{name: String, database_bytes: Integer, wal_bytes: Integer}],
+    solid_queue_ready: Integer,
+    solid_queue_failed: Integer
+  }
+
+  private
+
+  def database_files: () -> Array[{name: String, database_bytes: Integer, wal_bytes: Integer}]
+
+  def file_size: (String path) -> Integer
+
+  def safe_count: () { () -> Integer } -> Integer
+end

@@ -1,0 +1,6 @@
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+module ActionDispatch
+  class Request
+    def inertia?: () -> bool
+  end
+end

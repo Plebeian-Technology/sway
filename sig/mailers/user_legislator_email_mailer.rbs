@@ -1,0 +1,46 @@
+class UserLegislatorEmailMailer < ApplicationMailer
+    @user_legislator_email: UserLegislatorEmail
+
+    @text: LegislatorEmailText
+
+    @legislator: Legislator
+
+    @user: User
+
+    @bill: Bill
+
+    def send_email_to_legislator: (UserLegislatorEmail user_legislator_email) -> Mail::Message
+
+    def self.send_email_to_legislator: (UserLegislatorEmail user_legislator_email) -> ActionMailer::MessageDelivery
+
+    # @lat: [[rbs-signatures#Why a mailer's class-level call needs its own declaration]]
+    def self.default: (**untyped) -> Hash[Symbol, untyped]
+
+    # Message text delegated to LegislatorEmailText (single source
+    # of truth shared with the bill-page email_preview prop).
+    def intro: -> ::String
+
+    def body: -> ::String
+
+    def conclusion: -> ::String
+
+    def subject: -> String
+
+    def bill_link: -> String?
+
+    private
+
+    def text: -> LegislatorEmailText
+
+    def from: -> "outreach@sway.vote"
+
+    def reply_to: -> String?
+
+    def to: -> String?
+
+    def legislator: -> Legislator
+
+    def user: -> User
+
+    def bill: -> Bill
+end

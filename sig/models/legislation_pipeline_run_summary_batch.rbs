@@ -1,0 +1,2 @@
+# RBS signature for LegislationPipelineRunSummaryBatch legacy alias.
+LegislationPipelineRunSummaryBatch: singleton(PipelineRunSummaryBatch)

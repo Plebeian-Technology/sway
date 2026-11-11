@@ -1,0 +1,20 @@
+# Spec-only declarations for spec/lib/own_installation_values_spec.rb, whose
+# helper module is defined inside the spec file itself. Steep sees the calls but
+# not the definitions, so each one is declared here.
+module OwnInstallationValues
+  # Environment keys naming a machine or a cloud account.
+  KEYS: Array[String]
+
+  # How many leading path segments are too shallow to be worth searching for.
+  SHALLOWEST_DIRECTORY: Integer
+
+  def self.config_file: () -> Pathname
+
+  def self.published: () -> String
+
+  # The value, the host without its port, and each parent folder.
+  def self.searches_for: (String value) -> Array[String]
+
+  # Every tracked path. Raises rather than returning nothing.
+  def self.tracked_paths: () -> Array[String]
+end

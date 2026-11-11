@@ -1,0 +1,22 @@
+# Phase 32 Plan 11 (D-48 + H2): FCM v1 HTTP dispatcher signatures.
+class FcmClient
+  class DeviceNotRegisteredError < StandardError
+  end
+
+  class FcmError < StandardError
+  end
+
+  FCM_OAUTH_SCOPE: String
+
+  TOKEN_MUTEX: Thread::Mutex
+
+  self.@oauth2_token: String?
+
+  self.@cached_until: ActiveSupport::TimeWithZone?
+
+  def self.deliver: (push_token: String?, title: String, body: String, ?data: Hash[Symbol | String, untyped]) -> (Hash[String, untyped] | nil)
+
+  def self.oauth2_token: (String sa_json) -> String
+
+  def self.fetch_oauth2_token: (String sa_json) -> String
+end

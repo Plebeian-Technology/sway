@@ -1,0 +1,185 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BillOfTheMonthScreen matches snapshot — empty state 1`] = `
+<View
+  className="flex-1 bg-dominant-light dark:bg-dominant-dark"
+  testID="botm-empty-container"
+>
+  <View
+    className="flex-row items-center gap-2 px-2 py-1.5"
+    style={
+      {
+        "backgroundColor": "#3260db",
+        "borderBottomColor": "rgba(255, 255, 255, 0)",
+        "borderBottomWidth": 0,
+        "minHeight": 56,
+      }
+    }
+    testID="botm-brand-header"
+  >
+    <View
+      accessibilityLabel="Open menu"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="rounded-xl px-4 py-2 items-center justify-center bg-transparent w-11 h-11 !px-0 !py-0"
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "minHeight": 44,
+            "opacity": 1,
+          },
+          null,
+          null,
+          undefined,
+        ]
+      }
+      testID="brand-header-menu"
+    >
+      <View
+        testID="lucide-menu"
+      />
+    </View>
+    <Image
+      accessibilityLabel="Sway"
+      resizeMode="cover"
+      source={
+        {
+          "testUri": "../../../../../../assets/sway-logo.png",
+        }
+      }
+      style={
+        {
+          "borderRadius": 8,
+          "height": 32,
+          "width": 32,
+        }
+      }
+    />
+    <Text
+      accessibilityRole="header"
+      className="flex-1 text-xl font-open-sans-semibold"
+      numberOfLines={2}
+      style={
+        {
+          "color": "#ffffff",
+        }
+      }
+    >
+      Bill of the Month
+    </Text>
+  </View>
+  <View
+    className="pt-3"
+  >
+    <View
+      accessibilityLabel="Change locale, currently Baltimore, Maryland, United States"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="bg-surface-3-light dark:bg-surface-3-dark border border-accent-light dark:border-accent-dark rounded-card flex-row items-center justify-between px-4 py-2.5 mx-4"
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "minHeight": 44,
+          },
+          {
+            "elevation": 3,
+            "shadowColor": "#000000",
+            "shadowOffset": {
+              "height": 3,
+              "width": 0,
+            },
+            "shadowOpacity": 0.1,
+            "shadowRadius": 6,
+          },
+        ]
+      }
+      testID="locale-picker-trigger"
+    >
+      <Text
+        className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+      >
+        Baltimore, Maryland, United States
+      </Text>
+      <Text
+        className="text-xl font-open-sans-semibold text-accent-light dark:text-accent-dark"
+      >
+        ›
+      </Text>
+    </View>
+  </View>
+  <View
+    accessibilityLabel="No Bill of the Month is featured right now. Check back soon."
+    className="items-center py-12 gap-2"
+    testID="botm-empty"
+  >
+    <View
+      className="mb-2"
+    >
+      <View
+        testID="lucide-inbox"
+      />
+    </View>
+    <Text
+      className="text-center text-xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+    >
+      No Bill of the Month is featured right now. Check back soon.
+    </Text>
+  </View>
+</View>
+`;

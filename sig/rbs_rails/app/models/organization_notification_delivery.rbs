@@ -1,0 +1,57 @@
+# resolve-type-names: false
+
+# Hand-authored generated-layer RBS for OrganizationNotificationDelivery.
+# Mirrors the rbs_rails generated style, trimmed to the surface steep resolves:
+# the ClassMethods extend (where/create!/find_by/...) plus accessors for
+# id, organization_bill_position_id, user_id, change_type and created_at.
+# delivery_token is declared in sig/models/organization_notification_delivery.rbs.
+class ::OrganizationNotificationDelivery < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::OrganizationNotificationDelivery, ::OrganizationNotificationDelivery::ActiveRecord_Relation, ::Integer]
+
+  module ::OrganizationNotificationDelivery::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def organization_bill_position_id: () -> ::Integer
+
+    def organization_bill_position_id=: (::Integer) -> ::Integer
+
+    def organization_bill_position_id?: () -> bool
+
+    def user_id: () -> ::Integer
+
+    def user_id=: (::Integer) -> ::Integer
+
+    def user_id?: () -> bool
+
+    def change_type: () -> ::String
+
+    def change_type=: (::String) -> ::String
+
+    def change_type?: () -> bool
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+  end
+
+  module ::OrganizationNotificationDelivery::GeneratedAssociationMethods
+  end
+
+  module ::OrganizationNotificationDelivery::GeneratedRelationMethods
+  end
+
+  class ::OrganizationNotificationDelivery::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::OrganizationNotificationDelivery::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrganizationNotificationDelivery, ::Integer]
+    include ::Enumerable[::OrganizationNotificationDelivery]
+  end
+
+  include ::OrganizationNotificationDelivery::GeneratedAttributeMethods
+  include ::OrganizationNotificationDelivery::GeneratedAssociationMethods
+end

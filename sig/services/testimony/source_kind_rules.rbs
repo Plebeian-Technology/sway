@@ -1,0 +1,47 @@
+module Testimony
+  module SourceKindRules
+    type kind = :public_body | :named_organization | :person_speaking_for_org | :person_speaking_for_self
+
+    KINDS: Array[kind]
+
+    class Result
+      attr_reader kind: kind
+      attr_reader phrase: String?
+      attr_reader role: String?
+      attr_reader sender: String?
+      attr_reader org_name: String?
+
+      def initialize: (kind: kind, phrase: String?, role: String?, sender: String?, org_name: String?) -> void
+      def self.new: (kind: kind, phrase: String?, role: String?, sender: String?, org_name: String?) -> Testimony::SourceKindRules::Result
+    end
+
+    AGENCY_NOUNS: Array[String]
+    AGENCY_NOUN_SOURCE: String
+    REPORT_AGENCY_NOUNS: Array[String]
+    REPORT_AGENCY_NOUN_SOURCE: String
+    PUBLIC_BODY_PHRASES: Array[String]
+    PUBLIC_BODY_PATTERNS: Array[Regexp]
+    LETTERHEAD_NOUN_SOURCE: String
+    LETTERHEAD_LINE_PATTERN: Regexp
+    SALUTATION_PATTERN: Regexp
+    LETTERHEAD_WINDOW_CHARS: Integer
+    ORGANIZATION_NOUNS: Array[String]
+    ORGANIZATION_NOUN_SOURCE: String
+    OWN_VOICE_PHRASES: Array[String]
+    NAMED_ORGANIZATION_PATTERNS: Array[Regexp]
+    ROLE_TITLES: Array[String]
+    ROLE_TITLE_PATTERN: Regexp
+    ORG_AFFILIATION_PATTERN: Regexp
+    ORG_AFFILIATION_WINDOW_CHARS: Integer
+
+    def self.classify: (String? text, ?sender_address: String?) -> Result
+
+    private
+
+    def self.public_body?: (String text) -> bool
+    def self.letterhead?: (String text) -> bool
+    def self.letterhead_region: (String text) -> String
+    def self.named_organization?: (String text) -> bool
+    def self.person_speaking_for_org_evidence: (String text) -> [String?, String?, String?]
+  end
+end

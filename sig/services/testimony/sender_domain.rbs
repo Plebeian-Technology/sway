@@ -1,0 +1,12 @@
+# RBS signature for Testimony::SenderDomain (CR-02, WR-05) — the one place
+# that says what a usable sender domain is, read by both the reader that
+# derives one and the model that stores one.
+module Testimony
+  module SenderDomain
+    MAX_CHARS: Integer
+    FORMAT: Regexp
+
+    def self.valid?: (untyped candidate) -> bool
+    def self.from_address: (String? address) -> String?
+  end
+end

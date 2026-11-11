@@ -1,0 +1,19 @@
+module Pages
+  ADMIN_USER_ADDRESS_CHANGES: "admin/UserAddressChanges"
+end
+
+class ::ActionController::Base
+  def admin_user_address_changes_path: (*untyped) -> ::String
+  def admin_user_address_changes_url: (*untyped) -> ::String
+end
+
+class ::Object
+  def admin_user_address_changes_path: (*untyped) -> ::String
+  def admin_user_address_changes_url: (*untyped) -> ::String
+end
+
+module Admin
+  class UserAddressChangesController < ApplicationController
+    def show: () -> untyped
+  end
+end

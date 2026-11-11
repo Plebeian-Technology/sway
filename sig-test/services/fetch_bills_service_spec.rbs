@@ -1,0 +1,24 @@
+# Spec-only helper module for FetchBillsService specs (Phase 52 Plan 04).
+# Lives in sig-test (not sig) because it's only referenced from spec files.
+# Mirrors Plan 02's MupdfExtractorSpecHelpers pattern.
+module FetchBillsServiceSpecHelpers
+  ARTIFACT_ROOT: String
+
+  # FetchBillsService fetches Baltimore and only Baltimore, so every file it
+  # writes lands under this one path segment.
+  SWAY_LOCALE: String
+
+  CASSETTE_DIR: String
+  LEGISTAR_BASE_URL: String
+
+  # One bill's artifact directory: <root>/<sway_locale>/<external_id>/.
+  def self.bill_dir: (String external_id) -> String
+end
+
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def escape_target: () -> Pathname
+  def two_matters_payload: () -> Array[Hash[String, untyped]]
+  def malicious_external_ids: () -> Array[String?]
+  def safe_external_ids: () -> Array[String]
+end

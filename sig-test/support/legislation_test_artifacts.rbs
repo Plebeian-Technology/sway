@@ -1,0 +1,6 @@
+# Spec-only helper module (spec/support/legislation_test_artifacts.rb),
+# called directly as LegislationTestArtifacts.root_for(...) — not included
+# into example groups.
+module LegislationTestArtifacts
+  def self.root_for: (String name) -> String
+end

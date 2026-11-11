@@ -1,0 +1,12 @@
+# Bill interesting score retention sweep. See
+# app/jobs/bill_interesting_score_retention_job.rb for the full contract.
+class BillInterestingScoreRetentionJob < ApplicationJob
+  RETENTION_DAYS: Integer
+  BATCH_SIZE: Integer
+
+  def perform: () -> Integer
+
+  private
+
+  def prune_superseded: (ActiveSupport::TimeWithZone cutoff_at) -> Integer
+end

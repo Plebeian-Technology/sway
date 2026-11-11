@@ -1,0 +1,83 @@
+# Hand-written RBS for lib/query_parameter_check.rb.
+# @lat: [[query-parameter-namespaces#Machine-readable registry and lint enforcement]]
+class QueryParameterCheck
+  REGISTRY_PATH: String
+
+  type feature_registry = {
+    parameters: Array[String],
+    legacy_aliases: Array[String],
+    route_patterns: Array[String],
+    parameter_families: Hash[String, Array[String]]
+  }
+
+  type projection_feature = {
+    parameters: Array[String],
+    route_patterns: Array[String],
+    parameter_families: Hash[String, Array[String]]
+  }
+
+  type registry_projection = {
+    global_ambient: Array[String],
+    features: Hash[String, projection_feature]
+  }
+
+  class Offence
+    attr_reader message: String
+
+    def initialize: (String message) -> void
+
+    def to_s: () -> String
+  end
+
+  class MissingRegistryFileError < StandardError
+  end
+
+  class EmptyRegistryError < StandardError
+  end
+
+  class InvalidRegistryError < StandardError
+  end
+
+  attr_reader root: String
+  attr_reader registry_path: String
+
+  @scanned_count: Integer?
+  @features: Hash[String, feature_registry]?
+  @canonical_parameters: Hash[String, Array[String]]?
+  @global_ambient: Array[String]?
+  @registry_projection: registry_projection?
+
+  def initialize: (?String? root, ?registry_path: String) -> void
+
+  def offences: () -> Array[Offence]
+
+  def features: () -> Hash[String, feature_registry]
+
+  def canonical_parameters: () -> Hash[String, Array[String]]
+
+  def registry_projection: () -> registry_projection
+
+  def feature_for_path: (String? path) -> String?
+
+  def parameter_family: (String feature_name, String parameter_name) -> Array[String]
+
+  def global_ambient: () -> Array[String]
+
+  def scanned_count: () -> Integer
+
+  private
+
+  def portable_route_pattern?: (String pattern) -> bool
+
+  def full_path: () -> String
+
+  def load_registry!: () -> void
+
+  def detect_parameter_collisions: (Array[Offence] offences) -> void
+
+  def detect_duplicate_parameters_within_features: (Array[Offence] offences) -> void
+
+  def detect_ambient_collisions: (Array[Offence] offences) -> void
+
+  def detect_duplicate_ambient_parameters: (Array[Offence] offences) -> void
+end

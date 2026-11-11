@@ -1,0 +1,16 @@
+module Legislation
+  class ArtifactRelocationReport
+    @moved: Array[String]
+    @left: Hash[String, String]
+
+    attr_reader moved: Array[String]
+    attr_reader left: Hash[String, String]
+
+    def initialize: () -> void
+    def record_moved: (String relative_path) -> void
+    def record_left: (String relative_path, String reason) -> void
+    def moved_count: () -> Integer
+    def left_count: () -> Integer
+    def left_lines: () -> Array[String]
+  end
+end

@@ -1,0 +1,39 @@
+module Scraper
+  module Congress
+    module House
+      class LegislatorVotes
+        CLERK_BASE_URL: String
+        SUPPORT_MAP: Hash[String, String]
+
+        @roll_call_number: (Integer | String)?
+        @year: Integer
+        @congress: Integer
+        @session: Integer
+        @result: (String | Hash[String, untyped])?
+        @result_exception: Exception?
+        @clerk_conn: Faraday::Connection?
+        @process: Array[Scraper::LegislatorVote]?
+
+        def initialize: (roll_call_number: (Integer | String)?, year: Integer | String) -> void
+        def identity: -> Scraper::Congress::RollCallIdentity
+        def process: -> Array[Scraper::LegislatorVote]
+        def do_request: -> (String | Hash[String, untyped])?
+        def do_process: -> Array[Scraper::LegislatorVote]
+
+        private
+
+        def result: -> (String | Hash[String, untyped])?
+        def fetch_primary: -> Hash[String, untyped]?
+        def fetch_clerk_fallback: (String primary_error) -> String
+        def handle_fallback_failure: (primary_error: String, fallback_error: String) -> bot
+        def clerk_conn: -> Faraday::Connection
+        def roll: -> String
+        def identity_from_congress_gov: (Hash[String, untyped] raw_result) -> Scraper::Congress::RollCallIdentity
+        def identity_from_clerk_xml: (String xml_content) -> Scraper::Congress::RollCallIdentity
+        def process_congress_gov: (Hash[String, untyped] raw_result) -> Array[Scraper::LegislatorVote]
+        def process_clerk_xml: (String xml_content) -> Array[Scraper::LegislatorVote]
+        def parse_date: (String? text) -> Date?
+      end
+    end
+  end
+end

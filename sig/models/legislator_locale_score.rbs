@@ -1,0 +1,7 @@
+# Manual extensions for LegislatorLocaleScore. The rbs_rails-generated file
+# under sig/rbs_rails/app/models/legislator_locale_score.rbs covers attribute
+# readers and the belongs_to :legislator association. This file adds the
+# The model's hand-written instance methods (rbs_rails covers columns).
+class LegislatorLocaleScore < ApplicationRecord
+  def to_builder: -> Jbuilder
+end

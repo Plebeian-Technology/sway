@@ -1,0 +1,39 @@
+module Testimony
+  class BoilerplateRemover
+    CITY_IT_BANNER: String
+    LETTER_MARKER: Regexp
+    MARKER_LOOKBACK_LINES: Integer
+    MEMO_HEADER_LINE_PATTERN: Regexp
+    FORWARD_SUBJECT_PATTERN: Regexp
+    MAX_FORWARD_WRAPPER_BODY_CHARS: Integer
+    MAX_INTERNAL_ROUTING_NOTE_CHARS: Integer
+    MAX_INTERNAL_ROUTING_NOTE_LINES: Integer
+    INTERNAL_ROUTING_NOTE_PATTERN: Regexp
+    TESTIMONY_PROSE_PATTERN: Regexp
+    FOOTER_INNER_LINE: Regexp
+    MUNICIPAL_OFFICE_FOOTER_PATTERN: Regexp
+    REQUEST_COUNCIL_MEETING_PATTERN: Regexp
+    DEVICE_FOOTER_PATTERNS: Array[Regexp]
+    CONFIDENTIALITY_DISCLAIMER_PATTERNS: Array[Regexp]
+    PATTERNS: Array[Regexp]
+    CITY_IT_BANNER_PATTERN: Regexp
+
+    class Result
+      attr_reader text: String
+      attr_reader characters_removed: Integer
+      attr_reader occurrences: Integer
+
+      def initialize: (text: String, characters_removed: Integer, occurrences: Integer) -> void
+      def self.new: (text: String, characters_removed: Integer, occurrences: Integer) -> Testimony::BoilerplateRemover::Result
+    end
+
+    def self.call: (String text) -> Result
+    def self.forward_wrapper?: (String seg) -> bool
+    def self.internal_routing_note?: (String? text) -> bool
+    def self.classify_segments: (String text) -> Array[[Integer, Integer, bool]]
+    private def self.strip_forward_wrappers: (String text) -> [String, Integer, Integer]
+    private def self.raw_marker_starts: (String text) -> Array[Integer]
+    private def self.forward_or_reply_above?: (String text, Integer offset) -> bool
+    private def self.memo_header_above?: (String text, Integer offset) -> bool
+  end
+end

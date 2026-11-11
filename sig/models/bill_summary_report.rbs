@@ -1,0 +1,21 @@
+class BillSummaryReport < ApplicationRecord
+    VALID_REASONS: Array[String]
+    REASON_LABELS: Hash[String, String]
+    MAX_DETAILS_LENGTH: Integer
+    DUPLICATE_WINDOW_HOURS: Integer
+
+    def anonymous?: () -> bool
+    def reporter_display_name: () -> String
+    def reason_label: () -> String
+    def capture_bill_snapshot: () -> void
+    def throttle_duplicate_reports: () -> void
+
+    def pending?: () -> bool
+    def reviewed?: () -> bool
+    def resolved?: () -> bool
+    def dismissed?: () -> bool
+    def pending!: () -> bool
+    def reviewed!: () -> bool
+    def resolved!: () -> bool
+    def dismissed!: () -> bool
+end

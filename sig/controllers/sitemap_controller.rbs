@@ -1,0 +1,9 @@
+class SitemapController < ApplicationController
+    @bills: untyped
+
+    @legislators: untyped
+
+    @sway_locales: untyped
+
+    def index: -> untyped
+end

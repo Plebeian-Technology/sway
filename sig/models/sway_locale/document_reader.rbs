@@ -1,0 +1,147 @@
+class SwayLocale
+  class DocumentReader
+    class Error < StandardError
+    end
+
+    class ValidationError < Error
+      attr_reader filename: String?
+      attr_reader field_path: String?
+
+      def initialize: (String message, ?filename: String?, ?field_path: String?) -> void
+    end
+
+    class DuplicateKeyError < ValidationError
+    end
+
+    class DuplicateIdentityError < ValidationError
+    end
+
+    class FilenameMismatchError < ValidationError
+    end
+
+    class LegislativeSessionDefinition
+      attr_reader name: String
+      attr_reader start_date: Date
+      attr_reader end_date: Date
+      attr_reader active: bool
+      attr_reader upstream_name: String
+
+      def initialize: (name: String, start_date: Date | String, end_date: Date | String, ?active: bool, ?upstream_name: String?) -> void
+      def active?: () -> bool
+    end
+
+    class Document
+      @source_rules: Hash[Symbol, untyped]?
+      @term_rules: Hash[Symbol, untyped]?
+      @legislative_sessions: Array[LegislativeSessionDefinition]
+      @news_sources: Array[Hash[String, String]]
+      @source_config_digest: String
+
+      attr_reader data: Hash[String, untyped]
+      attr_reader filename: String?
+
+      def initialize: (Hash[String, untyped] data, ?filename: String?) -> void
+
+      def schema_version: () -> Integer
+      def city: () -> String
+      def region: () -> String
+      def region_code: () -> String?
+      def country: () -> String
+      def name: () -> String
+      def time_zone: () -> String
+      def icon_url: () -> String
+      def default?: () -> bool
+      def sample_address: () -> Hash[String, untyped]
+      def sample_street: () -> String?
+      def sample_postal_code: () -> String?
+      def sample_latitude: () -> Float?
+      def sample_longitude: () -> Float?
+      def source_rules: () -> Hash[Symbol, untyped]
+      def term_rules: () -> Hash[Symbol, untyped]
+      def locale_wide_district_name: () -> String?
+      def legislation_rules: () -> Hash[Symbol, untyped]?
+      def hearings_rules: () -> Hash[Symbol, untyped]?
+      def vote_rules: () -> Hash[Symbol, untyped]?
+      def roster_rules: () -> Hash[Symbol, untyped]?
+      def law_rules: () -> Hash[Symbol, untyped]?
+      def testimony_rules: () -> Hash[Symbol, untyped]?
+      def nominatim_viewbox: () -> String?
+      def nominatim_bounded: () -> bool?
+      def nominatim_bounded?: () -> bool
+      def nominatim_country_codes: () -> String?
+      def legislative_sessions: () -> Array[LegislativeSessionDefinition]
+      def sync_legislative_sessions!: (SwayLocale sway_locale) -> Array[LegislativeSession]
+      def news_sources: () -> Array[Hash[String, String]]
+      def source_config_digest: () -> String
+      def news_sources_digest: () -> String
+      def sync_news_sources!: (SwayLocale sway_locale) -> LlmBillSummarizationInstruction
+      def to_h: () -> Hash[Symbol, untyped]
+      def to_sway_locale_attributes: () -> Hash[Symbol, untyped]
+      def to_jurisdiction_rules: () -> SwayLocale::JurisdictionRules
+      def to_term_rules: () -> SwayLocale::TermRules
+
+      private
+
+      def deep_freeze: (untyped value) -> untyped
+    end
+
+    NOMINATIM_FIELDS: Array[String]
+    RULE_FIELDS: Array[String]
+    TOP_LEVEL_FIELDS: Array[String]
+    NEWS_SOURCE_FIELDS: Array[String]
+    VALID_PATH_POLICIES: Array[String]
+    IPV4_PART_PATTERN: Regexp
+    IPV4_LITERAL_REGEX: Regexp
+    PRIVATE_HOST_SUFFIXES: Array[String]
+    PRIVATE_EXACT_HOSTS: Array[String]
+    LEGISLATIVE_SESSION_FIELDS: Array[String]
+    SAMPLE_ADDRESS_FIELDS: Array[String]
+    SOURCE_RULES_FIELDS: Array[String]
+    INTEGRATION_RULE_FIELDS: Array[String]
+    TERM_RULES_FIELDS: Array[String]
+    CONVENING_FIELDS: Array[String]
+
+    VALID_SESSION_NUMBERINGS: Array[String]
+    VALID_CALENDAR_KINDS: Array[String]
+    VALID_IDENTIFIED_BY: Array[String]
+
+    self.@cache_mutex: Thread::Mutex
+    self.@discover_cache: Hash[String, [Array[[String, Integer, Integer, Integer]], Array[Document]]]
+
+    def self.default_directory: () -> Pathname
+    def self.discover_paths: (?Pathname | String directory) -> Array[String]
+    def self.discover: (?Pathname | String directory) -> Array[Document]
+    def self.discover_cache_key: (Pathname | String directory, Array[String] paths) -> [String, Array[[String, Integer, Integer, Integer]]]?
+    def self.all: (?Pathname | String directory) -> Array[Document]
+    def self.find: (String name, ?Pathname | String directory) -> Document?
+    def self.find_by_name: (String name, ?Pathname | String directory) -> Document?
+    def self.fetch: (String name, ?Pathname | String directory) -> Document
+    def self.current_for: (String | SwayLocale name_or_locale, ?Pathname | String directory) -> Document
+    def self.declared_locale_names: (?Pathname | String directory) -> Array[String]
+    def self.read: (Pathname | String path) -> Document
+
+    def self.parse_ast: (String content, String filename) -> untyped
+    def self.validate_ast: (untyped node, String filename, ?Array[String] path) -> void
+    def self.unsupported_tag?: (String tag) -> bool
+    def self.load_safe_yaml: (String content, String filename) -> untyped
+    def self.validate_schema: (untyped data, String filename, Pathname | String full_path) -> void
+    def self.validate_sample_address: (untyped sample, String filename) -> void
+    def self.validate_source_rules: (untyped rules, String filename, ?untyped top_data) -> void
+    def self.validate_integration_rule: (untyped rule, String rule_name, String filename, ?String field_path) -> void
+    def self.validate_term_rules: (untyped rules, String filename) -> void
+    def self.validate_seat_chambers: (untyped rules, String filename) -> void
+    def self.validate_representative_resolution: (untyped config, String filename) -> void
+    def self.validate_convening: (untyped convening, String filename) -> void
+    def self.validate_legislative_sessions: (untyped sessions, String filename) -> void
+    def self.validate_news_sources: (untyped sources, String filename) -> void
+    def self.validate_news_source_url: (untyped url, String filename, String field_path) -> void
+    def self.ip_address?: (String host) -> bool
+    def self.validate_nominatim_fields: (untyped data, String filename) -> void
+    def self.parse_session_date: (untyped value, String field_path, String filename) -> Date
+    def self.validate_allowlist: (untyped val, Array[String] list, String field_path, String filename) -> void
+    def self.normalize_news_source_url: (String) -> String
+    def self.normalize_hash: (untyped rule) -> untyped
+  end
+
+  LegislativeSessionDefinition: singleton(DocumentReader::LegislativeSessionDefinition)
+end

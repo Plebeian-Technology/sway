@@ -1,0 +1,78 @@
+.sgh-stage {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+.sgh-grid {
+    display: flex;
+    flex-direction: column;
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+    border-left: var(--rule-hair) var(--rule-style) var(--border);
+    border-right: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+.sgh-row {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+@media (max-width: 640px) {
+    .sgh-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.sgh-index {
+    padding: calc(var(--space-unit) * 4);
+    border-right: var(--rule-hair) var(--rule-style) var(--border);
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+@media (max-width: 640px) {
+    .sgh-index {
+        border-right: none;
+        border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+        padding-bottom: calc(var(--space-unit) * 2);
+    }
+}
+
+.sgh-content {
+    min-width: 0;
+    padding: calc(var(--space-unit) * 5) calc(var(--space-unit) * 6);
+}
+
+.sgh-wordmark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: var(--type-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--foreground);
+}
+
+.sgh-headline {
+    font-family: var(--font-display);
+    font-size: var(--type-display);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--foreground);
+}
+
+.sgh-paragraph {
+    margin-top: calc(var(--space-unit) * 3);
+    max-width: var(--measure);
+    font-size: var(--type-lede);
+    line-height: var(--leading-body);
+    color: var(--foreground);
+}

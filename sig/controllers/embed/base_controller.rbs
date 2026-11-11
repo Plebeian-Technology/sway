@@ -1,0 +1,14 @@
+module Embed
+  class BaseController < ActionController::Base
+    def self.prepend_before_action: (*untyped args, **untyped kwargs) -> untyped
+    def self.content_security_policy: (*untyped args, **untyped kwargs) ?{ (untyped policy) -> untyped } -> untyped
+    def self.content_security_policy_report_only: (bool value) -> untyped
+
+    private
+
+    def render_not_found: -> untyped
+    def prevent_session_cookies: -> untyped
+    def configure_embed_headers: -> untyped
+    def reject_js_request_format: -> untyped
+  end
+end

@@ -1,0 +1,223 @@
+# @lat: [[private-individual-guard-override#The override reaches one guard, not the whole chain]]
+class ApproveOrgPositionService
+  NAME_MATCH_THRESHOLD: Float
+  MIN_BACKSTOP_NAME_CHARS: Integer
+  BACKSTOP_HEADER_CHARS: Integer
+  BACKSTOP_SIGNATURE_CHARS: Integer
+
+  ORG_EVIDENCE_WINDOW_CHARS: Integer
+
+  # B2-IN-02: raised by #delete_approved_draft when the authoritative
+  # in-transaction re-check fails, so the whole mutation chain rolls back.
+  # #call translates it to :draft_index_mismatch; it never escapes the class.
+  class DraftIdentityMismatch < StandardError
+  end
+
+  # B4-CR-02: raised by the in-lock re-check when the draft at :index carries
+  # the evidence-retracted mark, so the mutation chain rolls back. #call
+  # translates it to :evidence_retracted; it never escapes the class.
+  class EvidenceRetracted < StandardError
+  end
+
+  # A2-CR-01 / C2-CR-01: raised by the in-lock re-check when the BILL has no
+  # testimony left at all, so the mutation chain rolls back. #call translates
+  # it to :no_testimony; it never escapes the class.
+  class NoTestimony < StandardError
+  end
+
+  # C21-03: raised by the in-lock re-check when a summary run is queued or
+  # running on the bill, so the mutation chain rolls back. A run replaces
+  # draft_org_positions wholesale, so a draft it is about to overwrite may not
+  # become a public position first. #call translates it to :run_in_flight; it
+  # never escapes the class.
+  class RunInFlight < StandardError
+  end
+
+  # T-67-20 (Phase 67 Plan 05, D-05): raised by the in-lock re-check when
+  # org_name matches a letter this bill's cleaned testimony read as a
+  # person speaking for themselves, so the mutation chain rolls back.
+  # #call translates it to :private_individual; it never escapes the class.
+  class PrivateIndividualSource < StandardError
+  end
+
+  # T-67-38 (Phase 67 Plan 08): raised by the in-lock re-check when
+  # Testimony::CoverageReport still finds an unacknowledged cut, so the
+  # mutation chain rolls back. #call translates it to
+  # :coverage_not_acknowledged; it never escapes the class.
+  class CoverageNotAcknowledged < StandardError
+  end
+
+  # Raised by the locked re-check when a :claimed_affiliation_position names
+  # no person_speaking_for_org letter in the cleaned artifact, so the mutation
+  # chain rolls back. #call translates it to :claimed_affiliation_not_found;
+  # it never escapes the class.
+  class ClaimedAffiliationNotFound < StandardError
+  end
+
+  class OrganizationHasUsers < StandardError
+  end
+
+  @bill: Bill
+
+  @actor: User
+
+  @org_name: String
+
+  @support_raw: untyped
+
+  @summary: String
+
+  @index: untyped
+
+  # C-CR-04 identity token: the PRISTINE org_name of the draft at @index.
+  @draft_org_name: untyped
+
+  # B2-IN-01 identity token: BillLlmProvisioning.draft_token of that same
+  # pristine entry. Supersedes @draft_org_name, which does not identify a draft
+  # when two siblings share an org_name.
+  @draft_token: untyped
+
+  # BillCreatorClaimedAffiliationCard's identity: the letter's position in the
+  # cleaned artifact. params-sourced, so untyped.
+  @claimed_affiliation_position: untyped
+
+  # The operator's confirmed override, cast to a real bool since
+  # it is params-sourced.
+  @override_private_individual: bool
+
+  # @lat: [[private-individual-guard-override#Recorded in the activity log only when it mattered]]
+  @private_individual_override_used: bool
+
+  def initialize: (bill: Bill, actor: User, org_name: String, support: untyped, summary: String, ?index: untyped, ?draft_org_name: untyped, ?draft_token: untyped, ?claimed_affiliation_position: untyped, ?override_private_individual: untyped) -> void
+
+  def call: () -> Symbol
+
+  private
+
+  # True when the support value asked for is Neutral, which is
+  # published without testimony.
+  def neutral_position?: () -> bool
+
+  # C2-IN-03: did the caller assert a draft identity at all? Delegated to
+  # BillLlmProvisioning so this and BillDraftOrgPositionsController answer it
+  # identically by construction.
+  def asserted_identity?: () -> bool
+
+  # D-CR-01: the one place that turns @index into an element of `drafts`.
+  # Returns nil for an index that resolves to no entry — unparseable, negative
+  # (Array#[] would wrap to the LAST draft) or past the end. draft_entry admits
+  # nil, so "no entry" and "a nil entry" share a return value; both callers
+  # answer both readings identically (see the method comment).
+  def draft_at: (Array[BillLlmProvisioning::draft_entry] drafts) -> BillLlmProvisioning::draft_entry
+
+  # D-CR-01: @index is params-sourced, so nil means "not an integer".
+  def draft_index: () -> Integer?
+
+  # B2-IN-02: `drafts` is supplied by the authoritative in-transaction re-check
+  # in #delete_approved_draft; omitted, the pre-transaction fast path reads the
+  # array itself.
+  #
+  # D-CR-01: also true when the index resolves to NO draft and the caller
+  # asserted an identity — an assertion about a draft that is not there is
+  # false, and publishing on it is the REAS-01 violation this refuses.
+  def draft_index_mismatch?: (?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  # B4-CR-02: index-addressed, and `drafts` is supplied by the authoritative
+  # in-transaction re-check exactly as #draft_index_mismatch?'s is.
+  def draft_evidence_retracted?: (?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  def news_sourced?: (?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  def matched_organization_has_users?: () -> bool
+
+  # True when the caller named something this bill's testimony produced — a
+  # stored draft or a letter in the cleaned artifact. Decides which callers the
+  # BILL-level evidence rules reach; deciding that by a MISSING parameter is
+  # what let a testimony-drawn card be read as one drawing on none.
+  def testimony_sourced?: (?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  # True when a :claimed_affiliation_position names no person_speaking_for_org
+  # letter in the cleaned artifact. `provisioning` is supplied by the locked
+  # re-check; omitted, the pre-transaction fast path reads it itself.
+  def claimed_affiliation_missing?: (?BillLlmProvisioning? provisioning) -> bool
+
+  # The locked re-check for a caller that named a LETTER rather than a draft.
+  # #delete_approved_draft is the draft path's equivalent; a claimed
+  # affiliation deletes nothing, so without this its guards would be
+  # pre-checks with no authoritative half.
+  def reconfirm_claimed_affiliation_guards: () -> void
+
+  # A2-CR-01: reaches every testimony-sourced caller. `provisioning` is
+  # supplied by the authoritative in-transaction re-check, which holds the row
+  # with_lock reloaded; omitted, the pre-transaction fast path reads it itself.
+  def bill_testimony_missing?: (?BillLlmProvisioning? provisioning, ?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  # C21-03: reaches every testimony-sourced caller, and true for BOTH
+  # in-flight statuses — the row is armed at `pending` and the drafts are
+  # replaced whenever the positions call comes back. `provisioning` is supplied
+  # by the authoritative in-transaction re-check; omitted, the pre-transaction
+  # fast path reads it itself.
+  def run_in_flight?: (?BillLlmProvisioning? provisioning, ?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  # T-67-20: reaches every testimony-sourced caller, including the
+  # claimed-affiliation card. `provisioning` is
+  # supplied by the authoritative in-transaction re-check; omitted, the
+  # pre-transaction fast path reads it itself.
+  def draft_names_private_individual?: (?BillLlmProvisioning? provisioning, ?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  # @lat: [[private-individual-guard-override#Honoured at both check sites]]
+  def guard_private_individual!: (BillLlmProvisioning? provisioning, ?Array[BillLlmProvisioning::draft_entry]? drafts) -> void
+
+  # T-67-20/: the header and signature regions of every letter
+  # this bill's cleaned testimony read as a person speaking for themselves,
+  # read by offset and length.
+  def private_individual_letter_texts: (BillLlmProvisioning? provisioning) -> Array[String]
+
+  # One letter's own header and signature windows.
+  def authorship_regions: (String text) -> Array[String]
+
+  # Full text of every letter this bill's cleaned testimony read
+  # as named_organization or public_body — direct evidence the guard stands
+  # down for.
+  def organization_letter_texts: (BillLlmProvisioning? provisioning) -> Array[String]
+
+  def organization_self_identification_regions: (String text) -> Array[String]
+
+  def self_identification_windows: (String text) -> Array[String]
+
+  def phrase_windows: (String text, Regexp pattern) -> Array[String]
+
+  # T-67-38: reaches every testimony-sourced caller. `provisioning` is
+  # supplied by the authoritative in-transaction re-check; omitted, the
+  # pre-transaction fast path reads it itself.
+  def coverage_not_acknowledged?: (?BillLlmProvisioning? provisioning, ?Array[BillLlmProvisioning::draft_entry]? drafts) -> bool
+
+  # C2-IN-03: #asserted_identity? and #entry_mismatch? both moved to
+  # BillLlmProvisioning, which BillDraftOrgPositionsController calls too, so
+  # the two "mirrored" guards are now one implementation.
+
+  def find_or_create_organization: () -> Organization
+
+  # ai_summary is written on EVERY approval, nil included, so a
+  # position re-approved from a person's own words stops claiming a model
+  # wrote it.
+  def upsert_position: (Organization org, String support, ai_summary: String?) -> void
+
+  # The model's own words for the draft being approved, or nil when
+  # no machine wrote the text being published — no draft named, the draft was
+  # edited through the edit endpoint, or the operator changed the sentence in
+  # the browser before clicking Approve.
+  def approved_ai_summary: () -> String?
+
+  # D-CR-01: raises DraftIdentityMismatch (rolling the whole approval back)
+  # rather than returning, whenever the index resolves to no draft. The former
+  # `next` left the with_lock block before the three re-check raises and let
+  # the enclosing transaction commit the public position #call had upserted.
+  def delete_approved_draft: () -> void
+
+  def log_decision: () -> void
+
+  def logged_draft_id: () -> String?
+
+  def jaro_winkler_similarity: (String s1, String s2) -> Float
+end

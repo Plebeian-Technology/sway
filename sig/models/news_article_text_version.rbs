@@ -1,0 +1,63 @@
+class NewsArticleTextVersion < ApplicationRecord
+  extend ActiveRecord::Base::ClassMethods[NewsArticleTextVersion, NewsArticleTextVersion::ActiveRecord_Relation, Integer]
+
+  ORIGINS: Array[String]
+  EXTRACTION_STATUSES: Array[String]
+
+  def self.exists?: (?untyped id_or_conditions) -> bool
+
+  def news_article: () -> NewsArticle
+  def news_article=: (NewsArticle) -> NewsArticle
+  def actor: () -> User?
+  def actor=: (User?) -> User?
+
+  def news_article_id: () -> Integer
+  def news_article_id=: (Integer) -> Integer
+  def actor_id: () -> Integer?
+  def actor_id=: (Integer?) -> Integer?
+  def text: () -> String?
+  def text=: (String?) -> String?
+  def digest: () -> String
+  def digest=: (String) -> String
+  def origin: () -> String
+  def origin=: (String) -> String
+  def extraction_status: () -> String
+  def extraction_status=: (String) -> String
+  def requested_url: () -> String?
+  def requested_url=: (String?) -> String?
+  def final_url: () -> String?
+  def final_url=: (String?) -> String?
+
+  def bill_news_articles: () -> BillNewsArticle::ActiveRecord_Associations_CollectionProxy
+  def source_uses: () -> NewsArticleSourceUse::ActiveRecord_Associations_CollectionProxy
+  def news_article_source_uses: () -> NewsArticleSourceUse::ActiveRecord_Associations_CollectionProxy
+  def news_article_testimonies: () -> NewsArticleTestimony::ActiveRecord_Associations_CollectionProxy
+
+  def retrieved?: () -> bool
+  def manual?: () -> bool
+  def admin?: () -> bool
+  def extracted?: () -> bool
+  def paywalled?: () -> bool
+  def failed?: () -> bool
+  def usable_text?: () -> bool
+  def readonly?: () -> bool
+
+  def self.extracted: () -> NewsArticleTextVersion::ActiveRecord_Relation
+  def self.paywalled: () -> NewsArticleTextVersion::ActiveRecord_Relation
+  def self.failed: () -> NewsArticleTextVersion::ActiveRecord_Relation
+  def self.retrieved: () -> NewsArticleTextVersion::ActiveRecord_Relation
+  def self.manual: () -> NewsArticleTextVersion::ActiveRecord_Relation
+  def self.admin: () -> NewsArticleTextVersion::ActiveRecord_Relation
+
+  private
+
+  def compute_digest: () -> void
+  def text_required?: () -> bool
+  def prevent_mutation: () -> void
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ActiveRecord::Associations::CollectionProxy
+  end
+end

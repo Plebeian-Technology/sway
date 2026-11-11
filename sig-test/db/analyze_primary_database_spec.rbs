@@ -1,0 +1,8 @@
+# @lat: [[signature-placement#Why a spec-only class is declared under sig-test]]
+class AnalyzePrimaryDatabase < ActiveRecord::Migration
+  # Rows sampled per index; SQLite's `analysis_limit` pragma.
+  ANALYSIS_LIMIT: Integer
+
+  def up: () -> void
+  def down: () -> void
+end

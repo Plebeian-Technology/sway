@@ -1,0 +1,41 @@
+# @lat: [[news-gate#News publication gating]]
+class BillSummaryPublication
+  class Decision
+    attr_reader publishable: bool
+    attr_reader status: Symbol
+    attr_reader errors: Array[String]
+    attr_reader reasons: Array[Symbol]
+    attr_reader verdict: String
+    attr_reader grounding_result: NewsClaimGroundingService::Result?
+    attr_reader eligibility_comparison: NewsArticleSourceSnapshot::EligibilityComparison?
+
+    def initialize: (
+      publishable: bool,
+      ?status: Symbol,
+      ?errors: Array[String],
+      ?reasons: Array[Symbol],
+      ?verdict: String,
+      ?grounding_result: NewsClaimGroundingService::Result?,
+      ?eligibility_comparison: NewsArticleSourceSnapshot::EligibilityComparison?
+    ) -> void
+
+    def publishable?: () -> bool
+    def supported?: () -> bool
+  end
+
+  type evaluation = Decision
+  Evaluation: singleton(Decision)
+
+  def self.publishable?: (bill: Bill, previous_draft: String?) -> bool
+
+  def self.evaluate: (
+    bill: Bill,
+    ?previous_draft: String?,
+    ?content: String?,
+    ?summary_markdown: String?,
+    ?news_usage: String?,
+    ?snapshot: NewsArticleSourceSnapshot?,
+    ?news_source_snapshot: NewsArticleSourceSnapshot?,
+    ?grounding_result: NewsClaimGroundingService::Result?
+  ) -> Decision
+end

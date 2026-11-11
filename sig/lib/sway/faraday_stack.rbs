@@ -1,0 +1,73 @@
+# RBS sig for Sway::FaradayStack (Phase 52 D-36).
+#
+# Concrete record-type alias for retry options; no loose Hash value type,
+# per project memory feedback_rbs_avoid_untyped + Phase 52 review issue 10.
+module Faraday
+  class Connection
+    def builder: () -> Faraday::RackBuilder
+  end
+
+  class RackBuilder
+    def insert: (Integer | Symbol | Class index, Symbol | Class klass, *untyped args, **untyped kwargs) ?{ (?) -> void } -> void
+    def handlers: () -> Array[untyped]
+  end
+end
+
+module Sway
+  module FaradayStack
+    class CongressGovErrorReporter < Faraday::Middleware
+      API_KEY_QUERY_REGEXP: Regexp
+      MESSAGE: String
+
+      def on_complete: (Faraday::Env env) -> void
+    end
+
+    type retry_options = {
+      max: Integer,
+      interval: Float,
+      backoff_factor: Integer,
+      retry_statuses: Array[Integer],
+      methods: Array[Symbol],
+      # Optional — the GET profiles add connection-reset classes
+      # (see TRANSPORT_RETRY_EXCEPTIONS); LLAMACPP_DEFAULTS omits it.
+      ?exceptions: Array[Class | String],
+    }
+
+    # Faraday-retry DEFAULT_EXCEPTIONS + connection-reset classes
+    # (Faraday::ConnectionFailed, Faraday::SSLError) for the idempotent GET
+    # profiles.
+    TRANSPORT_RETRY_EXCEPTIONS: Array[Class | String]
+
+    LEGISTAR_DEFAULTS: retry_options
+    LEGISTAR_ATTACHMENT_DEFAULTS: retry_options
+    LLAMACPP_DEFAULTS: retry_options
+    OPENROUTER_DEFAULTS: retry_options
+    GITHUB_DEFAULTS: retry_options
+    GITHUB_USER_AGENT: String
+    OPEN_DATA_DEFAULTS: retry_options
+    WIKIDATA_USER_AGENT: String
+    NOMINATIM_USER_AGENT: String
+
+    def self.build: (base_url: String, ?timeout_seconds: Integer, ?retry_options: retry_options) ?{ (Faraday::Connection) -> void } -> Faraday::Connection
+
+    def self.legistar: () -> Faraday::Connection
+
+    def self.legistar_attachment: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.github: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.open_baltimore: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.wikidata: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.open_states: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.congress_gov: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.congress_legislators: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.nominatim: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.brave_search: (?timeout_seconds: Integer) -> Faraday::Connection
+  end
+end

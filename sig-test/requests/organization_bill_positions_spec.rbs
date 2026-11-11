@@ -1,0 +1,7 @@
+# Helper defined at describe-block scope in
+# spec/requests/organization_bill_positions_spec.rb.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # Posts one position for the example's bill and organization.
+  def post_position: (support: String, summary: String) -> void
+end

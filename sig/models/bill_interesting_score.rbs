@@ -1,0 +1,9 @@
+# Phase 62 Plan 01 — hand-authored extensions for BillInterestingScore.
+# belongs_to :bill reader is covered by sig/rbs_rails/app/models/bill_interesting_score.rbs.
+# `signals` is overridden here from the generated layer's raw ::String? (the DB
+# text column) to the deserialized shape produced by `serialize :signals, coder: JSON`
+# — same override pattern as LegislationPipelineRun#summary (sig/models/legislation_pipeline_run.rbs:29-32).
+class BillInterestingScore < ApplicationRecord
+  def signals: () -> Hash[String, untyped]?
+  def signals=: (Hash[String, untyped]?) -> Hash[String, untyped]?
+end

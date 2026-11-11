@@ -1,0 +1,34 @@
+module BillCreator
+  class PickerBillsSerializer
+    type row = {
+      id: Integer,
+      external_id: String,
+      title: String,
+      scheduled_release_date_utc: String?,
+      status: String?,
+      chamber: String,
+      category: String,
+      introduced_date_time_utc: String?,
+      latest_action_date_time_utc: String?,
+      sponsor_name: String,
+      legislator_vote_count: Integer,
+      organization_position_count: Integer,
+      interesting_score_normalized: Float?,
+      interesting_badges: Array[("controversial" | "close" | "live")],
+    }
+
+    def self.call: (Bill::ActiveRecord_Relation scope, locale: SwayLocale?) -> Array[row]
+
+    # nil for a bill with no score row, and for a row whose stored JSON cannot
+    # be read.
+    def self.parse_signals: (String? signals_json, Integer bill_id) -> Hash[String, untyped]?
+
+    def self.latest_action_date_time: (Time? introduced, Time? house_vote, Time? senate_vote) -> Time?
+
+    def self.fresh_timeliness: (Time? most_recent) -> Float
+
+    def self.interesting_score_normalized: (Hash[String, untyped]? signals, Float fresh_timeliness, Float theoretical_max) -> Float?
+
+    def self.interesting_badges: (Hash[String, untyped]? signals, bool publishes_legislator_votes, Float fresh_timeliness) -> Array[("controversial" | "close" | "live")]
+  end
+end

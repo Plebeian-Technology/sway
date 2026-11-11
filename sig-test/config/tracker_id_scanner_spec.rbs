@@ -1,0 +1,8 @@
+# Spec-only declarations for spec/config/tracker_id_scanner_spec.rb.
+#
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def tracker_scanner_over: (Hash[String, String] files, ?Hash[String, String] symlinks) -> TrackerIdScanner
+
+  def planted_tracker_id: (?String suffix) -> String
+end

@@ -1,0 +1,10 @@
+# Shim: the gem_rbs_collection addressable RBS (.gem_rbs_collection/addressable)
+# declares `Addressable::URI` but not its nested exception class. Reopen the
+# class to add `InvalidURIError` (defined in the gem as `< StandardError`) so
+# `rescue Addressable::URI::InvalidURIError` type-checks under Steep.
+module Addressable
+  class URI
+    class InvalidURIError < StandardError
+    end
+  end
+end

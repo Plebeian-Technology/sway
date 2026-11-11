@@ -1,0 +1,4 @@
+# @lat: [[explanation/llm-summaries#Runs are marked and reclaimable#One lock shared by the job and the persist guard]]
+class SummaryRunLock
+  def self.settle_under_lock: [T] (BillLlmProvisioning provisioning) { () -> T } -> T?
+end

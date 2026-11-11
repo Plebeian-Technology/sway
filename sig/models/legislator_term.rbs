@@ -1,0 +1,28 @@
+# Manual extensions for LegislatorTerm. Schema-derived accessors + the
+# `current` scope live in the rbs_rails-generated
+# sig/rbs_rails/app/models/legislator_term.rbs; this file holds the
+# hand-written class/instance methods.
+class LegislatorTerm < ApplicationRecord
+    def sway_locale: -> SwayLocale
+    def seat: -> Seat?
+    def seat_id: -> Integer?
+    def seat_id=: (Integer?) -> Integer?
+    def seat_id_in_database: -> Integer?
+    def resolved_seat?: -> bool
+    def update_columns: (Hash[Symbol | String, untyped] attributes) -> bool
+
+    def self.covering: ((Date | ActiveSupport::TimeWithZone) vote_date, legislator: Legislator) -> LegislatorTerm?
+
+    def self.current_ids: -> Array[Integer]
+    def self.forget_current_ids: -> void
+    def self.current_for: (Array[Integer] legislator_ids) -> LegislatorTerm::ActiveRecord_Relation
+
+    def current?: -> bool
+
+    private
+
+    def seat_district_matches_term_district: -> void
+    def seat_and_person_share_locale: -> void
+    def reject_clearing_resolved_seat: -> void
+    def reject_overlapping_seat_occupancy: -> void
+end

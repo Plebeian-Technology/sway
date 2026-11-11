@@ -1,0 +1,10 @@
+module Api
+  module V1
+    class PhoneVerificationsController < BaseController
+      include Authentication
+
+      def request_code: -> untyped
+      def verify: -> untyped
+    end
+  end
+end

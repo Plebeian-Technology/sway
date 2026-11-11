@@ -1,0 +1,14 @@
+# The encryption error hierarchy is real in Rails 7+ but missing from the
+# vendored .gem_rbs_collection/activerecord snapshot, so it is backfilled here.
+# @lat: [[active-record-encryption-keys#Absent keys do not stop the application]]
+module ActiveRecord
+  module Encryption
+    module Errors
+      class Base < StandardError
+      end
+
+      class Configuration < Base
+      end
+    end
+  end
+end

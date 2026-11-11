@@ -1,0 +1,41 @@
+# Spec-only declarations for spec/config/vite_build_dir_spec.rb.
+#
+# Steep cannot see a `let` — it builds an anonymous class while the suite
+# runs, and nothing about that shape exists in the source a type checker
+# reads. Every helper below is declared here instead.
+class Object
+  # The literal text of vite.config.ts.
+  def vite_config_source: () -> String
+
+  # Only the argument object passed to rails(...), not the whole file.
+  def rails_plugin_call: () -> String?
+
+  def initializers_dir: () -> Pathname
+
+  # Every filename directly under config/initializers, sorted — the same
+  # order Rails loads them in.
+  def initializer_filenames: () -> Array[String]
+
+  # Found by content (a RailsVite.config.build_dir assignment), not by a
+  # hardcoded filename, so this spec does not assume the implementation's
+  # chosen name for the new initializer.
+  def vite_build_dir_initializer_name: () -> String?
+
+  def vite_build_dir_initializer: () -> String?
+
+  # The parsed .dockerdev/compose.yml.
+  def compose_config: () -> Hash[String, untyped]
+
+  # The rspec service's `command:` value from .dockerdev/compose.yml.
+  def rspec_service_command: () -> String?
+
+  # The literal text of scripts/dip/rspec.sh, which picks the plain suite's
+  # own build directory and has to hand it to the container that builds it.
+  def rspec_script: () -> String
+end
+
+module Rails
+  class Application
+    def middleware: () -> ActionDispatch::MiddlewareStack
+  end
+end

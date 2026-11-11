@@ -1,0 +1,59 @@
+module LegislatorsCache
+  class CongressTermHistory
+    # One term as Sway records it, before it is turned into a roster entry.
+    type term_window = {
+      start_year: Integer,
+      end_year: Integer,
+      # The real days the term ran, kept rather than
+      # lost to the widening that turns them into a pair of handover years.
+      began_on: Date,
+      ended_on: Date,
+      days_served: Integer,
+      senate: bool,
+      senate_class: Integer?,
+      state_code: String?,
+      district: Integer?
+    }
+
+    CURRENT_FILE: String
+    HISTORICAL_FILE: String
+    SOURCE_NAME: String
+    SENATE_CHAMBER: String
+    HOUSE_CHAMBER: String
+    SENATOR_TYPE: String
+
+    class FetchError < StandardError
+    end
+
+    def self.fetch: (Array[String?] bioguide_ids, ?connection: Faraday::Connection?) -> CongressTermHistory
+
+    def self.read: (Faraday::Connection connection, String file_name) -> Array[Hash[String, untyped]]
+
+    def self.index: (
+      Array[Hash[String, untyped]] entries,
+      Set[String] wanted
+    ) -> Hash[String, Array[Hash[String, untyped]]]
+
+    def self.terms_of: (Hash[String, untyped] entry) -> Array[Hash[String, untyped]]
+
+    def self.window: (Hash[String, untyped] term) -> term_window?
+
+    def self.keep_distinct: (Array[term_window] windows) -> Array[term_window]
+
+    def self.to_roster_entry: (term_window window) -> Hash[String, untyped]
+
+    def self.january_of: (Integer year) -> Date
+
+    @by_bioguide_id: Hash[String, Array[Hash[String, untyped]]]
+    @missing: Array[String]
+
+    attr_reader missing: Array[String]
+
+    def initialize: (
+      Hash[String, Array[Hash[String, untyped]]] by_bioguide_id,
+      ?missing: Array[String]
+    ) -> void
+
+    def terms_for: (String? bioguide_id) -> Array[Hash[String, untyped]]?
+  end
+end

@@ -1,0 +1,11 @@
+# The scheduled sweep that reads finished summary batches back.
+# No job waits on a batch — the run stops at awaiting_summary_batch and this
+# job, every five minutes, is what finishes it.
+class IngestSummaryBatchesJob < ApplicationJob
+  def self.limits_concurrency: (?to: Integer, ?key: ^(*untyped, **untyped) -> String, ?duration: untyped, ?on_conflict: Symbol) -> void
+
+  MAX_RUNS_PER_SWEEP: Integer
+
+  # How many runs were swept without raising.
+  def perform: () -> Integer
+end

@@ -1,0 +1,12 @@
+# Helpers defined at describe-block scope in
+# spec/jobs/backup_legislation_artifacts_job_spec.rb, prefixed so they cannot
+# collide on ::Object.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # The report the stubbed backup service hands back to the job.
+  def backup_report: () -> Legislation::ArtifactBackupReport
+
+  # config/recurring.yml, parsed, so the monitor crontab can be compared with
+  # the schedule Solid Queue actually runs.
+  def recurring_yml: () -> Hash[String, untyped]
+end

@@ -1,0 +1,176 @@
+version: "7.1"
+
+compose:
+    files:
+        - .dockerdev/compose.yml
+    project_name: sway
+
+interaction:
+    # This command spins up a Rails container with the required dependencies (such as databases),
+    # and opens a terminal within it.
+    runner:
+        description: Open a Bash shell within a Rails container (with dependencies up)
+        environment:
+            IS_DOCKER: "1"
+        service: rails
+        command: /bin/bash
+
+    # Run a Rails container without any dependent services (useful for non-Rails scripts)
+    bash:
+        description: Run an arbitrary script within a container (or open a shell without deps)
+        environment:
+            IS_DOCKER: "1"
+        service: rails
+        command: /bin/bash
+        compose_run_options: [no-deps]
+
+    # A shortcut to run Bundler commands
+    bundle:
+        description: Run Bundler commands
+        environment:
+            IS_DOCKER: "1"
+            # @lat: [[development-container-settings#Why an opt-in flag has to be declared to reach the container]]
+            RUN_PROD_DB_TESTS: ""
+            RUN_LIVE_LLM_TESTS: ""
+        service: rails
+        command: bundle
+        compose_run_options: [no-deps]
+
+    # A shortcut to run npm commands
+    pnpm:
+        description: Run pnpm commands
+        service: rails
+        command: pnpm
+        compose_run_options: [no-deps]
+
+    # No `service:` on purpose: it runs on the HOST, because the collector
+    # addresses must be set in the shell that calls `dip compose`.
+    rspec:
+        description: Run the full RSpec suite (takes no arguments)
+        command: scripts/dip/rspec.sh
+
+    # No `service:` on purpose: it runs on the HOST, for the same reason as
+    # rspec: above — Docker lanes are started from here via `dip compose run`.
+    verify:
+        description: Run the full regression gate (takes no arguments)
+        command: scripts/dip/verify.sh
+
+    # A shortcut to run Vitest (frontend unit/component tests).
+    #
+    # No `service:` on purpose: it runs on the HOST, for a different reason
+    # from rspec: and verify: above. Vitest is node-only and needs no Rails, so
+    # every JS/TS check runs on the host; the gate's own vitest lane
+    # already runs there. The image could not run it anyway — the Dockerfile
+    # installs Alpine's `nodejs` package, which is 24.19.0 against
+    # .node-version's 24.19.0, and the pinned-Node guard in
+    # app/frontend/__tests__/assert-pinned-node.ts refuses the suite on a Node
+    # the repo does not pin. Pinning a patch release out of Alpine's package
+    # index is not something the image can promise, so the host is the answer.
+    #
+    # `--run` is gone with the container: `pnpm test` is already `vitest run`,
+    # which never watches, and dropping it lets `dip run vitest <path>` pass
+    # file paths straight through.
+    vitest:
+        description: Run Vitest on the host (no arguments runs everything; takes file paths)
+        command: pnpm test
+
+    # steep on the host at information severity, seconds per run; single-token command, so dip appends your args.
+    steep:
+        description: Run steep type checking on the host (information severity; appends your args)
+        command: bin/steep check --severity-level=information
+
+    rails:
+        description: Run Rails commands
+        service: rails
+        # Single-token command — Docker execs this directly (no shell). dip
+        # appends the user's args, so `dip run rails db:seed` becomes
+        # `bundle exec rails db:seed` inside the container. Rails reads
+        # config/master.key from disk automatically when RAILS_MASTER_KEY env
+        # is unset, so no shell-builtin export is needed.
+        command: bundle exec rails
+        environment:
+            IS_DOCKER: "1"
+            MAX_FAILED_JOBS: ""
+            MAX_HEARTBEAT_STALENESS_MINUTES: ""
+            OTEL_EXPORTER: otlp
+            OTEL_SERVICE_NAME: sway-dip-rails
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://0.0.0.0:4318
+            # llama.cpp dev runtime contract. The host's
+            # `llama-server` listens on 8888; Rails reaches it across the
+            # Docker bridge via host.docker.internal. Values inherit from
+            # the operator shell when set; otherwise fall back to the
+            # documented dev default. .env.development also carries these
+            # for direct `docker compose run` flows.
+            LLAMACPP_BASE_URL: ${LLAMACPP_BASE_URL:-http://host.docker.internal:8888/v1}
+            LLAMACPP_MODEL: ${LLAMACPP_MODEL:-local}
+        subcommands:
+            s:
+                description: Run Rails server at http://localhost:3000
+                service: rails
+                compose:
+                    run_options: [service-ports, use-aliases]
+            seed:
+                description: db:seed (locales+legislators) followed by db:seed:bills
+                service: rails
+                command: |
+                    bash -lc "bundle exec rails db:seed && bundle exec rails db:seed:bills && bundle exec rails sway:scores:recompute_all"
+            c:
+                description: Rails console
+                service: rails
+                command: bundle exec rails console
+
+    dev:
+        environment:
+            IS_DOCKER: 1
+            OTEL_EXPORTER: otlp
+            OTEL_SERVICE_NAME: sway-dip-dev
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://0.0.0.0:4318
+            RAILS_ENV: development
+            NODE_ENV: development
+            PORT: "3000"
+            VITE_PORT: "3036"
+            WEBAUTHN_RP_ID: localhost
+        description: startup all processes (rails, vite) for development
+        command: scripts/dip/dev.sh
+
+    dev-mobile:
+        environment:
+            IS_DOCKER: 1
+            OTEL_EXPORTER: otlp
+            OTEL_SERVICE_NAME: sway-dip-dev
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://0.0.0.0:4318
+            RAILS_ENV: development
+            NODE_ENV: development
+            PORT: "3000"
+            VITE_PORT: "3036"
+            # WEBAUTHN_RP_ID is not pinned here: dev.sh derives it from
+            # DEV_TUNNEL_HOST (default localhost), and a pin would override it.
+        description: startup all processes (rails, vite) for development
+        command: scripts/dip/dev.sh
+
+    preview:
+        description: Run the app in production mode at https://localhost:3334
+        environment:
+            RAILS_LOG_LEVEL: info
+            RAILS_ENV: production
+            NODE_ENV: production
+            PORT: "3333"
+            CADDY_PORT: "3334"
+            APP_HOST: localhost
+            APP_PORT: "3334"
+            APP_PROTOCOL: https
+            APP_BASE_URL: https://localhost:3334
+            RAILS_ALLOWED_HOSTS: localhost,127.0.0.1
+            SWAY_DATABASE_NAME: storage/preview.sqlite3
+            SWAY_QUEUE_DATABASE_NAME: storage/preview_queue.sqlite3
+            PREVIEW_CONTAINER_NAME: sway-preview
+            PREVIEW_IMAGE: sway-preview:latest
+            PREVIEW_DOCKERFILE: docker/dockerfiles/production.alpine.dockerfile
+            CLOUDFLARED_PREVIEW_TOKEN: cannot-be-blank
+            DISABLE_DATABASE_ENVIRONMENT_CHECK: 1
+        command: scripts/dip/preview.sh
+
+provision:
+    # @lat: [[run-the-stack#Working in a phase worktree]]
+    - ./scripts/dip/secrets-root.sh
+    - ./scripts/dip/provision.sh

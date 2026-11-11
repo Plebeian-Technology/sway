@@ -1,0 +1,70 @@
+# RBS sig for PipelinePreviewService — Rails-native replacement for
+# the cycle-12 PipelinePreviewClient. Cycle-13 HIGH-13-2 eliminated the
+# FastAPI HTTP dependency; this service computes the auto-include set
+# in-process against LegislationPipelineRun::ALLOWED_PIPELINE_STAGES
+# (renamed Phase 55 P04 from FULL_NON_SUMMARY_STAGES).
+#
+# Phase 55 Plan 05 (D-27 / D-28 / D-29):
+#   compute_will_run is re-pointed from DAG-prefix-window to
+#   Pipeline::StageDeps.transitive_closure (shared helper — B-3 fix)
+#   intersected with batched per-bill Pipeline::ArtifactPresence
+#   (FINDING-3 — batch_for consumed AT MOST ONCE per fetch). The
+#   PREVIEW_RESPONSE_KEYS shape stays; `prereq_violations` is a NEW
+#   additive field for the WA-01 warn alert.
+#
+# Per feedback_rbs_avoid_untyped: prereq_violations is a concrete
+# record shape (Array of String/Integer-valued Hashes), not Hash[String,
+# untyped]. The response Hash mixes Array[String], bool, String? and
+# the prereq_violations record array; a Hash[String, top] union covers
+# all six values without leaking `untyped`.
+class PipelinePreviewService
+  type stage_key = String
+
+  type prereq_violation = {
+    "stage" => String,
+    "prerequisite" => String,
+    "missing_artifact" => String,
+    "bill_count" => Integer
+  }
+
+  type preview_value = Array[stage_key] | bool | String? | Array[prereq_violation]
+  type preview_response = Hash[String, preview_value]
+
+  PREVIEW_RESPONSE_KEYS: Array[String]
+
+  DAG_ORDER: Array[String]
+
+  MISSING_ARTIFACT_TOKENS: Hash[String, String]
+
+  # Plan 05 extends the fetch signature with `download_missing_assets:`
+  # (D-10 toggle) and `bills:` (D-28 — in-scope ActiveRecord::Relation
+  # for the batched per-bill artifact-presence check). Both kwargs are
+  # optional to preserve the cycle-13/14 single-`stages:` call sites.
+  def self.fetch: (
+    stages: Array[stage_key],
+    ?download_missing_assets: bool,
+    ?bills: ActiveRecord::Relation?
+  ) -> preview_response?
+
+  def fetch: (
+    stages: Array[stage_key],
+    ?download_missing_assets: bool,
+    ?bills: ActiveRecord::Relation?
+  ) -> preview_response?
+
+  private
+
+  def compute_will_run: (
+    Array[stage_key] stages_array,
+    Hash[String, Hash[String, bool]] presence_map,
+    bool download_missing_assets
+  ) -> Array[stage_key]
+
+  def compute_prereq_violations: (
+    Array[stage_key] stages_array,
+    Hash[String, Hash[String, bool]] presence_map,
+    bool download_missing_assets
+  ) -> Array[prereq_violation]
+
+  def per_bill_stage?: (String stage) -> bool
+end

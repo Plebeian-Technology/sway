@@ -1,0 +1,15 @@
+class DigestOrgNotificationAggregator
+  RECIPIENT_BATCH_SIZE: Integer
+
+  def self.enqueue: (
+    user_id: Integer,
+    cadence: Symbol | String,
+    org_id: Integer,
+    bill_id: Integer,
+    change_types: Array[Symbol | String]
+  ) -> PendingOrganizationDigestEntry
+
+  def self.dispatch_period: (Symbol | String cadence, ?batch_size: Integer) -> void
+
+  def self.build_digest_copy: (Array[String] org_names, Integer change_count, String period_label) -> [String, String]
+end

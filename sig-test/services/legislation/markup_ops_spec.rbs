@@ -1,0 +1,3 @@
+module MarkupOpsSpecHelpers
+  LEGEND: String
+end

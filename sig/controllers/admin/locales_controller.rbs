@@ -1,0 +1,14 @@
+# Controller action return types are `() -> untyped` per Sway convention
+# (Phase 54 iter-1 M10 exception to [[feedback_rbs_avoid_untyped]]): render
+# returns Rails-internal types whose shape varies across versions.
+module Admin
+  class LocalesController < ApplicationController
+    def show: () -> untyped
+    def update: () -> untyped
+
+    private
+
+    def sample_address_present?: () -> bool
+    def sample_address_params: () -> Hash[String, untyped]
+  end
+end

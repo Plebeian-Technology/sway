@@ -1,0 +1,28 @@
+# Hand-written RBS for lib/sway/audio_cache_control.rb.
+module Sway
+  class AudioCacheControl
+    class Result
+      attr_reader examined: Integer
+      attr_reader already_set: Integer
+      attr_reader names: Array[String]
+
+      def initialize: (examined: Integer, already_set: Integer, names: Array[String]) -> void
+
+      def self.new: (examined: Integer, already_set: Integer, names: Array[String]) -> Sway::AudioCacheControl::Result
+    end
+
+    AUDIO_EXTENSIONS: Array[String]
+
+    @bucket: untyped
+    @value: String
+
+    def initialize: (untyped bucket, ?value: String) -> void
+
+    # apply: false writes nothing and reports the same list.
+    def call: (?apply: bool) -> Sway::AudioCacheControl::Result
+
+    private
+
+    def audio?: (untyped file) -> bool
+  end
+end

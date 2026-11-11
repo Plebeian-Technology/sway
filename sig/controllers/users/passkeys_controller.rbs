@@ -1,0 +1,28 @@
+module Users
+    class PasskeysController < ApplicationController
+        include Authentication
+
+        ADD_PASSKEY_VERIFY_WINDOW: ActiveSupport::Duration
+        DEFAULT_PASSKEY_LABELS: Array[String]
+
+        def index: -> untyped
+
+        def verify_phone: -> untyped
+
+        def confirm_phone: -> untyped
+
+        def add_options: -> untyped
+
+        def add_callback: -> untyped
+
+        private
+
+        def disambiguate_passkey_label: (untyped raw_label) -> String
+
+        def add_passkey_verified?: -> bool
+
+        def clear_add_passkey_session: -> void
+
+        def add_passkey_code_approved?: -> bool
+    end
+end

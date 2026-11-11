@@ -1,0 +1,57 @@
+module LegislationPipelineRunSourcing
+  extend ActiveSupport::Concern
+
+  # Cap for the run-selector dropdown list.
+  RECENT_PIPELINE_RUNS_LIMIT: Integer
+
+  # The `included do inertia_share do ... end end` hook is class_eval'd into
+  # the including controller at load time; Steep evaluates the block in the
+  # concern's singleton scope rather than the controller's. Declare the
+  # controller DSL (`inertia_share`) plus the request-time helpers the
+  # block reaches for so the hook type-checks. Mirrors the shim approach in
+  # sig/shims/rails_controller_dsl.rbs.
+  def self.inertia_share: (*untyped) ?{ (*untyped) -> untyped } -> untyped
+  def self.current_user: () -> User?
+  # WS5.8: now returns a hash of lambda-valued (lazy) props.
+  def self.legislation_pipeline_run_props: () -> Hash[Symbol, ^() -> untyped]
+
+  private
+
+  @pipeline_share_snapshot: pipeline_snapshot?
+
+  # The per-request snapshot the five lazy props read (IN-NEW3-03 consistency).
+  #
+  # @lat: [[legislation-pipeline#Which run the Bill Creator surfaces]]
+  #
+  # legislation_pipeline_run / active_legislation_pipeline_run come from
+  # `LegislationPipelineRun#to_builder.attributes!` — Jbuilder, not
+  # ApplicationRecord, so the return type is the Jbuilder shim's
+  # `Hash[(String | Symbol), top]` (sig/shims/external_auth_libs.rbs), not
+  # the `Hash[String, untyped]` an ActiveRecord #attributes would give.
+  type pipeline_snapshot = {
+    legislation_pipeline_run: Hash[(String | Symbol), top]?,
+    recent_pipeline_runs: Array[Hash[Symbol, untyped]],
+    stale_pipeline_run_count: Integer,
+    orphan_pipeline_run_count: Integer,
+    active_legislation_pipeline_run: Hash[(String | Symbol), top]?
+  }
+
+  # WS5.8: returns a hash of five lambda-valued (lazy) props over the memoized
+  # snapshot, so a partial reload omitting the pipeline props runs no queries.
+  #
+  # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart#Stuck runs require evidence of abandonment]]
+  def legislation_pipeline_run_props: () -> Hash[Symbol, ^() -> untyped]
+
+  def pipeline_share_snapshot: () -> pipeline_snapshot
+  def compute_pipeline_share_snapshot: () -> pipeline_snapshot
+
+  # Run-selection for DISPLAY (decoupled from recovery gating).
+  # ?run_id= wins; else newest active; else newest run of ANY status.
+  def surfaced_pipeline_run: (Array[LegislationPipelineRun] active_runs) -> LegislationPipelineRun?
+  def explicitly_selected_pipeline_run: () -> LegislationPipelineRun?
+  def recent_pipeline_runs_summary: () -> Array[Hash[Symbol, untyped]]
+
+  # Provided by the including controller (ActionController::Base). Declared so
+  # the concern's request-time helpers type-check in isolation.
+  def params: () -> ActionController::Parameters
+end

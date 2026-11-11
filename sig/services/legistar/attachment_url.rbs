@@ -1,0 +1,31 @@
+# A-WR-02 / A2-WR-03: scheme + host allowlist for Legistar attachment
+# downloads. See the class body for why the upstream hyperlink is not a
+# trusted target.
+module Legistar
+  class AttachmentUrl
+    # The value arrives from parsed Legistar JSON (MatterAttachmentHyperlink),
+    # so it is a JSON scalar and not necessarily a String — the runtime
+    # is_a?(::String) guard is load-bearing, not decorative. Mirrors
+    # FetchHearingsService's `legistar_scalar` alias.
+    type legistar_scalar = String | Integer | Float | bool | nil
+
+    ALLOWED_HOST: Regexp
+    ALLOWED_PORT: Integer
+    MAX_REASON_LENGTH: Integer
+
+    # A23-05: the one place an outside string becomes a url candidate —
+    # scrubbed of invalid UTF-8 (String#strip raises on it) and trimmed.
+    # Legistar::AttachmentFetch shares it so the validator and the transport
+    # cannot disagree about what the url is.
+    def self.normalize: (legistar_scalar value) -> String
+
+    def self.allowed?: (legistar_scalar url) -> bool
+
+    # nil when the url is allowed.
+    def self.rejection_reason: (legistar_scalar url) -> String?
+
+    # A3-IN-02: every reason goes through here, so MAX_REASON_LENGTH is a
+    # bound the code enforces rather than one a comment claims.
+    def self.bounded: (String reason) -> String
+  end
+end

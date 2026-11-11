@@ -1,0 +1,6 @@
+class NotificationPreference < ApplicationRecord
+    CANONICAL_KEYS: Array[String]
+    KEYS: Array[String]
+
+    def self.seed_defaults_for: (User user) -> void
+end

@@ -1,0 +1,15 @@
+# Spec-only declarations for spec/scripts/dip_rspec_cleanup_spec.rb.
+#
+# Steep cannot see a `let`, so each helper is declared here. The spec reads
+# scripts/dip/rspec.sh and checks the shell it really runs, which is why the
+# second helper is the script with its comment lines dropped — the script's own
+# prose about `exec` would otherwise satisfy the check that forbids it.
+class Object
+  def script: () -> String
+
+  def runnable_lines: () -> String
+
+  # runnable_lines with its line continuations joined, so a check about the
+  # whole command is not defeated by where the backslashes fall.
+  def joined_lines: () -> String
+end

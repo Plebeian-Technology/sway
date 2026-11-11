@@ -1,0 +1,2 @@
+# RBS signature for LegislationPipelineRunStage legacy alias.
+LegislationPipelineRunStage: singleton(PipelineRunStage)

@@ -1,0 +1,17 @@
+module Api
+  module V1
+    class FunnelEventsController < BaseController
+      VISITOR_TOKEN_FORMAT: Regexp
+      FORBIDDEN_METADATA_KEYS: Array[String]
+
+      def create: () -> untyped
+
+      private
+
+      def valid_visitor_token: (untyped raw_token) -> String?
+      def funnel_event_params: () -> untyped
+      def sanitized_metadata: () -> Hash[untyped, untyped]
+      def funnel_attribution_user: () -> User?
+    end
+  end
+end

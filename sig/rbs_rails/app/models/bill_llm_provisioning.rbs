@@ -1,0 +1,1300 @@
+# resolve-type-names: false
+
+class ::BillLlmProvisioning < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::BillLlmProvisioning, ::BillLlmProvisioning::ActiveRecord_Relation, ::Integer]
+
+  module ::BillLlmProvisioning::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def bill_id: () -> ::Integer
+
+    def bill_id=: (::Integer) -> ::Integer
+
+    def bill_id?: () -> bool
+
+    def bill_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def bill_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def bill_id_will_change!: () -> void
+
+    def bill_id_was: () -> ::Integer?
+
+    def bill_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def bill_id_previous_change: () -> ::Array[::Integer?]?
+
+    def bill_id_previously_was: () -> ::Integer?
+
+    def bill_id_before_last_save: () -> ::Integer?
+
+    def bill_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def bill_id_in_database: () -> ::Integer?
+
+    def saved_change_to_bill_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_bill_id!: () -> void
+
+    def clear_bill_id_change: () -> void
+
+    def bill_id_before_type_cast: () -> ::Integer
+
+    def bill_id_for_database: () -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def diff_content: () -> ::String?
+
+    def diff_content=: (::String?) -> ::String?
+
+    def diff_content?: () -> bool
+
+    def diff_content_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def diff_content_change: () -> [ ::String?, ::String? ]
+
+    def diff_content_will_change!: () -> void
+
+    def diff_content_was: () -> ::String?
+
+    def diff_content_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def diff_content_previous_change: () -> ::Array[::String?]?
+
+    def diff_content_previously_was: () -> ::String?
+
+    def diff_content_before_last_save: () -> ::String?
+
+    def diff_content_change_to_be_saved: () -> ::Array[::String?]?
+
+    def diff_content_in_database: () -> ::String?
+
+    def saved_change_to_diff_content: () -> ::Array[::String?]?
+
+    def saved_change_to_diff_content?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_diff_content?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_diff_content!: () -> void
+
+    def clear_diff_content_change: () -> void
+
+    def diff_content_before_type_cast: () -> ::String?
+
+    def diff_content_for_database: () -> ::String?
+
+    def diff_generated_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def diff_generated_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def diff_generated_at?: () -> bool
+
+    def diff_generated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def diff_generated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def diff_generated_at_will_change!: () -> void
+
+    def diff_generated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def diff_generated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def diff_generated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def diff_generated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def diff_generated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def diff_generated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def diff_generated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_diff_generated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_diff_generated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_diff_generated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_diff_generated_at!: () -> void
+
+    def clear_diff_generated_at_change: () -> void
+
+    def diff_generated_at_before_type_cast: () -> ::Time?
+
+    def diff_generated_at_for_database: () -> ::Time?
+
+    def draft_org_positions: () -> ::String?
+
+    def draft_org_positions=: (::String?) -> ::String?
+
+    def draft_org_positions?: () -> bool
+
+    def draft_org_positions_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def draft_org_positions_change: () -> [ ::String?, ::String? ]
+
+    def draft_org_positions_will_change!: () -> void
+
+    def draft_org_positions_was: () -> ::String?
+
+    def draft_org_positions_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def draft_org_positions_previous_change: () -> ::Array[::String?]?
+
+    def draft_org_positions_previously_was: () -> ::String?
+
+    def draft_org_positions_before_last_save: () -> ::String?
+
+    def draft_org_positions_change_to_be_saved: () -> ::Array[::String?]?
+
+    def draft_org_positions_in_database: () -> ::String?
+
+    def saved_change_to_draft_org_positions: () -> ::Array[::String?]?
+
+    def saved_change_to_draft_org_positions?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_draft_org_positions?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_draft_org_positions!: () -> void
+
+    def clear_draft_org_positions_change: () -> void
+
+    def draft_org_positions_before_type_cast: () -> ::String?
+
+    def draft_org_positions_for_database: () -> ::String?
+
+    def generation_error: () -> ::String?
+
+    def generation_error=: (::String?) -> ::String?
+
+    def generation_error?: () -> bool
+
+    def generation_error_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def generation_error_change: () -> [ ::String?, ::String? ]
+
+    def generation_error_will_change!: () -> void
+
+    def generation_error_was: () -> ::String?
+
+    def generation_error_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def generation_error_previous_change: () -> ::Array[::String?]?
+
+    def generation_error_previously_was: () -> ::String?
+
+    def generation_error_before_last_save: () -> ::String?
+
+    def generation_error_change_to_be_saved: () -> ::Array[::String?]?
+
+    def generation_error_in_database: () -> ::String?
+
+    def saved_change_to_generation_error: () -> ::Array[::String?]?
+
+    def saved_change_to_generation_error?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_generation_error?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_generation_error!: () -> void
+
+    def clear_generation_error_change: () -> void
+
+    def generation_error_before_type_cast: () -> ::String?
+
+    def generation_error_for_database: () -> ::String?
+
+    def generation_status: () -> ::String?
+
+    def generation_status=: (::String?) -> ::String?
+
+    def generation_status?: () -> bool
+
+    def generation_status_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def generation_status_change: () -> [ ::String?, ::String? ]
+
+    def generation_status_will_change!: () -> void
+
+    def generation_status_was: () -> ::String?
+
+    def generation_status_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def generation_status_previous_change: () -> ::Array[::String?]?
+
+    def generation_status_previously_was: () -> ::String?
+
+    def generation_status_before_last_save: () -> ::String?
+
+    def generation_status_change_to_be_saved: () -> ::Array[::String?]?
+
+    def generation_status_in_database: () -> ::String?
+
+    def saved_change_to_generation_status: () -> ::Array[::String?]?
+
+    def saved_change_to_generation_status?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_generation_status?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_generation_status!: () -> void
+
+    def clear_generation_status_change: () -> void
+
+    def generation_status_before_type_cast: () -> ::String?
+
+    def generation_status_for_database: () -> ::String?
+
+    def hearings_fetched_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def hearings_fetched_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def hearings_fetched_at?: () -> bool
+
+    def hearings_fetched_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def hearings_fetched_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def hearings_fetched_at_will_change!: () -> void
+
+    def hearings_fetched_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def hearings_fetched_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def hearings_fetched_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def hearings_fetched_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def hearings_fetched_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def hearings_fetched_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def hearings_fetched_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_hearings_fetched_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_hearings_fetched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_hearings_fetched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_hearings_fetched_at!: () -> void
+
+    def clear_hearings_fetched_at_change: () -> void
+
+    def hearings_fetched_at_before_type_cast: () -> ::Time?
+
+    def hearings_fetched_at_for_database: () -> ::Time?
+
+    def llm_full_breakdown: () -> ::String?
+
+    def llm_full_breakdown=: (::String?) -> ::String?
+
+    def llm_full_breakdown?: () -> bool
+
+    def llm_full_breakdown_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_full_breakdown_change: () -> [ ::String?, ::String? ]
+
+    def llm_full_breakdown_will_change!: () -> void
+
+    def llm_full_breakdown_was: () -> ::String?
+
+    def llm_full_breakdown_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_full_breakdown_previous_change: () -> ::Array[::String?]?
+
+    def llm_full_breakdown_previously_was: () -> ::String?
+
+    def llm_full_breakdown_before_last_save: () -> ::String?
+
+    def llm_full_breakdown_change_to_be_saved: () -> ::Array[::String?]?
+
+    def llm_full_breakdown_in_database: () -> ::String?
+
+    def saved_change_to_llm_full_breakdown: () -> ::Array[::String?]?
+
+    def saved_change_to_llm_full_breakdown?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_llm_full_breakdown?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_llm_full_breakdown!: () -> void
+
+    def clear_llm_full_breakdown_change: () -> void
+
+    def llm_full_breakdown_before_type_cast: () -> ::String?
+
+    def llm_full_breakdown_for_database: () -> ::String?
+
+    def llm_generated_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def llm_generated_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def llm_generated_at?: () -> bool
+
+    def llm_generated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def llm_generated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def llm_generated_at_will_change!: () -> void
+
+    def llm_generated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def llm_generated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def llm_generated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def llm_generated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def llm_generated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def llm_generated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def llm_generated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_llm_generated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_llm_generated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_llm_generated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_llm_generated_at!: () -> void
+
+    def clear_llm_generated_at_change: () -> void
+
+    def llm_generated_at_before_type_cast: () -> ::Time?
+
+    def llm_generated_at_for_database: () -> ::Time?
+
+    def llm_model: () -> ::String?
+
+    def llm_model=: (::String?) -> ::String?
+
+    def llm_model?: () -> bool
+
+    def llm_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_model_change: () -> [ ::String?, ::String? ]
+
+    def llm_model_will_change!: () -> void
+
+    def llm_model_was: () -> ::String?
+
+    def llm_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_model_previous_change: () -> ::Array[::String?]?
+
+    def llm_model_previously_was: () -> ::String?
+
+    def llm_model_before_last_save: () -> ::String?
+
+    def llm_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def llm_model_in_database: () -> ::String?
+
+    def saved_change_to_llm_model: () -> ::Array[::String?]?
+
+    def saved_change_to_llm_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_llm_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_llm_model!: () -> void
+
+    def clear_llm_model_change: () -> void
+
+    def llm_model_before_type_cast: () -> ::String?
+
+    def llm_model_for_database: () -> ::String?
+
+    def llm_provider: () -> ::String?
+
+    def llm_provider=: (::String?) -> ::String?
+
+    def llm_provider?: () -> bool
+
+    def llm_provider_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_provider_change: () -> [ ::String?, ::String? ]
+
+    def llm_provider_will_change!: () -> void
+
+    def llm_provider_was: () -> ::String?
+
+    def llm_provider_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_provider_previous_change: () -> ::Array[::String?]?
+
+    def llm_provider_previously_was: () -> ::String?
+
+    def llm_provider_before_last_save: () -> ::String?
+
+    def llm_provider_change_to_be_saved: () -> ::Array[::String?]?
+
+    def llm_provider_in_database: () -> ::String?
+
+    def saved_change_to_llm_provider: () -> ::Array[::String?]?
+
+    def saved_change_to_llm_provider?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_llm_provider?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_llm_provider!: () -> void
+
+    def clear_llm_provider_change: () -> void
+
+    def llm_provider_before_type_cast: () -> ::String?
+
+    def llm_provider_for_database: () -> ::String?
+
+    def llm_summary: () -> ::String?
+
+    def llm_summary=: (::String?) -> ::String?
+
+    def llm_summary?: () -> bool
+
+    def llm_summary_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_summary_change: () -> [ ::String?, ::String? ]
+
+    def llm_summary_will_change!: () -> void
+
+    def llm_summary_was: () -> ::String?
+
+    def llm_summary_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def llm_summary_previous_change: () -> ::Array[::String?]?
+
+    def llm_summary_previously_was: () -> ::String?
+
+    def llm_summary_before_last_save: () -> ::String?
+
+    def llm_summary_change_to_be_saved: () -> ::Array[::String?]?
+
+    def llm_summary_in_database: () -> ::String?
+
+    def saved_change_to_llm_summary: () -> ::Array[::String?]?
+
+    def saved_change_to_llm_summary?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_llm_summary?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_llm_summary!: () -> void
+
+    def clear_llm_summary_change: () -> void
+
+    def llm_summary_before_type_cast: () -> ::String?
+
+    def llm_summary_for_database: () -> ::String?
+
+    def summary_run_id: () -> ::String?
+
+    def summary_run_id=: (::String?) -> ::String?
+
+    def summary_run_id?: () -> bool
+
+    def summary_run_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_run_id_change: () -> [ ::String?, ::String? ]
+
+    def summary_run_id_will_change!: () -> void
+
+    def summary_run_id_was: () -> ::String?
+
+    def summary_run_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_run_id_previous_change: () -> ::Array[::String?]?
+
+    def summary_run_id_previously_was: () -> ::String?
+
+    def summary_run_id_before_last_save: () -> ::String?
+
+    def summary_run_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def summary_run_id_in_database: () -> ::String?
+
+    def saved_change_to_summary_run_id: () -> ::Array[::String?]?
+
+    def saved_change_to_summary_run_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_summary_run_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_summary_run_id!: () -> void
+
+    def clear_summary_run_id_change: () -> void
+
+    def summary_run_id_before_type_cast: () -> ::String?
+
+    def summary_run_id_for_database: () -> ::String?
+
+    def supplemental_testimony: () -> ::String?
+
+    def supplemental_testimony=: (::String?) -> ::String?
+
+    def supplemental_testimony?: () -> bool
+
+    def supplemental_testimony_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def supplemental_testimony_change: () -> [ ::String?, ::String? ]
+
+    def supplemental_testimony_will_change!: () -> void
+
+    def supplemental_testimony_was: () -> ::String?
+
+    def supplemental_testimony_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def supplemental_testimony_previous_change: () -> ::Array[::String?]?
+
+    def supplemental_testimony_previously_was: () -> ::String?
+
+    def supplemental_testimony_before_last_save: () -> ::String?
+
+    def supplemental_testimony_change_to_be_saved: () -> ::Array[::String?]?
+
+    def supplemental_testimony_in_database: () -> ::String?
+
+    def saved_change_to_supplemental_testimony: () -> ::Array[::String?]?
+
+    def saved_change_to_supplemental_testimony?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_supplemental_testimony?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_supplemental_testimony!: () -> void
+
+    def clear_supplemental_testimony_change: () -> void
+
+    def supplemental_testimony_before_type_cast: () -> ::String?
+
+    def supplemental_testimony_for_database: () -> ::String?
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+
+    def extracted_testimony: () -> ::String?
+
+    def extracted_testimony=: (::String?) -> ::String?
+
+    def extracted_testimony?: () -> bool
+
+    def extracted_testimony_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def extracted_testimony_change: () -> [ ::String?, ::String? ]
+
+    def extracted_testimony_will_change!: () -> void
+
+    def extracted_testimony_was: () -> ::String?
+
+    def extracted_testimony_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def extracted_testimony_previous_change: () -> ::Array[::String?]?
+
+    def extracted_testimony_previously_was: () -> ::String?
+
+    def extracted_testimony_before_last_save: () -> ::String?
+
+    def extracted_testimony_change_to_be_saved: () -> ::Array[::String?]?
+
+    def extracted_testimony_in_database: () -> ::String?
+
+    def saved_change_to_extracted_testimony: () -> ::Array[::String?]?
+
+    def saved_change_to_extracted_testimony?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_extracted_testimony?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_extracted_testimony!: () -> void
+
+    def clear_extracted_testimony_change: () -> void
+
+    def extracted_testimony_before_type_cast: () -> ::String?
+
+    def extracted_testimony_for_database: () -> ::String?
+
+    def testimony_fetched_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def testimony_fetched_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def testimony_fetched_at?: () -> bool
+
+    def testimony_fetched_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def testimony_fetched_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def testimony_fetched_at_will_change!: () -> void
+
+    def testimony_fetched_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def testimony_fetched_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def testimony_fetched_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def testimony_fetched_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def testimony_fetched_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def testimony_fetched_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def testimony_fetched_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_testimony_fetched_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_testimony_fetched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_testimony_fetched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_testimony_fetched_at!: () -> void
+
+    def clear_testimony_fetched_at_change: () -> void
+
+    def testimony_fetched_at_before_type_cast: () -> ::Time?
+
+    def testimony_fetched_at_for_database: () -> ::Time?
+
+    def testimony_attachments: () -> ::String?
+
+    def testimony_attachments=: (::String?) -> ::String?
+
+    def testimony_attachments?: () -> bool
+
+    def testimony_attachments_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def testimony_attachments_change: () -> [ ::String?, ::String? ]
+
+    def testimony_attachments_will_change!: () -> void
+
+    def testimony_attachments_was: () -> ::String?
+
+    def testimony_attachments_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def testimony_attachments_previous_change: () -> ::Array[::String?]?
+
+    def testimony_attachments_previously_was: () -> ::String?
+
+    def testimony_attachments_before_last_save: () -> ::String?
+
+    def testimony_attachments_change_to_be_saved: () -> ::Array[::String?]?
+
+    def testimony_attachments_in_database: () -> ::String?
+
+    def saved_change_to_testimony_attachments: () -> ::Array[::String?]?
+
+    def saved_change_to_testimony_attachments?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_testimony_attachments?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_testimony_attachments!: () -> void
+
+    def clear_testimony_attachments_change: () -> void
+
+    def testimony_attachments_before_type_cast: () -> ::String?
+
+    def testimony_attachments_for_database: () -> ::String?
+
+    def citations_valid: () -> bool?
+
+    def citations_valid=: (bool?) -> bool?
+
+    def citations_valid?: () -> bool
+
+    def citations_valid_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def citations_valid_change: () -> [ bool?, bool? ]
+
+    def citations_valid_will_change!: () -> void
+
+    def citations_valid_was: () -> bool?
+
+    def citations_valid_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def citations_valid_previous_change: () -> ::Array[bool?]?
+
+    def citations_valid_previously_was: () -> bool?
+
+    def citations_valid_before_last_save: () -> bool?
+
+    def citations_valid_change_to_be_saved: () -> ::Array[bool?]?
+
+    def citations_valid_in_database: () -> bool?
+
+    def saved_change_to_citations_valid: () -> ::Array[bool?]?
+
+    def saved_change_to_citations_valid?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_citations_valid?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_citations_valid!: () -> void
+
+    def clear_citations_valid_change: () -> void
+
+    def citations_valid_before_type_cast: () -> bool?
+
+    def citations_valid_for_database: () -> bool?
+
+    def invalid_citations: () -> ::String?
+
+    def invalid_citations=: (::String?) -> ::String?
+
+    def invalid_citations?: () -> bool
+
+    def invalid_citations_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def invalid_citations_change: () -> [ ::String?, ::String? ]
+
+    def invalid_citations_will_change!: () -> void
+
+    def invalid_citations_was: () -> ::String?
+
+    def invalid_citations_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def invalid_citations_previous_change: () -> ::Array[::String?]?
+
+    def invalid_citations_previously_was: () -> ::String?
+
+    def invalid_citations_before_last_save: () -> ::String?
+
+    def invalid_citations_change_to_be_saved: () -> ::Array[::String?]?
+
+    def invalid_citations_in_database: () -> ::String?
+
+    def saved_change_to_invalid_citations: () -> ::Array[::String?]?
+
+    def saved_change_to_invalid_citations?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_invalid_citations?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_invalid_citations!: () -> void
+
+    def clear_invalid_citations_change: () -> void
+
+    def invalid_citations_before_type_cast: () -> ::String?
+
+    def invalid_citations_for_database: () -> ::String?
+
+    def categories_unmatched_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def categories_unmatched_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def categories_unmatched_at?: () -> bool
+
+    def categories_unmatched_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def categories_unmatched_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def categories_unmatched_at_will_change!: () -> void
+
+    def categories_unmatched_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def categories_unmatched_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def categories_unmatched_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def categories_unmatched_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def categories_unmatched_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def categories_unmatched_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def categories_unmatched_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_categories_unmatched_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_categories_unmatched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_categories_unmatched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_categories_unmatched_at!: () -> void
+
+    def clear_categories_unmatched_at_change: () -> void
+
+    def categories_unmatched_at_before_type_cast: () -> ::Time?
+
+    def categories_unmatched_at_for_database: () -> ::Time?
+
+    def cleaned_testimony: () -> ::String?
+
+    def cleaned_testimony=: (::String?) -> ::String?
+
+    def cleaned_testimony?: () -> bool
+
+    def cleaned_testimony_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def cleaned_testimony_change: () -> [ ::String?, ::String? ]
+
+    def cleaned_testimony_will_change!: () -> void
+
+    def cleaned_testimony_was: () -> ::String?
+
+    def cleaned_testimony_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def cleaned_testimony_previous_change: () -> ::Array[::String?]?
+
+    def cleaned_testimony_previously_was: () -> ::String?
+
+    def cleaned_testimony_before_last_save: () -> ::String?
+
+    def cleaned_testimony_change_to_be_saved: () -> ::Array[::String?]?
+
+    def cleaned_testimony_in_database: () -> ::String?
+
+    def saved_change_to_cleaned_testimony: () -> ::Array[::String?]?
+
+    def saved_change_to_cleaned_testimony?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_cleaned_testimony?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_cleaned_testimony!: () -> void
+
+    def clear_cleaned_testimony_change: () -> void
+
+    def cleaned_testimony_before_type_cast: () -> ::String?
+
+    def cleaned_testimony_for_database: () -> ::String?
+
+    def cleaned_testimony_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def cleaned_testimony_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def cleaned_testimony_at?: () -> bool
+
+    def cleaned_testimony_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def cleaned_testimony_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def cleaned_testimony_at_will_change!: () -> void
+
+    def cleaned_testimony_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def cleaned_testimony_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def cleaned_testimony_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def cleaned_testimony_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def cleaned_testimony_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def cleaned_testimony_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def cleaned_testimony_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_cleaned_testimony_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_cleaned_testimony_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_cleaned_testimony_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_cleaned_testimony_at!: () -> void
+
+    def clear_cleaned_testimony_at_change: () -> void
+
+    def cleaned_testimony_at_before_type_cast: () -> ::Time?
+
+    def cleaned_testimony_at_for_database: () -> ::Time?
+
+    def individual_campaign_draft_hashes: () -> ::String?
+
+    def individual_campaign_draft_hashes=: (::String?) -> ::String?
+
+    def individual_campaign_draft_hashes?: () -> bool
+
+    def individual_campaign_draft_hashes_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def individual_campaign_draft_hashes_change: () -> [ ::String?, ::String? ]
+
+    def individual_campaign_draft_hashes_will_change!: () -> void
+
+    def individual_campaign_draft_hashes_was: () -> ::String?
+
+    def individual_campaign_draft_hashes_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def individual_campaign_draft_hashes_previous_change: () -> ::Array[::String?]?
+
+    def individual_campaign_draft_hashes_previously_was: () -> ::String?
+
+    def individual_campaign_draft_hashes_before_last_save: () -> ::String?
+
+    def individual_campaign_draft_hashes_change_to_be_saved: () -> ::Array[::String?]?
+
+    def individual_campaign_draft_hashes_in_database: () -> ::String?
+
+    def saved_change_to_individual_campaign_draft_hashes: () -> ::Array[::String?]?
+
+    def saved_change_to_individual_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_individual_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_individual_campaign_draft_hashes!: () -> void
+
+    def clear_individual_campaign_draft_hashes_change: () -> void
+
+    def individual_campaign_draft_hashes_before_type_cast: () -> ::String?
+
+    def individual_campaign_draft_hashes_for_database: () -> ::String?
+
+    def rejected_campaign_draft_hashes: () -> ::String?
+
+    def rejected_campaign_draft_hashes=: (::String?) -> ::String?
+
+    def rejected_campaign_draft_hashes?: () -> bool
+
+    def rejected_campaign_draft_hashes_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def rejected_campaign_draft_hashes_change: () -> [ ::String?, ::String? ]
+
+    def rejected_campaign_draft_hashes_will_change!: () -> void
+
+    def rejected_campaign_draft_hashes_was: () -> ::String?
+
+    def rejected_campaign_draft_hashes_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def rejected_campaign_draft_hashes_previous_change: () -> ::Array[::String?]?
+
+    def rejected_campaign_draft_hashes_previously_was: () -> ::String?
+
+    def rejected_campaign_draft_hashes_before_last_save: () -> ::String?
+
+    def rejected_campaign_draft_hashes_change_to_be_saved: () -> ::Array[::String?]?
+
+    def rejected_campaign_draft_hashes_in_database: () -> ::String?
+
+    def saved_change_to_rejected_campaign_draft_hashes: () -> ::Array[::String?]?
+
+    def saved_change_to_rejected_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_rejected_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_rejected_campaign_draft_hashes!: () -> void
+
+    def clear_rejected_campaign_draft_hashes_change: () -> void
+
+    def rejected_campaign_draft_hashes_before_type_cast: () -> ::String?
+
+    def rejected_campaign_draft_hashes_for_database: () -> ::String?
+
+    def summary_batch_id: () -> ::String?
+
+    def summary_batch_id=: (::String?) -> ::String?
+
+    def summary_batch_id?: () -> bool
+
+    def summary_batch_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_batch_id_change: () -> [ ::String?, ::String? ]
+
+    def summary_batch_id_will_change!: () -> void
+
+    def summary_batch_id_was: () -> ::String?
+
+    def summary_batch_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_batch_id_previous_change: () -> ::Array[::String?]?
+
+    def summary_batch_id_previously_was: () -> ::String?
+
+    def summary_batch_id_before_last_save: () -> ::String?
+
+    def summary_batch_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def summary_batch_id_in_database: () -> ::String?
+
+    def saved_change_to_summary_batch_id: () -> ::Array[::String?]?
+
+    def saved_change_to_summary_batch_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_summary_batch_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_summary_batch_id!: () -> void
+
+    def clear_summary_batch_id_change: () -> void
+
+    def summary_batch_id_before_type_cast: () -> ::String?
+
+    def summary_batch_id_for_database: () -> ::String?
+
+    def summary_batch_expires_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def summary_batch_expires_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def summary_batch_expires_at?: () -> bool
+
+    def summary_batch_expires_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def summary_batch_expires_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def summary_batch_expires_at_will_change!: () -> void
+
+    def summary_batch_expires_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def summary_batch_expires_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def summary_batch_expires_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def summary_batch_expires_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def summary_batch_expires_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def summary_batch_expires_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def summary_batch_expires_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_summary_batch_expires_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_summary_batch_expires_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_summary_batch_expires_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_summary_batch_expires_at!: () -> void
+
+    def clear_summary_batch_expires_at_change: () -> void
+
+    def summary_batch_expires_at_before_type_cast: () -> ::Time?
+
+    def summary_batch_expires_at_for_database: () -> ::Time?
+
+    def summary_batch_testimony_digest: () -> ::String?
+
+    def summary_batch_testimony_digest=: (::String?) -> ::String?
+
+    def summary_batch_testimony_digest?: () -> bool
+
+    def summary_batch_testimony_digest_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_batch_testimony_digest_change: () -> [ ::String?, ::String? ]
+
+    def summary_batch_testimony_digest_will_change!: () -> void
+
+    def summary_batch_testimony_digest_was: () -> ::String?
+
+    def summary_batch_testimony_digest_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_batch_testimony_digest_previous_change: () -> ::Array[::String?]?
+
+    def summary_batch_testimony_digest_previously_was: () -> ::String?
+
+    def summary_batch_testimony_digest_before_last_save: () -> ::String?
+
+    def summary_batch_testimony_digest_change_to_be_saved: () -> ::Array[::String?]?
+
+    def summary_batch_testimony_digest_in_database: () -> ::String?
+
+    def saved_change_to_summary_batch_testimony_digest: () -> ::Array[::String?]?
+
+    def saved_change_to_summary_batch_testimony_digest?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_summary_batch_testimony_digest?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_summary_batch_testimony_digest!: () -> void
+
+    def clear_summary_batch_testimony_digest_change: () -> void
+
+    def summary_batch_testimony_digest_before_type_cast: () -> ::String?
+
+    def summary_batch_testimony_digest_for_database: () -> ::String?
+  end
+  include ::BillLlmProvisioning::GeneratedAttributeMethods
+  module ::BillLlmProvisioning::GeneratedAliasAttributeMethods
+    include ::BillLlmProvisioning::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::BillLlmProvisioning::GeneratedAliasAttributeMethods
+
+  def bill: () -> ::Bill
+  def bill=: (::Bill?) -> ::Bill?
+  def reload_bill: () -> ::Bill?
+  def build_bill: (?untyped) -> ::Bill
+  def create_bill: (?untyped) -> ::Bill
+  def create_bill!: (?untyped) -> ::Bill
+
+  module ::BillLlmProvisioning::GeneratedAssociationMethods
+  end
+  include ::BillLlmProvisioning::GeneratedAssociationMethods
+
+  def self.reclaimable_candidates: () -> ::BillLlmProvisioning::ActiveRecord_Relation
+
+  module ::BillLlmProvisioning::GeneratedRelationMethods
+    def reclaimable_candidates: () -> ::BillLlmProvisioning::ActiveRecord_Relation
+  end
+
+  class ::BillLlmProvisioning::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::BillLlmProvisioning]
+    include ::BillLlmProvisioning::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillLlmProvisioning, ::Integer]
+  end
+
+  class ::BillLlmProvisioning::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::BillLlmProvisioning]
+    include ::BillLlmProvisioning::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::BillLlmProvisioning, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillLlmProvisioning
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillLlmProvisioning]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillLlmProvisioning
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillLlmProvisioning]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::BillLlmProvisioning
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::BillLlmProvisioning]
+    def reload: () -> ::Array[::BillLlmProvisioning]
+
+    def replace: (::Array[::BillLlmProvisioning]) -> void
+    def delete: (*::BillLlmProvisioning | ::Integer) -> ::Array[::BillLlmProvisioning]
+    def destroy: (*::BillLlmProvisioning | ::Integer) -> ::Array[::BillLlmProvisioning]
+    def <<: (*::BillLlmProvisioning | ::Array[::BillLlmProvisioning]) -> self
+    def prepend: (*::BillLlmProvisioning | ::Array[::BillLlmProvisioning]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Bill < ::ApplicationRecord
+end

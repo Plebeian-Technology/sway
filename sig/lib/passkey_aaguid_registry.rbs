@@ -1,0 +1,5 @@
+module PasskeyAaguidRegistry
+  KNOWN: Hash[String, String]
+
+  def self.friendly_name: (String? aaguid) -> String?
+end

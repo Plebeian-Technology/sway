@@ -1,0 +1,75 @@
+# @lat: [[query-parameter-namespaces#Machine-readable registry and lint enforcement]]
+
+global_ambient:
+    - sway_locale_id
+    - run_id
+    - highlight_bill_id
+
+features:
+    bill_creator:
+        parameters:
+            - bill_creator_tab
+            - bill_creator_sort
+            - selected_stages
+            - download_missing_assets
+            - subject
+            - severity
+            - window
+            - cursor
+            - date
+            - highlight
+        route_patterns:
+            - "^/admin/bill_creator"
+            - "^/bills/new"
+            - "^/bills/\\d+/edit"
+        parameter_families:
+            bill_creator_tab: [tab_key]
+            bill_creator_sort: []
+            selected_stages: [stages]
+            download_missing_assets: []
+            subject: []
+            severity: []
+            window: []
+            cursor: []
+            date: []
+            highlight: []
+    bills:
+        parameters:
+            - bills_sort
+            - bills_direction
+            - bills_page
+            - bills_search
+            - bills_legislative_session_id
+        route_patterns:
+            - "^/bills(?!/(new|\\d+/edit))"
+            - "^/past_bills_of_the_month"
+        parameter_families:
+            bills_sort: [sort]
+            bills_direction: [direction]
+            bills_page: [page]
+            bills_search: [search]
+            bills_legislative_session_id: [legislative_session_id]
+    legislators:
+        parameters:
+            - legislators_tab
+            - legislators_search
+        route_patterns:
+            - "^/legislators"
+        parameter_families:
+            legislators_tab: [tab]
+            legislators_search: [search]
+    notifications:
+        parameters:
+            - notifications_tab
+        route_patterns:
+            - "^/notifications"
+        parameter_families:
+            notifications_tab: [tab]
+    organizations:
+        parameters:
+            - org_tab
+        route_patterns:
+            - "^/organizations"
+            - "^/public/organizations"
+        parameter_families:
+            org_tab: [tab, tab_key]

@@ -1,0 +1,41 @@
+module Llm
+  class UnknownRouteError < ArgumentError
+  end
+
+  module RouteResolver
+    UnknownRouteError: singleton(Llm::UnknownRouteError)
+
+    class Route
+      attr_reader provider: Symbol
+      attr_reader api_model: String
+      attr_reader reasoning_effort: String?
+      attr_reader mode: Symbol
+
+      def initialize: (provider: Symbol, api_model: String, ?reasoning_effort: String?, ?mode: Symbol?) -> void
+      def to_ary: () -> [Symbol, String]
+      def openrouter?: () -> bool
+      def claude?: () -> bool
+      def llamacpp?: () -> bool
+      def decision_model?: () -> bool
+      def extraction_model?: () -> bool
+      def deconstruct: () -> [Symbol, String]
+      def deconstruct_keys: (Array[Symbol]? keys) -> Hash[Symbol, untyped]
+      def []: (Symbol | String | Integer) -> untyped
+    end
+
+    def self?.resolve: (
+      ?model_choice: String?,
+      ?purpose: Symbol | String,
+      ?per_run_override: String?,
+      ?override: String?,
+      ?fallback_model: String?,
+      ?blank_fallback: String?,
+      ?fallback: String?,
+      ?active_models: Array[String]?,
+      ?offered_models: Array[String]?,
+      ?allowlist: Array[String]?,
+      ?setting: AdminSetting?,
+      ?reasoning_effort: String?
+    ) -> Route
+  end
+end

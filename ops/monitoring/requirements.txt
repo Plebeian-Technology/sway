@@ -1,0 +1,7 @@
+# Sway production debugging toolkit — host-side only, not part of the app.
+# Python 3.10+. Install into a venv:
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#
+# Only one third-party dependency: rich (for the live dashboards). Everything
+# else (SSH, HTTP, SQLite-over-SSH) uses the standard library + the system ssh.
+rich>=13

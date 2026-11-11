@@ -1,0 +1,53 @@
+# Shim for the rails_vite gem (0.2.3) — it ships no RBS of its own.
+# Only the surface this app actually calls: config/initializers/inertia.rb
+# (RailsVite.digest), config/initializers/content_security_policy.rb
+# (RailsVite.dev_server_csp_source), config/initializers/_vite_build_dir.rb
+# (RailsVite.config.build_dir=), and spec/config/vite_build_dir_spec.rb
+# (RailsVite.config.auto_build?, the RailsVite::AutoBuild constant).
+module RailsVite
+  def self.config: () -> RailsVite::Config
+
+  def self.manifest: () -> untyped
+
+  def self.digest: () -> String?
+
+  def self.dev_server_csp_source: (?websocket: bool) -> ^() -> String?
+
+  def self.reset!: () -> void
+
+  class AutoBuild
+    def initialize: (untyped app, ?RailsVite::Config config) -> void
+
+    def call: (Hash[String, untyped] env) -> untyped
+  end
+
+  class Config
+    attr_writer dev_meta_path: Pathname
+    attr_writer manifest_path: Pathname
+    attr_writer asset_prefix: String
+    attr_writer auto_build: bool
+    attr_writer build_dir: String
+
+    def dev_meta_path: () -> Pathname
+
+    def build_dir: () -> String
+
+    def manifest_path: () -> Pathname
+
+    def asset_prefix: () -> String
+
+    def source_dir: () -> String
+
+    def entrypoints_dir: () -> String?
+
+    def auto_build?: () -> bool
+
+    def dev_server_running?: () -> bool
+
+    def dev_server_url: () -> String?
+
+    def ssr_output_dir: () -> String?
+
+    def react_refresh?: () -> bool
+  end
+end

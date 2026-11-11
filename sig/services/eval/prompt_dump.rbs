@@ -1,0 +1,54 @@
+# RBS sig for Eval::PromptDump — see app/services/eval/prompt_dump.rb.
+module Eval
+  class PromptDump
+    type entry = Hash[String, untyped]
+
+    class MissingSourceError < StandardError
+    end
+
+    class MissingDiffMarkdownError < StandardError
+    end
+
+    class DevelopmentCapsError < StandardError
+    end
+
+    WATCHED_BUILDER_FILES: Array[String]
+    NON_DEVELOPMENT_CAPS: Hash[String, Integer]
+    SOURCE_HEADING_PREFIXES: Hash[String, Array[String]]
+
+    def self.call: (bill: Bill, answer_type: String) -> entry
+    def self.normalize_delimiters: (String text) -> String
+    def self.builder_content_digest: () -> String
+    def self.builder_file_digests: () -> Hash[String, String]
+    def self.effective_caps: () -> Hash[String, Integer]
+    def self.active_category_names_ordered: () -> Array[String]
+    def self.active_category_digest: (?Array[String] names) -> String
+    def self.assert_non_development_caps!: () -> void
+
+    @bill: Bill
+    @answer_type: String
+    @dump_dir: Pathname?
+    @active_categories: Array[Category]?
+
+    def initialize: (bill: Bill, answer_type: String) -> void
+    def call: () -> entry
+
+    private
+
+    attr_reader bill: Bill
+    attr_reader answer_type: String
+
+    def build_builder: () -> (BillPositionsPromptBuilder | BillSummaryPromptBuilder)
+    def summary_builder: () -> BillSummaryPromptBuilder
+    def active_categories: () -> Array[Category]
+    def active_category_names: () -> Array[String]
+    def diff_markdown_path: () -> Pathname
+    def require_diff_markdown_or_non_amending_sentinel!: () -> void
+    def verified_non_amending_sentinel?: () -> bool
+    def zero_sentinel_stats?: (untyped stats) -> bool
+    def dump_dir: () -> Pathname
+    def write_files: (Llm::PromptPayload payload) -> void
+    def source_section_heading: (String user_message) -> String?
+    def manifest_entry: ((BillPositionsPromptBuilder | BillSummaryPromptBuilder) builder, Llm::PromptPayload payload) -> entry
+  end
+end

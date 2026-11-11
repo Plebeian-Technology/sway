@@ -1,0 +1,6 @@
+# Helper defined at describe-block scope in
+# spec/services/pipeline_run_finalizer_spec.rb, which Steep cannot see.
+class Object
+  # A bill row of the run whose summarize stage carries this status.
+  def bill_run_with: (String stage_status) -> PipelineRunBill
+end

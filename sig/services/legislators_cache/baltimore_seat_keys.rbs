@@ -1,0 +1,13 @@
+module LegislatorsCache
+  module BaltimoreSeatKeys
+    MAYOR_EXTERNAL_ID: String
+    COUNCIL_PRESIDENT_EXTERNAL_ID: String
+    COMPTROLLER_EXTERNAL_ID: String
+    OFFICE_EXTERNAL_IDS: Array[String]
+    DISTRICT_SEAT_PREFIX: String
+
+    def self.district_seat_external_id: (String | Integer district_number) -> String
+
+    def self.seat_key?: (String? key) -> bool
+  end
+end

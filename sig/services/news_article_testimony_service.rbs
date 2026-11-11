@@ -1,0 +1,24 @@
+class NewsArticleTestimonyService
+  def self.eligible_articles: (Bill? bill) -> Array[BillNewsArticle]
+  def self.commentary_eligible?: (Bill? bill) -> bool
+  def self.persist_drafts!: (bill: Bill, payload: Hash[String | Symbol, untyped]?, snapshot: NewsArticleSourceSnapshot?, ?run_receipt: String?) -> Array[NewsArticleTestimony]
+  def self.record_drafts!: (bill: Bill, payload: Hash[String | Symbol, untyped]?, snapshot: NewsArticleSourceSnapshot?, ?run_receipt: String?) -> Array[NewsArticleTestimony]
+  def self.publish_commentary!: (bill: Bill, snapshot: NewsArticleSourceSnapshot) -> Array[NewsArticleTestimony]
+  def self.publish_generated_commentary!: (bill: Bill, snapshot: NewsArticleSourceSnapshot) -> Array[NewsArticleTestimony]
+  def self.publish_drafts!: (bill: Bill, snapshot: NewsArticleSourceSnapshot) -> Array[NewsArticleTestimony]
+
+  def initialize: (bill: Bill, ?payload: Hash[String | Symbol, untyped]?, ?snapshot: NewsArticleSourceSnapshot?, ?run_receipt: String?) -> void
+  def persist_drafts!: () -> Array[NewsArticleTestimony]
+  def publish_commentary!: () -> Array[NewsArticleTestimony]
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader snapshot: NewsArticleSourceSnapshot?
+  attr_reader run_receipt: String?
+
+  def record_single_draft: (untyped item) -> NewsArticleTestimony?
+  def record_source_use!: (BillNewsArticle bna, NewsArticleTextVersion tv, String claim_text, String excerpt, String citation_url) -> void
+  def attribution_valid?: (NewsArticle article, untyped item, String canonical_url) -> bool
+end
+

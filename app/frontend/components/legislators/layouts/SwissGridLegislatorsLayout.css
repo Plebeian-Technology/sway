@@ -1,0 +1,97 @@
+/* @lat: [[legislator-directory-layouts#SwissGridLegislatorsLayout.tsx]] */
+
+[data-theme="swiss-grid"] .swiss-grid-legislators {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-table {
+    display: flex;
+    flex-direction: column;
+    border-top: var(--rule-hair) var(--rule-style) var(--border);
+    border-left: var(--rule-hair) var(--rule-style) var(--border);
+    border-right: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-row {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+}
+
+@media (max-width: 640px) {
+    [data-theme="swiss-grid"] .swiss-grid-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+[data-theme="swiss-grid"] .swiss-grid-index {
+    padding: calc(var(--space-unit) * 4);
+    border-right: var(--rule-hair) var(--rule-style) var(--border);
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+@media (max-width: 640px) {
+    [data-theme="swiss-grid"] .swiss-grid-index {
+        border-right: none;
+        border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+        padding-bottom: calc(var(--space-unit) * 2);
+    }
+}
+
+[data-theme="swiss-grid"] .swiss-grid-content {
+    min-width: 0;
+    padding: calc(var(--space-unit) * 4) calc(var(--space-unit) * 5);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-heading);
+    color: var(--foreground);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-count {
+    margin-top: calc(var(--space-unit) * 1);
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-term-range {
+    margin-top: calc(var(--space-unit) * 1);
+    font-variant-numeric: var(--font-numeric);
+    font-size: var(--type-micro);
+    color: var(--muted-foreground);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-field {
+    display: flex;
+    flex: 1 1 14rem;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    min-width: 0;
+    max-width: 100%;
+}
+
+[data-theme="swiss-grid"] .swiss-grid-field__label {
+    font-family: var(--font-display);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+[data-theme="swiss-grid"] .swiss-grid-legislators__notice {
+    padding: calc(var(--space-unit) * 6) calc(var(--space-unit) * 4);
+    text-align: center;
+    background-color: var(--surface-1);
+}

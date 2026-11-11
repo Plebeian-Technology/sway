@@ -1,0 +1,6 @@
+class Object
+    def method_missing:
+        (Symbol, *untyped args, **untyped kwargs) -> untyped
+        | (Symbol, *untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def respond_to_missing?: (Symbol, ?bool include_private) -> bool
+end

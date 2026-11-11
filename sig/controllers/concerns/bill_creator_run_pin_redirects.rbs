@@ -1,0 +1,27 @@
+# @lat: [[rbs-signatures#Why a concern that calls super declares its host]]
+module BillCreatorRunPinRedirects : ActionController::Base
+  extend ActiveSupport::Concern
+
+  BILL_CREATOR_PREFIX: String
+  RUN_PIN_PARAM: String
+
+  @referer_uri: URI::Generic?
+
+  def _compute_redirect_to_location: (untyped request, untyped options) -> untyped
+
+  # Rails built-in (ActionController::Redirecting#url_from): returns the URL
+  # when it is same-origin, nil otherwise. Absent from the vendored actionpack
+  # signatures, so it is declared here — the same way
+  # OrganizationFollowsController and UserVotesController declare it.
+  def url_from: (String? url) -> String?
+
+  private
+
+  def carry_pinned_run: (untyped location) -> untyped
+  def pinned_run_id_from_referer: () -> String?
+  def referer_uri: () -> URI::Generic?
+  def bill_creator_uri: (String location) -> URI::Generic?
+  def decode_query: (String query) -> Hash[String, String]
+  def bill_id_in_path: (String? path) -> String?
+  def same_bill?: (String? target_path, String? referer_path) -> bool
+end

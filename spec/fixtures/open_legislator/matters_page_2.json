@@ -1,0 +1,41 @@
+{
+    "data": [
+        {
+            "id": 103,
+            "slug": "resolution-24-0003-parks-appreciation",
+            "file_number": "24-0003",
+            "title": "Public Parks Appreciation Day Resolution",
+            "short_title": "Parks Appreciation Day",
+            "introduced_on": "2026-02-01",
+            "enacted_on": "2026-02-15",
+            "matter_type": "Resolution",
+            "status": {
+                "name": "Adopted",
+                "outcome": "enacted"
+            }
+        }
+    ],
+    "page": {
+        "page": 2,
+        "last": 2,
+        "count": 3,
+        "limit": 2
+    },
+    "jurisdiction": {
+        "name": "Baltimore City Council",
+        "short_name": "Baltimore",
+        "time_zone": "America/New_York",
+        "locale": "en",
+        "legislation_noun": "ordinance",
+        "body_noun": "council",
+        "body_noun_plural": "councils",
+        "meeting_noun": "hearing",
+        "meeting_noun_plural": "hearings",
+        "person_noun": "councilmember",
+        "person_noun_plural": "councilmembers",
+        "agenda_item_noun": "bill",
+        "agenda_item_noun_plural": "bills",
+        "release_version": "1.0.0",
+        "schema_version": "1.0.0"
+    }
+}

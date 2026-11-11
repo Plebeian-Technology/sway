@@ -1,0 +1,69 @@
+# RBS signature for Testimony::SourceKindClassifier (Phase 67 Plan 05,
+# Task 2, D-05) — mirrors Testimony::AttachmentClassifier's shape.
+module Testimony
+  class SourceKindClassifier
+    RULE_DECIDED_KINDS: Array[Testimony::SourceKindRules::kind]
+    MODEL_PASS_KINDS: Array[Testimony::SourceKindRules::kind]
+    MIN_DECISION_CONFIDENCE: Float
+    CLASSIFIER_MODEL: String
+    MAX_TAIL_LETTERS_PER_BATCH: Integer
+
+    @llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+    @enabled: bool
+    @model_fallback_letters: Integer
+    @classification_model: String?
+    # Retained route for adapter/model consistency in default-built classifiers.
+    @route: Llm::RouteResolver::Route?
+    @purpose: Symbol?
+
+    # :default is the only value that reads the environment; anything else
+    # (an adapter, or nil for no model) is used as given, which is what makes
+    # the organization branch reachable in a spec (B3).
+    def self.build: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | nil | :default),
+      ?purpose: Symbol
+    ) -> Testimony::SourceKindClassifier
+
+    def initialize: (
+      ?llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?,
+      ?enabled: bool?,
+      ?route: Llm::RouteResolver::Route?,
+      ?purpose: Symbol
+    ) -> void
+
+    def call: (text: String, letters: Array[Hash[String, untyped]]) -> [Array[Hash[String, untyped]], Hash[String, Integer]]
+
+    private
+
+    attr_reader llm: (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter)?
+
+    def enabled?: () -> bool
+    def rule_result: (String full_text, Hash[String, untyped] letter) -> Testimony::SourceKindRules::Result
+    def letter_text_for: (String full_text, Hash[String, untyped] letter) -> String
+    def resolve_tail: (String full_text, Array[Hash[String, untyped]] tail_letters, Hash[Integer, Testimony::SourceKindRules::Result] rule_result_by_position) -> Hash[Integer, Testimony::SourceKindRules::Result]
+    def fallback_tail: (Array[Hash[String, untyped]] tail_letters) -> Hash[Integer, Testimony::SourceKindRules::Result]
+    def safe_fallback_result: () -> Testimony::SourceKindRules::Result
+    interface _DecisionAdapter
+      def generate_decisions: (
+        model: String,
+        state: Hash[String, untyped],
+        questions: Hash[String, untyped]
+      ) -> Hash[String, untyped]
+      def provider_label: () -> String
+    end
+
+    def decision_model_route?: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter) -> bool
+    def model_results: (String full_text, Array[Hash[String, untyped]] batch, (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter, Hash[Integer, Testimony::SourceKindRules::Result] rule_result_by_position) -> Hash[Integer, Testimony::SourceKindRules::Result]
+    def model_results_via_decisions: (String full_text, Array[Hash[String, untyped]] batch, (Llm::OpenRouterAdapter | _DecisionAdapter) adapter, Hash[Integer, Testimony::SourceKindRules::Result] rule_result_by_position) -> Hash[Integer, Testimony::SourceKindRules::Result]
+    def model_results_via_chat: (String full_text, Array[Hash[String, untyped]] batch, (Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter) adapter, Hash[Integer, Testimony::SourceKindRules::Result] rule_result_by_position) -> Hash[Integer, Testimony::SourceKindRules::Result]
+    def sanitize_letter_text: (String text) -> String
+    def apply_classifications: (Array[Hash[String, untyped]] batch, untyped classifications, Hash[Integer, Testimony::SourceKindRules::Result] rule_result_by_position) -> Hash[Integer, Testimony::SourceKindRules::Result]
+    def apply_one_classification: (Hash[Integer, Testimony::SourceKindRules::Result] results, Hash[Integer, Testimony::SourceKindRules::Result] rule_result_by_position, Set[Integer] asked, untyped entry, Set[Integer] written_positions) -> void
+    def warn_duplicate_position: (Integer position) -> void
+    def finalize: (Hash[String, untyped] letter, Testimony::SourceKindRules::Result result) -> Hash[String, untyped]
+    def kind_counts: (Array[Hash[String, untyped]] augmented) -> Hash[String, Integer]
+    def model_for: ((Llm::ClaudeAdapter | Llm::LlamacppAdapter | Llm::OpenRouterAdapter | _DecisionAdapter) adapter) -> String
+    def classification_model: () -> String
+    def resolve_classification_model: () -> String
+  end
+end

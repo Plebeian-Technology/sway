@@ -1,0 +1,22 @@
+# Who held a seat in one jurisdiction on one day.
+class LegislatorRoster
+    SENATE_TITLE: String
+
+    HOUSE_TITLE: String
+
+    @sway_locale: SwayLocale
+
+    @on: Date
+
+    @terms: ::Array[LegislatorTerm]?
+
+    def initialize: (sway_locale: SwayLocale, on: Date | Time | ::ActiveSupport::TimeWithZone) -> void
+
+    def terms: -> ::Array[LegislatorTerm]
+
+    def with_external_id: (String? external_id) -> LegislatorTerm?
+
+    def named: (String? last_name, String? region_code) -> ::Array[LegislatorTerm]
+
+    def senator_named: (String? last_name, String? region_code) -> LegislatorTerm?
+end

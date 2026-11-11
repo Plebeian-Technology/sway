@@ -1,0 +1,90 @@
+name: brakeman
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  brakeman:
+    # Whoever runs this picks the machine: set a CI_RUNNER variable to name one,
+    # or leave it unset for a GitHub-hosted runner.
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # A hosted machine has no mise and no runner-user home folder to read
+      # shims from. .ruby-version stays the one pin on either machine.
+      - name: Set up Ruby (hosted) and install gems
+        if: runner.environment == 'github-hosted'
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version-file: .ruby-version
+          bundler-cache: true
+
+      # @lat: [[continuous-integration#Why the runner's Ruby comes from the host toolchain]]
+      - name: Set up Ruby (host mise) and install gems
+        if: runner.environment == 'self-hosted'
+        run: |
+          # @lat: [[continuous-integration#Why the shim directory is proved before it is trusted]]
+          MISE_SHIMS="$HOME/.local/share/mise/shims"
+          test -x "$MISE_SHIMS/ruby" || {
+            echo "::error::mise shims not found at $MISE_SHIMS — is mise installed for the runner user?"
+            exit 1
+          }
+          echo "$MISE_SHIMS" >> "$GITHUB_PATH"
+          export PATH="$MISE_SHIMS:$PATH"
+          EXPECTED="$(tr -d '[:space:]' < .ruby-version)"
+          ACTUAL="$(ruby -e 'print RUBY_VERSION')"
+          test "$ACTUAL" = "$EXPECTED" || {
+            echo "::error::.ruby-version wants $EXPECTED but the toolchain gave $ACTUAL"
+            exit 1
+          }
+          ruby -v
+          bundle install --jobs 4
+
+      # No database, no compiled assets, and no SWAY_ALLOW_HOST_RAILS: brakeman
+      # parses the source statically and never boots the app, so config/boot.rb's
+      # host-Rails guard is not in play. The scan itself takes ~4s.
+      #
+      # --exit-on-warn/--exit-on-error are Brakeman 8 defaults, but are passed
+      # explicitly so that a future default flip, or a stray config file, cannot
+      # silently turn this gate into a no-op that reports success forever.
+      # Verified 2026-07-25 against brakeman 8.0.5: a controller doing
+      # `render inline: params[:tpl]` exits 3; this tree exits 0 with 0 warnings.
+      - name: Run Brakeman
+        run: |
+          set -o pipefail
+          mkdir -p tmp
+          bundle exec brakeman \
+            --no-pager \
+            --exit-on-warn \
+            --exit-on-error \
+            --github-repo "${{ github.repository }}@${{ github.sha }}" \
+            2>&1 | tee tmp/brakeman-ci.log
+
+      # Findings become check-run annotations, which stay readable via the REST
+      # API even when the raw log/artifact blob endpoints are not (the same
+      # rationale as rspec.yml's failing-example annotations). Brakeman's text
+      # report emits one stanza per warning with Line: last, so the printf
+      # fires once per finding.
+      - name: Surface findings as annotations
+        if: failure()
+        run: |
+          [ -f tmp/brakeman-ci.log ] || exit 0
+          awk '
+            /^Category: / { cat = substr($0, 11) }
+            /^Message: /  { msg = substr($0, 10) }
+            /^File: /     { file = substr($0, 7) }
+            /^Line: /     { printf "::error file=%s,line=%s::Brakeman [%s] %s\n", file, substr($0, 7), cat, msg }
+          ' tmp/brakeman-ci.log
+
+      - name: Upload Brakeman report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brakeman-report-${{ github.run_id }}
+          path: tmp/brakeman-ci.log
+          retention-days: 7

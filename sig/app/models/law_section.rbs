@@ -1,0 +1,11 @@
+# Phase 52 Plan 05 (D-45). Hand-written behavior overlay placeholder.
+# Supplements sig/rbs_rails/app/models/law_section.rbs.
+#
+# The autogen sig already declares `by_sway_locale` (introspected from the
+# `scope` macro, parameter widened to the generic placeholder type and
+# returning LawSection::ActiveRecord_Relation). RBS does not permit
+# redeclaring a method with a tighter signature without an `overload`
+# chain, so we leave the autogen declaration as-is. This file exists as
+# a placeholder for future hand-written behavior overlays.
+class LawSection < ApplicationRecord
+end

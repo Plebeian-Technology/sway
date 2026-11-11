@@ -1,0 +1,15 @@
+# Self-typed to ActionController::Base so steep resolves `session` and
+# `before_action`, and to JsonErrorRenderable for the refusal it renders
+# (mirrors JsonErrorRenderable's own self type).
+module AdminOnlyDirectUploads : ActionController::Base, JsonErrorRenderable
+  extend ActiveSupport::Concern
+
+  # `included do ... end` runs against the including CLASS, but steep reads the
+  # block with self as this module's singleton, so the callback methods have to
+  # be declared there or before_action reads as undefined.
+  extend AbstractController::Callbacks::ClassMethods
+
+  private
+
+  def require_sway_admin_for_upload: () -> untyped
+end

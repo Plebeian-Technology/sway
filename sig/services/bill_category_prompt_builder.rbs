@@ -1,0 +1,53 @@
+# Phase 60 Plan 04 — categorize-only prompt builder with injection defense (T-60-04).
+# Called by the backfill/main-summarize path; active categories are injected
+# by the caller to avoid N+1 queries on bulk categorization runs.
+class BillCategoryPromptBuilder
+  # B6-WR-04: the bounds on the two untrusted values this prompt renders.
+  # MAX_TITLE_CHARS mirrors BillSummaryPromptBuilder::MAX_METADATA_FIELD_CHARS
+  # (same title, same channel); MAX_SUMMARY_CHARS mirrors
+  # BillPositionsPromptBuilder.max_summary_context_chars (same llm_summary).
+  MAX_TITLE_CHARS: Integer
+  MAX_SUMMARY_CHARS: Integer
+  SUMMARY_TRUNCATION_NOTICE: String
+
+  # A20-05: the cap on `categories`, read from bill_categories.json's maxItems
+  # so the three places the prompt states it cannot drift from the schema the
+  # answer is checked against.
+  MAX_CATEGORIES: Integer
+
+  @bill: Bill
+  @active_categories: Array[Category]
+
+  # B1-IN-02 sweep: the enclosure around the untrusted bill title + llm_summary.
+  # Shares the registered :bill_context content class with
+  # BillPositionsPromptBuilder, because it is the same material.
+  @boundary: Llm::UntrustedTextBlock
+
+  # B1-WR-04: raises ArgumentError on an empty active_categories.
+  # BILL_CATEGORIES_SCHEMA is required: ["categories"] with minItems 1, so a
+  # categorize call against an empty taxonomy cannot succeed — the only
+  # correct answer is not to make it.
+  def initialize: (Bill bill, active_categories: Array[Category]) -> void
+
+  # Returns a PromptPayload value object ready for either LLM adapter.
+  def payload: () -> Llm::PromptPayload
+
+  def system_prompt: () -> String
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader active_categories: Array[Category]
+  attr_reader boundary: Llm::UntrustedTextBlock
+
+  # PROD-WR-04: the delimiter explanation, cache-safe (constant prefix only).
+  def boundary_instruction: () -> String
+
+  def user_message: () -> String
+
+  # B6-WR-04: the collapse-and-bound pair the enclosure was shipped without.
+  # Both return "" when the underlying value is nil — Llm::PromptLabel.collapse
+  # is total, which is what makes the `[0, MAX].to_s` chain a String.
+  def bounded_title: () -> String
+  def bounded_summary: () -> String
+end

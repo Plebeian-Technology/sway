@@ -1,0 +1,4 @@
+# Phase 38: storageState.json contains an authenticated session cookie.
+# Treat as a secret. Never commit.
+storageState.json
+*.json

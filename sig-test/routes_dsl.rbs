@@ -1,0 +1,16 @@
+# RSpec controller specs draw routes inline via `routes.draw do ... end`,
+# whose block self is `ActionDispatch::Routing::Mapper`. Mapper inherits
+# `get`/`post`/etc from HttpHelpers, but the rbs_collection signature does
+# not pick up that include cleanly — declare permissive overloads here so
+# `get "/path" => "controller#action"` type-checks.
+module ActionDispatch
+  module Routing
+    class Mapper
+      def get: (*untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
+      def post: (*untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
+      def put: (*untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
+      def patch: (*untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
+      def delete: (*untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
+    end
+  end
+end

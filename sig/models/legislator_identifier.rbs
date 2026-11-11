@@ -1,0 +1,14 @@
+# Manual extensions for LegislatorIdentifier. Schema-derived accessors live in
+# the rbs_rails-generated sig/rbs_rails/app/models/legislator_identifier.rbs;
+# this file holds the hand-written class/instance methods.
+class LegislatorIdentifier < ApplicationRecord
+    def self.legislator_for: (sway_locale: SwayLocale, identity: LegislatorIdentity) -> Legislator?
+
+    def self.record!: (legislator: Legislator, identity: LegislatorIdentity) -> LegislatorIdentifier
+
+    def identity: -> LegislatorIdentity
+
+    private
+
+    def locale_matches_the_legislator: -> void
+end

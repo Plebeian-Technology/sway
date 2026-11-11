@@ -1,0 +1,25 @@
+# RBS signature for Testimony::DomainCountsWriter (Phase 67 Plan 04, Task 3)
+# — writes each bill's contribution to the learned sending-service-domain
+# counts, replacing what was there. Sets no label, anywhere.
+module Testimony
+  class DomainCountsWriter
+    type contribution = {sender_count: Integer, letter_count: Integer, machine_sent_letter_count: Integer}
+
+    def self.call: (bill: Bill, letters: Array[Hash[String, untyped]]) -> Hash[String, contribution]
+
+    @bill: Bill
+    @letters: Array[Hash[String, untyped]]
+
+    def initialize: (bill: Bill, letters: Array[Hash[String, untyped]]) -> void
+    def call: () -> Hash[String, contribution]
+
+    private
+
+    # The off-ramp: a row that is both unlabelled and unreferenced is nobody's
+    # decision, so it is deleted inside the same transaction. A label is an
+    # operator's decision and survives.
+    def collect_unlabelled_orphans: () -> void
+
+    def build_contributions: () -> Hash[String, contribution]
+  end
+end

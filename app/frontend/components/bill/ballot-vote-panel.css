@@ -1,0 +1,167 @@
+/* The Ballot's vote control. Every value is a theme token, so the control
+   re-skins with light/dark and never hard-codes a colour. */
+
+.bal-panel {
+    border-top: var(--rule-thick) var(--rule-style) var(--border-strong);
+    padding-top: calc(var(--space-unit) * 3);
+    margin-top: calc(var(--space-unit) * 7);
+}
+
+.bal-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: calc(var(--space-unit) * 2.5);
+}
+
+.bal-title {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--type-h3);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.bal-instruction {
+    font-size: var(--type-small);
+    font-style: italic;
+    color: var(--muted-foreground);
+    margin: 0;
+}
+
+.bal-rows {
+    margin-top: calc(var(--space-unit) * 2);
+}
+
+/* A ballot line. Full-bleed hit target: the whole row is the button, as on a
+   real ballot where the whole line is the choice. */
+.bal-row {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 4);
+    width: 100%;
+    padding: calc(var(--space-unit) * 3.5) calc(var(--space-unit) * 1);
+    background: none;
+    border: none;
+    border-bottom: var(--rule-hair) var(--rule-style) var(--border);
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.bal-row:disabled {
+    cursor: default;
+}
+
+/* Hovering previews the fill — the pencil hovering over the oval. */
+.bal-row:not(:disabled):hover .bal-oval {
+    box-shadow: inset 0 0 0 3px var(--border);
+}
+
+.bal-row:focus-visible {
+    outline: var(--rule-thick) var(--rule-style) var(--ring);
+    outline-offset: 2px;
+}
+
+.bal-oval {
+    flex: none;
+    width: 52px;
+    height: 30px;
+    border: 2.5px var(--rule-style) var(--border-strong);
+    border-radius: 50%;
+    background: var(--input);
+    transition: background var(--dur-2) var(--ease-out);
+}
+
+/* Cast: the oval is filled solid, the way a scanner reads it. */
+.bal-row[aria-pressed="true"] .bal-oval {
+    background: var(--foreground);
+    box-shadow: none;
+}
+
+.bal-choice {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.bal-word {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--type-h3);
+    line-height: 1.05;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.bal-sub {
+    font-size: var(--type-small);
+    color: var(--muted-foreground);
+}
+
+/* Only rendered once the vote is on the record (see BallotVotePanel). */
+.bal-stamp {
+    margin-left: auto;
+    flex: none;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--type-small);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 2px var(--rule-style) var(--accent);
+    border-radius: var(--radius-sm);
+    padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 3);
+    transform: rotate(-4deg);
+}
+
+.bal-receipt,
+.bal-pending,
+.bal-offline {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 2);
+    margin: calc(var(--space-unit) * 3) 0 0;
+    font-size: var(--type-small);
+}
+
+.bal-receipt {
+    color: var(--muted-foreground);
+}
+
+.bal-receipt b {
+    font-weight: var(--weight-display);
+    color: var(--foreground);
+}
+
+.bal-spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.bal-offline {
+    border-left: var(--rule-thick) var(--rule-style) var(--accent);
+    padding-left: calc(var(--space-unit) * 3);
+    font-weight: var(--weight-medium);
+}
+
+@media (max-width: 480px) {
+    .bal-row {
+        flex-wrap: wrap;
+        gap: calc(var(--space-unit) * 3);
+    }
+
+    /* On a phone the stamp drops under the choice rather than squeezing it. */
+    .bal-stamp {
+        margin-left: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bal-oval {
+        transition: none;
+    }
+}

@@ -1,0 +1,29 @@
+default: &default
+    # Extends the graceful shutdown window to 120s so long-running stages
+    # (extract_text + summarize) have a chance to finish their current bill
+    # before SolidQueue SIGTERMs the worker.
+    shutdown_timeout: 120
+    dispatchers:
+        - polling_interval: 1
+          batch_size: 500
+    workers:
+        # Ordered list, not "*". Solid Queue polls queues in list order,
+        # so the user-facing `default` queue (SMS, registration, native push,
+        # voting reminders) always drains before the heavy `background` queue
+        # (pipeline, sweeps, summaries). Framework jobs (ActionMailer delivery,
+        # ActiveStorage analyze/purge) resolve to `default` under load_defaults
+        # 7.1, so they are covered. ANY new queue_as name MUST be appended here
+        # or its jobs never run — spec/config/queue_spec.rb enforces this.
+        - queues: [default, background]
+          threads: 3
+          processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+          polling_interval: 1
+
+development:
+    <<: *default
+
+test:
+    <<: *default
+
+production:
+    <<: *default

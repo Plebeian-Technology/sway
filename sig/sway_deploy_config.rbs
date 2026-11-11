@@ -1,0 +1,37 @@
+module SwayDeployConfig
+  @file_values: Hash[String, String]
+
+  class MissingValue < StandardError
+  end
+
+  FILE_VARIABLE: String
+  REAL_FILE: String
+  TEST_FILE: String
+  EXAMPLE_FILE: String
+
+  # nil when no source has the value. Only for the places where absence is a
+  # real answer, such as a standby machine nobody has set up.
+  def self.[]: (String name) -> String?
+
+  # Raises MissingValue rather than handing back a guess.
+  def self.fetch: (String name) -> String
+
+  def self.require_values!: (*String names) -> bool
+
+  # nil when no file exists, which is normal — every value may come from the
+  # environment instead.
+  def self.file: () -> String?
+
+  def self.root: () -> String
+
+  def self.reload!: () -> singleton(SwayDeployConfig)
+
+  private
+
+  def self.file_values: () -> Hash[String, String]
+  def self.parse: (String? path) -> Hash[String, String]
+  def self.unquote: (String value) -> String
+  def self.blank?: (String? value) -> bool
+  def self.test_environment?: () -> bool
+  def self.missing_message: (*String names) -> String
+end

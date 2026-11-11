@@ -1,0 +1,13 @@
+# The members of the two sentry-ruby classes this branch touches that the gem
+# collection's sig does not carry.
+# @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
+module Sentry
+  class HTTPTransport
+    def initialize: (untyped configuration) -> void
+    def should_compress?: (untyped data) -> bool
+  end
+end
+
+class SwayGzipOnlyTransport < Sentry::HTTPTransport
+  def should_compress?: (untyped data) -> bool
+end

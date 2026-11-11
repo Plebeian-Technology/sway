@@ -1,0 +1,15 @@
+# Spec-only declarations for spec/scripts/dip_vite_test_build_spec.rb.
+#
+# Steep cannot see a `let` or a `def` inside a describe block, so each helper
+# is declared here. compose_services is NOT declared again: it already has the
+# same signature in sig-test/config/compose_secrets_root_spec.rbs, and a
+# second declaration of one name on class Object is a Steep error.
+class Object
+  def vite_build_script: () -> Pathname
+
+  def container_entrypoint: () -> Pathname
+
+  def hash_of: (untyped root) -> String
+
+  def with_frontend_tree: () { (String dir) -> void } -> void
+end

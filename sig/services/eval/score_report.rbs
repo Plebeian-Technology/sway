@@ -1,0 +1,113 @@
+# RBS sig for Eval::ScoreReport — see app/services/eval/score_report.rb.
+module Eval
+  class ScoreReport
+    DIMENSIONS: Hash[String, Array[String]]
+    SCORE_VALUES: Array[Integer]
+
+    class DimensionDistribution
+      attr_reader answer_type: String
+      attr_reader dimension: String
+      attr_reader candidate_label: String
+      attr_reader counts: Hash[Integer, Integer]
+      attr_reader admitted_count: Integer
+
+      def initialize: (answer_type: String, dimension: String, candidate_label: String, counts: Hash[Integer, Integer], admitted_count: Integer) -> void
+      def self.new: (answer_type: String, dimension: String, candidate_label: String, counts: Hash[Integer, Integer], admitted_count: Integer) -> Eval::ScoreReport::DimensionDistribution
+    end
+
+    class LatencyRecord
+      attr_reader external_id: String
+      attr_reader answer_type: String
+      attr_reader candidate: String
+      attr_reader latency_ms: Integer
+
+      def initialize: (external_id: String, answer_type: String, candidate: String, latency_ms: Integer) -> void
+      def self.new: (external_id: String, answer_type: String, candidate: String, latency_ms: Integer) -> Eval::ScoreReport::LatencyRecord
+    end
+
+    class ExclusionRecord
+      attr_reader external_id: String
+      attr_reader answer_type: String
+      attr_reader candidate: String
+      attr_reader reason: String
+
+      def initialize: (external_id: String, answer_type: String, candidate: String, reason: String) -> void
+      def self.new: (external_id: String, answer_type: String, candidate: String, reason: String) -> Eval::ScoreReport::ExclusionRecord
+    end
+
+    class Share
+      class ZeroTotalError < StandardError
+      end
+
+      attr_reader count: Integer
+      attr_reader total: Integer
+
+      def initialize: (count: Integer, total: Integer) -> void
+      def self.new: (count: Integer, total: Integer) -> Eval::ScoreReport::Share
+      def to_percent_s: () -> String
+    end
+
+    class Result
+      attr_reader dimension_distributions: Array[Eval::ScoreReport::DimensionDistribution]
+      attr_reader schema_failure_count: Integer
+      attr_reader latency_records: Array[Eval::ScoreReport::LatencyRecord]
+      attr_reader unchecked_share: Eval::ScoreReport::Share
+      attr_reader source_read_share: Eval::ScoreReport::Share
+      attr_reader same_session_share: Eval::ScoreReport::Share
+      attr_reader excluded: Array[Eval::ScoreReport::ExclusionRecord]
+
+      def initialize: (
+        dimension_distributions: Array[Eval::ScoreReport::DimensionDistribution],
+        schema_failure_count: Integer,
+        latency_records: Array[Eval::ScoreReport::LatencyRecord],
+        unchecked_share: Eval::ScoreReport::Share,
+        source_read_share: Eval::ScoreReport::Share,
+        same_session_share: Eval::ScoreReport::Share,
+        excluded: Array[Eval::ScoreReport::ExclusionRecord]
+      ) -> void
+      def self.new: (
+        dimension_distributions: Array[Eval::ScoreReport::DimensionDistribution],
+        schema_failure_count: Integer,
+        latency_records: Array[Eval::ScoreReport::LatencyRecord],
+        unchecked_share: Eval::ScoreReport::Share,
+        source_read_share: Eval::ScoreReport::Share,
+        same_session_share: Eval::ScoreReport::Share,
+        excluded: Array[Eval::ScoreReport::ExclusionRecord]
+      ) -> Eval::ScoreReport::Result
+      def to_markdown: () -> String
+    end
+
+    def self.call: (manifest: Hash[String, untyped], answers: Array[Hash[String, untyped]], verdicts: Array[Hash[String, untyped]], ?references: Array[Hash[String, untyped]]) -> Eval::ScoreReport::Result
+    def self.load_fixtures: (Pathname root) -> Array[Hash[String, untyped]]
+    def self.load_fixture_file: (Pathname root, String path) -> Hash[String, untyped]
+
+    @manifest: Hash[String, untyped]
+    @answers: Array[Hash[String, untyped]]
+    @verdicts: Array[Hash[String, untyped]]
+    @references: Array[Hash[String, untyped]]
+    @answers_index: Hash[[String, String, String], Hash[String, untyped]]
+    @partitioned_verdicts: [Array[[Hash[String, untyped], Hash[String, untyped]]], Array[Eval::ScoreReport::ExclusionRecord]]
+
+    def initialize: (manifest: Hash[String, untyped], answers: Array[Hash[String, untyped]], verdicts: Array[Hash[String, untyped]], references: Array[Hash[String, untyped]]) -> void
+    def call: () -> Eval::ScoreReport::Result
+
+    private
+
+    attr_reader manifest: Hash[String, untyped]
+    attr_reader answers: Array[Hash[String, untyped]]
+    attr_reader verdicts: Array[Hash[String, untyped]]
+    attr_reader references: Array[Hash[String, untyped]]
+
+    def answers_index: () -> Hash[[String, String, String], Hash[String, untyped]]
+    def identity_key: (Hash[String, untyped] record) -> [String, String, String]
+    def partitioned_verdicts: () -> [Array[[Hash[String, untyped], Hash[String, untyped]]], Array[Eval::ScoreReport::ExclusionRecord]]
+    def admitted_pairs: () -> Array[[Hash[String, untyped], Hash[String, untyped]]]
+    def excluded: () -> Array[Eval::ScoreReport::ExclusionRecord]
+    def dimension_distributions: () -> Array[Eval::ScoreReport::DimensionDistribution]
+    def build_distribution: (String answer_type, String dimension, Array[[String, Hash[String, untyped], Hash[String, untyped]]] rows) -> Eval::ScoreReport::DimensionDistribution
+    def schema_failure_count: () -> Integer
+    def schema_failure?: (Hash[String, untyped] answer) -> bool
+    def latency_records: () -> Array[Eval::ScoreReport::LatencyRecord]
+    def share_where: () { (Hash[String, untyped] verdict, Hash[String, untyped] answer) -> boolish } -> Eval::ScoreReport::Share
+  end
+end

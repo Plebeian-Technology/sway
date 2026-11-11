@@ -1,0 +1,66 @@
+# Spec-only declarations for spec/scripts/dip_verify_cleanup_spec.rb.
+#
+# Steep cannot see a `let`, so each helper is declared here. Named
+# verify_script / verify_runnable_lines, not script / runnable_lines, because
+# sig-test/scripts/dip_rspec_cleanup_spec.rbs already declares those two names
+# on the same class Object and a second declaration of the same name is a
+# Steep error.
+class Object
+  def verify_script: () -> String
+
+  def verify_runnable_lines: () -> String
+
+  # 64-07: `def` inside a describe block is still invisible to Steep the same
+  # way a `let` is — declared here for the same reason as the two above.
+  def run_lane_case_block: (String lane_name) -> String?
+
+  def run_lane_body: () -> String?
+
+  # 64-08: same reason as the two above. Never nil -- see the method's own
+  # comment for why a nilable return would break every caller under Steep.
+  def declared_lane_names: () -> Array[String]
+
+  # 64-08: a `let`-backed value, invisible to Steep the same way
+  # verify_script/verify_runnable_lines already are.
+  def pinned_lane_names: () -> Array[String]
+
+  # Never nil -- an empty array is the "nothing parsed" signal, for the same
+  # reason declared_lane_names above returns one.
+  def run_lane_case_labels: () -> Array[String]
+
+  # Entries of one named index-aligned lane array. Empty when that array is
+  # not found, same signal as above.
+  def lane_array_entries: (String name) -> Array[String]
+
+  # nil when the guarded write_summary call is not found in the script.
+  def final_guard: () -> String?
+
+  def docker_available?: () -> bool
+
+  # Empty when the arrays could not be expanded, the same signal as
+  # declared_lane_names.
+  def expanded_lane_reruns: (?Hash[String, String] env) -> Array[String]
+
+  def reruns: () -> Array[String]
+
+  # Empty when the function is not found, the same signal as the two above.
+  def container_age_function: () -> String
+
+  def sweep_body: () -> String
+
+  # Empty when the block is not found, the same signal as the two above.
+  def js_worker_flag_block: () -> String
+
+  # nil when the block could not be run; the flag it computed otherwise.
+  def js_worker_flag_for: (String? value) -> String?
+
+  # Empty when the block is not found, the same signal as js_worker_flag_block.
+  def shard_counts_block: () -> String
+
+  # stdout, stderr and the exit status of the shard block run under env; nil status means the process was killed.
+  def shard_counts_for: (Hash[String, String] env) -> [String, String, Integer?]
+
+  def shard_arguments_in: (Array[String] reruns) -> Array[String]
+
+  def overrides: () -> Hash[String, String]
+end

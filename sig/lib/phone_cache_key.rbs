@@ -1,0 +1,12 @@
+module PhoneCacheKey
+  class MissingHmacSecretError < StandardError
+    MESSAGE: String
+
+    def initialize: (?String message) -> void
+  end
+
+  ANONYMOUS: String
+
+  def self.hmac_secret_key: () -> String?
+  def self.digest: (String | Symbol | nil phone) -> String
+end

@@ -1,0 +1,55 @@
+#!/usr/bin/env sh
+# Make the API token that the rustrak MCP server reads.
+#
+# The local error collector must be running: start it with `dip run dev`.
+# Signs in with the dashboard account that dev.sh made, asks the collector for
+# a token, and writes it where mise.toml and .mcp.json expect it.
+#
+# Safe to re-run. It stops when the file is already there, so it never makes a
+# second token nobody uses.
+set -eu
+
+root="$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)"
+cd "$root"
+
+key_file=config/rustrak_mcp.key
+admin_file=config/rustrak_admin.key
+url="http://127.0.0.1:${RUSTRAK_PORT:-8482}"
+
+if [ -f "$key_file" ]; then
+    echo "$key_file is already there. Delete it to make a new token."
+    exit 0
+fi
+
+if [ ! -f "$admin_file" ]; then
+    echo "$admin_file is missing. Run 'dip run dev' once to make it." >&2
+    exit 1
+fi
+
+email="$(cut -d: -f1 "$admin_file")"
+# f2- and not f2, so a password that contains a colon survives.
+password="$(cut -d: -f2- "$admin_file")"
+
+jar="$(mktemp)"
+trap 'rm -f "$jar"' EXIT
+
+if ! curl -sf -c "$jar" -X POST "$url/auth/login" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$email\",\"password\":\"$password\"}" -o /dev/null; then
+    echo "Could not sign in to $url. Is the collector running?" >&2
+    exit 1
+fi
+
+curl -sf -b "$jar" -X POST "$url/api/tokens" \
+    -H 'Content-Type: application/json' \
+    -d '{"description":"Claude Code MCP"}' |
+    sed -n 's/.*"token":"\([^"]*\)".*/\1/p' >"$key_file"
+
+if [ ! -s "$key_file" ]; then
+    rm -f "$key_file"
+    echo "The collector returned no token." >&2
+    exit 1
+fi
+
+chmod 600 "$key_file"
+echo "Wrote $key_file. Open a new shell so mise exports RUSTRAK_API_TOKEN."

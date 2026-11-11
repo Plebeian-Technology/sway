@@ -1,0 +1,55 @@
+# PROD-WR-11 / B4-CR-05: unforgeable enclosure for externally-authored text
+# embedded in an LLM prompt. Shared by BillSummaryPromptBuilder,
+# BillPositionsPromptBuilder, BillCategoryPromptBuilder and
+# Testimony::ClassificationPromptBuilder so the control has ONE
+# implementation.
+module Llm
+  class UntrustedTextBlock
+    FENCE_REPLACEMENT: String
+    BOUNDARY_MARKER_REPLACEMENT: String
+    FENCE_PATTERN: Regexp
+
+    # B1-IN-02: every enclosed content class, keyed by name. A block redacts
+    # EVERY registered prefix, not only its own, so an unregistered prefix is
+    # one the sibling blocks in the same prompt cannot neutralize.
+    PREFIXES: Hash[Symbol, String]
+    ALL_PREFIXES_PATTERN: Regexp
+
+    @prefix: String
+    @delimiter: String
+
+    attr_reader prefix: String
+
+    # "<prefix>-<16 hex chars>", fresh per instance.
+    attr_reader delimiter: String
+
+    # The production entry point. Raises KeyError on an unregistered key.
+    def self.for: (Symbol kind) -> UntrustedTextBlock
+
+    # Raises ArgumentError when the prefix occurs (case-insensitively) in
+    # BOUNDARY_MARKER_REPLACEMENT — the redaction would reintroduce it. Run
+    # over the whole registry at class-load.
+    def self.validate_prefix!: (String prefix) -> void
+
+    # Raises ArgumentError when the prefix is not a PREFIXES value.
+    def initialize: (String prefix) -> void
+
+    # Encloses text between the opening and closing delimiter tags, with
+    # fences and delimiter-shaped text neutralized. Input must be valid UTF-8.
+    #
+    # A20-01: the neutralize GROWS the body — 18 characters of prefix become 26
+    # of replacement — so a caller with a character budget must call
+    # .neutralize before it measures. .neutralize is idempotent, so the second
+    # pass here keeps the budget the caller took.
+    def wrap: (String text) -> String
+
+    # The cache-safe explanation of the delimiter: names the CONSTANT prefix
+    # only, never the per-instance random suffix (PROD-WR-04).
+    def instruction: (subject: String, provenance: String) -> String
+
+    # A20-01: a CLASS method, because it reads no instance state and every
+    # block scrubs the whole registry. Public so a caller can put its bound in
+    # the units the model will actually receive. Input must be valid UTF-8.
+    def self.neutralize: (String text) -> String
+  end
+end

@@ -1,0 +1,5 @@
+# Spec-only helper module (spec/support/concurrency_helpers.rb), included
+# into every example group via RSpec.configure.
+module ConcurrencyHelpers
+  def seed_active_pipeline_run: (?bill: Bill?, ?status: String) -> LegislationPipelineRun
+end

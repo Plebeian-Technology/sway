@@ -1,0 +1,25 @@
+module MobileFormatNegotiation
+  extend ActiveSupport::Concern
+
+  def render_inertia_or_json: (page: untyped, props: untyped) -> untyped
+  def redirect_or_json: (String path, ?flash_message: String?, ?status: Symbol) -> untyped
+  def mobile_api_request?: () -> bool
+  def bearer_authorization_header?: () -> bool
+  def resolve_inertia_props: (untyped props) -> untyped
+  def requested_optional_prop_names: () -> Array[String]
+  def vary_json_omission_header: () -> void
+  def resolve_inertia_prop_value: (untyped props) -> untyped
+  OMITTABLE_OPTIONAL_PROPS: Array[String]
+
+  # Rails controller methods invoked from inside the concern. Steep needs
+  # these declared on the module because the concern has no `self : ...`
+  # constraint binding it to ApplicationController. Public so the overload
+  # picked at the call site is the permissive one (the inherited rbs_collection
+  # signature for redirect_to is private and rejects flash kwargs).
+  def render: (*untyped args, **untyped kwargs) -> untyped
+  def redirect_to: (*untyped args, **untyped kwargs) -> untyped
+  def request: -> untyped
+  def response: -> untyped
+  def params: -> untyped
+  def flash: -> untyped
+end

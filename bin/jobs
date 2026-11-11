@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+# @lat: [[deploy-configuration#What the deploy file decides#Why Solid Queue runs in async supervisor mode with single-thread OpenMP]]
+ENV["SOLID_QUEUE_SUPERVISOR_MODE"] ||= "async"
+
+require_relative "../config/environment"
+require "solid_queue/cli"
+
+SolidQueue::Cli.start(ARGV)

@@ -1,0 +1,26 @@
+# @lat: [[rbs-signatures#Why a serialized column's generated signature is wrong]]
+class ReplicationHeartbeat < ApplicationRecord
+  SINGLETON_ID: Integer
+
+  attr_accessor checked_at: ActiveSupport::TimeWithZone
+
+  # Absent (nil) means no scheduled run has ever read a number (D-09).
+  attr_accessor last_replica_txid: Integer?
+
+  attr_accessor consecutive_stalls: Integer
+  attr_accessor consecutive_read_failures: Integer
+  attr_accessor consecutive_empty_listings: Integer
+  attr_accessor stalled_since: ActiveSupport::TimeWithZone?
+
+  attr_reader id: Integer
+  attr_reader created_at: ActiveSupport::TimeWithZone
+  attr_reader updated_at: ActiveSupport::TimeWithZone
+
+  # find_or_create_by! is already declared generically by
+  # ActiveRecord::Base::ClassMethods (extended in the rbs_rails generated
+  # file), so it is not redeclared here — unlike AdminSetting's
+  # first_or_create!, which is not in that generic module.
+  def self.singleton: () -> ReplicationHeartbeat
+
+  private def enforce_single_row: () -> void
+end

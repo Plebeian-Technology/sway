@@ -1,0 +1,25 @@
+# The one rule for turning a supplemental-testimony request into
+# attributes, shared by GenerateBillSummaryService (both generate actions) and
+# UpdateSupplementalTestimonyService (the Clear affordance).
+class SupplementalTestimonyWrite
+  # The value written for either column: the paste, the explicit clear's nil,
+  # or (D-WR-01) the retraction-stamped draft array.
+  type write_value = String | Array[BillLlmProvisioning::draft_entry] | nil
+
+  # {} means "leave the stored value untouched" — a blank value NEVER destroys
+  # a stored one (B2-WR-03). {supplemental_testimony: nil} is the explicit clear.
+  #
+  # D-WR-01: `provisioning` is REQUIRED, not defaulted. A paste that REPLACES
+  # stored testimony also retracts the drafts standing on it, which cannot be
+  # decided without the row, and a third caller quietly omitting it is the
+  # one-call-site-of-two shape this class exists to prevent.
+  def self.attrs: (value: String?, clear: bool, provisioning: BillLlmProvisioning) -> Hash[Symbol, write_value]
+
+  # D-WR-01: the draft_org_positions key when the incoming paste replaces the
+  # stored testimony (rather than appending to it) and drafts are standing on
+  # it; {} otherwise. Private — the rule has exactly one entry point.
+  def self.evidence_retraction_attrs: (String value, BillLlmProvisioning provisioning) -> Hash[Symbol, Array[BillLlmProvisioning::draft_entry]?]
+
+  # @lat: [[bill-creator-summary-tab#Supplemental testimony is replaced, never appended]]
+  def self.clear_retraction_attrs: (BillLlmProvisioning provisioning) -> Hash[Symbol, Array[BillLlmProvisioning::draft_entry]?]
+end

@@ -1,0 +1,63 @@
+module Testimony
+  class CleanAndGroupService
+    ARTIFACT_VERSION: Integer
+
+    TRANSIENT_LETTER_KEYS: Array[String]
+    STEP_ORDER: Array[Symbol]
+
+    @bill: Bill
+    @bill_run: PipelineRunBill?
+    @run: LegislationPipelineRun?
+    @classifier: Testimony::SourceKindClassifier?
+    @stance_classifier: Testimony::StanceClassifier?
+    @entity_extractor: Testimony::OrganizationEntityExtractor?
+    @manual_stance_overrides: Hash[String | [String, String], Hash[String, untyped] | String]?
+
+    def self.call: (
+      bill: Bill,
+      ?bill_run: PipelineRunBill?,
+      ?run: LegislationPipelineRun?,
+      ?classifier: Testimony::SourceKindClassifier?,
+      ?stance_classifier: Testimony::StanceClassifier?,
+      ?entity_extractor: Testimony::OrganizationEntityExtractor?,
+    ) -> Hash[String, untyped]
+
+    def initialize: (
+      bill: Bill,
+      ?bill_run: PipelineRunBill?,
+      ?run: LegislationPipelineRun?,
+      ?classifier: Testimony::SourceKindClassifier?,
+      ?stance_classifier: Testimony::StanceClassifier?,
+      ?entity_extractor: Testimony::OrganizationEntityExtractor?,
+    ) -> void
+
+    def call: () -> Hash[String, untyped]
+
+    private
+
+    attr_reader bill: Bill
+    attr_reader bill_run: PipelineRunBill?
+    attr_reader run: LegislationPipelineRun?
+
+    def run_step: (Symbol step, String text, untyped letters, Array[Hash[String, untyped]] groups) -> [String, untyped, Array[Hash[String, untyped]], Hash[String, untyped]]
+
+    def repair_characters: (String text, Array[untyped] letters, Array[Hash[String, untyped]] groups) -> [String, Array[untyped], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def remove_boilerplate: (String text, Array[untyped] letters, Array[Hash[String, untyped]] groups) -> [String, Array[untyped], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def split_into_letters: (String text, Array[untyped] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Testimony::LetterSplitter::Entry], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def read_senders: (String text, Array[Testimony::LetterSplitter::Entry] entries, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def mark_duplicate_letters: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def group_by_reuse: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, untyped]]
+    def public_body_letter?: (String text, Hash[String, untyped] letter) -> bool
+    def overlong_letter?: (String text, Hash[String, untyped] letter) -> bool
+    def mark_campaign_origin: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def write_domain_counts: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, untyped]]
+    def classify_source_kind: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def classify_stance: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, Integer]]
+    def extract_manual_stance_overrides: (untyped cleaned_testimony) -> Hash[String | [String, String], Hash[String, untyped] | String]
+    def current_manual_stance_overrides: () -> Hash[String | [String, String], Hash[String, untyped] | String]
+    def apply_manual_stance_overrides: (String text, Array[Hash[String, untyped]] letters) -> Array[Hash[String, untyped]]
+    def recompute_stance_counts: (Array[Hash[String, untyped]] letters) -> Hash[String, Integer]
+    def letter_body_digest: (String text, Hash[String, untyped] letter) -> String?
+    def extract_organization_entities: (String text, Array[Hash[String, untyped]] letters, Array[Hash[String, untyped]] groups) -> [String, Array[Hash[String, untyped]], Array[Hash[String, untyped]], Hash[String, Integer]]
+  end
+end

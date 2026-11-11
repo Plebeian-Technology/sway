@@ -1,0 +1,17 @@
+# Hand-written, kept OUTSIDE sig/lib/sway/settings/rate_limits.rbs on
+# purpose: that file is committed verbatim from RateLimits.to_rbs, and
+# to_rbs only generates attr_config getters/setters, never a plain
+# class-body constant. RBS merges a class's members across files, so this
+# small file adds the one member to_rbs cannot produce without disturbing
+# the generated file's exact-match contract
+# (spec/lib/sway/settings_signatures_spec.rb).
+module Sway
+  module Settings
+    class RateLimits
+      # WR-03: the words the raw-env typo check (see the class's own
+      # on_load) recognizes as an intentional true or false, distinct from
+      # anything else, which raises.
+      RECOGNIZED_BOOLEAN_WORDS: Array[String]
+    end
+  end
+end

@@ -1,0 +1,13 @@
+module CongressCorpusRegressionSpecHelpers
+  def self.zip_bytes: (Hash[String, String] entries) -> String
+  def self.stream: (String body, ?status: Integer) -> untyped
+end
+
+class CongressCorpusRegressionSpecContext
+  def archive_path: () -> String
+  def archive_url: () -> String
+  def catalog_url: () -> String
+  def catalog: () -> String
+  def xml: () -> String
+  def archive: () -> String
+end

@@ -1,0 +1,53 @@
+# Phase 62 Plan 02 — pure-Ruby scoring engine. Weight/threshold constants are
+# Float/Integer literals per 62-RESEARCH.md Questions 3/5 (copied verbatim).
+class BillInterestingScoreCalculator
+  WEIGHT_VOTE_DEFECTION: Float
+  WEIGHT_VOTE_ABSTENTION: Float
+  WEIGHT_ORG_SPLIT: Float
+  WEIGHT_TIMELINESS: Float
+  WEIGHT_TESTIMONY_ENGAGEMENT: Float
+  FULL_THEORETICAL_MAX: Float
+  LOCAL_THEORETICAL_MAX: Float
+
+  def self.theoretical_max: (bool publishes_legislator_votes) -> Float
+  DEFECTION_MAGNITUDE_CAP: Integer
+  ABSTENTION_RATE_THRESHOLD: Float
+  ABSTENTION_RATE_SATURATION: Float
+  ORG_SPLIT_VOLUME_CAP: Integer
+  TESTIMONY_VOLUME_CAP: Float
+  TESTIMONY_REPEAT_DISCOUNT: Float
+  CLOSE_MARGIN_THRESHOLD: Float
+  TIMELINESS_WINDOW_DAYS: Integer
+
+  @bill: Bill
+  @sway_locale: SwayLocale
+
+  def initialize: (Bill bill) -> void
+
+  def call: () -> BillInterestingScore
+
+  private
+
+  def local_signals: (Integer org_for, Integer org_against) -> Hash[String, (Float | Integer)]
+
+  def full_signals: (Integer org_for, Integer org_against) -> Hash[String, (Float | Integer)]
+
+  def testimony_engagement_metrics: () -> [Float, Integer, Integer, Integer, Integer]
+
+  def testimony_counts: () -> [Integer, Integer, Integer, Integer]
+
+  def real_legislator_votes: () -> Array[LegislatorVote]
+
+  def group_votes_by_bloc: (Array[LegislatorVote] votes) -> Hash[String, {for: Integer, against: Integer}]
+
+  def defection_score: (Hash[String, {for: Integer, against: Integer}] votes_by_bloc) -> Float
+
+  def abstention_score: (Integer abstain_count, Integer total_real_cast) -> Float
+
+  def org_position_counts: () -> [Integer, Integer]
+
+  def org_split_score: (Integer for_count, Integer against_count) -> Float
+
+  def timeliness_score: () -> Float
+
+end

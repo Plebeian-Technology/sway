@@ -1,0 +1,14 @@
+# The one place an Anthropic::Client is constructed. `untyped` return because
+# the official anthropic gem ships no RBS sigs — see sig/anthropic.rbs for the
+# minimal hand-written stub.
+module Llm
+  module ClaudeConnection
+    DEFAULT_MAX_RETRIES: Integer
+    DEFAULT_TIMEOUT_SECONDS: Integer
+    BATCH_RESULTS_TIMEOUT_SECONDS: Integer
+
+    def self.build: () -> untyped
+
+    private def self.api_key: () -> String
+  end
+end

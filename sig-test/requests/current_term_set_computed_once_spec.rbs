@@ -1,0 +1,9 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  # The candidate queries the given block issues, split into those narrowed by
+  # legislator and those covering the whole set.
+  def candidate_queries_during: () { () -> void } -> [Array[String], Array[String]]
+
+  # How many LegislatorTerm rows the given block reads.
+  def legislator_term_rows_during: () { () -> void } -> Integer
+end

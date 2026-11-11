@@ -1,0 +1,6 @@
+# @lat: [[boot-time-backfills#Only the web server process enqueues]]
+module Sway
+  module BootEnqueue
+    def self.web_server_process?: () -> bool
+  end
+end

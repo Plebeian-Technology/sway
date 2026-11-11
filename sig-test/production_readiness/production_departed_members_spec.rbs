@@ -1,0 +1,18 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def roster_entries: () -> Array[Hash[String, untyped]]
+
+  # The roster entries for people who have left, which the seeder may correct
+  # and retire terms for.
+  def departed_entries: () -> Array[Hash[String, untyped]]
+
+  def seed_congress!: () -> void
+
+  def seed_all_locales!: () -> void
+
+  # The (start year, end year) pairs a person holds in the database, and the
+  # ones the published history proves. Compared directly, so both are sorted.
+  def stored_spans: (String external_id) -> Array[[Integer, Integer]]
+
+  def proven_spans: (Hash[String, untyped] entry) -> Array[[Integer, Integer]]
+end

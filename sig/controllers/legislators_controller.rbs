@@ -1,0 +1,42 @@
+class LegislatorsController < ApplicationController
+    @legislator: untyped
+
+    @json_legislators: Array[Hash[Symbol, untyped]]
+
+    # GET /legislators or /legislators.json
+    def index: -> untyped
+
+    def show: -> untyped
+
+    private
+
+    def set_legislator: -> untyped
+
+    def waiting_for_new_term?: -> bool
+
+    def json_legislators: -> Array[Hash[Symbol, untyped]]
+
+    def build_json_legislators: -> Array[Hash[Symbol, untyped]]
+
+    def legislator_with_score: (Legislator legislator) -> untyped
+
+    def bill_of_the_month_votes_for: (Legislator legislator) -> Array[Hash[Symbol, untyped]]
+
+    def legislator_score_payload: (UserLegislator user_legislator, ?historical_score_explanations: Array[HistoricalScoreExplanation]?) -> untyped
+
+    def user_legislator_score_pair: (UserLegislator user_legislator) -> Hash[Symbol, untyped]
+
+    def current_term_score_for: (UserLegislator user_legislator) -> UserLegislatorTermScore?
+
+    def history_payload: -> untyped
+
+    def history_prop: -> Hash[Symbol, untyped]
+
+    def legislators_tab_param: -> untyped
+
+    def legislators_search_param: -> untyped
+
+    def forced_history_error_attempt: -> Integer?
+
+    def requesting_history_partial_reload?: -> bool
+end

@@ -1,0 +1,68 @@
+# Hand-written RBS for scripts/github_wiki_builder.rb.
+module Sway
+  class GitHubWikiBuilder
+    DEFAULT_REPO: String
+    DEFAULT_BRANCH: String
+    ROOT_DOC: String
+    HOME_SLUG: String
+    SIDEBAR_FILE: String
+
+    FRONTMATTER_PATTERN: Regexp
+    FENCE_LINE_PATTERN: Regexp
+    ESCAPED_WIKI_LINK_PATTERN: Regexp
+    CODE_WRAPPED_WIKI_LINK_PATTERN: Regexp
+    WIKI_LINK_PATTERN: Regexp
+    MARKDOWN_LINK_PATTERN: Regexp
+
+    @root: String
+    @repo: String
+    @branch: String
+    @source_files: Array[String]?
+    @slug_by_file: Hash[String, String]?
+    @file_by_stem: Hash[String, Array[String]]?
+
+    def initialize: (untyped root, ?repo: String, ?branch: String) -> void
+
+    def source_files: () -> Array[String]
+
+    def slug_for: (String relative_path) -> String
+
+    def render_page: (String relative_path) -> String
+
+    def render_sidebar: () -> String
+
+    def build: (untyped output_dir) -> Array[String]
+
+    private
+
+    def discover_source_files: () -> Array[String]
+
+    def git_tracked_lat_files: () -> Array[String]
+
+    def filesystem_lat_files: () -> Array[String]
+
+    def excluded_lat_path?: (String path) -> bool
+
+    def file_by_stem: () -> Hash[String, Array[String]]
+
+    def slug_by_file: () -> Hash[String, String]
+
+    def transform_line: (String current_file, String line) -> String
+
+    def resolve_wiki_link: (String current_file, String inner, code_wrapped: bool) -> String
+
+    def resolve_markdown_link: (String current_file, String label, String href) -> String
+
+    def resolve_lat_file: (String current_file, String path_part) -> String?
+
+    def candidate_lat_paths: (String current_file, String path_part) -> Array[String]
+
+    def with_md: (String path) -> String
+
+    def last_fragment_segment: (String fragment) -> String
+
+    def heading_anchor: (String heading) -> String
+
+    def format_markdown_link: (String label, String url, code_wrapped: bool) -> String
+  end
+end

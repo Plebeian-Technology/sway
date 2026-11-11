@@ -1,0 +1,26 @@
+# RBS sig for TestimonyTextExtractor (Phase 63 Plan 02, HEAR-02/D-03).
+# Canonical sig path: sig/services/ (Phase 52 HIGH-R2-2 convention).
+#
+# Thin, OCR-free mutool wrapper — deliberately simpler than mupdf_extractor.rbs:
+# no OCR/tessdata state, no class methods, stateless between calls.
+class TestimonyTextExtractor
+  include PdfSubprocessRunner
+
+  class ExtractionFailed < RuntimeError
+  end
+
+  @pdf_path: String
+
+  def initialize: (String pdf_path) -> void
+
+  def call: () -> String
+
+  private
+
+  def extract_remote: (String base_url) -> String
+
+  # PROD-CR-02: raises ExtractionFailed for BOTH a non-zero mutool exit and
+  # a SystemCallError (absent/unexecutable binary) — the caller's per-attachment
+  # isolation rescues only ExtractionFailed.
+  def run_mutool: (Array[String] args) -> String
+end

@@ -1,0 +1,21 @@
+module Users
+    module Webauthn
+        class RegistrationController < ApplicationController
+            class AlreadyRegistered < StandardError
+            end
+
+            ALREADY_REGISTERED_MESSAGE: String
+
+            def create: -> untyped
+
+            def callback: -> untyped
+
+            private
+
+            def sanitized_user_attributes: (untyped attributes, untyped verified_phone) -> untyped
+
+            def read_attribute: (untyped attributes, untyped key) -> untyped
+
+        end
+    end
+end

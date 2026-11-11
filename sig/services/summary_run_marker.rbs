@@ -1,0 +1,37 @@
+# The vocabulary of BillLlmProvisioning#summary_run_id — which
+# writer owns the row. Three shapes: a bare job_id is a purchase receipt,
+# "run:<job_id>" is one execution's claim on a row it armed (B20-01), and
+# "operator_paste:<uuid>" is a body a human wrote. See the implementation for
+# why this column carries all three rather than a new one per meaning.
+class SummaryRunMarker
+  PREFIX: String
+
+  RUN_CLAIM_PREFIX: String
+
+  # A fresh, per-row marker. Unique per call: summary_run_id is uniquely
+  # indexed WHERE NOT NULL, so a shared sentinel would collide across bills.
+  def self.operator_paste: () -> String
+
+  def self.operator_paste?: (String? value) -> bool
+
+  # B20-01: the claim one execution stamps when it arms a row. Derived from
+  # job_id rather than random, so a worker that comes back after a restart
+  # recognises its own claim and is not locked out of its own run.
+  def self.run_claim: (String job_id) -> String
+
+  def self.run_claim?: (String? value, String job_id) -> bool
+
+  # B22-01: the receipt test, named here because two readers ask it —
+  # GenerateBillSummaryJob's re-entry gate and SummaryRunArmDecision.
+  def self.purchase_receipt?: (String? value, String job_id) -> bool
+
+  BATCH_PREFIX: String
+
+  # @lat: [[llm-summaries#Batch summarisation#What identity arms a batch-submitted row]]
+  def self.batch_run_id: (batch_id: String, bill_id: Integer) -> String
+
+  # The identity a row carries between being claimed and its batch existing.
+  # A batch id cannot name a claim taken before the batch was created, and the
+  # claim has to come first so a contended row is never bought.
+  def self.batch_pending_id: (run_id: Integer, bill_id: Integer) -> String
+end

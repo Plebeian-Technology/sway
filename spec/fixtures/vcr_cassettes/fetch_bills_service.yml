@@ -1,0 +1,95 @@
+---
+http_interactions:
+    - request:
+          method: get
+          uri: https://webapi.legistar.com/v1/baltimore/Matters
+          body:
+              encoding: US-ASCII
+              string: ""
+          headers:
+              User-Agent:
+                  - Faraday v2.0
+              Accept-Encoding:
+                  - gzip,deflate,identity
+              Accept:
+                  - "*/*"
+      response:
+          status:
+              code: 200
+              message: OK
+          headers:
+              Content-Type:
+                  - application/json
+          body:
+              encoding: UTF-8
+              string: |
+                  [
+                    {
+                      "MatterId": 12345,
+                      "MatterFile": "25-0001",
+                      "MatterTitle": "An Ordinance for parity baseline testing.",
+                      "MatterIntroDate": "2025-01-15T00:00:00",
+                      "MatterTypeName": "Ordinance"
+                    }
+                  ]
+          http_version: "1.1"
+      recorded_at: Mon, 12 May 2026 18:30:00 GMT
+    - request:
+          method: get
+          uri: https://webapi.legistar.com/v1/baltimore/Matters/12345/Attachments
+          body:
+              encoding: US-ASCII
+              string: ""
+          headers:
+              User-Agent:
+                  - Faraday v2.0
+              Accept-Encoding:
+                  - gzip,deflate,identity
+              Accept:
+                  - "*/*"
+      response:
+          status:
+              code: 200
+              message: OK
+          headers:
+              Content-Type:
+                  - application/json
+          body:
+              encoding: UTF-8
+              string: |
+                  [
+                    {
+                      "MatterAttachmentId": 67890,
+                      "MatterAttachmentFileName": "bill_25-0001.pdf",
+                      "MatterAttachmentHyperlink": "https://example.invalid/legistar/cassette/bill_25-0001.pdf",
+                      "MatterAttachmentLastModifiedUtc": "2025-01-20T12:00:00"
+                    }
+                  ]
+          http_version: "1.1"
+      recorded_at: Mon, 12 May 2026 18:30:01 GMT
+    - request:
+          method: get
+          uri: https://example.invalid/legistar/cassette/bill_25-0001.pdf
+          body:
+              encoding: US-ASCII
+              string: ""
+          headers:
+              User-Agent:
+                  - Faraday v2.0
+              Accept-Encoding:
+                  - gzip,deflate,identity
+              Accept:
+                  - "*/*"
+      response:
+          status:
+              code: 200
+              message: OK
+          headers:
+              Content-Type:
+                  - application/pdf
+          body:
+              encoding: ASCII-8BIT
+              string: "%PDF-1.4\n% VCR cassette placeholder bytes\n%%EOF\n"
+          http_version: "1.1"
+      recorded_at: Mon, 12 May 2026 18:30:02 GMT
+recorded_with: VCR 6.x — hand-authored cassette for Phase 52 Plan 04 FetchBillsService

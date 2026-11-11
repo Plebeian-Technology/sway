@@ -1,0 +1,26 @@
+# Hand-written RBS for lib/sway/frontend_licenses.rb.
+module Sway
+  class FrontendLicenses
+    class Error < StandardError
+    end
+
+    UNKNOWN_LICENSE: String
+    UNAVAILABLE: Hash[String, Array[Hash[String, untyped]]]
+
+    @root: String
+
+    def initialize: (String root) -> void
+
+    # { "<license>" => [{ "name", "versions", "license", "homepage" }] }
+    def snapshot: () -> Hash[String, Array[Hash[String, untyped]]]
+
+    private
+
+    def direct_dependencies: () -> Array[String]
+
+    # nil when the package is not installed, or its manifest does not parse.
+    def installed_manifest: (String name) -> Hash[String, untyped]?
+
+    def license_of: (Hash[String, untyped] manifest) -> String
+  end
+end

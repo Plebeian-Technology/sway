@@ -1,0 +1,4 @@
+# Helper defined at describe-block scope in spec/system/bill_score_charts_spec.rb.
+class Object
+  def expect_populated_charts: () -> void
+end

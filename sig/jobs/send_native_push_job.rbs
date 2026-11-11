@@ -1,0 +1,4 @@
+# Phase 32 Plan 11 (D-37 + D-48): SendNativePushJob signatures.
+class SendNativePushJob < ApplicationJob
+  def perform: (Integer user_device_id, Hash[Symbol, untyped] payload) -> void
+end

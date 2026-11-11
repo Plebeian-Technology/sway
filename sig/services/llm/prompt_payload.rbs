@@ -1,0 +1,13 @@
+# Phase 54 D-02 + F-iter1-014. Steep enforces non-nil String at
+# type-check time; PromptPayload#initialize adds a runtime TypeError
+# guard at the boundary for dynamic callers that bypass Steep
+# (console sessions, future external integrations).
+module Llm
+  class PromptPayload
+    attr_reader system_prompt: String
+    attr_reader user_message: String
+
+    def initialize: (system_prompt: Object, user_message: Object) -> void
+    def self.new: (system_prompt: String, user_message: String) -> Llm::PromptPayload
+  end
+end

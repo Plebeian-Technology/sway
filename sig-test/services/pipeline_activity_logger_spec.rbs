@@ -1,0 +1,10 @@
+# Spec-only declarations for spec/services/pipeline_activity_logger_spec.rb.
+# Constants are defined at describe block scope (Steep resolves them as
+# top-level); AlwaysRaisingFlash is a spec-local fake flash store.
+STATE_MACHINE_EVENT_TYPES: Array[String]
+
+DIRECT_EMIT_EVENT_TYPES: Array[String]
+
+class AlwaysRaisingFlash
+  def []=: (untyped key, untyped value) -> untyped
+end

@@ -1,0 +1,78 @@
+class NewsArticleSourceSnapshotService
+  @bill: Bill
+  @purpose: String
+  @run_receipt: String?
+  @actor: User?
+  @sources: untyped
+  @source_uses_attributes: Array[Hash[Symbol | String, untyped]]
+
+  def self.capture!: (
+    bill: Bill,
+    purpose: String | Symbol,
+    ?run_receipt: String?,
+    ?actor: User?,
+    ?bill_news_articles: untyped?,
+    ?sources: untyped?,
+    ?source_associations: untyped?,
+    ?source_uses_attributes: Array[Hash[Symbol | String, untyped]]?,
+    ?source_uses: Array[Hash[Symbol | String, untyped]]?
+  ) -> NewsArticleSourceSnapshot
+
+  def self.call: (
+    bill: Bill,
+    purpose: String | Symbol,
+    ?run_receipt: String?,
+    ?actor: User?,
+    ?bill_news_articles: untyped?,
+    ?sources: untyped?,
+    ?source_associations: untyped?,
+    ?source_uses_attributes: Array[Hash[Symbol | String, untyped]]?,
+    ?source_uses: Array[Hash[Symbol | String, untyped]]?
+  ) -> NewsArticleSourceSnapshot
+
+  def self.record_snapshot!: (
+    bill: Bill,
+    purpose: String | Symbol,
+    ?run_receipt: String?,
+    ?actor: User?,
+    ?bill_news_articles: untyped?,
+    ?sources: untyped?,
+    ?source_associations: untyped?,
+    ?source_uses_attributes: Array[Hash[Symbol | String, untyped]]?,
+    ?source_uses: Array[Hash[Symbol | String, untyped]]?
+  ) -> NewsArticleSourceSnapshot
+
+  def self.create_snapshot!: (
+    bill: Bill,
+    purpose: String | Symbol,
+    ?run_receipt: String?,
+    ?actor: User?,
+    ?bill_news_articles: untyped?,
+    ?sources: untyped?,
+    ?source_associations: untyped?,
+    ?source_uses_attributes: Array[Hash[Symbol | String, untyped]]?,
+    ?source_uses: Array[Hash[Symbol | String, untyped]]?
+  ) -> NewsArticleSourceSnapshot
+
+  def self.compare_eligibility: (NewsArticleSourceSnapshot snapshot) -> NewsArticleSourceSnapshot::EligibilityComparison
+
+  def initialize: (
+    bill: Bill,
+    purpose: String | Symbol,
+    ?run_receipt: String?,
+    ?actor: User?,
+    ?bill_news_articles: untyped?,
+    ?sources: untyped?,
+    ?source_associations: untyped?,
+    ?source_uses_attributes: Array[Hash[Symbol | String, untyped]]?,
+    ?source_uses: Array[Hash[Symbol | String, untyped]]?
+  ) -> void
+
+  def capture!: () -> NewsArticleSourceSnapshot
+
+  private
+
+  def resolve_sources: () -> untyped
+  def validate_sources!: (untyped sources) -> void
+  def build_source_entries: (untyped sources) -> Array[Hash[String, untyped]]
+end

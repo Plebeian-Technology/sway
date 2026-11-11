@@ -1,0 +1,73 @@
+# @lat: [[deploy-configuration#What the deploy file decides#Why the replication config file ends in .erb]]
+#
+# <% require "pathname" %>
+# <% sway_root = Pathname.new(Dir.pwd).ascend.find { |dir| dir.join("lib", "sway_deploy_config.rb").exist? } %>
+# <% raise "litestream config cannot find lib/sway_deploy_config.rb. Run kamal from the top of the repository." if sway_root.nil? %>
+# <% require sway_root.join("lib", "sway_deploy_config.rb").to_s %>
+#
+# Uploaded to the accessory at /etc/litestream.yml (Litestream's
+# default config path) via config/deploy.yml's `files:`.
+#
+# The database arrives through the accessory's `volumes:` bind of the storage
+# volume onto /data, so this path is container-relative and does NOT change
+# when the host folder does. The host side is SWAY_STORAGE_DIR, and moving Sway
+# to another machine changes that without touching this line.
+#
+# v0.5 takes a SINGLE `replica:` per database. The `replicas:` ARRAY was
+# deprecated in the 0.3 -> 0.5 storage-layer refactor (WAL -> LTX); config
+# written against 0.3 examples will not behave as expected here.
+#
+# Checked against the pinned binary on 2026-07-31, not taken from the docs: a
+# config carrying a `replicas:` array is refused outright with "multiple
+# replicas on a single database are no longer supported". Do not be misled by
+# `litestream replicate -h`, whose usage line still reads
+# "DB_PATH REPLICA_URL [REPLICA_URL...]" — the config layer rejects the plural.
+#
+# So ONE database cannot be sent to two places at once. Wanting a second copy
+# somewhere else means either a second process (which puts a second writer near
+# the live database — see the two-writers warning in
+# docs/litestream-restore.md), or having the other machine pull a copy down for
+# itself, which touches nothing here.
+dbs:
+    - path: /data/production.sqlite3
+      replica:
+          # NATIVE GOOGLE CLIENT — deliberately not the `s3` type.
+          #
+          # GCS cannot be driven through Litestream's s3 replica type, and this
+          # is not a configuration problem. aws-sdk-go-v2 adds two retry
+          # telemetry headers, amz-sdk-invocation-id and amz-sdk-request, to the
+          # SignedHeaders list of EVERY request; GCS's signature validator
+          # rejects requests carrying them, so every operation fails with
+          # SignatureDoesNotMatch — including plain GETs like ListObjectsV2.
+          # Open upstream as aws/aws-sdk-go-v2#1816; the same failure hit
+          # longhorn#12676 and iceberg-go#1422. No Litestream option removes
+          # those headers (force-path-style, sign-payload and
+          # require-content-md5 all leave them in place), and Litestream's own
+          # s3-compatible guide enumerates 14+ providers while deliberately
+          # excluding GCS.
+          #
+          # Verified empirically 2026-07-29: an HMAC key that listed this exact
+          # bucket successfully from the AWS CLI failed from Litestream on the
+          # same operation, same endpoint, byte-identical secret.
+          #
+          # v0.5.0 renamed this type from `gcs` to `gs` (litestream#336).
+          type: gs
+          bucket: <%= SwayDeployConfig.fetch("SWAY_GCS_BUCKET_DB") %>
+          # Kept separate from db/production/, which holds the point-in-time
+          # snapshots written by DatabaseBackupService. Litestream maintains its
+          # own generation + LTX segment structure and prunes it itself; mixing
+          # the two would make both harder to reason about and to retain.
+          path: <%= SwayDeployConfig.fetch("SWAY_LITESTREAM_PATH") %>
+          # @lat: [[deploy-configuration#What the deploy file decides#Why the replication sync interval is 30 seconds]]
+          sync-interval: 30s
+
+# Credentials are NOT configured here. The native gs client uses Google's
+# standard credential chain, so config/deploy.yml sets
+# GOOGLE_APPLICATION_CREDENTIALS to the path of a service-account JSON keyfile.
+# No region is needed either — that was an S3/SigV4 concept.
+
+# production_queue.sqlite3 is deliberately NOT replicated. It is high-churn and
+# its contents are ephemeral: losing it costs in-flight jobs and Solid Queue's
+# recurring-execution bookkeeping, both of which bin/docker-entrypoint recreates
+# via db:migrate:with_data on the next boot. Replicating it would roughly double
+# replication traffic to protect data that is regenerated for free.

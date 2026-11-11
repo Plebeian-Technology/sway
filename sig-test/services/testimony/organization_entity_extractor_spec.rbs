@@ -1,0 +1,13 @@
+class Object
+  def make_letter: (
+    ?position: Integer,
+    ?text: String,
+    ?offset: Integer,
+    ?characters: Integer?,
+    ?source_kind: String,
+    ?repeat: bool,
+    ?source_evidence: Hash[String, untyped]?
+  ) -> Hash[String, untyped]
+
+  def extraction_route: () -> Llm::RouteResolver::Route
+end

@@ -1,0 +1,13 @@
+# Business-logic extraction from
+# Organizations::PositionChangesController#update. Returns a Symbol outcome
+# (:approved | :already_finalized | :approve_failed); the controller maps it to
+# an HTTP response. RBS kept narrow per feedback_update_rbs_with_code.md.
+class ApprovePositionChangeService
+  @change: OrganizationBillPositionChange
+
+  @approver: User
+
+  def initialize: (change: OrganizationBillPositionChange, approver: User) -> void
+
+  def call: () -> Symbol
+end

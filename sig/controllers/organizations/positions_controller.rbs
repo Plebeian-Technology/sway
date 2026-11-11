@@ -1,0 +1,27 @@
+class Organizations::PositionsController < Organizations::BaseController
+    @position: untyped
+
+    @change: untyped
+
+    def create: -> (nil | untyped)
+
+    def new: -> untyped
+
+    def update: -> untyped
+
+    def destroy: -> untyped
+
+    private
+
+    def verify_is_active_member!: () -> void
+
+    def pickable_bills: -> Bill::ActiveRecord_Relation
+
+    def set_position: -> untyped
+
+    def set_change: -> untyped
+
+    def change_must_not_be_finalized!: -> (nil | untyped)
+
+    def change_must_be_different!: -> (untyped | nil)
+end

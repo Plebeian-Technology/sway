@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "SourceKindClassificationPayload",
+    "description": "Batch classification of the testimony letters Testimony::SourceKindRules could not confidently settle on its own, judged on the letter's own text. Items are keyed by POSITION, never by name — the position is the letter's index in the cleaned artifact's letters array.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["classifications"],
+    "properties": {
+        "classifications": {
+            "type": "array",
+            "maxItems": 25,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["position", "kind"],
+                "properties": {
+                    "position": { "type": "integer", "minimum": 0 },
+                    "kind": { "enum": ["named_organization", "person_speaking_for_org"] }
+                }
+            }
+        }
+    }
+}

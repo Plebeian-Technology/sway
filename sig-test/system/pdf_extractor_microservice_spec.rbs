@@ -1,0 +1,16 @@
+module PdfExtractorMicroserviceSpecHelpers
+  ARTIFACT_ROOT: String
+  BILLS_RAW_ROOT: String
+  BILLS_TEXT_ROOT: String
+  TEXT_LAYER_PDF_PATH: String
+  TESSDATA_DIR: String
+  GO_SOURCE_DIR: String
+
+  @binary_path: String?
+
+  def self.binary_path: () -> String
+  def self.allocate_ephemeral_port: () -> Integer
+  def self.start_server!: (Integer port) -> Integer
+  def self.wait_until_healthy!: (Integer port, Integer pid) -> void
+  def self.stop_process!: (Integer? pid) -> void
+end

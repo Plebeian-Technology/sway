@@ -1,0 +1,10 @@
+module Llm
+  module BatchCustomId
+    PATTERN: Regexp
+    TRUNCATED_PREFIX_LENGTH: Integer
+    HASH_SUFFIX_LENGTH: Integer
+
+    def self.build: (*String parts) -> String
+    def self.valid?: (untyped id) -> bool
+  end
+end

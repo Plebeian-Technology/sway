@@ -1,0 +1,9 @@
+# The checks every Claude reply survives before its text is parsed, shared by
+# Llm::ClaudeAdapter (which lets them raise) and Llm::ClaudeBatchService (which
+# catches them per item). `message` is an Anthropic SDK struct — untyped for the
+# reason sig/services/llm/claude_adapter.rbs's header documents.
+module Llm
+  module ClaudeMessageText
+    def self.extract: (untyped message) -> String
+  end
+end

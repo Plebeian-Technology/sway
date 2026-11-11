@@ -1,0 +1,97 @@
+class RepresentativeReassignment < ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::RepresentativeReassignment, ::RepresentativeReassignment::ActiveRecord_Relation, ::Integer]
+
+  # Attributes
+  def id: () -> Integer
+  def id=: (Integer) -> Integer
+  def user_id: () -> Integer
+  def user_id=: (Integer) -> Integer
+  def district_id: () -> Integer?
+  def district_id=: (Integer?) -> Integer?
+  def previous_district_id: () -> Integer?
+  def previous_district_id=: (Integer?) -> Integer?
+  def legislator_id: () -> Integer?
+  def legislator_id=: (Integer?) -> Integer?
+  def previous_legislator_id: () -> Integer?
+  def previous_legislator_id=: (Integer?) -> Integer?
+  def reassignment_type: () -> String
+  def reassignment_type=: (String | Symbol) -> (String | Symbol)
+  def notified_at: () -> ActiveSupport::TimeWithZone?
+  def notified_at=: (ActiveSupport::TimeWithZone? | Time?) -> (ActiveSupport::TimeWithZone? | Time?)
+  def dismissed_at: () -> ActiveSupport::TimeWithZone?
+  def dismissed_at=: (ActiveSupport::TimeWithZone? | Time?) -> (ActiveSupport::TimeWithZone? | Time?)
+  def created_at: () -> ActiveSupport::TimeWithZone
+  def updated_at: () -> ActiveSupport::TimeWithZone
+
+  # Associations
+  def user: () -> User
+  def user=: (User) -> User
+  def district: () -> District?
+  def district=: (District?) -> District?
+  def previous_district: () -> District?
+  def previous_district=: (District?) -> District?
+  def legislator: () -> Legislator?
+  def legislator=: (Legislator?) -> Legislator?
+  def previous_legislator: () -> Legislator?
+  def previous_legislator=: (Legislator?) -> Legislator?
+
+  # Enum predicate methods
+  def district_changed?: () -> bool
+  def successor_seeded?: () -> bool
+  def vacant_seat?: () -> bool
+  def vacancy_filled?: () -> bool
+
+  # Domain methods
+  def dismiss!: () -> bool
+  def mark_notified!: () -> bool
+
+  # Class query scopes
+  def self.first: () -> RepresentativeReassignment
+  def self.last: () -> RepresentativeReassignment
+  def self.pending_in_app: () -> RepresentativeReassignment::ActiveRecord_Relation
+  def self.pending_delivery: () -> RepresentativeReassignment::ActiveRecord_Relation
+  def self.district_changed: () -> RepresentativeReassignment::ActiveRecord_Relation
+  def self.successor_seeded: () -> RepresentativeReassignment::ActiveRecord_Relation
+  def self.vacant_seat: () -> RepresentativeReassignment::ActiveRecord_Relation
+  def self.vacancy_filled: () -> RepresentativeReassignment::ActiveRecord_Relation
+  def self.reassignment_types: () -> Hash[String, Integer]
+
+  # Relation methods for chaining and scopes
+  module GeneratedRelationMethods
+    def pending_in_app: () -> RepresentativeReassignment::ActiveRecord_Relation
+    def pending_delivery: () -> RepresentativeReassignment::ActiveRecord_Relation
+    def district_changed: () -> RepresentativeReassignment::ActiveRecord_Relation
+    def successor_seeded: () -> RepresentativeReassignment::ActiveRecord_Relation
+    def vacant_seat: () -> RepresentativeReassignment::ActiveRecord_Relation
+    def vacancy_filled: () -> RepresentativeReassignment::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::RepresentativeReassignment]
+    include ::RepresentativeReassignment::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::RepresentativeReassignment, ::Integer]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::RepresentativeReassignment]
+    include ::RepresentativeReassignment::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::RepresentativeReassignment, ::Integer]
+
+    def first: () -> RepresentativeReassignment?
+    def last: () -> RepresentativeReassignment?
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::RepresentativeReassignment
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::RepresentativeReassignment]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::RepresentativeReassignment
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::RepresentativeReassignment]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::RepresentativeReassignment
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::RepresentativeReassignment]
+    def reload: () -> ::Array[::RepresentativeReassignment]
+
+    def replace: (::Array[::RepresentativeReassignment]) -> void
+    def delete: (*::RepresentativeReassignment | ::Integer) -> ::Array[::RepresentativeReassignment]
+    def destroy: (*::RepresentativeReassignment | ::Integer) -> ::Array[::RepresentativeReassignment]
+    def <<: (*::RepresentativeReassignment | ::Array[::RepresentativeReassignment]) -> self
+    def prepend: (*::RepresentativeReassignment | ::Array[::RepresentativeReassignment]) -> self
+  end
+end

@@ -1,0 +1,23 @@
+# @lat: [[auxiliary-databases#How a table the schema file gains reaches a database that already exists]]
+class QueueDatabaseSetupService
+  QUEUE_DATABASE_NAME: String
+
+  JOBS_TABLE: String
+
+  SCHEMA_PATH: String
+
+  SCRATCH_DATABASE: String
+
+  @schema_objects: Array[Array[untyped]]?
+
+  def call: () -> (:not_configured | :already_there | :created | :extended)
+
+  private
+
+  def schema_objects: () -> Array[Array[untyped]]
+
+  def queue_config: () -> ActiveRecord::DatabaseConfigurations::DatabaseConfig?
+
+  def log: (:not_configured | :already_there | :created | :extended outcome, String message)
+    -> (:not_configured | :already_there | :created | :extended)
+end

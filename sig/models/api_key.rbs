@@ -1,0 +1,24 @@
+class ApiKey < ApplicationRecord
+    # E-W-1. Raised by both HMAC-secret guards. `initialize` carries a default
+    # so `raise MissingHmacSecretError` (no argument) still names the variable.
+    class MissingHmacSecretError < StandardError
+        MESSAGE: String
+
+        def initialize: (?String message) -> void
+    end
+
+    def self.hmac_secret_key: () -> String?
+
+    attr_accessor token: String
+
+    def active?: () -> bool
+
+    def to_builder: () -> Jbuilder
+
+    def self.authenticate_by_token!: (String token) -> ApiKey
+    def self.authenticate_by_token: (String token) -> ApiKey?
+
+    private
+
+    def generate_token_hmac_digest: -> void
+end

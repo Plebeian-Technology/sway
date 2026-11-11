@@ -1,0 +1,18 @@
+# Phase 60 Plan 04 — active-set enforcement + idempotent join persist (R4).
+# Rename × assignment contract: resolution map keys on Category.slugify(c.name)
+# (current name), NOT the frozen stored slug — see LOCKED 60-09 cross-reference.
+class BillCategoryAssigner
+  @bill: Bill
+  @raw_names: Array[String]
+  @active_categories: Array[Category]
+
+  def initialize: (Bill bill, Array[String] raw_names, Array[Category] active_categories) -> void
+
+  # Normalize → active-set filter → first(3) → idempotent join persist.
+  # Raises Llm::SchemaError when zero names match the active set.
+  def call: () -> Array[Category]
+
+  private
+
+  def resolve_matches: () -> Array[Category]
+end

@@ -1,0 +1,9 @@
+class SwayRegistrationJob < ApplicationJob
+    TRANSIENT_ERRORS: Array[Class]
+
+    def perform: (Integer user_id, Integer address_id, Integer sway_locale_id, invited_by_id: String?) -> void
+
+    private
+
+    def mark_failed_if_processing: (Integer user_id) -> void
+end

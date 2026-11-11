@@ -1,0 +1,16 @@
+# Helpers included in RSpec examples to create canonical registered users.
+module RegisteredUserFixtures
+  def complete_registration_with_active_link: (User user, ?legislator: Legislator?) -> User
+end
+
+module RSpec
+  module Core
+    class ExampleGroup
+      include RegisteredUserFixtures
+    end
+  end
+end
+
+class Object
+  def complete_registration_with_active_link: (User user, ?legislator: Legislator?) -> User
+end

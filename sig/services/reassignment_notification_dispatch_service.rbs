@@ -1,0 +1,13 @@
+class ReassignmentNotificationDispatchService
+  PREFERENCE_KEY: String
+
+  def initialize: (?Integer? user_id) -> void
+  def call: (?untyped user_id) -> void
+
+  private
+
+  def claim_pending_delivery: (User user) -> Array[RepresentativeReassignment]
+  def deliver_push: (User user, Array[RepresentativeReassignment] reassignments) -> void
+  def deliver_email: (User user, Array[RepresentativeReassignment] reassignments) -> void
+  def build_push_copy: (Array[RepresentativeReassignment] reassignments) -> [String, String]
+end

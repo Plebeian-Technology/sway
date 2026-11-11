@@ -1,0 +1,57 @@
+{
+    "data": {
+        "id": 101,
+        "slug": "ordinance-24-0001-housing-affordability",
+        "file_number": "24-0001",
+        "title": "Housing Affordability Standards Act",
+        "short_title": "Housing Affordability Act",
+        "synopsis": "An ordinance establishing affordability requirements.",
+        "full_text": "Be it ordained by the Mayor and City Council...",
+        "version": "1",
+        "enactment_number": "26-101",
+        "introduced_on": "2026-01-15",
+        "final_action_on": "2026-05-15",
+        "enacted_on": "2026-05-15",
+        "effective_on": "2026-06-01",
+        "matter_type": "Ordinance",
+        "status": {
+            "name": "Enacted",
+            "outcome": "enacted"
+        },
+        "body": {
+            "slug": "city-council",
+            "name": "City Council"
+        },
+        "topics": [
+            {
+                "slug": "housing",
+                "name": "Housing"
+            }
+        ],
+        "sponsorships": [
+            {
+                "person_slug": "john-smith",
+                "person_name": "John Smith",
+                "role": "primary",
+                "withdrawn_on": null
+            }
+        ],
+        "actions": [
+            {
+                "acted_on": "2026-05-15",
+                "action_name": "Passed",
+                "body_name": "City Council",
+                "result": "pass",
+                "roll_call_recorded": true,
+                "vote_visibility": "recorded",
+                "tally": {
+                    "yes": 14,
+                    "no": 0,
+                    "abstain": 0,
+                    "absent": 1
+                }
+            }
+        ],
+        "attachments": []
+    }
+}

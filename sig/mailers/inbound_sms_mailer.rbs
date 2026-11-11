@@ -1,0 +1,11 @@
+class InboundSmsMailer < ApplicationMailer
+    @from: String
+
+    @body: String
+
+    @known_sender: bool
+
+    def forward: (from: String, body: String, known_sender: bool) -> untyped
+
+    def self.forward: (from: String, body: String, known_sender: bool) -> ActionMailer::MessageDelivery
+end

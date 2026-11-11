@@ -1,0 +1,16 @@
+# Phase 32 specs configure Rails.application.config.apns/.fcm by writing
+# OrderedOptions accessors (`c.bundle_id = "..."`). Steep does not fall back
+# to method_missing for setter calls, so each setter must be declared
+# explicitly in a sig.
+module ActiveSupport
+  class OrderedOptions < Hash[Symbol, untyped]
+    def auth_key_p8=: (untyped) -> untyped
+    def bundle_id=: (untyped) -> untyped
+    def enabled=: (untyped) -> untyped
+    def env=: (untyped) -> untyped
+    def key_id=: (untyped) -> untyped
+    def team_id=: (untyped) -> untyped
+    def project_id=: (untyped) -> untyped
+    def service_account_json=: (untyped) -> untyped
+  end
+end

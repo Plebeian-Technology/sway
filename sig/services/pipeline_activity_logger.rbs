@@ -1,0 +1,86 @@
+# RBS signature for PipelineActivityLogger.
+# Canonical sig path: sig/services/ (HIGH-R2-2).
+#
+# MEDIUM-2: serialize_entry returns Hash[Symbol, untyped] — the one allowed
+# untyped exception in this file. The payload value is a JSON-serializable
+# polymorphic Hash that varies by event_type; encoding it concretely would
+# require a union of 11 payload shapes, adding noise without correctness gain.
+class PipelineActivityLogger
+  SEVERITY_FOR_EVENT: Hash[String, String]
+  TITLE_TEMPLATES: Hash[String, ^(Hash[Symbol, untyped]) -> String]
+
+  # -------------------------------------------------------------------------
+  # Typed emission methods — one per event_type (D-05)
+  # -------------------------------------------------------------------------
+
+  def self.log_stage_failed!: (run: LegislationPipelineRun, stage_name: String, error_message: String, ?actor: User?) -> PipelineActivityLogEntry
+
+  def self.log_ingestion_failure!: (bill_external_id: String, error_message: String, ?actor: User?) -> PipelineActivityLogEntry
+
+
+  def self.log_llm_provider_error!: (bill: Bill, error_message: String, ?actor: User?) -> PipelineActivityLogEntry
+
+  def self.log_llm_json_parse_failure!: (bill: Bill, error_message: String, ?raw_excerpt: String?, ?actor: User?) -> PipelineActivityLogEntry
+
+
+
+
+  # Phase 50 D-13: operator-initiated summary regeneration; severity = info.
+  def self.log_summary_regenerate_triggered!: (bill: Bill, actor: User?, first_generation: bool) -> PipelineActivityLogEntry
+
+  # GenerateBillSummaryJob declining to call at all.
+  def self.log_summary_stood_down_for_paste!: (bill: Bill, ?actor: User?) -> PipelineActivityLogEntry
+  def self.log_summary_skipped_no_source_text!: (bill: Bill, ?actor: User?) -> PipelineActivityLogEntry
+
+  # RunLegislationPipelineJob declining to reopen a run whose
+  # summary batch can still return results.
+  def self.log_resume_deferred_for_summary_batch!: (run: LegislationPipelineRun, ?actor: User?) -> PipelineActivityLogEntry
+
+  # Phase 52 Plan 07 — D-24: 5 new operator-facing emission methods.
+  # `draft` is duck-typed (Plan 10 may settle on a concrete model later) —
+  # accepting `untyped` here is the ONE allowed exception, mirroring the
+  # serialize_entry rationale (MEDIUM-2).
+  def self.log_paste_summary_accepted!: (bill: Bill, actor: User?) -> PipelineActivityLogEntry
+  def self.log_paste_summary_rejected!: (bill: Bill, actor: User?, errors: Array[String]) -> PipelineActivityLogEntry
+  def self.log_org_position_decision!: (bill: Bill, draft: untyped, decision: Symbol | String, actor: User?, ?extra: Hash[Symbol, untyped]) -> PipelineActivityLogEntry
+  def self.log_orphan_run_deleted!: (run_id: Integer | String, actor: User?) -> PipelineActivityLogEntry
+  def self.log_force_fail_triggered!: (run: LegislationPipelineRun, actor: User?) -> PipelineActivityLogEntry
+
+  # Phase 52 Plan 07 — D-09: 5-consecutive-failure budget trip emitted by
+  # RunLegislationPipelineJob. Subject is the run; payload includes the
+  def self.log_stage_budget_tripped!: (run: LegislationPipelineRun, stage: Symbol | String, consecutive_failures: Integer, last_failed_bill_run: PipelineRunBill) -> PipelineActivityLogEntry
+
+  def self.log_attachment_download_attempt!: (record: Hash[String, untyped], ?bill: Bill?, ?actor: User?) -> PipelineActivityLogEntry
+
+  # Phase 52 Plan 03: state-machine transition seams.
+  # Called from after_transition callbacks on LegislationPipelineRun /
+  # PipelineRunBill. Run inside the transition's DB transaction; raise
+  # rolls back the column update (SPEC R14 contract).
+  def self.emit_state_transition!: (run: LegislationPipelineRun, from: Symbol | String, to: Symbol | String, event: Symbol | String) -> PipelineActivityLogEntry
+
+  def self.emit_bill_transition!: (bill_run: PipelineRunBill, from: Symbol | String, to: Symbol | String, event: Symbol | String) -> PipelineActivityLogEntry
+
+  # -------------------------------------------------------------------------
+  # Public helpers (INFO-2, HIGH-R2-3)
+  # -------------------------------------------------------------------------
+
+  # PUBLIC — Plan 04 prop loader calls this directly (INFO-2).
+  # MEDIUM-2: Hash[Symbol, untyped] is the one allowed untyped exception here —
+  # the value side is a JSON-serializable polymorphic mix of Integer?, String,
+  # Hash, and Array that differs by event_type.
+  def self.serialize_entry: (PipelineActivityLogEntry, ?for_flash: bool) -> Hash[Symbol, untyped]
+
+  # dispatch_transport / inertia_request? / resolve_stream_id
+  # extracted to PipelineActivityLogger::Transport — see
+  # sig/services/pipeline_activity_logger/transport.rbs. The model's
+  # `after_commit on: :create` hook now calls Transport.dispatch(self).
+
+  private
+
+  # BL2-01: transport is driven by `after_commit on: :create` on
+  # PipelineActivityLogEntry; `emit!` does not call dispatch directly.
+  def self.emit!: (String event_type, subject: (Bill | LegislationPipelineRun)?, actor: User?, payload: Hash[Symbol, untyped], message: String) -> PipelineActivityLogEntry
+
+  # Safely render a nilable actor's email for activity-log payloads.
+  def self.actor_email: (User? actor) -> String?
+end

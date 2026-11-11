@@ -1,0 +1,24 @@
+module BillCreator
+  class FetchedBillsPanelSerializer
+    type row = {
+      external_id: String,
+      bill_id: Integer?,
+      title: String?,
+      fetched_at: Time | ActiveSupport::TimeWithZone,
+      pdf_present: bool,
+      metadata_present: bool,
+      bill_row_exists: bool,
+    }
+
+    type bill_match = { id: Integer, title: String? }
+
+    PDF_EXTENSION: String
+    METADATA_FILENAME: String
+
+    def self.call: (SwayLocale? sway_locale) -> Array[row]
+
+    def self.bills_by_external_id: (SwayLocale sway_locale, Array[String] external_ids) -> Hash[String, bill_match]
+
+    def self.build_row: (Pathname | String dir, String external_id, bill_match? bill_match) -> row
+  end
+end

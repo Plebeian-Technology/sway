@@ -1,0 +1,9 @@
+class MirroredAssetUrl
+  def self.for: (ActiveStorage::Attached::One? attachment, fallback: String?) -> String?
+
+  private
+
+  def self.external_fallback_url: (String? fallback) -> String?
+
+  def self.url_options: () -> Hash[Symbol, untyped]
+end

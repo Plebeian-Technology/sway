@@ -1,0 +1,7 @@
+class BootstrapArchiveSpecContext < Object
+  def sway_locale: () -> SwayLocale
+  def session: () -> LegislativeSession
+  def prior_session: () -> LegislativeSession
+  def old_bill: () -> Bill
+  def user: () -> User
+end

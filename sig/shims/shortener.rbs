@@ -1,0 +1,15 @@
+module Shortener
+  def self.ignore_robots: () -> bool?
+
+  class ShortenedUrl
+    def self.extract_token: (untyped token) -> String
+    def self.fetch_with_token: (token: String, ?additional_params: untyped, ?track: bool) -> Hash[Symbol, untyped]?
+  end
+end
+
+module ActionDispatch
+  class Request
+    def human?: () -> bool
+    def session: () -> ActionDispatch::Request::Session
+  end
+end

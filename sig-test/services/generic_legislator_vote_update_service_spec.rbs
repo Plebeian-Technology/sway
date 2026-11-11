@@ -1,0 +1,9 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def open_leg_client: () -> OpenLegislator::Client
+  def real_open_leg_client: () -> OpenLegislator::Client
+  def legistar_mock_client: () -> Legistar::Client
+  def voter_ballot: () -> Hash[Symbol, untyped]
+  def former_ballot: () -> Hash[Symbol, untyped]
+  def ballot: () -> Hash[Symbol, untyped]
+end

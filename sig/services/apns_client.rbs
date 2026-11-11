@@ -1,0 +1,15 @@
+# Phase 32 Plan 11 (D-48 + H2): APNs HTTP/2 dispatcher signatures.
+class ApnsClient
+  class DeviceNotRegisteredError < StandardError
+  end
+
+  class ApnsError < StandardError
+  end
+
+  APNS_HOSTS: Hash[String, String]
+  POOL_THREAD_KEY: Symbol
+
+  def self.deliver: (device_token: String?, title: String, body: String, ?data: Hash[Symbol | String, untyped]) -> (bool | nil)
+
+  def self.build_connection_pool: (untyped cfg) -> untyped
+end

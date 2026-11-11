@@ -1,0 +1,5 @@
+class Object
+  def decision_adapter: () -> untyped
+  def decision_route: () -> Llm::RouteResolver::Route
+  def make_candidate: (id: Integer, ?name: String, ?text: String?) -> Hash[String, untyped]
+end

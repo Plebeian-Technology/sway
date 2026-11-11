@@ -1,0 +1,17 @@
+# Test-only RBS overrides for the Errno subclasses raised at spec scope. Core
+# RBS gives SystemCallError one `initialize: (string msg, Integer errno)`, so
+# the bare `Errno::EPIPE.new` Ruby allows reads as a missing argument.
+# @lat: [[rbs-signatures#Why a hand-written signature can outrank the standard library's]]
+module Errno
+  class ECONNREFUSED < SystemCallError
+    def initialize: (?string msg, ?Integer errno) -> void
+  end
+
+  class ECONNRESET < SystemCallError
+    def initialize: (?string msg, ?Integer errno) -> void
+  end
+
+  class EPIPE < SystemCallError
+    def initialize: (?string msg, ?Integer errno) -> void
+  end
+end

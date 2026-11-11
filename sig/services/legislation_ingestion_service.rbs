@@ -1,0 +1,27 @@
+class LegislationIngestionService
+  ALLOWED_BILL_COLUMNS: Array[String]
+  ALLOWED_PROVISIONING_COLUMNS: Array[String]
+  DEFAULT_LOCALE_NAME: String
+
+  class IngestionError < RuntimeError
+  end
+
+  @run: LegislationPipelineRun?
+  @all_locales: Array[SwayLocale]?
+  @fallback_cache: Hash[[Integer, String], Legislator]?
+
+  def initialize: (?run: LegislationPipelineRun?) -> void
+
+  # Per-bill upsert path used by FetchBillsService.
+  def upsert_bill_payload: (Hash[String, untyped] bill_data) -> Bill?
+
+  private
+  def archived_identity?: (Hash[String, untyped] bill_data, SwayLocale sway_locale) -> bool
+  def upsert_bill: (Hash[String, untyped] bill_data) -> Bill?
+  def apply_bill_attributes: (Bill bill, Hash[String, untyped] bill_data, SwayLocale sway_locale) -> void
+  def upsert_provisioning: (Bill bill, Hash[String, untyped] provisioning_data) -> BillLlmProvisioning
+  def resolve_sway_locale: (Hash[String, untyped] bill_data) -> SwayLocale?
+  def resolve_chamber: (Hash[String, untyped] bill_data, SwayLocale sway_locale) -> String?
+  def resolve_legislator: (Hash[String, untyped] bill_data, SwayLocale sway_locale, String chamber) -> Legislator?
+  def fallback_legislator: (SwayLocale sway_locale, String chamber) -> Legislator
+end

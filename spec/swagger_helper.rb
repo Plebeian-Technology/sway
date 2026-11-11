@@ -1,0 +1,244 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.configure do |config|
+  # OpenAPI 3.0 writes per-route security as `[{ <scheme>: [<scopes>] }]`.
+  # Sway's bearer tokens carry no scopes, so the inner array is empty. Written
+  # out once, with an explicit type, so the annotation is not repeated at every
+  # route. Used below as `security: bearer_auth_security`.
+  bearer_auth_scopes = []
+  # @type var bearer_auth_scopes: Array[String]
+  bearer_auth_security = [{bearer_auth: bearer_auth_scopes}]
+
+  config.openapi_root = Rails.root.join("swagger").to_s
+
+  # Sway API V1 is what the React Native mobile app talks to.
+  config.openapi_specs = {
+    "v1/swagger.yaml" => {
+      openapi: "3.0.1",
+      info: {
+        title: "Sway API V1",
+        version: "v1",
+        description: "Mobile (React Native) JSON API for Sway. " \
+          "Bearer-authenticated; CSRF skipped per request when " \
+          "Authorization: Bearer ... is present."
+      },
+      servers: [
+        {
+          url: "https://app.sway.vote",
+          description: "production"
+        },
+        {
+          url: "https://localhost:3333",
+          description: "development"
+        }
+      ],
+      components: {
+        securitySchemes: {
+          bearer_auth: {
+            type: :http,
+            scheme: :bearer,
+            bearerFormat: "opaque-hex64"
+          }
+        },
+        schemas: {
+          ErrorEnvelope: {
+            type: :object,
+            properties: {
+              error: {
+                type: :object,
+                properties: {
+                  code: {type: :string, example: "invalid_credentials"},
+                  message: {type: :string, example: "Passkey verification failed"},
+                  details: {type: :object, additionalProperties: true, nullable: true}
+                },
+                required: %w[code message]
+              }
+            },
+            required: %w[error]
+          },
+          BearerTokenEnvelope: {
+            type: :object,
+            properties: {
+              bearer_token: {type: :string, example: "deadbeef" * 8},
+              device_id: {type: :integer, example: 42},
+              user: {type: :object, additionalProperties: true},
+              expires_at: {type: :string, format: "date-time"}
+            },
+            required: %w[bearer_token device_id user expires_at]
+          }
+        }
+      },
+      # Hand-written declarations covering every /api/v1/* route. The mobile
+      # client takes its types from this file. If per-endpoint rswag specs are
+      # added later, they will MERGE into this paths hash through
+      # Rswag::Specs::SwaggerFormatter#upgrade_responses!.
+      paths: {
+        "/api/v1/sessions/challenge" => {
+          post: {
+            tags: %w[sessions],
+            summary: "Start a passkey authentication ceremony",
+            requestBody: {
+              required: true,
+              content: {
+                "application/json" => {
+                  schema: {
+                    type: :object,
+                    properties: {
+                      session: {
+                        type: :object,
+                        properties: {phone: {type: :string}},
+                        required: %w[phone]
+                      }
+                    },
+                    required: %w[session]
+                  }
+                }
+              }
+            },
+            responses: {
+              # @lat: [[decoy-challenge-non-disclosure#How the mobile client reads the envelope]]
+              "200" => {description: "flow: passkey with challenge options, or flow: sms for a phone with no passkey"},
+              "429" => {description: "rate_limited"}
+            }
+          }
+        },
+        "/api/v1/sessions/callback" => {
+          post: {
+            tags: %w[sessions],
+            summary: "Finish a passkey authentication ceremony (issues bearer)",
+            responses: {
+              "200" => {description: "Bearer issued", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/BearerTokenEnvelope"}}}},
+              "401" => {description: "invalid_challenge | invalid_credentials", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/ErrorEnvelope"}}}}
+            }
+          }
+        },
+        "/api/v1/sessions" => {
+          post: {
+            tags: %w[sessions],
+            summary: "SMS-fallback login (consumes sms_verified_token)",
+            responses: {
+              "200" => {description: "Bearer issued", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/BearerTokenEnvelope"}}}},
+              "401" => {description: "invalid_sms_token", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/ErrorEnvelope"}}}}
+            }
+          }
+        },
+        "/api/v1/sessions/revoke_all" => {
+          post: {
+            tags: %w[sessions],
+            summary: "Sign out all devices for the bearer's user",
+            security: bearer_auth_security,
+            responses: {
+              "204" => {description: "Revoked"},
+              "401" => {description: "unauthorized"}
+            }
+          }
+        },
+        "/api/v1/registrations" => {
+          post: {
+            tags: %w[registrations],
+            summary: "Start passkey enrollment (consumes sms_verified_token bind)",
+            responses: {
+              "200" => {description: "Registration options"},
+              "401" => {description: "invalid_sms_token", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/ErrorEnvelope"}}}}
+            }
+          }
+        },
+        "/api/v1/registrations/callback" => {
+          post: {
+            tags: %w[registrations],
+            summary: "Finish passkey enrollment (creates Passkey + UserDevice + ApiKey + 4 NotificationPreferences)",
+            responses: {
+              "200" => {description: "Bearer issued", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/BearerTokenEnvelope"}}}},
+              "401" => {description: "invalid_challenge | invalid_credentials", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/ErrorEnvelope"}}}}
+            }
+          }
+        },
+        "/api/v1/phone_verification" => {
+          post: {
+            tags: %w[phone_verification],
+            summary: "Request a Twilio Verify SMS code (rate-limited per IP + per phone)",
+            responses: {
+              "204" => {description: "SMS dispatched"},
+              "429" => {description: "rate_limited"},
+              "503" => {description: "verification_unavailable"}
+            }
+          }
+        },
+        "/api/v1/phone_verification/verify" => {
+          post: {
+            tags: %w[phone_verification],
+            summary: "Verify SMS code; issues a one-time-use sms_verified_token (10-min TTL)",
+            responses: {
+              "200" => {description: "Token issued"},
+              "401" => {description: "invalid_code", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/ErrorEnvelope"}}}}
+            }
+          }
+        },
+        "/api/v1/devices/push_token" => {
+          patch: {
+            tags: %w[devices],
+            summary: "Upsert push_token + platform + app_version on the bearer's most-recently-active device",
+            security: bearer_auth_security,
+            responses: {
+              "200" => {description: "Updated"},
+              "401" => {description: "unauthorized"},
+              "404" => {description: "no_active_device"},
+              "429" => {description: "rate_limited"}
+            }
+          }
+        },
+        "/api/v1/devices/{id}" => {
+          delete: {
+            tags: %w[devices],
+            summary: "Revoke device + cascade ApiKey expiry",
+            parameters: [{name: :id, in: :path, required: true, schema: {type: :integer}}],
+            security: bearer_auth_security,
+            responses: {
+              "204" => {description: "Revoked"},
+              "401" => {description: "unauthorized"},
+              "404" => {description: "not_found"}
+            }
+          }
+        },
+        "/api/v1/bootstrap" => {
+          get: {
+            tags: %w[bootstrap],
+            summary: "Single source of truth for app launch",
+            responses: {
+              "200" => {description: "Envelope"},
+              "429" => {description: "rate_limited"}
+            }
+          }
+        },
+        "/api/v1/notification_preferences" => {
+          get: {
+            tags: %w[notification_preferences],
+            summary: "List the 4 notification toggles for the bearer's user",
+            security: bearer_auth_security,
+            responses: {
+              "200" => {description: "Array of preferences"},
+              "401" => {description: "unauthorized"}
+            }
+          }
+        },
+        "/api/v1/notification_preferences/{key}" => {
+          patch: {
+            tags: %w[notification_preferences],
+            summary: "Toggle a single notification preference",
+            parameters: [{name: :key, in: :path, required: true, schema: {type: :string}}],
+            security: bearer_auth_security,
+            responses: {
+              "200" => {description: "Updated"},
+              "401" => {description: "unauthorized"},
+              "404" => {description: "unknown_preference", content: {"application/json" => {schema: {"$ref" => "#/components/schemas/ErrorEnvelope"}}}}
+            }
+          }
+        }
+      }
+    }
+  }
+
+  config.openapi_format = :yaml
+end

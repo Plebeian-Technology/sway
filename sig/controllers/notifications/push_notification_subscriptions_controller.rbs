@@ -1,0 +1,15 @@
+module Notifications
+    class PushNotificationSubscriptionsController < ApplicationController
+        @subscription: untyped
+
+        def create: -> untyped
+
+        def destroy: -> (nil | untyped)
+
+        private
+
+        def subscription: -> untyped
+
+        def push_notification_subscription_params: -> untyped
+    end
+end

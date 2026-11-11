@@ -1,0 +1,13 @@
+module Scraper
+    module OpenStates
+        module House
+            module ApiConnector
+                include FaradayConnector
+
+                def url: -> "https://mgaleg.maryland.gov"
+
+                def auth: -> nil
+            end
+        end
+    end
+end

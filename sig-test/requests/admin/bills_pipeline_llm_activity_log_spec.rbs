@@ -1,0 +1,3 @@
+# Spec-only constant for spec/requests/admin/bills_pipeline_llm_activity_log_spec.rb.
+# Defined at RSpec.describe block scope; Steep resolves it as top-level.
+EXPECTED_ENTRY_KEYS: Array[String]

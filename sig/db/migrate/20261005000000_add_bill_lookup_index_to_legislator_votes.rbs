@@ -1,0 +1,4 @@
+class AddBillLookupIndexToLegislatorVotes < ActiveRecord::Migration
+  def up: () -> void
+  def down: () -> void
+end

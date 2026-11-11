@@ -1,0 +1,79 @@
+module OpenLegislator
+  interface _MattersEnvelope
+    def is_a?: (singleton(Hash)) -> true
+    def []: ("data") -> Array[Hash[String, untyped]]
+          | ("page") -> Hash[String, untyped]?
+          | (String) -> untyped
+  end
+
+  class Client
+    DEFAULT_BASE_URL: String
+    MAX_LIMIT: Integer
+
+    class Error < StandardError
+    end
+
+    class ParseError < Error
+    end
+
+    class HttpError < Error
+      attr_reader status: Integer
+      attr_reader path: String
+      attr_reader body: String?
+
+      def initialize: (status: Integer, path: String, ?body: String?) -> void
+    end
+
+    attr_reader base_url: String
+    attr_reader conn: Faraday::Connection
+
+    def initialize: (?base_url: String, ?connection: Faraday::Connection?) -> void
+
+    def get: (String resource, **untyped params) -> untyped
+
+    def get_raw: (String resource, ?Hash[untyped, untyped] params) -> untyped
+
+    def matter_by_file_number: (String? file_number) -> Hash[String, untyped]?
+
+    def matter: (String? slug) -> Hash[String, untyped]
+
+    def matters: (?page: Integer?, ?limit: Integer?, **untyped filters) -> (Hash[String, untyped] & _MattersEnvelope)
+
+    def meeting: (String? slug) -> Hash[String, untyped]
+
+    def meetings: (?page: Integer?, ?limit: Integer?, **untyped filters) -> (Hash[String, untyped] & _MattersEnvelope)
+
+    def all_matters: (?page_size: Integer, ?max_pages: Integer, **untyped filters) -> Array[Hash[String, untyped]]
+
+    def matter_actions: (String? file_number_or_slug) -> Array[Hash[String, untyped]]
+
+    private
+
+    def normalize_path: (String resource) -> String
+
+    def clean_params: (Hash[untyped, untyped] params) -> Hash[String, untyped]
+
+    def parse: (String body) -> untyped
+  end
+end
+
+module OpenLegislatorFixtureHelpers
+  VALID_MATTER_OUTCOMES: Array[String]
+  VALID_ACTION_RESULTS: Array[String?]
+  VALID_VOTE_VALUES: Array[String]
+  EXACT_PAGE_KEYS: Array[String]
+
+  def open_legislator_fixture_files: () -> Array[String]
+  def verify_open_legislator_fixture_invariants!: () -> void
+
+  private
+
+  def check_outcomes: (untyped node, String file) -> void
+  def check_action_results: (untyped node, String file) -> void
+  def check_vote_values_and_visibility: (untyped node, String file) -> void
+end
+
+class Object
+  def open_legislator_fixture_files: () -> Array[String]
+  def verify_open_legislator_fixture_invariants!: () -> void
+end

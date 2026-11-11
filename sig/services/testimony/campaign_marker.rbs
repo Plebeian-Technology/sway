@@ -1,0 +1,37 @@
+# RBS signature for Testimony::CampaignMarker (Phase 67 Plan 04, Task 2) —
+# decides which letters arrived through a campaign tool. A domain is origin,
+# never identity or stance (D-13); grouping already happened in
+# Testimony::CampaignDraftFinder on text alone.
+module Testimony
+  class CampaignMarker
+    MAX_CAMPAIGN_ADDED_CHARS: Integer
+    SINGLETON_ID_LENGTH: Integer
+
+    class Result
+      attr_reader letters: Array[Hash[String, untyped]]
+      attr_reader campaign_drafts: Array[Hash[String, untyped]]
+
+      def initialize: (letters: Array[Hash[String, untyped]], campaign_drafts: Array[Hash[String, untyped]]) -> void
+      def self.new: (letters: Array[Hash[String, untyped]], campaign_drafts: Array[Hash[String, untyped]]) -> Testimony::CampaignMarker::Result
+    end
+
+    def self.call: (drafts: Array[Hash[String, untyped]], letters: Array[Hash[String, untyped]]) -> Result
+
+    @drafts: Array[Hash[String, untyped]]
+    @letters: Array[Hash[String, untyped]]
+    @letters_by_position: Hash[untyped, Hash[String, untyped]]?
+
+    def initialize: (drafts: Array[Hash[String, untyped]], letters: Array[Hash[String, untyped]]) -> void
+    def call: () -> Result
+
+    private
+
+    def confirmed_domain_set: () -> Hash[String, bool]
+    def build_singleton_draft: (Hash[String, untyped] letter) -> Hash[String, untyped]
+    def letters_by_position: () -> Hash[untyped, Hash[String, untyped]]
+    def letters_for: (Hash[String, untyped] draft) -> Array[Hash[String, untyped]]
+    def finalize_draft: (Hash[String, untyped] draft) -> Hash[String, untyped]
+    def bounded_added_words: (Array[Hash[String, untyped]] members) -> [String, Integer]
+    def dominant_domain: (Array[Hash[String, untyped]] members) -> String?
+  end
+end

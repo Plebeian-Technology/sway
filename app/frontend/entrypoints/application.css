@@ -1,0 +1,2 @@
+/* @lat: [[shared-stylesheet-entrypoint#Why an import inside a JavaScript entrypoint is not enough]] */
+@import "../styles/application.css";

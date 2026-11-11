@@ -1,0 +1,28 @@
+class FakeErrorCollector
+  # Anything JSON can hold, spelled out rather than left untyped, since every
+  # value this class touches came out of JSON.parse.
+  type jsonValue = String | Integer | Float | bool | nil | Array[jsonValue] | Hash[String, jsonValue]
+
+  # One request as it left the app: the headers, then the body.
+  type report = [Hash[String, String], String]
+
+  class Refused < StandardError
+  end
+
+  GZIP: String
+  EVENT_ITEM_TYPE: String
+
+  # The stored error, or nil when the envelope carried none (a session, say).
+  def receive: (Hash[String, String] headers, String body) -> Hash[String, jsonValue]?
+
+  private
+
+  def decode: (Hash[String, String] headers, String body) -> String
+  def find_header: (Hash[String, String] headers, String name) -> String?
+  def parse: (String line, String what) -> Hash[String, jsonValue]
+  def check_envelope_header: (Hash[String, jsonValue] header) -> void
+  def find_event: (Array[String] lines) -> Hash[String, jsonValue]?
+  def check_event: (Hash[String, jsonValue] event) -> void
+  def check_request_shape: (jsonValue request) -> void
+  def check_fingerprint: (jsonValue fingerprint) -> void
+end

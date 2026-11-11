@@ -1,0 +1,8 @@
+module EmailCacheKey
+  MissingHmacSecretError: singleton(PhoneCacheKey::MissingHmacSecretError)
+
+  ANONYMOUS: String
+
+  def self.hmac_secret_key: () -> String?
+  def self.digest: (String | Symbol | nil raw_email) -> String
+end

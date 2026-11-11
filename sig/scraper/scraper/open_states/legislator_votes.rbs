@@ -1,0 +1,24 @@
+module Scraper
+  module OpenStates
+    class LegislatorVotes
+      @region_code: untyped
+      @bill_created_at_year: untyped
+      @external_bill_id: untyped
+      @result: untyped
+
+      include FaradayConnector
+
+      def initialize: (bill: untyped, roll_call_number: untyped, roll_call_chamber: untyped) -> void
+      def content_type: () -> "application/json"
+      def chamber_name: () -> String
+      def vote_number: () -> bot
+      def do_request: () -> untyped
+      def do_process: () -> Array[Scraper::LegislatorVote]
+
+      private
+
+      def result: () -> untyped
+      def endpoint: () -> String
+    end
+  end
+end

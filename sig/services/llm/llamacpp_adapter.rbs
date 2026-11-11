@@ -1,0 +1,77 @@
+# Phase 54 D-02 / D-07 / iter-1 M5.
+#
+# JSONSchemer schemas are inherently recursive JSON; concrete typing
+# requires a recursive type alias which RBS does not yet express
+# cleanly. See [[feedback_rbs_avoid_untyped]] exception clause.
+module Llm
+  class LlamacppAdapter
+    TEMPERATURE: Float
+    MAX_TOKENS: Integer
+    DEFAULT_REQUEST_TIMEOUT_SECONDS: Integer
+
+    def self.request_timeout_seconds: () -> Integer
+
+    def self.thinking_enabled?: () -> bool
+
+    @client: untyped # OpenAI::Client — RBS sig not generated for ruby-openai
+
+    def provider_label: () -> String
+    def generate_bill_summary: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+    def generate_bill_categories: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+    def generate_bill_positions: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    # PROD-CR-01 stage 3: attachment-name classification, the LLM fallback
+    # behind Testimony::NameRules' deterministic allow/deny stages.
+    def generate_testimony_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    def generate_source_kind_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    def generate_testimony_stance_classification: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    def generate_news_claim_grounding: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+    ) -> Hash[String, untyped]
+
+    private
+
+
+    # WS5.13: shared body. validation_schema is a boot-loaded JSONSchemer
+    # instance (recursive JSON-Schema — untyped per the header exception).
+    def generate_structured: (
+      prompt: Llm::PromptPayload,
+      model: String,
+      schema: Hash[String, untyped],
+      schema_name: String,
+      validation_schema: untyped,
+    ) -> Hash[String, untyped]
+
+    def client: () -> untyped
+    def transport_error_detail: (untyped error) -> String
+  end
+end

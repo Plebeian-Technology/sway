@@ -1,0 +1,23 @@
+class Organizations::MembershipsController < Organizations::BaseController
+    # WR-03: working_membership memoizes a UserOrganizationMembership.find result.
+    # Within actions guarded by before_action chains, this is non-nil.
+    @working_membership: UserOrganizationMembership
+
+    def show: () -> void
+
+    def update: () -> void
+
+    def destroy: () -> void
+
+    def leave: () -> void
+
+    private
+
+    def verify_own_non_removed_membership!: () -> void
+
+    def working_membership: () -> UserOrganizationMembership
+
+    def working_membership_must_be_same_organization_as_current_user!: () -> void
+
+    def verify_admin_or_own_membership!: () -> void
+end

@@ -1,0 +1,46 @@
+class BillNewsArticleFetchService
+  MAX_NEWS_ARTICLES: Integer
+  MAX_TITLE_CHARS: Integer
+  MAX_CITED_TEXT_CHARS: Integer
+  MAX_DIAGNOSTICS_ENTRIES: Integer
+  MAX_DIAGNOSTIC_STRING_CHARS: Integer
+  GENERIC_LOCALE_SINGLE_WORDS: Array[String]
+  GENERIC_ISSUE_WORDS: Array[String]
+
+  @bill: Bill
+  @requested_by: User?
+  @discovery_request: NewsArticleDiscoveryRequest?
+  @search_client: untyped
+
+  def self.call: (*untyped, ?requested_by: User?, ?discovery_request: NewsArticleDiscoveryRequest?, ?search_client: untyped, **untyped) -> NewsArticleDiscoveryRequest
+  def initialize: (bill: Bill, ?requested_by: User?, ?discovery_request: NewsArticleDiscoveryRequest?, ?search_client: untyped) -> void
+  def call: () -> NewsArticleDiscoveryRequest
+
+  private
+
+  attr_reader bill: Bill
+  attr_reader requested_by: User?
+  attr_reader discovery_request: NewsArticleDiscoveryRequest?
+  attr_reader search_client: untyped
+
+  def validate_actor_and_bill!: () -> void
+  def find_or_initialize_receipt: (locale_doc: SwayLocale::DocumentReader::Document) -> NewsArticleDiscoveryRequest
+  def build_search_query: () -> String
+  def execute_search_and_attach: (receipt: NewsArticleDiscoveryRequest, sources: Array[Hash[String, untyped]]) -> NewsArticleDiscoveryRequest
+  def handle_failure: (NewsArticleDiscoveryRequest? receipt, Exception error) -> NewsArticleDiscoveryRequest
+  def scrub_exception_for_reporting: (Exception error) -> Exception
+  def extract_allowed_domains: (Array[Hash[String, untyped]] sources) -> Array[String]
+  def add_diagnostic: (Array[Hash[String, untyped]] diagnostics, Hash[String, untyped] entry) -> void
+  def process_candidate: (candidate: untyped, sources: Array[Hash[String, untyped]], counts: Hash[String, Integer], diagnostics: Array[Hash[String, untyped]], ?seen_canonical_urls: Set[String]) -> void
+  def parse_valid_https_uri: (String raw_url) -> URI::Generic?
+  def path_policy_allowed?: (uri: URI::Generic, matching_sources: Array[Hash[String, untyped]]) -> bool
+  def classify_candidate: (Hash[untyped, untyped] candidate) -> [String, String]
+  def bill_id_matches?: (String text) -> bool
+  def attach_candidate: (Hash[untyped, untyped] candidate, match_kind: String, match_evidence: String) -> BillNewsArticle
+  def determine_locale_terms: () -> Array[String]
+  def legislative_body_terms: () -> Array[String]
+  def conflicting_session?: (String text, Array[String] valid_years) -> bool
+  def issue_matches_bill?: (String text) -> bool
+  def infer_outlet_name: (String canonical_url) -> String
+  def valid_session_years: () -> Array[String]
+end

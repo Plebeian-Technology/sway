@@ -1,0 +1,18 @@
+# B2-WR-07: concrete sig for the live-LLM opt-in predicate.
+module LiveLlmGate
+  ENV_FLAG: String
+
+  # Host retained by CachePrefixTokenizer.
+  HOST: String
+  OPENROUTER_HOST: String
+  HOSTS: Array[String]
+
+  # Per-request deadline for live calls, in seconds. Never the SDK default.
+  TIMEOUT_SECONDS: Integer
+
+  def self.enabled?: () -> bool
+
+  # Derives the suite's outbound-HTTP policy (WebMock allowlist + VCR ignored
+  # hosts) from .enabled?. Idempotent and reversible in both directions.
+  def self.apply_http_policy!: () -> void
+end
