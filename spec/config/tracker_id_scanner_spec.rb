@@ -122,7 +122,7 @@ RSpec.describe TrackerIdScanner do
     scanner = described_class.new(root: Rails.root)
 
     expect(scanner.unexempt).to eq([]),
-      "a private tracker id is cited by a tracked file that ships to the public repository:\n\n" \
+      "a private tracker id is cited by a tracked file:\n\n" \
       "#{scanner.unexempt.join("\n")}\n\n" \
       "Nobody outside the tracker can resolve one. Name the change and the lat.md/ section it " \
       "belongs to instead, and leave the id in the tracker -- the tracker holds the pointer the " \

@@ -44,7 +44,7 @@ A red from it names the path and line and stops there. Widening `EXEMPT_PATHS` t
 
 ## Why the development storage directory is ignored outright
 
-The directory holding the development containers' databases is ignored by git rather than scanned, and the ignore rule is the only thing standing between it and the published tree.
+The directory holding the development containers' databases is ignored by git rather than scanned, and the ignore rule is the only thing standing between it and a commit.
 
 Nothing reads a database at that path — the live development database lives in a Docker named volume — so the only thing a tracked copy could do is publish rows. That asymmetry is what makes an ignore rule the right instrument: there is
 no reading to preserve and nothing to exempt, so a scanner finding is not the

@@ -80,7 +80,7 @@ and it survives a move to a different tracker.
 
 The tracker keeps the reverse pointers, so a maintainer with access still has
 the trail from a change back to the discussion that produced it, and nothing in
-the published tree depends on that access.
+the tracked tree depends on that access.
 
 A scanner keeps ids from coming back. `TrackerIdScanner` walks `git ls-files`
 and reports every committed line carrying the id shape, and
