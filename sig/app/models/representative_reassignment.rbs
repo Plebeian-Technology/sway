@@ -43,7 +43,6 @@ class RepresentativeReassignment < ApplicationRecord
 
   # Domain methods
   def dismiss!: () -> bool
-  def mark_notified!: () -> bool
 
   # Class query scopes
   def self.first: () -> RepresentativeReassignment

@@ -19,7 +19,6 @@ class Seat < ApplicationRecord
 
     def current_terms: (?Date date) -> Array[LegislatorTerm]
     def active_term: (?Date date) -> LegislatorTerm?
-    def current_occupant: (?Date date) -> Legislator?
     def sway_locale_id: -> Integer
 end
 

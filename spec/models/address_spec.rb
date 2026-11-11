@@ -26,24 +26,6 @@
 #
 
 RSpec.describe Address, type: :model do
-  describe "#from_string" do
-    let(:address) do
-      address_string = "1 East Baltimore St, Baltimore, MD, 21202"
-
-      # Tidying the values now happens on the way in, in a before_validation
-      # hook, so run validation on the new address before checking its cleaned-up
-      # region_code.
-      Address.from_string(address_string)&.tap(&:valid?)
-    end
-
-    context "when a user submits a form with an address" do
-      it "creates Address object from the form data strings" do
-        expect(address).to be_truthy
-        expect(address&.region_code).to match("MD")
-      end
-    end
-  end
-
   describe "#geocode" do
     let(:address) do
       Address.new(

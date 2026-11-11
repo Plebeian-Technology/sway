@@ -74,7 +74,6 @@ class SwayLocale
       def news_sources: () -> Array[Hash[String, String]]
       def source_config_digest: () -> String
       def news_sources_digest: () -> String
-      def sync_news_sources!: (SwayLocale sway_locale) -> LlmBillSummarizationInstruction
       def to_h: () -> Hash[Symbol, untyped]
       def to_sway_locale_attributes: () -> Hash[Symbol, untyped]
       def to_jurisdiction_rules: () -> SwayLocale::JurisdictionRules
@@ -140,7 +139,6 @@ class SwayLocale
     def self.parse_session_date: (untyped value, String field_path, String filename) -> Date
     def self.validate_allowlist: (untyped val, Array[String] list, String field_path, String filename) -> void
     def self.normalize_news_source_url: (String) -> String
-    def self.normalize_hash: (untyped rule) -> untyped
   end
 
   LegislativeSessionDefinition: singleton(DocumentReader::LegislativeSessionDefinition)

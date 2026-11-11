@@ -93,14 +93,6 @@ class SendingServiceDomain < ApplicationRecord
     summed_or_query(:bill_count) { sending_service_domain_bills.count }
   end
 
-  # @lat: [[domain-panel-totals#Why the domain panel bounds, filters, and validates untrusted domains]]
-  def machine_sent_share
-    total = letter_count
-    return nil if total.zero?
-
-    machine_sent_letter_count.to_f / total
-  end
-
   private
 
   def summed_or_query(column)

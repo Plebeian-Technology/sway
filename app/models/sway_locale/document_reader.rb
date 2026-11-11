@@ -304,19 +304,6 @@ class SwayLocale
         end
       end
 
-      def sync_news_sources!(sway_locale)
-        raise ArgumentError, "sway_locale must be present and persisted" unless sway_locale&.persisted?
-
-        instruction = sway_locale.llm_bill_summarization_instruction || sway_locale.build_llm_bill_summarization_instruction
-        target_urls = news_sources.pluck("url")
-
-        if instruction.new_record? || instruction.news_media_website_urls != target_urls
-          instruction.news_media_website_urls = target_urls
-          instruction.save!
-        end
-        instruction
-      end
-
       private
 
       def deep_freeze(value)
@@ -576,28 +563,6 @@ class SwayLocale
         validate_schema(raw_data, filename, path)
 
         Document.new(raw_data, filename: filename)
-      end
-
-      # @lat: [[jurisdiction-rules#Explicit retrieval and parsing decoupling]]
-      def normalize_hash(rule)
-        return nil if rule.nil?
-        return rule unless rule.is_a?(Hash)
-
-        hwia = rule.with_indifferent_access
-
-        engine = hwia[:engine]
-        retrieval = hwia[:retrieval].presence || hwia[:retrieval_strategy]
-        parsing = hwia[:parsing].presence || hwia[:parser_format]
-
-        retrieval ||= engine
-        parsing ||= engine
-        engine ||= retrieval
-
-        hwia[:retrieval] = retrieval if retrieval.present?
-        hwia[:parsing] = parsing if parsing.present?
-        hwia[:engine] = engine if engine.present?
-
-        hwia
       end
 
       def normalize_news_source_url(url)

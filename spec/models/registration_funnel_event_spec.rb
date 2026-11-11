@@ -73,38 +73,9 @@ RSpec.describe RegistrationFunnelEvent, type: :model do
       event2 = described_class.new(step: :geocoding_completed)
       expect(event1.read_attribute_before_type_cast(:step)).to eq(event2.read_attribute_before_type_cast(:step))
     end
-
-    it "defines all canonical steps" do
-      canonical = described_class::CANONICAL_STEPS
-      expect(canonical).to include(
-        "landing",
-        "phone_submitted",
-        "sms_verified",
-        "passkey_enrolled",
-        "address_submitted",
-        "geocoding_completed",
-        "first_vote_cast"
-      )
-    end
   end
 
   describe "scopes and helpers" do
-    let!(:event1) { described_class.create!(visitor_token: "v1", step: :landing, created_at: 2.days.ago) }
-    let!(:event2) { described_class.create!(visitor_token: "v2", step: :phone_submitted, created_at: 1.day.ago) }
-    let!(:event3) { described_class.create!(visitor_token: "v1", step: :sms_verified, created_at: 1.hour.ago) }
-
-    it "filters by step with for_step" do
-      expect(described_class.for_step(:landing)).to contain_exactly(event1)
-    end
-
-    it "filters by time window with in_window" do
-      expect(described_class.in_window(36.hours.ago..Time.current)).to contain_exactly(event2, event3)
-    end
-
-    it "filters by visitor_token" do
-      expect(described_class.for_visitor("v1")).to contain_exactly(event1, event3)
-    end
-
     it "extracts latency_ms from metadata" do
       event_with_latency = described_class.new(
         visitor_token: "vt",

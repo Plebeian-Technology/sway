@@ -1,7 +1,6 @@
 class RegistrationFunnelEvent < ApplicationRecord
   extend ::ActiveRecord::Base::ClassMethods[::RegistrationFunnelEvent, ::RegistrationFunnelEvent::ActiveRecord_Relation, ::Integer]
 
-  CANONICAL_STEPS: Array[String]
   STEP_ALIASES: Hash[String, String]
 
   def id: () -> Integer
@@ -33,9 +32,7 @@ class RegistrationFunnelEvent < ApplicationRecord
   def self.steps: () -> Hash[String, Integer]
   def self.normalize_step: (String | Symbol | Integer | untyped) -> String
   def self.recent: () -> RegistrationFunnelEvent::ActiveRecord_Relation
-  def self.for_visitor: (String) -> RegistrationFunnelEvent::ActiveRecord_Relation
   def self.for_user: (Integer) -> RegistrationFunnelEvent::ActiveRecord_Relation
-  def self.for_step: (String | Symbol) -> RegistrationFunnelEvent::ActiveRecord_Relation
   def self.since: (untyped) -> RegistrationFunnelEvent::ActiveRecord_Relation
   def self.humans: () -> RegistrationFunnelEvent::ActiveRecord_Relation
   def self.bots: () -> RegistrationFunnelEvent::ActiveRecord_Relation
@@ -46,9 +43,7 @@ class RegistrationFunnelEvent < ApplicationRecord
 
   module GeneratedRelationMethods
     def recent: () -> RegistrationFunnelEvent::ActiveRecord_Relation
-    def for_visitor: (String) -> RegistrationFunnelEvent::ActiveRecord_Relation
     def for_user: (Integer) -> RegistrationFunnelEvent::ActiveRecord_Relation
-    def for_step: (String | Symbol) -> RegistrationFunnelEvent::ActiveRecord_Relation
     def since: (untyped) -> RegistrationFunnelEvent::ActiveRecord_Relation
     def humans: () -> RegistrationFunnelEvent::ActiveRecord_Relation
     def bots: () -> RegistrationFunnelEvent::ActiveRecord_Relation

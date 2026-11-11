@@ -45,41 +45,6 @@ RSpec.describe Seat, type: :model do
     expect(district.seats).to contain_exactly(first, second)
   end
 
-  it "returns the occupant only inside the locale-derived half-open service window" do
-    seat = described_class.create!(
-      district:,
-      seat_identifier: "md-senate-class-1",
-      title: "United States Senator",
-      chamber: "Senate"
-    )
-    handover = TermWindow.convening_date(sway_locale, 2025)
-    predecessor = create(:legislator, sway_locale:)
-    successor = create(:legislator, sway_locale:)
-    create(
-      :legislator_term,
-      legislator: predecessor,
-      district:,
-      seat:,
-      term_start_year: 2023,
-      term_end_year: 2025,
-      ended_on: handover,
-      ended_on_source: LegislatorTerm::DateSource::PUBLISHED
-    )
-    create(
-      :legislator_term,
-      legislator: successor,
-      district:,
-      seat:,
-      term_start_year: 2025,
-      term_end_year: 2027,
-      began_on: handover,
-      began_on_source: LegislatorTerm::DateSource::PUBLISHED
-    )
-
-    expect(seat.current_occupant(handover - 1)).to eq(predecessor)
-    expect(seat.current_occupant(handover)).to eq(successor)
-  end
-
   it "rejects a seat from another district" do
     other_district = create(:district, sway_locale:, name: "MD1")
     seat = described_class.create!(

@@ -85,11 +85,6 @@ class TermWindow
       "COALESCE(#{ended_on_column}, #{convening_date_sql(year_column)})"
     end
 
-    def current_term_condition_sql(date = Date.current)
-      iso_date = (date.is_a?(String) ? Date.parse(date) : date.to_date).iso8601
-      "(#{begins_on_sql} <= '#{iso_date}' AND '#{iso_date}' < #{ends_on_sql})"
-    end
-
     private
 
     def cycle_anchor_and_years(sway_locale)

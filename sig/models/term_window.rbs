@@ -56,8 +56,6 @@ class TermWindow
 
   def self.ends_on_sql: (?String year_column, ?String ended_on_column) -> String
 
-  def self.current_term_condition_sql: (?(Date | ActiveSupport::TimeWithZone | String) date) -> String
-
   private
 
   def self.cycle_anchor_and_years: (SwayLocale sway_locale) -> [Integer, Integer]

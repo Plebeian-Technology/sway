@@ -42,16 +42,6 @@ class RegistrationFunnelEvent < ApplicationRecord
     first_vote_cast: 8
   }
 
-  CANONICAL_STEPS = %w[
-    landing
-    phone_submitted
-    sms_verified
-    passkey_enrolled
-    address_submitted
-    geocoding_completed
-    first_vote_cast
-  ].freeze
-
   STEP_ALIASES = {
     "phone_entered" => "phone_submitted",
     "registration_completed" => "geocoding_completed"
@@ -62,10 +52,6 @@ class RegistrationFunnelEvent < ApplicationRecord
   validates :attribution_key, length: {maximum: 100}, allow_nil: true
 
   scope :recent, -> { order(created_at: :desc) }
-  scope :for_step, ->(step_name) { where(step: RegistrationFunnelEvent.normalize_step(step_name)) }
-  scope :for_visitor, ->(token) { where(visitor_token: token) }
-  scope :with_attribution, ->(key) { where(attribution_key: key) }
-  scope :in_window, ->(range) { where(created_at: range) }
   scope :humans, -> { where(bot: false) }
   scope :bots, -> { where(bot: true) }
 

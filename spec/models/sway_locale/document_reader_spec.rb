@@ -1071,79 +1071,6 @@ RSpec.describe SwayLocale::DocumentReader do
     end
   end
 
-  describe ".normalize_hash" do
-    it "returns nil for nil input" do
-      expect(described_class.normalize_hash(nil)).to be_nil
-    end
-
-    it "populates retrieval and parsing fallbacks from engine while preserving engine" do
-      normalized = described_class.normalize_hash({"engine" => "legistar", "base_url" => "https://example.com"})
-
-      expect(normalized[:engine]).to eq("legistar")
-      expect(normalized["engine"]).to eq("legistar")
-      expect(normalized[:retrieval]).to eq("legistar")
-      expect(normalized["retrieval"]).to eq("legistar")
-      expect(normalized[:parsing]).to eq("legistar")
-      expect(normalized["parsing"]).to eq("legistar")
-      expect(normalized[:base_url]).to eq("https://example.com")
-    end
-
-    it "populates engine fallback from retrieval while preserving retrieval and parsing" do
-      normalized = described_class.normalize_hash({
-        retrieval: "generic_rest",
-        parsing: "generic_json",
-        base_url: "https://example.com"
-      })
-
-      expect(normalized[:engine]).to eq("generic_rest")
-      expect(normalized["engine"]).to eq("generic_rest")
-      expect(normalized[:retrieval]).to eq("generic_rest")
-      expect(normalized["retrieval"]).to eq("generic_rest")
-      expect(normalized[:parsing]).to eq("generic_json")
-      expect(normalized["parsing"]).to eq("generic_json")
-    end
-
-    it "preserves distinct engine and retrieval keys without overwriting when both are present" do
-      normalized = described_class.normalize_hash({
-        "engine" => "legacy_engine",
-        "retrieval" => "new_retrieval",
-        "parsing" => "new_parsing"
-      })
-
-      expect(normalized[:engine]).to eq("legacy_engine")
-      expect(normalized["engine"]).to eq("legacy_engine")
-      expect(normalized[:retrieval]).to eq("new_retrieval")
-      expect(normalized["retrieval"]).to eq("new_retrieval")
-      expect(normalized[:parsing]).to eq("new_parsing")
-      expect(normalized["parsing"]).to eq("new_parsing")
-    end
-
-    it "normalizes aliases retrieval_strategy and parser_format to canonical keys" do
-      normalized = described_class.normalize_hash({
-        retrieval_strategy: "open_states",
-        parser_format: "open_states_v3"
-      })
-
-      expect(normalized[:retrieval]).to eq("open_states")
-      expect(normalized["retrieval"]).to eq("open_states")
-      expect(normalized[:parsing]).to eq("open_states_v3")
-      expect(normalized["parsing"]).to eq("open_states_v3")
-      expect(normalized[:engine]).to eq("open_states")
-      expect(normalized[:retrieval_strategy]).to eq("open_states")
-      expect(normalized[:parser_format]).to eq("open_states_v3")
-    end
-
-    it "supports both symbol and string key access cleanly" do
-      sym_normalized = described_class.normalize_hash({engine: "legistar"})
-      str_normalized = described_class.normalize_hash({"engine" => "legistar"})
-
-      expect(sym_normalized[:retrieval]).to eq("legistar")
-      expect(sym_normalized["retrieval"]).to eq("legistar")
-      expect(str_normalized[:retrieval]).to eq("legistar")
-      expect(str_normalized["retrieval"]).to eq("legistar")
-    end
-  end
-
   describe "INTEGRATION_RULE_FIELDS" do
     it "includes legacy_path_fallback" do
       expect(described_class::INTEGRATION_RULE_FIELDS).to include("legacy_path_fallback")
@@ -2248,7 +2175,7 @@ RSpec.describe SwayLocale::DocumentReader do
     end
 
     describe "authoritative configuration vs stale instruction DB row" do
-      it "supplies configured newsroom sources over stale instruction DB row and syncs projection without resetting other fields" do
+      it "supplies configured newsroom sources over stale instruction DB row" do
         Dir.mktmpdir do |dir|
           file = File.join(dir, "synthetic-maryland-united_states.yml")
           File.write(file, synthetic_yaml_template)
@@ -2271,34 +2198,12 @@ RSpec.describe SwayLocale::DocumentReader do
           allow(described_class).to receive(:current_for).with(locale.name, any_args).and_return(doc)
           allow(described_class).to receive(:find).with(locale.name, any_args).and_return(doc)
 
-          doc.sync_news_sources!(locale)
-          instruction.reload
-          expect(instruction.news_media_website_urls).to eq([
-            "https://synthetic.news.org/city/",
-            "https://restricted.gazette.com/politics/"
-          ])
-          expect(instruction.legislative_body_makeup).to eq("Custom legislative body makeup")
-          expect(instruction.worked_example).to eq("Custom worked example")
-
-          expect { doc.sync_news_sources!(locale) }.not_to change { instruction.reload.updated_at }
-
           instruction.update_column(:news_media_website_urls, ["https://unauthorized-override.org/"])
           expect(instruction.news_sources).to eq(doc.news_sources)
           expect(instruction.allowed_domains).to eq([
             "synthetic.news.org/city",
             "restricted.gazette.com/politics"
           ])
-        end
-      end
-
-      it "raises ArgumentError when sway_locale is nil or unpersisted" do
-        Dir.mktmpdir do |dir|
-          file = File.join(dir, "synthetic-maryland-united_states.yml")
-          File.write(file, synthetic_yaml_template)
-          doc = described_class.read(file)
-
-          expect { doc.sync_news_sources!(nil) }.to raise_error(ArgumentError, /persisted/)
-          expect { doc.sync_news_sources!(SwayLocale.new) }.to raise_error(ArgumentError, /persisted/)
         end
       end
     end
@@ -2687,28 +2592,6 @@ RSpec.describe SwayLocale::DocumentReader do
 
             expect(doc1.source_config_digest).to eq(doc2.source_config_digest)
           end
-        end
-      end
-
-      it "persists stripped and canonical URLs when syncing padded or uppercase sources" do
-        Dir.mktmpdir do |dir|
-          yaml = synthetic_yaml_template.sub(
-            "https://synthetic.news.org/city/",
-            "  HTTPS://SYNTHETIC.NEWS.ORG/city/  "
-          )
-          file = File.join(dir, "synthetic-maryland-united_states.yml")
-          File.write(file, yaml)
-          doc = described_class.read(file)
-
-          locale = create(:sway_locale, city: "synthetic", region_name: "maryland", country: "united_states")
-          instruction = doc.sync_news_sources!(locale)
-
-          expect(instruction.news_media_website_urls).to eq([
-            "https://synthetic.news.org/city/",
-            "https://restricted.gazette.com/politics/"
-          ])
-          expect(instruction.news_media_website_urls.first).not_to start_with(" ")
-          expect(instruction.news_media_website_urls.first).not_to include("SYNTHETIC")
         end
       end
 

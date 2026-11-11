@@ -128,20 +128,6 @@ RSpec.describe RepresentativeReassignment, type: :model do
     end
   end
 
-  describe "#mark_notified!" do
-    it "sets notified_at to the current time" do
-      record = described_class.create!(
-        user: user,
-        district: district,
-        legislator: legislator,
-        reassignment_type: :vacancy_filled
-      )
-
-      expect { record.mark_notified! }.to change(record, :notified_at).from(nil)
-      expect(record.notified_at).to be_present
-    end
-  end
-
   describe "partial unique index deduplication" do
     it "enforces uniqueness for full transitions (both legislators present)" do
       described_class.create!(

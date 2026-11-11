@@ -73,22 +73,6 @@ class Address < ApplicationRecord
     self.class.normalized_key_for(latitude:, longitude:, street2:, street3:)
   end
 
-  def self.from_string(address_string)
-    return nil if address_string.blank?
-
-    results = Geocoder.search(address_string).first
-    return nil if results.nil?
-
-    Address.new(
-      street: results.street || results.address,
-      city: results.city,
-      region_code: results.state,
-      postal_code: results.postal_code,
-      latitude: results.coordinates.first,
-      longitude: results.coordinates.last
-    )
-  end
-
   def full_address
     [street, city, region_code, postal_code, country].compact.join(", ")
   end

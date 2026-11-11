@@ -1,6 +1,4 @@
 class Address < ApplicationRecord
-    def self.from_string: (String address_string) -> Address?
-
     COORDINATE_KEY_PRECISION: Integer
     UNIT_PREFIX: ::Regexp
 

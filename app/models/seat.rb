@@ -63,8 +63,4 @@ class Seat < ApplicationRecord
 
     terms.first
   end
-
-  def current_occupant(date = Date.current)
-    active_term(date)&.legislator
-  end
 end

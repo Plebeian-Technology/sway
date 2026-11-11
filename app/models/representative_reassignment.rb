@@ -57,8 +57,4 @@ class RepresentativeReassignment < ApplicationRecord
   def dismiss!
     touch(:dismissed_at)
   end
-
-  def mark_notified!
-    touch(:notified_at)
-  end
 end

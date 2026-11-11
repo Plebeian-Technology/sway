@@ -120,20 +120,6 @@ RSpec.describe SendingServiceDomain, type: :model do
       expect(domain.bill_count).to eq(2)
     end
 
-    it "reads machine_sent_share as absent, not zero, when there are no letters" do
-      domain = create(:sending_service_domain)
-      expect(domain.machine_sent_share).to be_nil
-    end
-
-    it "computes machine_sent_share from the summed counts" do
-      domain = create(:sending_service_domain)
-      create(:sending_service_domain_bill,
-        sending_service_domain: domain,
-        sender_count: 4, letter_count: 4, machine_sent_letter_count: 3)
-
-      expect(domain.machine_sent_share).to eq(0.75)
-    end
-
     # @lat: [[domain-panel-totals#Why the readers read the attribute rather than call the alias]]
     describe "loaded through .panel_ranked" do
       def sending_service_domain_queries_during
@@ -185,17 +171,6 @@ RSpec.describe SendingServiceDomain, type: :model do
         expect([plain.sender_count, plain.letter_count, plain.bill_count]).to eq([7, 9, 1])
       end
 
-      it "computes machine_sent_share correctly from panel_ranked-loaded values" do
-        domain = create(:sending_service_domain)
-        create(:sending_service_domain_bill,
-          sending_service_domain: domain,
-          sender_count: 4, letter_count: 4, machine_sent_letter_count: 3)
-
-        ranked = SendingServiceDomain.for_panel.panel_ranked.find(domain.id)
-
-        expect(ranked.machine_sent_share).to eq(0.75)
-      end
-
       it "reads zero, not a string, when a panel_ranked domain has no contribution rows" do
         domain = create(:sending_service_domain, label: SendingServiceDomain::CONFIRMED,
           confirmed_by: create(:user), confirmed_at: Time.zone.now)
@@ -208,9 +183,6 @@ RSpec.describe SendingServiceDomain, type: :model do
         expect(ranked.bill_count).to eq(0)
       end
 
-      # machine_sent_share calls .zero? and .to_f on these values — a String back from SQLite's
-      # COALESCE(SUM(...)) alias would break both silently (a numeric-looking string is truthy and
-      # not zero?, and .to_f on a non-numeric string would just read 0.0 without raising).
       it "hands back real Integers from the SQL-computed aliases, not strings" do
         domain = create(:sending_service_domain)
         create(:sending_service_domain_bill,

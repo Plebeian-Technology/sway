@@ -184,7 +184,6 @@ News sources define authoritative publisher domains and path policies governing 
   - Duplicate URLs after canonicalization fail validation.
 - Digest and synchronization behavior:
   - `DocumentReader#source_config_digest` (aliased as `news_sources_digest`): Deterministic SHA256 digest of canonicalized sources sorted by URL.
-  - `DocumentReader#sync_news_sources!(sway_locale)`: Idempotently synchronizes canonical URLs to `LlmBillSummarizationInstruction#news_media_website_urls` without mutating other editable fields.
   - `LlmBillSummarizationInstruction#news_sources`: Reads from authoritative locale document when present, falling back to legacy projection URLs.
   - `LlmBillSummarizationInstruction#allowed_domains`: Derives filtered domains exclusively from authoritative locale document sources.
 ## Nominatim geographic configuration

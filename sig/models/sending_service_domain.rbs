@@ -39,8 +39,6 @@ class SendingServiceDomain < ApplicationRecord
 
   def bill_count: () -> Integer
 
-  def machine_sent_share: () -> Float?
-
   # Present only on a row loaded through panel_ranked, which SELECTs them as
   # ad-hoc aliases (B12) — absent on a plain load, which is why the readers
   # above guard every call with has_attribute?.
