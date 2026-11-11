@@ -78,8 +78,6 @@ RSpec.describe NewsArticleSourceSnapshot, type: :model do
       revision.reload
 
       expect(revision.news_source_snapshot).to eq(snapshot)
-      expect(snapshot.captured_text_versions).to contain_exactly(version_1)
-      expect(snapshot.captured_text_versions.first.text).to eq("Initial reported text: Council approves funding.")
       expect(snapshot.source_entries.first["review_version"]).to eq(1)
       expect(snapshot.source_entries.first["text_digest"]).to eq(version_1.digest)
       expect(snapshot.source_entries.first["text_version_id"]).to eq(version_1.id)

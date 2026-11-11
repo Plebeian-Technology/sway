@@ -71,7 +71,7 @@ Before `self.max_summary_context_chars` read its setting per call per call, a te
 
 `MAX_DRAFT_POSITIONS`, `MAX_ORG_NAME_CHARS`, and `MAX_POSITION_SUMMARY_CHARS` are the bounds the model's answer is CHECKED against, read from the schema file rather than typed out again here.
 
-`MAX_DRAFT_POSITIONS`, `MAX_ORG_NAME_CHARS`, and `MAX_POSITION_SUMMARY_CHARS` are the bounds the model's answer is CHECKED against, read from the schema file rather than typed out again here — the same arrangement `BillLlmProvisioning::DRAFT_STANCES` uses, with `fetch` all the way down so a restructured schema raises at boot instead of quietly telling the model a limit that is not the one actually enforced.
+`MAX_DRAFT_POSITIONS`, `MAX_ORG_NAME_CHARS`, and `MAX_POSITION_SUMMARY_CHARS` are the bounds the model's answer is CHECKED against, read from the schema file rather than typed out again here — the same arrangement `BillLlmProvisioning::DRAFT_POSITIONS` uses, with `fetch` all the way down so a restructured schema raises at boot instead of quietly telling the model a limit that is not the one actually enforced.
 
 They are stated in the prompt because a payload past a bound is discarded WHOLE, after the call has already been paid for. A model that is not told the limit cannot keep to it.
 

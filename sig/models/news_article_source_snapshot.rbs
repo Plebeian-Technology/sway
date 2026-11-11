@@ -32,11 +32,7 @@ class NewsArticleSourceSnapshot < ApplicationRecord
   def testimony?: () -> bool
   def captured_source_entries: () -> Array[Hash[String, untyped]]
   def captured_text_version_ids: () -> Array[Integer]
-  def captured_text_versions: () -> NewsArticleTextVersion::ActiveRecord_Relation
   def current_eligibility_comparison: () -> NewsArticleSourceSnapshot::EligibilityComparison
-  def check_current_eligibility: () -> NewsArticleSourceSnapshot::EligibilityComparison
-  def compare_current_eligibility: () -> NewsArticleSourceSnapshot::EligibilityComparison
-  def current_eligibility_matches?: () -> bool
 
   def self.for_summary: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation
   def self.for_testimony: () -> NewsArticleSourceSnapshot::ActiveRecord_Relation

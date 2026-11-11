@@ -37,7 +37,7 @@ class BillDraftOrgPositionsController < ApplicationController
       )
     end
 
-    # @lat: [[draft-field-validation#DRAFT_STANCES: the three words a draft's stance may hold]]
+    # @lat: [[draft-field-validation#DRAFT_POSITIONS: the three words a draft's stance may hold]]
     support_val = edit_params[:support] || edit_params[:stance]
     if !rejecting && (edit_params.key?(:support) || edit_params.key?(:stance)) &&
         !BillLlmProvisioning.draft_support_valid?(support_val)

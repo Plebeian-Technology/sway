@@ -293,8 +293,8 @@ RSpec.describe "POST /bills/:bill_id/campaigns/reject_draft", type: :request do
       groups: [campaign_group(id: "grp2"), campaign_group(id: "grp1")]
     ))
 
-    expect(provisioning.reload.campaign_draft_rejected?("grp1")).to be(true)
-    expect(provisioning.campaign_draft_rejected?("grp2")).to be(false)
+    expect(provisioning.reload.rejected_campaign_draft_hash_list).to include("grp1")
+    expect(provisioning.rejected_campaign_draft_hash_list).not_to include("grp2")
   end
 
   it "is idempotent" do
@@ -389,8 +389,8 @@ RSpec.describe "POST /bills/:bill_id/campaigns/mark_individual_draft", type: :re
       groups: [campaign_group(id: "grp2"), campaign_group(id: "grp1")]
     ))
 
-    expect(provisioning.reload.campaign_draft_individual?("grp1")).to be(true)
-    expect(provisioning.campaign_draft_individual?("grp2")).to be(false)
+    expect(provisioning.reload.individual_campaign_draft_hash_list).to include("grp1")
+    expect(provisioning.individual_campaign_draft_hash_list).not_to include("grp2")
   end
 
   it "is idempotent" do
@@ -401,16 +401,16 @@ RSpec.describe "POST /bills/:bill_id/campaigns/mark_individual_draft", type: :re
 
   it "is mutually exclusive with rejection" do
     post reject_draft_bill_campaigns_path(bill), params: {content_hash: "grp1"}
-    expect(provisioning.reload.campaign_draft_rejected?("grp1")).to be(true)
-    expect(provisioning.campaign_draft_individual?("grp1")).to be(false)
+    expect(provisioning.reload.rejected_campaign_draft_hash_list).to include("grp1")
+    expect(provisioning.individual_campaign_draft_hash_list).not_to include("grp1")
 
     post mark_individual_draft_bill_campaigns_path(bill), params: {content_hash: "grp1"}
-    expect(provisioning.reload.campaign_draft_rejected?("grp1")).to be(false)
-    expect(provisioning.campaign_draft_individual?("grp1")).to be(true)
+    expect(provisioning.reload.rejected_campaign_draft_hash_list).not_to include("grp1")
+    expect(provisioning.individual_campaign_draft_hash_list).to include("grp1")
 
     post reject_draft_bill_campaigns_path(bill), params: {content_hash: "grp1"}
-    expect(provisioning.reload.campaign_draft_rejected?("grp1")).to be(true)
-    expect(provisioning.campaign_draft_individual?("grp1")).to be(false)
+    expect(provisioning.reload.rejected_campaign_draft_hash_list).to include("grp1")
+    expect(provisioning.individual_campaign_draft_hash_list).not_to include("grp1")
   end
 
   it "refuses a request that names no draft" do
@@ -426,7 +426,7 @@ RSpec.describe "POST /bills/:bill_id/campaigns/mark_individual_draft", type: :re
 
   it "clears individual_campaign_draft_hashes when the draft is subsequently approved as a campaign" do
     post mark_individual_draft_bill_campaigns_path(bill), params: {content_hash: "grp1"}
-    expect(provisioning.reload.campaign_draft_individual?("grp1")).to be(true)
+    expect(provisioning.reload.individual_campaign_draft_hash_list).to include("grp1")
 
     post bill_campaigns_path(bill), params: {
       name: "Coalition Campaign",
@@ -435,7 +435,7 @@ RSpec.describe "POST /bills/:bill_id/campaigns/mark_individual_draft", type: :re
       content_hash: "grp1"
     }
 
-    expect(provisioning.reload.campaign_draft_individual?("grp1")).to be(false)
+    expect(provisioning.reload.individual_campaign_draft_hash_list).not_to include("grp1")
   end
 
   it "restores a marked-individual draft" do

@@ -74,10 +74,6 @@ class Campaign < ApplicationRecord
   # @lat: [[campaign-organization-link#Why an organization from another locale is refused]]
   validate :organization_matches_link_decision
 
-  def organization_link_decided?
-    organization_link_decision.present?
-  end
-
   # @lat: [[campaign-scope-and-identity#Where the wrong scope came from]]
 
   private

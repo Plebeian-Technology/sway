@@ -951,17 +951,11 @@ RSpec.describe BillLlmProvisioning do
       expect(provisioning.news_articles_list).to eq([])
     end
 
-    it "serializes invalid_news_urls as JSON and exposes list helper" do
+    it "serializes invalid_news_urls as JSON" do
       urls = ["https://unlisted.com/1", "https://unlisted.com/2"]
       provisioning = create(:bill_llm_provisioning, invalid_news_urls: urls, news_urls_valid: false)
       expect(provisioning.reload.invalid_news_urls).to eq(urls)
-      expect(provisioning.invalid_news_urls_list).to eq(urls)
       expect(provisioning.news_urls_valid).to be(false)
-    end
-
-    it "returns empty array for invalid_news_urls_list when nil" do
-      provisioning = build(:bill_llm_provisioning, invalid_news_urls: nil)
-      expect(provisioning.invalid_news_urls_list).to eq([])
     end
   end
 
@@ -1229,19 +1223,15 @@ RSpec.describe BillLlmProvisioning do
     let(:bill) { create(:bill) }
     let(:provisioning) { create(:bill_llm_provisioning, bill: bill) }
 
-    describe "#individual_campaign_draft_hash_list and #campaign_draft_individual?" do
+    describe "#individual_campaign_draft_hash_list" do
       it "returns empty array when individual_campaign_draft_hashes is nil" do
         provisioning.update!(individual_campaign_draft_hashes: nil)
         expect(provisioning.individual_campaign_draft_hash_list).to eq([])
-        expect(provisioning.campaign_draft_individual?("hash123")).to be(false)
       end
 
-      it "returns string elements and checks membership" do
+      it "returns string elements" do
         provisioning.update!(individual_campaign_draft_hashes: ["hash1", 123])
         expect(provisioning.individual_campaign_draft_hash_list).to eq(["hash1", "123"])
-        expect(provisioning.campaign_draft_individual?("hash1")).to be(true)
-        expect(provisioning.campaign_draft_individual?(123)).to be(true)
-        expect(provisioning.campaign_draft_individual?("hash2")).to be(false)
       end
     end
 
@@ -1256,7 +1246,6 @@ RSpec.describe BillLlmProvisioning do
       it "adds the content hash to individual_campaign_draft_hashes" do
         expect(provisioning.mark_campaign_draft_individual!("grp1")).to be(true)
         expect(provisioning.reload.individual_campaign_draft_hash_list).to eq(["grp1"])
-        expect(provisioning.campaign_draft_individual?("grp1")).to be(true)
       end
 
       it "is idempotent and returns false if already individual" do
@@ -1267,12 +1256,11 @@ RSpec.describe BillLlmProvisioning do
 
       it "removes content hash from rejected_campaign_draft_hashes when marking individual (mutual exclusivity)" do
         provisioning.reject_campaign_draft!("grp1")
-        expect(provisioning.campaign_draft_rejected?("grp1")).to be(true)
+        expect(provisioning.rejected_campaign_draft_hash_list).to eq(["grp1"])
 
         expect(provisioning.mark_campaign_draft_individual!("grp1")).to be(true)
         provisioning.reload
-        expect(provisioning.campaign_draft_individual?("grp1")).to be(true)
-        expect(provisioning.campaign_draft_rejected?("grp1")).to be(false)
+        expect(provisioning.individual_campaign_draft_hash_list).to eq(["grp1"])
         expect(provisioning.rejected_campaign_draft_hash_list).to eq([])
       end
     end
@@ -1287,7 +1275,6 @@ RSpec.describe BillLlmProvisioning do
       it "adds the content hash to rejected_campaign_draft_hashes" do
         expect(provisioning.reject_campaign_draft!("grp1")).to be(true)
         expect(provisioning.reload.rejected_campaign_draft_hash_list).to eq(["grp1"])
-        expect(provisioning.campaign_draft_rejected?("grp1")).to be(true)
       end
 
       it "is idempotent and returns false if already rejected" do
@@ -1298,12 +1285,11 @@ RSpec.describe BillLlmProvisioning do
 
       it "removes content hash from individual_campaign_draft_hashes when rejecting (mutual exclusivity)" do
         provisioning.mark_campaign_draft_individual!("grp1")
-        expect(provisioning.campaign_draft_individual?("grp1")).to be(true)
+        expect(provisioning.individual_campaign_draft_hash_list).to eq(["grp1"])
 
         expect(provisioning.reject_campaign_draft!("grp1")).to be(true)
         provisioning.reload
-        expect(provisioning.campaign_draft_rejected?("grp1")).to be(true)
-        expect(provisioning.campaign_draft_individual?("grp1")).to be(false)
+        expect(provisioning.rejected_campaign_draft_hash_list).to eq(["grp1"])
         expect(provisioning.individual_campaign_draft_hash_list).to eq([])
       end
     end

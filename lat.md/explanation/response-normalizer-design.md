@@ -48,7 +48,7 @@ The `.fetch` calls right after the constant die at load time, not the first LLM 
 
 Every spec written for this would still pass: two build their own schema literal and never see the rename; the rest still raise — but from `additionalProperties: false`, not from this guard.
 
-`BillLlmProvisioning::DRAFT_STANCES` and `BillSummaryPromptBuilder::MAX_CATEGORIES` fetch their way down a schema hash for the same reason.
+`BillLlmProvisioning::DRAFT_POSITIONS` and `BillSummaryPromptBuilder::MAX_CATEGORIES` fetch their way down a schema hash for the same reason.
 
 ## cap_items: quietly changing a response is how earlier bugs went unnoticed — say so
 

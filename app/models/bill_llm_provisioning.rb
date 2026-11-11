@@ -68,17 +68,9 @@ class BillLlmProvisioning < ApplicationRecord
     Array(news_articles)
   end
 
-  def invalid_news_urls_list
-    Array(invalid_news_urls).map(&:to_s)
-  end
-
   # @lat: [[campaign-draft-rejection#The problem: a campaign draft has no row]]
   def rejected_campaign_draft_hash_list
     Array(rejected_campaign_draft_hashes).map(&:to_s)
-  end
-
-  def campaign_draft_rejected?(content_hash)
-    rejected_campaign_draft_hash_list.include?(content_hash.to_s.strip)
   end
 
   def reject_campaign_draft!(content_hash)
@@ -103,10 +95,6 @@ class BillLlmProvisioning < ApplicationRecord
   # @lat: [[campaign-draft-rejection#Releasing drafts to individual letters]]
   def individual_campaign_draft_hash_list
     Array(individual_campaign_draft_hashes).map(&:to_s)
-  end
-
-  def campaign_draft_individual?(content_hash)
-    individual_campaign_draft_hash_list.include?(content_hash.to_s.strip)
   end
 
   def mark_campaign_draft_individual!(content_hash)
@@ -181,7 +169,6 @@ class BillLlmProvisioning < ApplicationRecord
     .then { |props| (props["support"] || props["stance"]).fetch("enum") }
     .map(&:to_s)
     .freeze
-  DRAFT_STANCES = DRAFT_POSITIONS
 
   def self.draft_support_valid?(value)
     DRAFT_POSITIONS.include?(value.to_s)

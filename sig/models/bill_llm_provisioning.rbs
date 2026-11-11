@@ -40,7 +40,6 @@ class BillLlmProvisioning < ApplicationRecord
   def invalid_news_urls: () -> Array[String]?
   def invalid_news_urls=: (Array[String]?) -> Array[String]?
   def news_articles_list: () -> Array[Hash[String, String]]
-  def invalid_news_urls_list: () -> Array[String]
 
 
   # Phase 67 Plan 01 (D-01): cleaned_testimony is a Hash in every path that
@@ -115,8 +114,6 @@ class BillLlmProvisioning < ApplicationRecord
 
   def rejected_campaign_draft_hash_list: () -> Array[String]
 
-  def campaign_draft_rejected?: (untyped content_hash) -> bool
-
   def reject_campaign_draft!: (untyped content_hash) -> bool
 
   def individual_campaign_draft_hashes: () -> Array[String]?
@@ -124,8 +121,6 @@ class BillLlmProvisioning < ApplicationRecord
   def individual_campaign_draft_hashes=: (Array[String]?) -> Array[String]?
 
   def individual_campaign_draft_hash_list: () -> Array[String]
-
-  def campaign_draft_individual?: (untyped content_hash) -> bool
 
   def mark_campaign_draft_individual!: (untyped content_hash) -> bool
 
@@ -155,13 +150,12 @@ class BillLlmProvisioning < ApplicationRecord
   # BillDraftOrgPositionsController is the one writer of draft_org_positions
   # that the schema does not check, so it checks itself against this.
   DRAFT_POSITIONS: Array[String]
-  DRAFT_STANCES: Array[String]
 
   def self.draft_support_valid?: (untyped value) -> bool
   def self.draft_stance_valid?: (untyped value) -> bool
 
   # The org-name and summary character caps, read off the same
-  # schema for the same reason as DRAFT_STANCES. Keyed by the entry key, so a
+  # schema for the same reason as DRAFT_POSITIONS. Keyed by the entry key, so a
   # caller can name the field it refused and the cap it broke.
   DRAFT_TEXT_MAX_CHARS: Hash[String, Integer]
 

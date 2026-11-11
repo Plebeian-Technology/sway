@@ -184,7 +184,6 @@ RSpec.describe Campaign, type: :model do
     it "accepts no decision at all, which means nobody has been asked" do
       expect(campaign.organization_link_decision).to be_nil
       expect(campaign).to be_valid
-      expect(campaign).not_to be_organization_link_decided
     end
 
     it "refuses a decision value it does not recognise" do

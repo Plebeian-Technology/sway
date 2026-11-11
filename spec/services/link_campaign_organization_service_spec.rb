@@ -106,9 +106,7 @@ RSpec.describe LinkCampaignOrganizationService do
       record_decision(decision: "undetermined")
 
       expect(campaign.reload.organization_link_decision).to eq(Campaign::UNDETERMINED)
-      expect(campaign).to be_organization_link_decided
       expect(never_asked.reload.organization_link_decision).to be_nil
-      expect(never_asked).not_to be_organization_link_decided
     end
   end
 

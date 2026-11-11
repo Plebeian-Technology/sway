@@ -75,10 +75,6 @@ class NewsArticleSourceSnapshot < ApplicationRecord
     end.reject(&:zero?).uniq
   end
 
-  def captured_text_versions
-    NewsArticleTextVersion.where(id: captured_text_version_ids)
-  end
-
   def current_eligibility_comparison
     mismatches = []
     stale_reasons = []
@@ -138,12 +134,6 @@ class NewsArticleSourceSnapshot < ApplicationRecord
       stale_reasons: stale_reasons,
       details: details
     )
-  end
-  alias_method :check_current_eligibility, :current_eligibility_comparison
-  alias_method :compare_current_eligibility, :current_eligibility_comparison
-
-  def current_eligibility_matches?
-    current_eligibility_comparison.eligible?
   end
 
   private

@@ -22,8 +22,6 @@ class Campaign < ApplicationRecord
 
   def organization_link_decision=: (String?) -> String?
 
-  def organization_link_decided?: () -> bool
-
   private
 
   def organization_matches_link_decision: () -> void

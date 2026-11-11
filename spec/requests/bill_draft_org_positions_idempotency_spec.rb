@@ -171,7 +171,7 @@ RSpec.describe "BillDraftOrgPositions reject idempotency",
     end
 
     it "still stores each of the three the schema allows" do
-      BillLlmProvisioning::DRAFT_STANCES.each do |stance|
+      BillLlmProvisioning::DRAFT_POSITIONS.each do |stance|
         patch "/bill_draft_org_positions/#{bill.id}-0",
           params: {stance: stance, draft_org_name: "Sole Org"}
 

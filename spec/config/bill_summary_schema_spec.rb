@@ -269,7 +269,7 @@ RSpec.describe "BILL_POSITIONS_SCHEMA" do
         .to eq(stance_enum.call(BILL_POSITIONS_SCHEMA_HASH))
       # And the list the rest of the app answers from is that same list, not a
       # third copy typed out in Ruby.
-      expect(BillLlmProvisioning::DRAFT_STANCES)
+      expect(BillLlmProvisioning::DRAFT_POSITIONS)
         .to eq(stance_enum.call(BILL_POSITIONS_SCHEMA_HASH))
     end
 
