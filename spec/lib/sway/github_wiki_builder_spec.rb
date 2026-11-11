@@ -100,19 +100,6 @@ RSpec.describe Sway::GitHubWikiBuilder do
     end
   end
 
-  it "links the agent memory index in the sidebar only when that page is in the tree" do
-    Dir.mktmpdir("github-wiki-builder") do |root|
-      FileUtils.mkdir_p(File.join(root, "lat.md", "reference", "agent-memory"))
-      File.write(File.join(root, "lat.md", "lat.md"), "# Sway\n\nOverview.\n")
-
-      expect(described_class.new(root).render_sidebar).not_to include("agent-memory")
-
-      File.write(File.join(root, "lat.md", "reference", "agent-memory", "agent-memory.md"), "# Memory\n\nOverview.\n")
-
-      expect(described_class.new(root).render_sidebar).to include("- [Agent Memory Index](agent-memory)")
-    end
-  end
-
   it "compiles the repository's real lat.md tree with no unresolved wiki links" do
     Dir.mktmpdir("github-wiki-full") do |out|
       builder = described_class.new(Rails.root)

@@ -112,14 +112,11 @@ The dev environment runs entirely under Docker via [`dip`](https://github.com/bi
 - Docker ([OrbStack](https://orbstack.dev) or Docker Desktop on macOS)
 - [`dip`](https://github.com/bibendi/dip)
 - [`mkcert`](https://github.com/FiloSottile/mkcert) — provisioning generates the local TLS certs that Caddy serves
-- `config/master.key` — the Rails master key, never committed. Keep it in any secret store you trust (the maintainers use Bitwarden). `config/credentials.yml.enc` is committed on purpose: it is encrypted, and only that key, which is never committed, can read it. Outside contributors cannot decrypt it and do not need to. Generate your own key and start from an empty credentials file:
+- `config/master.key` — the Rails master key, never committed. Keep it in any secret store you trust. `config/credentials.yml.enc` is not in the repository either, and development reads no Rails credentials, so a fresh key is all you need:
 
 ```zsh
 openssl rand -hex 16 > config/master.key
-rm config/credentials.yml.enc
 ```
-
-Take care not to commit the deletion of `config/credentials.yml.enc`. Development reads no other Rails credentials, so a fresh key is all you need.
 
 - `deploy/config/sway.env` — your own installation's values (hosts, buckets, disk paths). Copy the template; its placeholder values are enough for development, and only a real deploy needs real ones. Rails refuses to boot without the file:
 

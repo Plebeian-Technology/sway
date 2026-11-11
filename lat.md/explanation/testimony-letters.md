@@ -13,7 +13,7 @@ See [[distributed-testimony-pipeline]] for the end-to-end flowcharts and model r
 The spacing rule itself belongs to [[testimony-attachment-rules#Every fixed phrase matches through the extracted-text helper]]; what a test can use as evidence for it is a separate question.
 
 The real attachment files carry residents' names, home addresses and personal
-email addresses, and this repository has a public remote, so an example is
+email addresses, and this repository is public, so an example is
 written from the shapes the extracted text takes rather than copied out of one
 of them. The alternative is worse than inconvenient: a fixture that interpolates
 the very constant being searched for proves only that the search can find a copy

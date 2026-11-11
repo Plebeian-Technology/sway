@@ -56,7 +56,7 @@ module Sway
     end
 
     def render_sidebar
-      lines = [
+      [
         "## Sway Documentation",
         "",
         "- [Home](#{HOME_SLUG})",
@@ -74,13 +74,9 @@ module Sway
         "- [Trace a Vote](trace-a-vote)",
         "- [Domain Entities](domain-entities)",
         "- [Naming Decisions](naming-decisions)",
-        "- [Distributed Testimony Pipeline](distributed-testimony-pipeline)"
-      ]
-      if source_files.include?("lat.md/reference/agent-memory/agent-memory.md")
-        lines << "- [Agent Memory Index](agent-memory)"
-      end
-      lines << ""
-      lines.join("\n")
+        "- [Distributed Testimony Pipeline](distributed-testimony-pipeline)",
+        ""
+      ].join("\n")
     end
 
     def build(output_dir)

@@ -11,20 +11,18 @@
 #
 name: "CodeQL"
 
-# Code scanning needs GitHub Advanced Security, which a private repository does
-# not have — there every run analyzes cleanly and then fails at the last step
-# with "Advanced Security must be enabled for this repository", spending the
-# scarce GitHub-hosted minutes budget on a lane that cannot pass. It is free on
-# a PUBLIC repository, so the job below asks the repository itself whether it is
-# private rather than being switched off by hand. Nobody has to
-# remember to turn it back on at publication. bin/codeql-local runs the same
-# analysis on a developer machine meanwhile.
+# Code scanning needs GitHub Advanced Security, which is free only on public
+# repositories. On a private fork every run analyzes cleanly and then fails at
+# the last step with "Advanced Security must be enabled for this repository",
+# spending GitHub-hosted minutes on a lane that cannot pass, so the job below
+# asks the repository itself whether it is private. bin/codeql-local runs the
+# same analysis on a developer machine.
 on:
     push:
-        branches: [main, padawan, claude]
+        branches: [main, padawan]
     pull_request:
         # The branches below must be a subset of the branches above
-        branches: [main, padawan, claude]
+        branches: [main, padawan]
     schedule:
         - cron: "33 18 * * 2"
     workflow_dispatch:
@@ -34,7 +32,7 @@ jobs:
         # Written as `== false`, not `!= true`, on purpose: an event whose
         # payload carries no repository object then SKIPS rather than runs, so a
         # payload shape nobody checked cannot start spending minutes on a
-        # private copy. The cost of being wrong that way is one missed scan.
+        # private fork. The cost of being wrong that way is one missed scan.
         if: github.event.repository.private == false
         name: Analyze
         runs-on: ubuntu-latest

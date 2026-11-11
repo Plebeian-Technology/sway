@@ -90,11 +90,8 @@ vouched for. It is the third of a family — `EnvCredentialScanner` and
 finding and the unvouched ones, so an accepted hit stays visible rather than
 vanishing into a skip list.
 
-The directories it passes over are the ones removed when the tree is
-published, so the scan's reach and the publication's reach are one fact written
-twice. The tracker integration's code matches the id prefix on purpose and its
-tests are built on id-shaped fixtures, so that directory is exempted with its
-evidence recorded beside it rather than skipped. The scanner assembles its pattern from pieces at run time,
+Two ignore files name a local notes file whose name has the id shape, so those
+paths are exempted with that evidence recorded beside them rather than skipped. The scanner assembles its pattern from pieces at run time,
 which is why it is never a hit against itself, and it reports a path, a line
 and the id alone — never the text of the line, which on a settings template is
 content a guard has no reason to quote back.

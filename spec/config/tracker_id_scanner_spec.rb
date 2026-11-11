@@ -65,15 +65,6 @@ RSpec.describe TrackerIdScanner do
     expect(scanner.findings).to eq([])
   end
 
-  it "does not enter either of the two directories the export deletes" do
-    scanner = tracker_scanner_over(
-      "plans/rollout.md" => "Tracked as #{planted_tracker_id}.\n",
-      "prompts/review.md" => "Tracked as #{planted_tracker_id}.\n"
-    )
-
-    expect(scanner.findings).to eq([])
-  end
-
   it "does not read a binary file type, whatever bytes it happens to hold" do
     scanner = tracker_scanner_over("public/logo.png" => "\x89PNG\r\n\x1A\n#{planted_tracker_id}\n")
 
@@ -117,11 +108,11 @@ RSpec.describe TrackerIdScanner do
     expect(scanner.unexempt).to equal(first_unexempt)
   end
 
-  it "still reaches the tracker integration's own fixtures, so an empty walk is not read as a clean tree" do
+  it "still reaches the exempt ignore files, so an empty walk is not read as a clean tree" do
     scanner = described_class.new(root: Rails.root)
 
-    expect(scanner.findings.map(&:path)).to include("scripts/agent_hooks/test_issue_titles.py"),
-      "the walk produced no hit in the one shipped file known to carry id-shaped fixtures, " \
+    expect(scanner.findings.map(&:path)).to include(".dockerignore"),
+      "the walk produced no hit in the one shipped file known to carry an id-shaped string, " \
       "which is what a failed or empty git ls-files looks like from here -- a scan of nothing " \
       "reports no hits and reads exactly like a clean tree"
   end
