@@ -1419,16 +1419,7 @@ class Object
     def person_104:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def wikidata_mayor:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def open_baltimore_double:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def legistar_double:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def wikidata_double:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def comptroller:

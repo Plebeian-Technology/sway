@@ -17,7 +17,7 @@ Each group is an `Anyway::Config` subclass under `lib/sway/settings/`, read as `
 - `mobile` — App Store id, minimum and latest app versions, Android cert fingerprints, Apple team and bundle ids, the hosts that serve the app association files (`APP_ASSOCIATION_HOSTS`)
 - `ops` — SMS phone number, deploy stamp, backup skip flag, Docker detection, dev tunnel host
 - `rate_limits` — per-endpoint switches for sign-in, sign-up, verification, invites, push and bootstrap
-- `upstream` — base URLs for Legistar, OpenStates, congress.gov, Wikidata, Open Baltimore, law XML, Open Legislator, Brave Search
+- `upstream` — base URLs for Legistar, OpenStates, congress.gov, law XML, Open Legislator, Brave Search
 - `webauthn` — allowed origins, relying-party id, and the hosts that serve `/.well-known/webauthn` (`WEBAUTHN_RELATED_HOSTS`)
 
 ## Type casters

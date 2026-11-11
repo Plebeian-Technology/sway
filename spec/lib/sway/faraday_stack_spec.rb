@@ -216,25 +216,6 @@ RSpec.describe Sway::FaradayStack do
     end
   end
 
-  describe ".open_baltimore" do
-    it "defaults to the ArcGIS base URL, keeping its trailing slash" do
-      with_app_config(:upstream, open_baltimore_arcgis_base_url: nil) do
-        expect(described_class.open_baltimore.url_prefix.to_s).to end_with("/")
-        expect(described_class.open_baltimore.url_prefix.to_s.start_with?(
-          "https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services/"
-        )).to be(true)
-      end
-    end
-  end
-
-  describe ".wikidata" do
-    it "defaults to the public Wikidata Query Service base URL" do
-      with_app_config(:upstream, wikidata_sparql_base_url: nil) do
-        expect(described_class.wikidata.url_prefix.to_s.start_with?("https://query.wikidata.org")).to be(true)
-      end
-    end
-  end
-
   describe ".open_states" do
     it "defaults to the public OpenStates v3 base URL" do
       with_app_config(:upstream, openstates_api_base_url: nil) do

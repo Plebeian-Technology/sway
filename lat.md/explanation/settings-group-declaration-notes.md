@@ -85,8 +85,8 @@ The array caster leaves a nil in the list for a genuinely empty entry (two comma
 
 The missing-file example fails rather than skips: a skip on a missing file is the same as no check at all for a group somebody forgot to commit a signature for.
 
-## Why ArcGIS and Congress Legislators base URLs keep their trailing slash
+## Why the Congress Legislators base URL keeps its trailing slash
 
-Both `open_baltimore_arcgis_base_url` and `congress_legislators_base_url` in [[lib/sway/settings/upstream.rb#Upstream]] retain their trailing slash in the default declaration.
+`congress_legislators_base_url` in [[lib/sway/settings/upstream.rb#Upstream]] retains its trailing slash in the default declaration.
 
-Callers such as [[app/services/open_baltimore/client.rb]] and the Congress legislator seed fetchers resolve relative resource paths and data file names directly against these base URLs, so normalizing the trailing slash away would drop the final path segment during resolution.
+The Congress legislator seed fetchers resolve relative resource paths and data file names directly against this base URL, so normalizing the trailing slash away would drop the final path segment during resolution.

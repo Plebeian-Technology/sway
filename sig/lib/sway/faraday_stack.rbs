@@ -45,7 +45,6 @@ module Sway
     GITHUB_DEFAULTS: retry_options
     GITHUB_USER_AGENT: String
     OPEN_DATA_DEFAULTS: retry_options
-    WIKIDATA_USER_AGENT: String
     NOMINATIM_USER_AGENT: String
 
     def self.build: (base_url: String, ?timeout_seconds: Integer, ?retry_options: retry_options) ?{ (Faraday::Connection) -> void } -> Faraday::Connection
@@ -55,10 +54,6 @@ module Sway
     def self.legistar_attachment: (?timeout_seconds: Integer) -> Faraday::Connection
 
     def self.github: (?timeout_seconds: Integer) -> Faraday::Connection
-
-    def self.open_baltimore: (?timeout_seconds: Integer) -> Faraday::Connection
-
-    def self.wikidata: (?timeout_seconds: Integer) -> Faraday::Connection
 
     def self.open_states: (?timeout_seconds: Integer) -> Faraday::Connection
 

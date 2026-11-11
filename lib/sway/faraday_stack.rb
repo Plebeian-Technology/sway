@@ -69,8 +69,6 @@ module Sway
     }.freeze #: retry_options
 
     # @lat: [[faraday-stack-retry-and-connection-design#OpenRouter retries and upstream User-Agent headers]]
-    WIKIDATA_USER_AGENT = "SwayCivic/1.0 (https://sway.vote; github@sway.vote)"
-
     NOMINATIM_USER_AGENT = "Sway/1.0 (civic-tech-app; https://sway.vote)"
 
     def self.build(base_url:, timeout_seconds: 30, retry_options: LEGISTAR_DEFAULTS)
@@ -108,27 +106,6 @@ module Sway
       ) do |conn|
         conn.headers["User-Agent"] = GITHUB_USER_AGENT
         conn.response(:follow_redirects)
-      end
-    end
-
-    # @lat: [[faraday-stack-retry-and-connection-design#Why .open_baltimore's base URL must keep its trailing slash]]
-    def self.open_baltimore(timeout_seconds: 30)
-      build(
-        base_url: Sway::Settings.upstream.open_baltimore_arcgis_base_url,
-        timeout_seconds: timeout_seconds,
-        retry_options: OPEN_DATA_DEFAULTS
-      )
-    end
-
-    # @lat: [[faraday-stack-retry-and-connection-design#OpenRouter retries and upstream User-Agent headers]]
-    def self.wikidata(timeout_seconds: 30)
-      build(
-        base_url: Sway::Settings.upstream.wikidata_sparql_base_url,
-        timeout_seconds: timeout_seconds,
-        retry_options: OPEN_DATA_DEFAULTS
-      ) do |conn|
-        conn.headers["User-Agent"] = WIKIDATA_USER_AGENT
-        conn.headers["Accept"] = "application/sparql-results+json"
       end
     end
 

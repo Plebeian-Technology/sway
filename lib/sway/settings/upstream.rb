@@ -15,16 +15,6 @@ module Sway
       coerce_types law_xml_github_base_url: :string
       required :law_xml_github_base_url
 
-      # @lat: [[settings-group-declaration-notes#Why ArcGIS and Congress Legislators base URLs keep their trailing slash]]
-      attr_config open_baltimore_arcgis_base_url:
-        "https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services/"
-      coerce_types open_baltimore_arcgis_base_url: :string
-      required :open_baltimore_arcgis_base_url
-
-      attr_config wikidata_sparql_base_url: "https://query.wikidata.org/"
-      coerce_types wikidata_sparql_base_url: :string
-      required :wikidata_sparql_base_url
-
       attr_config openstates_api_base_url: "https://v3.openstates.org"
       coerce_types openstates_api_base_url: :string
       required :openstates_api_base_url
@@ -33,7 +23,7 @@ module Sway
       coerce_types congress_gov_api_base_url: :string
       required :congress_gov_api_base_url
 
-      # @lat: [[settings-group-declaration-notes#Why ArcGIS and Congress Legislators base URLs keep their trailing slash]]
+      # @lat: [[settings-group-declaration-notes#Why the Congress Legislators base URL keeps its trailing slash]]
       attr_config congress_legislators_base_url:
         "https://unitedstates.github.io/congress-legislators/"
       coerce_types congress_legislators_base_url: :string

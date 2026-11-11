@@ -23,7 +23,7 @@ Public APIs like Legistar sometimes close the TLS socket mid-response, which Far
 
 ## Why there is no .llamacpp connection method
 
-Every other upstream (`legistar`, `github`, `open_baltimore`, `wikidata`, `open_states`, `congress_gov`, `congress_legislators`) gets a `Sway::FaradayStack.xxx` builder method.
+Every other upstream (`legistar`, `github`, `open_states`, `congress_gov`, `congress_legislators`) gets a `Sway::FaradayStack.xxx` builder method.
 
 A `.llamacpp` one is deliberately absent — only the `LLAMACPP_DEFAULTS` retry options above exist.
 
@@ -76,12 +76,6 @@ When [[lib/sway/faraday_stack.rb#FaradayStack#congress_gov]] and its fallback st
 3. **Selective suppression of intermediate Sentry alerts**: [[lib/sway/faraday_stack.rb#CongressGovErrorReporter]] suppresses only HTTP 404 responses on `/house-vote/{congress}/{session}/{roll}/members`; non-404 Congress.gov HTTP errors (such as 403 or retry-exhausted 5xx responses) are still reported immediately via [[lib/sway/faraday_stack.rb#CongressGovErrorReporter]]. In contrast, Senate primary and Voteview fallback failures, as well as House 404 responses paired with Clerk XML fallback failures, do not capture inline Sentry exceptions and instead alert Sentry only if all three [[app/jobs/legislator_vote_fetch_job.rb#LegislatorVoteFetchJob]] attempts fail.
 4. **Immediate failure on identity mismatches**: In contrast to transient availability errors, permanent identity verification failures—specifically [[app/scraper/scraper/congress/roll_call_mismatch.rb#RollCallMismatch]] (mismatched vote dates) and [[app/scraper/scraper/congress/roll_call_not_on_the_bill.rb#RollCallNotOnTheBill]] (procedural or cloture motions)—are neither retried (`retry_on`) nor discarded (`discard_on`). These exceptions propagate immediately out of the job, generating an actionable Sentry alert without wasteful retries.
 
-## Why .open_baltimore's base URL must keep its trailing slash
-
-`.open_baltimore` builds the connection for the Open Baltimore ArcGIS Feature Service — the live Baltimore City Council District roster.
-
-The base URL carries the ArcGIS org id and services root, and MUST keep its trailing slash so `OpenBaltimore::Client`'s relative resource paths resolve under it, the same shape of requirement as `.congress_legislators` below.
-
 ## Why .congress_legislators's base URL must keep its trailing slash
 
 `.congress_legislators` fetches the `unitedstates/congress-legislators` data files, which say how long each member of Congress really held each seat (`LegislatorsCache::CongressTermHistory`).
@@ -98,6 +92,6 @@ One example still has to prove a real environment variable reaches this call sit
 
 ## OpenRouter retries and upstream User-Agent headers
 
-[[lib/sway/faraday_stack.rb]] restricts `OPENROUTER_DEFAULTS` retries to HTTP `429` and transport exceptions, and attaches explicit `User-Agent` headers on the GitHub, Wikidata, and Nominatim connection profiles.
+[[lib/sway/faraday_stack.rb]] restricts `OPENROUTER_DEFAULTS` retries to HTTP `429` and transport exceptions, and attaches explicit `User-Agent` headers on the GitHub and Nominatim connection profiles.
 
-Retrying `5xx` responses against OpenRouter could trigger duplicate paid model executions when an upstream request already started, whereas `api.github.com`, the Wikidata Query Service, and Nominatim reject or throttle requests that omit an identifying `User-Agent` (and Wikidata additionally requires `Accept: application/sparql-results+json` to return JSON).
+Retrying `5xx` responses against OpenRouter could trigger duplicate paid model executions when an upstream request already started, whereas `api.github.com` and Nominatim reject or throttle requests that omit an identifying `User-Agent`.
