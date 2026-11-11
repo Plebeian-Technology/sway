@@ -15,7 +15,7 @@ Sway can only answer a question about a jurisdiction whose term rules it declare
 
 A made-up city has no calendar, so seating a legislator there and then asking whether they hold office raises instead of quietly borrowing another jurisdiction's dates.
 
-The factory used to hand out a random Faker city, which meant most of the suite ran against jurisdictions that cannot exist. The default now rotates through the locales Sway really seeds, read from the same file the seeder itself reads (`db/seeds/data/locales.json`), so the two cannot drift apart. Consecutive bare creates still hand back different locales, which is what the random city was for. A spec that needs a particular jurisdiction has to name it.
+The factory used to hand out a random Faker city, which meant most of the suite ran against jurisdictions that cannot exist. The default now rotates through the locales Sway really seeds, read from the same YAML files the seeder itself reads (`SwayLocale::DocumentReader`), so the two cannot drift apart. Consecutive bare creates still hand back different locales, which is what the random city was for. A spec that needs a particular jurisdiction has to name it.
 
 `city`, `state` and `country` are transient and default to `nil`, so the factory can tell "the caller said nothing" from "the caller said part of it." The rotation only fills in the first case. It used to fill in each field on its own, so naming one and leaving the rest built a jurisdiction the caller never asked for:
 

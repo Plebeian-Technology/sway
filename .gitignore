@@ -70,12 +70,10 @@
 /storage/assets/*
 **/*.sqlite3*
 /storage/*.db*
-!/db/seeds/data/locales.json
 !/db/seeds/data/united_states/congress
 !/db/seeds/data/united_states/maryland/baltimore
 !/db/seeds/data/united_states/maryland/maryland
 !/storage/geojson/baltimore-maryland-united_states.geojson
-!/db/seeds/data/locales.json
 /tmp/storage/*
 !/tmp/storage/
 

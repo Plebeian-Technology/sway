@@ -650,7 +650,7 @@ postal code and coordinates the Geocoder stub in `spec/rails_helper.rb` answers
 with, so district assignment agrees with the stub instead of landing somewhere
 else and failing in a way that looks unrelated. The address is Baltimore City
 Hall's, a public office's published address rather than a person's home. It is
-written into the seeder rather than into `db/seeds/data/locales.json`, so the
+written into the seeder rather than into locale YAML documents, so the
 seeded values and the stubbed values are both Ruby literals that change
 together.
 

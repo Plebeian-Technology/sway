@@ -4,7 +4,7 @@ lat:
 ---
 # Locale extension requirements
 
-A functional SwayLocale needs identity, source declarations, term rules, representative data and address matching. Adding a row to locales.json alone does not provide those capabilities.
+A functional SwayLocale needs identity, source declarations, term rules, representative data and address matching. Creating a database row alone does not provide those capabilities.
 
 ## Current configuration surfaces
 
@@ -12,7 +12,6 @@ Locale configuration is driven entirely by declarative YAML files in `config/swa
 
 | Surface | Current responsibility |
 | --- | --- |
-| db/seeds/data/locales.json | Identity, legislative session date, timezone, icon URL |
 | app/models/sway_locale/jurisdiction_rules_registry.rb | Roster, refresher, votes, legislation, law, hearings, chambers and provider identifiers |
 | app/models/sway_locale/term_rules_registry.rb | Convening calendar, cycle, identity scheme and evidence capabilities |
 | db/seeds/data/COUNTRY/REGION/CITY/legislators.json | Boot-time roster input in the declared preparer's format |
@@ -78,9 +77,9 @@ Address membership currently derives a city, a US state and US Congress. An arbi
 
 Each SwayLocale owns one YAML file at config/sway_locales/SLUG.yml. That file supplies seed attributes, source rules and term rules through the existing runtime reader interfaces.
 
-- Files are discovered automatically in deterministic filename order. Adding a SwayLocale requires no shared list, locales.json append or Ruby registry entry.
+- Files are discovered automatically in deterministic filename order. Adding a SwayLocale requires no shared list or Ruby registry entry.
 - Each file contains exactly one SwayLocale. Its filename matches the normalized city-region-country slug; duplicate identities and mismatches are rejected before writes.
-- The three bundled SwayLocales migrate into separate YAML files. locales.json ceases to be a runtime configuration source after consumer migration.
+- The three bundled SwayLocales live in separate YAML files, which serve as the runtime configuration source.
 - New configuration fields and abstractions use SwayLocale terminology, with sway_locale in code and data keys. Existing source identifiers cited in this audit retain their actual spelling.
 - Large geography or fixture assets remain separate files referenced by the SwayLocale configuration where needed.
 - A shared parser precedes migration of each consumer. Provider and calendar classes remain allowlisted code, rather than arbitrary names instantiated from YAML.

@@ -11,7 +11,7 @@ Why SeedLegislator.run has no fallback roster reader, how it tracks seen and uni
 
 `SeedLegislator.preparer_class_for` turns a declared `roster_source` name into the reader that understands that source's file shape.
 
-There is no fallback arm: this used to ask the locale which KIND it was, so adding a city to `locales.json` without saying where its roster comes from read the file with the curated reader, in the wrong shape.
+There is no fallback arm: this used to ask the locale which KIND it was, so adding a city without saying where its roster comes from read the file with the curated reader, in the wrong shape.
 
 ## Tracking seen identity values
 

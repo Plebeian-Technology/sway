@@ -42,7 +42,7 @@ Sway stores a term as two years today, so nothing reads this attribute yet — i
 
 ## Why the declarations live in code, with citations
 
-`TermRulesRegistry::DECLARATIONS` lives in code rather than in the database or in `locales.json`, for one reason: these are law, and the citation that proves each one belongs beside it.
+`TermRulesRegistry::DECLARATIONS` lives in code rather than in the database, for one reason: these are law, and the citation that proves each one belongs beside it.
 
 Nobody tunes them from an admin screen, and a wrong value here is not visible in any screen either — it just makes every vote-to-term answer wrong for that locale. Adding a locale means adding an entry here; until then, that locale raises `TermRules::Undeclared` the first time anything asks it a date question, rather than silently borrowing Baltimore's charter the way the previous arrangement did.
 
