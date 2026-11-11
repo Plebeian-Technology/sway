@@ -120,6 +120,16 @@ module WebAuthn
     end
 end
 
+module CBOR
+    class UnpackError < StandardError
+    end
+end
+
+module COSE
+    class Error < StandardError
+    end
+end
+
 # @lat: [[rbs-signatures#Why a shim stops being a shim when the collection grows]]
 module Geocoder
     def self.search: (*untyped args, **untyped kwargs) -> Array[untyped]

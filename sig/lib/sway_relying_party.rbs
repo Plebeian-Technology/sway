@@ -1,0 +1,17 @@
+class SwayRelyingParty < WebAuthn::RelyingParty
+  class MalformedCredentialError < WebAuthn::Error
+    def initialize: (?String message) -> void
+  end
+
+  DECODE_ERRORS: Array[singleton(StandardError)]
+
+  def verify_registration: (untyped raw_credential, untyped challenge, **untyped options) -> untyped
+
+  def verify_authentication:
+      (untyped raw_credential, untyped challenge, **untyped options) -> [untyped, untyped]
+    | (untyped raw_credential, untyped challenge, **untyped options) { (untyped) -> untyped } -> [untyped, untyped]
+
+  private
+
+  def rejecting_malformed_input: [T] (?passthrough: ^() -> bool) { () -> T } -> T
+end

@@ -20,7 +20,8 @@ module RelyingParty
         "request_protocol=#{request.protocol}"
       )
 
-      WebAuthn::RelyingParty.new(
+      # @lat: [[malformed-passkey-credentials#An unreadable credential is an invalid credential]]
+      SwayRelyingParty.new(
         allowed_origins: resolved_origins,
         # @lat: [[webauthn-rp-id-settings-resolution#Why the relying party name has no preview/staging suffix]]
         name: "sway-#{Rails.env}",
