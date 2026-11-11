@@ -157,9 +157,6 @@ end
 class PartnerEngagementReportResource < ApplicationResource
 end
 
-class SwayLocaleResource < ApplicationResource
-end
-
 class NewsArticleResource < ApplicationResource
 end
 

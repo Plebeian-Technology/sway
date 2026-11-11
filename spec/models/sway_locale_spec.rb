@@ -154,6 +154,15 @@ RSpec.describe SwayLocale, type: :model do
         .not_to change { SwayLocale.count }
       expect(SwayLocale.find_or_create_by_normalized!(**args).id).to eq(first.id)
     end
+
+    # @lat: [[locale-extension#Planned declarative contract]]
+    # @lat: [[locale-extension#Locale extension requirements#Planned declarative contract]]
+    it "is idempotent when called via SwayLocale.find_or_create_by_normalized! with mixed casing and codes" do
+      first = described_class.find_or_create_by_normalized!(city: "Baltimore", state: "MD", country: "US")
+      second = described_class.find_or_create_by_normalized!(city: "baltimore", state: "maryland", country: "united_states")
+
+      expect(second.id).to eq(first.id)
+    end
   end
 
   describe "#legislative_sessions" do
@@ -374,52 +383,6 @@ RSpec.describe SwayLocale, type: :model do
 
       fresh_locale = SwayLocale.find(baltimore.id)
       expect(fresh_locale.at_large_district).to eq(md0)
-    end
-  end
-
-  # @lat: [[locale-extension#Planned declarative contract]]
-  # @lat: [[locale-extension#Locale extension requirements#Planned declarative contract]]
-  describe "SwayLocaleResource vs to_builder Nominatim serialization parity" do
-    it "matches Nominatim attributes between to_builder and SwayLocaleResource across all four configured locales" do
-      [
-        ["baltimore", "maryland", "united_states"],
-        ["annapolis", "maryland", "united_states"],
-        ["maryland", "maryland", "united_states"],
-        ["congress", "congress", "united_states"]
-      ].each do |city, state, country|
-        locale = create(:sway_locale, city:, state:, country:)
-        builder_attrs = locale.to_builder.attributes!
-        resource_hash = JSON.parse(SwayLocaleResource.new(locale).serialize)
-
-        %w[nominatim_viewbox nominatim_bounded nominatim_country_codes].each do |key|
-          expect(resource_hash[key]).to eq(builder_attrs[key])
-        end
-      end
-    end
-
-    it "maintains parity for instance overrides and nil defaults on unconfigured locales" do
-      locale = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
-      locale.nominatim_viewbox = "-71.0,42.5,-70.0,41.5"
-      locale.nominatim_bounded = false
-      locale.nominatim_country_codes = "ca"
-
-      expect(JSON.parse(SwayLocaleResource.new(locale).serialize).slice("nominatim_viewbox", "nominatim_bounded", "nominatim_country_codes"))
-        .to eq(locale.to_builder.attributes!.slice("nominatim_viewbox", "nominatim_bounded", "nominatim_country_codes"))
-
-      unconfigured = create(:sway_locale, city: "unconfigured_city", state: "maryland", country: "united_states")
-      unconfigured_resource = JSON.parse(SwayLocaleResource.new(unconfigured).serialize)
-      unconfigured_builder = unconfigured.to_builder.attributes!
-      %w[nominatim_viewbox nominatim_bounded nominatim_country_codes].each do |key|
-        expect(unconfigured_resource[key]).to be_nil
-        expect(unconfigured_builder[key]).to be_nil
-      end
-    end
-
-    it "is idempotent when called via SwayLocale.find_or_create_by_normalized! with mixed casing and codes" do
-      first = described_class.find_or_create_by_normalized!(city: "Baltimore", state: "MD", country: "US")
-      second = described_class.find_or_create_by_normalized!(city: "baltimore", state: "maryland", country: "united_states")
-
-      expect(second.id).to eq(first.id)
     end
   end
 end

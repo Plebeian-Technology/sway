@@ -1182,48 +1182,6 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
     end
   end
 
-  describe "SwayLocaleResource" do
-    it "ships exactly the pinned keys for sway locale including Nominatim geographic bounds" do
-      sway_locale, _user = setup
-
-      raw = SwayLocaleResource.new(sway_locale).serializable_hash #: Hash[Symbol, untyped]
-      hash = raw.transform_keys(&:to_s)
-      expected_keys = %w[
-        id
-        slug
-        name
-        city
-        state
-        region_code
-        country
-        generic_portal_urls
-        nominatim_viewbox
-        nominatim_bounded
-        nominatim_country_codes
-      ]
-
-      expect(hash.keys).to match_array(expected_keys)
-      expect(hash["generic_portal_urls"]).to eq(sway_locale.generic_portal_urls)
-      expect(hash["nominatim_viewbox"]).to eq(sway_locale.nominatim_viewbox)
-      expect(hash["nominatim_bounded"]).to eq(sway_locale.nominatim_bounded)
-      expect(hash["nominatim_country_codes"]).to eq(sway_locale.nominatim_country_codes)
-    end
-
-    it "serializes null viewbox and boolean bounded false correctly for unconstrained locales" do
-      sway_locale = create(:sway_locale, :congress)
-      sway_locale.nominatim_viewbox = nil
-      sway_locale.nominatim_bounded = false
-      sway_locale.nominatim_country_codes = "us"
-
-      raw = SwayLocaleResource.new(sway_locale).serializable_hash #: Hash[Symbol, untyped]
-      hash = raw.transform_keys(&:to_s)
-
-      expect(hash["nominatim_viewbox"]).to be_nil
-      expect(hash["nominatim_bounded"]).to be(false)
-      expect(hash["nominatim_country_codes"]).to eq("us")
-    end
-  end
-
   describe "AdminBillNewsArticleResource" do
     it "ships exactly the pinned keys for admin bill news article" do
       sway_locale, _user = setup

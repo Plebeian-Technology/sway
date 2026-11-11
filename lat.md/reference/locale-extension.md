@@ -19,7 +19,7 @@ Locale configuration is driven entirely by declarative YAML files in `config/swa
 | storage/geojson/SLUG.geojson | Local representative assignment from district polygons |
 | Admin Locales | Sample address for developer-account registration |
 | config/sway_locales/SLUG.yml | Declarative locale attributes, source/term rules, and Nominatim bounds |
-| app/serializers/sway_locale_resource.rb | Serialized locale attributes including Nominatim bounds for autocomplete |
+| app/models/sway_locale.rb (`SwayLocale#to_builder`) | Serialized locale attributes including Nominatim bounds for autocomplete |
 
 
 ## Work count
@@ -194,7 +194,7 @@ SwayLocale declarations in `config/sway_locales/SLUG.yml` supply Nominatim geogr
 - `nominatim_viewbox`: Bounding box string formatted as `"min_lon,max_lat,max_lon,min_lat"` (left,top,right,bottom coordinates).
 - `nominatim_country_codes`: ISO 3166-1 alpha-2 comma-delimited country code string (e.g. `"us"`).
 - `nominatim_bounded`: Boolean flag indicating whether results outside the viewbox are strictly excluded (`true` or `false`).
-- Runtime delivery: Serialized via `SwayLocaleResource` and typed in `ISwayLocale` for consumption by `useNominatimAddressAutocomplete`.
+- Runtime delivery: Serialized via `SwayLocale#to_builder` and typed in `ISwayLocale` for consumption by `useNominatimAddressAutocomplete`.
 - Upstream compliance: Client requests include an identifying User-Agent header and throttle query dispatch with >= 1000ms debounce.
 - Rollback path: Google Maps Places autocomplete files ([[app/frontend/components/user/AddressAutocomplete.tsx#AddressAutocomplete|AddressAutocomplete]], [[app/frontend/hooks/useAddressAutocomplete.ts#useAddressAutocomplete|useAddressAutocomplete]], and [[app/frontend/sway_utils/parseGoogleAddressComponents.ts#parseGoogleAddressComponents|parseGoogleAddressComponents]]) remain installed as a rollback path, while registration uses [[app/frontend/components/user/NominatimAddressAutocomplete.tsx#NominatimAddressAutocomplete|NominatimAddressAutocomplete]].
 - Frontend integration: Rendered via `NominatimAddressAutocomplete` on the user-facing `SwayRegistration` Inertia page.
