@@ -103,14 +103,11 @@ class SummaryCitationValidator
       urls << url if url.present?
     end
 
+    # @lat: [[llm-summaries#Public summary content and source grounding]]
     if bill.respond_to?(:bill_news_articles)
-      begin
-        bill.bill_news_articles.approved.includes(:news_article).each do |bna|
-          canonical = bna.news_article&.canonical_url
-          urls << canonical if canonical.present?
-        end
-      rescue NoMethodError, (defined?(RSpec::Mocks::MockExpectationError) ? RSpec::Mocks::MockExpectationError : StandardError)
-        # @lat: [[llm-summaries#Public summary content and source grounding]]
+      bill.bill_news_articles.approved.includes(:news_article).each do |bna|
+        canonical = bna.news_article&.canonical_url
+        urls << canonical if canonical.present?
       end
     end
 

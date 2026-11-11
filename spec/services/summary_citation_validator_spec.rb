@@ -78,6 +78,16 @@ RSpec.describe SummaryCitationValidator do
     end
   end
 
+  describe ".allowed_news_urls" do
+    it "propagates ActiveRecord::StatementInvalid when querying approved news articles fails" do
+      allow(bill).to receive(:bill_news_articles).and_raise(ActiveRecord::StatementInvalid, "simulated query failure")
+
+      expect {
+        described_class.allowed_news_urls(bill)
+      }.to raise_error(ActiveRecord::StatementInvalid)
+    end
+  end
+
   # verdict_attrs holds the three-case rule for whether cited_section_keys
   # KEY IS PRESENT, the entry point both writers go through — they once held
   # OPPOSITE rules for the same payload.
