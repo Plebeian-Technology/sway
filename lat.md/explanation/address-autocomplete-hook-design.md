@@ -17,7 +17,7 @@ The hook preserves the Google Places suggestion contract to avoid breaking consu
 
 ## Why state lives in refs instead of useEffect
 
-`useAddressAutocomplete` backs the registration address field.
+The [[app/frontend/hooks/useAddressAutocomplete.ts#useAddressAutocomplete|useAddressAutocomplete]] hook and companion Google Places files serve as the kept rollback path for address autocomplete, while registration uses [[app/frontend/components/user/NominatimAddressAutocomplete.tsx#NominatimAddressAutocomplete|NominatimAddressAutocomplete]].
 
 It seeds the search box from any address already on the form, queries `google.maps.places.AutocompleteSuggestion` (the replacement for the deprecated `AutocompleteService`) as the user types, and once the user picks a suggestion, resolves it to address fields and writes them via `setData`.
 
