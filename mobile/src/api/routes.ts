@@ -31,7 +31,6 @@ export const Routes = {
     bill: (id: number) => `/bills/${id}`,
     billPublicTestimonyLetters: (billId: number) => `/bills/${billId}/public_testimony_letters`,
     billSummaryReports: (billId: number) => `/bills/${billId}/summary_reports`,
-    billOfTheMonth: () => "/bill_of_the_month",
     legislators: () => "/legislators",
     legislator: (id: number) => `/legislators/${id}`,
     userLegislators: () => "/user_legislators",
@@ -43,14 +42,11 @@ export const Routes = {
     userPreferences: () => "/users/preferences",
     userDelete: (id: number) => `/users/${id}`,
     passkeys: () => "/users/passkeys",
-    passkeyRevoke: (id: number) => `/users/webauthn/sessions/${id}`,
 
     memberships: () => "/users/organization_memberships",
     membership: (orgId: number, id: number) => `/organizations/${orgId}/memberships/${id}`,
 
     orgPositions: (orgId: number) => `/organizations/${orgId}/positions`,
-    position: (orgId: number, id: number) => `/organizations/${orgId}/positions/${id}`,
-    pendingChanges: (orgId: number) => `/organizations/${orgId}/position_changes`,
     pendingChange: (orgId: number, id: number) => `/organizations/${orgId}/position_changes/${id}`,
     membershipInvites: (orgId: number) => `/organizations/${orgId}/membership_invites`,
 
