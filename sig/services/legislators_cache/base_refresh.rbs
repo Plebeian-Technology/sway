@@ -15,16 +15,24 @@ module LegislatorsCache
     @force: bool
     @adapter: Legislation::Adapters::GenericRosterAdapter?
     @connection: Faraday::Connection?
+    @term_history: CongressTermHistory?
 
-    def initialize: (SwayLocale sway_locale, ?force: bool, ?adapter: Legislation::Adapters::GenericRosterAdapter?, ?connection: Faraday::Connection?) -> void
+    def initialize: (SwayLocale sway_locale, ?force: bool, ?adapter: Legislation::Adapters::GenericRosterAdapter?, ?connection: Faraday::Connection?, ?term_history: CongressTermHistory?) -> void
 
     def call: () -> Result
 
     private
 
     attr_reader sway_locale: SwayLocale
-
     attr_reader force: bool
+    attr_reader adapter: Legislation::Adapters::GenericRosterAdapter?
+    attr_reader connection: Faraday::Connection?
+    attr_reader term_history: CongressTermHistory?
+
+    def congress_locale?: () -> bool
+    def potus_entry: () -> Hash[String, untyped]?
+    def departed_members: (Array[Hash[String, untyped]] listed) -> Array[Hash[String, untyped]]
+    def with_term_history: (Array[Hash[String, untyped]] members) -> Array[Hash[String, untyped]]
 
     def merge_stored_fields: (Array[Hash[String, untyped]] incoming) -> Array[Hash[String, untyped]]
 

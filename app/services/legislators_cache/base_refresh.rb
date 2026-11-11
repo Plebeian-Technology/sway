@@ -10,11 +10,12 @@ module LegislatorsCache
     class Result < Data.define(:changed_files)
     end
 
-    def initialize(sway_locale, force: false, adapter: nil, connection: nil)
+    def initialize(sway_locale, force: false, adapter: nil, connection: nil, term_history: nil)
       @sway_locale = sway_locale
       @force = force
       @adapter = adapter
       @connection = connection
+      @term_history = term_history
     end
 
     def call
@@ -57,6 +58,14 @@ module LegislatorsCache
         hash = m.is_a?(Hash) ? m.deep_stringify_keys : m
         hash.is_a?(Hash) ? hash.except("raw_data") : hash
       end
+
+      if congress_locale?
+        potus = potus_entry
+        all_members = potus.nil? ? members : [potus].concat(members)
+        listed = all_members.map { |m| m.is_a?(Hash) ? m.except("updateDate") : m }
+        members = with_term_history(listed + departed_members(listed))
+      end
+
       json_string = JSON.pretty_generate(merge_stored_fields(members))
       json_path = output_json_path
 
@@ -76,7 +85,64 @@ module LegislatorsCache
 
     private
 
-    attr_reader :sway_locale, :force, :adapter, :connection
+    attr_reader :sway_locale, :force, :adapter, :connection, :term_history
+
+    def congress_locale?
+      return true if sway_locale&.respond_to?(:congress?) && sway_locale.congress?
+
+      [:congress_dot_gov, :congress].include?(roster_parsing)
+    end
+
+    # @lat: [[current-legislator-term#Departed members are put back before term history is asked]]
+    def potus_entry
+      return nil unless File.exist?(canonical_seed_path)
+
+      entries = JSON.parse(File.read(canonical_seed_path))
+      return nil unless entries.is_a?(Array)
+
+      entries.find { |m| m.is_a?(Hash) && m["bioguideId"] == POTUS_BIOGUIDE_ID }
+    rescue JSON::ParserError
+      nil
+    end
+
+    # @lat: [[current-legislator-term#Departed members are put back before term history is asked]]
+    def departed_members(listed)
+      DepartedMemberEntries.for(
+        sway_locale: sway_locale,
+        listed_bioguide_ids: listed.filter_map { |member| member["bioguideId"] }
+      )
+    end
+
+    # @lat: [[current-legislator-term#Why a Congress term is rebuilt from published history]]
+    def with_term_history(members)
+      bioguide_ids =
+        members.filter_map { |m| m["bioguideId"] }.reject { |id| id == POTUS_BIOGUIDE_ID }
+      history = term_history || CongressTermHistory.fetch(bioguide_ids)
+
+      merged = members.map do |member|
+        next member if member["bioguideId"] == POTUS_BIOGUIDE_ID
+
+        terms = history.terms_for(member["bioguideId"])
+
+        if terms.blank?
+          member
+        else
+          member.merge(
+            "terms" => {"item" => terms},
+            "termsSource" => CongressTermHistory::SOURCE_NAME
+          )
+        end
+      end
+
+      SwayLogging.info(
+        "legislators_cache.congress.term_history",
+        members: bioguide_ids.size,
+        without_history: history.missing.size,
+        bioguide_ids_without_history: history.missing.first(25)
+      )
+
+      merged
+    end
 
     # @lat: [[current-legislator-term#Missing source fields preserve stored roster values]]
     def merge_stored_fields(incoming)

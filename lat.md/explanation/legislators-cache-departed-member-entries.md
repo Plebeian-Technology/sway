@@ -19,7 +19,7 @@ Somebody who leaves simply falls out of it, so the seeder never looks at their r
 
 Every value in the entry this class builds is copied off the person's own existing row.
 
-No term is written here. The caller (`CongressRefresh#departed_members`) hands these entries to `CongressTermHistory` like any other roster entry, and that source answers with the real terms — including the year the person actually left, which is the fact the roster could not carry on its own.
+No term is written here. The caller (`BaseRefresh#departed_members`) hands these entries to `CongressTermHistory` like any other roster entry, and that source answers with the real terms — including the year the person actually left, which is the fact the roster could not carry on its own.
 
 ## Why only people still reading as in office are covered
 

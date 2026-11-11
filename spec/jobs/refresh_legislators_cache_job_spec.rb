@@ -511,6 +511,9 @@ RSpec.describe RefreshLegislatorsCacheJob, type: :job do
       stub_request(:get, %r{https://api\.congress\.gov/v3/member})
         .to_return(status: 200, body: congress_payload, headers: {"Content-Type" => "application/json"})
 
+      stub_request(:get, %r{https://unitedstates\.github\.io/congress-legislators/})
+        .to_return(status: 200, body: [].to_json, headers: {"Content-Type" => "application/json"})
+
       described_class.new.perform
 
       expect(Sentry).not_to have_received(:capture_exception)

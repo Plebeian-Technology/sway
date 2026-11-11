@@ -41,6 +41,12 @@ RSpec.describe LegislatorsCache::BaseRefresh do
     let(:sway_locale) { create(:sway_locale, :congress) }
     let(:adapter) { instance_double(Legislation::Adapters::GenericRosterAdapter) }
 
+    before do
+      allow(LegislatorsCache::CongressTermHistory).to receive(:fetch).and_return(
+        instance_double(LegislatorsCache::CongressTermHistory, terms_for: nil, missing: [])
+      )
+    end
+
     context "when publishing a refreshed roster" do
       let(:baseline_file) { Tempfile.new(["stored-roster", ".json"]) }
       let(:output_file) { Tempfile.new(["refreshed-roster", ".json"]) }
@@ -149,6 +155,96 @@ RSpec.describe LegislatorsCache::BaseRefresh do
         service = described_class.new(sway_locale, adapter: adapter)
         result = service.call
         expect(result.changed_files).to eq({})
+      end
+    end
+
+    context "for the Congress locale" do
+      let(:baseline_file) { Tempfile.new(["stored-roster", ".json"]) }
+      let(:output_file) { Tempfile.new(["refreshed-roster", ".json"]) }
+      let(:service) { described_class.new(sway_locale, force: true, adapter: adapter) }
+      let(:path) { "db/seeds/data/#{sway_locale.reversed_name.tr("-", "/")}/legislators.json" }
+      let(:potus_entry) do
+        {
+          "bioguideId" => LegislatorsCache::POTUS_BIOGUIDE_ID,
+          "name" => "Biden, Joseph R. Jr.",
+          "firstName" => "Joseph",
+          "lastName" => "Biden",
+          "partyName" => "Democratic",
+          "currentMember" => true
+        }
+      end
+
+      before do
+        allow(service).to receive(:canonical_seed_path).and_return(baseline_file.path)
+        allow(service).to receive(:output_json_path).and_return(output_file.path)
+        allow(service).to receive(:upload_json_to_gcs)
+      end
+
+      after do
+        baseline_file.close!
+        output_file.close!
+      end
+
+      # @lat: [[current-legislator-term#Departed members are put back before term history is asked]]
+      it "includes a legislator stored as in office who is missing from the fetch, marked currentMember false" do
+        baseline_file.write(JSON.generate([{"bioguideId" => "A000001"}, {"bioguideId" => "R000595"}]))
+        baseline_file.flush
+
+        legislator = create(:legislator, sway_locale: sway_locale, external_id: "R000595", first_name: "Marco", last_name: "Rubio", party: "R")
+        district = District.find_or_create_by!(name: "FL0", sway_locale: sway_locale)
+        create(:legislator_term, legislator: legislator, district: district, term_start_year: Date.current.year - 1, term_end_year: Date.current.year + 1)
+
+        allow(adapter).to receive(:fetch_roster).and_return([{"bioguideId" => "A000001", "name" => "Ada Member"}])
+
+        result = service.call
+        entries = JSON.parse(result.changed_files.fetch(path))
+        departed = entries.find { |m| m["bioguideId"] == "R000595" }
+
+        expect(departed).to be_present
+        expect(departed["currentMember"]).to be false
+      end
+
+      # @lat: [[current-legislator-term#Why a Congress term is rebuilt from published history]]
+      it "stamps every entry except the President with termsSource from term history" do
+        baseline_file.write(JSON.generate([potus_entry, {"bioguideId" => "A000001"}]))
+        baseline_file.flush
+
+        allow(adapter).to receive(:fetch_roster).and_return([{"bioguideId" => "A000001", "name" => "Ada Member"}])
+        sample_terms = [{"chamber" => "House of Representatives", "startYear" => 2023, "endYear" => 2025}]
+        history = instance_double(LegislatorsCache::CongressTermHistory, missing: [])
+        allow(history).to receive(:terms_for).with("A000001").and_return(sample_terms)
+        allow(LegislatorsCache::CongressTermHistory).to receive(:fetch).and_return(history)
+
+        result = service.call
+        entries = JSON.parse(result.changed_files.fetch(path))
+
+        non_potus = entries.reject { |m| m["bioguideId"] == LegislatorsCache::POTUS_BIOGUIDE_ID }
+        expect(non_potus).not_to be_empty
+        expect(non_potus).to all(include("termsSource" => LegislatorsCache::CongressTermHistory::SOURCE_NAME))
+
+        potus_result = entries.find { |m| m["bioguideId"] == LegislatorsCache::POTUS_BIOGUIDE_ID }
+        expect(potus_result).to be_present
+        expect(potus_result).not_to have_key("termsSource")
+      end
+
+      it "preserves a stored President entry first in output, unchanged, with no termsSource and not marked departed" do
+        baseline_file.write(JSON.generate([potus_entry, {"bioguideId" => "A000001"}]))
+        baseline_file.flush
+
+        potus_legislator = create(:legislator, sway_locale: sway_locale, external_id: LegislatorsCache::POTUS_BIOGUIDE_ID, first_name: "Joseph", last_name: "Biden")
+        district = District.find_or_create_by!(name: "US0", sway_locale: sway_locale)
+        create(:legislator_term, legislator: potus_legislator, district: district, term_start_year: Date.current.year - 1, term_end_year: Date.current.year + 1)
+
+        allow(adapter).to receive(:fetch_roster).and_return([{"bioguideId" => "A000001", "name" => "Ada Member"}])
+
+        result = service.call
+        entries = JSON.parse(result.changed_files.fetch(path))
+        first_entry = entries.first
+
+        expect(first_entry["bioguideId"]).to eq(LegislatorsCache::POTUS_BIOGUIDE_ID)
+        expect(first_entry).to eq(potus_entry)
+        expect(first_entry["currentMember"]).not_to be(false)
+        expect(first_entry).not_to have_key("termsSource")
       end
     end
   end

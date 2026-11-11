@@ -9,7 +9,7 @@ lat:
 
 congress.gov names everybody currently in Congress and keeps their photo, party, and contact details current, but it gives one entry PER CONGRESS rather than one entry per term — a senator's six-year term arrives as three two-year pieces. Sway decides who is in office by reading the year a term ends, so recording a senate term as two years long would put sitting senators out of office. This project publishes the real terms, with real dates and the seat each one was served in.
 
-It is safe that this source publishes slowly: a term that has already ended never changes again, so news arriving a few weeks late cannot make an old term wrong. A brand new member's own term still comes from the congress.gov roster, which `CongressRefresh` fetches fresh every week.
+It is safe that this source publishes slowly: a term that has already ended never changes again, so news arriving a few weeks late cannot make an old term wrong. A brand new member's own term still comes from the congress.gov roster, which `BaseRefresh` fetches fresh every week.
 
 For why each real term is widened to Sway's January-to-January years rather than narrowed to its real dates, see [[docs/explanation/retire-departed-members-safety-design.md|the RetireDepartedMembersService doc's widening section]] — `#window` implements the same rule this class states: a senator appointed until a special election in November must not read as out of office the following January.
 
