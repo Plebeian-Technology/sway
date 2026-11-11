@@ -24,7 +24,7 @@ The schema establishes `clicks_count`, `registrations_count`, `votes_count`, `pr
 
 Attribution parameters travel from embedded widgets through top-level navigation to registration and ballot submissions.
 
-When a reader clicks the call-to-action link in an embedded widget, `ApplicationController#capture_attribution_param` records the partner identity and optional article reference into `cookies.permanent[:sway_attribution_key]` as `partner:<partner_slug>:<ref>`. Session fixation protection in `sign_in` preserves this cookie across authentication boundaries. When a new user completes registration, `ArticleEngagementTrackerService.track_registration` increments the associated counter, and subsequent ballot submissions invoke `ArticleEngagementTrackerService.track_vote`.
+When a reader clicks the call-to-action link in an embedded widget, `ApplicationController#capture_attribution_param` records the partner identity and optional article reference into `cookies.permanent[:sway_attribution_key]` as `partner:<partner_slug>:<ref>`, resolves the `ArticleBill` (scoped to the active bill when visiting bill routes), and invokes `ArticleEngagementTrackerService.track_click` once per session. Session fixation protection in `sign_in` preserves this cookie across authentication boundaries. When a new user completes registration, `ArticleEngagementTrackerService.track_registration` increments the associated counter, and subsequent ballot submissions invoke `ArticleEngagementTrackerService.track_vote`.
 
 ## Privacy guarantees and k-anonymity
 

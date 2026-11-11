@@ -548,6 +548,10 @@ class ApplicationController < ActionController::Base
       first_legislator && LegislatorResource.new(first_legislator).serializable_hash
   end
 
+  TRACKED_ARTICLE_BILL_CLICKS_SESSION_KEY = :tracked_article_bill_clicks
+  MAX_TRACKED_ARTICLE_BILL_CLICKS = 100
+
+  # @lat: [[partner-article-engagement#End-to-end attribution lifecycle]]
   def capture_attribution_param
     partner = params[:partner].presence
     ref = params[:ref].presence || params[:attribution].presence
@@ -558,7 +562,26 @@ class ApplicationController < ActionController::Base
       ref
     end
 
-    cookies.permanent[:sway_attribution_key] = attribution_key if attribution_key.present?
+    return if attribution_key.blank?
+
+    cookies.permanent[:sway_attribution_key] = attribution_key
+    bill_id = params[:bill_id].presence || (params[:id].presence if controller_name == "bills")
+    record_article_bill_click(attribution_key, bill_id: bill_id)
+  end
+
+  def record_article_bill_click(attribution_key, bill_id: nil)
+    bill_id = bill_id.presence || params[:bill_id].presence || (params[:id].presence if controller_name == "bills")
+    article_bill = ArticleEngagementTrackerService.resolve_article_bill(
+      attribution_key: attribution_key,
+      bill_id: bill_id
+    )
+    return unless article_bill
+
+    tracked_ids = Array(session[TRACKED_ARTICLE_BILL_CLICKS_SESSION_KEY]).map(&:to_i)
+    return if tracked_ids.include?(article_bill.id)
+
+    ArticleEngagementTrackerService.track_click(article_bill: article_bill)
+    session[TRACKED_ARTICLE_BILL_CLICKS_SESSION_KEY] = (tracked_ids << article_bill.id).last(MAX_TRACKED_ARTICLE_BILL_CLICKS)
   end
 
   def current_visitor_token

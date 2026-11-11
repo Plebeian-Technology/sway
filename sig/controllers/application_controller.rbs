@@ -136,11 +136,14 @@ class ApplicationController < ActionController::Base
     REPEATED_BLOCK_WINDOW: ActiveSupport::Duration
     REPEATED_BLOCK_THRESHOLD: Integer
     SENTRY_ALERT_SAMPLE_RATIO: Integer
+    TRACKED_ARTICLE_BILL_CLICKS_SESSION_KEY: Symbol
+    MAX_TRACKED_ARTICLE_BILL_CLICKS: Integer
 
     def render_rate_limited: () -> untyped
     def report_repeated_rate_limit: () -> void
 
     def capture_attribution_param: () -> void
+    def record_article_bill_click: (String attribution_key, ?bill_id: (Bill | Integer | String)?) -> void
     def current_visitor_token: () -> String
     def bill_creator_tab_param: (?ActionController::Parameters source) -> untyped
     def track_sql_query_telemetry: () { () -> void } -> void
