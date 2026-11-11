@@ -50,29 +50,6 @@ from the other end: a factory handing out one fixed organization name worked
 only while every locale was invented fresh, so the name has to carry the
 difference once the locales are real.
 
-## Declared executives
-
-Which state-wide offices a locale has, and who fills them, is declared per locale rather than held as a constant inside the refresher that reads them.
-
-The executives list began as a constant inside the Maryland refresher, so the
-second state to adopt that refresher was handed Maryland's Governor. The same
-shape reached three other facts a refresher used to know about itself — its own
-jurisdiction name among them — which is why a refresher now derives every one of
-them from the locale it was given, and its upload path with them, rather than
-naming any of them itself.
-
-Dispatch follows the same rule. Which vote source a locale reads is taken from
-its own declaration and not from what kind of locale it is, so stubbing
-`congress?` or `local?` in a test can no longer change where a fetch goes.
-
-### A stored portrait address keeps no query string
-
-The executive portraits are stored as the address up to the "?" and no further.
-
-The site serving them hands out addresses whose query string stops working
-after ten minutes, so storing the whole thing stores an expiry. Everything
-before the "?" resolves on its own, which is what makes it worth keeping.
-
 ## Published legislator votes
 
 publishes_legislator_votes describes the publisher's evidence, not whether a locale is a city. Congress and Maryland declare true; Baltimore declares false.

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-# @lat: [[jurisdiction-rules#Declared executives]]
+# @lat: [[legislator-vote-fetch-job-design#Why LegislatorVoteFetchJob is shaped the way it is]]
 RSpec.describe LegislatorVoteFetchJob do
   describe "class macros" do
     it "is configured for the :background queue" do

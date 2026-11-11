@@ -523,7 +523,7 @@ RSpec.describe LegislatorsCache::BaseRefresh do
   end
 
   describe "#upload_json_to_gcs (private)" do
-    # @lat: [[jurisdiction-rules#Declared executives]]
+    # @lat: [[jurisdiction-rules-design#Why JurisdictionRules exists, and how it is organized#Why the legislators-cache GCS upload path is named from the locale]]
     it "uploads to both canonical and archive GCS paths, named for the locale" do
       sway_locale = create(:sway_locale, :congress)
       service = LegislatorsCache::TestRefresh.new(sway_locale)

@@ -2686,14 +2686,6 @@ class Object
     def baltimore_instance:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    # open_states_refresh_spec.rb — the executives a locale declares, the
-    # second state stood up to prove the refresher is generic over its locale,
-    # and that state's one executive. Concrete rather than untyped:
-    # each really is what it says.
-    def declared_executives: () -> Array[SwayLocale::OpenStatesExecutivesRegistry::executive]
-    def delaware: () -> SwayLocale
-    def delaware_governor: () -> SwayLocale::OpenStatesExecutivesRegistry::executive
-    def aruna: () -> SwayLocale::OpenStatesExecutivesRegistry::executive
     # Phase 62 review IN-03 — BillInterestingScoreCalculator spec helpers +
     # let-names (build_bill/cast_vote/create_org_positions are plain def
     # helpers inside the example group; calculator_class is a let).
