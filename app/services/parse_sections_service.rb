@@ -245,11 +245,6 @@ class ParseSectionsService
     refs
   end
 
-  def scan_for_declared_target(head)
-    declared = scan_for_declared_targets(head)
-    declared.find { |c| !without_amendments_header?(c[:anchor]) } || declared.first
-  end
-
   def scan_for_declared_targets(head)
     # @type var cites: Array[cite_payload]
     cites = []

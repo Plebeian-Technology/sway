@@ -92,7 +92,6 @@ class ParseSectionsService
   # Position of the earliest mention and the wording found there, or nil.
   def earliest_keyword: (String head, Array[String] keywords) -> [Integer, String]?
   def extract_section_references: (String text, SwayLocale? sway_locale) -> Array[section_ref_payload]
-  def scan_for_declared_target: (String head) -> cite_payload?
   def scan_for_declared_targets: (String head) -> Array[cite_payload]
   def without_amendments_header?: (String? anchor) -> bool
   def duplicate_of_target?: (cite_payload cite, cite_payload target_cite, Hash[String, String] title_prefix_map) -> bool

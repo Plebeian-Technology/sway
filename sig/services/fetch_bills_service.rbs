@@ -84,11 +84,9 @@ class FetchBillsService
 
   def warn_intro_date: (String external_id, json_scalar_value raw, String reason) -> nil
 
-  def default_years: () -> Array[Integer]
   def select_primary_attachment: (Array[Hash[String, untyped]] attachments, ?locale: (SwayLocale | String)?) -> Hash[String, untyped]?
   def build_metadata: (Hash[String, untyped] matter, ?locale: (SwayLocale | String)?) -> Hash[Symbol, untyped]?
   def fetch_all_matters: (?locale: (SwayLocale | String)?) -> Array[Hash[String, untyped]]
 
-  def jurisdiction_rules_for: (String? locale_name) -> SwayLocale::JurisdictionRules
   def default_faraday_conn: () -> Faraday::Connection
 end

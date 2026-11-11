@@ -245,10 +245,6 @@ class FetchBillsService
     end
   end
 
-  def default_years
-    [Time.current.year - 1, Time.current.year]
-  end
-
   def select_primary_attachment(attachments, locale: nil)
     target = locale || sway_locale_name
     adapter_for(target).select_primary_attachment(attachments, target)
@@ -300,11 +296,6 @@ class FetchBillsService
 
     adapter = adapter_for(resolve_sway_locale)
     adapter.download_pdf(dir, pdf_url, pdf_filename, connection: conn)
-  end
-
-  def jurisdiction_rules_for(locale_name)
-    locale = SwayLocale.resolve_by_computed_name(locale_name) if locale_name
-    locale&.jurisdiction_rules || resolve_sway_locale.jurisdiction_rules
   end
 
   def default_faraday_conn

@@ -6,7 +6,6 @@ module Legislation
       PDF_SECTION_DASHES: Regexp
       PDF_SECTION_MARKER: Regexp
       PDF_SECTION_SPACED_MARKER: Regexp
-      PDF_SECTION_START_REGEX: Regexp
       PDF_STRUCTURAL_DIVIDER: Regexp
       PDF_ARTICLE_DIVIDER: Regexp
       STATUS_NOTE_REGEX: Regexp

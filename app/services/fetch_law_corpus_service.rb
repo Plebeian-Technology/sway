@@ -18,9 +18,6 @@ class FetchLawCorpusService
     "https://github.com/#{repo}/archive/refs/heads/#{branch}.tar.gz"
   end
 
-  COMMITS_URL = commits_url
-  TARBALL_URL = tarball_url
-
   # @lat: [[fetch-law-corpus-service#Why REQUIRED_CORPUS_FILE is charter.xml]]
   REQUIRED_CORPUS_FILE = "charter.xml"
 

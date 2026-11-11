@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe Legislation::Adapters::GenericLegislationAdapter do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:maryland) do
     loc = create(:sway_locale, :maryland)
     create(
@@ -695,6 +697,35 @@ RSpec.describe Legislation::Adapters::GenericLegislationAdapter do
       ).and_return([])
 
       adapter.send(:fetch_all_legistar_matters, nil, custom_locale)
+    end
+
+    it "queries Legistar for the previous and current calendar years and rolls forward each year" do
+      custom_rules = instance_double(
+        SwayLocale::JurisdictionRules,
+        legislation_rules: {engine: "legistar", client: "baltimore", accepted_matter_types: %w[Ordinance]},
+        accepted_matter_types: %w[Ordinance]
+      )
+      custom_locale = instance_double(SwayLocale, name: "custom-locale", jurisdiction_rules: custom_rules)
+      adapter = described_class.new(custom_rules)
+
+      legistar_mock = instance_double(Legistar::Client)
+      allow(Legistar::Client).to receive(:new).and_return(legistar_mock)
+
+      travel_to(Time.zone.local(2026, 6, 1)) do
+        expect(legistar_mock).to receive(:get).with(
+          "Matters",
+          hash_including(filter: a_string_including("MatterIntroDate ge datetime'2025-01-01T00:00:00' and MatterIntroDate lt datetime'2027-01-01T00:00:00'"))
+        ).and_return([])
+        adapter.send(:fetch_all_legistar_matters, nil, custom_locale)
+      end
+
+      travel_to(Time.zone.local(2027, 2, 1)) do
+        expect(legistar_mock).to receive(:get).with(
+          "Matters",
+          hash_including(filter: a_string_including("MatterIntroDate ge datetime'2026-01-01T00:00:00' and MatterIntroDate lt datetime'2028-01-01T00:00:00'"))
+        ).and_return([])
+        adapter.send(:fetch_all_legistar_matters, nil, custom_locale)
+      end
     end
   end
 

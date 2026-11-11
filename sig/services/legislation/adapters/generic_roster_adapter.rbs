@@ -73,10 +73,6 @@ module Legislation
       def parse_generic_items: (untyped parsed) -> Array[Hash[Symbol, untyped]]
       def retrieve_legistar_payload: (SwayLocale sway_locale) -> untyped
       def parse_legistar_persons: (untyped parsed) -> Array[Hash[Symbol, untyped]]
-      def fetch_congress_roster: (SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[Symbol, untyped]]
-      def fetch_open_states_roster: (SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[Symbol, untyped]]
-      def fetch_generic_roster: (SwayLocale sway_locale, Faraday::Connection conn) -> Array[Hash[Symbol, untyped]]
-      def fetch_curated_roster: (SwayLocale sway_locale) -> Array[Hash[Symbol, untyped]]
       def single_roster_item?: (untyped hash) -> bool
       def extract_field: (untyped record, untyped path_expr) -> untyped
     end

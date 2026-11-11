@@ -65,23 +65,6 @@ RSpec.describe FetchBillsService do
     create(:legislation_pipeline_run)
   end
 
-  # The introduction-date range Baltimore is asked about follows the
-  # calendar: the query boundary is worked out entirely from default_years,
-  # so pinning default_years pins the query.
-  describe "#default_years" do
-    it "returns [previous_year, current_year] and rolls forward each year" do
-      service = described_class.new(run: run)
-
-      travel_to(Time.zone.local(2026, 6, 1)) do
-        expect(service.send(:default_years)).to eq([2025, 2026])
-      end
-
-      travel_to(Time.zone.local(2027, 2, 1)) do
-        expect(service.send(:default_years)).to eq([2026, 2027])
-      end
-    end
-  end
-
   describe "#call (happy path via VCR cassette)" do
     it "returns an array of metadata Hashes and writes metadata.json + PDF per bill" do
       VCR.configure do |c|

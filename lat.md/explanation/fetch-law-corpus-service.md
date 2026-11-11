@@ -52,7 +52,7 @@ Finding it on disk after extraction is how `#corpus_present?` knows the download
 
 `ENV.fetch(name, default)` only falls back when the variable is completely unset — a variable set to `""` or `"main\n"` passes straight through.
 
-Both `REPO` and `BRANCH` are interpolated into `COMMITS_URL` and `TARBALL_URL`, where a stray newline gets percent-encoded and the request 404s. `GitHubPrService` had the same bug.
+Both `repo` and `branch` are interpolated into `commits_url` and `tarball_url`, where a stray newline gets percent-encoded and the request 404s. `GitHubPrService` had the same bug.
 
 ## Why download_tarball reads a chunk at a time, not response.body
 

@@ -13,7 +13,6 @@ module Legislation
       PDF_SECTION_DASHES = /[-‐‑‒–—−]/
       PDF_SECTION_MARKER = /\A§([0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*[-‐‑‒–—−][0-9A-Za-z.‐‑‒–—−-]+?)(?:\.(?=\s|\z)|\z)\s*(.*)\z/u
       PDF_SECTION_SPACED_MARKER = /\A§\s+([0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*[-‐‑‒–—−][0-9A-Za-z.‐‑‒–—−-]+?)\.(?:\s+(.*)|\z)/u
-      PDF_SECTION_START_REGEX = PDF_SECTION_MARKER
       PDF_STRUCTURAL_DIVIDER = /\A(?:Title|Subtitle|Part|Subpart|Chapter|Division)\s+[0-9IVXLCDM]+[A-Za-z0-9–-]*\.(?:\s+.*)?\z/
       PDF_ARTICLE_DIVIDER = /\AArticle\s*[-‐‑‒–—−]\s*.+\z/i
       STATUS_NOTE_REGEX = /\A(?:\[.*\]|Repealed\b|Reserved\b|Abrogated\b|Terminated\b|Transferred\b|Redesignated\b)/i

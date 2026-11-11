@@ -253,12 +253,6 @@ module LegislatorsCache
       fetched_at < 6.days.ago
     end
 
-    def save_scrape_failure(source, raw_html)
-      dir = Rails.root.join("tmp", "scraper-failures")
-      FileUtils.mkdir_p(dir)
-      File.write(dir.join("#{Date.current.strftime("%Y%m%d")}-#{source}.html"), raw_html)
-    end
-
     # @lat: [[current-legislator-term#Refresh comparison and publication]]
     def canonical_seed_path
       Rails.root.join(

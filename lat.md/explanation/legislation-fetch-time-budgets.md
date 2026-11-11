@@ -58,7 +58,7 @@ Re-running discovery is not a cheap fallback here: it costs about 45 minutes of 
 
 The named lookup is also careful about how it builds its filter: `Legislation::Paths::EXTERNAL_ID_PATTERN` admits no quote character, so the value it validates cannot break out of the OData filter string Legistar receives; `FetchBillsService#fetch_all_matters` builds its own filter the same way.
 
-Asking by name casts a slightly wider net than discovery does: it can also return a `Resolution`, or a bill introduced outside the year window `#default_years` covers — both of which `#fetch_all_matters` filters out during ordinary discovery.
+Asking by name casts a slightly wider net than discovery does: it can also return a `Resolution`, or a bill introduced outside the year window the legislation adapter's Legistar query covers — both of which `#fetch_all_matters` filters out during ordinary discovery.
 
 ## Why the download loop keeps writing metadata.json after its budget is spent
 

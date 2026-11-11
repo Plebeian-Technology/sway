@@ -504,24 +504,6 @@ RSpec.describe LegislatorsCache::BaseRefresh do
     end
   end
 
-  describe "#save_scrape_failure (private)" do
-    it "writes a dated HTML file to tmp/scraper-failures/" do
-      sway_locale = create(:sway_locale)
-      service = LegislatorsCache::TestRefresh.new(sway_locale)
-
-      Dir.mktmpdir do |tmpdir|
-        allow(Rails).to receive(:root).and_return(Pathname.new(tmpdir))
-
-        service.send(:save_scrape_failure, "test-source", "<html>error</html>")
-
-        date_prefix = Date.current.strftime("%Y%m%d")
-        expected_path = File.join(tmpdir, "tmp", "scraper-failures", "#{date_prefix}-test-source.html")
-        expect(File.exist?(expected_path)).to be true
-        expect(File.read(expected_path)).to eq("<html>error</html>")
-      end
-    end
-  end
-
   describe "#upload_json_to_gcs (private)" do
     # @lat: [[jurisdiction-rules-design#Why JurisdictionRules exists, and how it is organized#Why the legislators-cache GCS upload path is named from the locale]]
     it "uploads to both canonical and archive GCS paths, named for the locale" do

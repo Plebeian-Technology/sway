@@ -524,25 +524,6 @@ module Legislation
         end
       end
 
-      def fetch_congress_roster(sway_locale, conn)
-        payload = retrieve_congress_payload(conn)
-        parse_congress_members(payload)
-      end
-
-      def fetch_open_states_roster(sway_locale, conn)
-        payload = retrieve_open_states_payload(conn)
-        parse_open_states_people(payload)
-      end
-
-      def fetch_generic_roster(sway_locale, conn)
-        payload = retrieve_generic_rest_payload(conn)
-        parse_generic_items(payload)
-      end
-
-      def fetch_curated_roster(_sway_locale)
-        []
-      end
-
       def single_roster_item?(hash)
         return false unless hash.is_a?(Hash)
 

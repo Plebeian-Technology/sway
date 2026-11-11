@@ -74,14 +74,15 @@ RSpec.describe FetchLawCorpusService do
   describe "#call — fresh download" do
     it "downloads, extracts charter.xml under raw/, and records the commit SHA" do
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes)
       )
 
-      expect(described_class.new(run: nil, http: http).call).to eq(:downloaded)
+      expect(service.call).to eq(:downloaded)
 
       charter = FetchLawCorpusServiceSpecHelpers.raw_root.join(FetchLawCorpusServiceSpecHelpers::CHARTER_REL)
       expect(charter.exist?).to be(true)
@@ -96,11 +97,12 @@ RSpec.describe FetchLawCorpusService do
       FetchLawCorpusServiceSpecHelpers.write_cached_charter
 
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
 
-      expect(described_class.new(run: nil, http: http).call).to eq(:unchanged)
-      expect(http).not_to have_received(:get).with(FetchLawCorpusService::TARBALL_URL)
+      expect(service.call).to eq(:unchanged)
+      expect(http).not_to have_received(:get).with(service.tarball_url)
     end
   end
 
@@ -113,14 +115,15 @@ RSpec.describe FetchLawCorpusService do
       FetchLawCorpusServiceSpecHelpers.write_cached_charter
 
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes)
       )
 
-      expect { described_class.new(run: nil, http: http).call }.not_to raise_error
+      expect { service.call }.not_to raise_error
     end
   end
 
@@ -130,14 +133,15 @@ RSpec.describe FetchLawCorpusService do
       FetchLawCorpusServiceSpecHelpers.write_cached_charter
 
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "new-sha"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes)
       )
 
-      expect(described_class.new(run: nil, http: http).call).to eq(:downloaded)
+      expect(service.call).to eq(:downloaded)
       expect(FetchLawCorpusServiceSpecHelpers.raw_root.join(".commit_sha").read).to eq("new-sha")
     end
   end
@@ -160,45 +164,48 @@ RSpec.describe FetchLawCorpusService do
       FetchLawCorpusServiceSpecHelpers.write_cached_charter
 
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes)
       )
 
-      expect(described_class.new(run: nil, http: http).call).to eq(:cached_offline)
+      expect(service.call).to eq(:cached_offline)
     end
 
     it "raises StageError over the compressed-size cap when no cached corpus exists" do
       stub_const("#{described_class}::MAX_TARBALL_BYTES", 16)
 
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes)
       )
 
-      expect { described_class.new(run: nil, http: http).call }
+      expect { service.call }
         .to raise_error(StageError, /tarball passed the 16-byte cap/)
     end
 
     # @lat: [[outbound-fetch-safety#A declared size is checked as well as the bytes that arrive]]
     it "refuses a response whose headers claim more than the cap, even when its bytes fit" do
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(
           bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes,
           headers: {"content-length" => "999999999999"}
         )
       )
 
-      expect { described_class.new(run: nil, http: http).call }
+      expect { service.call }
         .to raise_error(StageError, /tarball advertises 999999999999 bytes, over the \d+-byte cap/)
     end
 
@@ -206,14 +213,15 @@ RSpec.describe FetchLawCorpusService do
       stub_const("#{described_class}::MAX_EXTRACTED_BYTES", 16)
 
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
       allow(http).to receive(:get).with(
-        FetchLawCorpusService::TARBALL_URL,
+        service.tarball_url,
         &FetchLawCorpusServiceSpecHelpers.tarball_stream(bytes: FetchLawCorpusServiceSpecHelpers.tarball_bytes)
       )
 
-      expect { described_class.new(run: nil, http: http).call }
+      expect { service.call }
         .to raise_error(StageError, /extracted corpus exceeds \d+ bytes/)
     end
   end
@@ -228,12 +236,13 @@ RSpec.describe FetchLawCorpusService do
 
     it "raises StageError when the tarball request returns a non-success status" do
       http = instance_double(Faraday::Connection)
-      allow(http).to receive(:get).with(FetchLawCorpusService::COMMITS_URL)
+      service = described_class.new(run: nil, http: http)
+      allow(http).to receive(:get).with(service.commits_url)
         .and_return(instance_double(Faraday::Response, status: 200, body: {"sha" => "abc123"}.to_json))
-      allow(http).to receive(:get).with(FetchLawCorpusService::TARBALL_URL)
+      allow(http).to receive(:get).with(service.tarball_url)
         .and_return(instance_double(Faraday::Response, status: 503, body: ""))
 
-      expect { described_class.new(run: nil, http: http).call }.to raise_error(StageError, /non-success status/)
+      expect { service.call }.to raise_error(StageError, /non-success status/)
     end
   end
 
@@ -346,8 +355,8 @@ RSpec.describe FetchLawCorpusService do
       service = described_class.new(sway_locale: nil, http: http)
       expect(service.repo).to eq(described_class::DEFAULT_REPO)
       expect(service.branch).to eq(described_class::DEFAULT_BRANCH)
-      expect(service.commits_url).to eq(described_class::COMMITS_URL)
-      expect(service.tarball_url).to eq(described_class::TARBALL_URL)
+      expect(service.commits_url).to eq(described_class.commits_url)
+      expect(service.tarball_url).to eq(described_class.tarball_url)
     end
   end
 end

@@ -3,8 +3,6 @@
 class FetchLawCorpusService
   DEFAULT_REPO: String
   DEFAULT_BRANCH: String
-  COMMITS_URL: String
-  TARBALL_URL: String
   REQUIRED_CORPUS_FILE: String
   MAX_TARBALL_BYTES: Integer
   MAX_EXTRACTED_BYTES: Integer

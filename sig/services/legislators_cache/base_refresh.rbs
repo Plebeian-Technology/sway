@@ -50,8 +50,6 @@ module LegislatorsCache
 
     def freshness_check_passes?: () -> bool
 
-    def save_scrape_failure: (String source, String raw_html) -> void
-
     def canonical_seed_path: () -> String
 
     def seed_relative_path: () -> String

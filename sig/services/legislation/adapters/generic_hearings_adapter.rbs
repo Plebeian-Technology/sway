@@ -49,7 +49,6 @@ module Legislation
       def hearing_event: (Integer | String event_id) -> Hash[String, untyped]?
       def event_items: (Integer | String event_id) -> untyped
       def attachment_fetch: () -> Legistar::AttachmentFetch
-      def fetch_attachment: (String url) -> Faraday::Response
 
       private
 

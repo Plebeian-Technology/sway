@@ -194,10 +194,6 @@ module Legislation
         @attachment_fetch ||= Legistar::AttachmentFetch.new(connection: @attachment_connection || default_attachment_connection)
       end
 
-      def fetch_attachment(url)
-        attachment_fetch.call(url)
-      end
-
       private
 
       def extract_config(input)
