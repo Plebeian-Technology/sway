@@ -1171,10 +1171,10 @@ RSpec.describe Llm::OpenRouterModelsService do
       end
     end
 
-    it "strictly separates openrouter_choices (chat), openrouter_decision_choices, and openrouter_extraction_choices" do
-      chat_choices = Llm::ModelCatalog.openrouter_choices
-      decision_choices = Llm::ModelCatalog.openrouter_decision_choices
-      extraction_choices = Llm::ModelCatalog.openrouter_extraction_choices
+    it "strictly separates OpenRouter catalog routes for chat, decision, and extraction" do
+      chat_choices = Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label).uniq
+      decision_choices = Llm::ModelCatalog::OPENROUTER_DECISION_ROUTES.values.map(&:label).uniq
+      extraction_choices = Llm::ModelCatalog::OPENROUTER_EXTRACTION_ROUTES.values.map(&:label).uniq
 
       expect(chat_choices.size).to eq(9)
       expect(decision_choices.size).to eq(4)

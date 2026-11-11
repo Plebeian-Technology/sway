@@ -139,7 +139,7 @@ RSpec.describe Llm::OpenRouterAdapter, "live OpenRouter API integration", :integ
       allow(Llm::PromptCache).to receive(:cacheable?).and_call_original
 
       begin
-        Llm::ModelCatalog.openrouter_choices.each do |label|
+        Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label).uniq.each do |label|
           route = Llm::ModelCatalog.fetch(label)
           choice = OpenRouterMeasurementReport.choice(label: label, model: route.api_model)
           report["choices"] << choice
@@ -193,7 +193,7 @@ RSpec.describe Llm::OpenRouterAdapter, "live OpenRouter API integration", :integ
 
       expect(Llm::PromptCache).not_to have_received(:cacheable?)
       expect(report["choices"].pluck("requested_alias"))
-        .to eq(Llm::ModelCatalog.openrouter_choices)
+        .to eq(Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label).uniq)
       report["choices"].each do |choice|
         %w[bill_summary bill_positions].each do |schema_name|
           measurement = choice.dig("schema_measurements", schema_name)

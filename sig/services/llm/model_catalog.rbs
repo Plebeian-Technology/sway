@@ -53,11 +53,6 @@ module Llm
     def self?.supports_reasoning?: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> bool
     def self?.decision_model?: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> bool
     def self?.extraction_model?: (untyped choice, ?catalog_models: (Array[Llm::OpenRouterModelsService::model] | Array[Llm::OpenRouterModelsService::decision_model])?) -> bool
-    def self?.openrouter_choices: () -> Array[String]
-    def self?.openrouter_decision_choices: () -> Array[String]
-    def self?.openrouter_extraction_choices: () -> Array[String]
     def self?.active_claude_choices: () -> Array[String]
-    def self?.retired_claude_choices: () -> Array[String]
-    def self?.all_choices: () -> Array[String]
   end
 end

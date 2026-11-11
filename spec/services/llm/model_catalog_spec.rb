@@ -432,25 +432,6 @@ RSpec.describe Llm::ModelCatalog do
     end
   end
 
-  describe ".openrouter_choices" do
-    it "returns the frozen 9-element array of OpenRouter labels matching AdminSetting::SUPPORTED_MODELS" do
-      expected = [
-        "Opus Latest",
-        "Sonnet Latest",
-        "Haiku Latest",
-        "Gemini Argon Latest",
-        "Gemini Flash Latest",
-        "GLM Latest",
-        "Deepseek Pro Latest",
-        "Deepseek Flash Latest",
-        "OpenRouter Auto"
-      ]
-      expect(described_class.openrouter_choices).to eq(expected)
-      expect(described_class.openrouter_choices).to eq(AdminSetting::SUPPORTED_MODELS[3..])
-      expect(described_class.openrouter_choices).to be_frozen
-    end
-  end
-
   describe ".supports_reasoning?" do
     it "returns true for baseline OpenRouter models" do
       expect(described_class.supports_reasoning?("Opus Latest")).to be(true)
@@ -602,36 +583,6 @@ RSpec.describe Llm::ModelCatalog do
       expect(described_class.extraction_model?("claude-sonnet-5-5")).to be(false)
       expect(described_class.extraction_model?(nil)).to be(false)
       expect(described_class.extraction_model?("unknown")).to be(false)
-    end
-  end
-
-  describe ".openrouter_decision_choices" do
-    it "returns the frozen array of primary decision model labels" do
-      expected = [
-        "ScaleDown Classify Latest",
-        "Jev Latest",
-        "Perplexity Decider Latest",
-        "Perplexity Decider Flash Latest"
-      ]
-      expect(described_class.openrouter_decision_choices).to eq(expected)
-      expect(described_class.openrouter_decision_choices).to be_frozen
-    end
-
-    it "strictly separates openrouter_choices, openrouter_decision_choices, and openrouter_extraction_choices" do
-      chat_choices = described_class.openrouter_choices
-      decision_choices = described_class.openrouter_decision_choices
-      extraction_choices = described_class.openrouter_extraction_choices
-
-      expect(chat_choices & decision_choices).to be_empty
-      expect(chat_choices & extraction_choices).to be_empty
-      expect(decision_choices & extraction_choices).to be_empty
-    end
-  end
-
-  describe ".openrouter_extraction_choices" do
-    it "returns the frozen array of primary extraction model labels" do
-      expect(described_class.openrouter_extraction_choices).to eq(["ScaleDown Extract Latest"])
-      expect(described_class.openrouter_extraction_choices).to be_frozen
     end
   end
 

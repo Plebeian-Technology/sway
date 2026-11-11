@@ -1067,7 +1067,7 @@ RSpec.describe "Admin::LlmSettings", type: :request do
     # @lat: [[llm-summaries#Settings live in the database]]
     describe "candidate OpenRouter choices" do
       it "offers original entries plus exactly the three OpenRouter choices with exact labels when offered" do
-        candidate_models = (AdminSetting::SUPPORTED_MODELS + Llm::ModelCatalog.openrouter_choices).uniq
+        candidate_models = (AdminSetting::SUPPORTED_MODELS + Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label)).uniq
         AdminSetting.singleton.update!(offered_models: candidate_models)
 
         get "/admin/llm_settings"
@@ -1091,13 +1091,13 @@ RSpec.describe "Admin::LlmSettings", type: :request do
       end
 
       it "saves any candidate model ID without a provider parameter when allowlisted" do
-        candidate_list = (AdminSetting::SUPPORTED_MODELS + Llm::ModelCatalog.openrouter_choices).uniq
+        candidate_list = (AdminSetting::SUPPORTED_MODELS + Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label)).uniq
         stub_const("AdminSetting::SUPPORTED_MODELS", candidate_list)
         AdminSetting.validators_on(:summarization_model).each do |v|
           allow(v).to receive(:delimiter).and_return(candidate_list) if v.is_a?(ActiveModel::Validations::InclusionValidator)
         end
 
-        Llm::ModelCatalog.openrouter_choices.each do |model_choice|
+        Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label).uniq.each do |model_choice|
           patch "/admin/llm_settings", params: {admin_setting: {summarization_model: model_choice}}
           expect(response).to redirect_to("/admin/llm_settings")
           expect(flash[:notice]).to eq("Model updated.")

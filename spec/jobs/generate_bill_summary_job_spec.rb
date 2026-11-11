@@ -442,7 +442,7 @@ RSpec.describe GenerateBillSummaryJob do
     before do
       stub_const(
         "AdminSetting::SUPPORTED_MODELS",
-        AdminSetting::SUPPORTED_MODELS + Llm::ModelCatalog.openrouter_choices
+        (AdminSetting::SUPPORTED_MODELS + Llm::ModelCatalog::OPENROUTER_ROUTES.values.map(&:label)).uniq
       )
       allow(Llm::Client).to receive(:build).and_call_original
       allow(Llm::Client).to receive(:build).with(provider: "openrouter").and_return(openrouter_adapter)

@@ -319,45 +319,8 @@ module Llm
       lookup(choice, catalog_models: catalog_models)&.extraction_model? == true
     end
 
-    def openrouter_choices
-      [
-        "Opus Latest",
-        "Sonnet Latest",
-        "Haiku Latest",
-        "Gemini Argon Latest",
-        "Gemini Flash Latest",
-        "GLM Latest",
-        "Deepseek Pro Latest",
-        "Deepseek Flash Latest",
-        "OpenRouter Auto"
-      ].freeze
-    end
-
-    def openrouter_decision_choices
-      [
-        "ScaleDown Classify Latest",
-        "Jev Latest",
-        "Perplexity Decider Latest",
-        "Perplexity Decider Flash Latest"
-      ].freeze
-    end
-
-    def openrouter_extraction_choices
-      [
-        "ScaleDown Extract Latest"
-      ].freeze
-    end
-
     def active_claude_choices
       ACTIVE_CLAUDE_ROUTES.keys.freeze
-    end
-
-    def retired_claude_choices
-      RETIRED_CLAUDE_ROUTES.keys.freeze
-    end
-
-    def all_choices
-      ALL_ROUTES.keys.freeze
     end
   end
 end
