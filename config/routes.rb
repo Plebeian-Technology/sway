@@ -389,10 +389,6 @@ Rails.application.routes.draw do
   resources :user_bill_shares, only: %i[create]
   get "bill_shares/:share_uuid", to: "user_bill_shares#show", as: :bill_share
 
-  namespace :buckets do
-    resources :assets, only: %i[create]
-  end
-
   resources :notifications, only: %i[index] do
     collection do
       patch :settings, to: "notifications#update_settings"

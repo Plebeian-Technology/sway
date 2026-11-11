@@ -201,7 +201,6 @@ Admin-only routes use a single convention: `before_action :verify_is_sway_admin`
 - `app/controllers/organizations_controller.rb`
 - `app/controllers/organization_bill_positions_controller.rb`
 - `app/controllers/legislator_votes_controller.rb`
-- `app/controllers/buckets/assets_controller.rb`
 - `app/controllers/pipeline_runs_controller.rb`
 - `app/controllers/bill_draft_org_positions_controller.rb`
 - `app/controllers/admin/llm_settings_controller.rb`

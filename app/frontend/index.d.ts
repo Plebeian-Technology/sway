@@ -602,22 +602,6 @@ declare module "sway" {
             }
         }
 
-        namespace files {
-            interface IFileUpload {
-                url: string;
-                bucket_file_path: string;
-            }
-
-            interface IXHRFileUploadRequestOptions {
-                onProgress?: (s3ObjectPath: string, fileName: string, progress: number) => void;
-                onDone?: (fileUpload: IFileUpload, progress: number) => void;
-                onError?: (error: Error, s3ObjectPath?: string) => void;
-                max?: number;
-                extra?: Record<string, string | number | null>;
-                retryCount?: number;
-            }
-        }
-
         namespace notifications {
             // @lat: [[system-shape#System shape#One process, two languages#Why a payload goes through a resource rather than the record]]
             interface IPushNotificationSubscription extends IIDObject {

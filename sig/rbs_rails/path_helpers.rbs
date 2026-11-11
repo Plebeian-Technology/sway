@@ -127,7 +127,6 @@ interface ::_RbsRailsPathHelpers
   def user_legislator_score_path: (*untyped) -> ::String
   def user_votes_path: (*untyped) -> ::String
   def user_vote_path: (*untyped) -> ::String
-  def buckets_assets_path: (*untyped) -> ::String
   def settings_notifications_path: (*untyped) -> ::String
   def notifications_path: (*untyped) -> ::String
   def notifications_push_notifications_path: (*untyped) -> ::String
@@ -258,7 +257,6 @@ interface ::_RbsRailsPathHelpers
   def user_legislator_score_url: (*untyped) -> ::String
   def user_votes_url: (*untyped) -> ::String
   def user_vote_url: (*untyped) -> ::String
-  def buckets_assets_url: (*untyped) -> ::String
   def settings_notifications_url: (*untyped) -> ::String
   def notifications_url: (*untyped) -> ::String
   def notifications_push_notifications_url: (*untyped) -> ::String
