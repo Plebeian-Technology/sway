@@ -1,8 +1,0 @@
-class NewsArticleDiscoveryRequestService
-  def self.request!: (bill: Bill, requested_by: User) -> NewsArticleDiscoveryRequest
-  def self.retry!: (NewsArticleDiscoveryRequest discovery_request) -> NewsArticleDiscoveryRequest
-
-  private
-
-  def self.validate_actor_and_bill!: (bill: untyped, requested_by: untyped) -> void
-end
