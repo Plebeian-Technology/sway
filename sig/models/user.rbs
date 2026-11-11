@@ -43,7 +43,6 @@ class User < ApplicationRecord
     def is_admin: -> bool
     def is_sway_api_user?: -> bool
     def has_sway_passkey?: -> bool
-    def can_delete_sway_passkeys?: -> bool
     def registered?: -> bool
     def create_user_invite_url: -> UserInviteLink?
     def invite_url: -> String?

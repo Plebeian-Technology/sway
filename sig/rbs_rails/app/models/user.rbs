@@ -1103,10 +1103,6 @@ class ::User < ::ApplicationRecord
   def user_devices=: (::UserDevice::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDevice]) -> (::UserDevice::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDevice])
   def user_device_ids: () -> ::Array[::Integer]
   def user_device_ids=: (::Array[::Integer]) -> ::Array[::Integer]
-  def active_devices: () -> ::UserDevice::ActiveRecord_Associations_CollectionProxy
-  def active_devices=: (::UserDevice::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDevice]) -> (::UserDevice::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDevice])
-  def active_device_ids: () -> ::Array[::Integer]
-  def active_device_ids=: (::Array[::Integer]) -> ::Array[::Integer]
   def notification_preferences: () -> ::NotificationPreference::ActiveRecord_Associations_CollectionProxy
   def notification_preferences=: (::NotificationPreference::ActiveRecord_Associations_CollectionProxy | ::Array[::NotificationPreference]) -> (::NotificationPreference::ActiveRecord_Associations_CollectionProxy | ::Array[::NotificationPreference])
   def notification_preference_ids: () -> ::Array[::Integer]

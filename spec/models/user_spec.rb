@@ -139,23 +139,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#can_delete_sway_passkeys?" do
-    it "returns false when the user only has one passkey" do
-      user = create(:user)
-      create(:passkey, user: user)
-
-      expect(user.can_delete_sway_passkeys?).to be(false)
-    end
-
-    it "returns true when the user has more than one passkey" do
-      user = create(:user)
-      create(:passkey, user: user)
-      create(:passkey, user: user)
-
-      expect(user.can_delete_sway_passkeys?).to be(true)
-    end
-  end
-
   describe "webauthn_id initialization" do
     it "assigns a generated webauthn_id on new records" do
       allow(WebAuthn).to receive(:generate_user_id).and_return(

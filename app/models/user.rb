@@ -162,7 +162,6 @@ class User < ApplicationRecord
   has_many :user_districts, dependent: :destroy
 
   has_many :user_devices, dependent: :destroy
-  has_many :active_devices, -> { active }, class_name: "UserDevice", inverse_of: :user
   has_many :notification_preferences, dependent: :destroy
   has_many :registration_funnel_events, dependent: :nullify
   has_many :representative_reassignments, dependent: :destroy
@@ -349,10 +348,6 @@ class User < ApplicationRecord
 
   def has_sway_passkey?
     passkeys.size.positive?
-  end
-
-  def can_delete_sway_passkeys?
-    passkeys.size > MIN_PASSKEY_COUNT
   end
 
   # @lat: [[identity-and-access#Registration is asynchronous by necessity]]
