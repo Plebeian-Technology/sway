@@ -1,10 +1,5 @@
 # resolve-type-names: false
 
-# Phase 60 Plan 01 — hand-authored generated-layer RBS for BillCategory join model.
-# Mirrors sig/rbs_rails/app/models/bill_amendment_operation.rbs pattern for
-# belongs_to readers. The ActiveRecord_Associations_CollectionProxy class at the
-# bottom is required so category.rbs and bill.rbs can reference this type.
-
 class ::BillCategory < ::ApplicationRecord
   extend ::ActiveRecord::Base::ClassMethods[::BillCategory, ::BillCategory::ActiveRecord_Relation, ::Integer]
 
@@ -255,15 +250,12 @@ class ::BillCategory < ::ApplicationRecord
   end
   include ::BillCategory::GeneratedAliasAttributeMethods
 
-  # belongs_to :bill
   def bill: () -> ::Bill
   def bill=: (::Bill?) -> ::Bill?
   def reload_bill: () -> ::Bill?
   def build_bill: (?untyped) -> ::Bill
   def create_bill: (?untyped) -> ::Bill
   def create_bill!: (?untyped) -> ::Bill
-
-  # belongs_to :category
   def category: () -> ::Category
   def category=: (::Category?) -> ::Category?
   def reload_category: () -> ::Category?
@@ -310,6 +302,4 @@ end
 class ::Bill < ::ApplicationRecord
 end
 class ::Category < ::ApplicationRecord
-end
-class ::Category::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end

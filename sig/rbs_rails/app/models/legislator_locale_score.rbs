@@ -371,6 +371,11 @@ class ::LegislatorLocaleScore < ::ApplicationRecord
   include ::LegislatorLocaleScore::GeneratedAliasAttributeMethods
 
   def legislator: () -> ::Legislator?
+  def legislator=: (::Legislator?) -> ::Legislator?
+  def build_legislator: (?untyped) -> ::Legislator
+  def create_legislator: (?untyped) -> ::Legislator
+  def create_legislator!: (?untyped) -> ::Legislator
+  def reload_legislator: () -> ::Legislator?
   def legislator_term: () -> ::LegislatorTerm
   def legislator_term=: (::LegislatorTerm?) -> ::LegislatorTerm?
   def reload_legislator_term: () -> ::LegislatorTerm?

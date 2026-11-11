@@ -9,13 +9,4 @@ class BillSummaryReport < ApplicationRecord
     def reason_label: () -> String
     def capture_bill_snapshot: () -> void
     def throttle_duplicate_reports: () -> void
-
-    def pending?: () -> bool
-    def reviewed?: () -> bool
-    def resolved?: () -> bool
-    def dismissed?: () -> bool
-    def pending!: () -> bool
-    def reviewed!: () -> bool
-    def resolved!: () -> bool
-    def dismissed!: () -> bool
 end

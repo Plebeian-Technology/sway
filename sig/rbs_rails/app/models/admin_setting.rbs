@@ -244,86 +244,6 @@ class ::AdminSetting < ::ApplicationRecord
 
     def classification_model_for_database: () -> ::String
 
-    def decision_model: () -> ::String
-
-    def decision_model=: (::String) -> ::String
-
-    def decision_model?: () -> bool
-
-    def decision_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def decision_model_change: () -> [ ::String?, ::String? ]
-
-    def decision_model_will_change!: () -> void
-
-    def decision_model_was: () -> ::String?
-
-    def decision_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def decision_model_previous_change: () -> ::Array[::String?]?
-
-    def decision_model_previously_was: () -> ::String?
-
-    def decision_model_before_last_save: () -> ::String?
-
-    def decision_model_change_to_be_saved: () -> ::Array[::String?]?
-
-    def decision_model_in_database: () -> ::String?
-
-    def saved_change_to_decision_model: () -> ::Array[::String?]?
-
-    def saved_change_to_decision_model?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def will_save_change_to_decision_model?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def restore_decision_model!: () -> void
-
-    def clear_decision_model_change: () -> void
-
-    def decision_model_before_type_cast: () -> ::String
-
-    def decision_model_for_database: () -> ::String
-
-    def extraction_model: () -> ::String
-
-    def extraction_model=: (::String) -> ::String
-
-    def extraction_model?: () -> bool
-
-    def extraction_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def extraction_model_change: () -> [ ::String?, ::String? ]
-
-    def extraction_model_will_change!: () -> void
-
-    def extraction_model_was: () -> ::String?
-
-    def extraction_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def extraction_model_previous_change: () -> ::Array[::String?]?
-
-    def extraction_model_previously_was: () -> ::String?
-
-    def extraction_model_before_last_save: () -> ::String?
-
-    def extraction_model_change_to_be_saved: () -> ::Array[::String?]?
-
-    def extraction_model_in_database: () -> ::String?
-
-    def saved_change_to_extraction_model: () -> ::Array[::String?]?
-
-    def saved_change_to_extraction_model?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def will_save_change_to_extraction_model?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def restore_extraction_model!: () -> void
-
-    def clear_extraction_model_change: () -> void
-
-    def extraction_model_before_type_cast: () -> ::String
-
-    def extraction_model_for_database: () -> ::String
-
     def summary_batch_chunk_size: () -> ::Integer
 
     def summary_batch_chunk_size=: (::Integer) -> ::Integer
@@ -403,6 +323,206 @@ class ::AdminSetting < ::ApplicationRecord
     def summary_batch_enabled_before_type_cast: () -> bool
 
     def summary_batch_enabled_for_database: () -> bool
+
+    def offered_models: () -> untyped
+
+    def offered_models=: (untyped) -> untyped
+
+    def offered_models?: () -> bool
+
+    def offered_models_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def offered_models_change: () -> [ untyped, untyped ]
+
+    def offered_models_will_change!: () -> void
+
+    def offered_models_was: () -> untyped
+
+    def offered_models_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def offered_models_previous_change: () -> ::Array[untyped]?
+
+    def offered_models_previously_was: () -> untyped
+
+    def offered_models_before_last_save: () -> untyped
+
+    def offered_models_change_to_be_saved: () -> ::Array[untyped]?
+
+    def offered_models_in_database: () -> untyped
+
+    def saved_change_to_offered_models: () -> ::Array[untyped]?
+
+    def saved_change_to_offered_models?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_offered_models?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_offered_models!: () -> void
+
+    def clear_offered_models_change: () -> void
+
+    def offered_models_before_type_cast: () -> untyped?
+
+    def offered_models_for_database: () -> untyped?
+
+    def summarization_reasoning_effort: () -> ::String?
+
+    def summarization_reasoning_effort=: (::String?) -> ::String?
+
+    def summarization_reasoning_effort?: () -> bool
+
+    def summarization_reasoning_effort_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summarization_reasoning_effort_change: () -> [ ::String?, ::String? ]
+
+    def summarization_reasoning_effort_will_change!: () -> void
+
+    def summarization_reasoning_effort_was: () -> ::String?
+
+    def summarization_reasoning_effort_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summarization_reasoning_effort_previous_change: () -> ::Array[::String?]?
+
+    def summarization_reasoning_effort_previously_was: () -> ::String?
+
+    def summarization_reasoning_effort_before_last_save: () -> ::String?
+
+    def summarization_reasoning_effort_change_to_be_saved: () -> ::Array[::String?]?
+
+    def summarization_reasoning_effort_in_database: () -> ::String?
+
+    def saved_change_to_summarization_reasoning_effort: () -> ::Array[::String?]?
+
+    def saved_change_to_summarization_reasoning_effort?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_summarization_reasoning_effort?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_summarization_reasoning_effort!: () -> void
+
+    def clear_summarization_reasoning_effort_change: () -> void
+
+    def summarization_reasoning_effort_before_type_cast: () -> ::String?
+
+    def summarization_reasoning_effort_for_database: () -> ::String?
+
+    def classification_reasoning_effort: () -> ::String?
+
+    def classification_reasoning_effort=: (::String?) -> ::String?
+
+    def classification_reasoning_effort?: () -> bool
+
+    def classification_reasoning_effort_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def classification_reasoning_effort_change: () -> [ ::String?, ::String? ]
+
+    def classification_reasoning_effort_will_change!: () -> void
+
+    def classification_reasoning_effort_was: () -> ::String?
+
+    def classification_reasoning_effort_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def classification_reasoning_effort_previous_change: () -> ::Array[::String?]?
+
+    def classification_reasoning_effort_previously_was: () -> ::String?
+
+    def classification_reasoning_effort_before_last_save: () -> ::String?
+
+    def classification_reasoning_effort_change_to_be_saved: () -> ::Array[::String?]?
+
+    def classification_reasoning_effort_in_database: () -> ::String?
+
+    def saved_change_to_classification_reasoning_effort: () -> ::Array[::String?]?
+
+    def saved_change_to_classification_reasoning_effort?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_classification_reasoning_effort?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_classification_reasoning_effort!: () -> void
+
+    def clear_classification_reasoning_effort_change: () -> void
+
+    def classification_reasoning_effort_before_type_cast: () -> ::String?
+
+    def classification_reasoning_effort_for_database: () -> ::String?
+
+    def decision_model: () -> ::String
+
+    def decision_model=: (::String) -> ::String
+
+    def decision_model?: () -> bool
+
+    def decision_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def decision_model_change: () -> [ ::String?, ::String? ]
+
+    def decision_model_will_change!: () -> void
+
+    def decision_model_was: () -> ::String?
+
+    def decision_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def decision_model_previous_change: () -> ::Array[::String?]?
+
+    def decision_model_previously_was: () -> ::String?
+
+    def decision_model_before_last_save: () -> ::String?
+
+    def decision_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def decision_model_in_database: () -> ::String?
+
+    def saved_change_to_decision_model: () -> ::Array[::String?]?
+
+    def saved_change_to_decision_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_decision_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_decision_model!: () -> void
+
+    def clear_decision_model_change: () -> void
+
+    def decision_model_before_type_cast: () -> ::String
+
+    def decision_model_for_database: () -> ::String
+
+    def extraction_model: () -> ::String
+
+    def extraction_model=: (::String) -> ::String
+
+    def extraction_model?: () -> bool
+
+    def extraction_model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def extraction_model_change: () -> [ ::String?, ::String? ]
+
+    def extraction_model_will_change!: () -> void
+
+    def extraction_model_was: () -> ::String?
+
+    def extraction_model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def extraction_model_previous_change: () -> ::Array[::String?]?
+
+    def extraction_model_previously_was: () -> ::String?
+
+    def extraction_model_before_last_save: () -> ::String?
+
+    def extraction_model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def extraction_model_in_database: () -> ::String?
+
+    def saved_change_to_extraction_model: () -> ::Array[::String?]?
+
+    def saved_change_to_extraction_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_extraction_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_extraction_model!: () -> void
+
+    def clear_extraction_model_change: () -> void
+
+    def extraction_model_before_type_cast: () -> ::String
+
+    def extraction_model_for_database: () -> ::String
   end
   include ::AdminSetting::GeneratedAttributeMethods
   module ::AdminSetting::GeneratedAliasAttributeMethods

@@ -1,11 +1,5 @@
 # resolve-type-names: false
 
-# Phase 60 Plan 01 — hand-authored generated-layer RBS for Category.
-# Mirrors sig/rbs_rails/app/models/organization.rbs end-to-end (must include
-# ActiveRecord_Relation + ActiveRecord_Associations_CollectionProxy + both
-# Generated*Methods modules so steep can resolve ::Category::ActiveRecord_Associations_CollectionProxy
-# returned by Bill#categories).
-
 class ::Category < ::ApplicationRecord
   extend ::ActiveRecord::Base::ClassMethods[::Category, ::Category::ActiveRecord_Relation, ::Integer]
 
@@ -90,6 +84,46 @@ class ::Category < ::ApplicationRecord
 
     def active_for_database: () -> bool
 
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
     def name: () -> ::String
 
     def name=: (::String) -> ::String
@@ -169,46 +203,6 @@ class ::Category < ::ApplicationRecord
     def slug_before_type_cast: () -> ::String
 
     def slug_for_database: () -> ::String
-
-    def created_at: () -> ::ActiveSupport::TimeWithZone
-
-    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
-
-    def created_at?: () -> bool
-
-    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
-
-    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
-
-    def created_at_will_change!: () -> void
-
-    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
-
-    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
-
-    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
-
-    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
-
-    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
-
-    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
-
-    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
-
-    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
-
-    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
-
-    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
-
-    def restore_created_at!: () -> void
-
-    def clear_created_at_change: () -> void
-
-    def created_at_before_type_cast: () -> ::Time
-
-    def created_at_for_database: () -> ::Time
 
     def updated_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -295,14 +289,10 @@ class ::Category < ::ApplicationRecord
     alias id_value_for_database id_for_database
   end
   include ::Category::GeneratedAliasAttributeMethods
-
-  # has_many :bill_categories
   def bill_categories: () -> ::BillCategory::ActiveRecord_Associations_CollectionProxy
   def bill_categories=: (::BillCategory::ActiveRecord_Associations_CollectionProxy | ::Array[::BillCategory]) -> (::BillCategory::ActiveRecord_Associations_CollectionProxy | ::Array[::BillCategory])
   def bill_category_ids: () -> ::Array[::Integer]
   def bill_category_ids=: (::Array[::Integer]) -> ::Array[::Integer]
-
-  # has_many :bills, through: :bill_categories
   def bills: () -> ::Bill::ActiveRecord_Associations_CollectionProxy
   def bills=: (::Bill::ActiveRecord_Associations_CollectionProxy | ::Array[::Bill]) -> (::Bill::ActiveRecord_Associations_CollectionProxy | ::Array[::Bill])
   def bill_ids: () -> ::Array[::Integer]

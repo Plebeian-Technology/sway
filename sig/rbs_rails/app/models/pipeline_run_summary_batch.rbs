@@ -563,6 +563,46 @@ class ::PipelineRunSummaryBatch < ::ApplicationRecord
     def expired_count_before_type_cast: () -> ::Integer
 
     def expired_count_for_database: () -> ::Integer
+
+    def model: () -> ::String?
+
+    def model=: (::String?) -> ::String?
+
+    def model?: () -> bool
+
+    def model_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def model_change: () -> [ ::String?, ::String? ]
+
+    def model_will_change!: () -> void
+
+    def model_was: () -> ::String?
+
+    def model_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def model_previous_change: () -> ::Array[::String?]?
+
+    def model_previously_was: () -> ::String?
+
+    def model_before_last_save: () -> ::String?
+
+    def model_change_to_be_saved: () -> ::Array[::String?]?
+
+    def model_in_database: () -> ::String?
+
+    def saved_change_to_model: () -> ::Array[::String?]?
+
+    def saved_change_to_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_model?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_model!: () -> void
+
+    def clear_model_change: () -> void
+
+    def model_before_type_cast: () -> ::String?
+
+    def model_for_database: () -> ::String?
   end
   include ::PipelineRunSummaryBatch::GeneratedAttributeMethods
   module ::PipelineRunSummaryBatch::GeneratedAliasAttributeMethods

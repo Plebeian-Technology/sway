@@ -1,13 +1,5 @@
 # resolve-type-names: false
 
-# Phase 62 Plan 01 — hand-authored generated-layer RBS for BillInterestingScore.
-# rbs_rails:all is not wired in this repo (confirmed via `rake -T | grep rbs_rails`
-# returning nothing — same finding as Phase 60 Plan 01/22-01). Mirrors
-# sig/rbs_rails/app/models/bill_category.rbs pattern for a simple belongs_to-only
-# model. `signals` is typed ::String? here (the raw DB text column) — the
-# Hash[String, untyped] override for the `serialize`-deserialized value lives in
-# sig/models/bill_interesting_score.rbs.
-
 class ::BillInterestingScore < ::ApplicationRecord
   extend ::ActiveRecord::Base::ClassMethods[::BillInterestingScore, ::BillInterestingScore::ActiveRecord_Relation, ::Integer]
 
@@ -252,9 +244,9 @@ class ::BillInterestingScore < ::ApplicationRecord
 
     def raw_score_for_database: () -> ::Float
 
-    def signals: () -> ::String?
+    def signals: () -> ::String
 
-    def signals=: (::String?) -> ::String?
+    def signals=: (::String) -> ::String
 
     def signals?: () -> bool
 
@@ -288,9 +280,9 @@ class ::BillInterestingScore < ::ApplicationRecord
 
     def clear_signals_change: () -> void
 
-    def signals_before_type_cast: () -> ::String?
+    def signals_before_type_cast: () -> ::String
 
-    def signals_for_database: () -> ::String?
+    def signals_for_database: () -> ::String
 
     def updated_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -378,7 +370,6 @@ class ::BillInterestingScore < ::ApplicationRecord
   end
   include ::BillInterestingScore::GeneratedAliasAttributeMethods
 
-  # belongs_to :bill
   def bill: () -> ::Bill
   def bill=: (::Bill?) -> ::Bill?
   def reload_bill: () -> ::Bill?

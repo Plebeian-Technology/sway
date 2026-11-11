@@ -85,45 +85,45 @@ module ::SolidCable
 
       def channel_for_database: () -> ::String
 
-      def payload: () -> ::String
+      def channel_hash: () -> ::Integer
 
-      def payload=: (::String) -> ::String
+      def channel_hash=: (::Integer) -> ::Integer
 
-      def payload?: () -> bool
+      def channel_hash?: () -> bool
 
-      def payload_changed?: (?from: ::String?, ?to: ::String?) -> bool
+      def channel_hash_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-      def payload_change: () -> [ ::String?, ::String? ]
+      def channel_hash_change: () -> [ ::Integer?, ::Integer? ]
 
-      def payload_will_change!: () -> void
+      def channel_hash_will_change!: () -> void
 
-      def payload_was: () -> ::String?
+      def channel_hash_was: () -> ::Integer?
 
-      def payload_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+      def channel_hash_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-      def payload_previous_change: () -> ::Array[::String?]?
+      def channel_hash_previous_change: () -> ::Array[::Integer?]?
 
-      def payload_previously_was: () -> ::String?
+      def channel_hash_previously_was: () -> ::Integer?
 
-      def payload_before_last_save: () -> ::String?
+      def channel_hash_before_last_save: () -> ::Integer?
 
-      def payload_change_to_be_saved: () -> ::Array[::String?]?
+      def channel_hash_change_to_be_saved: () -> ::Array[::Integer?]?
 
-      def payload_in_database: () -> ::String?
+      def channel_hash_in_database: () -> ::Integer?
 
-      def saved_change_to_payload: () -> ::Array[::String?]?
+      def saved_change_to_channel_hash: () -> ::Array[::Integer?]?
 
-      def saved_change_to_payload?: (?from: ::String?, ?to: ::String?) -> bool
+      def saved_change_to_channel_hash?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-      def will_save_change_to_payload?: (?from: ::String?, ?to: ::String?) -> bool
+      def will_save_change_to_channel_hash?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-      def restore_payload!: () -> void
+      def restore_channel_hash!: () -> void
 
-      def clear_payload_change: () -> void
+      def clear_channel_hash_change: () -> void
 
-      def payload_before_type_cast: () -> ::String
+      def channel_hash_before_type_cast: () -> ::Integer
 
-      def payload_for_database: () -> ::String
+      def channel_hash_for_database: () -> ::Integer
 
       def created_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -165,45 +165,45 @@ module ::SolidCable
 
       def created_at_for_database: () -> ::Time
 
-      def channel_hash: () -> ::Integer
+      def payload: () -> ::String
 
-      def channel_hash=: (::Integer) -> ::Integer
+      def payload=: (::String) -> ::String
 
-      def channel_hash?: () -> bool
+      def payload?: () -> bool
 
-      def channel_hash_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def payload_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def channel_hash_change: () -> [ ::Integer?, ::Integer? ]
+      def payload_change: () -> [ ::String?, ::String? ]
 
-      def channel_hash_will_change!: () -> void
+      def payload_will_change!: () -> void
 
-      def channel_hash_was: () -> ::Integer?
+      def payload_was: () -> ::String?
 
-      def channel_hash_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def payload_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def channel_hash_previous_change: () -> ::Array[::Integer?]?
+      def payload_previous_change: () -> ::Array[::String?]?
 
-      def channel_hash_previously_was: () -> ::Integer?
+      def payload_previously_was: () -> ::String?
 
-      def channel_hash_before_last_save: () -> ::Integer?
+      def payload_before_last_save: () -> ::String?
 
-      def channel_hash_change_to_be_saved: () -> ::Array[::Integer?]?
+      def payload_change_to_be_saved: () -> ::Array[::String?]?
 
-      def channel_hash_in_database: () -> ::Integer?
+      def payload_in_database: () -> ::String?
 
-      def saved_change_to_channel_hash: () -> ::Array[::Integer?]?
+      def saved_change_to_payload: () -> ::Array[::String?]?
 
-      def saved_change_to_channel_hash?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def saved_change_to_payload?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def will_save_change_to_channel_hash?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def will_save_change_to_payload?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def restore_channel_hash!: () -> void
+      def restore_payload!: () -> void
 
-      def clear_channel_hash_change: () -> void
+      def clear_payload_change: () -> void
 
-      def channel_hash_before_type_cast: () -> ::Integer
+      def payload_before_type_cast: () -> ::String
 
-      def channel_hash_for_database: () -> ::Integer
+      def payload_for_database: () -> ::String
     end
     include ::SolidCable::Message::GeneratedAttributeMethods
     module ::SolidCable::Message::GeneratedAliasAttributeMethods
@@ -256,12 +256,12 @@ module ::SolidCable
     include ::SolidCable::Message::GeneratedAssociationMethods
 
     def self.trimmable: () -> ::SolidCable::Message::ActiveRecord_Relation
-    def self.broadcastable: (untyped channels, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
+    def self.broadcastable: (untyped channel_hashes, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
 
     module ::SolidCable::Message::GeneratedRelationMethods
       def trimmable: () -> ::SolidCable::Message::ActiveRecord_Relation
 
-      def broadcastable: (untyped channels, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
+      def broadcastable: (untyped channel_hashes, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
     end
 
     class ::SolidCable::Message::ActiveRecord_Relation < ::ActiveRecord::Relation

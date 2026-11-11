@@ -1,0 +1,713 @@
+# resolve-type-names: false
+
+module ::SolidQueue
+  class ::SolidQueue::Batch < ::SolidQueue::Record
+    extend ::ActiveRecord::Base::ClassMethods[::SolidQueue::Batch, ::SolidQueue::Batch::ActiveRecord_Relation, ::Integer]
+
+    module ::SolidQueue::Batch::GeneratedAttributeMethods
+      def id: () -> ::Integer
+
+      def id=: (::Integer) -> ::Integer
+
+      def id?: () -> bool
+
+      def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def id_will_change!: () -> void
+
+      def id_was: () -> ::Integer?
+
+      def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def id_previous_change: () -> ::Array[::Integer?]?
+
+      def id_previously_was: () -> ::Integer?
+
+      def id_before_last_save: () -> ::Integer?
+
+      def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def id_in_database: () -> ::Integer?
+
+      def saved_change_to_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_id!: () -> void
+
+      def clear_id_change: () -> void
+
+      def id_before_type_cast: () -> ::Integer
+
+      def id_for_database: () -> ::Integer
+
+      def active_job_batch_id: () -> ::String?
+
+      def active_job_batch_id=: (::String?) -> ::String?
+
+      def active_job_batch_id?: () -> bool
+
+      def active_job_batch_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def active_job_batch_id_change: () -> [ ::String?, ::String? ]
+
+      def active_job_batch_id_will_change!: () -> void
+
+      def active_job_batch_id_was: () -> ::String?
+
+      def active_job_batch_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def active_job_batch_id_previous_change: () -> ::Array[::String?]?
+
+      def active_job_batch_id_previously_was: () -> ::String?
+
+      def active_job_batch_id_before_last_save: () -> ::String?
+
+      def active_job_batch_id_change_to_be_saved: () -> ::Array[::String?]?
+
+      def active_job_batch_id_in_database: () -> ::String?
+
+      def saved_change_to_active_job_batch_id: () -> ::Array[::String?]?
+
+      def saved_change_to_active_job_batch_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_active_job_batch_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_active_job_batch_id!: () -> void
+
+      def clear_active_job_batch_id_change: () -> void
+
+      def active_job_batch_id_before_type_cast: () -> ::String?
+
+      def active_job_batch_id_for_database: () -> ::String?
+
+      def description: () -> ::String?
+
+      def description=: (::String?) -> ::String?
+
+      def description?: () -> bool
+
+      def description_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def description_change: () -> [ ::String?, ::String? ]
+
+      def description_will_change!: () -> void
+
+      def description_was: () -> ::String?
+
+      def description_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def description_previous_change: () -> ::Array[::String?]?
+
+      def description_previously_was: () -> ::String?
+
+      def description_before_last_save: () -> ::String?
+
+      def description_change_to_be_saved: () -> ::Array[::String?]?
+
+      def description_in_database: () -> ::String?
+
+      def saved_change_to_description: () -> ::Array[::String?]?
+
+      def saved_change_to_description?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_description?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_description!: () -> void
+
+      def clear_description_change: () -> void
+
+      def description_before_type_cast: () -> ::String?
+
+      def description_for_database: () -> ::String?
+
+      def on_finish: () -> ::String?
+
+      def on_finish=: (::String?) -> ::String?
+
+      def on_finish?: () -> bool
+
+      def on_finish_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def on_finish_change: () -> [ ::String?, ::String? ]
+
+      def on_finish_will_change!: () -> void
+
+      def on_finish_was: () -> ::String?
+
+      def on_finish_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def on_finish_previous_change: () -> ::Array[::String?]?
+
+      def on_finish_previously_was: () -> ::String?
+
+      def on_finish_before_last_save: () -> ::String?
+
+      def on_finish_change_to_be_saved: () -> ::Array[::String?]?
+
+      def on_finish_in_database: () -> ::String?
+
+      def saved_change_to_on_finish: () -> ::Array[::String?]?
+
+      def saved_change_to_on_finish?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_on_finish?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_on_finish!: () -> void
+
+      def clear_on_finish_change: () -> void
+
+      def on_finish_before_type_cast: () -> ::String?
+
+      def on_finish_for_database: () -> ::String?
+
+      def on_success: () -> ::String?
+
+      def on_success=: (::String?) -> ::String?
+
+      def on_success?: () -> bool
+
+      def on_success_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def on_success_change: () -> [ ::String?, ::String? ]
+
+      def on_success_will_change!: () -> void
+
+      def on_success_was: () -> ::String?
+
+      def on_success_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def on_success_previous_change: () -> ::Array[::String?]?
+
+      def on_success_previously_was: () -> ::String?
+
+      def on_success_before_last_save: () -> ::String?
+
+      def on_success_change_to_be_saved: () -> ::Array[::String?]?
+
+      def on_success_in_database: () -> ::String?
+
+      def saved_change_to_on_success: () -> ::Array[::String?]?
+
+      def saved_change_to_on_success?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_on_success?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_on_success!: () -> void
+
+      def clear_on_success_change: () -> void
+
+      def on_success_before_type_cast: () -> ::String?
+
+      def on_success_for_database: () -> ::String?
+
+      def on_failure: () -> ::String?
+
+      def on_failure=: (::String?) -> ::String?
+
+      def on_failure?: () -> bool
+
+      def on_failure_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def on_failure_change: () -> [ ::String?, ::String? ]
+
+      def on_failure_will_change!: () -> void
+
+      def on_failure_was: () -> ::String?
+
+      def on_failure_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def on_failure_previous_change: () -> ::Array[::String?]?
+
+      def on_failure_previously_was: () -> ::String?
+
+      def on_failure_before_last_save: () -> ::String?
+
+      def on_failure_change_to_be_saved: () -> ::Array[::String?]?
+
+      def on_failure_in_database: () -> ::String?
+
+      def saved_change_to_on_failure: () -> ::Array[::String?]?
+
+      def saved_change_to_on_failure?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_on_failure?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_on_failure!: () -> void
+
+      def clear_on_failure_change: () -> void
+
+      def on_failure_before_type_cast: () -> ::String?
+
+      def on_failure_for_database: () -> ::String?
+
+      def metadata: () -> ::String?
+
+      def metadata=: (::String?) -> ::String?
+
+      def metadata?: () -> bool
+
+      def metadata_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def metadata_change: () -> [ ::String?, ::String? ]
+
+      def metadata_will_change!: () -> void
+
+      def metadata_was: () -> ::String?
+
+      def metadata_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def metadata_previous_change: () -> ::Array[::String?]?
+
+      def metadata_previously_was: () -> ::String?
+
+      def metadata_before_last_save: () -> ::String?
+
+      def metadata_change_to_be_saved: () -> ::Array[::String?]?
+
+      def metadata_in_database: () -> ::String?
+
+      def saved_change_to_metadata: () -> ::Array[::String?]?
+
+      def saved_change_to_metadata?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_metadata?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_metadata!: () -> void
+
+      def clear_metadata_change: () -> void
+
+      def metadata_before_type_cast: () -> ::String?
+
+      def metadata_for_database: () -> ::String?
+
+      def total_jobs: () -> ::Integer
+
+      def total_jobs=: (::Integer) -> ::Integer
+
+      def total_jobs?: () -> bool
+
+      def total_jobs_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def total_jobs_change: () -> [ ::Integer?, ::Integer? ]
+
+      def total_jobs_will_change!: () -> void
+
+      def total_jobs_was: () -> ::Integer?
+
+      def total_jobs_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def total_jobs_previous_change: () -> ::Array[::Integer?]?
+
+      def total_jobs_previously_was: () -> ::Integer?
+
+      def total_jobs_before_last_save: () -> ::Integer?
+
+      def total_jobs_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def total_jobs_in_database: () -> ::Integer?
+
+      def saved_change_to_total_jobs: () -> ::Array[::Integer?]?
+
+      def saved_change_to_total_jobs?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_total_jobs?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_total_jobs!: () -> void
+
+      def clear_total_jobs_change: () -> void
+
+      def total_jobs_before_type_cast: () -> ::Integer
+
+      def total_jobs_for_database: () -> ::Integer
+
+      def completed_jobs: () -> ::Integer
+
+      def completed_jobs=: (::Integer) -> ::Integer
+
+      def completed_jobs?: () -> bool
+
+      def completed_jobs_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def completed_jobs_change: () -> [ ::Integer?, ::Integer? ]
+
+      def completed_jobs_will_change!: () -> void
+
+      def completed_jobs_was: () -> ::Integer?
+
+      def completed_jobs_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def completed_jobs_previous_change: () -> ::Array[::Integer?]?
+
+      def completed_jobs_previously_was: () -> ::Integer?
+
+      def completed_jobs_before_last_save: () -> ::Integer?
+
+      def completed_jobs_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def completed_jobs_in_database: () -> ::Integer?
+
+      def saved_change_to_completed_jobs: () -> ::Array[::Integer?]?
+
+      def saved_change_to_completed_jobs?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_completed_jobs?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_completed_jobs!: () -> void
+
+      def clear_completed_jobs_change: () -> void
+
+      def completed_jobs_before_type_cast: () -> ::Integer
+
+      def completed_jobs_for_database: () -> ::Integer
+
+      def failed_jobs: () -> ::Integer
+
+      def failed_jobs=: (::Integer) -> ::Integer
+
+      def failed_jobs?: () -> bool
+
+      def failed_jobs_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def failed_jobs_change: () -> [ ::Integer?, ::Integer? ]
+
+      def failed_jobs_will_change!: () -> void
+
+      def failed_jobs_was: () -> ::Integer?
+
+      def failed_jobs_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def failed_jobs_previous_change: () -> ::Array[::Integer?]?
+
+      def failed_jobs_previously_was: () -> ::Integer?
+
+      def failed_jobs_before_last_save: () -> ::Integer?
+
+      def failed_jobs_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def failed_jobs_in_database: () -> ::Integer?
+
+      def saved_change_to_failed_jobs: () -> ::Array[::Integer?]?
+
+      def saved_change_to_failed_jobs?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_failed_jobs?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_failed_jobs!: () -> void
+
+      def clear_failed_jobs_change: () -> void
+
+      def failed_jobs_before_type_cast: () -> ::Integer
+
+      def failed_jobs_for_database: () -> ::Integer
+
+      def enqueued_at: () -> ::ActiveSupport::TimeWithZone?
+
+      def enqueued_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+      def enqueued_at?: () -> bool
+
+      def enqueued_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def enqueued_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def enqueued_at_will_change!: () -> void
+
+      def enqueued_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def enqueued_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def enqueued_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def enqueued_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def enqueued_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def enqueued_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def enqueued_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_enqueued_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_enqueued_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_enqueued_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_enqueued_at!: () -> void
+
+      def clear_enqueued_at_change: () -> void
+
+      def enqueued_at_before_type_cast: () -> ::Time?
+
+      def enqueued_at_for_database: () -> ::Time?
+
+      def finished_at: () -> ::ActiveSupport::TimeWithZone?
+
+      def finished_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+      def finished_at?: () -> bool
+
+      def finished_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def finished_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def finished_at_will_change!: () -> void
+
+      def finished_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def finished_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def finished_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def finished_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def finished_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def finished_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def finished_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_finished_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_finished_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_finished_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_finished_at!: () -> void
+
+      def clear_finished_at_change: () -> void
+
+      def finished_at_before_type_cast: () -> ::Time?
+
+      def finished_at_for_database: () -> ::Time?
+
+      def failed_at: () -> ::ActiveSupport::TimeWithZone?
+
+      def failed_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+      def failed_at?: () -> bool
+
+      def failed_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def failed_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def failed_at_will_change!: () -> void
+
+      def failed_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def failed_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def failed_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def failed_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def failed_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def failed_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def failed_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_failed_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_failed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_failed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_failed_at!: () -> void
+
+      def clear_failed_at_change: () -> void
+
+      def failed_at_before_type_cast: () -> ::Time?
+
+      def failed_at_for_database: () -> ::Time?
+
+      def created_at: () -> ::ActiveSupport::TimeWithZone
+
+      def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def created_at?: () -> bool
+
+      def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def created_at_will_change!: () -> void
+
+      def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_created_at!: () -> void
+
+      def clear_created_at_change: () -> void
+
+      def created_at_before_type_cast: () -> ::Time
+
+      def created_at_for_database: () -> ::Time
+
+      def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+      def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def updated_at?: () -> bool
+
+      def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def updated_at_will_change!: () -> void
+
+      def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_updated_at!: () -> void
+
+      def clear_updated_at_change: () -> void
+
+      def updated_at_before_type_cast: () -> ::Time
+
+      def updated_at_for_database: () -> ::Time
+    end
+    include ::SolidQueue::Batch::GeneratedAttributeMethods
+    module ::SolidQueue::Batch::GeneratedAliasAttributeMethods
+      include ::SolidQueue::Batch::GeneratedAttributeMethods
+
+      alias id_value id
+
+      alias id_value= id=
+
+      alias id_value? id?
+
+      alias id_value_changed? id_changed?
+
+      alias id_value_change id_change
+
+      alias id_value_will_change! id_will_change!
+
+      alias id_value_was id_was
+
+      alias id_value_previously_changed? id_previously_changed?
+
+      alias id_value_previous_change id_previous_change
+
+      alias id_value_previously_was id_previously_was
+
+      alias id_value_before_last_save id_before_last_save
+
+      alias id_value_change_to_be_saved id_change_to_be_saved
+
+      alias id_value_in_database id_in_database
+
+      alias saved_change_to_id_value saved_change_to_id
+
+      alias saved_change_to_id_value? saved_change_to_id?
+
+      alias will_save_change_to_id_value? will_save_change_to_id?
+
+      alias restore_id_value! restore_id!
+
+      alias clear_id_value_change clear_id_change
+
+      alias id_value_before_type_cast id_before_type_cast
+
+      alias id_value_for_database id_for_database
+    end
+    include ::SolidQueue::Batch::GeneratedAliasAttributeMethods
+    def jobs: () -> ::SolidQueue::Job::ActiveRecord_Associations_CollectionProxy
+    def jobs=: (::SolidQueue::Job::ActiveRecord_Associations_CollectionProxy | ::Array[::SolidQueue::Job]) -> (::SolidQueue::Job::ActiveRecord_Associations_CollectionProxy | ::Array[::SolidQueue::Job])
+    def job_ids: () -> ::Array[::Integer]
+    def job_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def batch_executions: () -> ::SolidQueue::BatchExecution::ActiveRecord_Associations_CollectionProxy
+    def batch_executions=: (::SolidQueue::BatchExecution::ActiveRecord_Associations_CollectionProxy | ::Array[::SolidQueue::BatchExecution]) -> (::SolidQueue::BatchExecution::ActiveRecord_Associations_CollectionProxy | ::Array[::SolidQueue::BatchExecution])
+    def batch_execution_ids: () -> ::Array[::Integer]
+    def batch_execution_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+    module ::SolidQueue::Batch::GeneratedAssociationMethods
+    end
+    include ::SolidQueue::Batch::GeneratedAssociationMethods
+
+    def self.without_executions: () -> ::SolidQueue::Batch::ActiveRecord_Relation
+
+    module ::SolidQueue::Batch::GeneratedRelationMethods
+      def without_executions: () -> ::SolidQueue::Batch::ActiveRecord_Relation
+    end
+
+    class ::SolidQueue::Batch::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Enumerable[::SolidQueue::Batch]
+      include ::SolidQueue::Batch::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::SolidQueue::Batch, ::Integer]
+    end
+
+    class ::SolidQueue::Batch::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+      include ::Enumerable[::SolidQueue::Batch]
+      include ::SolidQueue::Batch::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::SolidQueue::Batch, ::Integer]
+
+      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::SolidQueue::Batch
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::SolidQueue::Batch]
+      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::SolidQueue::Batch
+                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::SolidQueue::Batch]
+      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::SolidQueue::Batch
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::SolidQueue::Batch]
+      def reload: () -> ::Array[::SolidQueue::Batch]
+
+      def replace: (::Array[::SolidQueue::Batch]) -> void
+      def delete: (*::SolidQueue::Batch | ::Integer) -> ::Array[::SolidQueue::Batch]
+      def destroy: (*::SolidQueue::Batch | ::Integer) -> ::Array[::SolidQueue::Batch]
+      def <<: (*::SolidQueue::Batch | ::Array[::SolidQueue::Batch]) -> self
+      def prepend: (*::SolidQueue::Batch | ::Array[::SolidQueue::Batch]) -> self
+    end
+  end
+end
+
+module ::SolidQueue
+end
+class ::SolidQueue::Record < ::ActiveRecord::Base
+end
+class ::SolidQueue::Job < ::SolidQueue::Record
+end
+class ::SolidQueue::Job::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::SolidQueue::BatchExecution < ::SolidQueue::Execution
+end
+class ::SolidQueue::BatchExecution::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::SolidQueue::Execution < ::SolidQueue::Record
+end

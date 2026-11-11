@@ -44,6 +44,46 @@ class ::OrganizationBillPosition < ::ApplicationRecord
 
     def id_for_database: () -> ::Integer
 
+    def active: () -> bool
+
+    def active=: (bool) -> bool
+
+    def active?: () -> bool
+
+    def active_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def active_change: () -> [ bool?, bool? ]
+
+    def active_will_change!: () -> void
+
+    def active_was: () -> bool?
+
+    def active_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def active_previous_change: () -> ::Array[bool?]?
+
+    def active_previously_was: () -> bool?
+
+    def active_before_last_save: () -> bool?
+
+    def active_change_to_be_saved: () -> ::Array[bool?]?
+
+    def active_in_database: () -> bool?
+
+    def saved_change_to_active: () -> ::Array[bool?]?
+
+    def saved_change_to_active?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_active?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_active!: () -> void
+
+    def clear_active_change: () -> void
+
+    def active_before_type_cast: () -> bool
+
+    def active_for_database: () -> bool
+
     def bill_id: () -> ::Integer
 
     def bill_id=: (::Integer) -> ::Integer
@@ -83,132 +123,6 @@ class ::OrganizationBillPosition < ::ApplicationRecord
     def bill_id_before_type_cast: () -> ::Integer
 
     def bill_id_for_database: () -> ::Integer
-
-    def organization_id: () -> ::Integer
-
-    def organization_id=: (::Integer) -> ::Integer
-
-    def organization_id?: () -> bool
-
-    def organization_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def organization_id_change: () -> [ ::Integer?, ::Integer? ]
-
-    def organization_id_will_change!: () -> void
-
-    def organization_id_was: () -> ::Integer?
-
-    def organization_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def organization_id_previous_change: () -> ::Array[::Integer?]?
-
-    def organization_id_previously_was: () -> ::Integer?
-
-    def organization_id_before_last_save: () -> ::Integer?
-
-    def organization_id_change_to_be_saved: () -> ::Array[::Integer?]?
-
-    def organization_id_in_database: () -> ::Integer?
-
-    def saved_change_to_organization_id: () -> ::Array[::Integer?]?
-
-    def saved_change_to_organization_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def will_save_change_to_organization_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def restore_organization_id!: () -> void
-
-    def clear_organization_id_change: () -> void
-
-    def organization_id_before_type_cast: () -> ::Integer
-
-    def organization_id_for_database: () -> ::Integer
-
-    def support: () -> ::String
-
-    def support=: (::String) -> ::String
-
-    def support?: () -> bool
-
-    def support_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def support_change: () -> [ ::String?, ::String? ]
-
-    def support_will_change!: () -> void
-
-    def support_was: () -> ::String?
-
-    def support_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def support_previous_change: () -> ::Array[::String?]?
-
-    def support_previously_was: () -> ::String?
-
-    def support_before_last_save: () -> ::String?
-
-    def support_change_to_be_saved: () -> ::Array[::String?]?
-
-    def support_in_database: () -> ::String?
-
-    def saved_change_to_support: () -> ::Array[::String?]?
-
-    def saved_change_to_support?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def will_save_change_to_support?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def restore_support!: () -> void
-
-    def clear_support_change: () -> void
-
-    def support_before_type_cast: () -> ::String
-
-    def support_for_database: () -> ::String
-
-    def ai_summary: () -> ::String?
-
-    def ai_summary=: (::String?) -> ::String?
-
-    def ai_summary?: () -> bool
-
-    def summary: () -> ::String
-
-    def summary=: (::String) -> ::String
-
-    def summary?: () -> bool
-
-    def summary_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def summary_change: () -> [ ::String?, ::String? ]
-
-    def summary_will_change!: () -> void
-
-    def summary_was: () -> ::String?
-
-    def summary_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def summary_previous_change: () -> ::Array[::String?]?
-
-    def summary_previously_was: () -> ::String?
-
-    def summary_before_last_save: () -> ::String?
-
-    def summary_change_to_be_saved: () -> ::Array[::String?]?
-
-    def summary_in_database: () -> ::String?
-
-    def saved_change_to_summary: () -> ::Array[::String?]?
-
-    def saved_change_to_summary?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def will_save_change_to_summary?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def restore_summary!: () -> void
-
-    def clear_summary_change: () -> void
-
-    def summary_before_type_cast: () -> ::String
-
-    def summary_for_database: () -> ::String
 
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -250,6 +164,126 @@ class ::OrganizationBillPosition < ::ApplicationRecord
 
     def created_at_for_database: () -> ::Time
 
+    def organization_id: () -> ::Integer
+
+    def organization_id=: (::Integer) -> ::Integer
+
+    def organization_id?: () -> bool
+
+    def organization_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def organization_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def organization_id_will_change!: () -> void
+
+    def organization_id_was: () -> ::Integer?
+
+    def organization_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def organization_id_previous_change: () -> ::Array[::Integer?]?
+
+    def organization_id_previously_was: () -> ::Integer?
+
+    def organization_id_before_last_save: () -> ::Integer?
+
+    def organization_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def organization_id_in_database: () -> ::Integer?
+
+    def saved_change_to_organization_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_organization_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_organization_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_organization_id!: () -> void
+
+    def clear_organization_id_change: () -> void
+
+    def organization_id_before_type_cast: () -> ::Integer
+
+    def organization_id_for_database: () -> ::Integer
+
+    def summary: () -> ::String
+
+    def summary=: (::String) -> ::String
+
+    def summary?: () -> bool
+
+    def summary_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_change: () -> [ ::String?, ::String? ]
+
+    def summary_will_change!: () -> void
+
+    def summary_was: () -> ::String?
+
+    def summary_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def summary_previous_change: () -> ::Array[::String?]?
+
+    def summary_previously_was: () -> ::String?
+
+    def summary_before_last_save: () -> ::String?
+
+    def summary_change_to_be_saved: () -> ::Array[::String?]?
+
+    def summary_in_database: () -> ::String?
+
+    def saved_change_to_summary: () -> ::Array[::String?]?
+
+    def saved_change_to_summary?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_summary?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_summary!: () -> void
+
+    def clear_summary_change: () -> void
+
+    def summary_before_type_cast: () -> ::String
+
+    def summary_for_database: () -> ::String
+
+    def support: () -> ::String
+
+    def support=: (::String) -> ::String
+
+    def support?: () -> bool
+
+    def support_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def support_change: () -> [ ::String?, ::String? ]
+
+    def support_will_change!: () -> void
+
+    def support_was: () -> ::String?
+
+    def support_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def support_previous_change: () -> ::Array[::String?]?
+
+    def support_previously_was: () -> ::String?
+
+    def support_before_last_save: () -> ::String?
+
+    def support_change_to_be_saved: () -> ::Array[::String?]?
+
+    def support_in_database: () -> ::String?
+
+    def saved_change_to_support: () -> ::Array[::String?]?
+
+    def saved_change_to_support?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_support?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_support!: () -> void
+
+    def clear_support_change: () -> void
+
+    def support_before_type_cast: () -> ::String
+
+    def support_for_database: () -> ::String
+
     def updated_at: () -> ::ActiveSupport::TimeWithZone
 
     def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
@@ -290,45 +324,45 @@ class ::OrganizationBillPosition < ::ApplicationRecord
 
     def updated_at_for_database: () -> ::Time
 
-    def active: () -> bool
+    def ai_summary: () -> ::String?
 
-    def active=: (bool) -> bool
+    def ai_summary=: (::String?) -> ::String?
 
-    def active?: () -> bool
+    def ai_summary?: () -> bool
 
-    def active_changed?: (?from: bool?, ?to: bool?) -> bool
+    def ai_summary_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
-    def active_change: () -> [ bool?, bool? ]
+    def ai_summary_change: () -> [ ::String?, ::String? ]
 
-    def active_will_change!: () -> void
+    def ai_summary_will_change!: () -> void
 
-    def active_was: () -> bool?
+    def ai_summary_was: () -> ::String?
 
-    def active_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+    def ai_summary_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
-    def active_previous_change: () -> ::Array[bool?]?
+    def ai_summary_previous_change: () -> ::Array[::String?]?
 
-    def active_previously_was: () -> bool?
+    def ai_summary_previously_was: () -> ::String?
 
-    def active_before_last_save: () -> bool?
+    def ai_summary_before_last_save: () -> ::String?
 
-    def active_change_to_be_saved: () -> ::Array[bool?]?
+    def ai_summary_change_to_be_saved: () -> ::Array[::String?]?
 
-    def active_in_database: () -> bool?
+    def ai_summary_in_database: () -> ::String?
 
-    def saved_change_to_active: () -> ::Array[bool?]?
+    def saved_change_to_ai_summary: () -> ::Array[::String?]?
 
-    def saved_change_to_active?: (?from: bool?, ?to: bool?) -> bool
+    def saved_change_to_ai_summary?: (?from: ::String?, ?to: ::String?) -> bool
 
-    def will_save_change_to_active?: (?from: bool?, ?to: bool?) -> bool
+    def will_save_change_to_ai_summary?: (?from: ::String?, ?to: ::String?) -> bool
 
-    def restore_active!: () -> void
+    def restore_ai_summary!: () -> void
 
-    def clear_active_change: () -> void
+    def clear_ai_summary_change: () -> void
 
-    def active_before_type_cast: () -> bool
+    def ai_summary_before_type_cast: () -> ::String?
 
-    def active_for_database: () -> bool
+    def ai_summary_for_database: () -> ::String?
   end
   include ::OrganizationBillPosition::GeneratedAttributeMethods
   module ::OrganizationBillPosition::GeneratedAliasAttributeMethods

@@ -1004,46 +1004,6 @@ class ::BillLlmProvisioning < ::ApplicationRecord
 
     def cleaned_testimony_at_for_database: () -> ::Time?
 
-    def individual_campaign_draft_hashes: () -> ::String?
-
-    def individual_campaign_draft_hashes=: (::String?) -> ::String?
-
-    def individual_campaign_draft_hashes?: () -> bool
-
-    def individual_campaign_draft_hashes_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def individual_campaign_draft_hashes_change: () -> [ ::String?, ::String? ]
-
-    def individual_campaign_draft_hashes_will_change!: () -> void
-
-    def individual_campaign_draft_hashes_was: () -> ::String?
-
-    def individual_campaign_draft_hashes_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def individual_campaign_draft_hashes_previous_change: () -> ::Array[::String?]?
-
-    def individual_campaign_draft_hashes_previously_was: () -> ::String?
-
-    def individual_campaign_draft_hashes_before_last_save: () -> ::String?
-
-    def individual_campaign_draft_hashes_change_to_be_saved: () -> ::Array[::String?]?
-
-    def individual_campaign_draft_hashes_in_database: () -> ::String?
-
-    def saved_change_to_individual_campaign_draft_hashes: () -> ::Array[::String?]?
-
-    def saved_change_to_individual_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def will_save_change_to_individual_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def restore_individual_campaign_draft_hashes!: () -> void
-
-    def clear_individual_campaign_draft_hashes_change: () -> void
-
-    def individual_campaign_draft_hashes_before_type_cast: () -> ::String?
-
-    def individual_campaign_draft_hashes_for_database: () -> ::String?
-
     def rejected_campaign_draft_hashes: () -> ::String?
 
     def rejected_campaign_draft_hashes=: (::String?) -> ::String?
@@ -1203,6 +1163,206 @@ class ::BillLlmProvisioning < ::ApplicationRecord
     def summary_batch_testimony_digest_before_type_cast: () -> ::String?
 
     def summary_batch_testimony_digest_for_database: () -> ::String?
+
+    def news_articles: () -> ::String?
+
+    def news_articles=: (::String?) -> ::String?
+
+    def news_articles?: () -> bool
+
+    def news_articles_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def news_articles_change: () -> [ ::String?, ::String? ]
+
+    def news_articles_will_change!: () -> void
+
+    def news_articles_was: () -> ::String?
+
+    def news_articles_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def news_articles_previous_change: () -> ::Array[::String?]?
+
+    def news_articles_previously_was: () -> ::String?
+
+    def news_articles_before_last_save: () -> ::String?
+
+    def news_articles_change_to_be_saved: () -> ::Array[::String?]?
+
+    def news_articles_in_database: () -> ::String?
+
+    def saved_change_to_news_articles: () -> ::Array[::String?]?
+
+    def saved_change_to_news_articles?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_news_articles?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_news_articles!: () -> void
+
+    def clear_news_articles_change: () -> void
+
+    def news_articles_before_type_cast: () -> ::String?
+
+    def news_articles_for_database: () -> ::String?
+
+    def news_articles_fetched_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def news_articles_fetched_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def news_articles_fetched_at?: () -> bool
+
+    def news_articles_fetched_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def news_articles_fetched_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def news_articles_fetched_at_will_change!: () -> void
+
+    def news_articles_fetched_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def news_articles_fetched_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def news_articles_fetched_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def news_articles_fetched_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def news_articles_fetched_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def news_articles_fetched_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def news_articles_fetched_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_news_articles_fetched_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_news_articles_fetched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_news_articles_fetched_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_news_articles_fetched_at!: () -> void
+
+    def clear_news_articles_fetched_at_change: () -> void
+
+    def news_articles_fetched_at_before_type_cast: () -> ::Time?
+
+    def news_articles_fetched_at_for_database: () -> ::Time?
+
+    def news_urls_valid: () -> bool?
+
+    def news_urls_valid=: (bool?) -> bool?
+
+    def news_urls_valid?: () -> bool
+
+    def news_urls_valid_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def news_urls_valid_change: () -> [ bool?, bool? ]
+
+    def news_urls_valid_will_change!: () -> void
+
+    def news_urls_valid_was: () -> bool?
+
+    def news_urls_valid_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def news_urls_valid_previous_change: () -> ::Array[bool?]?
+
+    def news_urls_valid_previously_was: () -> bool?
+
+    def news_urls_valid_before_last_save: () -> bool?
+
+    def news_urls_valid_change_to_be_saved: () -> ::Array[bool?]?
+
+    def news_urls_valid_in_database: () -> bool?
+
+    def saved_change_to_news_urls_valid: () -> ::Array[bool?]?
+
+    def saved_change_to_news_urls_valid?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_news_urls_valid?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_news_urls_valid!: () -> void
+
+    def clear_news_urls_valid_change: () -> void
+
+    def news_urls_valid_before_type_cast: () -> bool?
+
+    def news_urls_valid_for_database: () -> bool?
+
+    def invalid_news_urls: () -> ::String?
+
+    def invalid_news_urls=: (::String?) -> ::String?
+
+    def invalid_news_urls?: () -> bool
+
+    def invalid_news_urls_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def invalid_news_urls_change: () -> [ ::String?, ::String? ]
+
+    def invalid_news_urls_will_change!: () -> void
+
+    def invalid_news_urls_was: () -> ::String?
+
+    def invalid_news_urls_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def invalid_news_urls_previous_change: () -> ::Array[::String?]?
+
+    def invalid_news_urls_previously_was: () -> ::String?
+
+    def invalid_news_urls_before_last_save: () -> ::String?
+
+    def invalid_news_urls_change_to_be_saved: () -> ::Array[::String?]?
+
+    def invalid_news_urls_in_database: () -> ::String?
+
+    def saved_change_to_invalid_news_urls: () -> ::Array[::String?]?
+
+    def saved_change_to_invalid_news_urls?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_invalid_news_urls?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_invalid_news_urls!: () -> void
+
+    def clear_invalid_news_urls_change: () -> void
+
+    def invalid_news_urls_before_type_cast: () -> ::String?
+
+    def invalid_news_urls_for_database: () -> ::String?
+
+    def individual_campaign_draft_hashes: () -> ::String?
+
+    def individual_campaign_draft_hashes=: (::String?) -> ::String?
+
+    def individual_campaign_draft_hashes?: () -> bool
+
+    def individual_campaign_draft_hashes_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def individual_campaign_draft_hashes_change: () -> [ ::String?, ::String? ]
+
+    def individual_campaign_draft_hashes_will_change!: () -> void
+
+    def individual_campaign_draft_hashes_was: () -> ::String?
+
+    def individual_campaign_draft_hashes_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def individual_campaign_draft_hashes_previous_change: () -> ::Array[::String?]?
+
+    def individual_campaign_draft_hashes_previously_was: () -> ::String?
+
+    def individual_campaign_draft_hashes_before_last_save: () -> ::String?
+
+    def individual_campaign_draft_hashes_change_to_be_saved: () -> ::Array[::String?]?
+
+    def individual_campaign_draft_hashes_in_database: () -> ::String?
+
+    def saved_change_to_individual_campaign_draft_hashes: () -> ::Array[::String?]?
+
+    def saved_change_to_individual_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_individual_campaign_draft_hashes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_individual_campaign_draft_hashes!: () -> void
+
+    def clear_individual_campaign_draft_hashes_change: () -> void
+
+    def individual_campaign_draft_hashes_before_type_cast: () -> ::String?
+
+    def individual_campaign_draft_hashes_for_database: () -> ::String?
   end
   include ::BillLlmProvisioning::GeneratedAttributeMethods
   module ::BillLlmProvisioning::GeneratedAliasAttributeMethods

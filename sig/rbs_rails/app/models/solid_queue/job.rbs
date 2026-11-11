@@ -444,6 +444,46 @@ module ::SolidQueue
       def updated_at_before_type_cast: () -> ::Time
 
       def updated_at_for_database: () -> ::Time
+
+      def batch_id: () -> ::Integer?
+
+      def batch_id=: (::Integer?) -> ::Integer?
+
+      def batch_id?: () -> bool
+
+      def batch_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def batch_id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def batch_id_will_change!: () -> void
+
+      def batch_id_was: () -> ::Integer?
+
+      def batch_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def batch_id_previous_change: () -> ::Array[::Integer?]?
+
+      def batch_id_previously_was: () -> ::Integer?
+
+      def batch_id_before_last_save: () -> ::Integer?
+
+      def batch_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def batch_id_in_database: () -> ::Integer?
+
+      def saved_change_to_batch_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_batch_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_batch_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_batch_id!: () -> void
+
+      def clear_batch_id_change: () -> void
+
+      def batch_id_before_type_cast: () -> ::Integer?
+
+      def batch_id_for_database: () -> ::Integer?
     end
     include ::SolidQueue::Job::GeneratedAttributeMethods
     module ::SolidQueue::Job::GeneratedAliasAttributeMethods
@@ -491,6 +531,12 @@ module ::SolidQueue
     end
     include ::SolidQueue::Job::GeneratedAliasAttributeMethods
 
+    def batch_execution: () -> ::SolidQueue::BatchExecution?
+    def batch_execution=: (::SolidQueue::BatchExecution?) -> ::SolidQueue::BatchExecution?
+    def build_batch_execution: (?untyped) -> ::SolidQueue::BatchExecution
+    def create_batch_execution: (?untyped) -> ::SolidQueue::BatchExecution
+    def create_batch_execution!: (?untyped) -> ::SolidQueue::BatchExecution
+    def reload_batch_execution: () -> ::SolidQueue::BatchExecution?
     def recurring_execution: () -> ::SolidQueue::RecurringExecution?
     def recurring_execution=: (::SolidQueue::RecurringExecution?) -> ::SolidQueue::RecurringExecution?
     def build_recurring_execution: (?untyped) -> ::SolidQueue::RecurringExecution
@@ -527,6 +573,12 @@ module ::SolidQueue
     def create_claimed_execution: (?untyped) -> ::SolidQueue::ClaimedExecution
     def create_claimed_execution!: (?untyped) -> ::SolidQueue::ClaimedExecution
     def reload_claimed_execution: () -> ::SolidQueue::ClaimedExecution?
+    def batch: () -> ::SolidQueue::Batch?
+    def batch=: (::SolidQueue::Batch?) -> ::SolidQueue::Batch?
+    def reload_batch: () -> ::SolidQueue::Batch?
+    def build_batch: (?untyped) -> ::SolidQueue::Batch
+    def create_batch: (?untyped) -> ::SolidQueue::Batch
+    def create_batch!: (?untyped) -> ::SolidQueue::Batch
 
     module ::SolidQueue::Job::GeneratedAssociationMethods
     end
@@ -567,6 +619,8 @@ module ::SolidQueue
 end
 class ::SolidQueue::Record < ::ActiveRecord::Base
 end
+class ::SolidQueue::BatchExecution < ::SolidQueue::Execution
+end
 class ::SolidQueue::RecurringExecution < ::SolidQueue::Execution
 end
 class ::SolidQueue::FailedExecution < ::SolidQueue::Execution
@@ -578,6 +632,8 @@ end
 class ::SolidQueue::ReadyExecution < ::SolidQueue::Execution
 end
 class ::SolidQueue::ClaimedExecution < ::SolidQueue::Execution
+end
+class ::SolidQueue::Batch < ::SolidQueue::Record
 end
 class ::SolidQueue::Execution < ::SolidQueue::Record
 end

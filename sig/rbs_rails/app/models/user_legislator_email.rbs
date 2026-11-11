@@ -44,45 +44,45 @@ class ::UserLegislatorEmail < ::ApplicationRecord
 
     def id_for_database: () -> ::Integer
 
-    def user_legislator_id: () -> ::Integer
+    def bill_id: () -> ::Integer
 
-    def user_legislator_id=: (::Integer) -> ::Integer
+    def bill_id=: (::Integer) -> ::Integer
 
-    def user_legislator_id?: () -> bool
+    def bill_id?: () -> bool
 
-    def user_legislator_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def bill_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def user_legislator_id_change: () -> [ ::Integer?, ::Integer? ]
+    def bill_id_change: () -> [ ::Integer?, ::Integer? ]
 
-    def user_legislator_id_will_change!: () -> void
+    def bill_id_will_change!: () -> void
 
-    def user_legislator_id_was: () -> ::Integer?
+    def bill_id_was: () -> ::Integer?
 
-    def user_legislator_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def bill_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def user_legislator_id_previous_change: () -> ::Array[::Integer?]?
+    def bill_id_previous_change: () -> ::Array[::Integer?]?
 
-    def user_legislator_id_previously_was: () -> ::Integer?
+    def bill_id_previously_was: () -> ::Integer?
 
-    def user_legislator_id_before_last_save: () -> ::Integer?
+    def bill_id_before_last_save: () -> ::Integer?
 
-    def user_legislator_id_change_to_be_saved: () -> ::Array[::Integer?]?
+    def bill_id_change_to_be_saved: () -> ::Array[::Integer?]?
 
-    def user_legislator_id_in_database: () -> ::Integer?
+    def bill_id_in_database: () -> ::Integer?
 
-    def saved_change_to_user_legislator_id: () -> ::Array[::Integer?]?
+    def saved_change_to_bill_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_user_legislator_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def saved_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def will_save_change_to_user_legislator_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def will_save_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def restore_user_legislator_id!: () -> void
+    def restore_bill_id!: () -> void
 
-    def clear_user_legislator_id_change: () -> void
+    def clear_bill_id_change: () -> void
 
-    def user_legislator_id_before_type_cast: () -> ::Integer
+    def bill_id_before_type_cast: () -> ::Integer
 
-    def user_legislator_id_for_database: () -> ::Integer
+    def bill_id_for_database: () -> ::Integer
 
     def created_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -124,6 +124,46 @@ class ::UserLegislatorEmail < ::ApplicationRecord
 
     def created_at_for_database: () -> ::Time
 
+    def status: () -> ::String
+
+    def status=: (::Integer | ::String | ::Symbol) -> ::String
+
+    def status?: () -> bool
+
+    def status_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def status_change: () -> [ ::String?, ::String? ]
+
+    def status_will_change!: () -> void
+
+    def status_was: () -> ::String?
+
+    def status_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def status_previous_change: () -> ::Array[::String?]?
+
+    def status_previously_was: () -> ::String?
+
+    def status_before_last_save: () -> ::String?
+
+    def status_change_to_be_saved: () -> ::Array[::String?]?
+
+    def status_in_database: () -> ::String?
+
+    def saved_change_to_status: () -> ::Array[::String?]?
+
+    def saved_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_status!: () -> void
+
+    def clear_status_change: () -> void
+
+    def status_before_type_cast: () -> ::Integer
+
+    def status_for_database: () -> ::Integer
+
     def updated_at: () -> ::ActiveSupport::TimeWithZone
 
     def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
@@ -164,85 +204,45 @@ class ::UserLegislatorEmail < ::ApplicationRecord
 
     def updated_at_for_database: () -> ::Time
 
-    def bill_id: () -> ::Integer
+    def user_legislator_id: () -> ::Integer
 
-    def bill_id=: (::Integer) -> ::Integer
+    def user_legislator_id=: (::Integer) -> ::Integer
 
-    def bill_id?: () -> bool
+    def user_legislator_id?: () -> bool
 
-    def bill_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def user_legislator_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def bill_id_change: () -> [ ::Integer?, ::Integer? ]
+    def user_legislator_id_change: () -> [ ::Integer?, ::Integer? ]
 
-    def bill_id_will_change!: () -> void
+    def user_legislator_id_will_change!: () -> void
 
-    def bill_id_was: () -> ::Integer?
+    def user_legislator_id_was: () -> ::Integer?
 
-    def bill_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def user_legislator_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def bill_id_previous_change: () -> ::Array[::Integer?]?
+    def user_legislator_id_previous_change: () -> ::Array[::Integer?]?
 
-    def bill_id_previously_was: () -> ::Integer?
+    def user_legislator_id_previously_was: () -> ::Integer?
 
-    def bill_id_before_last_save: () -> ::Integer?
+    def user_legislator_id_before_last_save: () -> ::Integer?
 
-    def bill_id_change_to_be_saved: () -> ::Array[::Integer?]?
+    def user_legislator_id_change_to_be_saved: () -> ::Array[::Integer?]?
 
-    def bill_id_in_database: () -> ::Integer?
+    def user_legislator_id_in_database: () -> ::Integer?
 
-    def saved_change_to_bill_id: () -> ::Array[::Integer?]?
+    def saved_change_to_user_legislator_id: () -> ::Array[::Integer?]?
 
-    def saved_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def saved_change_to_user_legislator_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def will_save_change_to_bill_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+    def will_save_change_to_user_legislator_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
 
-    def restore_bill_id!: () -> void
+    def restore_user_legislator_id!: () -> void
 
-    def clear_bill_id_change: () -> void
+    def clear_user_legislator_id_change: () -> void
 
-    def bill_id_before_type_cast: () -> ::Integer?
+    def user_legislator_id_before_type_cast: () -> ::Integer
 
-    def bill_id_for_database: () -> ::Integer?
-
-    def status: () -> ::String
-
-    def status=: (::Integer | ::String | ::Symbol) -> ::String
-
-    def status?: () -> bool
-
-    def status_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def status_change: () -> [ ::String?, ::String? ]
-
-    def status_will_change!: () -> void
-
-    def status_was: () -> ::String?
-
-    def status_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def status_previous_change: () -> ::Array[::String?]?
-
-    def status_previously_was: () -> ::String?
-
-    def status_before_last_save: () -> ::String?
-
-    def status_change_to_be_saved: () -> ::Array[::String?]?
-
-    def status_in_database: () -> ::String?
-
-    def saved_change_to_status: () -> ::Array[::String?]?
-
-    def saved_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def will_save_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
-
-    def restore_status!: () -> void
-
-    def clear_status_change: () -> void
-
-    def status_before_type_cast: () -> ::Integer
-
-    def status_for_database: () -> ::Integer
+    def user_legislator_id_for_database: () -> ::Integer
   end
   include ::UserLegislatorEmail::GeneratedAttributeMethods
   module ::UserLegislatorEmail::GeneratedAliasAttributeMethods
