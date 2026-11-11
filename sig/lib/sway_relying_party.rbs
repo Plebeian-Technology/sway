@@ -13,5 +13,5 @@ class SwayRelyingParty < WebAuthn::RelyingParty
 
   private
 
-  def rejecting_malformed_input: [T] (?passthrough: ^() -> bool) { () -> T } -> T
+  def rejecting_malformed_input: [T] (ceremony: String, ?passthrough: ^() -> bool) { () -> T } -> T
 end

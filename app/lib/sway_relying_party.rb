@@ -22,12 +22,12 @@ class SwayRelyingParty < WebAuthn::RelyingParty
   ].freeze
 
   def verify_registration(raw_credential, challenge, **options)
-    rejecting_malformed_input { super }
+    rejecting_malformed_input(ceremony: "registration") { super }
   end
 
   # @lat: [[malformed-passkey-credentials#The stored-passkey lookup keeps its own errors]]
   def verify_authentication(raw_credential, challenge, **options, &lookup)
-    return rejecting_malformed_input { super } unless lookup
+    return rejecting_malformed_input(ceremony: "authentication") { super } unless lookup
 
     lookup_raised = false
     guarded_lookup = proc do |credential|
@@ -37,18 +37,20 @@ class SwayRelyingParty < WebAuthn::RelyingParty
       stored_credential
     end
 
-    rejecting_malformed_input(passthrough: -> { lookup_raised }) do
+    rejecting_malformed_input(ceremony: "authentication", passthrough: -> { lookup_raised }) do
       super(raw_credential, challenge, **options, &guarded_lookup)
     end
   end
 
   private
 
-  def rejecting_malformed_input(passthrough: -> { false })
+  # @lat: [[malformed-passkey-credentials#Every refusal is logged where it is translated]]
+  def rejecting_malformed_input(ceremony:, passthrough: -> { false })
     yield
-  rescue *DECODE_ERRORS
+  rescue *DECODE_ERRORS => error
     raise if passthrough.call
 
+    SwayLogging.log_exception("webauthn.malformed_credential", exception: error, level: :warn, ceremony: ceremony)
     raise MalformedCredentialError
   end
 end

@@ -12,7 +12,13 @@ A passkey response that cannot be decoded proves nothing about who sent it, so i
 
 [[app/lib/sway_relying_party.rb#SwayRelyingParty]] is the relying party that [[app/controllers/concerns/relying_party.rb]] builds for every callback. Its two verify methods turn a decoding failure into [[app/lib/sway_relying_party.rb#SwayRelyingParty#MalformedCredentialError]], a subclass of the gem's own error. Each callback already rescues that error, so a garbled payload reaches the same branch as a failed signature: the web callbacks redirect home with "Verification failed", the add-a-passkey callback answers success false, and the mobile callbacks answer 401 invalid_credentials and clear the one-use challenge.
 
-The translation sits in one place, not in seven rescue clauses, because the seven call sites already agree on what an invalid credential looks like. A new callback gets the same treatment by calling the shared relying party. The original exception survives as the error's cause, so the warning the callbacks log still names what failed to decode. The message shown to the person is fixed and never echoes the decoder's text.
+The translation sits in one place, not in seven rescue clauses, because the seven call sites already agree on what an invalid credential looks like. A new callback gets the same treatment by calling the shared relying party. The original exception survives as the error's cause, and the message shown to the person is fixed and never echoes the decoder's text.
+
+## Every refusal is logged where it is translated
+
+The relying party logs each decoding failure it translates as a warning, naming the ceremony and the original exception, before raising the malformed-credential error.
+
+The log sits in the relying party rather than in the callbacks because the two mobile callbacks log nothing when they refuse a credential. Before the translation existed, a decoding failure there surfaced as a reported server error. Translating it without a log would have turned a genuine defect, such as a gem or configuration bug that raises one of the listed exception classes, into a silent "invalid credential" on mobile. The web callbacks still write their own warning as well, so a web refusal appears twice in the log: once naming the decoding error, once naming the callback.
 
 ## Which decoding failures escape the WebAuthn gem
 

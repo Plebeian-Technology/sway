@@ -32,6 +32,26 @@ RSpec.describe SwayRelyingParty do
     }.to raise_error(SwayRelyingParty::MalformedCredentialError) { |error| expect(error.cause).to be_a(IOError) }
   end
 
+  # @lat: [[malformed-passkey-credential-tests#Every translated decode error is logged]]
+  it "logs the original decode error as a warning before translating it" do
+    client = MalformedWebauthnCredentials.client
+    challenge = MalformedWebauthnCredentials.challenge
+    corrupt = MalformedWebauthnCredentials::REGISTRATION_CORRUPTIONS.fetch("a truncated attestationObject")
+    attestation = corrupt.call(MalformedWebauthnCredentials.registration(client, challenge))
+    allow(SwayLogging).to receive(:log_exception)
+
+    expect {
+      MalformedWebauthnCredentials.sway_relying_party.verify_registration(attestation, challenge, user_verification: true)
+    }.to raise_error(SwayRelyingParty::MalformedCredentialError)
+
+    expect(SwayLogging).to have_received(:log_exception).with(
+      "webauthn.malformed_credential",
+      exception: kind_of(StandardError),
+      level: :warn,
+      ceremony: "registration"
+    )
+  end
+
   it "verifies a well-formed assertion" do
     client = MalformedWebauthnCredentials.client
     challenge = MalformedWebauthnCredentials.challenge

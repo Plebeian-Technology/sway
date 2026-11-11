@@ -38,6 +38,10 @@ The mobile add-a-passkey callback answers each corrupted attestation with 401 in
 
 An exception raised by the stored-passkey lookup block reaches the caller unchanged, so a defect in application code is not reported as an unreadable credential.
 
+## Every translated decode error is logged
+
+A truncated attestation object is logged as a warning naming the ceremony and the original decoding error, before it becomes the malformed-credential error.
+
 ## Decode errors after the lookup are translated
 
 A truncated authenticator data field, which fails to decode only after the lookup returned, becomes the malformed-credential error and keeps the original IOError as its cause.
