@@ -200,6 +200,7 @@ RAKE_GATES=(
     sway:lint:migration_models
     sway:lint:inertia_prop_cache
     sway:lint:param_names
+    sway:lint:rspec_constants
 )
 
 # --- Lane table ----------------------------------------------------------------

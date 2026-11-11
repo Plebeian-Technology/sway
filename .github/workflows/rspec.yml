@@ -139,6 +139,9 @@ jobs:
       - name: Lint — no Inertia prop cache without an identity in its key
         run: bundle exec rake sway:lint:inertia_prop_cache
 
+      - name: Lint — no RSpec constants in app/ or lib/
+        run: bundle exec rake sway:lint:rspec_constants
+
       - name: Run tests
         env:
           SCREENSHOT_DIR: spec/screenshots

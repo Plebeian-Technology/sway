@@ -208,5 +208,158 @@ namespace :sway do
 
       puts "Scanned #{check.scanned_count} parameter name(s) across #{check.features.length} feature(s); all canonical parameters are unique."
     end
+
+    # @lat: [[verification-gates#Docker lanes]]
+    desc "Forbid an RSpec constant anywhere in app/ or lib/"
+    task :rspec_constants, [:root] do |_t, args|
+      require "erb"
+      require "open3"
+      require "prism"
+
+      root = args[:root] || ENV["SWAY_LINT_ROOT"] || File.expand_path("../..", __dir__)
+      check = SwayLintRSpecConstantCheck.new(root)
+      offences = check.offences
+
+      if check.skipped_paths.any?
+        warn "Skipped (unrecognized extension): #{check.skipped_paths.join(", ")}"
+      end
+
+      if offences.any?
+        warn "RSpec constant(s) found under app/ or lib/ in:"
+        offences.each { |offence| warn "  - #{offence}" }
+        abort "Production code under app/ and lib/ must never name an RSpec constant."
+      end
+
+      puts "Scanned #{check.scanned_paths.length} file(s) under app/ and lib/; no RSpec constants."
+    end
+  end
+end
+
+class SwayLintRSpecConstantCheck
+  RUBY_LIKE_EXTENSIONS = [".rb", ".rake", ".builder"].freeze
+  NON_SOURCE_EXTENSIONS = %w[.png .jpg .jpeg .gif .svg .ico .webp .woff .woff2 .ttf .eot .otf .css .js .keep].freeze
+
+  class Offence
+    attr_reader :path, :line
+
+    def initialize(path:, line:)
+      @path = path
+      @line = line
+    end
+
+    def to_s
+      "#{path}:#{line}"
+    end
+  end
+
+  class Visitor < Prism::Visitor
+    def initialize(lines)
+      super()
+      @lines = lines
+    end
+
+    def visit_constant_read_node(node)
+      @lines << node.location.start_line if node.name == :RSpec
+      super
+    end
+
+    def visit_constant_path_node(node)
+      @lines << node.location.start_line if node.parent.nil? && node.name == :RSpec
+      super
+    end
+
+    def visit_constant_write_node(node)
+      @lines << node.location.start_line if node.name == :RSpec
+      super
+    end
+
+    def visit_constant_target_node(node)
+      @lines << node.location.start_line if node.name == :RSpec
+      super
+    end
+
+    def visit_constant_or_write_node(node)
+      @lines << node.location.start_line if node.name == :RSpec
+      super
+    end
+
+    def visit_constant_and_write_node(node)
+      @lines << node.location.start_line if node.name == :RSpec
+      super
+    end
+
+    def visit_constant_operator_write_node(node)
+      @lines << node.location.start_line if node.name == :RSpec
+      super
+    end
+
+    def visit_constant_path_target_node(node)
+      @lines << node.location.start_line if node.parent.nil? && node.name == :RSpec
+      super
+    end
+  end
+
+  attr_reader :root
+
+  def initialize(root)
+    @root = root.to_s
+  end
+
+  def offences
+    @skipped_paths = []
+    scanned_paths.flat_map { |path| offences_in(path) }
+  end
+
+  def scanned_paths
+    @scanned_paths ||= git_tracked_files
+  end
+
+  def skipped_paths
+    @skipped_paths ||= []
+  end
+
+  private
+
+  def git_tracked_files
+    stdout, status =
+      begin
+        Open3.capture2("git", "-C", root, "ls-files", "-z", "--", "app", "lib")
+      rescue Errno::ENOENT
+        raise "git was not found on PATH -- this check did not run against #{root}."
+      end
+    raise "git ls-files failed under #{root} (exit #{status.exitstatus})" unless status.success?
+
+    stdout.split("\0").reject { |path| path.empty? || path.start_with?("app/frontend/") }
+  end
+
+  def offences_in(relative_path)
+    absolute = File.join(root, relative_path)
+    return [] unless File.file?(absolute)
+
+    if relative_path.end_with?(".erb")
+      offences_from_erb(relative_path, absolute)
+    elsif RUBY_LIKE_EXTENSIONS.any? { |ext| relative_path.end_with?(ext) }
+      offences_from_ruby(relative_path, File.read(absolute))
+    elsif NON_SOURCE_EXTENSIONS.any? { |ext| relative_path.end_with?(ext) }
+      []
+    else
+      skipped_paths << relative_path
+      []
+    end
+  end
+
+  def offences_from_ruby(relative_path, source)
+    lines_with_rspec(source).map { |line| Offence.new(path: relative_path, line: line) }
+  end
+
+  def offences_from_erb(relative_path, absolute)
+    compiled = ERB.new(File.read(absolute), trim_mode: "-").src
+    lines_with_rspec(compiled).map { |line| Offence.new(path: relative_path, line: line - 1) }
+  end
+
+  def lines_with_rspec(source)
+    lines = []
+    Prism.parse(source).value.accept(Visitor.new(lines))
+    lines.uniq.sort
   end
 end
