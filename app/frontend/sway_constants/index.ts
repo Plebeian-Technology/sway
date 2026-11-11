@@ -11,8 +11,6 @@ export const IS_MOBILE_PHONE: boolean = (() => {
     });
 })();
 
-export const CURRENT_CONGRESS_NUMBER = 119;
-
 export const GITHUB_LINK = "https://github.com/Plebeian-Technology/sway";
 
 export const Support: {

@@ -9,11 +9,7 @@ import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { ROUTES } from "app/frontend/sway_constants";
 import type { ThemeId } from "app/frontend/styles/themes";
 import DefaultLegislatorsLayout from "app/frontend/components/legislators/layouts/DefaultLegislatorsLayout";
-import {
-    legislatorsLayoutFor,
-    legislatorListLayoutFor,
-    type ILegislatorsLayoutProps,
-} from "app/frontend/components/legislators/layouts";
+import { legislatorsLayoutFor, type ILegislatorsLayoutProps } from "app/frontend/components/legislators/layouts";
 
 vi.mock("@inertiajs/react", () => ({
     router: {
@@ -119,10 +115,6 @@ describe("LegislatorsLayouts — layout registry & resolution", () => {
         expect(swiss).not.toBe(DefaultLegislatorsLayout);
         expect(mono).not.toBe(service);
         expect(service).not.toBe(swiss);
-    });
-
-    it("exports legislatorListLayoutFor as an alias for legislatorsLayoutFor", () => {
-        expect(legislatorListLayoutFor).toBe(legislatorsLayoutFor);
     });
 });
 

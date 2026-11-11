@@ -7,11 +7,8 @@ import {
     FEATURE_QUERY_PARAMETERS,
     GLOBAL_AMBIENT_QUERY_PARAMETERS,
     getAllowedCarryParametersForPath,
-    getCanonicalParameter,
     getFeatureForPath,
     getParameterFamily,
-    getSemanticEquivalents,
-    getSemanticParameterAliases,
     isGlobalAmbientParameter,
     isParameterOwnedByFeature,
     QUERY_PARAMETER_REGISTRY_FOR_PARITY,
@@ -146,7 +143,6 @@ describe("queryParameters registry constants and helpers", () => {
 
         it("keeps the picker sort in a canonical-only family", () => {
             expect(getParameterFamily("bill_creator", "bill_creator_sort")).toEqual(["bill_creator_sort"]);
-            expect(getCanonicalParameter("bill_creator", "bill_creator_sort")).toBe("bill_creator_sort");
             expect(isParameterOwnedByFeature("bill_creator", "bill_creator_sort")).toBe(true);
         });
 
@@ -186,26 +182,6 @@ describe("queryParameters registry constants and helpers", () => {
             expect(isParameterOwnedByFeature("bills", "legislators_search")).toBe(false);
             expect(isParameterOwnedByFeature("bills", "notifications_tab")).toBe(false);
             expect(isParameterOwnedByFeature("legislators", "bills_sort")).toBe(false);
-        });
-    });
-
-    describe("getCanonicalParameter", () => {
-        it("returns canonical name for canonical parameters and legacy aliases", () => {
-            expect(getCanonicalParameter("bills", "bills_search")).toBe("bills_search");
-            expect(getCanonicalParameter("bills", "search")).toBe("bills_search");
-            expect(getCanonicalParameter("legislators", "tab")).toBe("legislators_tab");
-            expect(getCanonicalParameter("organizations", "tab_key")).toBe("org_tab");
-        });
-
-        it("returns null for unmapped parameters", () => {
-            expect(getCanonicalParameter("bills", "unknown_key")).toBeNull();
-        });
-    });
-
-    describe("getSemanticEquivalents and getSemanticParameterAliases", () => {
-        it("returns the full parameter family", () => {
-            expect(getSemanticEquivalents("bills", "bills_search")).toEqual(["bills_search", "search"]);
-            expect(getSemanticParameterAliases("bills_search", "bills")).toEqual(["bills_search", "search"]);
         });
     });
 

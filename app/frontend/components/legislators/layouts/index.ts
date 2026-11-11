@@ -26,6 +26,5 @@ export function legislatorsLayoutFor(themeId: ThemeId): React.ComponentType<ILeg
     return LEGISLATOR_LIST_LAYOUTS[themeId] ?? DefaultLegislatorsLayout;
 }
 
-export { legislatorsLayoutFor as legislatorListLayoutFor };
 export { DefaultLegislatorsLayout };
 export type { ILegislatorsLayoutProps };

@@ -19,11 +19,7 @@ import DefaultLegislatorsLayout from "app/frontend/components/legislators/layout
 import MonochromeLegislatorsLayout from "app/frontend/components/legislators/layouts/MonochromeLegislatorsLayout";
 import ServiceManualLegislatorsLayout from "app/frontend/components/legislators/layouts/ServiceManualLegislatorsLayout";
 import SwissGridLegislatorsLayout from "app/frontend/components/legislators/layouts/SwissGridLegislatorsLayout";
-import {
-    legislatorsLayoutFor,
-    legislatorListLayoutFor,
-    type ILegislatorsLayoutProps,
-} from "app/frontend/components/legislators/layouts";
+import { legislatorsLayoutFor, type ILegislatorsLayoutProps } from "app/frontend/components/legislators/layouts";
 
 vi.mock("@inertiajs/react", () => ({
     router: {
@@ -124,10 +120,6 @@ describe("Challenge: Layout Registry & Complete Theme Mapping", () => {
         ["non-existent-theme" as ThemeId],
     ])("handles invalid theme %s gracefully by falling back to DefaultLegislatorsLayout", (themeId) => {
         expect(legislatorsLayoutFor(themeId)).toBe(DefaultLegislatorsLayout);
-    });
-
-    it("ensures legislatorListLayoutFor is an alias for legislatorsLayoutFor", () => {
-        expect(legislatorListLayoutFor).toBe(legislatorsLayoutFor);
     });
 });
 

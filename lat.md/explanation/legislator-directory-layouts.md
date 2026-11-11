@@ -11,7 +11,7 @@ Why the default, monochrome, service manual, and Swiss grid layouts carry distin
 
 Layout selection dispatches the directory view by active theme while isolating page state management.
 
-Theme-driven resolution relies on `legislatorsLayoutFor(themeId)` in `app/frontend/components/legislators/layouts/index.ts`. Standard themes (`sway`, `banner`, `ballot`, `cornerstore`) and unrecognized theme identifiers resolve synchronously to `DefaultLegislatorsLayout`. The three readability themes (`monochrome`, `service-manual`, `swiss-grid`) resolve through dynamic imports wrapped in `React.lazy`, enabling deferred bundle loading. An export alias `legislatorListLayoutFor` preserves architectural consistency with bill list layouts.
+Theme-driven resolution relies on `legislatorsLayoutFor(themeId)` in `app/frontend/components/legislators/layouts/index.ts`. Standard themes (`sway`, `banner`, `ballot`, `cornerstore`) and unrecognized theme identifiers resolve synchronously to `DefaultLegislatorsLayout`. The three readability themes (`monochrome`, `service-manual`, `swiss-grid`) resolve through dynamic imports wrapped in `React.lazy`, enabling deferred bundle loading.
 
 ## Legislators page container
 

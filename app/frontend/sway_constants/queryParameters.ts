@@ -222,32 +222,6 @@ export function isParameterOwnedByFeature(arg1: string, arg2: string): boolean {
     );
 }
 
-export const getCanonicalParameter = (feature: FeatureName, paramName: string): string | null => {
-    if (!feature || !(feature in FEATURE_QUERY_PARAMETERS)) return null;
-    const base = paramName.replace(/\[\]$/, "");
-    const config = FEATURE_QUERY_PARAMETERS[feature];
-    if ((config.parameters as readonly string[]).includes(base)) {
-        return base;
-    }
-    const aliasMap = FEATURE_ALIAS_MAP[feature] as Record<string, readonly string[]>;
-    if (aliasMap) {
-        for (const [canonical, aliases] of Object.entries(aliasMap)) {
-            if ((aliases as readonly string[]).includes(base)) {
-                return canonical;
-            }
-        }
-    }
-    return null;
-};
-
-export const getSemanticEquivalents = (feature: FeatureName, paramName: string): string[] => {
-    return getParameterFamily(feature, paramName);
-};
-
-export const getSemanticParameterAliases = (name: string, feature?: FeatureName | null): string[] => {
-    return getParameterFamily(name, feature);
-};
-
 const isPastBillsOfTheMonthPath = (pathname: string): boolean => {
     const cleanPath = (pathname.split("?")[0] ?? "").split("#")[0] ?? "";
     return /^\/past_bills_of_the_month/.test(cleanPath);

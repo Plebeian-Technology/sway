@@ -113,10 +113,6 @@ export const logDev = (...args: any[]) => {
     }
 };
 
-export const flatten = (arrays: any[]): any[] => {
-    return [].concat(...arrays);
-};
-
 export const titleize = (string: string, separator = " ", joiner = " ") => {
     if (!string) return "";
 
