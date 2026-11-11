@@ -167,7 +167,7 @@ separate two senators of the same surname, and a seat that changed hands
 mid-term leaves both of its holders reading as running, so an unresolvable name
 records nobody rather than a guess.
 
-`GenericLegislatorVoteUpdateService` applies this historical roster resolution when persisting normalized votes. It constructs a `LegislatorRoster` on the vote's date (`voted_on`, mapped to local calendar days according to jurisdiction timezone rules) to resolve voter identifiers and senators by name and state before falling back to direct database ID matching. Where configured by `enable_historical_fallback`, unmatched voter identifiers trigger a single retry via `HistoricalElectedOfficialImporter` before unresolvable tokens are reported alongside matched counts as [[legislator-vote-upserter-guard-rules#What each upsert outcome means for vote coverage|vote coverage]].
+`GenericLegislatorVoteUpdateService` applies this historical roster resolution when persisting normalized votes. It constructs a `LegislatorRoster` on the vote's date (`voted_on`, mapped to local calendar days according to jurisdiction timezone rules) to resolve voter identifiers and senators by name and state before falling back to direct database ID matching. Jurisdiction configuration provides an `enable_historical_fallback` toggle, but the historical fallback remains planned under [[current-legislator-term#Planned automatic legislator updates]]. Because no importer exists today, unmatched voters stay unmatched and the service reports them alongside matched counts as [[legislator-vote-upserter-guard-rules#What each upsert outcome means for vote coverage|vote coverage]].
 
 ## A date before every term this person served has no term
 

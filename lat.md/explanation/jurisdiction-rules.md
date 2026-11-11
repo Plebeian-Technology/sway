@@ -101,7 +101,7 @@ Integration rules separate transport retrieval from payload parsing. Opaque engi
 
 Each domain rule block (`legislation_rules`, `hearings_rules`, `vote_rules`, `roster_rules`, `law_rules`) specifies `retrieval` to govern network acquisition or repository transport, and `parsing` to govern payload decoding and field mapping. Transitional compatibility falls back to `engine` when either property is omitted, enabling phased adapter migration without breaking existing locale configurations.
 
-Roster evidence attribution properties (`evidence_publisher`, `evidence_jurisdiction`, `evidence_source_url`) identify upstream official authorities without hardcoding jurisdiction names in generic roster adapters. Similarly, vote execution properties (`enable_historical_fallback`, `timezone`) configure candidate retries and local calendar calculations directly per jurisdiction.
+Roster evidence attribution properties (`evidence_publisher`, `evidence_jurisdiction`, `evidence_source_url`) identify upstream official authorities without hardcoding jurisdiction names in generic roster adapters. Similarly, vote execution properties set local calendar calculations (`timezone`) directly per jurisdiction. While `enable_historical_fallback` exists in configuration for the planned fallback described in [[current-legislator-term#Planned automatic legislator updates]], no importer exists today and unmatched voters stay unmatched.
 
 Eliminating legacy jurisdiction symbols such as `:maryland_general_assembly` and `:mga` ensures generic adapters (`GenericLegislationAdapter`, `GenericVoteAdapter`) route all HTML processing through generic protocols (`:generic_html`), while `determine_retrieval` maps declared jurisdiction rules without code mutations.
 
