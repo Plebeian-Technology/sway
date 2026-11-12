@@ -63,6 +63,30 @@ describe("useDebouncedUrlSearch", () => {
             preserveState: true,
             only: ["bills", "bills_total"],
         });
+        expect(options).not.toHaveProperty("reset");
+    });
+
+    it("passes reset option to router.get when configured", () => {
+        const { result } = renderHook(() =>
+            useDebouncedUrlSearch({
+                ...CONFIG,
+                param: "feed_search",
+                resetParams: ["feed_cursor"],
+                only: ["items", "feed_search"],
+                reset: ["items"],
+            }),
+        );
+
+        act(() => result.current.onChange("housing"));
+        // oxlint-disable-next-line typescript/no-floating-promises -- React Testing Library's act() types declare Promise<void> even for sync callbacks
+        act(() => vi.advanceTimersByTime(400));
+
+        expect(routerGet).toHaveBeenCalledTimes(1);
+        const [, , options] = routerGet.mock.calls[0];
+        expect(options).toMatchObject({
+            only: ["items", "feed_search"],
+            reset: ["items"],
+        });
     });
 
     it("trims the term, clears the param when blank, and drops reset params", () => {

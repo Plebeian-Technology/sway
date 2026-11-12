@@ -5,12 +5,13 @@ import { setQueryParamCleared } from "app/frontend/sway_utils/queryParamClearedS
 export interface NavigateWithParamsOptions {
     only: string[];
     resetParams?: string[];
+    reset?: string[];
     errorTitle: string;
 }
 
 export const navigateWithParams = (
     mutate: (params: URLSearchParams) => void,
-    { only, resetParams = [], errorTitle }: NavigateWithParamsOptions,
+    { only, resetParams = [], reset, errorTitle }: NavigateWithParamsOptions,
 ): void => {
     const params = new URLSearchParams(window.location.search);
     mutate(params);
@@ -28,6 +29,7 @@ export const navigateWithParams = (
             preserveScroll: true,
             preserveState: true,
             only,
+            ...(reset ? { reset } : {}),
             onError: () => notify({ level: "error", title: errorTitle }),
         },
     );

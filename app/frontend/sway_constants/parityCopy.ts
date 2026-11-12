@@ -488,5 +488,14 @@ export const PARITY_COPY = {
         seeYourRepresentatives: "See your representatives",
         legislativeTermBegan: (localeName: string) => `New legislative term for ${localeName}!`,
         loadingMore: "Loading more...",
+        searchLabel: "Search your feed",
+        searchPlaceholder: "Search bills, places and legislators",
+        clearSearch: "Clear search",
+        searchError: "Could not search your feed.",
+        searchMatchCount: (count: number, query: string) =>
+            `${count} ${count === 1 ? "item" : "items"} in your feed ${count === 1 ? "matches" : "match"} "${query}"`,
+        searchNoMatches: (query: string) => `Nothing in your feed matches "${query}".`,
+        searchBrowsePrefix: "Search covers your feed only. To find any bill, browse ",
+        searchBrowseLink: "all bills",
     },
 } as const;

@@ -1,12 +1,16 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { IFeedItem } from "app/frontend/components/feed/types";
 
 const infiniteScrollCalls = vi.hoisted(() => [] as Array<Record<string, unknown>>);
+const routerGet = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
 
 vi.mock("@inertiajs/react", () => ({
     Head: ({ title }: { title?: string }) => <title>{title}</title>,
+    router: {
+        get: (...args: unknown[]) => routerGet(...args),
+    },
     InfiniteScroll: ({
         children,
         data,
@@ -60,7 +64,9 @@ const makeItem = (overrides: Partial<IFeedItem>): IFeedItem => ({
 beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-12T18:00:00Z"));
+    window.history.replaceState({}, "", "/feed");
     infiniteScrollCalls.length = 0;
+    routerGet.mockReset();
 });
 
 afterEach(() => {
@@ -312,5 +318,90 @@ describe("Feed page", () => {
         ).toBeTruthy();
         expect(screen.getByTestId("share-bill-301")).toBeTruthy();
         expect(screen.getByTestId("share-bill-302")).toBeTruthy();
+    });
+
+    it("renders a labelled search input and debounces typing into feed_search with reset and dropped feed_cursor", () => {
+        window.history.replaceState({}, "", "/feed?feed_cursor=abc123");
+        render(<Feed items={[]} />);
+
+        const input = screen.getByLabelText("Search your feed") as HTMLInputElement;
+        expect(input.getAttribute("placeholder")).toBe("Search bills, places and legislators");
+
+        fireEvent.change(input, { target: { value: "housing" } });
+        expect(routerGet).not.toHaveBeenCalled();
+
+        vi.advanceTimersByTime(400);
+
+        expect(routerGet).toHaveBeenCalledTimes(1);
+        const [url, , options] = routerGet.mock.calls[0];
+        const params = new URLSearchParams((url as string).split("?")[1]);
+        expect(params.get("feed_search")).toBe("housing");
+        expect(params.get("feed_cursor")).toBe("");
+        expect(options).toMatchObject({
+            only: ["items", "feed_search"],
+            reset: ["items"],
+        });
+    });
+
+    it("renders the clear button when searching and clears feed_search when clicked", () => {
+        window.history.replaceState({}, "", "/feed?feed_search=housing&feed_cursor=abc123");
+        render(
+            <Feed
+                items={[
+                    makeItem({
+                        key: "user_joined:1",
+                        kind: "user_joined",
+                        occurred_at: "2026-11-12T15:00:00Z",
+                    }),
+                ]}
+                feed_search="housing"
+            />,
+        );
+
+        const clearButton = screen.getByRole("button", { name: "Clear search" });
+        fireEvent.click(clearButton);
+        vi.advanceTimersByTime(400);
+
+        expect(routerGet).toHaveBeenCalledTimes(1);
+        const [url, , options] = routerGet.mock.calls[0];
+        const params = new URLSearchParams((url as string).split("?")[1]);
+        expect(params.get("feed_search")).toBe("");
+        expect(params.get("feed_cursor")).toBe("");
+        expect(options).toMatchObject({
+            only: ["items", "feed_search"],
+            reset: ["items"],
+        });
+    });
+
+    it("renders the match summary when feed_search has results and no-match message with all bills link when empty", () => {
+        const { rerender } = render(
+            <Feed
+                items={[
+                    makeItem({
+                        key: "botm:1",
+                        kind: "bill_of_the_month_released",
+                        occurred_at: "2026-11-01T00:00:00Z",
+                        sway_locale: { id: 1, name: "Baltimore City" },
+                        bill: { id: 101, external_id: "CB 1", title: "Fare cap", summary: null },
+                    }),
+                    makeItem({
+                        key: "botm:2",
+                        kind: "bill_of_the_month_released",
+                        occurred_at: "2026-11-01T00:00:00Z",
+                        sway_locale: { id: 2, name: "Maryland" },
+                        bill: { id: 102, external_id: "HB 2", title: "Fare equity", summary: null },
+                    }),
+                ]}
+                feed_search="fare"
+            />,
+        );
+
+        expect(screen.getByText('2 items in your feed match "fare"')).toBeTruthy();
+
+        rerender(<Feed items={[]} feed_search="fare" />);
+
+        expect(screen.getByText(/Nothing in your feed matches "fare"/)).toBeTruthy();
+        const allBillsLink = screen.getByRole("link", { name: "all bills" });
+        expect(allBillsLink.getAttribute("href")).toBe("/bills");
     });
 });

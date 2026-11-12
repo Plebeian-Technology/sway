@@ -6,6 +6,7 @@ import { navigateWithParams, setQueryParamCleared } from "app/frontend/sway_util
 interface IDebouncedUrlSearchConfig {
     only: string[];
     resetParams?: string[];
+    reset?: string[];
     errorTitle: string;
     param: string;
     legacyAliases?: string[];
@@ -19,6 +20,7 @@ const DEFAULT_SEARCH_DEBOUNCE_MS = 350;
 export const useDebouncedUrlSearch = ({
     only,
     resetParams = [],
+    reset,
     errorTitle,
     param,
     legacyAliases = [],
@@ -83,11 +85,11 @@ export const useDebouncedUrlSearch = ({
                             }
                         });
                     },
-                    { only, resetParams, errorTitle },
+                    { only, resetParams, reset, errorTitle },
                 );
             }, debounceMs);
         },
-        [param, legacyAliases, debounceMs, only, resetParams, errorTitle],
+        [param, legacyAliases, debounceMs, only, resetParams, reset, errorTitle],
     );
 
     return { value, onChange };
