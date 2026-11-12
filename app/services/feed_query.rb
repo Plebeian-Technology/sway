@@ -57,6 +57,7 @@ class FeedQuery
     items.concat(legislative_term_began_items)
     items.concat(bill_of_the_month_released_items)
     items.concat(legislator_voted_items)
+    items.concat(organization_position_taken_items)
 
     items.sort do |a, b|
       cmp = b.occurred_at <=> a.occurred_at
@@ -199,6 +200,47 @@ class FeedQuery
     return true if chamber&.casecmp?("senate")
 
     legislator.title.to_s.match?(/\bsen/i)
+  end
+
+  def organization_position_taken_items
+    return [] if declared_locales.empty?
+
+    followed_org_ids = @user.followed_organizations.pluck(:id)
+    return [] if followed_org_ids.empty?
+
+    positions = OrganizationBillPosition
+      .where(organization_id: followed_org_ids, active: true)
+      .where.not(activated_at: nil)
+      .includes(:organization)
+      .to_a
+    return [] if positions.empty?
+
+    bills_by_id = Bill
+      .unscope(where: :archived_at)
+      .where(id: positions.map(&:bill_id).uniq, sway_locale_id: declared_locales.map(&:id))
+      .includes(:sway_locale)
+      .index_by(&:id)
+    return [] if bills_by_id.empty?
+
+    user_votes_by_bill_id = @user.user_votes.where(bill_id: bills_by_id.keys).index_by(&:bill_id)
+    positions.filter_map do |position|
+      bill = bills_by_id[position.bill_id]
+      activated_at = position.activated_at
+      next unless bill && activated_at
+
+      term_start = term_starts_by_locale_id.fetch(bill.sway_locale_id).in_time_zone("UTC").beginning_of_day
+      next if activated_at < term_start
+
+      Item.new(
+        kind: "organization_position_taken",
+        key: "organization_position_taken:#{position.id}",
+        occurred_at: activated_at,
+        sway_locale: bill.sway_locale,
+        bill:,
+        organization_bill_position: position,
+        user_vote: user_votes_by_bill_id[bill.id]
+      )
+    end
   end
 
   def paginate(sorted_items)

@@ -297,4 +297,61 @@ RSpec.describe FeedQuery do
       expect(items.first.occurred_at).to eq(senate_time)
     end
   end
+
+  describe "organization_position_taken items" do
+    it "includes an active position by a followed organization on a bill in the user's locale, dated by activated_at" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      org = create(:organization, sway_locale: baltimore)
+      create(:organization_follow, user: user, organization: org)
+
+      term_start = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day
+      activated_time = term_start + 5.days
+      created_time = term_start - 10.days
+
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil)
+      user_vote = create(:user_vote, user: user, bill: bill)
+      position = create(:organization_bill_position, organization: org, bill: bill, active: true, created_at: created_time)
+      position.update_columns(activated_at: activated_time)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "organization_position_taken" }
+
+      expect(items.size).to eq(1)
+      item = items.first
+      expect(item.key).to eq("organization_position_taken:#{position.id}")
+      expect(item.occurred_at).to be_within(1.second).of(activated_time)
+      expect(item.organization_bill_position).to eq(position)
+      expect(item.bill).to eq(bill)
+      expect(item.sway_locale).to eq(baltimore)
+      expect(item.user_vote).to eq(user_vote)
+    end
+
+    it "excludes an inactive position, a position by an unfollowed organization, and a position activated before term start" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      followed_org = create(:organization, sway_locale: baltimore)
+      unfollowed_org = create(:organization, sway_locale: baltimore)
+      create(:organization_follow, user: user, organization: followed_org)
+
+      term_start = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day
+      in_term_time = term_start + 3.days
+
+      inactive_bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil)
+      create(:organization_bill_position, organization: followed_org, bill: inactive_bill, active: false)
+
+      unfollowed_bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil)
+      unfollowed_position = create(:organization_bill_position, organization: unfollowed_org, bill: unfollowed_bill, active: true)
+      unfollowed_position.update_columns(activated_at: in_term_time)
+
+      old_bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil)
+      old_position = create(:organization_bill_position, organization: followed_org, bill: old_bill, active: true)
+      old_position.update_columns(activated_at: term_start - 1.day)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "organization_position_taken" }
+
+      expect(items).to be_empty
+    end
+  end
 end
