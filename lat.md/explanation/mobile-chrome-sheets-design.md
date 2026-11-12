@@ -5,19 +5,7 @@ lat:
 
 # Mobile app chrome and sheets
 
-Design rationale for mobile app-chrome and modal-sheet components — AccessibilityPolyfill, AuthPromptSheet, DestructiveSheet, and UpdateBanner.
-
-## AccessibilityPolyfill
-
-A placeholder wrapper, kept for later use.
-
-It wraps part of the screen so that we can later slot in accessibility fixes that differ by platform — keeping focus inside a dialog, forcing a role, spacing out screen-reader announcements — in one place instead of editing every screen.
-
-Today it renders its children untouched. It exists now so that:
-
-1. screens can `import { AccessibilityPolyfill }` already and need no edit when a
-   real fix ships,
-2. putting the seam in a brand-new file meant no existing screen had to change.
+Design rationale for mobile app-chrome and modal-sheet components: AuthPromptSheet, DestructiveSheet, LocalePickerSheet, and UpdateBanner.
 
 ## AuthPromptSheet
 

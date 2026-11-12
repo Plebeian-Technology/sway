@@ -34,16 +34,6 @@ What it looks like:
 
 The layout is shortened on purpose: see [[mobile-chrome-and-scroll-layout#Cards carry a coloured edge]].
 
-## BillContent
-
-The bill's text plus Sway's own summary, as a stand-alone block that no bill screen mounts.
-
-It follows the website's BillContent.tsx but shows less: a "Sway summary" block rendered as markdown, the bill text (`body`, else `text`), and a sentence saying neither is available yet. It draws no charts; the locale tally is [[mobile-bill-surface-components-design#BillScoreBar]] and the by-district charts are [[mobile-bill-surface-components-design#DistrictVotesPanel]].
-
-The screens read the summary through [[mobile-bill-surface-components-design#BillSummarySection]], which folds a long summary, on the Bill tab composed by [[mobile-bill-surface-components-design#BillScreenTabs]]. BillContent keeps its own component test and is not part of either screen.
-
-Accessibility: each block heading is marked as a header, and the bill text and the empty-state sentence as text, so VoiceOver moves through them as separate sections instead of one long blob.
-
 ## BillHeader
 
 The bill number and chamber, the headline (20pt semibold), category chips, a muted 14pt line naming the sponsor and the locale, and a StampedBadge for the status; the sentence about when legislators voted is optional.

@@ -7,18 +7,6 @@ lat:
 
 See [[docs/reference/mobile-legislators-list-screen.md|LegislatorsListScreen]] for how these components fit into the legislators list screen.
 
-## LegislatorAccountability
-
-The user's votes next to their representative's.
-
-Given the bills the user has voted on AND how the legislator voted on those same bills, it puts an "Aligned" or "Divergent" badge on each one, so the user can see at a glance how their elected official lines up with them.
-
-The data it needs is deliberately simple: the caller hands over a flat array of `{ bill_title, user_support, legislator_support }` rows, so this component knows nothing about how UserVote or LegislatorVote are built. The comparison is just as simple: the same side means Aligned (in the green for-vote colour), a different side means Divergent (in the red against-vote colour).
-
-### Abstain counts as Divergent
-
-A legislator who abstained counts as Divergent, since they did not take the same side the user did. The website judges it the same way.
-
 ## LegislatorCard
 
 One legislator on a card, built from the shared Card pieces.

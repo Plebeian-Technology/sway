@@ -74,7 +74,7 @@ Phase 58 delivered these implementation groups. Current color and shadow values 
 | 0 — Token regen | 58-01 | Flat Sway palette (34 tokens, light + dark) in `tokens.ts` / `tokens.js`; `tailwind.config.js` — 6px radius family, remove `neo: "1.5px"`, `border-2` key, font family entries |
 | 1 — Font assets | 58-02 | `OpenSans-Light.ttf` + `OpenSans-SemiBold.ttf` bundled via `expo-font`; `font-open-sans-light` + `font-open-sans-semibold` NativeWind classes registered |
 | 2 — Primitives | 58-03 | Card, Pressable, EmptyState, ListRow, FormField — 1px borders, 6px radius, weight-300 body |
-| 3 — Component re-treatments | 58-04 | StampedBadge (solid Bootstrap pill + WCAG `readableForeground()`), BroadsideTabStrip (1px container border + square underline), PrimitiveGalleryScreen ("SWAY LIGHT/DARK") |
+| 3 — Component re-treatments | 58-04 | StampedBadge (solid Bootstrap pill + WCAG `readableForeground()`), BroadsideTabStrip (1px container border + square underline) |
 | 4 — Screen sweep | 58-05 | All 11 authenticated screens — `border-[1.5px]` → `border`, `font-open-sans` body → `font-open-sans-light`, error text → `font-open-sans-semibold` |
 | 5 — Component sweep | 58-06 | All 24 remaining authenticated components — same sweep + `VoteButton border-[2px]` → `border-2`, `LocalePickerSheet rounded-t-[17.6px]` → `rounded-t-lg` |
 | 6 — Snapshot regen + audit | 58-07 | This document + snapshot regen; anti-rubber-stamp assertion (zero classic artifacts survive) |
