@@ -65,7 +65,7 @@ rather than a placeholder that would collide with every other unlocated row.
 
 ## Why the backfill reports collisions instead of merging
 
-The data migration (`db/data/20261111000001_backfill_address_normalized_keys.rb`) fills the column on rows written before it existed and lists the keys two or more rows now share, but moves no data.
+The data migration (`db/data/20261111000001_backfill_address_normalized_keys.rb`) fills the column on rows written before it existed and lists, by address id, the rows that now share a key, but moves no data.
 
 Merging two address rows means choosing which registered person's district,
 legislators and vote history move to the surviving row. That choice can

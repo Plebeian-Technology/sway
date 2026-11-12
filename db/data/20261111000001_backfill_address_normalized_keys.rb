@@ -51,7 +51,7 @@ class BackfillAddressNormalizedKeys < ActiveRecord::Migration[8.1]
       say "#{collisions.size} normalized key(s) shared by more than one row (not merged):"
       collisions.each_key do |normalized_key|
         ids = MigrationAddress.where(normalized_key:).order(:id).pluck(:id)
-        say "  #{normalized_key} - address ids #{ids.join(", ")}"
+        say "  address ids #{ids.join(", ")}"
       end
     end
   end
