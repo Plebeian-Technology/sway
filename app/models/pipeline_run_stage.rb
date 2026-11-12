@@ -32,7 +32,7 @@ class PipelineRunStage < ApplicationRecord
 
   belongs_to :legislation_pipeline_run
 
-  # @lat: [[pipeline-run-stage-design#Why the serialized array columns have no default]]
+  # @lat: [[pipeline-run-stage-design#Why the serialized array columns declare no model default]]
   serialize :completed_bill_external_ids, coder: JSON
   serialize :remaining_bill_external_ids, coder: JSON
   serialize :output_summary, coder: JSON
