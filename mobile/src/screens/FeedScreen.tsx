@@ -1,12 +1,14 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, RefreshControl, Text, View } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, FlatList, RefreshControl, Text, TextInput, View } from "react-native";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { Search, X } from "lucide-react-native";
 
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import BrandHeader from "../components/BrandHeader";
 import { OfflineBanner } from "../components/OfflineBanner";
 import { SkeletonCard } from "../components/SkeletonCard";
 import { EmptyState } from "../components/ui/EmptyState";
+import { Pressable } from "../components/ui/Pressable";
 import FeedItemRow from "../components/feed/FeedItemRow";
 import { groupFeedItemsByDate } from "../components/feed/dateGrouping";
 import type { IFeedBill, IFeedItem } from "../components/feed/types";
@@ -25,15 +27,35 @@ interface Props {
 
 type FeedListRow = { type: "header"; key: string; heading: string } | { type: "item"; key: string; item: IFeedItem };
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 export default function FeedScreen({ navigation }: Props) {
     const nav = useNavigation();
     const { colorScheme } = useTheme();
     const t = swayTokens[colorScheme];
 
+    const [searchText, setSearchText] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchText);
+        }, SEARCH_DEBOUNCE_MS);
+        return () => clearTimeout(timer);
+    }, [searchText]);
+
     const { items, loading, error, loadingMore, pageError, hasMore, isOnline, isResolved, refresh, loadMore } =
-        useFeed();
+        useFeed(debouncedSearch);
     const { shareBill } = useShareBill();
     const [pullRefreshing, setPullRefreshing] = useState(false);
+
+    const activeQuery = debouncedSearch.trim();
+    const isSearching = activeQuery.length > 0;
+
+    const handleClearSearch = useCallback(() => {
+        setSearchText("");
+        setDebouncedSearch("");
+    }, []);
 
     const handlePullRefresh = useCallback(async () => {
         setPullRefreshing(true);
@@ -64,6 +86,15 @@ export default function FeedScreen({ navigation }: Props) {
             parent.navigate("Legislators");
         } else {
             navigation.navigate("Legislators");
+        }
+    }, [nav, navigation]);
+
+    const handlePressBills = useCallback(() => {
+        const parent = nav.getParent() as NavLike | undefined;
+        if (parent) {
+            parent.navigate("Bills");
+        } else {
+            navigation.navigate("Bills");
         }
     }, [nav, navigation]);
 
@@ -129,6 +160,61 @@ export default function FeedScreen({ navigation }: Props) {
             <BrandHeader title={PARITY_COPY.feed.title} onMenuPress={() => nav.dispatch(DrawerActions.openDrawer())} />
             {isResolved && !isOnline ? <OfflineBanner /> : null}
 
+            <View
+                style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: t.border,
+                    backgroundColor: t.card,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                }}
+            >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
+                        minHeight: 44,
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: t.border,
+                        backgroundColor: t.input,
+                        paddingLeft: 12,
+                        paddingRight: 4,
+                    }}
+                >
+                    <Search size={18} color={t.mutedForeground} />
+                    <TextInput
+                        testID="feed-search-input"
+                        value={searchText}
+                        onChangeText={setSearchText}
+                        placeholder={PARITY_COPY.feed.searchPlaceholder}
+                        placeholderTextColor={t.mutedForeground}
+                        accessibilityLabel={PARITY_COPY.feed.searchLabel}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        returnKeyType="search"
+                        style={{
+                            flex: 1,
+                            fontSize: 14,
+                            color: t.foreground,
+                            paddingVertical: 8,
+                        }}
+                    />
+                    {searchText.length > 0 ? (
+                        <Pressable
+                            variant="ghost"
+                            onPress={handleClearSearch}
+                            testID="feed-search-clear"
+                            accessibilityLabel={PARITY_COPY.feed.clearSearch}
+                            className="w-11 h-11 !px-0 !py-0"
+                        >
+                            <X size={18} color={t.mutedForeground} />
+                        </Pressable>
+                    ) : null}
+                </View>
+            </View>
+
             {loading && items.length === 0 ? (
                 <View style={{ padding: 16, gap: 12 }} testID="feed-loading">
                     <SkeletonCard />
@@ -147,7 +233,25 @@ export default function FeedScreen({ navigation }: Props) {
                 </View>
             ) : items.length === 0 ? (
                 <View style={{ flex: 1, padding: 16, justifyContent: "center" }}>
-                    <EmptyState testID="feed-empty" title={PARITY_COPY.feed.emptyState} />
+                    {isSearching ? (
+                        <View testID="feed-search-empty" style={{ alignItems: "center", gap: 8, paddingVertical: 24 }}>
+                            <Text style={{ fontSize: 14, color: t.mutedForeground, textAlign: "center" }}>
+                                {PARITY_COPY.feed.searchNoMatches(activeQuery)}
+                            </Text>
+                            <Text style={{ fontSize: 14, color: t.mutedForeground, textAlign: "center" }}>
+                                {PARITY_COPY.feed.searchBrowsePrefix}
+                                <Text
+                                    onPress={handlePressBills}
+                                    style={{ color: t.primary, textDecorationLine: "underline" }}
+                                >
+                                    {PARITY_COPY.feed.searchBrowseLink}
+                                </Text>
+                                .
+                            </Text>
+                        </View>
+                    ) : (
+                        <EmptyState testID="feed-empty" title={PARITY_COPY.feed.emptyState} />
+                    )}
                 </View>
             ) : (
                 <FlatList
@@ -159,6 +263,22 @@ export default function FeedScreen({ navigation }: Props) {
                     onEndReached={handleEndReached}
                     onEndReachedThreshold={0.4}
                     refreshControl={<RefreshControl refreshing={pullRefreshing} onRefresh={handlePullRefresh} />}
+                    ListHeaderComponent={
+                        isSearching ? (
+                            <View
+                                style={{
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: t.border,
+                                    paddingHorizontal: 16,
+                                    paddingVertical: 12,
+                                }}
+                            >
+                                <Text style={{ fontSize: 13, color: t.mutedForeground }}>
+                                    {PARITY_COPY.feed.searchMatchCount(items.length, activeQuery)}
+                                </Text>
+                            </View>
+                        ) : null
+                    }
                     ListFooterComponent={
                         loadingMore ? (
                             <View style={{ paddingVertical: 20, alignItems: "center", gap: 6 }}>
@@ -170,6 +290,19 @@ export default function FeedScreen({ navigation }: Props) {
                         ) : pageError ? (
                             <View style={{ padding: 16, alignItems: "center" }}>
                                 <Text style={{ fontSize: 13, color: t.destructive }}>{pageError.message}</Text>
+                            </View>
+                        ) : isSearching ? (
+                            <View style={{ paddingHorizontal: 16, paddingVertical: 20, alignItems: "center" }}>
+                                <Text style={{ fontSize: 13, color: t.mutedForeground, textAlign: "center" }}>
+                                    {PARITY_COPY.feed.searchBrowsePrefix}
+                                    <Text
+                                        onPress={handlePressBills}
+                                        style={{ color: t.primary, textDecorationLine: "underline" }}
+                                    >
+                                        {PARITY_COPY.feed.searchBrowseLink}
+                                    </Text>
+                                    .
+                                </Text>
                             </View>
                         ) : null
                     }

@@ -219,6 +219,7 @@ const ALL_KIND_ITEMS: IFeedItem[] = [
 describe("FeedScreen", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockApiGet.mockReset();
         mockIsOnline = true;
     });
 
@@ -377,5 +378,121 @@ describe("FeedScreen", () => {
         fireEvent.press(screen.getByText("Retry"));
 
         await screen.findByText(PARITY_COPY.feed.userJoinedSummary);
+    });
+
+    it("debounces search input into feed_search, drops prior cursor, and shows match count", async () => {
+        jest.useFakeTimers();
+        try {
+            mockApiGet
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[0]],
+                    feed_cursor: "cursor-initial",
+                    feed_search: null,
+                })
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[1]],
+                    feed_cursor: "cursor-search-2",
+                    feed_search: "Transit",
+                })
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[6]],
+                    feed_cursor: null,
+                    feed_search: "Transit",
+                });
+
+            render(<FeedScreen navigation={makeNav()} />);
+            await screen.findByText("Clean Harbor Act");
+
+            const input = screen.getByTestId("feed-search-input");
+            fireEvent.changeText(input, "Transit");
+
+            expect(mockApiGet).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                jest.advanceTimersByTime(300);
+            });
+
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledWith("/feed?feed_search=Transit"));
+            await screen.findByText(PARITY_COPY.feed.searchMatchCount(1, "Transit"));
+
+            const list = screen.UNSAFE_getByType(FlatList);
+            await act(async () => {
+                list.props.onEndReached();
+            });
+
+            await waitFor(() =>
+                expect(mockApiGet).toHaveBeenCalledWith("/feed?feed_search=Transit&feed_cursor=cursor-search-2"),
+            );
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("clears search and restores the full feed", async () => {
+        jest.useFakeTimers();
+        try {
+            mockApiGet
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[0]],
+                    feed_cursor: null,
+                    feed_search: null,
+                })
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[1]],
+                    feed_cursor: null,
+                    feed_search: "Transit",
+                })
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[0]],
+                    feed_cursor: null,
+                    feed_search: null,
+                });
+
+            render(<FeedScreen navigation={makeNav()} />);
+            await screen.findByText("Clean Harbor Act");
+
+            fireEvent.changeText(screen.getByTestId("feed-search-input"), "Transit");
+            await act(async () => {
+                jest.advanceTimersByTime(300);
+            });
+            await screen.findByText("Transit Funding Expansion");
+
+            fireEvent.press(screen.getByTestId("feed-search-clear"));
+
+            await waitFor(() => expect(mockApiGet).toHaveBeenLastCalledWith("/feed"));
+            await screen.findByText("Clean Harbor Act");
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("renders no-match copy when search returns no items", async () => {
+        jest.useFakeTimers();
+        try {
+            mockApiGet
+                .mockResolvedValueOnce({
+                    items: [ALL_KIND_ITEMS[0]],
+                    feed_cursor: null,
+                    feed_search: null,
+                })
+                .mockResolvedValueOnce({
+                    items: [],
+                    feed_cursor: null,
+                    feed_search: "Nonexistent",
+                });
+
+            render(<FeedScreen navigation={makeNav()} />);
+            await screen.findByText("Clean Harbor Act");
+
+            fireEvent.changeText(screen.getByTestId("feed-search-input"), "Nonexistent");
+            await act(async () => {
+                jest.advanceTimersByTime(300);
+            });
+
+            await screen.findByText(PARITY_COPY.feed.searchNoMatches("Nonexistent"));
+            expect(screen.getByText(PARITY_COPY.feed.searchBrowseLink)).toBeTruthy();
+        } finally {
+            jest.useRealTimers();
+        }
     });
 });

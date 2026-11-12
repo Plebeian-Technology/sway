@@ -24,13 +24,20 @@ export interface UseFeedResult {
     loadMore: () => Promise<void>;
 }
 
-const buildFeedPath = (cursor?: string | null): string => {
+const buildFeedPath = (searchQuery: string, cursor?: string | null): string => {
     const base = Routes.feed();
-    if (!cursor) return base;
-    return `${base}?feed_cursor=${encodeURIComponent(cursor)}`;
+    const params: string[] = [];
+    if (searchQuery.length > 0) {
+        params.push(`feed_search=${encodeURIComponent(searchQuery)}`);
+    }
+    if (cursor) {
+        params.push(`feed_cursor=${encodeURIComponent(cursor)}`);
+    }
+    return params.length > 0 ? `${base}?${params.join("&")}` : base;
 };
 
-export function useFeed(): UseFeedResult {
+export function useFeed(searchQuery = ""): UseFeedResult {
+    const trimmedQuery = searchQuery.trim();
     const [items, setItems] = useState<IFeedItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
@@ -49,6 +56,7 @@ export function useFeed(): UseFeedResult {
         setLoading(true);
         setError(null);
         setPageError(null);
+        setNextCursor(null);
         loadingMoreRef.current = false;
         setLoadingMore(false);
 
@@ -60,7 +68,7 @@ export function useFeed(): UseFeedResult {
         }
 
         try {
-            const res = await apiClient.get<FeedApiResponse>(buildFeedPath());
+            const res = await apiClient.get<FeedApiResponse>(buildFeedPath(trimmedQuery));
             if (!mountedRef.current || generationRef.current !== currentGen) return;
             setItems(res.items ?? []);
             setNextCursor(res.feed_cursor ?? null);
@@ -73,7 +81,7 @@ export function useFeed(): UseFeedResult {
                 setLoading(false);
             }
         }
-    }, [reach.isOnline]);
+    }, [reach.isOnline, trimmedQuery]);
 
     useEffect(() => {
         mountedRef.current = true;
@@ -100,7 +108,7 @@ export function useFeed(): UseFeedResult {
         const currentGen = generationRef.current;
 
         try {
-            const res = await apiClient.get<FeedApiResponse>(buildFeedPath(nextCursor));
+            const res = await apiClient.get<FeedApiResponse>(buildFeedPath(trimmedQuery, nextCursor));
             if (!mountedRef.current || generationRef.current !== currentGen) return;
             const incoming = res.items ?? [];
             setItems((prev) => {
@@ -125,7 +133,7 @@ export function useFeed(): UseFeedResult {
                 setLoadingMore(false);
             }
         }
-    }, [loading, nextCursor, reach.isOnline]);
+    }, [loading, nextCursor, reach.isOnline, trimmedQuery]);
 
     return {
         items,
