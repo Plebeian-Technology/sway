@@ -228,20 +228,6 @@ module Seedable
   def seed_or_skip?: (_Stampable record, ?force: bool) -> bool
 end
 
-module ProgressBar
-  class Base
-    attr_accessor total: untyped
-    attr_accessor progress: untyped
-    attr_accessor title: untyped
-
-    def increment: () -> untyped
-    def finish: () -> untyped
-    def stop: () -> untyped
-  end
-
-  def self.create: (**untyped kwargs) -> ProgressBar::Base
-end
-
 module VCR
   def self.configure: () { (untyped) -> untyped } -> untyped
   def self.use_cassette: (String name, **untyped opts) { () -> untyped } -> untyped

@@ -138,8 +138,6 @@ gem "apnotic"
 # read vote tally PDFs from MD state legislator
 gem "pdf-reader"
 
-gem "ruby-progressbar"
-
 # Phase 52 D-16: shared JSON Schema (Draft 2020-12) validator for bill summary
 # payloads (paste_summary + llama.cpp). Single BILL_SUMMARY_SCHEMA constant.
 gem "json_schemer"
@@ -268,13 +266,9 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
 
-  gem "prettier_print"
   gem "rbs", require: false
   gem "rbs_rails", require: false
   gem "steep", require: false
-  gem "syntax_tree"
-  gem "syntax_tree-haml"
-  gem "syntax_tree-rbs"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   # Gated in CI by .github/workflows/brakeman.yml.
