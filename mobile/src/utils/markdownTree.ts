@@ -43,10 +43,6 @@ export function visibleText(node: Nodes): string {
     return "";
 }
 
-export function markdownVisibleLength(root: Root): number {
-    return visibleText(root).length;
-}
-
 const ATOMIC_TYPES = new Set([
     "link",
     "linkReference",
