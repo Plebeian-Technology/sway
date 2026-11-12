@@ -96,19 +96,6 @@ module ServiceWorkerStub
     @sway_stub_script_ids = [] #: Array[untyped]
   end
 
-  # @lat: [[system-spec-service-worker-stub#Why a leftover real service worker is cleared before the stub goes in]]
-
-  def wait_for_sw!(timeout_seconds: 10)
-    Timeout.timeout(timeout_seconds) do
-      loop do
-        ready = page.evaluate_script("navigator.serviceWorker && !!navigator.serviceWorker.controller")
-        break if ready
-
-        sleep 0.1
-      end
-    end
-  end
-
   def go_offline!
     set_network_conditions(offline: true)
   end

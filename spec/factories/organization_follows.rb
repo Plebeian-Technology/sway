@@ -37,14 +37,6 @@ FactoryBot.define do
     notify_on_support_change { true }
     notify_on_summary_change { true }
 
-    trait :daily_cadence do
-      notification_cadence { :daily }
-    end
-
-    trait :weekly_cadence do
-      notification_cadence { :weekly }
-    end
-
     trait :muted do
       notify_on_new_position { false }
       notify_on_support_change { false }

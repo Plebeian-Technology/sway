@@ -92,13 +92,6 @@ FactoryBot.define do
       scheduled_release_date_utc { Time.zone.today }
     end
 
-    trait :in_active_session do
-      add_attribute(:legislative_session) do
-        sway_locale&.current_legislative_session ||
-          association(:legislative_session, :active, sway_locale:)
-      end
-    end
-
     trait :without_session do
       add_attribute(:legislative_session) { nil }
     end

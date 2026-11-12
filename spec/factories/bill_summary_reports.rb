@@ -49,10 +49,6 @@ FactoryBot.define do
     summary_snapshot { bill&.summary || "Summary text." }
     summary_ai_unreviewed { true }
 
-    trait :with_user do
-      user
-    end
-
     trait :reviewed do
       status { :reviewed }
     end
@@ -62,13 +58,6 @@ FactoryBot.define do
       resolved_by factory: %i[user sway_admin]
       resolved_at { Time.current }
       admin_notes { "Updated summary via Bill Creator." }
-    end
-
-    trait :dismissed do
-      status { :dismissed }
-      resolved_by factory: %i[user sway_admin]
-      resolved_at { Time.current }
-      admin_notes { "Verified against bill text; accurate as written." }
     end
   end
 end

@@ -396,7 +396,6 @@ module ServiceWorkerStub
   def clear_real_service_workers!: () -> untyped
   def inject_service_worker_stub!: (?endpoint: untyped) -> untyped
   def clear_service_worker_stub!: () -> untyped
-  def wait_for_sw!: (?timeout_seconds: Integer) -> untyped
   def go_offline!: () -> untyped
   def go_online!: () -> untyped
   def go_slow_link!: () -> untyped

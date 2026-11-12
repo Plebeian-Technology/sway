@@ -73,12 +73,6 @@ module AdminSystemHelpers
     end
   end
 
-  def stub_pipeline_failure
-    openai_client = instance_double(OpenAI::Client)
-    allow(OpenAI::Client).to receive(:new).and_return(openai_client)
-    allow(openai_client).to receive(:chat).and_raise(StandardError, "llama.cpp unreachable")
-  end
-
   def cleanup_summary_files(bill)
     FileUtils.rm_f(
       Rails.root.join("legislation/summaries/#{bill.external_id}.json")

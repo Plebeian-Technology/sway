@@ -1,7 +1,0 @@
-%%MediaBox 0 0 612 792
-%%Font F1 Times-Roman
-
-BT /F1 12 Tf 72 720 Td (GENERAL PROVISIONS) Tj ET
-BT /F1 12 Tf 72 690 Td (\247 1\227102. Scope.) Tj ET
-BT /F1 12 Tf 72 660 Td (This article applies throughout the State.) Tj ET
-BT /F1 10 Tf 72 30 Td (2) Tj ET

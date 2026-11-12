@@ -39,9 +39,9 @@ Without those do-nothing methods, libraries like `virtual:pwa-register` throw `"
 
 ## The offline helpers
 
-`wait_for_sw!`, `go_offline!`, and `go_online!` exist for the offline system spec.
+`go_offline!` and `go_online!` exist for the offline system spec.
 
-They wrap Selenium 4's CDP network emulation so a test can switch the network on and off mid-example. `wait_for_sw!` keeps checking until `navigator.serviceWorker.controller` has a value, meaning the service worker is installed, activated, and in charge of the page. It must always be called BEFORE `go_offline!`, so the cache has been filled — the service worker must control the page before the network is cut.
+They wrap Selenium 4's CDP network emulation so a test can switch the network on and off mid-example.
 
 ## The slow-link profile
 

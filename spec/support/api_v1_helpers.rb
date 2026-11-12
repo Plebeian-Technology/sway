@@ -23,11 +23,6 @@ module ApiV1Helpers
   def json_body
     JSON.parse(response.body, symbolize_names: true)
   end
-
-  def expect_error_envelope(code:, status: nil)
-    expect(response).to have_http_status(status) if status
-    expect(json_body).to match(hash_including(error: hash_including(code: code)))
-  end
 end
 
 RSpec.configure do |c|

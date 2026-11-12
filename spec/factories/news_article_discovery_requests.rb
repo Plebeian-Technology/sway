@@ -53,16 +53,6 @@ FactoryBot.define do
       completed_at { Time.current }
     end
 
-    trait :no_matches do
-      status { "no_matches" }
-      completed_at { Time.current }
-    end
-
-    trait :unsupported do
-      status { "unsupported" }
-      completed_at { Time.current }
-    end
-
     trait :failed do
       status { "failed" }
       completed_at { Time.current }

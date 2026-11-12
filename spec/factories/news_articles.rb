@@ -37,9 +37,5 @@ FactoryBot.define do
     trait :editorial do
       add_attribute(:article_kind) { "editorial" }
     end
-
-    trait :unknown do
-      add_attribute(:article_kind) { "unknown" }
-    end
   end
 end

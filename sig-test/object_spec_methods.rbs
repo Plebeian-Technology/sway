@@ -1748,9 +1748,6 @@ class Object
     def valid_body:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def wait_for_sw!:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # FastAPI legislation webhook receivers.
     def webhooks_legislation_run_progress_path:
         (*untyped args, **untyped kwargs) -> untyped

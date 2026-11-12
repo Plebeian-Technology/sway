@@ -43,20 +43,5 @@ FactoryBot.define do
     citation_url { bill_news_article.news_article.canonical_url }
     grounding_status { "pending" }
     grounding_reason { nil }
-
-    trait :supported do
-      grounding_status { "supported" }
-      grounding_reason { "Claim directly corroborated by verbatim excerpt." }
-    end
-
-    trait :unsupported do
-      grounding_status { "unsupported" }
-      grounding_reason { "Claim contradicts source reporting." }
-    end
-
-    trait :indeterminate do
-      grounding_status { "indeterminate" }
-      grounding_reason { "Model unable to verify claim against excerpt." }
-    end
   end
 end

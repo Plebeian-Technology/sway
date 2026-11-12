@@ -62,10 +62,6 @@ FactoryBot.define do
       completed_at { 1.minute.ago }
     end
 
-    trait :per_bill do
-      bill
-    end
-
     trait :awaiting_summary_batch do
       transient do
         summary_batch_expires_at { 24.hours.from_now }

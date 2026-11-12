@@ -25,7 +25,6 @@ module AdminSystemHelpers
   def navigate_to_pipeline_llm_tab: (untyped bill) -> untyped
   def click_testid: (untyped testid, **untyped find_opts) -> untyped
   def stub_pipeline_success: (untyped bill, ?summary_text: String, ?org_positions: Array[untyped]) -> void
-  def stub_pipeline_failure: -> void
   def cleanup_summary_files: (untyped bill) -> void
   def browser_json_request: (untyped method, untyped path, untyped payload) -> untyped
 end
