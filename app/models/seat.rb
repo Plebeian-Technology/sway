@@ -49,18 +49,4 @@ class Seat < ApplicationRecord
   end
 
   class IdentityConflictError < StandardError; end
-
-  def current_terms(date = Date.current)
-    legislator_terms.includes(:legislator).select do |term|
-      TermWindow.begins_on(term) <= date && date < TermWindow.ends_on(term)
-    end
-  end
-
-  def active_term(date = Date.current)
-    terms = current_terms(date)
-    return nil if terms.empty?
-    raise Seats::OverlapValidator::OverlapError, "Seat #{seat_identifier} has multiple current occupants" if terms.length > 1
-
-    terms.first
-  end
 end

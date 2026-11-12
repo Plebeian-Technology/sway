@@ -17,8 +17,6 @@ class Seat < ApplicationRecord
     def self.count: (?untyped column_name) -> Integer
     def self.where: (*untyped) -> ActiveRecord::Relation
 
-    def current_terms: (?Date date) -> Array[LegislatorTerm]
-    def active_term: (?Date date) -> LegislatorTerm?
     def sway_locale_id: -> Integer
 end
 
