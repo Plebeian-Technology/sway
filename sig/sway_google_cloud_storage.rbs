@@ -36,10 +36,6 @@ module SwayGoogleCloudStorage
 
     def self.write_keyfile: (String path, String payload) -> void
 
-    def generate_get_signed_url_v4: (bucket_name: untyped, file_name: untyped) -> (nil | untyped)
-
-    def generate_put_signed_url_v4: (bucket_name: untyped, file_name: untyped, content_type: untyped) -> (nil | untyped)
-
     def upload_file: (bucket_name: untyped, bucket_file_path: untyped, local_file_path: untyped, ?cache_control: String?) -> (nil | untyped)
 
     def download_file: (bucket_name: untyped, bucket_file_path: untyped, local_file_path: untyped) -> (nil | untyped)

@@ -119,29 +119,6 @@ module SwayGoogleCloudStorage
     end
   end
 
-  def generate_get_signed_url_v4(bucket_name:, file_name:)
-    return unless bucket_name.present? && file_name.present?
-
-    storage_expiry_time = 5 * 60
-
-    storage.signed_url bucket_name, file_name, method: "GET", expires: storage_expiry_time, version: :v4
-  end
-
-  def generate_put_signed_url_v4(bucket_name:, file_name:, content_type:)
-    return unless bucket_name.present? && file_name.present?
-
-    storage_expiry_time = 5 * 60
-
-    storage.signed_url(
-      bucket_name,
-      file_name,
-      method: "PUT",
-      expires: storage_expiry_time,
-      version: :v4,
-      headers: {"Content-Type" => content_type.presence || "image/png"}
-    )
-  end
-
   def upload_file(bucket_name:, bucket_file_path:, local_file_path:, cache_control: nil)
     return unless bucket_name && bucket_file_path && local_file_path
 
