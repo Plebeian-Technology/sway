@@ -52,8 +52,6 @@
         "oxfmt": "^0.57.0",
         "oxlint": "^1.93.0",
         "oxlint-tsgolint": "^7.0.2006",
-        "pixelmatch": "7.2.0",
-        "pngjs": "^7.0.0",
         "promptfoo": "0.122.0",
         "rails-vite-plugin": "^0.2.5",
         "react": "^19.3.1",
@@ -95,9 +93,6 @@
         "typecheck": "tsc --project tsconfig.json",
         "mobile:tokens": "node scripts/extract_sway_tokens.mjs && oxfmt mobile/src/theme/tokens.ts mobile/src/theme/tokens.js",
         "parity:auth": "node mobile/scripts/parity-auth-bootstrap.js",
-        "parity:capture:web": "node scripts/capture_parity_evidence_phase38.mjs --web",
-        "parity:capture:ios": "node scripts/capture_parity_evidence_phase38.mjs --ios",
-        "parity:diff": "node scripts/capture_parity_evidence_phase38.mjs --diff",
         "parity:verify": "bash mobile/scripts/verify-evidence-pack.sh && node mobile/scripts/verify-summary.js",
         "eval:promptfoo": "PROMPTFOO_DISABLE_TELEMETRY=1 PROMPTFOO_DISABLE_UPDATE=1 PROMPTFOO_CONFIG_DIR=\"$PWD/tmp/promptfoo/config\" promptfoo"
     }

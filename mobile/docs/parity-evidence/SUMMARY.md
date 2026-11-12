@@ -28,9 +28,6 @@ xcrun -f simctl                                                     # verify
 dip run dev                                                          # terminal 1
 pnpm parity:auth                                                     # terminal 2 — complete passkey
 xcrun simctl boot 'iPhone 15 Pro'
-pnpm parity:capture:web
-pnpm parity:capture:ios                                              # interactive — drive simulator between pauses
-pnpm parity:diff
 pnpm parity:verify                                                   # must exit 0 to close PARITY-19
 ```
 
