@@ -16,8 +16,6 @@ module PipelineRuns
       failing_stage: String?,
     }
 
-    ROW_KEYS: Array[Symbol]
-
     def self.call: (untyped scope) -> Array[row]
     def self.serialize: (LegislationPipelineRun run) -> row
   end

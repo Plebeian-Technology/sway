@@ -558,7 +558,7 @@ RSpec.describe RunLegislationPipelineJob do
       expect { described_class.new.perform(run.id) }.to raise_error(StageError)
 
       error_entries = PipelineActivityLogEntry.errors_only
-        .for_subject("LegislationPipelineRun", run.id.to_s)
+        .where(subject_type: "LegislationPipelineRun", subject_id: run.id.to_s)
       expect(error_entries).not_to be_empty
       expect(error_entries.last&.payload&.dig("error_message"))
         .to include("all bills failed in stage parse_sections")

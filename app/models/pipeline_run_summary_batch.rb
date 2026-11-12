@@ -46,7 +46,6 @@ class PipelineRunSummaryBatch < ApplicationRecord
   scope :ingested, -> { where.not(ingested_at: nil) }
 
   # @lat: [[llm-summaries#Batch summarisation#A failed item is retried once, as a batch]]
-  FIRST_ATTEMPT = 1
   MAX_ATTEMPTS = 2
 
   def live?

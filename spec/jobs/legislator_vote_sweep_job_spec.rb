@@ -94,7 +94,7 @@ RSpec.describe LegislatorVoteSweepJob do
     end
 
     it "sweeps roll call votes for maryland_general_assembly engine" do
-      expect(described_class::ROLL_CALL_ENGINES).to include("maryland_general_assembly")
+      expect(described_class::ROLL_CALL_RETRIEVALS).to include("maryland_general_assembly")
 
       maryland_locale = create(:sway_locale, :maryland)
       qualifying_md = create(:bill, sway_locale: maryland_locale, scheduled_release_date_utc: 2.days.ago.to_date)

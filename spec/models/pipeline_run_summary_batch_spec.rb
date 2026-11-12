@@ -59,7 +59,7 @@ RSpec.describe PipelineRunSummaryBatch, type: :model do
   # @lat: [[explanation/llm-summaries#Batch summarisation#A failed item is retried once, as a batch]]
   describe "#retryable?" do
     it "is true for the batch the run submitted" do
-      batch = create(:pipeline_run_summary_batch, attempt: described_class::FIRST_ATTEMPT)
+      batch = create(:pipeline_run_summary_batch, attempt: 1)
 
       expect(batch.retryable?).to be(true)
     end

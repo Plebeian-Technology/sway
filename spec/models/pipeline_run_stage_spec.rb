@@ -147,36 +147,4 @@ RSpec.describe PipelineRunStage, type: :model do
       )
     end
   end
-
-  describe "#mark_bill_completed!" do
-    it "moves bill from remaining to completed" do
-      stage = create(:pipeline_run_stage, :running)
-      stage.mark_bill_completed!("bill_2")
-      stage.reload
-      expect(stage.remaining_bill_external_ids).to eq(["bill_1", "bill_3"])
-      expect(stage.completed_bill_external_ids).to eq(["bill_2"])
-    end
-
-    it "is idempotent — second call does not duplicate" do
-      stage = create(:pipeline_run_stage, :running)
-      stage.mark_bill_completed!("bill_2")
-      stage.mark_bill_completed!("bill_2")
-      stage.reload
-      expect(stage.completed_bill_external_ids).to eq(["bill_2"])
-    end
-
-    it "is a no-op when bill_external_id is not in remaining (monotonic invariant)" do
-      stage = create(:pipeline_run_stage, :running)
-      expect {
-        stage.mark_bill_completed!("bill_not_there")
-      }.not_to(change { stage.reload.completed_bill_external_ids })
-    end
-
-    it "uses with_lock to serialize concurrent writers" do
-      # Read the model's own source and confirm mark_bill_completed! uses with_lock.
-      model_path = Rails.root.join("app", "models", "pipeline_run_stage.rb").to_s
-      model_source = File.read(model_path)
-      expect(model_source).to include("with_lock")
-    end
-  end
 end

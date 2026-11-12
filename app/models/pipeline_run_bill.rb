@@ -35,8 +35,6 @@ class PipelineRunBill < ApplicationRecord
   # @lat: [[pipeline-run-bill-lifecycle#Why sort_order cannot change once set]]
   validate :sort_order_monotonic, on: :update
 
-  TERMINAL_BILL_STATUSES = %w[succeeded failed skipped].freeze
-
   # @lat: [[pipeline-run-bill-status-column#PipelineRunBill's status column is a coarse summary]]
 
   state_machine :status, initial: :pending do

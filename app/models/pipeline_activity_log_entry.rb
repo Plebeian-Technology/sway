@@ -63,7 +63,6 @@ class PipelineActivityLogEntry < ApplicationRecord
   end
 
   scope :recent_first, -> { order(created_at: :desc, id: :desc) }
-  scope :for_subject, ->(type, id) { where(subject_type: type, subject_id: id) }
   scope :errors_only, -> { where(severity: "error") }
   scope :since, ->(time) { where("created_at >= ?", time) }
 

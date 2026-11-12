@@ -465,14 +465,11 @@ class ::PipelineActivityLogEntry < ::ApplicationRecord
   include ::PipelineActivityLogEntry::GeneratedAssociationMethods
 
   def self.recent_first: () -> ::PipelineActivityLogEntry::ActiveRecord_Relation
-  def self.for_subject: (untyped type, untyped id) -> ::PipelineActivityLogEntry::ActiveRecord_Relation
   def self.errors_only: () -> ::PipelineActivityLogEntry::ActiveRecord_Relation
   def self.since: (untyped time) -> ::PipelineActivityLogEntry::ActiveRecord_Relation
 
   module ::PipelineActivityLogEntry::GeneratedRelationMethods
     def recent_first: () -> ::PipelineActivityLogEntry::ActiveRecord_Relation
-
-    def for_subject: (untyped type, untyped id) -> ::PipelineActivityLogEntry::ActiveRecord_Relation
 
     def errors_only: () -> ::PipelineActivityLogEntry::ActiveRecord_Relation
 

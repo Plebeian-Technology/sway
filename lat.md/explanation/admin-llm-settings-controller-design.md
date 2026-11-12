@@ -35,7 +35,7 @@ This mirrors the admin gate's dual-format response elsewhere in this codebase. T
 
 It reads, decides, and writes inside ONE locked transaction, so the guard against a stale overwrite can't be raced by a second admin's PATCH landing in the gap between a separate check and write.
 
-`#with_lock` reloads the row inside the transaction (the pattern this app uses elsewhere for a guarded write: `PipelineRunStage#mark_bill_completed!`, `PasteSummaryService`, `UserOrganizationMembership`, `BillCategoryAssigner`) — under SQLite's WAL mode that's `BEGIN IMMEDIATE`, a true one-writer-at-a-time barrier.
+`#with_lock` reloads the row inside the transaction (the pattern this app uses elsewhere for a guarded write: `PasteSummaryService`, `UserOrganizationMembership`, `BillCategoryAssigner`). Under SQLite WAL mode that is `BEGIN IMMEDIATE`, a true one-writer-at-a-time barrier.
 
 A submit that moves no value writes nothing (the `:unchanged` branch skips `update!`) rather than stamping `updated_by_id`/`updated_at` for a change that never happened.
 

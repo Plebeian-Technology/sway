@@ -61,29 +61,4 @@ class PipelineRunStage < ApplicationRecord
       transition running: :cancelled
     end
   end
-
-  def completed_bills
-    Array(completed_bill_external_ids)
-  end
-
-  def remaining_bills
-    Array(remaining_bill_external_ids)
-  end
-
-  # @lat: [[pipeline-run-stage-design#Why mark_bill_completed! takes a row lock]]
-  def mark_bill_completed!(external_id)
-    with_lock do
-      remaining = Array(remaining_bill_external_ids) #: Array[untyped]
-      completed = Array(completed_bill_external_ids) #: Array[untyped]
-      return unless remaining.include?(external_id)
-
-      remaining.delete(external_id)
-      completed << external_id unless completed.include?(external_id)
-
-      update!(
-        remaining_bill_external_ids: remaining,
-        completed_bill_external_ids: completed
-      )
-    end
-  end
 end

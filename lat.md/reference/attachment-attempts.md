@@ -17,7 +17,7 @@ Attachment download attempts are recorded append-only in PipelineActivityLog wit
 
 Selection criteria governing when a failed attachment attempt recorded in PipelineActivityLog qualifies for scheduled re-download.
 
-- Candidate scope: `RetryFailedAttachmentsJob` loads all retained `PipelineActivityLogEntry` records where `event_type = 'attachment_download_attempt'`, groups by `[bill_external_id, attachment_id]`, and requires the first attempt in the group to fall within `LOOKBACK_WINDOW` (14 days, also referenced as `MAX_LOOKBACK`).
+- Candidate scope: `RetryFailedAttachmentsJob` loads all retained `PipelineActivityLogEntry` records where `event_type = 'attachment_download_attempt'`, groups by `[bill_external_id, attachment_id]`, and requires the first attempt in the group to fall within `LOOKBACK_WINDOW` (14 days).
 - Retryable outcomes: candidate qualifies if its most recent attempt failed with transient status `skipped_time_budget`, transport error (`Faraday::Error`, timeouts, connection failures), timeout ceiling (`Legistar::AttachmentFetch::TooSlow`), HTTP 429/5xx, or disk write failure (`write failed:`).
 - Permanent rejections: candidate is excluded if its most recent attempt failed due to host allowlist rejection (`Legistar::AttachmentFetch::Rejected`), redirect loop (`too many redirects`), missing URL (`attachment has no download url`), non-PDF magic bytes (`response body is not a PDF (magic-byte check failed)`), HTTP 4xx (except 429), or size limit (`TooLarge`).
 - Wait window: candidate is excluded if its most recent attempt occurred within `WAIT_WINDOW` (24 hours).
@@ -30,7 +30,7 @@ Selection criteria governing when a failed attachment attempt recorded in Pipeli
 
 Scheduled pruning of aged attachment download attempt records from PipelineActivityLogEntry.
 
-- Retention window: `TrimAttachmentAttemptsJob` deletes records older than `RETENTION_DAYS` (30 days), which strictly exceeds `RetryFailedAttachmentsJob`'s 14-day `LOOKBACK_WINDOW` (`MAX_LOOKBACK`).
+- Retention window: `TrimAttachmentAttemptsJob` deletes records older than `RETENTION_DAYS` (30 days), which strictly exceeds `RetryFailedAttachmentsJob`'s 14-day `LOOKBACK_WINDOW`.
 - Lookback safety margin: The 30-day window ensures attempts remain queryable throughout the 14-day retry eligibility window plus an additional 16-day audit buffer before deletion, guaranteeing no candidate is trimmed while eligible for retry.
 - Batched deletion: Records matching `event_type = 'attachment_download_attempt'` and `created_at < 30.days.ago` are removed in batches of `BATCH_SIZE` (500) to minimize SQLite WAL write lock contention.
 - Authoritative isolation: Trimming only deletes attempt history logs; `testimony_attachments` on `BillLlmProvisioning` is never modified or pruned by the sweep.

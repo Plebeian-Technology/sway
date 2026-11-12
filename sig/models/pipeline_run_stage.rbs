@@ -1,6 +1,5 @@
 # Hand-authored RBS sig for PipelineRunStage.
-# Covers state-machine helpers (D-21), JSON column return types (D-22),
-# and the atomic mark_bill_completed! helper (D-08/D-18).
+# Covers state-machine helpers (D-21) and JSON column return types (D-22).
 # Regenerate rbs_rails sig with: bundle exec rbs_rails all
 class PipelineRunStage < ApplicationRecord
   # State predicates (state_machines-activerecord dynamic methods)
@@ -31,12 +30,4 @@ class PipelineRunStage < ApplicationRecord
   def can_mark_failed?: () -> bool
   def can_mark_skipped?: () -> bool
   def can_mark_cancelled?: () -> bool
-
-  # JSON-serialized column helpers (D-22 — coder: JSON)
-  # rbs_rails sees raw ::String; helpers return the deserialized Ruby objects
-  def completed_bills: () -> Array[String]
-  def remaining_bills: () -> Array[String]
-
-  # Atomic bill-progress helper (D-08 monotonic invariant, D-18 with_lock)
-  def mark_bill_completed!: (String external_id) -> void
 end

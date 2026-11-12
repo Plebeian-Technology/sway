@@ -1,6 +1,5 @@
 class RetryFailedAttachmentsJob < ApplicationJob
   LOOKBACK_WINDOW: ActiveSupport::Duration
-  MAX_LOOKBACK: ActiveSupport::Duration
   WAIT_WINDOW: ActiveSupport::Duration
   MAX_ATTEMPTS: Integer
   PERMANENT_ERROR_PATTERNS: Array[Regexp]

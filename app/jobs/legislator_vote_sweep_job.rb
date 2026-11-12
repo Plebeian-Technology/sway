@@ -7,8 +7,6 @@ class LegislatorVoteSweepJob < ApplicationJob
   WAIT_CEILING_SECONDS = 1800
   ROLL_CALL_RETRIEVALS = %w[congress_dot_gov generic_csv open_states maryland_general_assembly generic_html congress].freeze
   EXTERNAL_ID_RETRIEVALS = %w[legistar generic_rest generic_json].freeze
-  ROLL_CALL_ENGINES = ROLL_CALL_RETRIEVALS
-  EXTERNAL_ID_ENGINES = EXTERNAL_ID_RETRIEVALS
 
   def perform
     SwayLocale.find_each do |sway_locale|

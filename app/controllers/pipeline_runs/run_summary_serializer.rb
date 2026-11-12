@@ -3,13 +3,6 @@
 # @lat: [[pipeline-runs-index-only-surface#Why index precomputes bill counts]]
 module PipelineRuns
   class RunSummarySerializer
-    type_row_keys = %i[
-      id status kind bill_id bill_external_id remote_run_id
-      started_at completed_at current_stage
-      bills_total bills_succeeded bills_failed failing_stage
-    ].freeze
-    ROW_KEYS = type_row_keys
-
     def self.call(scope)
       scope
         .includes(:bill, :pipeline_run_bills, :pipeline_run_stages)

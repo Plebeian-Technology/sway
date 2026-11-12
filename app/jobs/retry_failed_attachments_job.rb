@@ -5,7 +5,6 @@ class RetryFailedAttachmentsJob < ApplicationJob
   queue_as :background
 
   LOOKBACK_WINDOW = 14.days
-  MAX_LOOKBACK = LOOKBACK_WINDOW
   WAIT_WINDOW = 24.hours
   MAX_ATTEMPTS = 3
 
