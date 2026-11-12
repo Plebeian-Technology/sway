@@ -37,9 +37,6 @@ class SeedBill
   end
 
   def self.run: (*untyped) -> untyped
-  def self.run_pipeline!: (*untyped) -> untyped
-  def self.sync_to_sway!: (*untyped) -> untyped
-  def self.await_terminal!: (*untyped) -> untyped
   def self.resolve_max_seeded_bills: (untyped raw) -> Integer
 end
 

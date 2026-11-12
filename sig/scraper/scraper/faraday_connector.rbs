@@ -61,7 +61,5 @@ module Scraper
     def parse_response: (untyped response) -> untyped
 
     def json_content?: () -> untyped
-
-    def xml_content?: () -> untyped
   end
 end

@@ -18,10 +18,7 @@ class RegistrationFunnelEvent < ApplicationRecord
   def bot: () -> bool
   def bot=: (bool) -> bool
   def bot?: () -> bool
-  def occurred_at: () -> ActiveSupport::TimeWithZone?
-  def occurred_at=: (ActiveSupport::TimeWithZone?) -> ActiveSupport::TimeWithZone?
   def created_at: () -> ActiveSupport::TimeWithZone
-  def updated_at: () -> ActiveSupport::TimeWithZone
 
   def user: () -> User?
   def user=: (User?) -> User?

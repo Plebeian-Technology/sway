@@ -60,7 +60,6 @@ module Legislation
       def ingest_json: (Pathname path, Pathname law_root, SwayLocale sway_locale, Hash[String, Integer] stats, Hash[String, Hash[String, String]] section_index, Set[String] seen_articles) -> void
       def record_section: (String article, String? section, String title, String body, Pathname law_root, SwayLocale sway_locale, Hash[String, Integer] stats, Hash[String, Hash[String, String]] section_index, ?status: String) -> void
       def load_akoma_ntoso_corpus: (run: LegislationPipelineRun?, sway_locale: SwayLocale, law_root: Pathname, ?service: FetchLawService?) -> FetchLawService::stats_payload
-      def load_baltimore_corpus: (run: LegislationPipelineRun?, sway_locale: SwayLocale, law_root: Pathname, ?service: FetchLawService?) -> FetchLawService::stats_payload
     end
   end
 end

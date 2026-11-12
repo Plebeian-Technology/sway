@@ -43,8 +43,6 @@ class ApplicationController < ActionController::Base
 
     include QueryParameterRedirectCarry
 
-    def render_routed_json: (String? route, ?Hash[Symbol, untyped] new_params) -> void
-
     def sign_in: (User user) -> void
 
     def sign_out: -> void

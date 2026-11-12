@@ -46,13 +46,6 @@ module SettingsSpecHelpers
     def decimal_number=: (Float?) -> void
   end
 
-  # Built under a stubbed production environment (plan 12, task 2; T-68-27)
-  # -- see this class's own comment in settings_spec.rb.
-  class ProductionScopedRequiredProbe < Sway::Settings::Base
-    def probed_value: () -> String?
-    def probed_value=: (String?) -> void
-  end
-
   class SettingsSetterVisitor < Prism::Visitor
     @path: String
     class SettingsWrite

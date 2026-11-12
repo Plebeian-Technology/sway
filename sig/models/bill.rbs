@@ -119,6 +119,4 @@ class Bill < ApplicationRecord
 
   # Phase 62 review iter-2 WR-01: distinct-name create-commit wrapper.
   def enqueue_interesting_score_recompute_on_create: () -> void
-
-  def cleanup_news_source_snapshots_and_uses: () -> void
 end

@@ -4297,13 +4297,6 @@ class RepairBills58And59 < ActiveRecord::Migration
   def down: () -> void
 end
 
-# @lat: [[legistar-detail-url-resolution#Gateway redirection as the reproducible source]]
-module LegistarIngestionChallengeSpecHelpers
-  ARTIFACT_ROOT: String
-  SWAY_LOCALE: String
-  def self.bill_dir: (untyped external_id) -> String
-end
-
 class NilClass
   def size: () -> Integer?
 end

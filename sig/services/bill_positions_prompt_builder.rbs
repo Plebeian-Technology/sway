@@ -147,7 +147,6 @@ class BillPositionsPromptBuilder
   def opinion_boundary_instruction: () -> String
   def reporting_boundary_instruction: () -> String
   def published_opinion_section: () -> String?
-  def published_opinion_body: () -> String?
   def opinion_articles: () -> Array[BillNewsArticle]
   def format_opinion_article: (BillNewsArticle bna) -> String?
   def news_reporting_section: () -> String?

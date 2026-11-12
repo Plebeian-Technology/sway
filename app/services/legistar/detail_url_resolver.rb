@@ -6,6 +6,7 @@ module Legistar
   # @lat: [[legistar-detail-url-resolution#Architectural resolution service]]
   class DetailUrlResolver
     DEFAULT_HOST = "baltimore.legistar.com"
+    # @lat: [[legistar-detail-url-resolution#Gateway redirection as the reproducible source]]
     GATEWAY_PATH = "/Gateway.aspx"
     REDIRECT_STATUSES = [301, 302, 303].freeze
     ID_MAX = (2**31) - 1 #: Integer
