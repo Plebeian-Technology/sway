@@ -9,7 +9,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -18,7 +18,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -53,7 +53,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:42Z"
   },
   "25-0003/summary": {
     "external_id": "25-0003",
@@ -65,7 +65,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -74,7 +74,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -109,7 +109,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:41Z"
   },
   "25-0019/positions": {
     "external_id": "25-0019",
@@ -121,7 +121,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -130,7 +130,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -165,7 +165,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0019/summary": {
     "external_id": "25-0019",
@@ -177,7 +177,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -186,7 +186,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -221,7 +221,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0036/positions": {
     "external_id": "25-0036",
@@ -233,7 +233,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -242,7 +242,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -277,7 +277,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0036/summary": {
     "external_id": "25-0036",
@@ -289,7 +289,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -298,7 +298,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -333,7 +333,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0040/positions": {
     "external_id": "25-0040",
@@ -345,7 +345,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -354,7 +354,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -389,7 +389,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0040/summary": {
     "external_id": "25-0040",
@@ -401,7 +401,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -410,7 +410,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -445,7 +445,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:43Z"
   },
   "25-0053/positions": {
     "external_id": "25-0053",
@@ -457,7 +457,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -466,7 +466,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -501,7 +501,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0053/summary": {
     "external_id": "25-0053",
@@ -513,7 +513,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -522,7 +522,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -557,7 +557,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0062/positions": {
     "external_id": "25-0062",
@@ -569,7 +569,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -578,7 +578,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -613,7 +613,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0062/summary": {
     "external_id": "25-0062",
@@ -625,7 +625,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -634,7 +634,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -669,7 +669,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0064/positions": {
     "external_id": "25-0064",
@@ -681,7 +681,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -690,7 +690,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -725,7 +725,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:06Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0064/summary": {
     "external_id": "25-0064",
@@ -737,7 +737,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -746,7 +746,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -781,7 +781,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:06Z"
+    "dumped_at": "2026-11-12T04:16:39Z"
   },
   "25-0065/positions": {
     "external_id": "25-0065",
@@ -793,7 +793,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -802,7 +802,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -837,7 +837,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0065/summary": {
     "external_id": "25-0065",
@@ -849,7 +849,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -858,7 +858,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -893,7 +893,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:06Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0066/positions": {
     "external_id": "25-0066",
@@ -905,7 +905,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -914,7 +914,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -949,7 +949,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0066/summary": {
     "external_id": "25-0066",
@@ -961,7 +961,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -970,7 +970,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1005,7 +1005,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0067/summary": {
     "external_id": "25-0067",
@@ -1017,7 +1017,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1026,7 +1026,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1061,7 +1061,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   },
   "25-0070/summary": {
     "external_id": "25-0070",
@@ -1073,7 +1073,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1082,7 +1082,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1117,7 +1117,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   },
   "25-0080/positions": {
     "external_id": "25-0080",
@@ -1129,7 +1129,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1138,7 +1138,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1173,7 +1173,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0080/summary": {
     "external_id": "25-0080",
@@ -1185,7 +1185,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1194,7 +1194,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1229,7 +1229,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0087/positions": {
     "external_id": "25-0087",
@@ -1241,7 +1241,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1250,7 +1250,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1285,7 +1285,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:41Z"
   },
   "25-0087/summary": {
     "external_id": "25-0087",
@@ -1297,7 +1297,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1306,7 +1306,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1341,7 +1341,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0088/positions": {
     "external_id": "25-0088",
@@ -1353,7 +1353,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1362,7 +1362,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1397,7 +1397,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   },
   "25-0088/summary": {
     "external_id": "25-0088",
@@ -1409,7 +1409,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1418,7 +1418,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1453,7 +1453,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0093/positions": {
     "external_id": "25-0093",
@@ -1465,7 +1465,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1474,7 +1474,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1509,7 +1509,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0093/summary": {
     "external_id": "25-0093",
@@ -1521,7 +1521,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1530,7 +1530,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1565,7 +1565,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0094/positions": {
     "external_id": "25-0094",
@@ -1577,7 +1577,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1586,7 +1586,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1621,7 +1621,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0094/summary": {
     "external_id": "25-0094",
@@ -1633,7 +1633,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1642,7 +1642,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1677,7 +1677,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "25-0115/summary": {
     "external_id": "25-0115",
@@ -1689,7 +1689,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1698,7 +1698,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1733,7 +1733,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   },
   "25-0116/positions": {
     "external_id": "25-0116",
@@ -1745,7 +1745,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1754,7 +1754,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1789,7 +1789,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:43Z"
   },
   "25-0116/summary": {
     "external_id": "25-0116",
@@ -1801,7 +1801,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1810,7 +1810,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1845,7 +1845,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:42Z"
   },
   "25-0136/positions": {
     "external_id": "25-0136",
@@ -1857,7 +1857,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1866,7 +1866,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1901,7 +1901,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0136/summary": {
     "external_id": "25-0136",
@@ -1913,7 +1913,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1922,7 +1922,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -1957,7 +1957,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0141/positions": {
     "external_id": "25-0141",
@@ -1969,7 +1969,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -1978,7 +1978,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2013,7 +2013,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "25-0141/summary": {
     "external_id": "25-0141",
@@ -2025,7 +2025,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2034,7 +2034,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2069,7 +2069,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0144/positions": {
     "external_id": "26-0144",
@@ -2081,7 +2081,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2090,7 +2090,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2125,7 +2125,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0144/summary": {
     "external_id": "26-0144",
@@ -2137,7 +2137,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2146,7 +2146,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2181,7 +2181,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0147/positions": {
     "external_id": "26-0147",
@@ -2193,7 +2193,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2202,7 +2202,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2237,7 +2237,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0147/summary": {
     "external_id": "26-0147",
@@ -2249,7 +2249,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2258,7 +2258,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2293,7 +2293,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0150/positions": {
     "external_id": "26-0150",
@@ -2305,7 +2305,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2314,7 +2314,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2349,7 +2349,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0150/summary": {
     "external_id": "26-0150",
@@ -2361,7 +2361,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2370,7 +2370,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2405,7 +2405,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0151/positions": {
     "external_id": "26-0151",
@@ -2417,7 +2417,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2426,7 +2426,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2461,7 +2461,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "26-0151/summary": {
     "external_id": "26-0151",
@@ -2473,7 +2473,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2482,7 +2482,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2517,7 +2517,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:40Z"
   },
   "26-0158/positions": {
     "external_id": "26-0158",
@@ -2529,7 +2529,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2538,7 +2538,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2573,7 +2573,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0158/summary": {
     "external_id": "26-0158",
@@ -2585,7 +2585,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2594,7 +2594,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2629,7 +2629,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0161/positions": {
     "external_id": "26-0161",
@@ -2641,7 +2641,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2650,7 +2650,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2685,7 +2685,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0161/summary": {
     "external_id": "26-0161",
@@ -2697,7 +2697,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2706,7 +2706,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2741,7 +2741,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:44Z"
   },
   "26-0173/summary": {
     "external_id": "26-0173",
@@ -2753,7 +2753,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2762,7 +2762,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2797,7 +2797,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   },
   "26-0174/summary": {
     "external_id": "26-0174",
@@ -2809,7 +2809,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2818,7 +2818,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2853,7 +2853,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   },
   "26-0188/positions": {
     "external_id": "26-0188",
@@ -2865,7 +2865,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Testimony",
     "builder_class": "BillPositionsPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2874,7 +2874,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2909,7 +2909,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:42Z"
   },
   "26-0188/summary": {
     "external_id": "26-0188",
@@ -2921,7 +2921,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill text (extracted)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2930,7 +2930,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -2965,7 +2965,7 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:07Z"
+    "dumped_at": "2026-11-12T04:16:42Z"
   },
   "26-0195/summary": {
     "external_id": "26-0195",
@@ -2977,7 +2977,7 @@
     "user_message_hash_is_delimiter_normalised": true,
     "source_section_heading": "## Bill diff (bill vs. existing law)",
     "builder_class": "BillSummaryPromptBuilder",
-    "builder_content_digest": "372aa08ed78344d41f55ea9ac2f8c50b2eb899dd25c0e89e726639d29dc7337c",
+    "builder_content_digest": "5c39e17520eeeba1b6dbab259c2f33a0ffaa255cc64e36b7863bbeff24b957c6",
     "builder_digest_files": [
       "app/services/bill_positions_prompt_builder.rb",
       "app/services/bill_summary_prompt_builder.rb",
@@ -2986,7 +2986,7 @@
       "lib/sway/settings/llm.rb"
     ],
     "builder_file_digests": {
-      "app/services/bill_positions_prompt_builder.rb": "c3182357803904babb7a985186253d7b6dedf7df16e0dfe188efae2c53c6a614",
+      "app/services/bill_positions_prompt_builder.rb": "a7f9ce06f06bef943b4e0f6d87d584740f59f6b771aa12c2f9ca65538eb6782b",
       "app/services/bill_summary_prompt_builder.rb": "c48f462dc7b724ddd0850e3b0b150e5b6c06c587ab8a71b0cfde04ad2563365e",
       "app/services/llm/untrusted_text_block.rb": "d6a9e6da1e43043e798a3c8b6809df317cf3765c6a5c8fef987e2450613cd49c",
       "app/services/llm/prompt_payload.rb": "c4884ce06de47236ede0df490371b640e84a85d2196f85bf3f1e77be791ca899",
@@ -3021,6 +3021,6 @@
       "Transportation",
       "Veterans & Military"
     ],
-    "dumped_at": "2026-11-03T14:46:08Z"
+    "dumped_at": "2026-11-12T04:16:45Z"
   }
 }
