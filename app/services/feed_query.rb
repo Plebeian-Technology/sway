@@ -41,11 +41,12 @@ class FeedQuery
     TermWindow.convening_date(sway_locale, TermWindow.cycle_start_year(sway_locale, Date.current))
   end
 
-  def initialize(user:, cursor: nil, per_page: DEFAULT_PER_PAGE)
+  def initialize(user:, cursor: nil, per_page: DEFAULT_PER_PAGE, query: nil)
     @user = user
     @cursor = cursor
     @per_page = per_page
-    @items, @next_cursor = paginate(build_items)
+    @query = query&.strip&.downcase.presence
+    @items, @next_cursor = paginate(filter_by_query(build_items))
   end
 
   private
@@ -241,6 +242,35 @@ class FeedQuery
         user_vote: user_votes_by_bill_id[bill.id]
       )
     end
+  end
+
+  def filter_by_query(items)
+    query = @query
+    return items unless query
+
+    items.select { |item| item_matches_query?(item, query) }
+  end
+
+  def item_matches_query?(item, query)
+    searchable_texts(item).any? { |text| text.downcase.include?(query) }
+  end
+
+  def searchable_texts(item)
+    texts = [] #: Array[String?]
+    if (bill = item.bill)
+      texts << bill.title << bill.external_id
+    end
+    if (legislator = item.legislator)
+      texts << legislator.full_name
+    end
+    item.legislators&.each { |legislator| texts << legislator.full_name }
+    if (locale = item.sway_locale)
+      texts << locale.human_name
+    end
+    if (org_name = item.organization_bill_position&.organization&.name)
+      texts << org_name
+    end
+    texts.compact
   end
 
   def paginate(sorted_items)

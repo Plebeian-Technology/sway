@@ -21,3 +21,9 @@ Active positions by organizations the user follows produce `organization_positio
 Undeclared locales produce no term-start items because only declared jurisdictions have configured term rules in [[app/models/term_window.rb#TermWindow]]. Each term-start timestamp uses midnight UTC on the convening date returned by [[app/services/feed_query.rb#FeedQuery#term_start_on|FeedQuery.term_start_on]].
 
 Items sort by `occurred_at` descending and break ties by `key` descending. The cursor encodes the last returned item's UTC timestamp at nanosecond precision alongside its `key`, so the next page resumes strictly after that boundary without skips or duplicates.
+
+## Searching the feed
+
+[[app/services/feed_query.rb#FeedQuery]] filters built items in memory before cursor paging when `query` is non-blank after stripping whitespace.
+
+Matching ignores letter case across the bill's `title` and `external_id`, the `full_name` of the item's `legislator` or `legislators`, the locale's `human_name`, and the organization's `name`. Because `user_joined` carries none of those fields, it never matches a non-blank search, and cursor paging advances only through matching items.

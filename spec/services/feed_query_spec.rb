@@ -354,4 +354,86 @@ RSpec.describe FeedQuery do
       expect(items).to be_empty
     end
   end
+
+  describe "query filtering" do
+    it "matches a bill title with 'fare' and excludes non-matching items" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      term_start = described_class.term_start_on(baltimore)
+      release_date = [term_start, Time.zone.today - 1.day].max
+
+      matching_bill = create(:bill, sway_locale: baltimore, title: "Fare cap for MTA buses", scheduled_release_date_utc: release_date)
+      create(:bill, sway_locale: baltimore, title: "Zoning reform act", scheduled_release_date_utc: Time.zone.today)
+
+      items = described_class.new(user: user, query: "fare").items
+
+      expect(items.map(&:key)).to eq(["bill_of_the_month_released:#{matching_bill.id}"])
+    end
+
+    it "matches a legislator's last name on their vote items and representatives_found" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore, first_name: "Ada", last_name: "Lovelace")
+      create(:user_legislator, user: user, legislator: rep)
+
+      vote_time = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day + 2.days
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: vote_time)
+      legislator_vote = create(:legislator_vote, bill: bill, legislator: rep)
+
+      items = described_class.new(user: user, query: "lovelace").items
+
+      expect(items.map(&:key)).to contain_exactly(
+        "legislator_voted:#{legislator_vote.id}",
+        "representatives_found:#{user.id}"
+      )
+    end
+
+    it "matches 'maryland' on Maryland items and Baltimore City items via human_name" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore, maryland, congress = user.sway_locales
+
+      items = described_class.new(user: user, query: "maryland").items
+
+      expect(items.map(&:key)).to contain_exactly(
+        "legislative_term_began:#{baltimore.id}",
+        "legislative_term_began:#{maryland.id}"
+      )
+      expect(items.map(&:sway_locale)).not_to include(congress)
+    end
+
+    it "returns the full feed for a blank or whitespace query" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      rep = create(:legislator, sway_locale: user.sway_locales.first)
+      create(:user_legislator, user: user, legislator: rep)
+
+      full_keys = described_class.new(user: user).items.map(&:key)
+      blank_keys = described_class.new(user: user, query: "   ").items.map(&:key)
+
+      expect(blank_keys).to eq(full_keys)
+    end
+
+    it "pages through matching items only when a query is present" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      term_start = described_class.term_start_on(baltimore)
+
+      b1 = create(:bill, sway_locale: baltimore, title: "Transit Fare One", scheduled_release_date_utc: term_start + 1.day)
+      b2 = create(:bill, sway_locale: baltimore, title: "Transit Fare Two", scheduled_release_date_utc: term_start + 2.days)
+      b3 = create(:bill, sway_locale: baltimore, title: "Transit Fare Three", scheduled_release_date_utc: term_start + 3.days)
+      create(:bill, sway_locale: baltimore, title: "Other Topic", scheduled_release_date_utc: term_start + 4.days)
+
+      page1 = described_class.new(user: user, query: "Transit Fare", per_page: 2)
+      expect(page1.items.map(&:bill)).to eq([b3, b2])
+      expect(page1.next_cursor).to be_a(String)
+
+      page2 = described_class.new(user: user, query: "Transit Fare", cursor: page1.next_cursor, per_page: 2)
+      expect(page2.items.map(&:bill)).to eq([b1])
+      expect(page2.next_cursor).to be_nil
+    end
+  end
 end

@@ -43,6 +43,7 @@ class FeedQuery
   @user: User
   @cursor: String?
   @per_page: Integer
+  @query: String?
   @items: Array[Item]
   @next_cursor: String?
   @declared_locales: Array[SwayLocale]
@@ -54,11 +55,14 @@ class FeedQuery
 
   def self.term_start_on: (SwayLocale sway_locale) -> Date
 
-  def initialize: (user: User, ?cursor: String?, ?per_page: Integer) -> void
+  def initialize: (user: User, ?cursor: String?, ?per_page: Integer, ?query: String?) -> void
 
   private
 
   def build_items: () -> Array[Item]
+  def filter_by_query: (Array[Item] items) -> Array[Item]
+  def item_matches_query?: (Item item, String query) -> bool
+  def searchable_texts: (Item item) -> Array[String]
   def user_joined_item: () -> Item
   def active_user_legislators: () -> Array[UserLegislator]
   def representatives_found_item: () -> Item?
