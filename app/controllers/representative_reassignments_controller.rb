@@ -12,10 +12,4 @@ class RepresentativeReassignmentsController < ApplicationController
       format.json { head :no_content }
     end
   end
-
-  private
-
-  def authenticate_user!
-    authenticate_sway_user!
-  end
 end

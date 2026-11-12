@@ -41,14 +41,6 @@ RSpec.describe "RepresentativeReassignments", type: :request do
       expect(response).to have_http_status(:no_content)
     end
 
-    it "dismisses a notification via /representative_reassignments/:id/dismiss" do
-      expect {
-        patch "/representative_reassignments/#{reassignment.id}/dismiss", as: :json
-      }.to change { reassignment.reload.dismissed_at }.from(nil)
-
-      expect(response).to have_http_status(:no_content)
-    end
-
     it "returns 404 when attempting to dismiss another user's reassignment" do
       other_user = create(:user).tap do |u|
         complete_registration_with_active_link(u)
@@ -65,9 +57,9 @@ RSpec.describe "RepresentativeReassignments", type: :request do
     end
 
     it "is idempotent across repeated dismissals and safely serializes and renders sparse records with nil associations" do
-      patch "/representative_reassignments/#{reassignment.id}/dismiss", as: :json
+      patch "/reassignment_notifications/#{reassignment.id}/dismiss", as: :json
       expect(response).to have_http_status(:no_content)
-      patch "/representative_reassignments/#{reassignment.id}/dismiss", as: :json
+      patch "/reassignment_notifications/#{reassignment.id}/dismiss", as: :json
       expect(response).to have_http_status(:no_content)
 
       sparse = RepresentativeReassignment.create!(

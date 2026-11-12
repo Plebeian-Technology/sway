@@ -403,11 +403,6 @@ Rails.application.routes.draw do
       as: :destroy_push_notification_subscription
   end
 
-  resources :representative_reassignments, only: [] do
-    member do
-      patch :dismiss
-    end
-  end
   patch "reassignment_notifications/:id/dismiss", to: "representative_reassignments#dismiss"
 
   resources :phone_verification, only: %i[create update]
