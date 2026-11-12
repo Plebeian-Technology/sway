@@ -14,6 +14,13 @@ RSpec.describe "FeedController", type: :request do
         expect(response).to redirect_to(root_path)
         expect(flash[:notice]).to eq("Sign up or sign in to view this page.")
       end
+
+      it "returns 401 JSON for an unauthenticated JSON request" do
+        get "/feed", headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.content_type).to include("application/json")
+      end
     end
 
     context "when signed in" do
@@ -264,6 +271,102 @@ RSpec.describe "FeedController", type: :request do
 
         expect(two_bill_count_queries).to eq(3)
         expect(six_bill_count_queries).to eq(two_bill_count_queries)
+      end
+    end
+
+    context "when signed in via bearer token (mobile JSON)" do
+      it "returns items with counts, feed_cursor, and feed_search without newest_keys" do
+        _sway_locale, user = setup
+        user.complete!
+        create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+        baltimore = user.sway_locales.find(&:declared?)
+        district = create(:district, sway_locale: baltimore)
+        legislator = create(:legislator, district:, sway_locale: baltimore)
+        create(:user_legislator, user: user, legislator: legislator, active: true)
+        bill = create(
+          :bill,
+          sway_locale: baltimore,
+          legislator: legislator,
+          title: "Transit Access Act",
+          scheduled_release_date_utc: Date.current
+        )
+        create(:bill_score, bill: bill, for: 3, against: 2)
+        BillView.record_for(user: user, bill: bill)
+        create(:user_bill_share, bill: bill, user: user)
+
+        raw_token = "feed-mobile-#{SecureRandom.hex(8)}"
+        ApiKey.create!(bearer: user, token: raw_token)
+
+        get "/feed", headers: {"Authorization" => "Bearer #{raw_token}", "Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to include("application/json")
+
+        body = response.parsed_body
+        expect(body.keys).to match_array(%w[items feed_cursor feed_search])
+        expect(body).not_to have_key("newest_keys")
+        expect(body["feed_cursor"]).to be_nil
+        expect(body["feed_search"]).to be_nil
+
+        bill_item = body["items"].find { |item| item.dig("bill", "id") == bill.id }
+        expect(bill_item["bill"]).to include(
+          "vote_count" => 5,
+          "view_count" => 1,
+          "share_count" => 1
+        )
+      end
+
+      it "filters with feed_search and pages with feed_cursor" do
+        _sway_locale, user = setup
+        user.complete!
+        create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+        baltimore = user.sway_locales.find(&:declared?)
+        district = create(:district, sway_locale: baltimore)
+        legislator = create(:legislator, district:, sway_locale: baltimore)
+        create(:user_legislator, user: user, legislator: legislator, active: true)
+        FeedQuery::DEFAULT_PER_PAGE.times do |i|
+          bill = create(
+            :bill,
+            sway_locale: baltimore,
+            legislator: legislator,
+            title: "Solar Bill #{i}",
+            house_vote_date_time_utc: (i + 1).hours.ago
+          )
+          create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
+        end
+        other_bill = create(
+          :bill,
+          sway_locale: baltimore,
+          legislator: legislator,
+          title: "Highway Bill",
+          house_vote_date_time_utc: 1.minute.ago
+        )
+        create(:legislator_vote, legislator: legislator, bill: other_bill, inferred: false, support: "FOR")
+
+        raw_token = "feed-mobile-#{SecureRandom.hex(8)}"
+        ApiKey.create!(bearer: user, token: raw_token)
+        headers = {"Authorization" => "Bearer #{raw_token}", "Accept" => "application/json"}
+
+        get "/feed", params: {feed_search: "Solar"}, headers: headers
+
+        expect(response).to have_http_status(:ok)
+        search_body = response.parsed_body
+        expect(search_body["feed_search"]).to eq("Solar")
+        expect(search_body["items"].map { |item| item.dig("bill", "id") }).not_to include(other_bill.id)
+
+        get "/feed", headers: headers
+
+        expect(response).to have_http_status(:ok)
+        page_one = response.parsed_body
+        next_cursor = page_one["feed_cursor"]
+        expect(next_cursor).to be_present
+
+        get "/feed", params: {feed_cursor: next_cursor}, headers: headers
+
+        expect(response).to have_http_status(:ok)
+        page_two = response.parsed_body
+        expected_second_page = FeedQuery.new(user: user, cursor: next_cursor)
+        expect(page_two["items"].pluck("key")).to eq(expected_second_page.items.map(&:key))
       end
     end
   end
