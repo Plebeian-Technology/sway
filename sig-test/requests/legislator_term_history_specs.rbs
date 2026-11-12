@@ -23,7 +23,6 @@ class Object
   #  spec/serializers/legislator_resource_spec.rb)
   def active_term: () -> LegislatorTerm
   def prior_term: () -> LegislatorTerm
-  def term_2021: () -> LegislatorTerm
   def term_2023: () -> LegislatorTerm
   def term_2025: () -> LegislatorTerm
 end

@@ -3,10 +3,4 @@ class Object
   def draft_position: () -> Hash[String, untyped]
   def build_article_context: (String text, ?outlet_name: String, ?author_name: String) -> [BillNewsArticle, NewsArticleTextVersion]
   def text: () -> String
-  def context_records: () -> [BillNewsArticle, NewsArticleTextVersion]
-  def tv: () -> NewsArticleTextVersion
-  def ambiguous_draft: () -> Hash[String, untyped]
-  def text1: () -> String
-  def text2: () -> String
-  def text3: () -> String
 end

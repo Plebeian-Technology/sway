@@ -1,5 +1,4 @@
 class Object
-    def send: (Symbol, *untyped args, **untyped kwargs) -> untyped
     def describe:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -7,15 +6,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def it:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def fit:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def xit:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def specify:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def before:
@@ -134,13 +124,6 @@ class Object
     def build_bill_params: -> untyped
     def spec_create_failure: -> untyped
     def driven_by: (*untyped args, **untyped kwargs) -> untyped
-    def dev_db_file_path: -> String
-    def dev_data_file_path: -> String
-    def dev_seed_tables: -> Array[String]
-    def dev_seed_load_order: -> Array[String]
-    def dev_seed_sql: -> String
-    def reset_dev_seed_tables!: -> untyped
-    def load_dev_seed_sql!: (String sql) -> untyped
     def browser_json_request: (untyped method, untyped path, untyped payload) -> untyped
     def browser_create_credential: (untyped public_key_options) -> untyped
     def browser_get_credential: (
@@ -171,7 +154,6 @@ class Object
     def org_defaults_notifications_path: (*untyped args, **untyped kwargs) -> untyped
     def phone_verification_index_path: (*untyped args, **untyped kwargs) -> untyped
     def phone_verification_path: (*untyped args, **untyped kwargs) -> untyped
-    def users_details_path: (*untyped args, **untyped kwargs) -> untyped
     def users_webauthn_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
     def users_webauthn_sessions_path: (*untyped args, **untyped kwargs) -> untyped
     def users_webauthn_session_path: (*untyped args, **untyped kwargs) -> untyped
@@ -192,10 +174,8 @@ class Object
     def host!: (*untyped args, **untyped kwargs) -> untyped
     def invite_path: (*untyped args, **untyped kwargs) -> untyped
     def organization_membership_invites_path: (*untyped args, **untyped kwargs) -> untyped
-    def accept_organization_membership_invite_path: (*untyped args, **untyped kwargs) -> untyped
     def notifications_push_notifications_path: (*untyped args, **untyped kwargs) -> untyped
     def edit_bill_path: (*untyped args, **untyped kwargs) -> untyped
-    def edit_bill_creator_path: (*untyped args, **untyped kwargs) -> untyped
     def creator_bill_creator_path: (*untyped args, **untyped kwargs) -> untyped
     def schedule_bill_creator_path: (*untyped args, **untyped kwargs) -> untyped
     def pipeline_bill_creator_path: (*untyped args, **untyped kwargs) -> untyped
@@ -206,10 +186,6 @@ class Object
     def provisional_vote_path: (*untyped args, **untyped kwargs) -> untyped
     def admin_bill_summary_reports_path: (*untyped args, **untyped kwargs) -> untyped
     def admin_bill_summary_report_path: (*untyped args, **untyped kwargs) -> untyped
-    def bill_summary_reports_path: (*untyped args, **untyped kwargs) -> untyped
-    def bill_summary_report_path: (*untyped args, **untyped kwargs) -> untyped
-    def admin_registration_funnel_path: (*untyped args, **untyped kwargs) -> untyped
-    def admin_partner_reports_path: (*untyped args, **untyped kwargs) -> untyped
     def have_props: (untyped value) -> untyped
                   | () { (untyped) -> untyped } -> untyped
     def have_current_path: (*untyped args, **untyped kwargs) -> untyped

@@ -18,7 +18,4 @@ end
 # @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
 class Object
   def escape_target: () -> Pathname
-  def two_matters_payload: () -> Array[Hash[String, untyped]]
-  def malicious_external_ids: () -> Array[String?]
-  def safe_external_ids: () -> Array[String]
 end

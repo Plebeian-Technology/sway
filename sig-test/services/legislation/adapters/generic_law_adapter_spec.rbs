@@ -1,5 +1,4 @@
 # @lat: [[rbs-signatures#Why some specs get their own file]]
 class Object
-  def local_dir: () -> Pathname
   def raw_dir: () -> Pathname
 end

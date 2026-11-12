@@ -20,44 +20,15 @@ class Object
     def a_request:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def current_inertia_version: () -> String
 
     # Legislation adapter spec helpers
-    def bill_text_json: () -> String
     def pdf_fixture: () -> String
-    def index_json: () -> String
-    def detail_json: () -> String
     def connection_for: () -> untyped
     def service_result_for: () -> untyped
     def record_factory: () -> untyped
-    def meetings_json: () -> String
-    def empty_meetings_json: () -> String
     def xml_fixture: () -> String
-    def sample_xml: () -> String
-    def index_html: () -> String
-    def detail_html: () -> String
-    def hearing_html: () -> String
-    def no_hearing_html: () -> String
     def law_root: () -> Pathname
-    def valid_pdf_content: () -> String
-    def annapolis_locale: () -> SwayLocale
-    def baltimore_locale_double: () -> untyped
-    def annapolis_doc: () -> untyped
-    def baltimore_doc: () -> untyped
-    def mga_doc: () -> untyped
-    def mga_locale: () -> untyped
-    def congress_doc: () -> untyped
-    def maryland_doc: () -> untyped
-    def baltimore_target: () -> untyped
-    def congress_target: () -> untyped
-    def maryland_target: () -> untyped
-    def all_locale_files: () -> untyped
-    def with_temp_locale_yaml: (untyped yaml_content, ?untyped filename) { (untyped file_path) -> untyped } -> untyped
-    def build_modified_yaml: (untyped rule_block, ?untyped inject_keys, ?untyped delete_keys) -> untyped
-    def raw_baltimore_yaml: () -> String
     def pdf_bytes: () -> untyped
-    def mock_rules: () -> untyped
-    def maryland_bill: () -> Bill
     def mock_adapter: () -> untyped
     def abandoned_run: (?status: untyped, ?quiet_for: untyped, **untyped) -> untyped
     # Phase 67 Plan 08: acknowledge_testimony_coverage_service_spec.rb's own
@@ -144,7 +115,6 @@ class Object
     # The campaign-draft reject/restore collection routes on the
     # same nested resource.
     def development_config: () -> String
-    def failing_user: (User user) -> User
     def latitude: () -> Float
     def longitude: () -> Float
     # user_spec.rb's lambda-returning let, named apart from address_spec.rb's
@@ -153,9 +123,7 @@ class Object
     def raw: (untyped record, (String | Symbol) column) -> untyped
     def raw_column: () -> untyped
     def raw_email: (User user) -> untyped
-    def raw_full_name: (User user) -> untyped
     def raw_phone: (User user) -> untyped
-    def raw_street: (Address address) -> untyped
     def reject_draft_bill_campaigns_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -175,12 +143,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def bill_with_pdf:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def bill_with_testimony:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def bill_without_hearings:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # One bill's artifact directory, deleted to make the bill one
@@ -246,18 +208,6 @@ class Object
     # "cleaned_artifact" (which takes letters: but no groups:) — same-named
     # bare spec helpers with different shapes collide under Steep.
     def campaign_artifact: (raw_chars: Integer, cleaned_chars: Integer, ?groups: Array[Hash[String, untyped]], ?letters: Array[Hash[String, untyped]]) -> Hash[String, untyped]
-    def canonical_hearings_root:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def canonical_raw_root:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def canonical_with_dir:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def canonical_with_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # Phase 63 Plan 05 Task 1: legistar_testimony_endpoint_probe_spec.rb let.
     def captured_payload: (String message) -> String
     # Phase 67 Plan 05: approve_org_position_service_spec.rb's own cleaned
@@ -413,9 +363,6 @@ class Object
     def deficient_bill:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def destroy_notifications_push_notification_subscriptions_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def disable_virtual_authenticator:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -530,9 +477,6 @@ class Object
     def have_button:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def have_content:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def have_css:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -541,9 +485,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def have_link:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def have_no_content:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # Negative field matcher used by the production-snapshot
@@ -577,14 +518,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def inertia_load_deferred_props:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    # inertia_rails RSpec partial-reload helper (re-issues the GET
-    # with X-Inertia-Partial-Data headers). Used by partial_reload_contracts_spec.
-    def inertia_reload_only:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def inertia_reload_except:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # The project helper in spec/support/inertia_versioned_reload.rb.
@@ -1053,9 +986,6 @@ class Object
     def session_store:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def setup_data:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def short_url:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1075,9 +1005,6 @@ class Object
     def sms_notifications_enabled:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    # sendgrid_smtp_credentials_spec.rb's let-defined helper (steep does not
-    # resolve let blocks).
-    def smtp_settings: () -> String
     def source_url:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1119,9 +1046,6 @@ class Object
     def captured_classification_prompts: () -> Array[Llm::PromptPayload]
     def stub_content_classifier: (Hash[String, Array[Hash[String, (Integer | String)]]] payload) -> void
     def seed_prior_evidence: () -> BillLlmProvisioning
-    # baltimore_external_id_rewriter_spec: the Baltimore row that
-    # already answers to the seat name another row is about to be renamed onto.
-    def seat_holder: () -> Legislator
     def stub_pipeline_success:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1187,9 +1111,6 @@ class Object
     # every application table between system specs. No args, no return
     # value used — declare concretely (per feedback_rbs_avoid_untyped).
     def truncate_application_tables: () -> void
-    def tx_calls:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def twilio_client_double:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1264,10 +1185,6 @@ class Object
     def wait_until: (?Float delay) { () -> untyped } -> untyped
     def open_category_filter: () -> untyped
     def toggle_category: (String name) -> untyped
-    def base_doc_hash: () -> Hash[String, untyped]
-    def build_test_locale: (anchor_year: Integer, cycle_years: Integer) -> SwayLocale
-    def manual_locale: () -> untyped
-    def annapolis_slug: () -> String
     def within:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1307,26 +1224,10 @@ class Object
     def llm_summary:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def provisioning_with_testimony:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def queue_adapter: -> untyped
-    def reject_org_position_bill_path: (*untyped args, **untyped kwargs) -> untyped
     # A FactoryBot trait composition, not an attribute setter: it takes no arguments and its return value is never read.
     def with_testimony: () -> void
     def a_string_including:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def a_string_starting_with:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def accept_confirm:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def add_filter:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def add_group:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def admin:
@@ -1341,19 +1242,10 @@ class Object
     def application_rb_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def cors_doc_relative_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def cors_doc_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def at_large_district:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def baltimore:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def bar:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def be_between:
@@ -1383,9 +1275,6 @@ class Object
     def bill_of_the_month_index_url:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def bill_payload:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def bill_score:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1393,9 +1282,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def cancel_pipeline_run_bill_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def cf_ips_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def clear_service_worker_stub!:
@@ -1407,22 +1293,7 @@ class Object
     def client_double:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def arcgis_features:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def body1_office_records:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def body3_office_records:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def person_104:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def legistar_double:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def comptroller:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def md1:
@@ -1434,14 +1305,9 @@ class Object
     def arcgis_reseed_entry:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def members_from: (untyped result) -> untyped
-    def external_id_of: (untyped member) -> untyped
     def base:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_root: (body: untyped, ?status: untyped) -> untyped
-    def stub_query: (layer_id: untyped, body: untyped, ?status: untyped) -> untyped
-    def stub_sparql: (body: untyped, ?status: untyped) -> untyped
     # Phase 62 Plan 03 (baltimore_legislator_vote_update_service_spec.rb):
     # stub Legistar::Client#matters / #matter_histories end-to-end.
     # Phase 63 WR-E-04 (fetch_bills_service_spec.rb): two Legistar matters and
@@ -1461,12 +1327,7 @@ class Object
     # Phase 63 WR-E-06 (artifact_presence_spec.rb): two bills in different
     # locales holding the same external_id. Returns [shared_id, first, second].
     def two_locale_collision: () -> [String, Bill, Bill]
-    def stub_matters: (matter_id: Integer, ?external_id: String) -> untyped
-    def stub_histories: (matter_id: Integer, rows: Array[Hash[String, untyped]]) -> untyped
     def completed_at:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def completed_response:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def config_src:
@@ -1519,12 +1380,6 @@ class Object
     def dummy_class:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def email_verification_index_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def email_verification_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def error_message:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1555,9 +1410,6 @@ class Object
     def have_rejected_connection:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def have_selector:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def have_stream_from:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1575,10 +1427,6 @@ class Object
     def minimal_payload:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def navigate_to_llm_accordion_for_bill:
-        (untyped bill) -> untyped
-    def navigate_to_pipeline_accordion:
-        (untyped bill) -> untyped
     def new_bill_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1628,9 +1476,6 @@ class Object
     def record:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def refresh_pipeline_bill_bill_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def remote_run_id:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1646,18 +1491,10 @@ class Object
     def run:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def run_await:
-        (?extra_responses: untyped) -> untyped
     def run_id:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def running_response:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def satisfy:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def sentry_double:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def service:
@@ -1684,17 +1521,12 @@ class Object
     def stub_const:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_pipeline_runs!:
-        (untyped count) -> untyped
     def stub_request:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # The pipeline_run_summary_batches factory's attribute, in
     # the implicit style steep sees as a bare call on Object.
     def submitted_at:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def submitted_response:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def subscribe:
@@ -1704,9 +1536,6 @@ class Object
     # :awaiting_summary_batch trait transient, in the implicit style steep
     # sees as bare calls on Object (same as remote_run_id below).
     def summary_batch_expires_at:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def summary_result:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def sway_and_user:
@@ -1724,16 +1553,7 @@ class Object
     def sweep_stale_pipeline_runs_bills_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def terminal_payload:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def test_payload:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def track_files:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def user_districts_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def user_fixture:
@@ -1746,13 +1566,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def valid_body:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    # FastAPI legislation webhook receivers.
-    def webhooks_legislation_run_progress_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def webhooks_legislation_run_bill_completed_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # Comes from EnvHelpers, included into every example. nil means "make sure
@@ -1796,12 +1609,6 @@ class Object
     # nullable anyway, so accepting nil is the accurate signature rather than a
     # concession.
     def bill_with_external_id: (String? value) -> Bill
-    # Phase 32 Plan 09 (D-08) — let names + helpers used by public/orgs +
-    # follows specs. RSpec hoists `let(:name)` into Object via dynamic
-    # def_node; declare here so steep accepts the references.
-    def user_and_locale:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def authenticate_as:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1955,9 +1762,6 @@ class Object
     def create_locale_with_vote:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_fetch:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def config:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1970,9 +1774,6 @@ class Object
     def house_xml:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def legislation_url:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def migration:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -1983,9 +1784,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def pdf_reader:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def primary_legislator:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def scraper:
@@ -2031,34 +1829,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def round_trip:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stage_entry:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def bill_entry:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def run_entry:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    # Phase 49 plan 02 — PipelineActivityLogger spec let-bindings
-    def bill_with_run:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def run_for_bill:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def bill_no_runs:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def fake_flash:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def fake_req:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def entry_payload:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
 
@@ -2154,9 +1924,6 @@ class Object
     def char_start:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def commit_sha:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def controls_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2186,19 +1953,12 @@ class Object
     def delete_position:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def dismiss_confirm:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def draft_composite_id:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def empty_diff_payload:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def existing_run:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def extract_forbidden_patterns: (untyped source) -> untyped
     def failed_run:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2218,9 +1978,6 @@ class Object
     def inertia_errors: () -> untyped
     def inertia_props_hash: () -> untyped
     def inertia_share_props: () -> untyped
-    def inputs_fingerprint:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def insert_log_entry: (?untyped overrides) -> untyped
     def insert_solid_queue_job: (run_id: untyped, ?finished_at: untyped, ?class_name: untyped) -> untyped
     def invalid_json:
@@ -2271,16 +2028,10 @@ class Object
     def only_admin:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def openai_client:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def operation:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def ops_for: (untyped bill) -> untyped
-    def orphan:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def other_user:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2304,13 +2055,7 @@ class Object
     def prefix:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def prepare_prompt_bill_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def prompt:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def rake_source:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def refs_for: (untyped bill) -> untyped
@@ -2335,9 +2080,6 @@ class Object
     def run_filtered:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def run_with_diffs:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def schema_hash:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2356,19 +2098,10 @@ class Object
     def seed_window_bills: (?Integer count) -> SwayLocale
     def seed_namespaced_bills: () -> SwayLocale
     def serialized_active_job_arguments: (untyped run_id, ?origin: untyped) -> untyped
-    def sha256:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def short_native:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def signed_token: (untyped invite) -> untyped
-    def skip_create:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def source_fingerprint:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def source_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2379,7 +2112,6 @@ class Object
     def start_with:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_chat_response: (untyped content) -> untyped
     def stub_configs: (untyped configs, env: untyped) -> untyped
     def success:
         (*untyped args, **untyped kwargs) -> untyped
@@ -2422,9 +2154,6 @@ class Object
     def bill_ok:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def context_overflow_body:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def seed_through_hearings: () -> untyped
 
     # Phase 54 Plan 01 — let names + helper methods used by the LLM
@@ -2439,9 +2168,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def search_client:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def brave_search_client:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def openrouter_adapter:
@@ -2548,106 +2274,10 @@ class Object
     def api_key:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def api_base:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def member_page_1:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def member_page_2:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def potus_entry:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def tmp_seed_dir:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def tmp_seed_path:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_congress_api:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
 
-    # open_states_refresh_spec.rb let-names and helper methods. Same pattern as
-    # the congress spec names above.
-    def people_page_1:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def people_page_2:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_openstates_api_page1:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_openstates_api_page2:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def stub_openstates_single_page:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-
-
-    # Phase 65-05 — baltimore_external_id_rewriter_spec.rb legislator_term
-    # let-names (title/district now term-derived; auto-score-creation
-    # callback dropped, so scores are built explicitly via legislator_term).
-    def mayor_term:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def council_president_term:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def council_md1_term:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def council_md2_term:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def comptroller_term:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-
-    # Phase 59 Plan 05 — migration spec let-names.
-    def district_a:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def district_b:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-
-    # Phase 59 Plan 05 — BaltimoreRefresh spec let-names.
-    def legistar_bodies:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def council_office_records:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def person_1001:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def person_1002:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def mayor_html:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def comptroller_html:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def http_fetcher:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    # Phase 59 plan 06 — RefreshLegislatorsCacheJob spec let-names
-    def congress_refresher_class:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def open_states_refresher_class:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def baltimore_refresher_class:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def pr_service_double:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2806,9 +2436,6 @@ class Object
     def term_end_year:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def in_office:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
 
     # LlmBillSummarizationInstruction factory and spec helpers
     def legislative_body_makeup:
@@ -2831,24 +2458,6 @@ class Object
     def allowed_domains:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def citation:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def search_response:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def citation_1:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def citation_2:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def response_text_block:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def error_block:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def valid_url_1:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -2858,31 +2467,12 @@ class Object
     def news_url:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def valid_categories_payload:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def adapter_double:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def instruction:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def bill_text:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def target_law_sec:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-
-    # Adversarial stress test helpers
-    def cached_articles: () -> Array[Hash[String, untyped]]
-    def valid_article_1: () -> String
-    def valid_article_2: () -> String
-    def valid_article_3: () -> String
-    def valid_article_4: () -> String
-    def valid_article_5: () -> String
-    def valid_article_6: () -> String
-    def validator_articles: () -> Array[Hash[String, untyped]]
 
     # Phase 63 steep-zero sweep — backfill_bill_categories_job_spec.rb let-names
     def adapter:
@@ -2926,9 +2516,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def renters:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def be_organization_link_decided:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def organization_link_decision:
@@ -3036,12 +2623,6 @@ class Object
     def anchor_json2:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def leg:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def mayor_json_no_term:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def maryland:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -3055,9 +2636,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def district_congress:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def congress_json_base:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     # Phase 65-09: reconcile_user_districts_service_spec.rb's congress-fixture
@@ -3244,16 +2822,12 @@ class Object
     def housing_bill:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def have_no_button:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
 
     # Phase 63 steep-zero sweep — plain `def` helpers with real argument
     # lists (UndeclaredMethodDefinition), declared concretely rather than the
     # generic let-pattern above.
     def create_job: (finished_at: untyped, ?class_name: untyped) -> untyped
     def create_failed: (job_id: untyped, created_at: untyped) -> untyped
-    def seed_known_scores: (untyped leg, ?agreed_district: untyped, ?disagreed_district: untyped, ?no_vote_district: untyped, ?abstained_district: untyped, ?agreed_locale: untyped, ?disagreed_locale: untyped, ?no_vote_locale: untyped, ?abstained_locale: untyped) -> untyped
     def stage_collision: (other_active: untyped) -> untyped
     def system_prompt_text: (untyped builder) -> untyped
     def user_message_text: (untyped builder) -> untyped
@@ -3428,7 +3002,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def valid_positions_json: () -> untyped
-    def extra_key_positions_json: () -> untyped
 
     # Phase 63-03 — bills_paste_summary_spec.rb draft_org_positions omission
     # guard let-name (REVIEWS C7).
@@ -3641,10 +3214,6 @@ class Object
 
     # spec/config/standby_restore_spec.rb reads scripts/standby-restore.sh as text and compares it against the deploy config.
     def standby_script: () -> String
-    def litestream_config: () -> Hash[String, untyped]
-    # Reads the fallback out of a `NAME="${OVERRIDE:-fallback}"` line. nil when
-    # the line is missing, which is itself a failure the spec reports.
-    def script_default_for: (String name) -> String?
 
     # spec/lib/sway_deploy_config_spec.rb. A throwaway value file is written
     # per example, so the reader can be driven without touching the operator's
@@ -3894,7 +3463,6 @@ class Object
     def card_campaign_letter: (untyped position) -> Hash[String, untyped]
     def card_cleaned_artifact: () -> Hash[String, untyped]
     def seed_cards!: () -> untyped
-    def summary_tab_path: () -> String
     def positions_tab_path: () -> String
     def campaign_card_selector: () -> String
     def claimed_card_selector: () -> String
@@ -4037,9 +3605,6 @@ class Object
     def table_container_box: () -> untyped
     def expect_table_scrolls_in_its_own_container!: (String context) -> void
 
-    # bill_page_wide_spec.rb's own column-geometry helper.
-    def column_edges: () -> untyped
-
     def stub_mutool: (*untyped args, **untyped kwargs) -> untyped
     def landmarks: () -> untyped
     def vote_buttons: () -> untyped
@@ -4056,19 +3621,7 @@ class Object
     def reassignment_pending: () -> RepresentativeReassignment
     def reassignment_dismissed: () -> RepresentativeReassignment
     def reassignment: () -> RepresentativeReassignment
-    def user_a: () -> User
     def user_b: () -> User
-    def legislator_a: () -> Legislator
-    def legislator_b: () -> Legislator
-    def user_b_reassignment: () -> RepresentativeReassignment
-    def dist: () -> District
-    def leg_old: () -> Legislator
-    def leg_new: () -> Legislator
-    def ul_old: () -> UserLegislator
-    def ud_old: () -> UserDistrict
-    def sparse_reassignment: () -> RepresentativeReassignment
-    def vacant_reassignment_nil_district: () -> RepresentativeReassignment
-    def filled_reassignment_nil_district: () -> RepresentativeReassignment
 
     def reset_browser_state: () -> untyped
 
@@ -4128,7 +3681,6 @@ class Object
     def generic_congress_domain: () -> String
     def generic_www_congress_domain: () -> String
     def canonical_url: () -> String
-    def ingestion_service: () -> LegislationIngestionService
 
     # Persist immutable news source snapshots
     def text_version:
@@ -4138,9 +3690,6 @@ class Object
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def bna:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def snapshot2:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def use:
@@ -4221,12 +3770,6 @@ class Object
     def requested_by:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def legacy_cached_articles:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def discovered_article:
-        (*untyped args, **untyped kwargs) -> untyped
-        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def other_admin:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
@@ -4265,14 +3808,9 @@ class Object
     def news_article_text_version:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
-    def tv_1: () -> NewsArticleTextVersion
-    def tv_2: () -> NewsArticleTextVersion
-    def bna_1: () -> BillNewsArticle
-    def bna_2: () -> BillNewsArticle
     def supported_grounding: () -> NewsClaimGroundingService::Result
     def unsupported_grounding: () -> NewsClaimGroundingService::Result
 end
-
 
 # Phase 49 plan 02 — FakeRequest test double used in pipeline_activity_logger_spec.rb
 # Declared at top level so Steep resolves the constant reference in the spec.
