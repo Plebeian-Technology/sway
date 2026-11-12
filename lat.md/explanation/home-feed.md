@@ -33,3 +33,10 @@ Matching ignores letter case across the bill's `title` and `external_id`, the `f
 [[app/controllers/feed_controller.rb#FeedController]] serves the authenticated feed at `GET /feed` as an Inertia scroll response backed by [[app/services/feed_query.rb#FeedQuery]] and [[app/serializers/feed_item_resource.rb#FeedItemResource]].
 
 The endpoint relies on `ApplicationController`'s default `authenticate_sway_user!` filter and intentionally skips any locale redirect because feed items span all of a user's declared locales. It accepts `feed_search` and `feed_cursor` under the decided query-parameter namespaces and configures `InertiaRails.scroll` with `page_name: "feed_cursor"`, `current_page`, `next_page`, and `previous_page: nil` so cursor paging integrates with Inertia's infinite scroll without a separate `next_cursor` prop.
+
+## Live feed updates
+
+[[app/channels/feed_channel.rb#FeedChannel]] and [[app/services/feed_broadcaster.rb#FeedBroadcaster]] deliver lightweight per-user invalidation signals so open home feeds refresh without pushing feed item payloads over ActionCable.
+
+Each signed-in connection subscribes to `feed_<user_id>`, and subscriptions without a user are rejected. Broadcasting only `{type: "feed_updated"}` keeps authorization, locale filtering, cursor state, and serialization in `GET /feed` instead of duplicating query logic in ActionCable. `FeedBroadcaster.users_for_locale` selects distinct users who have an active `UserLegislator` in the target locale.
+

@@ -1,0 +1,5 @@
+class FeedChannel < ApplicationCable::Channel
+  def subscribed: () -> void
+
+  def unsubscribed: () -> void
+end
