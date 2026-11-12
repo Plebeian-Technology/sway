@@ -4,4 +4,6 @@ class NotifyBillOfTheMonthUsersJob < ApplicationJob
     private
 
     def fan_out_native_push: (Bill bill) -> void
+
+    def broadcast_feed_update: (Bill bill) -> void
 end

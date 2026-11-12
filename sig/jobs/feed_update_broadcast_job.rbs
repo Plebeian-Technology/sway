@@ -1,0 +1,3 @@
+class FeedUpdateBroadcastJob < ApplicationJob
+  def perform: (Array[Integer] user_ids) -> void
+end

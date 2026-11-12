@@ -276,4 +276,29 @@ RSpec.describe NotifyBillOfTheMonthUsersJob, type: :job do
       end
     end
   end
+
+  describe "feed update broadcast" do
+    it "enqueues FeedUpdateBroadcastJob for users in the released bill's locale" do
+      locale_a = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
+      locale_b = create(:sway_locale, city: "maryland", state: "maryland", country: "united_states")
+
+      district_a = create(:district, sway_locale: locale_a)
+      district_b = create(:district, sway_locale: locale_b)
+
+      leg_a = create(:legislator, district: district_a)
+      leg_b = create(:legislator, district: district_b)
+
+      user_in_locale = create(:user)
+      create(:user_legislator, user: user_in_locale, legislator: leg_a, active: true)
+
+      user_other_locale = create(:user)
+      create(:user_legislator, user: user_other_locale, legislator: leg_b, active: true)
+
+      create(:bill, sway_locale: locale_a, scheduled_release_date_utc: Time.zone.today)
+
+      expect {
+        described_class.new.perform
+      }.to have_enqueued_job(FeedUpdateBroadcastJob).with([user_in_locale.id])
+    end
+  end
 end

@@ -266,4 +266,50 @@ RSpec.describe LegislatorVote, type: :model do
       }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(vote.legislator_id, vote.legislator_term_id).exactly(1).times
     end
   end
+
+  describe "feed update broadcast trigger" do
+    it "enqueues FeedUpdateBroadcastJob on create when inferred is false" do
+      legislator = create(:legislator)
+      active_user = create(:user)
+      inactive_user = create(:user)
+      create(:user_legislator, user: active_user, legislator: legislator, active: true)
+      create(:user_legislator, user: inactive_user, legislator: legislator, active: false)
+
+      expect {
+        create(:legislator_vote, legislator: legislator, inferred: false)
+      }.to have_enqueued_job(FeedUpdateBroadcastJob).with([active_user.id]).exactly(1).times
+    end
+
+    it "enqueues nothing on create when inferred is true" do
+      legislator = create(:legislator)
+      active_user = create(:user)
+      create(:user_legislator, user: active_user, legislator: legislator, active: true)
+
+      expect {
+        create(:legislator_vote, legislator: legislator, inferred: true)
+      }.not_to have_enqueued_job(FeedUpdateBroadcastJob)
+    end
+
+    it "enqueues FeedUpdateBroadcastJob once when confirming an inferred vote" do
+      legislator = create(:legislator)
+      active_user = create(:user)
+      create(:user_legislator, user: active_user, legislator: legislator, active: true)
+      vote = create(:legislator_vote, legislator: legislator, inferred: true)
+
+      expect {
+        vote.update!(inferred: false)
+      }.to have_enqueued_job(FeedUpdateBroadcastJob).with([active_user.id]).exactly(1).times
+    end
+
+    it "enqueues nothing on other vote updates" do
+      legislator = create(:legislator)
+      active_user = create(:user)
+      create(:user_legislator, user: active_user, legislator: legislator, active: true)
+      vote = create(:legislator_vote, legislator: legislator, inferred: false, source: "manual")
+
+      expect {
+        vote.update!(source: "congress")
+      }.not_to have_enqueued_job(FeedUpdateBroadcastJob)
+    end
+  end
 end

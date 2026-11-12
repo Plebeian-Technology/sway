@@ -298,4 +298,72 @@ RSpec.describe OrganizationBillPosition, type: :model do
       end
     end
   end
+
+  describe "feed update broadcast trigger" do
+    it "enqueues FeedUpdateBroadcastJob for followers when created active" do
+      organization = create(:organization)
+      follower = create(:user)
+      create(:user)
+      create(:organization_follow, user: follower, organization: organization)
+
+      expect {
+        create(:organization_bill_position, organization: organization, active: true)
+      }.to have_enqueued_job(FeedUpdateBroadcastJob).with([follower.id]).exactly(1).times
+    end
+
+    it "enqueues nothing when created inactive" do
+      organization = create(:organization)
+      follower = create(:user)
+      create(:organization_follow, user: follower, organization: organization)
+
+      expect {
+        create(:organization_bill_position, organization: organization, active: false)
+      }.not_to have_enqueued_job(FeedUpdateBroadcastJob)
+    end
+
+    it "enqueues FeedUpdateBroadcastJob for followers when activated" do
+      organization = create(:organization)
+      follower = create(:user)
+      create(:organization_follow, user: follower, organization: organization)
+      position = create(:organization_bill_position, organization: organization, active: false)
+
+      expect {
+        position.update!(active: true)
+      }.to have_enqueued_job(FeedUpdateBroadcastJob).with([follower.id]).exactly(1).times
+    end
+
+    it "enqueues nothing when deactivated" do
+      organization = create(:organization)
+      follower = create(:user)
+      create(:organization_follow, user: follower, organization: organization)
+      position = create(:organization_bill_position, organization: organization, active: true)
+
+      expect {
+        position.update!(active: false)
+      }.not_to have_enqueued_job(FeedUpdateBroadcastJob)
+    end
+
+    it "enqueues nothing when editing an already-active position without activating" do
+      organization = create(:organization)
+      follower = create(:user)
+      create(:organization_follow, user: follower, organization: organization)
+      position = create(:organization_bill_position, organization: organization, active: true)
+
+      expect {
+        position.update!(summary: "Revised summary")
+      }.not_to have_enqueued_job(FeedUpdateBroadcastJob)
+    end
+
+    it "enqueues FeedUpdateBroadcastJob for followers when reactivated" do
+      organization = create(:organization)
+      follower = create(:user)
+      create(:organization_follow, user: follower, organization: organization)
+      position = create(:organization_bill_position, organization: organization, active: true)
+      position.update!(active: false)
+
+      expect {
+        position.update!(active: true)
+      }.to have_enqueued_job(FeedUpdateBroadcastJob).with([follower.id]).exactly(1).times
+    end
+  end
 end

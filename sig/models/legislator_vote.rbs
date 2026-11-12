@@ -32,4 +32,6 @@ class ::LegislatorVote < ::ApplicationRecord
 
   # Phase 62 Plan 04 (D-14): sibling to :update_scores.
   def enqueue_interesting_score_recompute: () -> void
+
+  def broadcast_feed_update: () -> void
 end

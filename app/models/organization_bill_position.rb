@@ -92,6 +92,8 @@ class OrganizationBillPosition < ApplicationRecord
   # @lat: [[organization-bill-position-notification-callbacks#enqueue_interesting_score_recompute: soft-deletes and a tolerated double-enqueue]]
   after_commit :enqueue_interesting_score_recompute
 
+  after_commit :broadcast_feed_update, on: %i[create update]
+
   def latest_position_change
     position_changes.order(created_at: :desc).first
   end
@@ -170,5 +172,14 @@ class OrganizationBillPosition < ApplicationRecord
       organization_bill_position_id: id
     )
     Sentry.capture_exception(e) if Rails.env.production?
+  end
+
+  def broadcast_feed_update
+    return unless active? && saved_change_to_activated_at?
+
+    user_ids = OrganizationFollow.where(organization_id: organization_id).distinct.pluck(:user_id)
+    return if user_ids.empty?
+
+    FeedUpdateBroadcastJob.perform_later(user_ids)
   end
 end

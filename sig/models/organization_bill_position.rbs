@@ -51,4 +51,6 @@ class OrganizationBillPosition < ApplicationRecord
 
   # Phase 61 D-13: after_commit handler — label and route change notification.
   def notify_followers_on_change: () -> void
+
+  def broadcast_feed_update: () -> void
 end

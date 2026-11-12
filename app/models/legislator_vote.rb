@@ -54,6 +54,8 @@ class LegislatorVote < ApplicationRecord
   # @lat: [[bill-score-recompute-callback-split#LegislatorVote's bare after_commit callbacks]]
   after_commit :enqueue_interesting_score_recompute
 
+  after_commit :broadcast_feed_update, on: %i[create update]
+
   validates :support,
     :bill_id,
     :legislator_id,
@@ -138,5 +140,15 @@ class LegislatorVote < ApplicationRecord
   # @lat: [[bill-score-recompute-callback-split#LegislatorVote's bare after_commit callbacks]]
   def enqueue_interesting_score_recompute
     RecomputeBillInterestingScoreJob.perform_later(bill_id)
+  end
+
+  def broadcast_feed_update
+    became_visible = (previously_new_record? && !inferred?) || saved_change_to_inferred?(from: true, to: false)
+    return unless became_visible
+
+    user_ids = UserLegislator.active.where(legislator_id: legislator_id).distinct.pluck(:user_id)
+    return if user_ids.empty?
+
+    FeedUpdateBroadcastJob.perform_later(user_ids)
   end
 end

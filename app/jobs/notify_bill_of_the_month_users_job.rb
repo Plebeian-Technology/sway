@@ -13,6 +13,7 @@ class NotifyBillOfTheMonthUsersJob < ApplicationJob
       .each do |bill|
         BillNotification.create!(bill: bill)
         fan_out_native_push(bill)
+        broadcast_feed_update(bill)
       rescue => e
         SwayLogging.log_exception(
           "botm_notify.bill_failed",
@@ -46,5 +47,12 @@ class NotifyBillOfTheMonthUsersJob < ApplicationJob
       .each do |device|
         SendNativePushJob.perform_later(device.id, payload)
       end
+  end
+
+  def broadcast_feed_update(bill)
+    user_ids = FeedBroadcaster.users_for_locale(bill.sway_locale).pluck(:id)
+    return if user_ids.empty?
+
+    FeedUpdateBroadcastJob.perform_later(user_ids)
   end
 end
