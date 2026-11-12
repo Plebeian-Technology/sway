@@ -140,21 +140,13 @@ belongs after the last column has been converted rather than after the first.
 
 ## Converting the rows that already exist
 
-Data migration `db/data/20261111000002_encrypt_address_details.rb` and rake task `sway:users:encrypt_personal_details` walk their tables to encrypt existing rows. `ActiveRecord::Encryption::EncryptableRecord#encrypt` writes the ciphertext.
+Data migrations `20261111000002_encrypt_address_details.rb` and `20261111000003_encrypt_user_personal_details.rb` run at deploy boot via `rails db:migrate:with_data`. Each migration inspects rows and encrypts any plaintext values.
 
 For addresses, `db/data/20261111000002_encrypt_address_details.rb` encrypts `street`, `street2`, `street3`, `latitude`, and `longitude`. It inspects each row and calls `encrypt` only when at least one column holds plaintext, preserving byte-level stability on already-encrypted rows.
 
-`sway:users:encrypt_personal_details` walks the table and re-saves each row,
-which is what encrypts it. `ActiveRecord::Encryption::EncryptableRecord#encrypt`
-does the work; a row already encrypted is skipped rather than encrypted twice.
+For users, `db/data/20261111000003_encrypt_user_personal_details.rb` encrypts `full_name`, `email`, `phone`, `current_sign_in_ip`, and `last_sign_in_ip`. It inspects each row and calls `encrypt` only when at least one column holds plaintext, preserving byte-level stability on already-encrypted rows.
 
-The walk is batched. SQLite allows one writer at a time, so a single transaction
-covering the whole table would hold the write lock for its full duration and
-block every other write on the Pi, including sign-ins and vote submissions.
-
-A row that fails is logged and the walk continues. Stopping at the first failure
-would leave the table half converted with no record of where it stopped, which
-is harder to resume than a logged list of the rows to look at.
+Both migrations use standalone stand-in classes to avoid coupling to application models during migration runs.
 
 ## Why the shared-addresses admin page reports counts only
 

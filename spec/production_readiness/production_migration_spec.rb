@@ -137,7 +137,7 @@ RSpec.describe "Production snapshot migration", :production_snapshot do
 
     # Users and their credentials are untouched.
     expect(
-      select_rows("SELECT id, phone, is_registration_complete FROM users ORDER BY id")
+      User.order(:id).map { |u| [u.id, u.phone, u.is_registration_complete ? 1 : 0] }
     ).to eq(users_before)
     expect(snapshot_passkey_rows).to eq(passkeys_before)
     expect(connection.column_exists?(:users, :is_admin)).to be(false)

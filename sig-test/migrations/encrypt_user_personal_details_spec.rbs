@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def raw_user: (Integer id) -> Hash[String, untyped]
+  def insert_user: (full_name: String, email: String, phone: String, ?current_sign_in_ip: String?, ?last_sign_in_ip: String?) -> User
+end
