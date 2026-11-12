@@ -77,6 +77,27 @@ RSpec.describe "ResolveLegacyBaltimoreBillLinks data migration", type: :model do
     expect(resolvable_bill.reload.link).to eq("https://baltimore.legistar.com/LegislationDetail.aspx?ID=1005&GUID=CCCC-3333")
   end
 
+  it "clears the generic link to nil when the detail URL resolver raises after the matters lookup succeeds" do
+    bill = create_legacy_bill(external_id: "24-RESOLVER-FAIL", link: generic_search_url)
+
+    stub_request(:get, "https://webapi.legistar.com/v1/baltimore/Matters?$filter=MatterFile%20eq%20'24-RESOLVER-FAIL'")
+      .to_return(
+        status: 200,
+        headers: {"Content-Type" => "application/json"},
+        body: [{"MatterId" => 1007, "MatterFile" => "24-RESOLVER-FAIL"}].to_json
+      )
+
+    stub_request(:head, "https://baltimore.legistar.com/Gateway.aspx?ID=1007&M=L")
+      .to_raise(RuntimeError.new("unexpected resolver failure"))
+
+    allow(SwayLogging).to receive(:warn)
+
+    expect { run_migration }.not_to raise_error
+
+    expect(bill.reload.link).to be_nil
+    expect(SwayLogging).to have_received(:warn).with(a_string_including("detail URL resolver error"))
+  end
+
   it "raises BaltimoreBillLinkBackfillService::PersistenceError when persistence fails" do
     failing_bill = create_legacy_bill(external_id: "24-FAIL-PERSIST", link: generic_search_url)
 
