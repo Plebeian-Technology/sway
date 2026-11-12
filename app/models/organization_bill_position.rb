@@ -6,6 +6,7 @@
 # Database name: primary
 #
 #  id              :integer          not null, primary key
+#  activated_at    :datetime
 #  active          :boolean          default(FALSE), not null
 #  ai_summary      :text
 #  summary         :text             not null
@@ -64,6 +65,7 @@ class OrganizationBillPosition < ApplicationRecord
   end
 
   before_validation :normalize_support_value
+  before_save :record_activated_at, if: :activating?
 
   # @lat: [[organization-bill-position-notification-callbacks#notify_followers_on_change: the guard and the change-label rule]]
   after_commit :notify_followers_on_change,
@@ -132,6 +134,16 @@ class OrganizationBillPosition < ApplicationRecord
 
     normalized = self.class.normalize_support(support)
     self.support = normalized if normalized
+  end
+
+  def activating?
+    will_save_change_to_active?(from: false, to: true)
+  end
+
+  def record_activated_at
+    return if will_save_change_to_activated_at?
+
+    self.activated_at = Time.current.in_time_zone
   end
 
   def enqueue_interesting_score_recompute

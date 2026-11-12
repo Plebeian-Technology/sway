@@ -6,6 +6,7 @@
 # Database name: primary
 #
 #  id              :integer          not null, primary key
+#  activated_at    :datetime
 #  active          :boolean          default(FALSE), not null
 #  ai_summary      :text
 #  summary         :text             not null
@@ -234,6 +235,67 @@ RSpec.describe OrganizationBillPosition, type: :model do
         %i[id organization_id bill_id support summary active created_at summary_ai_unreviewed]
       )
       expect(position_with("FOR").to_public_json[:summary]).to eql("Stored in the column.")
+    end
+  end
+
+  describe "activated_at" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    it "sets activated_at to Time.current when created active" do
+      now = Time.utc(2026, 11, 12, 12, 0, 0)
+      travel_to(now) do
+        position = create(:organization_bill_position, active: true)
+        expect(position.activated_at).to eq(now)
+      end
+    end
+
+    it "leaves activated_at nil when created inactive" do
+      position = create(:organization_bill_position, active: false)
+      expect(position.activated_at).to be_nil
+    end
+
+    it "sets activated_at when an inactive position is activated" do
+      position = create(:organization_bill_position, active: false)
+      expect(position.activated_at).to be_nil
+
+      now = Time.utc(2026, 11, 12, 13, 0, 0)
+      travel_to(now) do
+        position.update!(active: true)
+        expect(position.activated_at).to eq(now)
+      end
+    end
+
+    it "leaves activated_at unchanged when an active position is deactivated" do
+      initial = Time.utc(2026, 11, 12, 12, 0, 0)
+      position = travel_to(initial) { create(:organization_bill_position, active: true) }
+
+      travel_to(initial + 1.hour) do
+        position.update!(active: false)
+        expect(position.activated_at).to eq(initial)
+      end
+    end
+
+    it "leaves activated_at unchanged when an already-active position is updated" do
+      initial = Time.utc(2026, 11, 12, 12, 0, 0)
+      position = travel_to(initial) { create(:organization_bill_position, active: true) }
+
+      travel_to(initial + 1.hour) do
+        position.update!(summary: "Revised summary")
+        expect(position.activated_at).to eq(initial)
+      end
+    end
+
+    it "updates activated_at when a deactivated position is reactivated" do
+      initial = Time.utc(2026, 11, 12, 12, 0, 0)
+      position = travel_to(initial) { create(:organization_bill_position, active: true) }
+
+      travel_to(initial + 1.hour) { position.update!(active: false) }
+
+      reactivated = initial + 2.hours
+      travel_to(reactivated) do
+        position.update!(active: true)
+        expect(position.activated_at).to eq(reactivated)
+      end
     end
   end
 end
