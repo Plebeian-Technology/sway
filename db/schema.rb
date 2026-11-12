@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_000002) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -334,6 +334,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_000000) do
     t.index ["bill_id"], name: "index_bill_summary_revisions_on_bill_id"
     t.index ["news_source_snapshot_id"], name: "index_bill_summary_revisions_on_news_source_snapshot_id"
     t.index ["restored_from_id"], name: "index_bill_summary_revisions_on_restored_from_id"
+  end
+
+  create_table "bill_views", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "bill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bill_id"], name: "index_bill_views_on_bill_id"
+    t.index ["user_id", "bill_id"], name: "index_bill_views_on_user_id_and_bill_id", unique: true
   end
 
   create_table "bills", force: :cascade do |t|
@@ -1428,6 +1437,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_000000) do
   add_foreign_key "bill_summary_revisions", "bills"
   add_foreign_key "bill_summary_revisions", "news_article_source_snapshots", column: "news_source_snapshot_id", on_delete: :nullify
   add_foreign_key "bill_summary_revisions", "users", column: "actor_id"
+  add_foreign_key "bill_views", "bills"
+  add_foreign_key "bill_views", "users"
   add_foreign_key "bills", "legislative_sessions", on_delete: :nullify
   add_foreign_key "bills", "legislators"
   add_foreign_key "bills", "sway_locales"

@@ -157,6 +157,7 @@ class User < ApplicationRecord
   has_many :user_votes, dependent: :destroy
   has_many :user_bill_reminders, dependent: :destroy
   has_many :user_bill_shares, dependent: :destroy
+  has_many :bill_views, dependent: :destroy
 
   # @lat: [[reconcile-user-districts-service-design#Why the comparison happens at two levels]]
   has_many :user_districts, dependent: :destroy

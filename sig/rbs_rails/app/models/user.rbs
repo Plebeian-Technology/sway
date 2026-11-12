@@ -1099,6 +1099,10 @@ class ::User < ::ApplicationRecord
   def user_bill_shares=: (::UserBillShare::ActiveRecord_Associations_CollectionProxy | ::Array[::UserBillShare]) -> (::UserBillShare::ActiveRecord_Associations_CollectionProxy | ::Array[::UserBillShare])
   def user_bill_share_ids: () -> ::Array[::Integer]
   def user_bill_share_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def bill_views: () -> ::BillView::ActiveRecord_Associations_CollectionProxy
+  def bill_views=: (::BillView::ActiveRecord_Associations_CollectionProxy | ::Array[::BillView]) -> (::BillView::ActiveRecord_Associations_CollectionProxy | ::Array[::BillView])
+  def bill_view_ids: () -> ::Array[::Integer]
+  def bill_view_ids=: (::Array[::Integer]) -> ::Array[::Integer]
   def user_devices: () -> ::UserDevice::ActiveRecord_Associations_CollectionProxy
   def user_devices=: (::UserDevice::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDevice]) -> (::UserDevice::ActiveRecord_Associations_CollectionProxy | ::Array[::UserDevice])
   def user_device_ids: () -> ::Array[::Integer]

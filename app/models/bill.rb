@@ -99,6 +99,7 @@ class Bill < ApplicationRecord
   has_many :news_article_source_uses, through: :bill_news_articles, source: :source_uses
   has_many :news_article_discovery_requests, inverse_of: :bill, dependent: :destroy
   has_many :user_bill_shares, dependent: :destroy
+  has_many :bill_views, dependent: :destroy
 
   # @lat: [[legislation-pipeline#Parsed references are replaced together]]
   has_many :bill_section_references, dependent: :destroy, inverse_of: :bill
