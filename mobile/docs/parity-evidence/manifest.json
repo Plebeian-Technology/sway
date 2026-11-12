@@ -20,7 +20,7 @@
             "android_diff_pct": null,
             "pass": false,
             "waiver_reason": "iOS capture deferred until the operator runs the capture pipeline",
-            "notes": "Capture deferred — operator must run pnpm parity:auth + pnpm parity:capture:web + pnpm parity:capture:ios + pnpm parity:diff."
+            "notes": "Capture deferred — operator must run pnpm parity:auth + capture pipeline."
         },
         {
             "id": "bills",
