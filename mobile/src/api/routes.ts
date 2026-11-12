@@ -26,6 +26,8 @@ export const Routes = {
 
     testPush: () => "/api/v1/notifications/test_push",
 
+    feed: () => "/feed",
+
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",
     bill: (id: number) => `/bills/${id}`,

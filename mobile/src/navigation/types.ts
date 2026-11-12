@@ -1,6 +1,7 @@
 // @lat: [[mobile-tab-navigation-architecture#types.ts: why the route-name types are split per stack]]
 export type RootParamList = {
     Auth: undefined;
+    Feed: undefined;
     Home: undefined;
     Bills: undefined;
     Legislators: undefined;
@@ -20,11 +21,17 @@ export type OnboardingStackParamList = {
 };
 
 export type AppDrawerParamList = {
+    Feed: undefined;
     Home: undefined;
     Bills: undefined;
     Legislators: undefined;
     Orgs: undefined;
     Profile: undefined;
+};
+
+export type FeedStackParamList = {
+    FeedList: undefined;
+    BillDetail: { id: number };
 };
 
 export type HomeStackParamList = {

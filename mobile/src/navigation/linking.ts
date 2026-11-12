@@ -7,6 +7,12 @@ export const linking: LinkingOptions<RootParamList> = {
     config: {
         screens: {
             Auth: "sign-in",
+            Feed: {
+                screens: {
+                    FeedList: "feed",
+                    BillDetail: { path: "bills/:id", parse: { id: Number } },
+                },
+            },
             Home: {
                 screens: {
                     BillOfTheMonth: { path: "bill_of_the_month", alias: ["bill_of_the_week"] },

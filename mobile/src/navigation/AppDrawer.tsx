@@ -7,15 +7,17 @@ import {
     type DrawerContentComponentProps,
 } from "@react-navigation/drawer";
 import { getFocusedRouteNameFromRoute, type RouteProp } from "@react-navigation/native";
-import { Home as HomeIcon, FileText, Users, Building2, User } from "lucide-react-native";
+import { Home as HomeIcon, FileText, Newspaper, Users, Building2, User } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import { chromeColors } from "../theme/chrome";
 import DrawerBrandBlock from "../components/DrawerBrandBlock";
 import type { AppDrawerParamList } from "./types";
+import FeedStack from "./FeedStack";
 import HomeStack from "./HomeStack";
 import BillsStack from "./BillsStack";
 import LegislatorsStack from "./LegislatorsStack";
@@ -27,6 +29,7 @@ import { onboardingHandoff } from "./onboardingHandoff";
 const Drawer = createDrawerNavigator<AppDrawerParamList>();
 
 const TOP_LEVEL_ROUTE_NAMES = [
+    "FeedList",
     "BillOfTheMonth",
     "BillsList",
     "PastBillsOfTheMonth",
@@ -59,7 +62,7 @@ const renderDrawerContent = (props: DrawerContentComponentProps): React.ReactEle
 const AppDrawer: React.FC = () => {
     // @lat: [[mobile-auth-and-onboarding-flow#onboardingHandoff#AppDrawer's use of the handoff flag]]
     const [initialRouteName] = useState<keyof AppDrawerParamList>(() =>
-        onboardingHandoff.consumeLandOnLegislators() ? "Legislators" : "Home",
+        onboardingHandoff.consumeLandOnLegislators() ? "Legislators" : "Feed",
     );
 
     const { colorScheme } = useTheme();
@@ -98,6 +101,17 @@ const AppDrawer: React.FC = () => {
                         sceneStyle: { backgroundColor: t.background },
                     })}
                 >
+                    <Drawer.Screen
+                        name="Feed"
+                        component={FeedStack}
+                        options={{
+                            drawerLabel: PARITY_COPY.feed.title,
+                            drawerItemTestID: "drawer-item-feed",
+                            drawerIcon: ({ color, focused }) => (
+                                <Newspaper color={color} size={24} strokeWidth={focused ? 2.5 : 2} />
+                            ),
+                        }}
+                    />
                     <Drawer.Screen
                         name="Home"
                         component={HomeStack}
