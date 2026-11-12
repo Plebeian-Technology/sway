@@ -565,12 +565,16 @@ class ApplicationController < ActionController::Base
     return if attribution_key.blank?
 
     cookies.permanent[:sway_attribution_key] = attribution_key
-    bill_id = params[:bill_id].presence || (params[:id].presence if controller_name == "bills")
+    bill_id = string_param(:bill_id) || (string_param(:id) if controller_name == "bills")
     record_article_bill_click(attribution_key, bill_id: bill_id)
   end
 
-  def record_article_bill_click(attribution_key, bill_id: nil)
-    bill_id = bill_id.presence || params[:bill_id].presence || (params[:id].presence if controller_name == "bills")
+  def string_param(key)
+    value = params[key]
+    value if value.is_a?(String) && value.present?
+  end
+
+  def record_article_bill_click(attribution_key, bill_id:)
     article_bill = ArticleEngagementTrackerService.resolve_article_bill(
       attribution_key: attribution_key,
       bill_id: bill_id

@@ -141,7 +141,8 @@ class ApplicationController < ActionController::Base
     def report_repeated_rate_limit: () -> void
 
     def capture_attribution_param: () -> void
-    def record_article_bill_click: (String attribution_key, ?bill_id: (Bill | Integer | String)?) -> void
+    def string_param: (Symbol key) -> String?
+    def record_article_bill_click: (String attribution_key, bill_id: String?) -> void
     def current_visitor_token: () -> String
     def bill_creator_tab_param: (?ActionController::Parameters source) -> untyped
     def track_sql_query_telemetry: () { () -> void } -> void

@@ -111,4 +111,16 @@ RSpec.describe "Partner article click tracking", type: :request do
     expect(response).to have_http_status(:ok)
     expect(article_bill.reload.clicks_count).to eq(0)
   end
+
+  it "ignores an array bill_id alongside an attribution param" do
+    get "/", params: {partner: "unknown-slug", bill_id: [bill.id.to_s]}
+    expect(response).to have_http_status(:ok)
+    expect(article_bill.reload.clicks_count).to eq(0)
+  end
+
+  it "ignores a hash bill_id alongside an attribution param" do
+    get "/", params: {ref: "999999", bill_id: {a: bill.id.to_s}}
+    expect(response).to have_http_status(:ok)
+    expect(article_bill.reload.clicks_count).to eq(0)
+  end
 end
