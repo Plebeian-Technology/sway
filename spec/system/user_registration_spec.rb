@@ -116,7 +116,7 @@ RSpec.describe "User Registration", type: :system, js: true do
 
     # @lat: [[identity-and-access#Registration is asynchronous by necessity]]
     expect(page).to have_current_path(
-      /legislators/,
+      /\/feed/,
       ignore_query: true,
       wait: 15
     )
@@ -254,7 +254,7 @@ RSpec.describe "User Registration", type: :system, js: true do
 
     visit sway_registration_index_path
     expect(page).to have_current_path(
-      /legislators/,
+      /\/feed/,
       ignore_query: true,
       wait: 15
     )
@@ -372,7 +372,7 @@ RSpec.describe "User Registration", type: :system, js: true do
 
     visit sway_registration_index_path
     expect(page).to have_current_path(
-      /legislators/,
+      /\/feed/,
       ignore_query: true,
       wait: 10
     )

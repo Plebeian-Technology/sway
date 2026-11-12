@@ -21,7 +21,7 @@ class SwayRegistrationController < ApplicationController
       redirect_to root_path
     elsif u.registered?
       u.complete! unless u.completed? && u.is_registration_complete
-      redirect_to legislators_path
+      redirect_to feed_path
     elsif u.processing?
       render inertia: Pages::REGISTRATION, props: registration_page_props(processing: true)
     else
@@ -169,7 +169,7 @@ class SwayRegistrationController < ApplicationController
     if reconciliation[:success] && reconciliation[:bill].present?
       respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: bill_path(reconciliation[:bill]))
     else
-      respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: legislators_path)
+      respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: feed_path)
     end
   end
 

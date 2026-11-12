@@ -60,6 +60,7 @@ interface ::_RbsRailsPathHelpers
   def bill_score_path: (*untyped) -> ::String
   def bill_score_district_path: (*untyped) -> ::String
   def districts_path: (*untyped) -> ::String
+  def feed_path: (*untyped) -> ::String
   def influence_index_path: (*untyped) -> ::String
   def legislators_path: (*untyped) -> ::String
   def legislator_path: (*untyped) -> ::String

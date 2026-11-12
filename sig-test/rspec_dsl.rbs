@@ -165,6 +165,7 @@ class Object
     def confirm_phone_users_passkeys_path: (*untyped args, **untyped kwargs) -> untyped
     def add_options_users_passkeys_path: (*untyped args, **untyped kwargs) -> untyped
     def add_callback_users_passkeys_path: (*untyped args, **untyped kwargs) -> untyped
+    def feed_path: (*untyped args, **untyped kwargs) -> untyped
     def legislators_path: (*untyped args, **untyped kwargs) -> untyped
     def terms_of_service_path: (*untyped args, **untyped kwargs) -> untyped
     def users_organization_memberships_path: (*untyped args, **untyped kwargs) -> untyped
@@ -626,6 +627,7 @@ module RSpec
     def confirm_phone_users_passkeys_path: (*untyped args, **untyped kwargs) -> untyped
     def add_options_users_passkeys_path: (*untyped args, **untyped kwargs) -> untyped
     def add_callback_users_passkeys_path: (*untyped args, **untyped kwargs) -> untyped
+            def feed_path: (*untyped args, **untyped kwargs) -> untyped
             def legislators_path: (*untyped args, **untyped kwargs) -> untyped
             def sway_registration_index_path: (*untyped args, **untyped kwargs) -> untyped
             def users_organization_memberships_path: (*untyped args, **untyped kwargs) -> untyped

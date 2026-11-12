@@ -235,10 +235,10 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         }.to change { passkey.reload.last_used_at }.from(nil)
       end
 
-      it "redirects to legislators when registration is complete" do
+      it "redirects to feed when registration is complete" do
         post callback_users_webauthn_sessions_path, params: callback_params
 
-        expect(response).to redirect_to(legislators_path)
+        expect(response).to redirect_to(feed_path)
       end
 
       # @lat: [[low-friction-voting#Reconciliation on registration and sign-in]]
@@ -413,7 +413,7 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:user_id]).to eq(user.id)
       expect(session_hash[:inertia_clear_history]).to be true
       expect(session_hash[:verified_phone]).to eq(phone)
-      expect(response).to redirect_to(legislators_path)
+      expect(response).to redirect_to(feed_path)
       expect(session_hash[:discoverable_authentication]).to be_nil
     end
 

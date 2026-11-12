@@ -25,6 +25,7 @@ import {
     LayoutDashboard,
     LogIn,
     LogOut,
+    Newspaper,
     ScrollText,
     Search,
     Sparkles,
@@ -122,6 +123,7 @@ const AuthLayout: React.FC<IProps> = ({ children }) => {
         }
 
         const defaults: NavItem[] = [
+            { route: ROUTES.feed, label: PARITY_COPY.feed.title, Icon: Newspaper, prefetch: true },
             { route: ROUTES.legislators, label: "Representatives", Icon: Users, prefetch: true },
             { route: ROUTES.billOfTheMonth, label: PARITY_COPY.billOfTheMonth.title, Icon: Bookmark, prefetch: true },
             {

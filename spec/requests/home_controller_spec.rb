@@ -78,13 +78,13 @@ RSpec.describe "/", type: :request do
     end
 
     context "when user is signed in with complete registration" do
-      it "redirects to legislators path" do
+      it "redirects to feed path" do
         _sway_locale, user = setup_pre_registration
         create(:user_legislator, user: user)
         user.complete!
 
         get root_path
-        expect(response).to redirect_to(legislators_path)
+        expect(response).to redirect_to(feed_path)
       end
     end
   end

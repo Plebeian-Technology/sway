@@ -68,14 +68,14 @@ RSpec.describe "User Login", type: :system, js: true do
         callback_users_webauthn_sessions_path,
         {publicKeyCredential: assertion}
       )
-    # On success the callback redirects to legislators_path, which is how
+    # On success the callback redirects to feed_path, which is how
     # Inertia expects a successful post to end.
     expect(complete_auth.fetch("status")).to eq(303)
 
-    # The session exists, so visiting the legislators page is not bounced.
-    visit legislators_path
+    # The session exists, so visiting the feed page is not bounced.
+    visit feed_path
     expect(page).to have_current_path(
-      legislators_path,
+      feed_path,
       ignore_query: true,
       wait: CapybaraHelpers::SECONDS_TO_WAIT
     )
@@ -83,7 +83,7 @@ RSpec.describe "User Login", type: :system, js: true do
   end
 
   # @lat: [[identity-and-access#The sign-in challenge says which ceremony to run]]
-  it "logs in through the real passkey UI and renders the legislators page" do
+  it "logs in through the real passkey UI and renders the feed page" do
     user = register_passkey_user(phone: phone)
     complete_registration_with_active_link(user)
 
@@ -98,13 +98,13 @@ RSpec.describe "User Login", type: :system, js: true do
 
     # The chain: the page starts authentication, the browser asks the fake
     # authenticator for a signature, the result is posted back for checking, and
-    # the server signs the user in and redirects to the legislators page.
+    # the server signs the user in and redirects to the feed page.
     expect(page).to have_current_path(
-      legislators_path,
+      feed_path,
       ignore_query: true,
       wait: CapybaraHelpers::SECONDS_TO_WAIT
     )
-    expect(page).to have_text("Representatives")
+    expect(page).to have_text("Feed")
   end
 
   it "rejects login when passkey challenge is tampered" do

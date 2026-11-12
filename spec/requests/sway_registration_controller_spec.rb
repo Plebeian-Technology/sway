@@ -15,13 +15,13 @@ RSpec.describe "/registration", type: :request do
     end
 
     context "when user registration is complete" do
-      it "redirects to legislators path" do
+      it "redirects to feed path" do
         _sway_locale, user = setup_pre_registration
         create(:user_legislator, user: user)
         user.complete!
 
         get sway_registration_index_path
-        expect(response).to redirect_to(legislators_path)
+        expect(response).to redirect_to(feed_path)
       end
     end
 
@@ -656,10 +656,10 @@ RSpec.describe "/registration", type: :request do
       expect(UserVote.find_by(user: reg_user, bill: bill).support).to eq("FOR")
     end
 
-    it "redirects to legislators_path when no pending vote cookie exists" do
+    it "redirects to feed_path when no pending vote cookie exists" do
       post "/sway_registration", params: {sway_registration: address_params}
 
-      expect(response).to redirect_to(legislators_path)
+      expect(response).to redirect_to(feed_path)
     end
   end
 end

@@ -122,12 +122,12 @@ RSpec.describe "WebAuthn Passkey", type: :system, js: true, phase16: true do
         callback_users_webauthn_sessions_path,
         {publicKeyCredential: assertion}
       )
-    # The sign-in callback answers with a redirect to legislators_path.
+    # The sign-in callback answers with a redirect to feed_path.
     expect(complete_authentication.fetch("status")).to eq(303)
 
-    visit legislators_path
+    visit feed_path
     expect(page).to have_current_path(
-      legislators_path,
+      feed_path,
       ignore_query: true,
       wait: 10
     )

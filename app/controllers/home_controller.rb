@@ -13,7 +13,7 @@ class HomeController < ApplicationController
           isBubbles: true
         }
     elsif u.registered?
-      redirect_to legislators_path
+      redirect_to feed_path
     else
       redirect_to sway_registration_index_path
     end

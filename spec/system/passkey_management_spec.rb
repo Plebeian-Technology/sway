@@ -100,8 +100,8 @@ RSpec.describe "Passkey management", type: :system, js: true do
     click_button "Sign in with a passkey"
 
     # discoverable_callback works out who the user is from the signed response
-    # alone, then sends a fully registered user to /legislators.
-    expect(page).to have_text("Representatives", wait: 15)
-    expect(page).to have_current_path("/legislators", ignore_query: true)
+    # alone, then sends a fully registered user to /feed.
+    expect(page).to have_text("Feed", wait: 15)
+    expect(page).to have_current_path("/feed", ignore_query: true)
   end
 end

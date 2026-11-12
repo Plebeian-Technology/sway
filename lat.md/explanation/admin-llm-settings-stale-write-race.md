@@ -77,7 +77,7 @@ The non-admin denial example's real assertion is on the redirect target, not on 
 
 The two `have_no_text` checks used to be the whole assertion, and they depend on the page's WORDING rather than on the guard: measured, not assumed — with `before_action :verify_is_sway_admin` deleted from the controller AND the heading renamed, a non-admin got the full admin page and the example still reported 1 example, 0 failures. That takes two separate edits, but renaming a heading is exactly the sort of change nobody re-checks an authorization spec over.
 
-`verify_is_sway_admin` redirects browser clients to `root_path`, and `HomeController#index` sends a fully registered user on to `/legislators`. Landing there IS the refusal, and it does not depend on any words from the admin page, so the example asserts it outright first; only then does "LLM Settings is not on this page" mean anything. Put through the same simulated regression, this now fails with `expected "/admin/llm_settings" to equal "/legislators"`.
+`verify_is_sway_admin` redirects browser clients to `root_path`, and `HomeController#index` sends a fully registered user on to `/feed`. Landing there IS the refusal, and it does not depend on any words from the admin page, so the example asserts it outright first; only then does "LLM Settings is not on this page" mean anything. Put through the same simulated regression, this now fails with `expected "/admin/llm_settings" to equal "/feed"`.
 
 ## Test design: no example for saving an invalid model
 

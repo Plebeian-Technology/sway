@@ -147,8 +147,10 @@ describe("AuthLayout — admin-mode Drawer flip", () => {
 
     it("renders user-facing nav outside the /admin namespace even when user is sway_admin", () => {
         setPage({ url: "/legislators", user: { is_admin: true, is_registration_complete: true } });
-        const { queryByRole } = renderV2(<AuthLayout />);
+        const { queryByRole, getAllByRole } = renderV2(<AuthLayout />);
 
+        expect(navLink(queryByRole, "Feed")).toHaveAttribute("href", "/feed");
+        expect(getAllByRole("link").find((el) => el.getAttribute("href") === "/feed")?.textContent).toContain("Feed");
         expect(navLink(queryByRole, "Representatives")).not.toBeNull();
         expect(navLink(queryByRole, "Bill of the Month")).not.toBeNull();
         expect(navLink(queryByRole, "Past Bills of the Month")).toHaveAttribute("href", "/past_bills_of_the_month");
@@ -156,6 +158,15 @@ describe("AuthLayout — admin-mode Drawer flip", () => {
         expect(navLink(queryByRole, "Admin Home")).toBeNull();
         // user-mode secondary nav still surfaces the "Admin" entry that links to /admin
         expect(navLink(queryByRole, "Admin")).not.toBeNull();
+    });
+
+    it("places Feed first in the signed-in primary navigation list", () => {
+        setPage({ url: "/feed", user: { is_admin: false, is_registration_complete: true } });
+        const { getAllByRole } = renderV2(<AuthLayout />);
+
+        const navLinks = getAllByRole("link").filter((el) => el.getAttribute("href") !== "/");
+        expect(navLinks[0]).toHaveAttribute("href", "/feed");
+        expect(navLinks[1]).toHaveAttribute("href", "/legislators");
     });
 
     it("labels the influence nav item 'Your Sway', matching the page heading and the terminology canon", () => {

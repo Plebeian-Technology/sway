@@ -178,8 +178,8 @@ RSpec.describe "Admin LLM Settings",
       visit "/admin/llm_settings"
 
       # @lat: [[admin-gate-shared-examples#Admin-gate shared examples#Incomplete registration can mask the admin gate]]
-      expect(page).to have_current_path("/legislators", ignore_query: true, wait: 10)
-      expect(page).to have_text("Representatives", wait: 10)
+      expect(page).to have_current_path("/feed", ignore_query: true, wait: 10)
+      expect(page).to have_text("Feed", wait: 10)
 
       expect(page).to have_no_text("LLM Settings")
       expect(page).to have_no_text("Summarization model")

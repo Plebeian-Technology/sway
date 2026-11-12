@@ -147,7 +147,7 @@ module Users
           if reconciliation[:success] && reconciliation[:bill].present?
             redirect_to bill_path(reconciliation[:bill])
           else
-            redirect_to legislators_path
+            redirect_to feed_path
           end
         else
           redirect_to sway_registration_index_path
@@ -242,7 +242,7 @@ module Users
           if reconciliation[:success] && reconciliation[:bill].present?
             redirect_to bill_path(reconciliation[:bill])
           else
-            redirect_to legislators_path
+            redirect_to feed_path
           end
         else
           redirect_to sway_registration_index_path
