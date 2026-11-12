@@ -140,6 +140,10 @@ belongs after the last column has been converted rather than after the first.
 
 ## Converting the rows that already exist
 
+Data migration `db/data/20261111000002_encrypt_address_details.rb` and rake task `sway:users:encrypt_personal_details` walk their tables to encrypt existing rows. `ActiveRecord::Encryption::EncryptableRecord#encrypt` writes the ciphertext.
+
+For addresses, `db/data/20261111000002_encrypt_address_details.rb` encrypts `street`, `street2`, `street3`, `latitude`, and `longitude`. It inspects each row and calls `encrypt` only when at least one column holds plaintext, preserving byte-level stability on already-encrypted rows.
+
 `sway:users:encrypt_personal_details` walks the table and re-saves each row,
 which is what encrypts it. `ActiveRecord::Encryption::EncryptableRecord#encrypt`
 does the work; a row already encrypted is skipped rather than encrypted twice.
