@@ -2,7 +2,7 @@ import { KeyOf } from "sway";
 
 export const ROUTES = {
     index: "/",
-    signin: "/signin",
+    signin: "/",
     sign_up: "/sign_up",
     logout: "/users/webauthn/sessions/0",
     registration: "sway_registration",
