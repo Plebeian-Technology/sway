@@ -25,7 +25,7 @@ That is visible on the legislators page, caught by `spec/production_readiness/pr
 
 `LegislatorIdentity.seat_and_name` returns `nil` when the source published no usable name under the seat.
 
-`BaltimoreRefresh` writes a blank name on purpose when Legistar cannot say who chairs the council, so the office row never disappears — and an entry with no name cannot say which person holds the seat. The caller skips it, leaving the person already on that seat exactly as they are. The alternative, seeding it, would write the blank over their name.
+An entry with no name cannot say which person holds the seat, so the caller skips it and leaves the person already on that seat exactly as they are. Seeding it instead would write the blank over their name. The deleted Baltimore refresher produced such entries: it wrote a blank name when Legistar could not say who chaired the council.
 
 ## Why a seat may not contain the separator
 

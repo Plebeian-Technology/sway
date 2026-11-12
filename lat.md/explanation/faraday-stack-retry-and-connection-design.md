@@ -38,10 +38,13 @@ Adding a connection back here would rebuild that trap. If llama.cpp ever needs o
 `.open_states` and `.congress_gov` both replace an earlier bare Faraday call that raised on the first blip:
 
 - `.open_states` (the OpenStates v3 API) replaced a bare `Faraday.get`.
-- `.congress_gov` (the congress.gov v3 API, used by the weekly
-  `CongressRefresh` legislators-cache roster fetch) replaced a bare
+- `.congress_gov` (the congress.gov v3 API, used by `FetchBillsService`,
+  `FetchHearingsService` and the House legislator-vote scraper) replaced a bare
   `Faraday.new`. `OPEN_DATA_DEFAULTS`'s bounded 429/5xx retries mean one blip
-  mid-pagination no longer aborts the whole run.
+  mid-pagination no longer aborts the whole run. The weekly legislators-cache
+  roster fetch (`LegislatorsCache::BaseRefresh`) does not use this profile:
+  `Legislation::Adapters::GenericRosterAdapter` opens a plain Faraday
+  connection with no retries.
 
 ## Why .congress_legislators has a longer timeout
 

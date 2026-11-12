@@ -61,7 +61,7 @@ It is deliberately far shorter than the interval it guards. An hour of slack on 
 
 Each locale's refresh runs inside its own rescue, so one flaky upstream source never stops the other locales from refreshing.
 
-Baltimore's Legistar feed, OpenStates, and Congress's API are three independent upstream sources with independent uptimes. A single rescue around the whole loop would let one down source cost every other locale its weekly refresh, so the isolation sits at the per-locale boundary where the independence actually lives. Each caught exception is logged and reported to Sentry with the locale's name attached, and the loop moves on to the next locale rather than propagating.
+OpenStates and Congress's API are independent upstream sources with independent uptimes. A single rescue around the whole loop would let one down source cost every other locale its weekly refresh, so the isolation sits at the per-locale boundary where the independence actually lives. Each caught exception is logged and reported to Sentry with the locale's name attached, and the loop moves on to the next locale rather than propagating.
 
 ## Why a total-failure run reports rather than fails
 

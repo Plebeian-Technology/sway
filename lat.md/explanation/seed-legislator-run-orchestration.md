@@ -23,9 +23,9 @@ The value, not the published id, is compared: a stored row's `external_id` holds
 
 `unidentified_entries` collects every entry the roster carried but could not name a person in.
 
-Such an entry adds nothing to `seen_identity_values`, and the retire pass would read that silence as the sitting member having left. `BaltimoreRefresh` writes the Council President this way on purpose when Legistar cannot resolve the chair.
+Such an entry adds nothing to `seen_identity_values`, and the retire pass would read that silence as the sitting member having left.
 
-An entry that names no person is left alone rather than seeded, for the same reason: `BaltimoreRefresh` writes the Council President row with a blank name on purpose when Legistar cannot say who chairs the council, so that the office never drops out of the roster. Under a seat-keyed identity a blank name cannot say who holds the seat. Seeding it anyway would write the blank over the sitting member's name — the same destruction the seat-keyed identity change is about, arriving by a different road.
+An entry that names no person is left alone rather than seeded, for the same reason. Under a seat-keyed identity a blank name cannot say who holds the seat, so the caller skips the entry rather than writing the blank over the sitting member's name — the same destruction the seat-keyed identity change is about, arriving by a different road. The deleted Baltimore refresher produced such entries: it wrote the Council President row with a blank name when Legistar could not say who chaired the council.
 
 ## Malformed rows fail loudly, per-row
 

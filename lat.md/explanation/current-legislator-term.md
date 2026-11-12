@@ -398,8 +398,11 @@ The `term_rules.seat_chambers` mapping opts selected titles into configured cham
 
 A refresh overlays incoming fields onto the same person's committed roster entry. Source silence preserves stored values; an explicitly supplied value, including nil, blank text, false, or an empty array, replaces them.
 
-BaseRefresh applies this contract to Baltimore, OpenStates, and Congress before
-writing or uploading JSON. The baseline is the locale's canonical seed file,
+BaseRefresh applies this contract to automated rosters, OpenStates and Congress,
+before writing or uploading JSON. A curated roster such as Baltimore's returns
+before the merge runs, as
+[[current-legislator-term#Missing source fields preserve stored roster values#Baltimore source presence]]
+describes. The baseline is the locale's canonical seed file,
 not the live Legislator table. This protects the existing file-based refresh
 workflow while database refresh remains separate planned work, with its intended
 behavior described in [[current-legislator-term#Planned automatic legislator updates]].
@@ -410,7 +413,8 @@ call-path photo regression checks the returned JSON itself, because the private
 merge examples alone do not prove that refresh publication retains the photo.
 
 Matching follows the seed identity rules: Congress bioguide IDs, OpenStates
-person IDs, or the curated locale's declared identity scheme. Baltimore needs
+person IDs, or the curated locale's declared identity scheme, which is either a
+person-keyed external ID or the seat-keyed scheme. The seat-keyed scheme needs
 the seat plus a normalized published name. A successor or unnamed seat inherits
 nothing from its previous occupant. Only incoming people are returned, so this
 merge cannot undo observed departures or add back a missing roster member.
@@ -428,13 +432,11 @@ and term-year aliases. Congress updateDate remains excluded as volatile metadata
 
 ### Baltimore source presence
 
-Curated Baltimore roster entries preserve stored contact details and photos when incoming updates omit them. Properties explicitly present as nil or blank clear existing values.
+Baltimore's roster is curated: the refresh returns no changes, so the checked-in seed file is the roster and nothing overwrites its stored contacts or photos.
 
-Baltimore configures `roster_rules.retrieval` as `curated` and `term_rules.identified_by` as `seat` in [[config/sway_locales/baltimore-maryland-united_states.yml]]. [[app/services/legislators_cache/base_refresh.rb#BaseRefresh]] skips automated network retrieval for curated rosters, but `merge_stored_fields` handles incoming roster updates against the checked-in seed file.
+Baltimore configures `roster_rules.retrieval` as `curated` and `term_rules.identified_by` as `seat` in [[config/sway_locales/baltimore-maryland-united_states.yml]]. [[app/services/legislators_cache/base_refresh.rb#BaseRefresh]] returns an empty result for a curated roster before it fetches or merges anything, so `merge_stored_fields` applies only to automated rosters. A Baltimore roster change is an edit to the seed file itself.
 
-The merge pairs the seat external ID with the published first and last name through [[app/models/legislator_identity.rb#LegislatorIdentity]]. A successor arriving on the same seat has a different name, so the merge treats them as a distinct identity and preserves no details from the previous occupant. Unnamed seat entries similarly inherit no stored person fields.
-
-When incoming entries provide new values, `stored_fields_for` removes competing alias keys before merging. For example, supplying any photo spelling removes stored `photoURL`, `photo_url`, and `photoUrl` before applying the incoming value. [[app/services/legislators_cache/baltimore_seat_keys.rb#LegislatorsCache#BaltimoreSeatKeys]] maintains stable seat identifiers for citywide offices and council districts across seeding and cache operations.
+[[app/services/legislators_cache/baltimore_seat_keys.rb#LegislatorsCache#BaltimoreSeatKeys]] maintains stable seat identifiers for citywide offices and council districts.
 
 ## Planned automatic legislator updates
 

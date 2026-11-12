@@ -26,7 +26,7 @@ Locale configuration is driven entirely by declarative YAML files in `config/swa
 A compatible US state requires six backend deliverables; a maintained US city requires seven. These counts exclude app installation, optional developer setup, frontend source presentation and unsupported provider implementation.
 
 - Six shared deliverables: seed metadata, SwayLocale declaration, term declaration, roster input, address matching, seed verification.
-- The maintained-city seventh deliverable is a matching official roster refresher; the only municipal refresher currently reads Baltimore.
+- The maintained-city seventh deliverable is a matching official roster refresher; no municipal refresher exists, and Baltimore's roster is curated.
 - Merely adding an empty locale row is one edit, but does not establish representative assignment or working imports.
 - A fully automated locale has no universal fixed step count: discovery, bill text, hearings, law, roster refresh and legislative votes are separate provider capabilities.
 
@@ -51,7 +51,7 @@ Declaring a provider symbol does not establish support for another SwayLocale. T
 | Legistar vote updates | Separate Baltimore sponsor inference from genuine roll calls; declare final-passage action identifiers |
 | Other OpenStates state votes | Generic scraper explicitly raises NotImplementedError outside Maryland |
 | Full law pipeline | Only Baltimore, Maryland and US law adapters exist; unrelated locales cannot borrow those corpora |
-| New municipal roster | BaltimoreRefresh is city-specific; no explicit manual/unavailable refresher mode exists |
+| New municipal roster | `curated` and `unavailable` roster modes exist; automated municipal Legistar `Persons` parsing does not map council districts or executive offices |
 | New source family | Separate discovery, bill-text, hearing, law and vote implementations as applicable |
 
 ## Client presentation

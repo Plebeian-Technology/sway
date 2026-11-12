@@ -17,7 +17,7 @@ Any code that updates a `Legislator` row for an unrelated reason — a migration
 
 The `SeedLegislatorTerms` call sits outside the guard, so terms are written on every run, guard or no guard.
 
-`spec/db/seeds/congress_roster_spec.rb` reads the committed Congress roster file directly, because that file is the only thing that tells Sway how long each member really held each seat — everything downstream reads it: who is in office, and which term a vote belongs to. The roster is rewritten by `LegislatorsCache::CongressRefresh` every week, so a broken rewrite would quietly put the file back to one term per member with no seat named — a state that files votes under the wrong term. Reading the file itself means that state cannot recur without one of these examples going red.
+`spec/db/seeds/congress_roster_spec.rb` reads the committed Congress roster file directly, because that file is the only thing that tells Sway how long each member really held each seat — everything downstream reads it: who is in office, and which term a vote belongs to. The roster is rewritten by `LegislatorsCache::BaseRefresh` every week, so a broken rewrite would quietly put the file back to one term per member with no seat named — a state that files votes under the wrong term. Reading the file itself means that state cannot recur without one of these examples going red.
 
 ## Executives get no term
 
