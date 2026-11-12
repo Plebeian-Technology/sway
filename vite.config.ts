@@ -10,7 +10,6 @@ import manifestSRI from "vite-plugin-manifest-sri";
 import { relative, resolve } from "path";
 import { Logger } from "sass";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-// import visualizer from "rollup-plugin-visualizer";
 
 // @lat: [[dev-server-watching#Whether a build uploads source maps]]
 const uploadsSourceMaps = Boolean(
@@ -129,7 +128,6 @@ export default defineConfig(({ command }) => ({
         }),
         ReactPlugin(),
         tailwindcss(),
-        // visualizer(),
         // Puts integrity + crossorigin on every script, stylesheet and
         // modulepreload tag: the plugin writes a hash into the manifest and
         // RailsVite::TagHelper copies it onto the tag.
