@@ -57,3 +57,9 @@ The store build scripts ask `with-vault-env.sh` for all four Sentry values, so a
 `app.config.ts` treats Sentry as optional: the plugin is added only when a token exists, and `initSentry` returns without a DSN. That keeps development runs and type checks free of Sentry. A store build is different, because a missing value would ship without crash reports or readable traces, and the gap would surface during an incident. A fork without a Sentry project exports the four names itself, or drops them from the build scripts' lists.
 
 The organization is shared with the web build and read from `SWAY_SENTRY_ORG`. The project and the token have mobile-only items. The web project item is `SWAY_SENTRY_PROJECT`, and an item name may not contain another's, so the mobile one is `SWAY_MOBILE_SENTRY_PROJECT`. Both builds read the token through the same `SENTRY_AUTH_TOKEN` name because `sentry-cli` fixes it, and never in the same process: the web token is extracted inside the Kamal deploy and the mobile one is scoped to the `eas build` command. The item list is in [[settings-and-secrets#Mobile Sentry credentials]].
+
+## Why `@sentry/cli` is a direct dependency
+
+`mobile/package.json` lists `@sentry/cli` itself, pinned to the version `@sentry/react-native` pins, although only Sentry's iOS build phase uses it.
+
+That build phase resolves `@sentry/cli` from `mobile/ios` with Node's ordinary lookup, under `set -e`, before it tries its own pnpm fallback. pnpm links a package's dependencies only inside that package, so a transitive `@sentry/cli` cannot be found from `mobile/ios`: the lookup throws `Cannot find module '@sentry/cli/package.json'` and the archive fails. A direct dependency puts it at `mobile/node_modules/@sentry/cli`. Upgrading `@sentry/react-native` means moving this pin to the version it names.

@@ -126,6 +126,9 @@ importers:
       '@babel/runtime':
         specifier: ^7.25.0
         version: 7.29.7
+      '@sentry/cli':
+        specifier: 2.58.4
+        version: 2.58.4(supports-color@8.1.1)
       '@testing-library/jest-native':
         specifier: ^5.4.0
         version: 5.4.3(react-native@0.83.10(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.0)(supports-color@8.1.1))(react-test-renderer@19.2.0(react@19.2.0))(react@19.2.0)
