@@ -56,6 +56,7 @@ class FeedQuery
     items << reps_item if reps_item
     items.concat(legislative_term_began_items)
     items.concat(bill_of_the_month_released_items)
+    items.concat(legislator_voted_items)
 
     items.sort do |a, b|
       cmp = b.occurred_at <=> a.occurred_at
@@ -71,8 +72,16 @@ class FeedQuery
     )
   end
 
+  def active_user_legislators
+    @active_user_legislators ||= @user
+      .user_legislators
+      .where(active: true)
+      .includes(legislator: {active_term: :seat})
+      .order(:created_at, :id)
+      .to_a
+  end
+
   def representatives_found_item
-    active_user_legislators = @user.user_legislators.where(active: true).includes(:legislator).order(:created_at, :id).to_a
     return nil if active_user_legislators.empty?
 
     earliest_created_at = active_user_legislators.first&.created_at
@@ -138,6 +147,58 @@ class FeedQuery
         user_vote: votes_by_bill_id[bill.id]
       )
     end
+  end
+
+  def legislator_voted_items
+    return [] if active_user_legislators.empty? || declared_locales.empty?
+
+    legislators_by_id = active_user_legislators.map(&:legislator).index_by(&:id)
+    votes = LegislatorVote.where(legislator_id: legislators_by_id.keys, inferred: false).to_a
+    return [] if votes.empty?
+
+    bills_by_id = Bill
+      .unscope(where: :archived_at)
+      .where(id: votes.map(&:bill_id).uniq, sway_locale_id: declared_locales.map(&:id))
+      .includes(:sway_locale)
+      .index_by(&:id)
+    return [] if bills_by_id.empty?
+
+    user_votes_by_bill_id = @user.user_votes.where(bill_id: bills_by_id.keys).index_by(&:bill_id)
+    votes.filter_map do |legislator_vote|
+      bill = bills_by_id[legislator_vote.bill_id]
+      legislator = legislators_by_id[legislator_vote.legislator_id]
+      next unless bill && legislator
+
+      occurred_at = legislator_vote_occurred_at(bill, legislator, legislator_vote)
+      term_start = term_starts_by_locale_id.fetch(bill.sway_locale_id).in_time_zone("UTC").beginning_of_day
+      next if occurred_at < term_start
+
+      Item.new(
+        kind: "legislator_voted",
+        key: "legislator_voted:#{legislator_vote.id}",
+        occurred_at:,
+        sway_locale: bill.sway_locale,
+        bill:,
+        legislator:,
+        legislator_vote:,
+        user_vote: user_votes_by_bill_id[bill.id]
+      )
+    end
+  end
+
+  def legislator_vote_occurred_at(bill, legislator, legislator_vote)
+    if senator?(legislator)
+      bill.senate_vote_date_time_utc || bill.house_vote_date_time_utc || legislator_vote.created_at
+    else
+      bill.house_vote_date_time_utc || bill.senate_vote_date_time_utc || legislator_vote.created_at
+    end
+  end
+
+  def senator?(legislator)
+    chamber = legislator.active_term&.seat&.chamber
+    return true if chamber&.casecmp?("senate")
+
+    legislator.title.to_s.match?(/\bsen/i)
   end
 
   def paginate(sorted_items)

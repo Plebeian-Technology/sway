@@ -163,4 +163,138 @@ RSpec.describe FeedQuery do
       expect(bills).not_to include(other_bill)
     end
   end
+
+  describe "legislator_voted items" do
+    it "includes a vote this term by the user's active legislator with the bill's vote date and the user's own vote" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: rep)
+
+      vote_time = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day + 2.days
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: vote_time)
+      legislator_vote = create(:legislator_vote, bill: bill, legislator: rep)
+      user_vote = create(:user_vote, user: user, bill: bill)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items.size).to eq(1)
+      item = items.first
+      expect(item.key).to eq("legislator_voted:#{legislator_vote.id}")
+      expect(item.occurred_at).to eq(vote_time)
+      expect(item.legislator).to eq(rep)
+      expect(item.bill).to eq(bill)
+      expect(item.sway_locale).to eq(baltimore)
+      expect(item.legislator_vote).to eq(legislator_vote)
+      expect(item.user_vote).to eq(user_vote)
+    end
+
+    it "excludes votes by a non-user legislator or an inactive user_legislator" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      other_rep = create(:legislator, sway_locale: baltimore)
+      inactive_rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: inactive_rep, active: false)
+
+      vote_time = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day + 2.days
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: vote_time)
+      create(:legislator_vote, bill: bill, legislator: other_rep)
+      create(:legislator_vote, bill: bill, legislator: inactive_rep)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items).to be_empty
+    end
+
+    it "excludes a vote dated before the locale's term start" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: rep)
+
+      before_term = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day - 1.day
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: before_term)
+      create(:legislator_vote, bill: bill, legislator: rep)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items).to be_empty
+    end
+
+    it "falls back to the legislator vote's created_at when the bill has no vote date" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: rep)
+
+      vote_created_at = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day + 3.days
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: nil, senate_vote_date_time_utc: nil)
+      legislator_vote = create(:legislator_vote, bill: bill, legislator: rep, created_at: vote_created_at)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items.size).to eq(1)
+      expect(items.first.legislator_vote).to eq(legislator_vote)
+      expect(items.first.occurred_at).to be_within(1.second).of(vote_created_at)
+    end
+
+    it "excludes inferred legislator votes" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: rep)
+
+      vote_time = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day + 2.days
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: vote_time)
+      create(:legislator_vote, :inferred, bill: bill, legislator: rep)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items).to be_empty
+    end
+
+    it "includes a vote on an archived bill from earlier this term" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: rep)
+
+      vote_time = described_class.term_start_on(baltimore).in_time_zone("UTC").beginning_of_day + 2.days
+      bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil, house_vote_date_time_utc: vote_time, archived_at: 1.day.ago)
+      legislator_vote = create(:legislator_vote, bill: bill, legislator: rep)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items.size).to eq(1)
+      expect(items.first.bill).to eq(bill)
+      expect(items.first.legislator_vote).to eq(legislator_vote)
+    end
+
+    it "dates a senator's vote by senate_vote_date_time_utc when the House date is earlier" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      congress = user.sway_locales.find(&:congress?)
+      district = create(:district, sway_locale: congress)
+      senator = create(:legislator, sway_locale: congress)
+      term = create(:legislator_term, legislator: senator, district: district, title: "Sen.")
+      create(:user_legislator, user: user, legislator: senator)
+
+      term_start = described_class.term_start_on(congress).in_time_zone("UTC").beginning_of_day
+      house_time = term_start + 1.day
+      senate_time = term_start + 5.days
+      bill = create(:bill, sway_locale: congress, scheduled_release_date_utc: nil, house_vote_date_time_utc: house_time, senate_vote_date_time_utc: senate_time)
+      create(:legislator_vote, bill: bill, legislator: senator, legislator_term: term)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items.size).to eq(1)
+      expect(items.first.occurred_at).to eq(senate_time)
+    end
+  end
 end

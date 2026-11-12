@@ -47,6 +47,7 @@ class FeedQuery
   @next_cursor: String?
   @declared_locales: Array[SwayLocale]
   @term_starts_by_locale_id: Hash[Integer, Date]
+  @active_user_legislators: Array[UserLegislator]
 
   attr_reader items: Array[Item]
   attr_reader next_cursor: String?
@@ -59,11 +60,15 @@ class FeedQuery
 
   def build_items: () -> Array[Item]
   def user_joined_item: () -> Item
+  def active_user_legislators: () -> Array[UserLegislator]
   def representatives_found_item: () -> Item?
   def declared_locales: () -> Array[SwayLocale]
   def term_starts_by_locale_id: () -> Hash[Integer, Date]
   def legislative_term_began_items: () -> Array[Item]
   def bill_of_the_month_released_items: () -> Array[Item]
+  def legislator_voted_items: () -> Array[Item]
+  def legislator_vote_occurred_at: (Bill bill, Legislator legislator, LegislatorVote legislator_vote) -> (ActiveSupport::TimeWithZone | Time)
+  def senator?: (Legislator legislator) -> bool
   def paginate: (Array[Item] sorted_items) -> [Array[Item], String?]
   def filter_after_cursor: (Array[Item] sorted_items) -> Array[Item]
   def encode_cursor: (Item item) -> String
