@@ -90,4 +90,77 @@ RSpec.describe FeedQuery do
     expect(items.map(&:kind)).not_to include("representatives_found")
     expect(items.map(&:kind)).to include("user_joined", "legislative_term_began")
   end
+
+  describe "bill_of_the_month_released items" do
+    it "includes a Bill of the Month released this term in the user's locale, dated by its release day, with the user's vote" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      term_start = described_class.term_start_on(baltimore)
+      release_date = [term_start, Time.zone.today - 1.day].max
+      bill_with_vote = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: release_date)
+      user_vote = create(:user_vote, user: user, bill: bill_with_vote)
+      bill_without_vote = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: Time.zone.today)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "bill_of_the_month_released" }
+
+      voted_item = items.find { |item| item.bill == bill_with_vote }
+      expect(voted_item).to be_present
+      expect(voted_item.key).to eq("bill_of_the_month_released:#{bill_with_vote.id}")
+      expect(voted_item.occurred_at).to eq(release_date.in_time_zone("UTC").beginning_of_day)
+      expect(voted_item.sway_locale).to eq(baltimore)
+      expect(voted_item.user_vote).to eq(user_vote)
+
+      unvoted_item = items.find { |item| item.bill == bill_without_vote }
+      expect(unvoted_item).to be_present
+      expect(unvoted_item.user_vote).to be_nil
+    end
+
+    it "excludes a bill scheduled for a future date" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      future_bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: Time.zone.today + 1.day)
+
+      bills = described_class.new(user: user).items.filter_map(&:bill)
+
+      expect(bills).not_to include(future_bill)
+    end
+
+    it "excludes a Bill of the Month released before the locale's current term" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      term_start = described_class.term_start_on(baltimore)
+      old_bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: term_start - 1.day)
+
+      bills = described_class.new(user: user).items.filter_map(&:bill)
+
+      expect(bills).not_to include(old_bill)
+    end
+
+    it "excludes a bill with no scheduled_release_date_utc" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      unscheduled_bill = create(:bill, sway_locale: baltimore, scheduled_release_date_utc: nil)
+
+      bills = described_class.new(user: user).items.filter_map(&:bill)
+
+      expect(bills).not_to include(unscheduled_bill)
+    end
+
+    it "excludes a Bill of the Month in a locale the user does not belong to" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      annapolis = create(:sway_locale, city: "Annapolis", state: "maryland", country: "united_states")
+      expect(user.sway_locales).not_to include(annapolis)
+
+      other_bill = create(:bill, sway_locale: annapolis, scheduled_release_date_utc: Time.zone.today)
+
+      bills = described_class.new(user: user).items.filter_map(&:bill)
+
+      expect(bills).not_to include(other_bill)
+    end
+  end
 end

@@ -55,6 +55,7 @@ class FeedQuery
     reps_item = representatives_found_item
     items << reps_item if reps_item
     items.concat(legislative_term_began_items)
+    items.concat(bill_of_the_month_released_items)
 
     items.sort do |a, b|
       cmp = b.occurred_at <=> a.occurred_at
@@ -84,14 +85,57 @@ class FeedQuery
     )
   end
 
+  def declared_locales
+    @declared_locales ||= @user.sway_locales.select(&:declared?)
+  end
+
+  def term_starts_by_locale_id
+    @term_starts_by_locale_id ||= declared_locales.each_with_object({}) do |locale, map|
+      map[locale.id] = self.class.term_start_on(locale)
+    end
+  end
+
   def legislative_term_began_items
-    @user.sway_locales.select(&:declared?).map do |locale|
-      occurred_at = self.class.term_start_on(locale).in_time_zone("UTC").beginning_of_day
+    declared_locales.map do |locale|
+      occurred_at = term_starts_by_locale_id.fetch(locale.id).in_time_zone("UTC").beginning_of_day
       Item.new(
         kind: "legislative_term_began",
         key: "legislative_term_began:#{locale.id}",
         occurred_at:,
         sway_locale: locale
+      )
+    end
+  end
+
+  def bill_of_the_month_released_items
+    return [] if declared_locales.empty?
+
+    today_utc = Time.now.utc.to_date
+    candidates = Bill
+      .where(sway_locale_id: declared_locales.map(&:id))
+      .where.not(scheduled_release_date_utc: nil)
+      .where(scheduled_release_date_utc: ..today_utc)
+      .includes(:sway_locale)
+      .to_a
+
+    matching_bills = candidates.select do |bill|
+      release_date = bill.scheduled_release_date_utc
+      release_date && release_date >= term_starts_by_locale_id.fetch(bill.sway_locale_id)
+    end
+    return [] if matching_bills.empty?
+
+    votes_by_bill_id = @user.user_votes.where(bill_id: matching_bills.map(&:id)).index_by(&:bill_id)
+    matching_bills.filter_map do |bill|
+      release_date = bill.scheduled_release_date_utc
+      next unless release_date
+
+      Item.new(
+        kind: "bill_of_the_month_released",
+        key: "bill_of_the_month_released:#{bill.id}",
+        occurred_at: release_date.in_time_zone("UTC").beginning_of_day,
+        sway_locale: bill.sway_locale,
+        bill:,
+        user_vote: votes_by_bill_id[bill.id]
       )
     end
   end
