@@ -5,5 +5,5 @@ class FeedController < ApplicationController
 
   private
 
-  def bill_count_params: (Array[FeedQuery::Item] items) -> { vote_counts_by_bill_id: Hash[Integer, Integer], share_counts_by_bill_id: Hash[Integer, Integer] }
+  def bill_count_params: (Array[FeedQuery::Item] items) -> { vote_counts_by_bill_id: Hash[Integer, Integer], view_counts_by_bill_id: Hash[Integer, Integer], share_counts_by_bill_id: Hash[Integer, Integer] }
 end

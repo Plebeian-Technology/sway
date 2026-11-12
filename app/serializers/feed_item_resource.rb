@@ -28,6 +28,7 @@ class FeedItemResource < ApplicationResource
     next nil unless bill
 
     vote_counts = params[:vote_counts_by_bill_id] || {}
+    view_counts = params[:view_counts_by_bill_id] || {}
     share_counts = params[:share_counts_by_bill_id] || {}
 
     {
@@ -36,6 +37,7 @@ class FeedItemResource < ApplicationResource
       title: bill.title,
       summary: bill.summary,
       vote_count: vote_counts.fetch(bill.id, 0),
+      view_count: view_counts.fetch(bill.id, 0),
       share_count: share_counts.fetch(bill.id, 0)
     }
   end

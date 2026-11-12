@@ -499,6 +499,7 @@ export const PARITY_COPY = {
         searchBrowseLink: "all bills",
         showNewItems: (count: number, isCapped: boolean) => (isCapped ? `Show ${count}+ new` : `Show ${count} new`),
         votedCount: (count: number) => `${count} voted`,
+        viewedCount: (count: number) => `${count} viewed`,
         sharedCount: (count: number) => `${count} shared`,
     },
 } as const;

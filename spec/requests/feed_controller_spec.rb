@@ -198,7 +198,7 @@ RSpec.describe "FeedController", type: :request do
         expect(newest_keys).not_to include("bill_of_the_month_released:#{other_bill.id}")
       end
 
-      it "includes bulk-loaded vote_count and share_count on bills with constant count queries" do
+      it "includes bulk-loaded vote_count, view_count, and share_count on bills with constant count queries" do
         _sway_locale, user = setup
         user.complete!
         create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
@@ -220,6 +220,8 @@ RSpec.describe "FeedController", type: :request do
           create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
           if with_counts
             create(:bill_score, bill: bill, for: 4, against: 3)
+            BillView.record_for(user: sharer_one, bill: bill)
+            BillView.record_for(user: sharer_two, bill: bill)
             create(:user_bill_share, bill: bill, user: sharer_one)
             create(:user_bill_share, bill: bill, user: sharer_two)
           end
@@ -232,7 +234,7 @@ RSpec.describe "FeedController", type: :request do
             sql = payload[:sql].to_s
             next if %w[SCHEMA TRANSACTION].include?(payload[:name])
 
-            count_queries += 1 if sql.match?(/FROM\s+"(?:bill_scores|user_bill_shares)"/i)
+            count_queries += 1 if sql.match?(/FROM\s+"(?:bill_scores|bill_views|user_bill_shares)"/i)
           end
           ActiveSupport::Notifications.subscribed(counter, "sql.active_record") do
             get "/feed"
@@ -251,14 +253,16 @@ RSpec.describe "FeedController", type: :request do
         uncounted_item = items.find { |item| (item.dig(:bill, :id) || item.dig("bill", "id")) == uncounted_bill.id }
 
         expect(counted_item.dig(:bill, :vote_count) || counted_item.dig("bill", "vote_count")).to eq(7)
+        expect(counted_item.dig(:bill, :view_count) || counted_item.dig("bill", "view_count")).to eq(2)
         expect(counted_item.dig(:bill, :share_count) || counted_item.dig("bill", "share_count")).to eq(2)
         expect(uncounted_item.dig(:bill, :vote_count) || uncounted_item.dig("bill", "vote_count")).to eq(0)
+        expect(uncounted_item.dig(:bill, :view_count) || uncounted_item.dig("bill", "view_count")).to eq(0)
         expect(uncounted_item.dig(:bill, :share_count) || uncounted_item.dig("bill", "share_count")).to eq(0)
 
         4.times { |i| create_counted_bill.call(i + 3, with_counts: true) }
         six_bill_count_queries = count_queries_for_request.call
 
-        expect(two_bill_count_queries).to eq(2)
+        expect(two_bill_count_queries).to eq(3)
         expect(six_bill_count_queries).to eq(two_bill_count_queries)
       end
     end

@@ -20,6 +20,7 @@ export interface IFeedBill {
     title: string;
     summary: string | null;
     vote_count: number;
+    view_count: number;
     share_count: number;
 }
 

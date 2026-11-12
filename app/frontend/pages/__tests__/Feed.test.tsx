@@ -141,6 +141,7 @@ describe("Feed page", () => {
                     title: "Expanding vacant building receivership",
                     summary: "Lets the city hand more long-vacant houses to court-appointed receivers.",
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
             }),
@@ -155,6 +156,7 @@ describe("Feed page", () => {
                     title: "Statewide right to counsel",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 legislator: {
@@ -178,6 +180,7 @@ describe("Feed page", () => {
                     title: "Lead paint inspections",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 organization: {
@@ -248,6 +251,7 @@ describe("Feed page", () => {
                     title: "Lead paint",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 organization: { id: 5, name: "Bikemore", support: "Oppose" },
@@ -257,14 +261,30 @@ describe("Feed page", () => {
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
                 sway_locale: { id: 1, name: "Baltimore City" },
-                bill: { id: 101, external_id: "CB 1", title: "Nov Bill", summary: null, vote_count: 0, share_count: 0 },
+                bill: {
+                    id: 101,
+                    external_id: "CB 1",
+                    title: "Nov Bill",
+                    summary: null,
+                    vote_count: 0,
+                    view_count: 0,
+                    share_count: 0,
+                },
             }),
             makeItem({
                 key: "older:1",
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-10-01T00:00:00Z",
                 sway_locale: { id: 2, name: "Maryland" },
-                bill: { id: 104, external_id: "HB 1", title: "Oct Bill", summary: null, vote_count: 0, share_count: 0 },
+                bill: {
+                    id: 104,
+                    external_id: "HB 1",
+                    title: "Oct Bill",
+                    summary: null,
+                    vote_count: 0,
+                    view_count: 0,
+                    share_count: 0,
+                },
             }),
         ];
 
@@ -289,6 +309,7 @@ describe("Feed page", () => {
                     title: "Fare cap",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 legislator: {
@@ -313,6 +334,7 @@ describe("Feed page", () => {
                     title: "Rural broadband",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 legislator: {
@@ -348,6 +370,7 @@ describe("Feed page", () => {
                     title: "Unvoted Bill",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 user_support: null,
@@ -363,6 +386,7 @@ describe("Feed page", () => {
                     title: "Voted Bill",
                     summary: null,
                     vote_count: 0,
+                    view_count: 0,
                     share_count: 0,
                 },
                 user_support: "AGAINST",
@@ -453,6 +477,7 @@ describe("Feed page", () => {
                             title: "Fare cap",
                             summary: null,
                             vote_count: 0,
+                            view_count: 0,
                             share_count: 0,
                         },
                     }),
@@ -467,6 +492,7 @@ describe("Feed page", () => {
                             title: "Fare equity",
                             summary: null,
                             vote_count: 0,
+                            view_count: 0,
                             share_count: 0,
                         },
                     }),
@@ -538,7 +564,7 @@ describe("Feed page", () => {
         scrollToSpy.mockRestore();
     });
 
-    it("renders vote_count and share_count with tabular-nums only on items that have a bill", () => {
+    it("renders vote_count, view_count, and share_count with tabular-nums only on items that have a bill", () => {
         render(
             <Feed
                 items={[
@@ -553,6 +579,7 @@ describe("Feed page", () => {
                             title: "Transit Funding",
                             summary: null,
                             vote_count: 42,
+                            view_count: 108,
                             share_count: 9,
                         },
                     }),
@@ -566,12 +593,16 @@ describe("Feed page", () => {
         );
 
         const votedText = screen.getByText("42 voted");
+        const viewedText = screen.getByText("108 viewed");
         const sharedText = screen.getByText("9 shared");
         expect(votedText).toBeTruthy();
+        expect(viewedText).toBeTruthy();
         expect(sharedText).toBeTruthy();
         expect(votedText.closest(".tabular-nums")).not.toBeNull();
+        expect(viewedText.closest(".tabular-nums")).not.toBeNull();
         expect(sharedText.closest(".tabular-nums")).not.toBeNull();
         expect(screen.getAllByText(/voted$/)).toHaveLength(1);
+        expect(screen.getAllByText(/viewed$/)).toHaveLength(1);
         expect(screen.getAllByText(/shared$/)).toHaveLength(1);
     });
 });

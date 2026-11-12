@@ -31,15 +31,17 @@ class FeedController < ApplicationController
 
   def bill_count_params(items)
     bill_ids = items.filter_map { |item| item.bill&.id }.uniq
-    return {vote_counts_by_bill_id: {}, share_counts_by_bill_id: {}} if bill_ids.empty?
+    return {vote_counts_by_bill_id: {}, view_counts_by_bill_id: {}, share_counts_by_bill_id: {}} if bill_ids.empty?
 
     vote_counts_by_bill_id = BillScore.where(bill_id: bill_ids)
       .pluck(:bill_id, :for, :against)
       .to_h { |bill_id, for_count, against_count| [bill_id, for_count + against_count] }
+    view_counts_by_bill_id = BillView.where(bill_id: bill_ids).group(:bill_id).count
     share_counts_by_bill_id = UserBillShare.where(bill_id: bill_ids).group(:bill_id).distinct.count(:user_id)
 
     {
       vote_counts_by_bill_id:,
+      view_counts_by_bill_id:,
       share_counts_by_bill_id:
     }
   end
