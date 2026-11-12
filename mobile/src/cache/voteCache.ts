@@ -24,8 +24,3 @@ export async function set(billId: number, vote: Record<string, unknown>): Promis
         Date.now(),
     ]);
 }
-
-export async function clear(): Promise<void> {
-    const d = await openDatabase();
-    await d.runAsync("DELETE FROM user_votes");
-}

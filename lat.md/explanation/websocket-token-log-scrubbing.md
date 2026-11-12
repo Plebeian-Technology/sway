@@ -17,8 +17,6 @@ An `Authorization` header would be the better way, because the token would then 
 
 `@rails/actioncable` v8 offers no public `headers` option on `createConsumer`, and even with a WebSocket subclass, React Native's WebSocket client usually refuses custom headers during the opening handshake. So the mobile client puts the token in the query string instead and leans on the Rails log scrubber described above to mask `/cable?token=<value>` anywhere it is logged.
 
-Whichever approach is live is recorded in the `consumer.ts` module and readable through `currentAuthStrategy()`, so a later move to header auth can be observed without touching any call site.
-
 Without a token, the consumer connects with no credentials and Rails turns the subscription away in `ApplicationCable::Connection#find_verified_user`.
 
 ## consumer.ts's single shared consumer
@@ -27,7 +25,7 @@ Without a token, the consumer connects with no credentials and Rails turns the s
 
 The FIRST caller's token is the one used for the rest of the session; later callers get that same consumer whatever token they pass, which matches `@rails/actioncable`'s assumption of a single WebSocket.
 
-`destroyConsumer()` is called from `useSession.signOut`, so the next sign-in builds a fresh consumer with the new token. It also clears the recorded auth-strategy approach, so `currentAuthStrategy()` reflects the signed-out state.
+`destroyConsumer()` is called from `useSession.signOut`, so the next sign-in builds a fresh consumer with the new token.
 
 `react-native-url-polyfill/auto` must be imported once when the app starts (it already is, in `index.js`), so URL parsing inside `@rails/actioncable` works in the React Native runtime.
 

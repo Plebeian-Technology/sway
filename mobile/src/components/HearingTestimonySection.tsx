@@ -10,14 +10,7 @@ import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
-import { DEFAULT_ALLOWED_HOSTS, isSafeBillLink } from "../constants/officialSourceHosts";
 import { isOnOfficialSourceHost, openSourceLink } from "../utils/officialSourceLink";
-
-export { isSafeBillLink };
-
-// @lat: [[mobile-bill-surface-components-design#HearingTestimonySection#ALLOWED_HOSTS]]
-const ALLOWED_HOSTS = new Set(DEFAULT_ALLOWED_HOSTS);
-export { ALLOWED_HOSTS };
 
 // @lat: [[mobile-bill-surface-components-design#HearingTestimonySection#LOCALE_LINK_LABELS]]
 const LOCALE_LINK_LABELS: Record<string, string> = {

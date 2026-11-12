@@ -5,7 +5,7 @@ lat:
 
 # Mobile bill hooks
 
-Contract for useBill, usePublicTestimonyLetters and the useBills.ts hooks (useBills, useBillCategories, useCachedBill) — what each loads, how caching is split between them, and why useCachedBill exists.
+Contract for useBill, usePublicTestimonyLetters and the useBills.ts hooks (useBills, useBillCategories) — what each loads, and how caching is split between them.
 
 ## useBill
 
@@ -53,11 +53,3 @@ Contract for useBill, usePublicTestimonyLetters and the useBills.ts hooks (useBi
 `useBillCategories(localeId)` is the list of category chips shown above the bill list. The names come from the server, in the `all_categories` field of the `/bills` response.
 
 - [[mobile/src/hooks/useBills.ts#useBills]] captures `all_categories` into [[mobile/src/hooks/useBills.ts#capturedCategoriesByLocale]] and tracks active requests in [[mobile/src/hooks/useBills.ts#inFlightBillsRequests]] so [[mobile/src/hooks/useBills.ts#useBillCategories]] reuses the in-memory list or attaches to an in-flight request before falling back to a standalone `/bills?sway_locale_id=N` GET. If the network request fails, the hook leaves the chip list empty because category chips are optional filter affordances.
-
-## useCachedBill
-
-This is called `useCachedBill`, not `useBill`, because `hooks/useBill.ts` already owns that name and returns a different shape (the full page payload, `BillData`).
-
-- The two cannot be swapped for each other. The bill screens (`BillDetailScreen` and the featured-bill screen's body) use `hooks/useBill.ts`. This one is here for any future caller that wants the cached-first version instead.
-
-- The cache is filed by place, not by bill, so finding one bill means walking every saved row and matching on id. That is cheap: the cache keeps only about 20 bills per place.

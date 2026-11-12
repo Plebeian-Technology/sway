@@ -1,4 +1,4 @@
-import { shadowBold, shadowCalm } from "../../src/theme/effects";
+import { shadowBold } from "../../src/theme/effects";
 import { swayTokens } from "../../src/theme/tokens";
 
 const EXPECTED_TOKEN_KEYS = [
@@ -81,16 +81,6 @@ describe("effects.shadowBold — sway soft Bootstrap shadow (Phase 58)", () => {
         expect(s.shadowOpacity).toBe(0.5);
         expect(s.shadowRadius).toBe(4);
         expect(s.elevation).toBe(4);
-    });
-});
-
-describe("effects.shadowCalm — flat-no-shadow variant (PARITY-02)", () => {
-    test("returns transparent zero-offset shadow", () => {
-        expect(shadowCalm.shadowColor).toBe("transparent");
-        expect(shadowCalm.shadowOffset).toEqual({ width: 0, height: 0 });
-        expect(shadowCalm.shadowOpacity).toBe(0);
-        expect(shadowCalm.shadowRadius).toBe(0);
-        expect(shadowCalm.elevation).toBe(0);
     });
 });
 

@@ -1,7 +1,7 @@
 /**
  // @lat: [[mobile-phone-formatting-parity#Why mobile's phone formatter is tested against the web copy]]
  */
-import { formatPhone, isValidPhoneNumber, PHONE_INPUT_TRANSFORMER, removeNonDigits } from "../../src/utils/phone";
+import { formatPhone, PHONE_INPUT_TRANSFORMER, removeNonDigits } from "../../src/utils/phone";
 
 describe("removeNonDigits", () => {
     test("strips letters, parens, spaces, dashes", () => {
@@ -45,20 +45,5 @@ describe("PHONE_INPUT_TRANSFORMER", () => {
     });
     test("output strips leading 1 from 11-digit paste", () => {
         expect(PHONE_INPUT_TRANSFORMER.output("+1 (410) 555-1234")).toBe("4105551234");
-    });
-});
-
-describe("isValidPhoneNumber", () => {
-    test.each([
-        ["4105551234", true],
-        ["410555123", false], // too short
-        ["41055512345", false], // too long; normally cut to 10 digits before it gets here
-        ["0105551234", false], // leading 0
-        ["1105551234", false], // leading 1
-        ["", false],
-        [null, false],
-        [undefined, false],
-    ])("isValidPhoneNumber(%s) === %s", (input, expected) => {
-        expect(isValidPhoneNumber(input)).toBe(expected);
     });
 });

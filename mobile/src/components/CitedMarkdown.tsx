@@ -99,10 +99,6 @@ export function tokenizeMarkdown(rawContent: string | null | undefined): Markdow
     return tokens;
 }
 
-export function getVisibleLength(tokens: MarkdownToken[]): number {
-    return tokens.reduce((acc, t) => acc + (t.type === "link" ? t.text.length : t.value.length), 0);
-}
-
 function hasRemainingTokens(tokens: MarkdownToken[], nextIndex: number): boolean {
     for (let j = nextIndex; j < tokens.length; j++) {
         const t = tokens[j];

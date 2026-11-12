@@ -23,7 +23,6 @@ const mockVoteSet = jest.fn(async (_id: number, _vote: unknown) => {});
 jest.mock("../../src/cache/voteCache", () => ({
     set: (...args: unknown[]) => mockVoteSet(...(args as [number, unknown])),
     get: jest.fn(async () => null),
-    clear: jest.fn(async () => {}),
 }));
 
 const mockLegislatorClear = jest.fn(async () => {});

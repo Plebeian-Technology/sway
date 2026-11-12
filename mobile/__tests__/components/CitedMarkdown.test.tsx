@@ -1,7 +1,7 @@
 import React from "react";
 import { Linking } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { CitedMarkdown, getVisibleLength, tokenizeMarkdown } from "../../src/components/CitedMarkdown";
+import { CitedMarkdown } from "../../src/components/CitedMarkdown";
 
 describe("CitedMarkdown", () => {
     let openURLSpy: jest.SpyInstance;
@@ -58,12 +58,6 @@ describe("CitedMarkdown", () => {
 
         expect(screen.getByText(/Caution: Evil Script in summary\./)).toBeTruthy();
         expect(screen.queryByRole("link")).toBeNull();
-    });
-
-    test("calculates visible length correctly ignoring markdown delimiters and URLs", () => {
-        const content = "Short [Banner](https://long-url-address.com/very/long/path) text.";
-        const tokens = tokenizeMarkdown(content);
-        expect(getVisibleLength(tokens)).toBe("Short Banner text.".length);
     });
 
     // @lat: [[news-mobile-testimony#News mobile testimony#URL safety and markdown citation parsing]]

@@ -1,3 +1,4 @@
+// @lat: [[mobile-bill-surface-components-design#HearingTestimonySection#DEFAULT_ALLOWED_HOSTS]]
 export const DEFAULT_ALLOWED_HOSTS: readonly string[] = Object.freeze([
     "mgaleg.maryland.gov",
     "legistar.com",
@@ -22,10 +23,6 @@ export const OFFICIAL_SOURCE_HOSTS_BY_LOCALE: Record<string, readonly string[]> 
     "washington-district_of_columbia-united_states": Object.freeze(["lims.dccouncil.gov", "lims.dccouncil.us"]),
     "los_angeles-california-united_states": Object.freeze(["cityclerk.lacity.org", "clkrep.lacity.org"]),
 };
-
-export function registerOfficialSourceHosts(swayLocaleSlug: string, hosts: readonly string[]): void {
-    OFFICIAL_SOURCE_HOSTS_BY_LOCALE[swayLocaleSlug] = Object.freeze([...hosts]);
-}
 
 export function getOfficialSourceHosts(
     swayLocaleSlug?: string,

@@ -5,7 +5,6 @@ import { API_BASE_URL } from "../constants/api";
 
 let _consumer: Consumer | null = null;
 let _consumerToken: string | null = null;
-let _authStrategy: "header" | "query" | null = null;
 
 // @lat: [[websocket-token-log-scrubbing#Why consumer.ts puts the token on the query string instead of a header]]
 function buildCableUrl(token: string | null): string {
@@ -22,12 +21,7 @@ export async function getConsumer(token: string | null): Promise<Consumer> {
     const url = buildCableUrl(token);
     _consumer = createConsumer(url);
     _consumerToken = token;
-    _authStrategy = token ? "query" : null;
     return _consumer;
-}
-
-export function currentAuthStrategy(): "header" | "query" | null {
-    return _authStrategy;
 }
 
 export function destroyConsumer(): void {
@@ -36,5 +30,4 @@ export function destroyConsumer(): void {
     } catch {}
     _consumer = null;
     _consumerToken = null;
-    _authStrategy = null;
 }

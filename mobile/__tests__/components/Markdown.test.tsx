@@ -1,7 +1,7 @@
 import React from "react";
 import { Linking } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { Markdown, markdownContentLength, markdownExceedsLimit } from "../../src/components/Markdown";
+import { Markdown, markdownExceedsLimit } from "../../src/components/Markdown";
 
 describe("Markdown", () => {
     let openURLSpy: jest.SpyInstance;
@@ -201,12 +201,5 @@ describe("Markdown", () => {
             expect(screen.getByText("…")).toBeTruthy();
             expect(markdownExceedsLimit(content, 10)).toBe(true);
         });
-    });
-
-    test("markdownContentLength counts what a reader sees, including image references and footnote references", () => {
-        expect(markdownContentLength("**bold** [link](https://example.com)")).toBe("bold link".length);
-        expect(markdownContentLength("![alt text][img]\n\n[img]: https://example.com/a.png")).toBe("alt text".length);
-        expect(markdownContentLength("Claim[^1]\n\n[^1]: Note")).toBe("Claim[1]Note".length);
-        expect(markdownContentLength(null)).toBe(0);
     });
 });

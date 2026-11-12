@@ -1,8 +1,8 @@
 // @lat: [[mobile-bill-hooks#useBills]]
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useReachability } from "./useReachability";
-import { type UseOfflineCacheResult, useOfflineCache } from "./useOfflineCache";
+import { type UseOfflineCacheResult } from "./useOfflineCache";
 import * as billCache from "../cache/billCache";
 import { apiClient } from "../api/client";
 import { Routes } from "../api/routes";
@@ -286,31 +286,4 @@ export function useBillCategories(swayLocaleId: number): { allCategories: string
     }, [swayLocaleId]);
 
     return { allCategories };
-}
-
-// @lat: [[mobile-bill-hooks#useCachedBill]]
-export function useCachedBill(id: number): UseOfflineCacheResult<BillRecord> {
-    const cache = useMemo(
-        () => ({
-            get: async (): Promise<BillRecord[]> => {
-                const all = await billCache.get(0);
-                const found = all.find((r) => (r.bill as BillRecord).id === id);
-                return found ? [found.bill as BillRecord] : [];
-            },
-            set: async (bills: BillRecord[]): Promise<void> => {
-                if (bills.length) await billCache.set(0, bills);
-            },
-        }),
-        [id],
-    );
-
-    const fetcher = useMemo(
-        () => async (): Promise<BillRecord[]> => {
-            const res = await apiClient.get<{ bill: BillRecord }>(Routes.bill(id));
-            return res.bill ? [res.bill] : [];
-        },
-        [id],
-    );
-
-    return useOfflineCache<BillRecord>({ name: "cached-bills", cache, fetcher, deps: [id] });
 }

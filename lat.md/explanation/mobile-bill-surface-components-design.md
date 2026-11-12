@@ -234,7 +234,7 @@ Security: before opening a link we check that it points at a specific bill, is h
 
 The source button's label wraps and centers so a long locale label such as "View on Baltimore County Website" stays inside the card at large type sizes.
 
-### ALLOWED_HOSTS
+### DEFAULT_ALLOWED_HOSTS
 
 The default set of sites bill.link is allowed to point at. The value comes from our own Rails database, so it should already be safe; checking again here means a wrong entry can never bounce a user off to somewhere else.
 

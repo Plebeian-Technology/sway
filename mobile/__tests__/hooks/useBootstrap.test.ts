@@ -40,7 +40,7 @@ jest.mock("../../src/api/client", () => ({
 import React from "react";
 import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { AppState } from "react-native";
-import { BootstrapProvider, useBootstrap, getFeaturedBill } from "../../src/state/BootstrapContext";
+import { BootstrapProvider, useBootstrap } from "../../src/state/BootstrapContext";
 import { authEvents } from "../../src/auth/authEvents";
 import { getConsumer } from "../../src/channels/consumer";
 import * as ActionCable from "@rails/actioncable";
@@ -195,27 +195,5 @@ describe("BootstrapProvider / useBootstrap", () => {
         await getConsumer("tok_2");
         expect(c1.disconnect).toHaveBeenCalledTimes(1);
         expect(createSpy).toHaveBeenCalledTimes(2);
-    });
-
-    describe("getFeaturedBill precedence reader", () => {
-        test("returns bill_of_the_month when present in canonical payload", () => {
-            const payload = {
-                bill_of_the_month: { id: 101, title: "Monthly Bill" },
-            };
-            expect(getFeaturedBill(payload as any)).toEqual({ id: 101, title: "Monthly Bill" });
-        });
-
-        test("returns null when bill_of_the_month is explicitly null", () => {
-            const payload = {
-                bill_of_the_month: null,
-            };
-            expect(getFeaturedBill(payload as any)).toBeNull();
-        });
-
-        test("returns null when it is missing or null", () => {
-            expect(getFeaturedBill({} as any)).toBeNull();
-            expect(getFeaturedBill(null)).toBeNull();
-            expect(getFeaturedBill({ bill_of_the_month: null } as any)).toBeNull();
-        });
     });
 });

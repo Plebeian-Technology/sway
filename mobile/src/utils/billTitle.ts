@@ -18,11 +18,6 @@ export const splitBillTitle = (title: string): SplitBillTitle => {
     return { headline: head || title.trim(), deck: null };
 };
 
-export const shortBillTitle = (title: string): string => {
-    const { headline, deck } = splitBillTitle(title);
-    return deck ? `${headline} — ${deck}` : headline;
-};
-
 export const billHeadline = (title?: string | null): string => {
     if (!title) return "";
     return splitBillTitle(title).headline;

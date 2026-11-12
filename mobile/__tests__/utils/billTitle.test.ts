@@ -1,4 +1,4 @@
-import { splitBillTitle, shortBillTitle, billHeadline, hasMoreThanHeadline } from "../../src/utils/billTitle";
+import { splitBillTitle, billHeadline, hasMoreThanHeadline } from "../../src/utils/billTitle";
 
 describe("splitBillTitle", () => {
     test("splits hyphen deck", () => {
@@ -53,20 +53,6 @@ describe("splitBillTitle", () => {
     test("handles empty and whitespace-only strings", () => {
         expect(splitBillTitle("")).toEqual({ headline: "", deck: null });
         expect(splitBillTitle("   ")).toEqual({ headline: "", deck: null });
-    });
-});
-
-describe("shortBillTitle", () => {
-    test("formats with en-dash when deck is present", () => {
-        expect(shortBillTitle("Clean Energy Act - modernizing the grid")).toBe(
-            "Clean Energy Act — modernizing the grid",
-        );
-    });
-
-    test("returns headline when no deck is present", () => {
-        expect(shortBillTitle("Property Tax Credit FOR the purpose of altering the credit")).toBe(
-            "Property Tax Credit",
-        );
     });
 });
 

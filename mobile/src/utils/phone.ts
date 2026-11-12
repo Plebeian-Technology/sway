@@ -37,11 +37,3 @@ export const PHONE_INPUT_TRANSFORMER = {
         return p;
     },
 };
-
-export const isValidPhoneNumber = (value: string | null | undefined): boolean => {
-    if (!value || typeof value !== "string") return false;
-    const phone = removeNonDigits(value);
-    if (phone.length !== 10) return false;
-    if (phone.startsWith("0") || phone.startsWith("1")) return false;
-    return /\d{10}/.test(phone);
-};

@@ -17,11 +17,3 @@ export type ShadowBoldStyle = ReturnType<typeof shadowBold>;
 // @lat: [[theme-token-contract#Mobile's twin: swayTokens#Why pressFeedback exists]]
 export const pressFeedback = (pressed: boolean, disabled = false): ViewStyle | null =>
     pressed && !disabled ? { opacity: 0.85, transform: [{ scale: 0.97 }] } : null;
-
-export const shadowCalm = {
-    shadowColor: "transparent",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-} as const;

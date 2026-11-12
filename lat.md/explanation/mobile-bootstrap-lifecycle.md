@@ -53,6 +53,6 @@ Without this, the payload loaded at cold start — when nobody was signed in, so
 
 ## hooks/useBootstrap.ts is a pass-through
 
-`mobile/src/hooks/useBootstrap.ts` re-exports `useBootstrap` and `BootstrapProvider` from `BootstrapContext.tsx`.
+`mobile/src/hooks/useBootstrap.ts` re-exports `useBootstrap` from `BootstrapContext.tsx`.
 
 It lets screens write `import { useBootstrap } from "../hooks/useBootstrap"` instead of reaching into the state/ folder. The real code lives in `mobile/src/state/BootstrapContext.tsx`.

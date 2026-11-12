@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { Linking, Platform, Text, View } from "react-native";
 import type { Definition, Nodes, PhrasingContent, Root, RootContent, Table } from "mdast";
 import { isSafeCitationUrl } from "../utils/safeUrl";
-import { markdownVisibleLength, parseMarkdown, truncateMarkdown, visibleText } from "../utils/markdownTree";
+import { parseMarkdown, truncateMarkdown, visibleText } from "../utils/markdownTree";
 
 export interface MarkdownProps {
     content?: string | null;
@@ -19,10 +19,6 @@ export interface MarkdownProps {
 const MONO = Platform.select({ ios: "Menlo", default: "monospace" });
 const HEADING_SIZES = ["text-xl", "text-lg", "text-base", "text-base", "text-sm", "text-sm"];
 const DEFAULT_LINK_CLASS = "text-accent-light dark:text-accent-dark font-open-sans-semibold underline";
-
-export function markdownContentLength(content: string | null | undefined): number {
-    return content ? markdownVisibleLength(parseMarkdown(content)) : 0;
-}
 
 export function markdownExceedsLimit(content: string | null | undefined, maxChars: number): boolean {
     return content ? truncateMarkdown(parseMarkdown(content), maxChars).isTruncated : false;

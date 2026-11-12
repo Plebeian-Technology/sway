@@ -194,10 +194,3 @@ function compareVersion(a: string, b: string): number {
     }
     return 0;
 }
-
-export function getFeaturedBill(
-    bootstrap: Bootstrap | Record<string, unknown> | null | undefined,
-): Record<string, unknown> | null {
-    const bootstrapExt = bootstrap as unknown as Record<string, unknown> | null;
-    return (bootstrapExt?.bill_of_the_month as Record<string, unknown> | null) ?? null;
-}
