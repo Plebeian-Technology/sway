@@ -44,11 +44,10 @@ The fallback is not a courtesy. A submission without coordinates cannot produce
 a key, and matching nothing would create a fresh row on every attempt. The old
 exact-field match is the honest answer for a submission Sway cannot place.
 
-A row found by key that does not yet carry one — an old row the backfill has not
-reached, or one created before the column existed — has the key written onto it
-as it is used. So the table converges without a second pass, and
-`sway:addresses:backfill_normalized_keys` only has to cover rows nobody
-registers against again.
+A row found by key that does not yet carry one has the key written onto it
+as it is used. So the table converges without a second pass, and the data
+migration (`db/data/20261111000001_backfill_address_normalized_keys.rb`)
+only has to cover rows nobody registers against again.
 
 The key is deliberately not part of the create call's matching tuple. It is
 computed from the coordinates rather than supplied by the client, so making it a
@@ -66,13 +65,11 @@ rather than a placeholder that would collide with every other unlocated row.
 
 ## Why the backfill reports collisions instead of merging
 
-`sway:addresses:backfill_normalized_keys` (lib/tasks/backfill_address_normalized_keys.rake)
-fills the column on rows written before it existed and lists the keys two or
-more rows now share, but moves no data.
+The data migration (`db/data/20261111000001_backfill_address_normalized_keys.rb`) fills the column on rows written before it existed and lists the keys two or more rows now share, but moves no data.
 
 Merging two address rows means choosing which registered person's district,
 legislators and vote history move to the surviving row. That choice can
-depend on facts the key does not carry — which row is the one still in use,
+depend on facts the key does not carry: which row is the one still in use,
 whether the two geocodes actually agree on unit, whether a person meant to
-move. Filling in a column is not the place to make it. The task stops at the
-report so that decision stays a separate, reviewed step.
+move. Filling in a column is not the place to make it. The migration stops at
+the report so that decision stays a separate, reviewed step.

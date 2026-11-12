@@ -25,7 +25,9 @@ class MigrationModelCheck
     "db/data/20260811140000_backfill_legislator_identifiers.rb" =>
       ["LegislatorIdentity", "SwayLocale::JurisdictionRulesRegistry", "SwayLocale::TermRulesRegistry"].freeze,
     "db/data/20260812000001_join_baltimore_council_rows_to_one_person.rb" =>
-      ["LegislatorIdentity"].freeze
+      ["LegislatorIdentity"].freeze,
+    "db/data/20261111000001_backfill_address_normalized_keys.rb" =>
+      ["Address"].freeze
   }.freeze
 
   class Offence

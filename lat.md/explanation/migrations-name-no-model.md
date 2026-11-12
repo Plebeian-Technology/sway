@@ -41,15 +41,16 @@ a chain.
 
 ## The calculators a stand-in cannot replace
 
-Eight data migrations still name a class `app/models` defines, and `MigrationModelCheck::ALLOWED_REFERENCES` records each one by file and by constant. None of them is table access.
+Nine data migrations still name a class `app/models` defines, and `MigrationModelCheck::ALLOWED_REFERENCES` records each one by file and by constant. None of them is table access.
 
-`TermWindow` is a calculator over plain objects — one migration hands it a
-`Struct`, not a record. `SwayLocale::TermRulesRegistry` and
+`TermWindow` is a calculator over plain objects: one migration hands it a
+`Struct`, not a record. `Address.normalized_key_for` is a calculator over
+coordinates and units. `SwayLocale::TermRulesRegistry` and
 `SwayLocale::JurisdictionRulesRegistry` hold the real convening dates and roster
 rules of real jurisdictions. `CongressChamber` says how long a senator's term
 runs, and `LegislatorIdentity` is the value object that decides what identifies
 a person. A copy of any of them inside a migration would be a second statement
-of Baltimore's and Congress's own rules, free to disagree with the first with
+of Baltimore's, Congress's, or Sway's own rules, free to disagree with the first with
 nothing to notice, which is a worse outcome than the coupling it would remove.
 
 `BillLlmProvisioning` is the one exception that is a model rather than a

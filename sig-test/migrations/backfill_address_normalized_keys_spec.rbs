@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def insert_address: (street: String, latitude: String?, longitude: String?, ?street2: String?, ?street3: String?) -> Address
+  def run_migration: () -> void
+end

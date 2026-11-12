@@ -85,10 +85,10 @@ Registration creates a row when the key finds nothing. A row that still has a
 nil key is therefore invisible to the lookup, and the person registering against
 it gets a second row for the same building.
 
-`sway:addresses:backfill_normalized_keys` is what closes that window, so it
-belongs in the same deploy, before anyone registers again. Encrypting the street
-removes the fallback that used to catch this, which is why the ordering stops
-being advisory at this point.
+The data migration (`db/data/20261111000001_backfill_address_normalized_keys.rb`)
+closes that window, so it belongs in the same deploy, before anyone registers
+again. Encrypting the street removes the fallback that used to catch this, which
+is why the ordering stops being advisory at this point.
 
 ## Why the mode is not a free choice
 
