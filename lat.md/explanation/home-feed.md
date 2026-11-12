@@ -32,7 +32,7 @@ Matching ignores letter case across the bill's `title` and `external_id`, the `f
 
 [[app/controllers/feed_controller.rb#FeedController]] serves the authenticated feed at `GET /feed` as an Inertia scroll response backed by [[app/services/feed_query.rb#FeedQuery]] and [[app/serializers/feed_item_resource.rb#FeedItemResource]].
 
-The endpoint relies on `ApplicationController`'s default `authenticate_sway_user!` filter and intentionally skips any locale redirect because feed items span all of a user's declared locales. It accepts `feed_search` and `feed_cursor` under the decided query-parameter namespaces and configures `InertiaRails.scroll` with `page_name: "feed_cursor"`, `current_page`, `next_page`, and `previous_page: nil` so cursor paging integrates with Inertia's infinite scroll without a separate `next_cursor` prop.
+The endpoint relies on `ApplicationController`'s default `authenticate_sway_user!` filter and intentionally skips any locale redirect because feed items span all of a user's declared locales. It accepts `feed_search` and `feed_cursor` under the decided query-parameter namespaces and configures `InertiaRails.scroll` with `page_name: "feed_cursor"`, `current_page`, `next_page`, and `previous_page: nil` so cursor paging integrates with Inertia's infinite scroll without a separate `next_cursor` prop. An `InertiaRails.optional` `newest_keys` prop computes first-page item keys (respecting `feed_search` and ignoring `feed_cursor`) only on partial reloads so live updates can count unseen top-of-feed items without resetting scroll state.
 
 ## Live feed updates
 

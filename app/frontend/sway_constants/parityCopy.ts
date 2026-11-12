@@ -497,5 +497,6 @@ export const PARITY_COPY = {
         searchNoMatches: (query: string) => `Nothing in your feed matches "${query}".`,
         searchBrowsePrefix: "Search covers your feed only. To find any bill, browse ",
         searchBrowseLink: "all bills",
+        showNewItems: (count: number, isCapped: boolean) => (isCapped ? `Show ${count}+ new` : `Show ${count} new`),
     },
 } as const;

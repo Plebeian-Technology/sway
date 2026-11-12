@@ -19,7 +19,10 @@ class FeedController < ApplicationController
       ) {
         FeedItemResource.new(feed_query.items).serializable_hash
       },
-      feed_search: query
+      feed_search: query,
+      newest_keys: InertiaRails.optional { # steep:ignore
+        FeedQuery.new(user:, query:).items.map(&:key)
+      }
     }
   end
 end

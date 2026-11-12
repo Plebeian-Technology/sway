@@ -117,6 +117,86 @@ RSpec.describe "FeedController", type: :request do
         items = props[:items] || props["items"]
         expect(items.map { |item| item[:key] || item["key"] }).to eq(expected_second_page.items.map(&:key))
       end
+
+      it "omits newest_keys on initial load and returns first-page keys on partial reload ignoring feed_cursor" do
+        _sway_locale, user = setup
+        user.complete!
+        create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+        baltimore = user.sway_locales.find(&:declared?)
+        district = create(:district, sway_locale: baltimore)
+        legislator = create(:legislator, district:, sway_locale: baltimore)
+        create(:user_legislator, user: user, legislator: legislator, active: true)
+        FeedQuery::DEFAULT_PER_PAGE.times do |i|
+          bill = create(
+            :bill,
+            sway_locale: baltimore,
+            legislator: legislator,
+            title: "Bill #{i}",
+            house_vote_date_time_utc: (i + 1).hours.ago
+          )
+          create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
+        end
+
+        get "/feed"
+        expect(response).to have_http_status(:ok)
+        expect(inertia.props).not_to have_key(:newest_keys)
+        expect(inertia.props).not_to have_key("newest_keys")
+
+        expected_first_page = FeedQuery.new(user: user)
+        cursor = expected_first_page.next_cursor
+        expect(cursor).to be_present
+
+        get "/feed",
+          params: {feed_cursor: cursor},
+          headers: {
+            "X-Inertia" => "true",
+            "X-Inertia-Version" => InertiaRails.configuration.version,
+            "X-Inertia-Partial-Component" => Pages::FEED,
+            "X-Inertia-Partial-Data" => "newest_keys"
+          }
+
+        expect(response).to have_http_status(:ok)
+        newest_keys = inertia.props[:newest_keys] || inertia.props["newest_keys"]
+        expect(newest_keys).to eq(expected_first_page.items.map(&:key))
+      end
+
+      it "filters newest_keys by feed_search on partial reload" do
+        _sway_locale, user = setup
+        user.complete!
+        create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+        baltimore = user.sway_locales.find(&:declared?)
+        district = create(:district, sway_locale: baltimore)
+        legislator = create(:legislator, district:, sway_locale: baltimore)
+        create(:user_legislator, user: user, legislator: legislator, active: true)
+        matching_bill = create(
+          :bill,
+          sway_locale: baltimore,
+          legislator: legislator,
+          title: "Solar Energy Expansion",
+          scheduled_release_date_utc: Date.current
+        )
+        other_bill = create(
+          :bill,
+          sway_locale: baltimore,
+          legislator: legislator,
+          title: "Highway Maintenance",
+          scheduled_release_date_utc: 1.day.ago.to_date
+        )
+
+        get "/feed",
+          params: {feed_search: "Solar"},
+          headers: {
+            "X-Inertia" => "true",
+            "X-Inertia-Version" => InertiaRails.configuration.version,
+            "X-Inertia-Partial-Component" => Pages::FEED,
+            "X-Inertia-Partial-Data" => "newest_keys"
+          }
+
+        expect(response).to have_http_status(:ok)
+        newest_keys = inertia.props[:newest_keys] || inertia.props["newest_keys"]
+        expect(newest_keys).to include("bill_of_the_month_released:#{matching_bill.id}")
+        expect(newest_keys).not_to include("bill_of_the_month_released:#{other_bill.id}")
+      end
     end
   end
 end

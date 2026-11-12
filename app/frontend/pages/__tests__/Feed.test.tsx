@@ -5,12 +5,36 @@ import type { IFeedItem } from "app/frontend/components/feed/types";
 
 const infiniteScrollCalls = vi.hoisted(() => [] as Array<Record<string, unknown>>);
 const routerGet = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
+const routerReload = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
+const usePollMock = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
+const subscriptionUnsubscribe = vi.hoisted(() => vi.fn<() => void>());
+const channelCallbacks = vi.hoisted(() => ({
+    current: null as { received?: (data: { type?: string }) => void } | null,
+}));
+const subscriptionsCreate = vi.hoisted(() =>
+    vi.fn<
+        (_channel: string, callbacks: { received?: (data: { type?: string }) => void }) => { unsubscribe: () => void }
+    >((_channel, callbacks) => {
+        channelCallbacks.current = callbacks;
+        return { unsubscribe: subscriptionUnsubscribe };
+    }),
+);
+
+vi.mock("app/frontend/channels/consumer", () => ({
+    default: {
+        subscriptions: {
+            create: subscriptionsCreate,
+        },
+    },
+}));
 
 vi.mock("@inertiajs/react", () => ({
     Head: ({ title }: { title?: string }) => <title>{title}</title>,
     router: {
         get: (...args: unknown[]) => routerGet(...args),
+        reload: (...args: unknown[]) => routerReload(...args),
     },
+    usePoll: (...args: unknown[]) => usePollMock(...args),
     InfiniteScroll: ({
         children,
         data,
@@ -403,5 +427,59 @@ describe("Feed page", () => {
         expect(screen.getByText(/Nothing in your feed matches "fare"/)).toBeTruthy();
         const allBillsLink = screen.getByRole("link", { name: "all bills" });
         expect(allBillsLink.getAttribute("href")).toBe("/bills");
+    });
+
+    it("subscribes to FeedChannel, polls newest_keys, and reloads newest_keys on feed_updated", () => {
+        routerReload.mockClear();
+        usePollMock.mockClear();
+        subscriptionsCreate.mockClear();
+        subscriptionUnsubscribe.mockClear();
+
+        const { unmount } = render(<Feed items={[makeItem({ key: "item:1" })]} />);
+
+        expect(subscriptionsCreate).toHaveBeenCalledWith("FeedChannel", expect.any(Object));
+        expect(usePollMock).toHaveBeenCalledWith(60000, { only: ["newest_keys"] }, { background: "pause" });
+
+        channelCallbacks.current?.received?.({ type: "feed_updated" });
+        expect(routerReload).toHaveBeenCalledWith({ only: ["newest_keys"] });
+        expect(routerReload.mock.calls[0]?.[0]).not.toHaveProperty("preserveScroll");
+
+        unmount();
+        expect(subscriptionUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    it("renders Show 1 new, Show N new, and Show 20+ new in a polite live region and reloads from top on click", () => {
+        routerGet.mockClear();
+        const scrollToSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+
+        const shownItem = makeItem({ key: "shown:1" });
+        const { rerender } = render(<Feed items={[shownItem]} newest_keys={["shown:1"]} />);
+        expect(screen.queryByRole("button", { name: /Show .* new/ })).toBeNull();
+
+        rerender(<Feed items={[shownItem]} newest_keys={["new:1", "shown:1"]} />);
+        const oneButton = screen.getByRole("button", { name: "Show 1 new" });
+        expect(oneButton.closest("[aria-live='polite']")).not.toBeNull();
+
+        const twentyNewKeys = Array.from({ length: 20 }, (_, i) => `new:${i + 1}`);
+        rerender(<Feed items={[shownItem]} newest_keys={twentyNewKeys} />);
+        expect(screen.getByRole("button", { name: "Show 20+ new" })).toBeTruthy();
+
+        rerender(<Feed items={[shownItem]} newest_keys={["new:1", "new:2", "new:3", "shown:1"]} />);
+        const threeButton = screen.getByRole("button", { name: "Show 3 new" });
+        fireEvent.click(threeButton);
+
+        expect(routerGet).toHaveBeenCalledWith(
+            "/feed",
+            {},
+            expect.objectContaining({
+                only: ["items", "newest_keys"],
+                reset: ["items"],
+                preserveState: true,
+            }),
+        );
+        expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: "smooth" });
+        expect(screen.queryByRole("button", { name: /Show .* new/ })).toBeNull();
+
+        scrollToSpy.mockRestore();
     });
 });
