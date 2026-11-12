@@ -118,7 +118,7 @@ RSpec.describe ArticleBill, type: :model do
       expect(ab.organization).to eq(organization)
     end
 
-    it "is linked via bill.article_bills and bill.partner_organizations" do
+    it "is linked via bill.article_bills" do
       ab = described_class.create!(
         bill:,
         organization:,
@@ -127,7 +127,6 @@ RSpec.describe ArticleBill, type: :model do
         article_title: "City Council Considers Housing Bill"
       )
       expect(bill.article_bills).to include(ab)
-      expect(bill.partner_organizations).to include(organization)
     end
 
     it "is linked via organization.article_bills" do

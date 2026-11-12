@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# @lat: [[bill-interesting-score-design#Why BillInterestingScoreCalculator is built this way]]
 # @lat: [[bill-interesting-score#The bill interesting score#Signals follow published evidence]]
 class BillInterestingScoreCalculator
   WEIGHT_VOTE_DEFECTION = 40.0

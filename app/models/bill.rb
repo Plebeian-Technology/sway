@@ -92,7 +92,6 @@ class Bill < ApplicationRecord
   has_many :legislation_pipeline_runs, inverse_of: :bill, dependent: :nullify
   has_many :bill_summary_reports, inverse_of: :bill, dependent: :destroy
   has_many :article_bills, dependent: :destroy
-  has_many :partner_organizations, through: :article_bills, source: :organization
   has_many :news_article_source_snapshots, inverse_of: :bill, dependent: :delete_all
   has_many :bill_news_articles, inverse_of: :bill, dependent: :destroy
   has_many :news_articles, through: :bill_news_articles
@@ -117,12 +116,6 @@ class Bill < ApplicationRecord
 
   # @lat: [[bill-interesting-score-design#Why Bill needs dependent: :delete_all on bill_interesting_scores]]
   has_many :bill_interesting_scores, dependent: :delete_all
-
-  # @lat: [[bill-interesting-score-design#Why BillInterestingScoreCalculator is built this way]]
-  has_one :latest_bill_interesting_score,
-    -> { order(id: :desc) },
-    class_name: "BillInterestingScore",
-    inverse_of: :bill
 
   before_validation :downcase_status
   # @lat: [[bill-external-id-normalisation#Callback placement]]

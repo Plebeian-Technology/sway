@@ -1184,12 +1184,6 @@ class ::Bill < ::ApplicationRecord
   def bill_summary_revisions=: (::BillSummaryRevision::ActiveRecord_Associations_CollectionProxy | ::Array[::BillSummaryRevision]) -> (::BillSummaryRevision::ActiveRecord_Associations_CollectionProxy | ::Array[::BillSummaryRevision])
   def bill_summary_revision_ids: () -> ::Array[::Integer]
   def bill_summary_revision_ids=: (::Array[::Integer]) -> ::Array[::Integer]
-  def latest_bill_interesting_score: () -> ::BillInterestingScore?
-  def latest_bill_interesting_score=: (::BillInterestingScore?) -> ::BillInterestingScore?
-  def build_latest_bill_interesting_score: (?untyped) -> ::BillInterestingScore
-  def create_latest_bill_interesting_score: (?untyped) -> ::BillInterestingScore
-  def create_latest_bill_interesting_score!: (?untyped) -> ::BillInterestingScore
-  def reload_latest_bill_interesting_score: () -> ::BillInterestingScore?
   def legislator: () -> ::Legislator
   def legislator=: (::Legislator?) -> ::Legislator?
   def reload_legislator: () -> ::Legislator?

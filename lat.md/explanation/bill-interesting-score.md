@@ -10,10 +10,9 @@ lat:
 `BillInterestingScoreCalculator` derives the number from five signals across jurisdictions: how many
 legislators voted against their own party, what share of the chamber abstained,
 how far the organization positions on the bill are split, how actively citizens
-submitted hearing testimony, and how recently the bill moved. Two places read the
-result. `Bill#latest_bill_interesting_score` is a `has_one` ordered by descending id,
-and `BillCreator::PickerBillsSerializer` carries its own subquery ending `ORDER BY s.id DESC LIMIT 1`.
-Neither looks at a second row, and no surface shows a history of the score.
+submitted hearing testimony, and how recently the bill moved. `BillCreator::PickerBillsSerializer`
+is the sole reader of the result, querying the latest score through a subquery ending `ORDER BY s.id DESC LIMIT 1`.
+It never looks at a second row, and no surface shows a history of the score.
 
 ## Why a bill gains a row every day
 
@@ -48,8 +47,8 @@ the least active bills, which is the opposite of what a retention sweep is for.
 Being superseded rather than being old is what makes a row unreadable, so the
 delete tests both conditions.
 
-"Newest" means the highest id rather than the latest timestamp, matching the two
-readers above, so the exclusion is written as `id NOT IN (SELECT MAX(id) FROM
+"Newest" means the highest id rather than the latest timestamp, matching the picker
+subquery reader above, so the exclusion is written as `id NOT IN (SELECT MAX(id) FROM
 bill_interesting_scores GROUP BY bill_id)`. The table's index on
 `(bill_id, id)` covers that grouping; the reasoning for column order is in
 [[query-plan-indexes]].
@@ -105,9 +104,8 @@ window. The picker recomputes that signal when read so aging needs no new row.
 The picker reads its displayed columns and indexed vote and position counts in one query. Loading each bill's full serialization would repeatedly load votes during five-second admin refreshes.
 
 Arel qualifies columns shared by bills and joined legislators. The latest score
-uses descending id, matching the model reader; a Ruby computed_at timestamp
-precedes insertion and cannot decide insertion order. Locale rules and the score
-ceiling are read once before mapping rows.
+subquery orders by descending id; a Ruby computed_at timestamp precedes insertion
+and cannot decide insertion order. Locale rules and the score ceiling are read once before mapping rows.
 
 Unknown jurisdiction rules, missing score rows and corrupt signals JSON yield
 no score or badges. A read remains available for repair while the calculator
