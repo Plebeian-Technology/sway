@@ -43,7 +43,7 @@ RSpec.describe "sway:lint:param_names and QueryParameterCheck" do
       expect(check.offences).to be_empty
       expect(check.scanned_count).to be >= 20
       expect(check.features.keys).to contain_exactly(
-        "bill_creator", "bills", "legislators", "notifications", "organizations"
+        "bill_creator", "bills", "feed", "legislators", "notifications", "organizations"
       )
       expect(check.canonical_parameters["bill_creator"]).to eq(
         [

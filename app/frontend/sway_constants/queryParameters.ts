@@ -66,6 +66,14 @@ const FEATURE_DEFINITIONS = {
             org_tab: ["tab", "tab_key"],
         },
     },
+    feed: {
+        parameters: ["feed_search", "feed_cursor"],
+        route_patterns: ["^/feed"],
+        parameter_families: {
+            feed_search: [],
+            feed_cursor: [],
+        },
+    },
 } as const;
 
 export type FeatureName = keyof typeof FEATURE_DEFINITIONS;

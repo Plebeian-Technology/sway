@@ -44,6 +44,11 @@ describe("queryParameters registry constants and helpers", () => {
             expect(getFeatureForPath("/organizations/5")).toBe("organizations");
         });
 
+        it("identifies feed feature", () => {
+            expect(getFeatureForPath("/feed")).toBe("feed");
+            expect(getFeatureForPath("/feed?feed_search=housing")).toBe("feed");
+        });
+
         it("returns null for non-feature paths", () => {
             expect(getFeatureForPath("/")).toBeNull();
             expect(getFeatureForPath("/about")).toBeNull();

@@ -31,6 +31,7 @@ const exact =
 
 const PLACEHOLDER_ENTRIES: IRegistryEntry[] = [
     { test: exact("/"), shape: "home", pageName: "Home" },
+    { test: exact("/feed"), shape: "list", pageName: "Feed" },
     { test: exact("/bills"), shape: "list", pageName: "All Bills" },
     { test: exact("/past_bills_of_the_month"), shape: "list", pageName: "Past Bills of the Month" },
     { test: (pathname) => /^\/bills\/[^/]+$/.test(pathname), shape: "detail", pageName: "Bill" },

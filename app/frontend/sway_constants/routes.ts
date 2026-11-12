@@ -9,6 +9,7 @@ export const ROUTES = {
     invite: "/invite",
 
     notifications: "/notifications",
+    feed: "/feed",
 
     influence: "/influence",
 

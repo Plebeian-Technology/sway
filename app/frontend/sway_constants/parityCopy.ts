@@ -446,4 +446,47 @@ export const PARITY_COPY = {
             neutralPill: "Neutral",
         },
     },
+
+    feed: {
+        title: "Feed",
+        emptyState: "Nothing here yet. New Bills of the Month and your representatives' votes will show up here.",
+        dateHeadings: {
+            today: "Today",
+            yesterday: "Yesterday",
+            earlierThisMonth: "Earlier this month",
+        },
+        voteLabels: {
+            for: "For",
+            against: "Against",
+            abstain: "Abstain",
+            you: "You",
+            agree: "You agree",
+            differ: "You differ",
+            goVote: "Go vote",
+            youVotedFor: "You voted For",
+            youVotedAgainst: "You voted Against",
+            youAbstained: "You abstained",
+        },
+        billOfTheMonthReleased: (localeName: string, monthName: string) =>
+            `${localeName} released the ${monthName} Bill of the Month`,
+        legislatorVotedWithUser: "voted on a bill you voted on",
+        legislatorVotedOnLocaleBill: (supportLabel: string, localeName: string) =>
+            `voted ${supportLabel} a ${localeName} bill`,
+        legislatorAbstainedOnLocaleBill: (localeName: string) => `abstained on a ${localeName} bill`,
+        organizationPositionTaken: (stanceVerb: string, localeName: string) => `${stanceVerb} a ${localeName} bill`,
+        organizationStanceVerbs: {
+            Support: "supports",
+            Oppose: "opposes",
+            Neutral: "is neutral on",
+        },
+        userJoinedActor: "You",
+        userJoinedAction: "joined Sway",
+        userJoinedSummary:
+            "New Bills of the Month, your representatives' votes and positions from organizations you follow will show up here, newest first.",
+        representativesFoundActor: "Sway",
+        representativesFoundAction: "found your representatives",
+        seeYourRepresentatives: "See your representatives",
+        legislativeTermBegan: (localeName: string) => `New legislative term for ${localeName}!`,
+        loadingMore: "Loading more...",
+    },
 } as const;

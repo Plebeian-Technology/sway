@@ -8,6 +8,7 @@ import { GENERIC_ENTRY, resolvePlaceholder } from "app/frontend/navigation/place
 
 const REGISTERED_ROWS: Array<{ pathname: string; shape: string; pageName: string }> = [
     { pathname: "/", shape: "home", pageName: "Home" },
+    { pathname: "/feed", shape: "list", pageName: "Feed" },
     { pathname: "/bills", shape: "list", pageName: "All Bills" },
     { pathname: "/past_bills_of_the_month", shape: "list", pageName: "Past Bills of the Month" },
     { pathname: "/bills/12", shape: "detail", pageName: "Bill" },
@@ -68,6 +69,7 @@ const PAGE_CONSTANT_URLS: Array<{ constant: string; pathname: string }> = [
     { constant: "BILLS", pathname: "/bills" },
     { constant: "BILL_CREATOR", pathname: "/admin/bill_creator/new" },
     { constant: "BILL_OF_THE_MONTH", pathname: "/bill_of_the_month" },
+    { constant: "FEED", pathname: "/feed" },
     { constant: "HOME", pathname: "/" },
     { constant: "INFLUENCE", pathname: "/influence" },
     { constant: "LEGISLATOR", pathname: "/legislators/7" },

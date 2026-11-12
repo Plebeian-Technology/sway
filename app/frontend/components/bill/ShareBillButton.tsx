@@ -11,7 +11,7 @@ import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { notify } from "app/frontend/sway_utils";
 
 interface IProps {
-    bill: sway.IBill;
+    bill: Pick<sway.IBill, "id" | "title">;
     className?: string;
 }
 

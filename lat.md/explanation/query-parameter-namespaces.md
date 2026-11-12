@@ -32,6 +32,7 @@ The established namespace mappings are:
 - **Legislators (`legislators_*`)**: Owns `legislators_tab` and `legislators_search`, with `tab` and `search` as legacy aliases.
 - **Notifications (`notifications_*`)**: Owns `notifications_tab`, with `tab` as a legacy alias.
 - **Organizations (`org_*`)**: Owns `org_tab`, with `tab` and `tab_key` as legacy aliases.
+- **Feed (`feed_*`)**: Owns `feed_search` and `feed_cursor`.
 
 Parameters that cross subsystem boundaries and maintain app-wide ambient context (`sway_locale_id`, `run_id`, and `highlight_bill_id`) belong to the global ambient parameter group rather than an individual feature namespace.
 

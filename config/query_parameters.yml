@@ -73,3 +73,12 @@ features:
             - "^/public/organizations"
         parameter_families:
             org_tab: [tab, tab_key]
+    feed:
+        parameters:
+            - feed_search
+            - feed_cursor
+        route_patterns:
+            - "^/feed"
+        parameter_families:
+            feed_search: []
+            feed_cursor: []
