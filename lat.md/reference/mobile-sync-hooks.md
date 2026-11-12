@@ -19,7 +19,7 @@ These hooks keep mobile screen data current and track network reachability: useF
 
 1. Screen becomes visible: the timer starts, the subscription opens, and the network listener attaches.
 2. Screen is covered or tabs switch: the timer clears, the subscription closes, and the network listener detaches.
-3. Screen returns: all three recreate from scratch so no stale timers fire twice.
+3. Screen returns: all three recreate from scratch. The old timer is guaranteed gone, so nothing fires twice.
 
 - The subscription opens inside an async function immediately because token fetching is asynchronous. The `cancelled` flag prevents a late subscription from dangling if cleanup runs before token resolution finishes.
 
@@ -34,9 +34,9 @@ These hooks keep mobile screen data current and track network reachability: useF
 - NetInfo reports the moment the connection drops.
 - Periodic pings confirm whether the server is reachable when device status is inaccurate (for captive portals or unroutable networks).
 
-- Return values match the web hook contract so `useOfflineCache` works identically on both platforms.
+- Return values match the web hook's shape. `useOfflineCache` reads them, but no screen calls that hook today.
 
-- `isResolved` stays false until the first probe or network event completes. An offline banner displays only when `!isOnline && isResolved` to avoid flashing during tab switches. Blocking writes treats unresolved status as offline.
+- `isResolved` stays false until the first probe or network event completes. An offline banner displays only when `!isOnline && isResolved` to avoid flashing during tab switches. Blocking writes ignores this flag on purpose: an unresolved status counts as offline, because not knowing is the safe side.
 
 - `isOnline` initializes to false so airplane mode does not display active vote buttons before the initial probe completes. The first successful probe or connected status turns it true.
 

@@ -7,6 +7,10 @@ lat:
 
 `useOfflineCache` (`mobile/src/hooks/useOfflineCache.ts`) shows the copy already saved on the phone at once, then quietly fetches a fresh one. It works for any list, over the app's SQLite database.
 
+## Callers
+
+No screen calls the hook today: `useBills` borrows only its `UseOfflineCacheResult` return type, and `useCastUserVote` calls its `assertOnlineForWrite`.
+
 ## The cycle
 
 Runs the first time the hook is used, and again whenever anything in the caller's `deps` array changes:

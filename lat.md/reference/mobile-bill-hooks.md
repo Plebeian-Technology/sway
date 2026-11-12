@@ -19,7 +19,7 @@ Contract for useBill, usePublicTestimonyLetters and the useBills.ts hooks (useBi
 
 - Every request sends `X-Sway-Omit-Props: legislators,legislator_votes,public_testimony_letters` ([[lazy-inertia-props#Mobile JSON omission is an explicit request]]). `districts` is not named, because [[mobile-bill-surface-components-design#DistrictVotesPanel]] needs the reader's districts to find their own; the letters are fetched separately and only on demand.
 
-- On purpose, this hook does not use `useOfflineCache` the way the bill-list hook `useBills` does. One bill's detail belongs to one screen, and it is kept current by background polling and live WebSocket updates instead. There is an offline copy of a single bill, `billCache.get(id)`, and `BillDetailScreen` could start using it later to show the old copy at once and refresh behind it. For now the behaviour is: fetch when the screen opens, refresh on each poll or live update. That matches the website's `Bill.tsx`, which refreshes the same way.
+- On purpose, this hook does not paint from the on-device cache the way the bill-list hook `useBills` does. One bill's detail belongs to one screen, and it is kept current by background polling and live WebSocket updates instead. There is an offline copy of a single bill, `billCache.get(id)`, and `BillDetailScreen` could start using it later to show the old copy at once and refresh behind it. For now the behaviour is: fetch when the screen opens, refresh on each poll or live update. That matches the website's `Bill.tsx`, which refreshes the same way.
 
 - Cancelling: the request carries an abort signal that `apiClient` honours, so flipping quickly between tabs cancels the request already in flight instead of updating a screen that is gone. The resulting "aborted" error is ignored on purpose.
 
@@ -38,13 +38,13 @@ Contract for useBill, usePublicTestimonyLetters and the useBills.ts hooks (useBi
 
 `useBills(localeId, options)` (`mobile/src/hooks/useBills.ts`) loads the bill list for a locale, serving the cached copy immediately on default queries before fetching fresh data.
 
-- It stitches together `useOfflineCache`, `billCache` (the on-device store), `apiClient`, `Routes.bills()`, and `Routes.pastBillsOfTheMonth()`. When `options.listMode === "past_bills_of_the_month"`, it queries `/past_bills_of_the_month`; when `options.legislativeSessionId` is provided in `"all_bills"` mode, it appends `bills_legislative_session_id` and returns `legislativeSessions` and `selectedLegislativeSessionId` from the response. Non-default queries bypass the single-slot per-locale `billCache` so historical or featured-only lists do not overwrite the cached current-session list.
+- It stitches together `billCache` (the on-device store), `apiClient`, `Routes.bills()`, and `Routes.pastBillsOfTheMonth()`. When `options.listMode === "past_bills_of_the_month"`, it queries `/past_bills_of_the_month`; when `options.legislativeSessionId` is provided in `"all_bills"` mode, it appends `bills_legislative_session_id` and returns `legislativeSessions` and `selectedLegislativeSessionId` from the response. Non-default queries bypass the single-slot per-locale `billCache` so historical or featured-only lists do not overwrite the cached current-session list.
 
 - `BillRecord` is loosely typed: the server's fields change over time, so screens read only the keys they know.
 
 - Three app-wide rules meet here: anyone may browse without signing in, saving anything needs a live connection, and lists always paint from cache first.
 
-- `cache` and `fetcher` are built with `useMemo` and kept as the same objects between renders. `useOfflineCache` watches them, so if they were rebuilt every render it would fetch in an endless loop. Only a change of `localeId` should restart it.
+- It reads and writes `billCache` itself and does not call `useOfflineCache`; it borrows only that hook's `UseOfflineCacheResult` return type.
 
 - The query parameter must be named `sway_locale_id`, not `locale_id`: that is the name the Rails side reads when it works out which place is being asked about. Send the wrong name and the server quietly falls back to the user's home place, so the picker looks broken and reports "no bills found".
 
