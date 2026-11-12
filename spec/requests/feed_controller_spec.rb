@@ -197,6 +197,70 @@ RSpec.describe "FeedController", type: :request do
         expect(newest_keys).to include("bill_of_the_month_released:#{matching_bill.id}")
         expect(newest_keys).not_to include("bill_of_the_month_released:#{other_bill.id}")
       end
+
+      it "includes bulk-loaded vote_count and share_count on bills with constant count queries" do
+        _sway_locale, user = setup
+        user.complete!
+        create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+        baltimore = user.sway_locales.find(&:declared?)
+        district = create(:district, sway_locale: baltimore)
+        legislator = create(:legislator, district:, sway_locale: baltimore)
+        create(:user_legislator, user: user, legislator: legislator, active: true)
+        sharer_one = create(:user)
+        sharer_two = create(:user)
+
+        create_counted_bill = lambda do |idx, with_counts:|
+          bill = create(
+            :bill,
+            sway_locale: baltimore,
+            legislator: legislator,
+            title: "Counted Bill #{idx}",
+            house_vote_date_time_utc: idx.hours.ago
+          )
+          create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
+          if with_counts
+            create(:bill_score, bill: bill, for: 4, against: 3)
+            create(:user_bill_share, bill: bill, user: sharer_one)
+            create(:user_bill_share, bill: bill, user: sharer_two)
+          end
+          bill
+        end
+
+        count_queries_for_request = lambda do
+          count_queries = 0
+          counter = lambda do |*, payload|
+            sql = payload[:sql].to_s
+            next if %w[SCHEMA TRANSACTION].include?(payload[:name])
+
+            count_queries += 1 if sql.match?(/FROM\s+"(?:bill_scores|user_bill_shares)"/i)
+          end
+          ActiveSupport::Notifications.subscribed(counter, "sql.active_record") do
+            get "/feed"
+          end
+          count_queries
+        end
+
+        counted_bill = create_counted_bill.call(1, with_counts: true)
+        uncounted_bill = create_counted_bill.call(2, with_counts: false)
+
+        two_bill_count_queries = count_queries_for_request.call
+        expect(response).to have_http_status(:ok)
+
+        items = inertia.props[:items] || inertia.props["items"]
+        counted_item = items.find { |item| (item.dig(:bill, :id) || item.dig("bill", "id")) == counted_bill.id }
+        uncounted_item = items.find { |item| (item.dig(:bill, :id) || item.dig("bill", "id")) == uncounted_bill.id }
+
+        expect(counted_item.dig(:bill, :vote_count) || counted_item.dig("bill", "vote_count")).to eq(7)
+        expect(counted_item.dig(:bill, :share_count) || counted_item.dig("bill", "share_count")).to eq(2)
+        expect(uncounted_item.dig(:bill, :vote_count) || uncounted_item.dig("bill", "vote_count")).to eq(0)
+        expect(uncounted_item.dig(:bill, :share_count) || uncounted_item.dig("bill", "share_count")).to eq(0)
+
+        4.times { |i| create_counted_bill.call(i + 3, with_counts: true) }
+        six_bill_count_queries = count_queries_for_request.call
+
+        expect(two_bill_count_queries).to eq(2)
+        expect(six_bill_count_queries).to eq(two_bill_count_queries)
+      end
     end
   end
 end

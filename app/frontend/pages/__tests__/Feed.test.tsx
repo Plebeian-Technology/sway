@@ -140,6 +140,8 @@ describe("Feed page", () => {
                     external_id: "Council Bill 26-0141",
                     title: "Expanding vacant building receivership",
                     summary: "Lets the city hand more long-vacant houses to court-appointed receivers.",
+                    vote_count: 0,
+                    share_count: 0,
                 },
             }),
             makeItem({
@@ -152,6 +154,8 @@ describe("Feed page", () => {
                     external_id: "SB 203",
                     title: "Statewide right to counsel",
                     summary: null,
+                    vote_count: 0,
+                    share_count: 0,
                 },
                 legislator: {
                     id: 10,
@@ -173,6 +177,8 @@ describe("Feed page", () => {
                     external_id: "SB 88",
                     title: "Lead paint inspections",
                     summary: null,
+                    vote_count: 0,
+                    share_count: 0,
                 },
                 organization: {
                     id: 5,
@@ -236,7 +242,14 @@ describe("Feed page", () => {
                 kind: "organization_position_taken",
                 occurred_at: "2026-11-11T15:00:00Z",
                 sway_locale: { id: 2, name: "Maryland" },
-                bill: { id: 103, external_id: "SB 88", title: "Lead paint", summary: null },
+                bill: {
+                    id: 103,
+                    external_id: "SB 88",
+                    title: "Lead paint",
+                    summary: null,
+                    vote_count: 0,
+                    share_count: 0,
+                },
                 organization: { id: 5, name: "Bikemore", support: "Oppose" },
             }),
             makeItem({
@@ -244,14 +257,14 @@ describe("Feed page", () => {
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
                 sway_locale: { id: 1, name: "Baltimore City" },
-                bill: { id: 101, external_id: "CB 1", title: "Nov Bill", summary: null },
+                bill: { id: 101, external_id: "CB 1", title: "Nov Bill", summary: null, vote_count: 0, share_count: 0 },
             }),
             makeItem({
                 key: "older:1",
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-10-01T00:00:00Z",
                 sway_locale: { id: 2, name: "Maryland" },
-                bill: { id: 104, external_id: "HB 1", title: "Oct Bill", summary: null },
+                bill: { id: 104, external_id: "HB 1", title: "Oct Bill", summary: null, vote_count: 0, share_count: 0 },
             }),
         ];
 
@@ -270,7 +283,14 @@ describe("Feed page", () => {
                 kind: "legislator_voted",
                 occurred_at: "2026-11-12T14:00:00Z",
                 sway_locale: { id: 2, name: "Maryland" },
-                bill: { id: 201, external_id: "HB 412", title: "Fare cap", summary: null },
+                bill: {
+                    id: 201,
+                    external_id: "HB 412",
+                    title: "Fare cap",
+                    summary: null,
+                    vote_count: 0,
+                    share_count: 0,
+                },
                 legislator: {
                     id: 11,
                     full_name: "Alex Delegate",
@@ -287,7 +307,14 @@ describe("Feed page", () => {
                 kind: "legislator_voted",
                 occurred_at: "2026-11-12T13:00:00Z",
                 sway_locale: { id: 3, name: "U.S. Congress" },
-                bill: { id: 202, external_id: "S. 1820", title: "Rural broadband", summary: null },
+                bill: {
+                    id: 202,
+                    external_id: "S. 1820",
+                    title: "Rural broadband",
+                    summary: null,
+                    vote_count: 0,
+                    share_count: 0,
+                },
                 legislator: {
                     id: 12,
                     full_name: "Pat Senator",
@@ -315,7 +342,14 @@ describe("Feed page", () => {
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
                 sway_locale: { id: 1, name: "Baltimore City" },
-                bill: { id: 301, external_id: "CB 1", title: "Unvoted Bill", summary: null },
+                bill: {
+                    id: 301,
+                    external_id: "CB 1",
+                    title: "Unvoted Bill",
+                    summary: null,
+                    vote_count: 0,
+                    share_count: 0,
+                },
                 user_support: null,
             }),
             makeItem({
@@ -323,7 +357,14 @@ describe("Feed page", () => {
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
                 sway_locale: { id: 2, name: "Maryland" },
-                bill: { id: 302, external_id: "HB 2", title: "Voted Bill", summary: null },
+                bill: {
+                    id: 302,
+                    external_id: "HB 2",
+                    title: "Voted Bill",
+                    summary: null,
+                    vote_count: 0,
+                    share_count: 0,
+                },
                 user_support: "AGAINST",
             }),
         ];
@@ -406,14 +447,28 @@ describe("Feed page", () => {
                         kind: "bill_of_the_month_released",
                         occurred_at: "2026-11-01T00:00:00Z",
                         sway_locale: { id: 1, name: "Baltimore City" },
-                        bill: { id: 101, external_id: "CB 1", title: "Fare cap", summary: null },
+                        bill: {
+                            id: 101,
+                            external_id: "CB 1",
+                            title: "Fare cap",
+                            summary: null,
+                            vote_count: 0,
+                            share_count: 0,
+                        },
                     }),
                     makeItem({
                         key: "botm:2",
                         kind: "bill_of_the_month_released",
                         occurred_at: "2026-11-01T00:00:00Z",
                         sway_locale: { id: 2, name: "Maryland" },
-                        bill: { id: 102, external_id: "HB 2", title: "Fare equity", summary: null },
+                        bill: {
+                            id: 102,
+                            external_id: "HB 2",
+                            title: "Fare equity",
+                            summary: null,
+                            vote_count: 0,
+                            share_count: 0,
+                        },
                     }),
                 ]}
                 feed_search="fare"
@@ -481,5 +536,42 @@ describe("Feed page", () => {
         expect(screen.queryByRole("button", { name: /Show .* new/ })).toBeNull();
 
         scrollToSpy.mockRestore();
+    });
+
+    it("renders vote_count and share_count with tabular-nums only on items that have a bill", () => {
+        render(
+            <Feed
+                items={[
+                    makeItem({
+                        key: "botm:counts",
+                        kind: "bill_of_the_month_released",
+                        occurred_at: "2026-11-12T15:00:00Z",
+                        sway_locale: { id: 1, name: "Baltimore City" },
+                        bill: {
+                            id: 501,
+                            external_id: "CB 501",
+                            title: "Transit Funding",
+                            summary: null,
+                            vote_count: 42,
+                            share_count: 9,
+                        },
+                    }),
+                    makeItem({
+                        key: "user_joined:counts",
+                        kind: "user_joined",
+                        occurred_at: "2026-11-12T10:00:00Z",
+                    }),
+                ]}
+            />,
+        );
+
+        const votedText = screen.getByText("42 voted");
+        const sharedText = screen.getByText("9 shared");
+        expect(votedText).toBeTruthy();
+        expect(sharedText).toBeTruthy();
+        expect(votedText.closest(".tabular-nums")).not.toBeNull();
+        expect(sharedText.closest(".tabular-nums")).not.toBeNull();
+        expect(screen.getAllByText(/voted$/)).toHaveLength(1);
+        expect(screen.getAllByText(/shared$/)).toHaveLength(1);
     });
 });

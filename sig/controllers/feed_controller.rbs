@@ -2,4 +2,8 @@
 
 class FeedController < ApplicationController
   def index: () -> void
+
+  private
+
+  def bill_count_params: (Array[FeedQuery::Item] items) -> { vote_counts_by_bill_id: Hash[Integer, Integer], share_counts_by_bill_id: Hash[Integer, Integer] }
 end

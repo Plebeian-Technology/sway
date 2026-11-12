@@ -11,16 +11,22 @@ interface IBillBlockProps {
 }
 
 export const FeedBillBlock: React.FC<IBillBlockProps> = ({ bill, showSummary = false }) => (
-    <Link
-        href={ROUTES.bill(bill.id)}
-        className="mt-3.5 block rounded-md border border-border bg-card p-4 text-card-foreground transition-colors hover:border-border-strong"
-    >
-        <div className="text-xs font-medium text-muted-foreground">{bill.external_id}</div>
-        <div className="mt-1 text-base font-semibold leading-snug text-foreground">{bill.title}</div>
-        {showSummary && bill.summary && (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{bill.summary}</p>
-        )}
-    </Link>
+    <>
+        <Link
+            href={ROUTES.bill(bill.id)}
+            className="mt-3.5 block rounded-md border border-border bg-card p-4 text-card-foreground transition-colors hover:border-border-strong"
+        >
+            <div className="text-xs font-medium text-muted-foreground">{bill.external_id}</div>
+            <div className="mt-1 text-base font-semibold leading-snug text-foreground">{bill.title}</div>
+            {showSummary && bill.summary && (
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{bill.summary}</p>
+            )}
+        </Link>
+        <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground tabular-nums">
+            <span>{PARITY_COPY.feed.votedCount(bill.vote_count)}</span>
+            <span>{PARITY_COPY.feed.sharedCount(bill.share_count)}</span>
+        </div>
+    </>
 );
 
 const UserVoteStatus: React.FC<{ userSupport: TFeedSupport }> = ({ userSupport }) => {

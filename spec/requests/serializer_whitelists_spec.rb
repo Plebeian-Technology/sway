@@ -2004,7 +2004,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
         ]
       )
       expect(hash["sway_locale"].keys).to match_array(%i[id name])
-      expect(hash["bill"].keys).to match_array(%i[id external_id title summary])
+      expect(hash["bill"].keys).to match_array(%i[id external_id title summary vote_count share_count])
       expect(hash["legislator"].keys).to match_array(%i[id full_name title district_name photo_url])
       expect(hash["legislators"].first.keys).to match_array(%i[id full_name title district_name photo_url])
       expect(hash["organization"].keys).to match_array(%i[id name support])

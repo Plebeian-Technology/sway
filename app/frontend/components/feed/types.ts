@@ -19,6 +19,8 @@ export interface IFeedBill {
     external_id: string;
     title: string;
     summary: string | null;
+    vote_count: number;
+    share_count: number;
 }
 
 export interface IFeedLegislator {
