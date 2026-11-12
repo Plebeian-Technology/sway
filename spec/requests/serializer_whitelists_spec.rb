@@ -1968,4 +1968,46 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(hash["new_sway_locale_names"]).to eq([locale.name])
     end
   end
+
+  describe "FeedItemResource" do
+    it "ships the exact feed item keys and nested hash shapes" do
+      locale = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
+      district = create(:district, sway_locale: locale, name: "MD1")
+      legislator = create(:legislator, district:, first_name: "Ada", last_name: "Lovelace", title: "Delegate")
+      bill = create(:bill, sway_locale: locale, legislator:, external_id: "25-0001", title: "Sample Bill", summary: "Summary text")
+      organization = create(:organization, sway_locale: locale, name: "Civic Org")
+      position = create(:organization_bill_position, organization:, bill:, support: "FOR", active: true)
+      user = create(:user)
+      user_vote = create(:user_vote, user:, bill:, support: "FOR")
+      legislator_vote = create(:legislator_vote, bill:, legislator:, support: "FOR")
+
+      item = FeedQuery::Item.new(
+        kind: "legislator_voted",
+        key: "legislator_voted:#{legislator_vote.id}",
+        occurred_at: Time.utc(2026, 5, 1, 12, 0, 0),
+        sway_locale: locale,
+        bill:,
+        legislator:,
+        legislators: [legislator],
+        organization_bill_position: position,
+        user_vote:,
+        legislator_vote:
+      )
+
+      raw = FeedItemResource.new(item).serializable_hash #: Hash[Symbol, untyped]
+      hash = raw.transform_keys(&:to_s)
+
+      expect(hash.keys).to match_array(
+        %w[
+          key kind occurred_at sway_locale bill legislator legislators
+          organization user_support legislator_support agreement
+        ]
+      )
+      expect(hash["sway_locale"].keys).to match_array(%i[id name])
+      expect(hash["bill"].keys).to match_array(%i[id external_id title summary])
+      expect(hash["legislator"].keys).to match_array(%i[id full_name title district_name photo_url])
+      expect(hash["legislators"].first.keys).to match_array(%i[id full_name title district_name photo_url])
+      expect(hash["organization"].keys).to match_array(%i[id name support])
+    end
+  end
 end

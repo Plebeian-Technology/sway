@@ -1,0 +1,6 @@
+class FeedItemResource < ApplicationResource
+  ORGANIZATION_SUPPORT_LABELS: Hash[String, String]
+
+  def self.short_locale_name: (SwayLocale locale) -> String
+  def self.serialize_legislator: (Legislator? legislator) -> Hash[Symbol, untyped]?
+end
