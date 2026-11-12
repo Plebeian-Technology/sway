@@ -19,6 +19,7 @@ module Pages
   BILL_CREATOR = "BillCreatorPage"
   BILL_OF_THE_MONTH = "BillOfTheMonth"
   EMBED_BILL = "embed/BillCard"
+  FEED = "Feed"
   HOME = "Home"
   INFLUENCE = "Influence"
   LEGISLATOR = "Legislator"

@@ -217,6 +217,7 @@ Rails.application.routes.draw do
   resources :bill_scores, only: %i[show]
   resources :bill_score_districts, only: %i[show]
   resources :districts, only: %i[index]
+  get "feed", to: "feed#index", as: :feed
   resources :influence, only: %i[index]
   resources :legislators, only: %i[index show]
   # @lat: [[legacy-cookie-json-routes#Retired top-level read routes and numeric user destroy constraint]]

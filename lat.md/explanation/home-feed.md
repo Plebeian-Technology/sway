@@ -27,3 +27,9 @@ Items sort by `occurred_at` descending and break ties by `key` descending. The c
 [[app/services/feed_query.rb#FeedQuery]] filters built items in memory before cursor paging when `query` is non-blank after stripping whitespace.
 
 Matching ignores letter case across the bill's `title` and `external_id`, the `full_name` of the item's `legislator` or `legislators`, the locale's `human_name`, and the organization's `name`. Because `user_joined` carries none of those fields, it never matches a non-blank search, and cursor paging advances only through matching items.
+
+## Serving the feed
+
+[[app/controllers/feed_controller.rb#FeedController]] serves the authenticated feed at `GET /feed` as an Inertia scroll response backed by [[app/services/feed_query.rb#FeedQuery]] and [[app/serializers/feed_item_resource.rb#FeedItemResource]].
+
+The endpoint relies on `ApplicationController`'s default `authenticate_sway_user!` filter and intentionally skips any locale redirect because feed items span all of a user's declared locales. It accepts `feed_search` and `feed_cursor` under the decided query-parameter namespaces and configures `InertiaRails.scroll` with `page_name: "feed_cursor"`, `current_page`, `next_page`, and `previous_page: nil` so cursor paging integrates with Inertia's infinite scroll without a separate `next_cursor` prop.

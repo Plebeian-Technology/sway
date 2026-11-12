@@ -25,6 +25,8 @@ module Pages
     BILL_OF_THE_MONTH: "BillOfTheMonth"
     EMBED_BILL: "embed/BillCard"
 
+    FEED: "Feed"
+
     HOME: "Home"
 
     INFLUENCE: "Influence"
