@@ -5,19 +5,17 @@ lat:
 
 # Boot-time backfills
 
-Three one-off cleanup jobs are queued from initializers as the application starts, rather than from the recurring schedule. Each one fills a column that older rows were written without.
+Two one-off cleanup jobs are queued from initializers as the application starts, rather than from the recurring schedule. Each one fills a column that older rows were written without.
 
-`config/initializers/backfill_bill_categories.rb`,
-`config/initializers/backfill_bill_interesting_scores.rb` and
-`config/initializers/retag_inferred_legislator_votes.rb` hold the same block of
-code with three job names in it. `BackfillBillCategoriesJob` gives summarized
-bills their missing categories, `BackfillBillInterestingScoresJob` fills missing
-interesting scores, and `RetagInferredLegislatorVotesJob` marks synthetic
-legislator votes as inferred.
+`config/initializers/backfill_bill_categories.rb` and
+`config/initializers/backfill_bill_interesting_scores.rb` hold the same block of
+code with two job names in it. `BackfillBillCategoriesJob` gives summarized
+bills their missing categories and `BackfillBillInterestingScoresJob` fills missing
+interesting scores.
 
 ## Why boot rather than the recurring schedule
 
-Each of the three has an end: once every affected row is fixed there is no work left in it, and new unfixed rows arrive with a deploy that adds a column rather than between deploys.
+Both have an end: once every affected row is fixed there is no work left in it, and new unfixed rows arrive with a deploy that adds a column rather than between deploys.
 
 An entry in `config/recurring.yml` would run the job at a fixed interval
 forever, long after the last row was fixed. A boot enqueue runs it once per
@@ -26,11 +24,11 @@ cost of an unnecessary run is one indexed query that matches nothing, so a
 deploy with nothing to fix pays almost nothing.
 
 Removing an initializer once production holds no more affected rows is the
-intended end state for each of the three.
+intended end state for each of the two.
 
 ## Only the web server process enqueues
 
-`Sway::BootEnqueue.web_server_process?` is true only in a `bin/rails server` process, and each of the three initializers stops unless it is true.
+`Sway::BootEnqueue.web_server_process?` is true only in a `bin/rails server` process, and each of the two initializers stops unless it is true.
 
 `rails/commands/server/server_command.rb` defines `Rails::Server` before
 `config/environment` is loaded, so that constant exists inside
@@ -56,7 +54,7 @@ is the smaller statement.
 
 ## A second enqueue is discarded
 
-Each of the three jobs declares `limits_concurrency to: 1, on_conflict: :discard` under a fixed key, so a duplicate enqueue is dropped rather than queued behind the first.
+Each of the two jobs declares `limits_concurrency to: 1, on_conflict: :discard` under a fixed key, so a duplicate enqueue is dropped rather than queued behind the first.
 
 Production runs two web containers and both boot the same initializers, so every
 deploy produces two enqueues per job. The concurrency limit folds each pair into
@@ -102,9 +100,3 @@ written out.
 
 Nothing retries inside the process. The next boot of a web container runs the
 same initializer again.
-
-## Why the Congress and Maryland recompute is delayed 30 seconds
-
-The retag uses `update_all`, which writes directly to the database and skips ActiveRecord callbacks, so score recompute triggers do not fire automatically.
-
-`RecomputeBillInterestingScoreJob` is enqueued manually with a 30-second delay. Solid Queue coalesces recompute jobs per bill on conflict. An immediate enqueue could race an in-flight recompute that started prior to this cleanup, dropping the new job and preserving a stale score. Waiting 30 seconds allows earlier recomputes to finish and release their concurrency slots before this pass enqueues.
