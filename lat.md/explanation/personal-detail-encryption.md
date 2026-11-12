@@ -148,6 +148,8 @@ For users, `db/data/20261111000003_encrypt_user_personal_details.rb` encrypts `f
 
 Both migrations use standalone stand-in classes to avoid coupling to application models during migration runs.
 
+Each data migration runs inside one transaction, because data_migrate's migrator is ActiveRecord's migrator and wraps every migration that way on SQLite. The first row that fails rolls back that whole migration and stops the deploy boot, and the SQLite write lock is held for the whole walk over the table.
+
 ## Why the shared-addresses admin page reports counts only
 
 `/admin/shared_addresses` (`SharedAddressCountsService`) exists to flag unusual clusters — many registered people at one address — for a person to review, not to let an admin browse where constituents live.
