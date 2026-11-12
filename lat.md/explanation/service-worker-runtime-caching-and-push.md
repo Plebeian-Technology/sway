@@ -41,13 +41,13 @@ Requiring an exact pathname match opened redundant tabs whenever a user already 
 
 Navigation and Inertia requests are excluded from service worker runtime caching because dynamic pages contain authenticated user identity, voter registrations, and user votes.
 
-The worker registers no navigation route or page fallback. All dynamic requests go directly to the network, as detailed in [[client-caches-and-identity#What the page cache is allowed to hold]]. During activation, the worker deletes legacy `inertia-pages` and `inertia-navigations` caches to prevent stale private data exposure across sign-ins, and responds to `DYNAMIC_PAGES_NETWORK_ONLY` messages to verify this policy during authentication preflights.
+The worker registers no navigation route or page fallback. All dynamic requests go directly to the network, as detailed in [[client-caches-and-identity#What the page cache is allowed to hold]]. Retired page caches are covered in [[client-caches-and-identity#Static worker lifecycle]]. The worker responds to `DYNAMIC_PAGES_NETWORK_ONLY` messages to verify this policy during authentication preflights.
 
 ## Why runtime caching only targets lazily loaded admin assets
 
 The only runtime route registered by `sw.ts` caches lazily loaded admin chunks under `/assets/admin/` using `CacheFirst`.
 
-Admin chunks are excluded from build precaching to keep the initial manifest compact for normal visitors, as described in [[admin-chunks-are-not-precached#Why the precache excludes them]]. When an admin loads an admin view, the service worker caches the fingerprinted chunk. `CacheControlPlugin` ensures responses carrying `no-store` or `no-cache` headers are never stored.
+Admin chunks are excluded from build precaching to keep the initial manifest compact for normal visitors, as described in [[admin-chunks-are-not-precached#Why the precache excludes them]]. When an admin loads an admin view, the service worker caches the fingerprinted chunk. The responses `CacheControlPlugin` refuses to store are covered in [[client-caches-and-identity#What the page cache is allowed to hold]].
 
 ## Why PURGE_CACHES uses event.waitUntil
 
