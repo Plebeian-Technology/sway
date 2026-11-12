@@ -1,0 +1,66 @@
+class FeedQuery
+  DEFAULT_PER_PAGE: Integer
+
+  class Item < Data
+    attr_reader kind: String
+    attr_reader key: String
+    attr_reader occurred_at: ActiveSupport::TimeWithZone | Time
+    attr_reader sway_locale: SwayLocale?
+    attr_reader bill: Bill?
+    attr_reader legislator: Legislator?
+    attr_reader legislators: Array[Legislator]?
+    attr_reader organization_bill_position: OrganizationBillPosition?
+    attr_reader user_vote: UserVote?
+    attr_reader legislator_vote: LegislatorVote?
+
+    def initialize: (
+      kind: String,
+      key: String,
+      occurred_at: ActiveSupport::TimeWithZone | Time,
+      ?sway_locale: SwayLocale?,
+      ?bill: Bill?,
+      ?legislator: Legislator?,
+      ?legislators: Array[Legislator]?,
+      ?organization_bill_position: OrganizationBillPosition?,
+      ?user_vote: UserVote?,
+      ?legislator_vote: LegislatorVote?
+    ) -> void
+
+    def self.new: (
+      kind: String,
+      key: String,
+      occurred_at: ActiveSupport::TimeWithZone | Time,
+      ?sway_locale: SwayLocale?,
+      ?bill: Bill?,
+      ?legislator: Legislator?,
+      ?legislators: Array[Legislator]?,
+      ?organization_bill_position: OrganizationBillPosition?,
+      ?user_vote: UserVote?,
+      ?legislator_vote: LegislatorVote?
+    ) -> Item
+  end
+
+  @user: User
+  @cursor: String?
+  @per_page: Integer
+  @items: Array[Item]
+  @next_cursor: String?
+
+  attr_reader items: Array[Item]
+  attr_reader next_cursor: String?
+
+  def self.term_start_on: (SwayLocale sway_locale) -> Date
+
+  def initialize: (user: User, ?cursor: String?, ?per_page: Integer) -> void
+
+  private
+
+  def build_items: () -> Array[Item]
+  def user_joined_item: () -> Item
+  def representatives_found_item: () -> Item?
+  def legislative_term_began_items: () -> Array[Item]
+  def paginate: (Array[Item] sorted_items) -> [Array[Item], String?]
+  def filter_after_cursor: (Array[Item] sorted_items) -> Array[Item]
+  def encode_cursor: (Item item) -> String
+  def decode_cursor: (String? cursor) -> [Time, String]?
+end
