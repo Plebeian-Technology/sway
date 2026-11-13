@@ -8,6 +8,8 @@ class SwayRegistrationController < ApplicationController
 
     @submitted_place_types: Array[String]
 
+    @submitted_coordinates: { latitude: Float?, longitude: Float? }
+
     def index: -> untyped
 
     # Finds representatives for the submitted address and reports completion only for active pairings.
@@ -37,7 +39,13 @@ class SwayRegistrationController < ApplicationController
 
     def submitted_normalized_key: -> String?
 
-    def submitted_coordinate: (Symbol name) -> Float?
+    def submitted_text: (Symbol name) -> String
+
+    def submitted_coordinate: (:latitude | :longitude name) -> Float?
+
+    def submitted_coordinates: () -> { latitude: Float?, longitude: Float? }
+
+    def parsed_coordinate: (untyped value, Integer bound) -> Float?
 
     def sway_registration_params: -> untyped
 

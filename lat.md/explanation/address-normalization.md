@@ -30,4 +30,10 @@ Latitude and longitude fields from external geocoding payloads are converted to 
 
 Out-of-bounds or non-numeric values are excluded to prevent malformed coordinates from entering registration state.
 
+The server applies the same bounds to a registration submission, because a
+client may post typed text or a hand-built body
+([[app/controllers/sway_registration_controller.rb#SwayRegistrationController#parsed_coordinate]]).
+A value outside them, or one that is not a finite number, is stored as no
+coordinate. One bad coordinate drops both, since a lone latitude places nothing.
+
 

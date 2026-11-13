@@ -38,11 +38,22 @@ become `4`, which is what makes the same unit written three ways agree.
 
 ## Finding an address during registration
 
-Registration looks an address up by its normalized key, and falls back to matching every typed field when the submission has no coordinates and therefore no key.
+Registration looks an address up by its normalized key. A submission without two valid coordinates has no key, so it always gets a new row of its own.
 
-The fallback is not a courtesy. A submission without coordinates cannot produce
-a key, and matching nothing would create a fresh row on every attempt. The old
-exact-field match is the honest answer for a submission Sway cannot place.
+There is no fallback that matches every typed field. Two unlocated submissions
+cannot be shown to be one place, and sharing a row would hand each user the
+other's later geocode and district. A fresh row per attempt is the cost of
+never merging strangers.
+
+The address is accepted as a fact, so nothing in it refuses the user. A missing
+or null text field is stored as an empty string, and a body with no address at
+all still stores a blank row
+([[app/controllers/sway_registration_controller.rb#SwayRegistrationController#submitted_text]]).
+A coordinate that is not a finite number inside its bounds counts as absent,
+and both are stored as nil when either is absent
+([[address-normalization#Defensive coordinate parsing and validation bounds]]).
+Reading the text `abc` as `0.0` would otherwise give every such submission the
+same key and one shared row.
 
 A row found by key that does not yet carry one has the key written onto it
 as it is used. So the table converges without a second pass, and the data

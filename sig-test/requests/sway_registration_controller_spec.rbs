@@ -1,3 +1,10 @@
 class Object
   def reg_user: () -> User
+  def complete_params: () -> Hash[Symbol, String | Float]
+  def post_json_body: (untyped body) -> void
+  def expect_neither_400_nor_500: () -> void
+  def stored_address_for: (User user) -> untyped
+  def expect_one_stored_address_for: (User user) -> untyped
+  def expect_blank_address: (untyped address) -> void
+  def pending: (String message) -> void
 end

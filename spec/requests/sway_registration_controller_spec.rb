@@ -811,4 +811,160 @@ RSpec.describe "/registration", type: :request do
       expect(response).to redirect_to(feed_path)
     end
   end
+
+  # @lat: [[address-normalized-key#Finding an address during registration]]
+  describe "POST /sway_registration with an incomplete or malformed address" do
+    let(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+    let(:json_headers) { {"Accept" => "application/json"} }
+    let(:complete_params) do
+      {
+        street: "100 N Holliday St",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21202",
+        country: "US",
+        latitude: 39.29105,
+        longitude: -76.61069
+      }
+    end
+
+    before do
+      sign_in(user)
+      allow(Geocoder).to receive(:search).and_return([])
+    end
+
+    def post_json_body(body)
+      post "/sway_registration",
+        params: body.to_json,
+        headers: json_headers.merge("Content-Type" => "application/json")
+    end
+
+    def expect_neither_400_nor_500
+      expect(response).not_to have_http_status(:bad_request)
+      expect(response).not_to have_http_status(:internal_server_error)
+    end
+
+    def stored_address_for(user)
+      expect(UserAddress.where(user: user).count).to eq(1)
+      user.reload.address
+    end
+
+    def expect_one_stored_address_for(user)
+      expect_neither_400_nor_500
+      stored_address_for(user)
+    end
+
+    def expect_blank_address(address)
+      expect(address).to have_attributes(
+        street: "", city: "", region_code: "", postal_code: "", country: "",
+        latitude: nil, longitude: nil, normalized_key: nil
+      )
+    end
+
+    context "when locale resolution is stubbed out for a blank region and country" do
+      before do
+        allow_any_instance_of(Address).to receive(:sway_locales).and_return([]) # rubocop:disable RSpec/AnyInstance
+      end
+
+      [
+        ["no sway_registration key is sent", {}],
+        ["sway_registration is an empty object", {sway_registration: {}}],
+        ["sway_registration is JSON null", {sway_registration: nil}],
+        ["sway_registration is a plain string", {sway_registration: "abc"}]
+      ].each do |shape, body|
+        it "stores one blank address and answers neither 400 nor 500 when #{shape}" do
+          expect { post_json_body(body) }.to change(Address, :count).by(1)
+
+          expect_blank_address(expect_one_stored_address_for(user))
+        end
+      end
+
+      it "redirects a browser that posts an empty object instead of answering 400" do
+        post "/sway_registration", params: {sway_registration: {}}
+
+        expect(response).to have_http_status(:redirect)
+        expect_blank_address(stored_address_for(user))
+      end
+    end
+
+    it "stores a null street as blank and the other fields as sent" do
+      post_json_body({sway_registration: complete_params.merge(street: nil)})
+
+      expect(expect_one_stored_address_for(user)).to have_attributes(
+        street: "", city: "Baltimore", region_code: "MD", postal_code: "21202", country: "US",
+        latitude: "39.29105", longitude: "-76.61069"
+      )
+    end
+
+    it "stores blank and whitespace text fields as given" do
+      post_json_body({sway_registration: complete_params.merge(street: "", street2: " ", city: "  ", postal_code: " ")})
+
+      expect(expect_one_stored_address_for(user)).to have_attributes(
+        street: "", street2: " ", city: "  ", region_code: "MD", postal_code: " ", country: "US"
+      )
+    end
+
+    it "answers neither 400 nor 500 when the address has no region and no country" do
+      pending "locale resolution still raises on a blank region or country"
+      post "/sway_registration", params: {}, headers: json_headers
+
+      expect_neither_400_nor_500
+    end
+
+    [
+      {latitude: "abc"},
+      {latitude: 91},
+      {longitude: -181},
+      {latitude: "NaN"}
+    ].each do |bad_coordinate|
+      it "stores no coordinates and no key for #{bad_coordinate.inspect}" do
+        post_json_body({sway_registration: complete_params.merge(bad_coordinate)})
+
+        expect(expect_one_stored_address_for(user)).to have_attributes(
+          latitude: nil, longitude: nil, normalized_key: nil, street: "100 N Holliday St"
+        )
+      end
+    end
+
+    it "gives two users who both send an invalid latitude two different address rows" do
+      other_user = create(:user, is_registration_complete: false, registration_status: "pending")
+
+      post_json_body({sway_registration: complete_params.merge(latitude: "abc")})
+      sign_in(other_user)
+      post_json_body({sway_registration: complete_params.merge(latitude: "abc")})
+
+      expect(user.reload.address.id).not_to eq(expect_one_stored_address_for(other_user).id)
+    end
+
+    it "stores coordinates and a key sent as JSON numbers" do
+      post_json_body({sway_registration: complete_params})
+
+      address = expect_one_stored_address_for(user)
+      expect(address).to have_attributes(latitude: "39.29105", longitude: "-76.61069")
+      expect(address.normalized_key).to eq(Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069))
+    end
+
+    it "stores coordinates and a key sent as numeric strings" do
+      post_json_body({sway_registration: complete_params.merge(latitude: "39.29105", longitude: "-76.61069")})
+
+      address = expect_one_stored_address_for(user)
+      expect(address).to have_attributes(latitude: "39.29105", longitude: "-76.61069")
+      expect(address.normalized_key).to eq(Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069))
+    end
+
+    it "redirects a browser that posts only a region and country instead of answering 400" do
+      post "/sway_registration", params: {sway_registration: {region_code: "MD", country: "US"}}
+
+      expect(response).to have_http_status(:redirect)
+      expect(stored_address_for(user)).to have_attributes(street: "", city: "", postal_code: "", latitude: nil)
+    end
+
+    it "still answers 401 to an unauthenticated post" do
+      session_hash.clear
+
+      post_json_body({sway_registration: {}})
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
 end

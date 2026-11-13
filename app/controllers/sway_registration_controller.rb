@@ -218,15 +218,15 @@ class SwayRegistrationController < ApplicationController
   # @lat: [[address-normalized-key#Finding an address during registration]]
   def address
     found = address_by_normalized_key || Address.create!(
-      street: sway_registration_params.fetch(:street),
+      street: submitted_text(:street),
       street2: sway_registration_params[:street2],
       street3: sway_registration_params[:street3],
-      city: sway_registration_params.fetch(:city),
-      region_code: sway_registration_params.fetch(:region_code),
-      postal_code: sway_registration_params.fetch(:postal_code),
-      country: sway_registration_params.fetch(:country),
-      latitude: sway_registration_params.fetch(:latitude),
-      longitude: sway_registration_params.fetch(:longitude)
+      city: submitted_text(:city),
+      region_code: submitted_text(:region_code),
+      postal_code: submitted_text(:postal_code),
+      country: submitted_text(:country),
+      latitude: submitted_coordinate(:latitude),
+      longitude: submitted_coordinate(:longitude)
     )
 
     changes = {}
@@ -256,11 +256,33 @@ class SwayRegistrationController < ApplicationController
     )
   end
 
-  def submitted_coordinate(name)
-    value = sway_registration_params[name]
-    return nil if value.nil? || value.to_s.strip.empty?
+  # Returns an empty string for a missing or null field.
+  def submitted_text(name)
+    sway_registration_params[name].to_s
+  end
 
-    value.to_f
+  def submitted_coordinate(name)
+    submitted_coordinates[name]
+  end
+
+  # @lat: [[address-normalization#Defensive coordinate parsing and validation bounds]]
+  def submitted_coordinates
+    return @submitted_coordinates if defined?(@submitted_coordinates)
+
+    latitude = parsed_coordinate(sway_registration_params[:latitude], 90)
+    longitude = parsed_coordinate(sway_registration_params[:longitude], 180)
+    @submitted_coordinates =
+      if latitude && longitude
+        {latitude: latitude, longitude: longitude}
+      else
+        {latitude: nil, longitude: nil}
+      end
+  end
+
+  # Returns nil unless the value is a finite number within -bound..bound.
+  def parsed_coordinate(value, bound)
+    number = Float(value, exception: false)
+    number if number&.finite? && number.abs <= bound
   end
 
   def submitted_place_types
@@ -275,7 +297,9 @@ class SwayRegistrationController < ApplicationController
   end
 
   def sway_registration_params
-    params.require(:sway_registration).permit(
+    submitted = params[:sway_registration]
+    submitted = ActionController::Parameters.new unless submitted.is_a?(ActionController::Parameters)
+    submitted.permit(
       :latitude,
       :longitude,
       :street,
