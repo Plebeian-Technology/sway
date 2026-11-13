@@ -4,7 +4,7 @@
 class SwayRegistrationService
   include SwayGeocode
 
-  attr_reader :address, :sway_locale
+  attr_reader :address, :sway_locale, :skipped_resolution_errors
 
   def initialize(user, address, sway_locale, invited_by_id:, async: true)
     @user = user
@@ -17,6 +17,9 @@ class SwayRegistrationService
 
     @feature = nil
     @districts = nil
+
+    @skipped_resolution_errors = []
+    @skipped_term_ids = []
   end
 
   def call
@@ -115,59 +118,85 @@ class SwayRegistrationService
 
     terms = district.legislator_terms.current.includes(:legislator, :seat).to_a
       .reject { |term| unseated_unconfigured_office?(term) }
-    unresolved = terms.find { |term| term.seat_id.blank? || term.seat.nil? }
-    if unresolved
-      raise Seats::UnresolvedSeatError,
-        "Locale-wide term #{unresolved.id} in #{sway_locale.name} has no persisted seat identity"
+    seated_terms, unseated_terms = terms.partition { |term| term.seat_id.present? && term.seat.present? }
+    unseated_terms.each do |term|
+      skip_unresolved_terms(
+        [term],
+        Seats::UnresolvedSeatError.new(
+          "Locale-wide term #{term.id} in #{sway_locale.name} has no persisted seat identity"
+        )
+      )
     end
 
-    terms.map(&:legislator)
+    seated_terms.map(&:legislator)
   end
 
   def resolve_seat_candidates(candidates)
     candidate_terms = candidates.filter_map(&:active_term).uniq(&:id)
       .reject { |term| unseated_unconfigured_office?(term) }
-    unresolved = candidate_terms.find { |term| term.seat_id.blank? || term.seat.nil? }
-    if unresolved
-      raise Seats::UnresolvedSeatError,
-        "Current term #{unresolved.id} in #{sway_locale.name} has no persisted seat identity"
+    seated_terms, unseated_terms = candidate_terms.partition { |term| term.seat_id.present? && term.seat.present? }
+    unseated_terms.each do |term|
+      skip_unresolved_terms(
+        [term],
+        Seats::UnresolvedSeatError.new(
+          "Current term #{term.id} in #{sway_locale.name} has no persisted seat identity"
+        )
+      )
     end
 
-    candidate_terms.each do |term|
-      seat = term.seat
-      unless seat && term.district.sway_locale_id == sway_locale.id &&
-          seat.district_id == term.district_id &&
-          term.legislator.sway_locale_id == sway_locale.id
-        raise Seats::UnresolvedSeatError,
-          "Current term #{term.id} has a seat outside its locale or district"
-      end
-    end
-
-    seat_ids = candidate_terms.map(&:seat_id).uniq
+    seat_ids = terms_within_locale(seated_terms).map(&:seat_id).uniq
     return [] if seat_ids.empty?
 
     current_terms = LegislatorTerm.current
       .where(seat_id: seat_ids)
       .includes(:legislator, :seat, district: :sway_locale)
       .to_a
-    current_terms.group_by(&:seat_id).each do |seat_id, occupants|
-      if occupants.length > 1
-        seat = occupants.first.seat
-        raise Seats::OverlapValidator::OverlapError,
+    single_occupants = current_terms.group_by(&:seat_id).filter_map do |seat_id, occupants|
+      next occupants.first if occupants.length == 1
+
+      seat = occupants.first.seat
+      skip_unresolved_terms(
+        occupants,
+        Seats::OverlapValidator::OverlapError.new(
           "Seat #{seat&.seat_identifier || seat_id} has multiple current occupants"
-      end
+        )
+      )
+      nil
     end
 
-    current_terms.each do |term|
-      unless term.seat&.district_id == term.district_id &&
-          term.district.sway_locale_id == sway_locale.id &&
-          term.legislator.sway_locale_id == sway_locale.id
-        raise Seats::UnresolvedSeatError,
-          "Current term #{term.id} has a seat outside its locale or district"
-      end
-    end
+    terms_within_locale(single_occupants).map(&:legislator).uniq(&:id)
+  end
 
-    current_terms.map(&:legislator).uniq(&:id)
+  def terms_within_locale(terms)
+    inside, outside = terms.partition do |term|
+      term.seat&.district_id == term.district_id &&
+        term.district.sway_locale_id == sway_locale.id &&
+        term.legislator.sway_locale_id == sway_locale.id
+    end
+    outside.each do |term|
+      skip_unresolved_terms(
+        [term],
+        Seats::UnresolvedSeatError.new("Current term #{term.id} has a seat outside its locale or district")
+      )
+    end
+    inside
+  end
+
+  # @lat: [[representative-resolution#Representative resolution by seat#Resolution branches]]
+  def skip_unresolved_terms(terms, error)
+    term_ids = terms.map(&:id)
+    return if (term_ids - @skipped_term_ids).empty?
+
+    @skipped_term_ids.concat(term_ids)
+    @skipped_resolution_errors << error
+    SwayLogging.warn(
+      "sway_registration.unresolved_term_skipped",
+      term_ids:,
+      district: terms.first.district.name,
+      sway_locale: sway_locale.name,
+      error_class: error.class.name
+    )
+    Sentry.capture_exception(error, level: :warning)
   end
 
   # @lat: [[representative-resolution#Representative resolution by seat#Unconfigured offices]]

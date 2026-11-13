@@ -10,6 +10,8 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
   let(:district) { create(:district, sway_locale: congress, name: "MD0") }
   let(:maryland_locale) { create(:sway_locale, :maryland) }
 
+  before { allow(Sentry).to receive(:capture_exception) }
+
   def create_seat_term(district:, office_identity:, last_name:, years: [2025, 2027])
     seat = Seat.create!(
       district:,
@@ -126,7 +128,9 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     reps = service.district_legislators
     expect(reps.map(&:last_name)).to include("Moore")
     expect(reps).not_to include(attorney_general)
+    expect(service.skipped_resolution_errors).to be_empty
     expect { ReconcileUserDistrictsService.new(user, maryland_locale).call }.not_to raise_error
+    expect(Sentry).not_to have_received(:capture_exception)
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Skips unconfigured geographic offices]]
@@ -136,14 +140,21 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
 
     expect { service.district_legislators }.not_to raise_error
     expect(service.district_legislators).to be_empty
+    expect(service.skipped_resolution_errors).to be_empty
+    expect(Sentry).not_to have_received(:capture_exception)
   end
 
-  # @lat: [[representative-resolution-tests#Registration seat resolution#Refuses untitled unseated terms]]
-  it "still refuses an unseated locale-wide term with no title" do
-    create_unseated_md0_term(maryland_locale, title: nil, last_name: "Untitled")
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Skips untitled unseated terms]]
+  it "skips and reports an unseated locale-wide term with no title" do
+    untitled = create_unseated_md0_term(maryland_locale, title: nil, last_name: "Untitled")
+    service = maryland_service(maryland_locale)
 
-    expect { maryland_service(maryland_locale).district_legislators }
-      .to raise_error(Seats::UnresolvedSeatError, /no persisted seat identity/)
+    expect(service.district_legislators).not_to include(untitled)
+    expect(service.skipped_resolution_errors).to contain_exactly(
+      an_instance_of(Seats::UnresolvedSeatError).and(having_attributes(message: /no persisted seat identity/))
+    )
+    expect(Sentry).to have_received(:capture_exception)
+      .once.with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Retains co-serving distinct seats]]
@@ -187,15 +198,52 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     expect(service.district_legislators).to contain_exactly(delegate_a, delegate_b)
   end
 
-  # @lat: [[representative-resolution-tests#Registration seat resolution#Refuses missing seat identity]]
-  it "refuses a current geographic candidate without a persisted seat identity" do
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Skips missing seat identity]]
+  it "skips and reports a current geographic candidate without a persisted seat identity" do
+    senator, = create_seat_term(district:, office_identity: "md-senate-class-1", last_name: "Seated")
     legislator = create(:legislator, sway_locale: congress)
     create(:legislator_term, legislator:, district:)
     service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
     allow(service).to receive(:districts).and_return([0])
 
-    expect { service.district_legislators }
-      .to raise_error(Seats::UnresolvedSeatError, /seat/i)
+    expect(service.district_legislators).to contain_exactly(senator)
+    expect(service.skipped_resolution_errors).to contain_exactly(
+      an_instance_of(Seats::UnresolvedSeatError).and(having_attributes(message: /no persisted seat identity/))
+    )
+    expect(Sentry).to have_received(:capture_exception)
+      .once.with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
+  end
+
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Skips a seat outside its district]]
+  it "skips and reports a current term whose seat lies in another district" do
+    other_district = create(:district, sway_locale: congress, name: "MD7")
+    _other, _other_term, foreign_seat = create_seat_term(
+      district: other_district,
+      office_identity: "md-congress-district-7",
+      last_name: "Other"
+    )
+    misplaced = create(:legislator, sway_locale: congress, last_name: "Misplaced")
+    now = Time.current
+    LegislatorTerm.insert_all!([
+      {
+        legislator_id: misplaced.id,
+        district_id: district.id,
+        seat_id: foreign_seat.id,
+        term_start_year: 2025,
+        term_end_year: 2027,
+        created_at: now,
+        updated_at: now
+      }
+    ])
+    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    allow(service).to receive(:districts).and_return([0])
+
+    expect(service.district_legislators).to be_empty
+    expect(service.skipped_resolution_errors).to contain_exactly(
+      an_instance_of(Seats::UnresolvedSeatError).and(having_attributes(message: /outside its locale or district/))
+    )
+    expect(Sentry).to have_received(:capture_exception)
+      .once.with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Selects the exact Congress locale-wide district]]
@@ -288,7 +336,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Checks omitted current occupants]]
-  it "checks all current rows for a selected seat even when the geo candidate list omits one" do
+  it "drops every occupant of a selected seat even when the geo candidate list omits one" do
     state_locale = create(:sway_locale, city: "maryland", state: "MD", country: "united_states")
     state_district = create(:district, sway_locale: state_locale, name: "MD1")
     selected, _term, seat = create_seat_term(
@@ -312,13 +360,16 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     service = described_class.new(user, address, state_locale, invited_by_id: nil, async: false)
     allow(service).to receive(:find_legislators_from_open_states_geo_endpoint).and_return([selected])
 
-    expect { service.district_legislators }
-      .to raise_error(Seats::OverlapValidator::OverlapError, /multiple current occupants/)
-    expect(selected).to be_present
+    expect(service.district_legislators).to be_empty
+    expect(service.skipped_resolution_errors).to contain_exactly(
+      an_instance_of(Seats::OverlapValidator::OverlapError).and(having_attributes(message: /multiple current occupants/))
+    )
+    expect(Sentry).to have_received(:capture_exception)
+      .once.with(an_instance_of(Seats::OverlapValidator::OverlapError), level: :warning)
   end
 
-  # @lat: [[representative-resolution-tests#Registration seat resolution#Rejects duplicate rows for one person]]
-  it "rejects overlapping current rows for one person and one seat" do
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Drops duplicate rows for one person]]
+  it "drops overlapping current rows for one person and one seat" do
     selected, _term, seat = create_seat_term(
       district:,
       office_identity: "md-senate-class-1",
@@ -339,8 +390,12 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
     allow(service).to receive(:districts).and_return([0])
 
-    expect { service.district_legislators }
-      .to raise_error(Seats::OverlapValidator::OverlapError, /multiple current occupants/)
+    expect(service.district_legislators).to be_empty
+    expect(service.skipped_resolution_errors).to contain_exactly(
+      an_instance_of(Seats::OverlapValidator::OverlapError).and(having_attributes(message: /multiple current occupants/))
+    )
+    expect(Sentry).to have_received(:capture_exception)
+      .once.with(an_instance_of(Seats::OverlapValidator::OverlapError), level: :warning)
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Leaves expired seats vacant]]
@@ -420,5 +475,91 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
 
     expect(stored_legislator.reload.active).to be(true)
     expect(stored_district.reload.active).to be(true)
+  end
+
+  context "when a configured office's successor term has no seat yet" do
+    let(:baltimore) { create(:sway_locale, :baltimore) }
+    let(:mayor_entry) do
+      path = Rails.root.join("db", "seeds", "data", "united_states", "maryland", "baltimore", "legislators.json")
+      JSON.parse(File.read(path)).first
+    end
+    let(:successor_entry) { mayor_entry.merge("first_name" => "Successor", "last_name" => "Arrived") }
+
+    def seed_unseated_successor
+      SeedLegislator.run([baltimore])
+      SeedLegislator.new(successor_entry, baltimore, force: true).seed
+      previous = baltimore.legislators.find_by!(first_name: mayor_entry["first_name"], last_name: mayor_entry["last_name"])
+      successor = baltimore.legislators.find_by!(first_name: "Successor", last_name: "Arrived")
+      [previous, successor]
+    end
+
+    def baltimore_service
+      allow(SwayGeocode).to receive(:build).and_return(double(districts: [0]))
+      described_class.new(user, address, baltimore, invited_by_id: nil, async: false)
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Skips an unseated successor]]
+    it "resolves the seated officers and skips the unseated successor once" do
+      previous, successor = seed_unseated_successor
+      service = baltimore_service
+
+      reps = service.district_legislators
+
+      expect(reps).to include(previous)
+      expect(reps).not_to include(successor)
+      expect(service.skipped_resolution_errors).to contain_exactly(an_instance_of(Seats::UnresolvedSeatError))
+      expect(Sentry).to have_received(:capture_exception)
+        .once.with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Registers around a skipped term]]
+    it "links the seated officers and completes the user" do
+      previous, successor = seed_unseated_successor
+      create(:user_address, user:, address:)
+
+      baltimore_service.call
+
+      linked_ids = user.user_legislators.where(active: true).pluck(:legislator_id)
+      expect(linked_ids).to include(previous.id)
+      expect(linked_ids).not_to include(successor.id)
+      expect(user.reload.registration_status).to eq("completed")
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Resolves a seated successor]]
+    it "returns the successor once the previous term ends and the successor holds the seat" do
+      previous, successor = seed_unseated_successor
+      previous_term = previous.legislator_terms.current.sole
+      previous_term.update!(ended_on: Date.current, ended_on_source: LegislatorTerm::DateSource::PUBLISHED)
+      successor.legislator_terms.current.sole.update!(
+        began_on: Date.current,
+        began_on_source: LegislatorTerm::DateSource::PUBLISHED,
+        seat: previous_term.seat
+      )
+      service = baltimore_service
+
+      reps = service.district_legislators
+
+      expect(reps).to include(successor)
+      expect(reps).not_to include(previous)
+      expect(service.skipped_resolution_errors).to be_empty
+      expect(Sentry).not_to have_received(:capture_exception)
+    end
+
+    # @lat: [[representative-resolution-tests#Reconciliation refusal#Refuses while a term is skipped]]
+    it "refuses reconciliation and leaves existing links active" do
+      seed_unseated_successor
+      council_member = baltimore.legislators.with_active_term.find { |l| l.district && l.district.name != "MD0" }
+      create(:user_address, user:, address:)
+      stored_legislator = create(:user_legislator, user:, legislator: council_member)
+      stored_district = create(:user_district, user:, district: council_member.district)
+      allow(SwayGeocode).to receive(:build).and_return(double(districts: [0]))
+
+      expect {
+        ReconcileUserDistrictsService.new(user, baltimore).call
+      }.to raise_error(Seats::UnresolvedSeatError)
+
+      expect(stored_legislator.reload.active).to be(true)
+      expect(stored_district.reload.active).to be(true)
+    end
   end
 end

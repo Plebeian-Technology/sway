@@ -27,21 +27,25 @@ Two currently serving seats in one geographic district both resolve even when th
 
 Every supported delegate seat returned by the Maryland regional source remains available to registration when several delegates share one district.
 
-### Refuses missing seat identity
+### Skips missing seat identity
 
-A current selected term without a persisted seat identity raises before it can be linked.
+A current geographic candidate without a persisted seat identity is left out, recorded once as `Seats::UnresolvedSeatError` and reported to Sentry at warning level, while the seated senator still resolves.
+
+### Skips a seat outside its district
+
+A current term whose seat belongs to another district is left out, recorded once as `Seats::UnresolvedSeatError` and reported to Sentry.
 
 ### Skips unconfigured locale-wide offices
 
-A current unseated Maryland Attorney General term in `MD0` is left out, and the configured Governor still resolves without an error.
+A current unseated Maryland Attorney General term in `MD0` is left out without a recorded error or Sentry report, and the configured Governor still resolves.
 
 ### Skips unconfigured geographic offices
 
-An unconfigured office holder returned by the regional source is dropped instead of refusing the whole registration.
+An unconfigured office holder returned by the regional source is dropped without a recorded error or Sentry report.
 
-### Refuses untitled unseated terms
+### Skips untitled unseated terms
 
-An unseated locale-wide term with no title still raises, because an absent title cannot show the office is unconfigured.
+An unseated locale-wide term with no title is left out, recorded and reported, because an absent title cannot show the office is unconfigured.
 
 ### Selects the exact Congress locale-wide district
 
@@ -61,19 +65,31 @@ The configured `MD0` office resolves even when OpenStates returns no geographic 
 
 ### Checks omitted current occupants
 
-Every current row for a selected seat is checked even when the geographic endpoint omits an overlapping occupant.
+Every current row for a selected seat is checked even when the geographic endpoint omits an overlapping occupant; both occupants are dropped and one `Seats::OverlapValidator::OverlapError` is recorded and reported.
 
-### Rejects duplicate rows for one person
+### Drops duplicate rows for one person
 
-Duplicate overlapping current terms for one person and one seat are refused instead of being hidden by the singular active-term association.
+Duplicate overlapping current terms for one person and one seat drop that person and record one `Seats::OverlapValidator::OverlapError`, instead of being hidden by the singular active-term association.
 
 ### Leaves expired seats vacant
 
 The exclusive end boundary removes the former occupant without inventing a successor.
 
+### Skips an unseated successor
+
+A Baltimore successor seeded under a renamed office with the same published id has no seat yet; resolution returns the previous holder, leaves the successor out, and records and reports one `Seats::UnresolvedSeatError`.
+
+### Registers around a skipped term
+
+Synchronous registration in that state links the seated officers only, never the unseated successor, and completes the user.
+
+### Resolves a seated successor
+
+Once the previous term ends and the successor's term holds the seat, resolution returns the successor and records nothing.
+
 ## Reconciliation refusal
 
-Resolution errors occur before reconciliation mutates stored representative links.
+A recorded resolution skip refuses reconciliation before it mutates stored representative links.
 
 ### Preserves links on unresolved reconciliation
 
@@ -82,6 +98,10 @@ Reconciliation raises on an unresolved current seat before deactivating stored l
 ### Preserves links on locale-wide conflict
 
 An ambiguous configured locale-wide seat raises before reconciliation deactivates existing links.
+
+### Refuses while a term is skipped
+
+Reconciliation raises the recorded `Seats::UnresolvedSeatError` while a Baltimore successor term is skipped, and leaves a stored council link active.
 
 ### Refuses unseated locale-wide term
 

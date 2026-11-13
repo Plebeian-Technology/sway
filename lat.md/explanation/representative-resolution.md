@@ -8,7 +8,7 @@ Each supported term points to a persisted [[app/models/seat.rb#Seat]] within one
 
 District remains the geographic boundary and owns its service terms; a Seat distinguishes each official office inside that district.
 
-Source-backed office identity is scoped to that district. Legacy terms may retain a nil seat, but registration refuses a selected current term without persisted identity; it never derives a seat from a person's name, term year, or district number.
+Source-backed office identity is scoped to that district. Legacy terms may retain a nil seat, but registration never links a selected current term without persisted identity; it skips that term and never derives a seat from a person's name, term year, or district number.
 
 ## Occupancy interval
 
@@ -26,15 +26,19 @@ Congress declares `US0`; Maryland and Baltimore declare `MD0`. This avoids treat
 
 [[app/services/sway_registration_service.rb#SwayRegistrationService#district_legislators]] applies one seat validation to geographic and OpenStates regional candidates, then adds the locale-wide district's current occupants.
 
-Candidate terms, seats, districts, and legislators must agree on the selected locale. [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#call]] resolves the complete set before [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#apply_diff]], so an unresolved identity or ambiguous seat raises before link changes.
+Candidate terms, seats, districts, and legislators must agree on the selected locale. A term that fails one of these checks is skipped rather than raised: a term with no seat, a seat outside its locale or district, and every occupant of a seat with more than one current occupant. One bad roster row would otherwise refuse every registration it reaches, and a locale-wide office reaches every address in its locale. The user gets the missing representative later.
+
+[[app/services/sway_registration_service.rb#SwayRegistrationService#skip_unresolved_terms]] records each skip once in the `skipped_resolution_errors` reader, as the `Seats::UnresolvedSeatError` or `Seats::OverlapValidator::OverlapError` the check would have raised, logs it with term ids, district and locale names, and reports it to Sentry at warning level. An overlapping seat yields one error for all of its occupants.
+
+Reconciliation still refuses. [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#call]] resolves the complete set before [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#apply_diff]] and raises the first recorded skip, so a skipped term never deactivates a stored link.
 
 ## Unconfigured offices
 
-Registration skips a current term that has no seat and whose title names an office absent from the locale's `seat_chambers`. Every other unseated current term is still refused.
+Registration skips a current term that has no seat and whose title names an office absent from the locale's `seat_chambers`, silently. Every other unseated current term is skipped and reported, as [[representative-resolution#Resolution branches]] describes.
 
 [[app/services/sway_registration_service.rb#SwayRegistrationService#unseated_unconfigured_office?]] looks the title up through [[app/models/sway_locale/term_rules.rb#TermRules#seat_chamber_for]], which applies the same `State Delegate`/`State Senator` aliases the seeder uses. The seeder already declines to seat these offices, so a holdover term for one of them can never gain a seat. Refusing it would block registration for every address in the locale, because the locale-wide district reaches every address.
 
-The skip is narrow on purpose. A seated term always passes through, whatever its title, because it already carries its identity. A term with no title, a locale that configures no seat chambers, and a configured office without a seat all still raise `Seats::UnresolvedSeatError`, because those cases are missing identity for an office registration is meant to link.
+The silent skip is narrow on purpose. A seated term always passes through, whatever its title, because it already carries its identity. A term with no title, a locale that configures no seat chambers, and a configured office without a seat are recorded and reported, because those cases are missing identity for an office registration is meant to link. Reporting the unconfigured holdover offices would send a report for every registration in their locale.
 
 ## Configured seat identity for person-keyed rosters
 
@@ -82,4 +86,4 @@ Seed ingestion attaches validated seats to current terms while preserving tempor
 
 [[app/models/seat.rb#Seat|Seat.find_or_create_by_identity!]] finds or creates the district-scoped seat record with matching title and chamber metadata. Before attaching the seat to a current term, [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms]] evaluates existing terms on that seat using the half-open interval `[begins_on, ends_on)` defined by [[app/models/term_window.rb#TermWindow]].
 
-Same-day handovers between departing incumbents and incoming successors succeed because `incumbent.ended_on <= successor.begins_on` produces zero overlap under the half-open interval convention. If another legislator holds an overlapping interval on the same seat, [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms]] logs a warning and leaves `term.seat_id` unattached rather than corrupting seat occupancy. If the same legislator holds overlapping terms on the same seat, an overlap error is raised. [[app/services/sway_registration_service.rb#SwayRegistrationService]] subsequently refuses any current term lacking a valid, unconflicted seat, guaranteeing that ambiguous or overlapping representation never links to registered citizens.
+Same-day handovers between departing incumbents and incoming successors succeed because `incumbent.ended_on <= successor.begins_on` produces zero overlap under the half-open interval convention. If another legislator holds an overlapping interval on the same seat, [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms]] logs a warning and leaves `term.seat_id` unattached rather than corrupting seat occupancy. If the same legislator holds overlapping terms on the same seat, an overlap error is raised. [[app/services/sway_registration_service.rb#SwayRegistrationService]] subsequently skips and reports any current term lacking a valid, unconflicted seat, so ambiguous or overlapping representation never links to registered citizens.
