@@ -60,7 +60,7 @@ const requireBundleId = (): string => {
     if (bundleId) return bundleId;
 
     throw new Error(
-        "APPLE_BUNDLE_ID is unset. Export it, or run through mobile/scripts/with-vault-env.sh, which reads it from the secret-store item SWAY_BUNDLE_ID.",
+        "APPLE_BUNDLE_ID is unset. Export it, or run through mobile/scripts/with-vault-env.sh, which reads it from mobile/.env.local or else the secret-store item SWAY_BUNDLE_ID.",
     );
 };
 

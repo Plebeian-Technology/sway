@@ -17,7 +17,11 @@ pnpm --dir mobile run ios        # build and launch on the iOS simulator
 pnpm --dir mobile run android    # build and launch on an Android emulator
 ```
 
-Every script that resolves `app.config.ts` needs `APPLE_BUNDLE_ID` — see [Shipping your own build](#shipping-your-own-build).
+Every script that resolves `app.config.ts` needs `APPLE_BUNDLE_ID` — see [Shipping your own build](#shipping-your-own-build). To build without unlocking a secret store, put it in `mobile/.env.local`:
+
+```zsh
+echo 'APPLE_BUNDLE_ID=your.bundle.id' >> mobile/.env.local
+```
 
 The backend address comes from `EXPO_PUBLIC_API_URL`, which `app.config.ts` reads into `apiBaseUrl` (falling back to `https://app.sway.vote`). The `start`, `ios`, and `android` scripts set it to `https://localhost:3333`; `ios:dev`, `android:dev` and `android:dev:device` point at `https://$EXPO_PUBLIC_DEV_TUNNEL_HOST` instead. To reach a backend somewhere else, set it yourself:
 
@@ -58,7 +62,7 @@ Nothing in the tree names the maintainer's Apple team, bundle id, Expo account, 
 | `APP_STORE_CONNECT_API_KEY_ID` | `mobile/scripts/asc.rb` and `upload-ios.sh` | The key id in your `AuthKey_<id>.p8` filename |
 | `APP_STORE_CONNECT_ISSUER_ID` | the same two | The account-wide UUID from Users and Access, Integrations |
 
-`mobile/scripts/with-vault-env.sh [VAR ...] -- <command...>` runs a command with these variables set; with no list it sets all seven below. Any you already exported win; the rest it reads in one fetch from the secret store `scripts/lib/secrets.sh` selects — Bitwarden by default, through the account named by `SWAY_SECRETS_ACCOUNT` or `SWAY_BW_ACCOUNT`. With no account and a variable missing, it stops and names both. A fork without that vault exports the variables itself.
+`mobile/scripts/with-vault-env.sh [VAR ...] -- <command...>` runs a command with these variables set; with no list it sets all seven below. Any you already exported win, then any set as `KEY=value` lines in the gitignored `mobile/.env.local`; the rest it reads in one fetch from the secret store `scripts/lib/secrets.sh` selects — Bitwarden by default, through the account named by `SWAY_SECRETS_ACCOUNT` or `SWAY_BW_ACCOUNT`. With no account and a variable missing, it stops and names both. A fork without that vault exports the variables itself.
 
 | Variable | Bitwarden item |
 | --- | --- |

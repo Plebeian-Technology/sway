@@ -26,6 +26,31 @@ if [ "$#" -eq 0 ]; then
     exit 2
 fi
 
+# @lat: [[mobile-expo-config#Deployment identifiers come from the environment#Local values come from mobile/.env.local]]
+env_file="$(dirname "$0")/../.env.local"
+if [ -f "$env_file" ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="${line%$'\r'}"
+        line="${line#export }"
+        if [[ ! "$line" =~ ^[[:space:]]*([A-Z][A-Z0-9_]*)[[:space:]]*=(.*)$ ]]; then
+            continue
+        fi
+        key="${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[2]}"
+        if [ -n "${!key:-}" ]; then
+            continue
+        fi
+        for name in ${wanted[@]+"${wanted[@]}"}; do
+            if [ "$name" = "$key" ]; then
+                if [[ "$value" =~ ^\"(.*)\"$ || "$value" =~ ^\'(.*)\'$ ]]; then
+                    value="${BASH_REMATCH[1]}"
+                fi
+                export "$key=$value"
+            fi
+        done
+    done <"$env_file"
+fi
+
 missing=()
 for name in ${wanted[@]+"${wanted[@]}"}; do
     index=""

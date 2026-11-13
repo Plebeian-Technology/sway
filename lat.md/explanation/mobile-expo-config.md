@@ -109,13 +109,19 @@ The Apple team id, the Expo account that owns the project and the EAS project id
 
 The three name one deployment's accounts, not the app. A fork that cloned them would build against an Apple team and an EAS project it cannot sign into, and the failure would surface late, at signing or upload. Left unset, each key is simply absent from the resolved config: EAS then uses the signed-in account, or asks for the team. The development error-collector address follows the same rule — `RUSTRAK_DSN_MOBILE` supplies it and `app.json` no longer carries a local default. The production address follows it: `SENTRY_DSN_MOBILE` supplies that one, with the three values the source-map upload needs — [[mobile-sentry-init-design#Why the store build requires the Sentry values]]. The server reads the same `APPLE_TEAM_ID` name — [[mobile-settings-group-design]].
 
-The bundle identifier and the development tunnel host follow the same rule, through `APPLE_BUNDLE_ID` and `EXPO_PUBLIC_DEV_TUNNEL_HOST`. [[mobile/scripts/with-vault-env.sh]] is the one place the maintainer's values enter: it exports each name it is asked for, keeps any value already set, and reads the rest from Bitwarden in a single fetch. A caller names only the variables its command needs, so a development run does not demand the EAS ids a store build does. A fork without that vault exports the variables itself and the runner fetches nothing.
+The bundle identifier and the development tunnel host follow the same rule, through `APPLE_BUNDLE_ID` and `EXPO_PUBLIC_DEV_TUNNEL_HOST`. [[mobile/scripts/with-vault-env.sh]] is the one place the maintainer's values enter: it exports each name it is asked for, keeps any value already set, takes what it can from `mobile/.env.local`, and reads the rest from Bitwarden in a single fetch. A caller names only the variables its command needs, so a development run does not demand the EAS ids a store build does. A fork without that vault exports the variables itself and the runner fetches nothing.
 
 ### Why a missing bundle id stops the config
 
 With `APPLE_BUNDLE_ID` unset, resolving the config throws an error that names the variable and the runner, rather than falling back to a default id.
 
 A build with no bundle id is meaningless, and a default would be another deployment's app: a fork would sign, link and push against an identifier it does not own, and find out at upload. Every package script that resolves the config therefore goes through the runner. Type checking and linting never execute the file, so they need no value; the config test sets a neutral one.
+
+### Local values come from mobile/.env.local
+
+Before it asks the secret store, the runner reads `KEY=value` lines from the gitignored `mobile/.env.local` for the names its caller asked for. A value already exported still wins.
+
+A development run needs only the bundle id, which is not secret, so unlocking a vault for it on every simulator build is friction with no benefit. Writing the id into a package script instead would put the maintainer's identifier back in the tracked tree. The file stays on one machine, and Expo already loads it into the app config, so one file serves both. Only names the caller requested are taken, and any name the file lacks still comes from the secret store, so a store build is unchanged.
 
 ### The dev tunnel host is claimed only when set
 
