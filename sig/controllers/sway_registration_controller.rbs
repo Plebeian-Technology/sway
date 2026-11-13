@@ -19,6 +19,8 @@ class SwayRegistrationController < ApplicationController
 
     def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
 
+    def report_skipped_locale: (User u, Address address_instance, SwayLocale sway_locale, StandardError exception) -> void
+
     def render_no_representatives: () -> untyped
 
     def registered_voter_address_confirmed: -> bool

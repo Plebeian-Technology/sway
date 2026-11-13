@@ -37,7 +37,7 @@ So an empty seat with no successor yet simply does not appear. Comparing against
 
 If the lookup blows up — the OpenStates or Census service is down, the address will not geocode — the error escapes before a single row has been touched, because nothing before the comparison step writes to `user_legislators` or `user_districts`.
 
-This method deliberately does not catch anything. The caller, `ReconcileUserDistrictsJob`, is responsible for keeping one bad user from stopping the rest: it catches, logs, reports to Sentry, and moves on to the next user. Keeping that in one place means a failure is not logged twice.
+This method deliberately does not catch anything. The caller, `ReconcileUserDistrictsJob`, is responsible for keeping one bad user from stopping the rest: it catches, logs, reports to Sentry, and moves on to the next user. Keeping that in one place means a lookup failure is logged once. A term skipped because its seat cannot be resolved is the exception: the registration service logs and reports it at warning level when it skips it, and the job then logs the same error again when `#call` raises it. Sentry records it once, because the client drops a second capture of the same exception object.
 
 ## Modeling a vacant seat in specs
 

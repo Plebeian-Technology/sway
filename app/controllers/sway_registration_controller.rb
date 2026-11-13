@@ -57,21 +57,21 @@ class SwayRegistrationController < ApplicationController
       return redirect_after_registration_completion(u)
     end
 
-    begin
-      # @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
+    skipped_locales = [] #: Array[SwayLocale]
+    # @lat: [[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]
+    address_instance.sway_locales.each do |sway_locale|
       ActiveRecord::Base.transaction do
-        address_instance.sway_locales.each do |sway_locale|
-          SwayRegistrationService.new(
-            u,
-            address_instance,
-            sway_locale,
-            invited_by_id: invited_by_id,
-            async: false
-          ).call
-        end
+        SwayRegistrationService.new(
+          u,
+          address_instance,
+          sway_locale,
+          invited_by_id: invited_by_id,
+          async: false
+        ).call
       end
-    rescue SwayGeocode::ServiceUnavailableError => e
-      return render_geocoding_unavailable(u, address_instance, e)
+    rescue => e
+      report_skipped_locale(u, address_instance, sway_locale, e)
+      skipped_locales << sway_locale
     end
 
     u.reload
@@ -142,6 +142,20 @@ class SwayRegistrationController < ApplicationController
       status: :service_unavailable,
       json: {error: {code: "geocoding_unavailable", message: REGISTRATION_UNAVAILABLE_MESSAGE}},
       redirect: sway_registration_index_path
+    )
+  end
+
+  def report_skipped_locale(u, address_instance, sway_locale, exception)
+    SwayLogging.log_exception(
+      "sway_registration.locale_skipped",
+      exception: exception,
+      user_id: u.id,
+      address_id: address_instance.id,
+      sway_locale: sway_locale.name
+    )
+    Sentry.capture_exception(
+      exception,
+      extra: {user_id: u.id, address_id: address_instance.id, sway_locale: sway_locale.name}
     )
   end
 

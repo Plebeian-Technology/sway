@@ -5,15 +5,17 @@ lat:
 
 # SwayRegistrationController design notes
 
-Design notes for SwayRegistrationController: the transient-outage message and rollback, why the legislator check comes before the service loop, and why mobile gets JSON instead of following the web redirect.
+Design notes for SwayRegistrationController: why one locale's failed lookup is skipped, why the legislator check comes before the service loop, and why mobile gets JSON instead of following the web redirect.
 
-## Why geocoding failures roll back and ask for a retry
+## Why one locale's failed lookup is skipped and reported
 
-`REGISTRATION_UNAVAILABLE_MESSAGE` is shown when Census TIGERweb / OpenStates can't be reached while resolving a user's districts.
+An upstream outage never blocks a first registration: `#create` gives each locale its own transaction, so one locale's failure costs only that locale.
 
-The outage is transient, so `#create` rolls back any partial legislator assignments, leaves the user `pending`, and asks them to retry.
+An address reaches up to three locales (city, state, Congress), and each resolves through a different upstream: a local boundary file, OpenStates, or Census TIGERweb. Any error from one locale's [[app/services/sway_registration_service.rb#SwayRegistrationService]] call — an unreachable service, a malformed body, a bad roster row — rolls back that locale's own links and leaves the links of the other locales in place. The error is logged as `sway_registration.locale_skipped` and reported to Sentry with the user, address and locale, so nothing is skipped silently.
 
-All-or-nothing applies across the three locales (city, state, congress): if one jurisdiction's geocoding is unreachable, the `UserLegislators` already created for the others are rolled back too, so the user stays `pending` (never half-registered) and can retry the whole thing.
+The user then completes with whatever resolved. The earlier design rolled every locale back and answered `geocoding_unavailable`, which left the user `pending` with a saved address; every retry repeated the failure for as long as the upstream problem lasted, so one bad answer for one locale stopped the whole registration. The skipped locales are only collected during the request; assigning their representatives later is planned as a separate job.
+
+Only `StandardError` is caught, and only around one locale's call, so the rest of the action still fails loudly. A registered user switching address takes a different path, which still answers the outage message.
 
 ## Why create checks has_user_legislators? before the service loop
 

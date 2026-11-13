@@ -10,7 +10,7 @@ Registration can end on a card with nothing on it to press. Each such card carri
 
 [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] keeps a local flag that, once set, lets the reader past the failed card and back to the address form on the same page.
 
-An address lookup can fail because of a typo, an address outside the supported jurisdictions, or a temporary upstream outage. A transient geocoding outage rolls back assignments across all locales and leaves registration available for retry; the browser sees the outage message and JSON clients receive the same safe error in their response format. A synchronous lookup that succeeds but creates no active representative link is a different outcome: it returns `no_representatives` with a safe message rather than marking registration complete.
+An address lookup can fail because of a typo, an address outside the supported jurisdictions, or a temporary upstream outage. For a first registration a failed lookup in one locale is skipped and reported, and registration completes with the locales that resolved ([[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]); only a registered user's address switch still answers the outage message, which the browser sees as a flash and JSON clients receive as the same safe error in their response format. A synchronous lookup that succeeds but creates no active representative link is a different outcome: it returns `no_representatives` with a safe message rather than marking registration complete.
 
 The flag lives in the component rather than on the server because nothing about the account changes when the reader decides to try again. `SwayRegistrationController#create` accepts a fresh address whatever the current registration status is, so the corrected address takes the same path the first one did.
 
@@ -65,6 +65,8 @@ The instruction used to name an action the screen did not offer: there was no bu
 The page posts what the user typed. The structured fields exist only after a suggestion is picked, so the autocomplete also records the typed text in the form, and the submit fills `street` from it when no street is held.
 
 The operator decided that a user's address is accepted as a fact, so a missing house number or postcode must not stop a sign-up. A road-only or postcode-less suggestion keeps its other fields and gains the typed text as its street, and a complete suggestion posts as before. The typed-text key is removed from the body at request-build time, and nothing on the page blocks or warns before the post.
+
+The structured fields always describe the text in the box. Editing the text clears every field a pick filled, and a pick replaces all of them, writing an empty value for any the place lacks and recording its description as the typed text. A stale street, postcode or coordinate from an earlier pick therefore never posts under a newer address.
 
 ## Browser page state selectors
 

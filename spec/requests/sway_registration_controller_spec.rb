@@ -105,50 +105,199 @@ RSpec.describe "/registration", type: :request do
       sign_in(user)
       # Avoid real geocoding when Address#sway_locales resolves city/state/congress.
       allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
+      allow(Sentry).to receive(:capture_exception)
     end
 
-    it "responds 503 with a retry error code and leaves the user pending (JSON)" do
-      allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise( # rubocop:disable RSpec/AnyInstance
-        SwayGeocode::ServiceUnavailableError,
-        "Census TIGERweb geocoding is unavailable"
-      )
+    it "skips the unavailable locale and completes with the locales that resolved (JSON)" do
+      call_count = 0
+      allow_any_instance_of(SwayRegistrationService).to receive(:call) do # rubocop:disable RSpec/AnyInstance
+        call_count += 1
+        raise SwayGeocode::ServiceUnavailableError, "Census TIGERweb geocoding is unavailable" if call_count > 1
+
+        UserLegislator.find_or_create_by!(user: user, legislator: legislator)
+      end
 
       post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
 
-      expect(response).to have_http_status(:service_unavailable)
-      expect(response.parsed_body.dig("error", "code")).to eq("geocoding_unavailable")
-      expect(user.reload.registration_status).to eq("pending")
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.dig("error", "code")).not_to eq("geocoding_unavailable")
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(user.reload.registration_status).to eq("completed")
+      expect(Sentry).to have_received(:capture_exception)
+        .with(an_instance_of(SwayGeocode::ServiceUnavailableError), extra: hash_including(user_id: user.id))
+        .twice
     end
 
-    it "rolls back UserLegislators created before the failing locale (no partial registration)" do
+    it "keeps none of a failing locale's own links and keeps the links of a locale that resolved earlier" do
+      failing_legislator = create(:legislator, district: district)
       call_count = 0
-      allow_any_instance_of(SwayRegistrationService).to receive(:call) do |_instance| # rubocop:disable RSpec/AnyInstance
+      allow_any_instance_of(SwayRegistrationService).to receive(:call) do # rubocop:disable RSpec/AnyInstance
         call_count += 1
         if call_count == 1
           UserLegislator.find_or_create_by!(user: user, legislator: legislator)
         else
+          UserLegislator.find_or_create_by!(user: user, legislator: failing_legislator)
           raise SwayGeocode::ServiceUnavailableError, "OpenStates geocoding is unavailable"
         end
       end
 
-      expect {
-        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
-      }.not_to change(UserLegislator, :count)
+      post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
 
-      expect(response).to have_http_status(:service_unavailable)
-      expect(user.reload.registration_status).to eq("pending")
+      expect(response).to have_http_status(:ok)
+      expect(UserLegislator.find_by!(user: user, legislator: legislator).active).to be(true)
+      expect(UserLegislator.where(user: user, legislator: failing_legislator)).to be_empty
+      expect(user.reload.registration_status).to eq("completed")
     end
 
-    it "redirects back to registration with a flash alert (web)" do
-      allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise( # rubocop:disable RSpec/AnyInstance
-        SwayGeocode::ServiceUnavailableError,
-        "Census TIGERweb geocoding is unavailable"
-      )
+    it "follows the normal completion redirect with no flash alert (web)" do
+      call_count = 0
+      allow_any_instance_of(SwayRegistrationService).to receive(:call) do # rubocop:disable RSpec/AnyInstance
+        call_count += 1
+        raise SwayGeocode::ServiceUnavailableError, "Census TIGERweb geocoding is unavailable" if call_count > 1
+
+        UserLegislator.find_or_create_by!(user: user, legislator: legislator)
+      end
 
       post "/sway_registration", params: address_params
 
-      expect(response).to redirect_to(sway_registration_index_path)
-      expect(flash[:alert]).to eq(SwayRegistrationController::REGISTRATION_UNAVAILABLE_MESSAGE)
+      expect(response).to redirect_to(feed_path)
+      expect(flash[:alert]).to be_nil
+    end
+  end
+
+  describe "POST /sway_registration when one locale's representative lookup fails" do
+    let!(:baltimore) { create(:sway_locale, :baltimore) }
+    let!(:maryland) { create(:sway_locale, :maryland) }
+    let!(:congress) { create(:sway_locale, :congress) }
+    let!(:mayor) do
+      create_seat_term(
+        district: create(:district, sway_locale: baltimore, name: "MD0"),
+        seat_identifier: "baltimore-mayor",
+        title: "Mayor",
+        years: [2024, 2028]
+      )
+    end
+    let!(:house_member) do
+      create_seat_term(
+        district: create(:district, sway_locale: congress, name: "MD7"),
+        seat_identifier: "md-house-district-7",
+        title: "Representative",
+        years: [2025, 2027]
+      )
+    end
+    let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+    let(:address_params) do
+      {
+        sway_registration: {
+          street: "100 N Holliday St",
+          city: "Baltimore",
+          region_code: "MD",
+          postal_code: "21202",
+          country: "US",
+          latitude: 39.29105,
+          longitude: -76.61069
+        }
+      }
+    end
+
+    def create_seat_term(district:, seat_identifier:, title:, years:)
+      seat = Seat.create!(district:, seat_identifier:, title:, chamber: title)
+      legislator = create(:legislator, district:)
+      create(
+        :legislator_term,
+        legislator:,
+        district:,
+        seat:,
+        title:,
+        term_start_year: years[0],
+        term_end_year: years[1]
+      )
+      legislator
+    end
+
+    def stub_census_body(body)
+      stub_request(:get, %r{tigerweb\.geo\.census\.gov/arcgis/rest/services/TIGERweb/})
+        .to_return(status: 200, body:)
+    end
+
+    def active_legislator_ids
+      UserLegislator.where(user:, active: true).pluck(:legislator_id)
+    end
+
+    before do
+      sign_in(user)
+      allow(Sentry).to receive(:capture_exception)
+      stub_census_body("not json")
+    end
+
+    it "completes with the locales that resolved and reports the failing one (JSON)" do
+      post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(active_legislator_ids).to eq([mayor.id])
+      expect(UserLegislator.where(user:, legislator: house_member)).to be_empty
+      expect(user.reload.registration_status).to eq("completed")
+      expect(Sentry).to have_received(:capture_exception).with(
+        an_instance_of(JSON::ParserError),
+        extra: hash_including(user_id: user.id, sway_locale: congress.name)
+      )
+    end
+
+    it "follows the normal completion redirect with no flash alert (web)" do
+      post "/sway_registration", params: address_params
+
+      expect(response).to redirect_to(feed_path)
+      expect(flash[:alert]).to be_nil
+      expect(active_legislator_ids).to eq([mayor.id])
+    end
+
+    it "answers a bearer request without an Accept header with the JSON completion body" do
+      post "/sway_registration", params: address_params, headers: authenticate_as(user)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({"ok" => true, "registration_status" => "completed"})
+      expect(active_legislator_ids).to eq([mayor.id])
+    end
+
+    it "skips Maryland when OpenStates answers HTTP 500 and completes with the Baltimore links" do
+      stub_census_body({features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => "07"}}]}.to_json)
+      create_seat_term(
+        district: create(:district, sway_locale: maryland, name: "MD46"),
+        seat_identifier: "md-senate-district-46",
+        title: "Senator",
+        years: [2023, 2027]
+      )
+      stub_request(:get, %r{v3\.openstates\.org/people\.geo}).to_return(status: 500, body: "")
+
+      with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(active_legislator_ids).to contain_exactly(mayor.id, house_member.id)
+      expect(Sentry).to have_received(:capture_exception).with(
+        an_instance_of(SwayGeocode::ServiceUnavailableError),
+        extra: hash_including(user_id: user.id, sway_locale: maryland.name)
+      )
+    end
+
+    it "reports every locale and ends without a 500 when every locale is skipped" do
+      allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise( # rubocop:disable RSpec/AnyInstance
+        SwayGeocode::ServiceUnavailableError,
+        "geocoding is unavailable"
+      )
+
+      post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+      expect(response).not_to have_http_status(:internal_server_error)
+      expect(UserLegislator.where(user:)).to be_empty
+      [baltimore, maryland, congress].each do |sway_locale|
+        expect(Sentry).to have_received(:capture_exception).with(
+          an_instance_of(SwayGeocode::ServiceUnavailableError),
+          extra: hash_including(sway_locale: sway_locale.name)
+        )
+      end
     end
   end
 
