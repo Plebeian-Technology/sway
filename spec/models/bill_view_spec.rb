@@ -83,11 +83,10 @@ RSpec.describe BillView, type: :model do
       expect { expect(described_class.record_for(user:, bill: nil)).to be_nil }.not_to change(described_class, :count)
     end
 
-    it "recovers from a concurrent unique-index insert race" do
-      existing = described_class.create!(user:, bill:)
-      allow(described_class).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordNotUnique.new("duplicate"))
+    it "is idempotent when a row already exists for the user and bill" do
+      described_class.create!(user:, bill:)
 
-      expect(described_class.record_for(user:, bill:)).to eq(existing)
+      expect { described_class.record_for(user:, bill:) }.not_to change(described_class, :count)
     end
   end
 end

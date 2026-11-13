@@ -30,8 +30,6 @@ class BillView < ApplicationRecord
   def self.record_for(user:, bill:)
     return nil if user.nil? || bill.nil?
 
-    find_or_create_by!(user:, bill:)
-  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
-    find_by(user:, bill:)
+    insert({user_id: user.id, bill_id: bill.id}, unique_by: %i[user_id bill_id])
   end
 end
