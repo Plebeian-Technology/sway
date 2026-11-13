@@ -18,11 +18,13 @@ interface IFormActionOptions {
 }
 
 const postMock = vi.fn<(url: string, options?: IFormActionOptions) => void>();
+let postedBody: Record<string, unknown> | undefined;
 const usePollMock = vi.fn<(interval: number, options?: unknown, config?: unknown) => void>();
 
 vi.mock("@inertiajs/react", () => ({
     useForm: function useForm<TForm extends Record<string, unknown>>(initial: TForm) {
         const [data, setDataState] = React.useState<TForm>(initial ?? ({} as TForm));
+        const transformRef = React.useRef<((d: TForm) => TForm) | null>(null);
         const setData = (keyOrObj: string | Partial<TForm>, val?: unknown) => {
             if (typeof keyOrObj === "string") {
                 setDataState((prev) => ({ ...prev, [keyOrObj]: val }));
@@ -33,10 +35,15 @@ vi.mock("@inertiajs/react", () => ({
         return {
             data,
             setData,
-            post: postMock,
+            post: (url: string, options?: IFormActionOptions) => {
+                postMock(url, options);
+                postedBody = transformRef.current ? transformRef.current(data) : data;
+            },
             processing: false,
             errors: {},
-            transform: vi.fn<(fn: (d: TForm) => TForm) => void>(),
+            transform: (fn: (d: TForm) => TForm) => {
+                transformRef.current = fn;
+            },
         };
     },
     usePoll: (interval: number, options?: unknown, config?: unknown) => usePollMock(interval, options, config),
@@ -187,6 +194,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
     beforeEach(() => {
         vi.useFakeTimers();
         postMock.mockReset();
+        postedBody = undefined;
         usePollMock.mockReset();
         mockLogout.mockReset();
         toastDismissMock.mockReset();
@@ -349,6 +357,8 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
             expect(screen.queryByTestId("registration-error")).toBeNull();
             expect(screen.getByRole("combobox")).toBeInTheDocument();
 
+            fireEvent.change(screen.getByRole("combobox"), { target: { value: "100 Holliday" } });
+
             const submitButton = screen.getByTestId("btn-submit-registration");
             const form = submitButton.closest("form");
             expect(form).not.toBeNull();
@@ -361,6 +371,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
                 }),
             );
             expect(postMock).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+            expect(postedBody?.street).toBe("100 Holliday");
 
             expect(submitButton).toBeDisabled();
 
@@ -374,6 +385,18 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
             fireEvent.click(screen.getByTestId("btn-retry-registration"));
             expect(screen.queryByTestId("registration-error")).toBeNull();
             expect(screen.getByRole("combobox")).toBeInTheDocument();
+        });
+
+        it("posts typed text as the street when no suggestion option is clicked", () => {
+            render(<SwayRegistration user={failedUser} />);
+            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+
+            fireEvent.change(screen.getByRole("combobox"), { target: { value: "100 Holliday" } });
+            fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+            expect(postMock).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+            expect(postedBody).toMatchObject({ street: "100 Holliday" });
+            expect(postedBody).not.toHaveProperty("typed_address");
         });
 
         it("handles cancel button click by invoking useLogout", () => {

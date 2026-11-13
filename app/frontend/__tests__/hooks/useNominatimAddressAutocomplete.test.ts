@@ -243,6 +243,21 @@ describe("useNominatimAddressAutocomplete", () => {
         });
     });
 
+    describe("Typed text", () => {
+        it("handleInput writes the typed text to the form under typed_address", () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "100 Holliday" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+
+            expect(form.setData).toHaveBeenCalledWith("typed_address", "100 Holliday");
+        });
+    });
+
     describe("Debounce Timing & Rate Limiting", () => {
         it("does NOT trigger fetch before 1000ms debounce threshold expires (e.g. at 500ms or 999ms)", async () => {
             const form = buildMockForm();

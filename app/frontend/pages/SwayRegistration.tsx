@@ -29,6 +29,7 @@ const REGISTRATION_FIELD: sway.IFormField<sway.IUser> = {
 };
 
 interface IRegistrationFormData extends sway.IAddress {
+    typed_address?: string;
     is_voter_registration_address_confirmed: boolean;
     confirm_deactivate_legislators?: boolean;
 }
@@ -95,15 +96,24 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
         }
     }, [user?.is_registration_complete, user?.registration_status]);
 
-    const submitRegistration = useCallback(() => {
-        trackFunnelStep("address_submitted", {
-            voter_confirmed: form.data.is_voter_registration_address_confirmed,
-            city: form.data.city,
-            region_code: form.data.region_code,
-        });
-        handleStart();
-        form.post("/sway_registration", { onFinish: handleFinish });
-    }, [form, handleStart, handleFinish]);
+    // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
+    const submitRegistration = useCallback(
+        (extraData: Partial<IRegistrationFormData> = {}) => {
+            trackFunnelStep("address_submitted", {
+                voter_confirmed: form.data.is_voter_registration_address_confirmed,
+                city: form.data.city,
+                region_code: form.data.region_code,
+            });
+            handleStart();
+            form.transform(({ typed_address, ...data }) => ({
+                ...data,
+                ...(data.street?.trim() || !typed_address?.trim() ? {} : { street: typed_address.trim() }),
+                ...extraData,
+            }));
+            form.post("/sway_registration", { onFinish: handleFinish });
+        },
+        [form, handleStart, handleFinish],
+    );
 
     const handleSubmit = useCallback(
         (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -119,12 +129,8 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
 
     const handleConfirmAddressSwitch = useCallback(() => {
         form.setData("confirm_deactivate_legislators", true);
-        form.transform((data) => ({
-            ...data,
-            confirm_deactivate_legislators: true,
-        }));
         setShowSwitchConfirm(false);
-        submitRegistration();
+        submitRegistration({ confirm_deactivate_legislators: true });
     }, [form, submitRegistration]);
 
     const handleOpenUrl = useCallback((url: string) => {

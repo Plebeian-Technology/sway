@@ -288,6 +288,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const input = e.target.value;
             setValue(input);
+            (setData as (key: string, val: unknown) => void)("typed_address", input);
 
             if (debounceRef.current) {
                 clearTimeout(debounceRef.current);
@@ -312,7 +313,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
                 fetchSuggestions(trimmed).catch(() => {});
             }, NOMINATIM_DEBOUNCE_MS);
         },
-        [fetchSuggestions, updateLoading],
+        [fetchSuggestions, setData, updateLoading],
     );
 
     // @lat: [[address-place-classification#Why the web autocomplete's request for types costs nothing extra]]

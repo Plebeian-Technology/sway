@@ -60,6 +60,12 @@ The card shown when the page loads without a user says to sign in again, so it c
 
 The instruction used to name an action the screen did not offer: there was no button and no link. The link is an Inertia link rather than a plain anchor, so it behaves like every other in-app navigation, and its wording lives in `PARITY_COPY` with the rest of the registration copy rather than in the markup.
 
+## Submitting the typed address when no complete suggestion is picked
+
+The page posts what the user typed. The structured fields exist only after a suggestion is picked, so the autocomplete also records the typed text in the form, and the submit fills `street` from it when no street is held.
+
+The operator decided that a user's address is accepted as a fact, so a missing house number or postcode must not stop a sign-up. A road-only or postcode-less suggestion keeps its other fields and gains the typed text as its street, and a complete suggestion posts as before. The typed-text key is removed from the body at request-build time, and nothing on the page blocks or warns before the post.
+
 ## Browser page state selectors
 
 The browser and component specs use stable selectors to identify registration outcomes.
