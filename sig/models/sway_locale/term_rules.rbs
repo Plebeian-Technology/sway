@@ -3,6 +3,8 @@ class SwayLocale
     class Undeclared < StandardError
     end
 
+    TITLE_ALIASES: Hash[String, String]
+
     attr_reader convening: ConveningRule
 
     attr_reader cycle_anchor_year: Integer
@@ -19,6 +21,8 @@ class SwayLocale
     attr_reader identified_by: Symbol
 
     attr_reader seat_chambers: Hash[String, String]
+
+    def seat_chamber_for: (String? title) -> String?
 
     def initialize: (
       convening: ConveningRule,

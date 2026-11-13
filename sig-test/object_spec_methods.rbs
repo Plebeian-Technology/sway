@@ -3764,6 +3764,8 @@ class Object
     def create_seat_term:
         (district: District, office_identity: String, last_name: String, ?years: Array[Integer])
         -> [Legislator, LegislatorTerm, Seat]
+    def create_unseated_md0_term: (SwayLocale maryland, title: String?, last_name: String) -> Legislator
+    def maryland_service: (SwayLocale maryland, ?geo_candidates: Array[Legislator]) -> SwayRegistrationService
     def create_supported_term: (legislator: Legislator, district: District, ?office_identity: String) -> LegislatorTerm
         | (legislator: Legislator, district: District, ?seat: Seat, ?office_identity: String, **untyped term_attributes)
           -> LegislatorTerm

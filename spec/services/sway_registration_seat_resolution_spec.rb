@@ -8,6 +8,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
   let(:congress) { create(:sway_locale, :congress) }
   let(:address) { create(:address, region_code: "MD") }
   let(:district) { create(:district, sway_locale: congress, name: "MD0") }
+  let(:maryland_locale) { create(:sway_locale, :maryland) }
 
   def create_seat_term(district:, office_identity:, last_name:, years: [2025, 2027])
     seat = Seat.create!(
@@ -97,6 +98,52 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       .to match_array(reps.map(&:id))
     expect(user.user_districts.where(active: true).pluck(:district_id))
       .to match_array([district_md0.id, district_md46.id])
+  end
+
+  def create_unseated_md0_term(maryland, title:, last_name:)
+    md0 = maryland.districts.find_by(name: "MD0") || create(:district, sway_locale: maryland, name: "MD0")
+    legislator = create(:legislator, sway_locale: maryland, last_name:)
+    create(:legislator_term, legislator:, district: md0, title:, term_start_year: 2023, term_end_year: 2027)
+    legislator
+  end
+
+  def maryland_service(maryland, geo_candidates: [])
+    create(:user_address, user:, address:)
+    allow(SwayGeocode).to receive(:build).and_return(double(districts: [0]))
+    allow_any_instance_of(described_class)
+      .to receive(:find_legislators_from_open_states_geo_endpoint)
+      .and_return(geo_candidates)
+    described_class.new(user, address, maryland, invited_by_id: nil, async: false)
+  end
+
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Skips unconfigured locale-wide offices]]
+  it "skips the unconfigured locale-wide office and resolves the rest" do
+    SeedLegislator.run([maryland_locale])
+    attorney_general = create_unseated_md0_term(maryland_locale, title: "Attorney General", last_name: "HoldoverAg")
+    service = maryland_service(maryland_locale)
+
+    expect { service.district_legislators }.not_to raise_error
+    reps = service.district_legislators
+    expect(reps.map(&:last_name)).to include("Moore")
+    expect(reps).not_to include(attorney_general)
+    expect { ReconcileUserDistrictsService.new(user, maryland_locale).call }.not_to raise_error
+  end
+
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Skips unconfigured geographic offices]]
+  it "skips an unconfigured office holder returned by the regional source" do
+    lt_governor = create_unseated_md0_term(maryland_locale, title: "Lt_Governor", last_name: "HoldoverLtGov")
+    service = maryland_service(maryland_locale, geo_candidates: [lt_governor])
+
+    expect { service.district_legislators }.not_to raise_error
+    expect(service.district_legislators).to be_empty
+  end
+
+  # @lat: [[representative-resolution-tests#Registration seat resolution#Refuses untitled unseated terms]]
+  it "still refuses an unseated locale-wide term with no title" do
+    create_unseated_md0_term(maryland_locale, title: nil, last_name: "Untitled")
+
+    expect { maryland_service(maryland_locale).district_legislators }
+      .to raise_error(Seats::UnresolvedSeatError, /no persisted seat identity/)
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Retains co-serving distinct seats]]

@@ -31,6 +31,18 @@ Every supported delegate seat returned by the Maryland regional source remains a
 
 A current selected term without a persisted seat identity raises before it can be linked.
 
+### Skips unconfigured locale-wide offices
+
+A current unseated Maryland Attorney General term in `MD0` is left out, and the configured Governor still resolves without an error.
+
+### Skips unconfigured geographic offices
+
+An unconfigured office holder returned by the regional source is dropped instead of refusing the whole registration.
+
+### Refuses untitled unseated terms
+
+An unseated locale-wide term with no title still raises, because an absent title cannot show the office is unconfigured.
+
 ### Selects the exact Congress locale-wide district
 
 Congress resolves the configured `US0` district and does not mistake Maryland's `MD0` Senate seat for a nationwide office.

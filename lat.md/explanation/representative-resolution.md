@@ -28,6 +28,14 @@ Congress declares `US0`; Maryland and Baltimore declare `MD0`. This avoids treat
 
 Candidate terms, seats, districts, and legislators must agree on the selected locale. [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#call]] resolves the complete set before [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#apply_diff]], so an unresolved identity or ambiguous seat raises before link changes.
 
+## Unconfigured offices
+
+Registration skips a current term that has no seat and whose title names an office absent from the locale's `seat_chambers`. Every other unseated current term is still refused.
+
+[[app/services/sway_registration_service.rb#SwayRegistrationService#unseated_unconfigured_office?]] looks the title up through [[app/models/sway_locale/term_rules.rb#TermRules#seat_chamber_for]], which applies the same `State Delegate`/`State Senator` aliases the seeder uses. The seeder already declines to seat these offices, so a holdover term for one of them can never gain a seat. Refusing it would block registration for every address in the locale, because the locale-wide district reaches every address.
+
+The skip is narrow on purpose. A seated term always passes through, whatever its title, because it already carries its identity. A term with no title, a locale that configures no seat chambers, and a configured office without a seat all still raise `Seats::UnresolvedSeatError`, because those cases are missing identity for an office registration is meant to link.
+
 ## Configured seat identity for person-keyed rosters
 
 Configured chamber mappings allow person-keyed rosters to establish distinct seats during seed ingestion without requiring live external network requests.
@@ -64,7 +72,7 @@ The Maryland House of Delegates seats 141 members across the 47 districts under 
 
 A roster entry classified as an executive office whose title has no `seat_chambers` mapping is skipped by the seeder rather than raised as an unresolved seat.
 
-[[db/seeds/models/legislator.rb#SeedLegislator#unconfigured_executive_office?]] applies the rule using [[db/seeds/seed_preparers/legislators/open_states.rb#OpenStates#executive_office?]], which reads `current_role.org_classification`. The roster JSON still carries Maryland's Lieutenant Governor and Attorney General, so restoring the mapping in the locale document brings them back without a roster refetch. Legislative titles keep the strict check: an unmapped `Senator` or `Delegate` still raises `Seats::UnresolvedSeatError`, so a roster typo cannot silently drop a member. A previously seeded holder of a now-unmapped office is absent from the fresh roster and is retired by the usual departure reconciliation.
+[[db/seeds/models/legislator.rb#SeedLegislator#unconfigured_executive_office?]] applies the rule using [[db/seeds/seed_preparers/legislators/open_states.rb#OpenStates#executive_office?]], which reads `current_role.org_classification`. The roster JSON still carries Maryland's Lieutenant Governor and Attorney General, so restoring the mapping in the locale document brings them back without a roster refetch. Legislative titles keep the strict check: an unmapped `Senator` or `Delegate` still raises `Seats::UnresolvedSeatError`, so a roster typo cannot silently drop a member. A previously seeded holder of a now-unmapped office is absent from the fresh roster, but departure reconciliation does not end the term without official departure evidence, so the term stays current and unseated. [[representative-resolution#Representative resolution by seat#Unconfigured offices]] keeps such a holdover out of registration.
 
 ## Seat validation, attachment, and handover semantics
 

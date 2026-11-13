@@ -35,6 +35,8 @@ class SwayRegistrationService
 
     def resolve_seat_candidates: (::Array[Legislator] candidates) -> ::Array[Legislator]
 
+    def unseated_unconfigured_office?: (LegislatorTerm term) -> bool
+
     def districts: -> untyped
 
     def find_legislators_from_open_states_geo_endpoint: -> (::Array[untyped] | untyped)

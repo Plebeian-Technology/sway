@@ -6,6 +6,8 @@ class SwayLocale
     # @lat: [[current-legislator-term#Which term a legislator is serving now#Declared calendars]]
     class Undeclared < StandardError; end
 
+    TITLE_ALIASES = {"State Delegate" => "Delegate", "State Senator" => "Senator"}.freeze
+
     attr_reader :convening
 
     # @lat: [[current-legislator-term#Which term a legislator is serving now#Declared calendars]]
@@ -25,6 +27,15 @@ class SwayLocale
 
     # @lat: [[current-legislator-term#Which term a legislator is serving now#Roster identity during seeding#Configured office metadata for current seat-keyed rosters]]
     attr_reader :seat_chambers
+
+    # Returns the configured chamber for a term title, or nil when the locale
+    # configures no seat for that office.
+    # @lat: [[representative-resolution#Representative resolution by seat#Unconfigured offices]]
+    def seat_chamber_for(title)
+      return nil if title.blank?
+
+      seat_chambers[TITLE_ALIASES.fetch(title, title)]
+    end
 
     def initialize(
       convening:,

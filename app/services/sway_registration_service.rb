@@ -114,6 +114,7 @@ class SwayRegistrationService
     return [] unless district
 
     terms = district.legislator_terms.current.includes(:legislator, :seat).to_a
+      .reject { |term| unseated_unconfigured_office?(term) }
     unresolved = terms.find { |term| term.seat_id.blank? || term.seat.nil? }
     if unresolved
       raise Seats::UnresolvedSeatError,
@@ -125,6 +126,7 @@ class SwayRegistrationService
 
   def resolve_seat_candidates(candidates)
     candidate_terms = candidates.filter_map(&:active_term).uniq(&:id)
+      .reject { |term| unseated_unconfigured_office?(term) }
     unresolved = candidate_terms.find { |term| term.seat_id.blank? || term.seat.nil? }
     if unresolved
       raise Seats::UnresolvedSeatError,
@@ -166,6 +168,15 @@ class SwayRegistrationService
     end
 
     current_terms.map(&:legislator).uniq(&:id)
+  end
+
+  # @lat: [[representative-resolution#Representative resolution by seat#Unconfigured offices]]
+  def unseated_unconfigured_office?(term)
+    return false if term.seat_id.present? || term.title.blank?
+    return false unless SwayLocale::TermRulesRegistry.declared?(sway_locale.name)
+
+    rules = sway_locale.term_rules
+    rules.seat_chambers.any? && rules.seat_chamber_for(term.title).nil?
   end
 
   def districts
