@@ -463,15 +463,11 @@ export const PARITY_COPY = {
             agree: "You agree",
             differ: "You differ",
             goVote: "Go vote",
-            youVotedFor: "You voted For",
-            youVotedAgainst: "You voted Against",
             youAbstained: "You abstained",
         },
         billOfTheMonthReleased: (localeName: string, monthName: string) =>
             `${localeName} released the ${monthName} Bill of the Month`,
         legislatorVotedWithUser: "voted on a bill you voted on",
-        legislatorVotedOnLocaleBill: (supportLabel: string, localeName: string) =>
-            `voted ${supportLabel} a ${localeName} bill`,
         legislatorAbstainedOnLocaleBill: (localeName: string) => `abstained on a ${localeName} bill`,
         organizationPositionTaken: (stanceVerb: string, localeName: string) => `${stanceVerb} a ${localeName} bill`,
         organizationStanceVerbs: {
