@@ -80,7 +80,7 @@ Push to phones takes five vault-held credentials, two of which never reach produ
 The mobile store build reads four Sentry values through `mobile/scripts/with-vault-env.sh`, each from a Bitwarden login item with the value in its password field.
 
 - `SENTRY_DSN_MOBILE` — item `SWAY_MOBILE_SENTRY_DSN`; read by `mobile/app.config.ts` into `extra.sentryDsn`
-- `SENTRY_AUTH_TOKEN` — item `SWAY_MOBILE_APP_AUTH_TOKEN`; uploads source maps and debug symbols; the web build uses the same variable name from `SWAY_SENTRY_AUTH_TOKEN`
+- `SENTRY_AUTH_TOKEN` — item `SWAY_SENTRY_AUTH_TOKEN`, shared with the web build; uploads source maps and debug symbols
 - `SENTRY_ORG` — item `SWAY_SENTRY_ORG`, shared with the web build
 - `SENTRY_PROJECT` — item `SWAY_MOBILE_SENTRY_PROJECT`; not `SWAY_SENTRY_PROJECT`, which names the web project
 - Passed by `mobile/scripts/release.sh` and the `build:ios`, `build:android` and `build:local` package scripts
