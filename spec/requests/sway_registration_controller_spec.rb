@@ -239,7 +239,7 @@ RSpec.describe "/registration", type: :request do
       expect(UserLegislator.where(user:, legislator: house_member)).to be_empty
       expect(user.reload.registration_status).to eq("completed")
       expect(Sentry).to have_received(:capture_exception).with(
-        an_instance_of(JSON::ParserError),
+        an_instance_of(SwayGeocode::ServiceUnavailableError),
         extra: hash_including(user_id: user.id, sway_locale: congress.name)
       )
     end

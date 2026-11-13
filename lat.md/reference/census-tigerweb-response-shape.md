@@ -41,3 +41,6 @@ lat:
 ```
 
 - `Census::Congress#congressional_district` reads `data["features"].first["attributes"]["CD#{CURRENT_CONGRESS_NUMBER}"]` — the live code path uses the `CD#{CURRENT_CONGRESS_NUMBER}` spelling, not the bare `119` key shown in `fieldAliases` above.
+- `Census::Congress#request` sends `Accept: application/json` as a header and sets open and read timeouts of `Census::REQUEST_TIMEOUT_SECONDS` (5 seconds).
+- Answers treated as unavailable (a `Faraday::Error` that `SwayGeocode::Congress#districts` raises as `SwayGeocode::ServiceUnavailableError`): a non-success HTTP status, a timeout or failed connection, a blank body, a body that is not valid JSON, JSON that is not an object, and an object with an `error` key.
+- Answers treated as "no district" (an empty array from `SwayGeocode::Congress#districts`): an object with no `features` key, and an empty `features` array.
