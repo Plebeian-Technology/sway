@@ -256,6 +256,23 @@ describe("useNominatimAddressAutocomplete", () => {
 
             expect(form.setData).toHaveBeenCalledWith("typed_address", "100 Holliday");
         });
+
+        it("shows the form's typed_address as the box text", () => {
+            const form = buildMockForm({ typed_address: "5 Elm St" });
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            expect(result.current.value).toBe("5 Elm St");
+        });
+
+        it("shows a typed_address the form receives after the first render", () => {
+            const form = buildMockForm();
+            const { result, rerender } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            form.data.typed_address = "5 Elm St";
+            rerender();
+
+            expect(result.current.value).toBe("5 Elm St");
+        });
     });
 
     describe("Selected address", () => {
@@ -295,11 +312,12 @@ describe("useNominatimAddressAutocomplete", () => {
 
         it("handleInput after a selection clears every selected field from the form", async () => {
             const form = buildMockForm();
-            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            const { result, rerender } = renderHook(() => useNominatimAddressAutocomplete(form));
             await searchAndSelect(result, createMockPlace());
             expect(form.data).toMatchObject({ street: "100 Holliday Street", postal_code: "21202" });
 
             typeText(result, "200 Other Street");
+            rerender();
 
             SELECTED_FIELDS.forEach((field) => {
                 expect((form.data as Record<string, unknown>)[field]).toBeUndefined();

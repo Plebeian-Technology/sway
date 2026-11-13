@@ -173,7 +173,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
     locale?: sway.ISwayLocale | null,
 ): UseNominatimAddressAutocomplete {
     const { data, setData } = form;
-    const address = data as unknown as Partial<sway.IAddress>;
+    const address = data as unknown as Partial<sway.IAddress> & { typed_address?: string };
 
     const defaultValue = useMemo(
         () =>
@@ -183,7 +183,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
         [address],
     );
 
-    const [value, setValue] = useState(defaultValue);
+    const value = address.typed_address ?? defaultValue;
     const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
     const [status, setStatus] = useState("IDLE");
     const [loading, setInternalLoading] = useState(false);
@@ -300,7 +300,6 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
     const handleInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const input = e.target.value;
-            setValue(input);
             const setField = setData as (key: string, val: unknown) => void;
             setField("typed_address", input);
             SELECTED_ADDRESS_FIELDS.forEach((field) => setField(field, undefined));
@@ -348,7 +347,6 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
             }
 
             const place = placesRef.current.get(suggestion.place_id) ?? suggestion.raw_place;
-            setValue(suggestion.description);
             clearSuggestions();
 
             const setField = setData as (key: string, val: unknown) => void;
