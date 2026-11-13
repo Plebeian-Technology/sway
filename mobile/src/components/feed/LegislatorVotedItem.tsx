@@ -5,8 +5,9 @@ import { AlertTriangle, Check, CheckCircle2, Minus, X } from "lucide-react-nativ
 import { PARITY_COPY } from "../../../../app/frontend/sway_constants/parityCopy";
 import { useTheme } from "../../theme/ThemeProvider";
 import { swayTokens } from "../../theme/tokens";
-import { LegislatorAvatar } from "./FeedAvatar";
-import { FeedBillActions, FeedBillBlock } from "./FeedBillBlock";
+import FeedAvatar from "./FeedAvatar";
+import FeedBillActions from "./FeedBillActions";
+import FeedBillBlock from "./FeedBillBlock";
 import FeedItemShell from "./FeedItemShell";
 import type { IFeedBill, IFeedItem, TFeedSupport } from "./types";
 
@@ -15,55 +16,6 @@ interface IProps {
     onPressBill: (billId: number) => void;
     onShareBill: (bill: IFeedBill) => void;
 }
-
-const VoteValue: React.FC<{ support: TFeedSupport; align?: "left" | "right" }> = ({ support, align = "left" }) => {
-    const { colorScheme } = useTheme();
-    const t = swayTokens[colorScheme];
-
-    const justify = align === "right" ? "flex-end" : "flex-start";
-
-    if (support === "FOR") {
-        return (
-            <View style={{ marginTop: 2, flexDirection: "row", alignItems: "center", justifyContent: justify, gap: 4 }}>
-                <Check size={16} color={t.voteFor} />
-                <Text style={{ fontSize: 15, fontWeight: "700", color: t.voteFor }}>
-                    {PARITY_COPY.feed.voteLabels.for}
-                </Text>
-            </View>
-        );
-    }
-    if (support === "AGAINST") {
-        return (
-            <View style={{ marginTop: 2, flexDirection: "row", alignItems: "center", justifyContent: justify, gap: 4 }}>
-                <X size={16} color={t.voteAgainst} />
-                <Text style={{ fontSize: 15, fontWeight: "700", color: t.voteAgainst }}>
-                    {PARITY_COPY.feed.voteLabels.against}
-                </Text>
-            </View>
-        );
-    }
-    return (
-        <View style={{ marginTop: 2, flexDirection: "row", alignItems: "center", justifyContent: justify, gap: 4 }}>
-            <Minus size={16} color={t.mutedForeground} />
-            <Text style={{ fontSize: 15, fontWeight: "700", color: t.mutedForeground }}>
-                {PARITY_COPY.feed.voteLabels.abstain}
-            </Text>
-        </View>
-    );
-};
-
-const InlineSupportWord: React.FC<{ support: TFeedSupport }> = ({ support }) => {
-    const { colorScheme } = useTheme();
-    const t = swayTokens[colorScheme];
-
-    if (support === "FOR") {
-        return <Text style={{ fontWeight: "600", color: t.voteFor }}>{PARITY_COPY.feed.voteLabels.for}</Text>;
-    }
-    if (support === "AGAINST") {
-        return <Text style={{ fontWeight: "600", color: t.voteAgainst }}>{PARITY_COPY.feed.voteLabels.against}</Text>;
-    }
-    return <Text style={{ fontWeight: "600", color: t.mutedForeground }}>{PARITY_COPY.feed.voteLabels.abstain}</Text>;
-};
 
 const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill }) => {
     const { colorScheme } = useTheme();
@@ -77,11 +29,82 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
 
     const subtitle = [legislator.title, legislator.district_name, localeName].filter(Boolean).join(", ");
 
+    const renderVoteValue = (support: TFeedSupport, align: "left" | "right" = "left") => {
+        const justify = align === "right" ? "flex-end" : "flex-start";
+
+        if (support === "FOR") {
+            return (
+                <View
+                    style={{
+                        marginTop: 2,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: justify,
+                        gap: 4,
+                    }}
+                >
+                    <Check size={16} color={t.voteFor} />
+                    <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 15, color: t.voteFor }}>
+                        {PARITY_COPY.feed.voteLabels.for}
+                    </Text>
+                </View>
+            );
+        }
+        if (support === "AGAINST") {
+            return (
+                <View
+                    style={{
+                        marginTop: 2,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: justify,
+                        gap: 4,
+                    }}
+                >
+                    <X size={16} color={t.voteAgainst} />
+                    <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 15, color: t.voteAgainst }}>
+                        {PARITY_COPY.feed.voteLabels.against}
+                    </Text>
+                </View>
+            );
+        }
+        return (
+            <View style={{ marginTop: 2, flexDirection: "row", alignItems: "center", justifyContent: justify, gap: 4 }}>
+                <Minus size={16} color={t.mutedForeground} />
+                <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 15, color: t.mutedForeground }}>
+                    {PARITY_COPY.feed.voteLabels.abstain}
+                </Text>
+            </View>
+        );
+    };
+
+    const renderInlineSupportWord = (support: TFeedSupport) => {
+        if (support === "FOR") {
+            return (
+                <Text style={{ fontFamily: "OpenSans-SemiBold", color: t.voteFor }}>
+                    {PARITY_COPY.feed.voteLabels.for}
+                </Text>
+            );
+        }
+        if (support === "AGAINST") {
+            return (
+                <Text style={{ fontFamily: "OpenSans-SemiBold", color: t.voteAgainst }}>
+                    {PARITY_COPY.feed.voteLabels.against}
+                </Text>
+            );
+        }
+        return (
+            <Text style={{ fontFamily: "OpenSans-SemiBold", color: t.mutedForeground }}>
+                {PARITY_COPY.feed.voteLabels.abstain}
+            </Text>
+        );
+    };
+
     const renderWhoLine = () => {
         if (item.user_support) {
             return (
                 <>
-                    <Text style={{ fontWeight: "700" }}>{legislator.full_name}</Text>{" "}
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{legislator.full_name}</Text>{" "}
                     {PARITY_COPY.feed.legislatorVotedWithUser}
                 </>
             );
@@ -90,7 +113,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
         if (item.legislator_support === "ABSTAIN") {
             return (
                 <>
-                    <Text style={{ fontWeight: "700" }}>{legislator.full_name}</Text>{" "}
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{legislator.full_name}</Text>{" "}
                     {PARITY_COPY.feed.legislatorAbstainedOnLocaleBill(localeName)}
                 </>
             );
@@ -99,19 +122,20 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
         if (item.legislator_support === "FOR" || item.legislator_support === "AGAINST") {
             return (
                 <>
-                    <Text style={{ fontWeight: "700" }}>{legislator.full_name}</Text> voted{" "}
-                    <InlineSupportWord support={item.legislator_support} /> a {localeName} bill
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{legislator.full_name}</Text>{" "}
+                    {PARITY_COPY.feed.legislatorVotedVerb}
+                    {renderInlineSupportWord(item.legislator_support)} {PARITY_COPY.feed.aLocaleBill(localeName)}
                 </>
             );
         }
 
-        return <Text style={{ fontWeight: "700" }}>{legislator.full_name}</Text>;
+        return <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{legislator.full_name}</Text>;
     };
 
     return (
         <FeedItemShell
             item={item}
-            avatar={<LegislatorAvatar legislator={legislator} />}
+            avatar={<FeedAvatar kind="legislator" legislator={legislator} />}
             whoLine={renderWhoLine()}
             subtitle={subtitle || undefined}
         >
@@ -132,10 +156,10 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
                     <View
                         style={{ flex: 1, backgroundColor: t.background, paddingHorizontal: 12, paddingVertical: 12 }}
                     >
-                        <Text style={{ fontSize: 12, color: t.mutedForeground }}>
+                        <Text style={{ fontFamily: "OpenSans-Regular", fontSize: 12, color: t.mutedForeground }}>
                             {PARITY_COPY.feed.voteLabels.you}
                         </Text>
-                        <VoteValue support={item.user_support} />
+                        {renderVoteValue(item.user_support)}
                     </View>
 
                     {item.agreement === "agree" ? (
@@ -152,7 +176,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
                             }}
                         >
                             <CheckCircle2 size={14} color={t.success} />
-                            <Text style={{ fontSize: 12, fontWeight: "600", color: t.success }}>
+                            <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 12, color: t.success }}>
                                 {PARITY_COPY.feed.voteLabels.agree}
                             </Text>
                         </View>
@@ -172,7 +196,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
                             }}
                         >
                             <AlertTriangle size={14} color={t.warning} />
-                            <Text style={{ fontSize: 12, fontWeight: "600", color: t.warning }}>
+                            <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 12, color: t.warning }}>
                                 {PARITY_COPY.feed.voteLabels.differ}
                             </Text>
                         </View>
@@ -183,10 +207,18 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
                     <View
                         style={{ flex: 1, backgroundColor: t.background, paddingHorizontal: 12, paddingVertical: 12 }}
                     >
-                        <Text numberOfLines={1} style={{ fontSize: 12, color: t.mutedForeground, textAlign: "right" }}>
+                        <Text
+                            numberOfLines={1}
+                            style={{
+                                fontFamily: "OpenSans-Regular",
+                                fontSize: 12,
+                                color: t.mutedForeground,
+                                textAlign: "right",
+                            }}
+                        >
                             {legislator.full_name}
                         </Text>
-                        <VoteValue support={item.legislator_support} align="right" />
+                        {renderVoteValue(item.legislator_support, "right")}
                     </View>
                 </View>
             ) : null}

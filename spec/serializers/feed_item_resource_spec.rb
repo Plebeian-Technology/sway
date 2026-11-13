@@ -106,6 +106,7 @@ RSpec.describe FeedItemResource, type: :model do
         external_id: "25-0010",
         title: "Transit Bill",
         summary: "Expands bus service.",
+        summary_ai_unreviewed: false,
         vote_count: 0,
         view_count: 0,
         share_count: 0
@@ -113,6 +114,25 @@ RSpec.describe FeedItemResource, type: :model do
       expect(hash["user_support"]).to eq("FOR")
       expect(hash["legislator_support"]).to be_nil
       expect(hash["agreement"]).to be_nil
+    end
+
+    it "sends summary and summary_ai_unreviewed only on bill_of_the_month_released items" do
+      sway_locale = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
+      bill = create(:bill, sway_locale:, summary: "The model wrote this.")
+      create(:bill_llm_provisioning, bill:, llm_summary: "The model wrote this.", llm_provider: "claude")
+      bill.reload
+      occurred_at = Time.utc(2026, 11, 1, 0, 0, 0)
+
+      botm_hash = described_class.new(
+        FeedQuery::Item.new(kind: "bill_of_the_month_released", key: "bill_of_the_month_released:#{bill.id}", occurred_at:, sway_locale:, bill:)
+      ).serializable_hash.transform_keys(&:to_s)
+      vote_hash = described_class.new(
+        FeedQuery::Item.new(kind: "legislator_voted", key: "legislator_voted:1", occurred_at:, sway_locale:, bill:)
+      ).serializable_hash.transform_keys(&:to_s)
+
+      expect(botm_hash["bill"]).to include(summary: "The model wrote this.", summary_ai_unreviewed: true)
+      expect(vote_hash["bill"]).to include(summary: nil, summary_ai_unreviewed: false)
+      expect(vote_hash["bill"].keys).to match_array(botm_hash["bill"].keys)
     end
 
     it "includes vote_count, view_count, and share_count from params and defaults missing bills to zero" do
@@ -276,6 +296,48 @@ RSpec.describe FeedItemResource, type: :model do
       expect(for_hash["organization"]).to eq(id: organization.id, name: "Transit Riders United", support: "Support")
       expect(against_hash["organization"]).to eq(id: organization.id, name: "Transit Riders United", support: "Oppose")
       expect(abstain_hash["organization"]).to eq(id: organization.id, name: "Transit Riders United", support: "Neutral")
+    end
+
+    it "normalizes lowercase organization_bill_position support values before formatting labels" do
+      sway_locale = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
+      organization = create(:organization, sway_locale:, name: "Transit Riders United")
+      occurred_at = Time.utc(2026, 4, 2, 15, 0, 0)
+
+      positions_by_stored_value = %w[support oppose neutral].index_with do |stored_support|
+        bill = create(:bill, sway_locale:)
+        position = create(:organization_bill_position, organization:, bill:, support: "FOR", active: true)
+        position.update_columns(support: stored_support)
+        position.reload
+      end
+
+      hashes = positions_by_stored_value.transform_values do |position|
+        described_class.new(
+          FeedQuery::Item.new(
+            kind: "organization_position_taken",
+            key: "organization_position_taken:#{position.id}",
+            occurred_at:,
+            sway_locale:,
+            bill: position.bill,
+            organization_bill_position: position
+          )
+        ).serializable_hash.transform_keys(&:to_s)
+      end
+
+      expect(hashes.fetch("support")["organization"]).to eq(
+        id: organization.id,
+        name: "Transit Riders United",
+        support: "Support"
+      )
+      expect(hashes.fetch("oppose")["organization"]).to eq(
+        id: organization.id,
+        name: "Transit Riders United",
+        support: "Oppose"
+      )
+      expect(hashes.fetch("neutral")["organization"]).to eq(
+        id: organization.id,
+        name: "Transit Riders United",
+        support: "Neutral"
+      )
     end
   end
 end

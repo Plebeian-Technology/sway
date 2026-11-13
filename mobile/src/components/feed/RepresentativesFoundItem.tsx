@@ -37,7 +37,9 @@ const RepresentativesFoundItem: React.FC<IProps> = ({ item, onPressLegislators }
             }
             whoLine={
                 <>
-                    <Text style={{ fontWeight: "700" }}>{PARITY_COPY.feed.representativesFoundActor}</Text>{" "}
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>
+                        {PARITY_COPY.feed.representativesFoundActor}
+                    </Text>{" "}
                     {PARITY_COPY.feed.representativesFoundAction}
                 </>
             }
@@ -54,11 +56,17 @@ const RepresentativesFoundItem: React.FC<IProps> = ({ item, onPressLegislators }
                 >
                     {item.legislators.map((rep) => (
                         <View key={rep.id}>
-                            <Text style={{ fontSize: 14, fontWeight: "600", color: t.foreground }}>
+                            <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 14, color: t.foreground }}>
                                 {rep.full_name}
                             </Text>
                             {rep.title || rep.district_name ? (
-                                <Text style={{ fontSize: 12, color: t.mutedForeground }}>
+                                <Text
+                                    style={{
+                                        fontFamily: "OpenSans-Regular",
+                                        fontSize: 12,
+                                        color: t.mutedForeground,
+                                    }}
+                                >
                                     {[rep.title, rep.district_name].filter(Boolean).join(", ")}
                                 </Text>
                             ) : null}
@@ -74,7 +82,7 @@ const RepresentativesFoundItem: React.FC<IProps> = ({ item, onPressLegislators }
                     accessibilityLabel={PARITY_COPY.feed.seeYourRepresentatives}
                     className="!rounded-md !px-3.5"
                 >
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: t.accent }}>
+                    <Text style={{ fontFamily: "OpenSans-SemiBold", fontSize: 14, color: t.accent }}>
                         {PARITY_COPY.feed.seeYourRepresentatives}
                     </Text>
                 </Pressable>

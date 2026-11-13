@@ -35,8 +35,6 @@ class FeedQuery
     end
   end
 
-  attr_reader :items, :next_cursor
-
   def self.term_start_on(sway_locale)
     TermWindow.convening_date(sway_locale, TermWindow.cycle_start_year(sway_locale, Date.current))
   end
@@ -46,10 +44,29 @@ class FeedQuery
     @cursor = cursor
     @per_page = per_page
     @query = query&.strip&.downcase.presence
-    @items, @next_cursor = paginate(filter_by_query(build_items))
+  end
+
+  def items
+    page_result[0]
+  end
+
+  def next_cursor
+    page_result[1]
+  end
+
+  def match_count
+    matching_items.size
   end
 
   private
+
+  def matching_items
+    @matching_items ||= filter_by_query(build_items)
+  end
+
+  def page_result
+    @page_result ||= paginate(matching_items)
+  end
 
   def build_items
     items = [user_joined_item]
@@ -78,7 +95,7 @@ class FeedQuery
     @active_user_legislators ||= @user
       .user_legislators
       .where(active: true)
-      .includes(legislator: {active_term: :seat})
+      .includes(legislator: [:district, {active_term: %i[seat district]}, {photo_attachment: :blob}])
       .order(:created_at, :id)
       .to_a
   end
@@ -206,11 +223,11 @@ class FeedQuery
   def organization_position_taken_items
     return [] if declared_locales.empty?
 
-    followed_org_ids = @user.followed_organizations.pluck(:id)
-    return [] if followed_org_ids.empty?
+    followed_organization_ids = @user.followed_organizations.pluck(:id)
+    return [] if followed_organization_ids.empty?
 
     positions = OrganizationBillPosition
-      .where(organization_id: followed_org_ids, active: true)
+      .where(organization_id: followed_organization_ids, active: true)
       .where.not(activated_at: nil)
       .includes(:organization)
       .to_a
@@ -265,10 +282,10 @@ class FeedQuery
     end
     item.legislators&.each { |legislator| texts << legislator.full_name }
     if (locale = item.sway_locale)
-      texts << locale.human_name
+      texts << locale.human_name << locale.short_name
     end
-    if (org_name = item.organization_bill_position&.organization&.name)
-      texts << org_name
+    if (organization_name = item.organization_bill_position&.organization&.name)
+      texts << organization_name
     end
     texts.compact
   end
@@ -277,7 +294,8 @@ class FeedQuery
     filtered = filter_after_cursor(sorted_items)
     window = filtered.first(@per_page + 1)
     page_items = window.first(@per_page)
-    next_cursor = (window.size > @per_page) ? encode_cursor(page_items.last) : nil
+    last_page_item = page_items.last
+    next_cursor = (window.size > @per_page && last_page_item) ? encode_cursor(last_page_item) : nil
     [page_items, next_cursor]
   end
 
@@ -298,9 +316,16 @@ class FeedQuery
   end
 
   def decode_cursor(cursor)
-    return nil if cursor.blank?
+    return nil if cursor.nil? || cursor.blank?
 
-    sec, nsec, key = JSON.parse(Base64.urlsafe_decode64(cursor))
+    parsed = JSON.parse(Base64.urlsafe_decode64(cursor))
+    return nil unless parsed.is_a?(Array) && parsed.size == 3
+
+    sec, nsec, key = parsed
+    return nil unless sec.is_a?(Integer) && nsec.is_a?(Integer) && key.is_a?(String)
+
     [Time.at(sec, nsec, :nanosecond, in: "UTC"), key]
+  rescue ArgumentError, JSON::ParserError, TypeError, RangeError, EncodingError
+    nil
   end
 end

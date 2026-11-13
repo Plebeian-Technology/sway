@@ -10,7 +10,6 @@ export const linking: LinkingOptions<RootParamList> = {
             Feed: {
                 screens: {
                     FeedList: "feed",
-                    BillDetail: { path: "bills/:id", parse: { id: Number } },
                 },
             },
             Home: {

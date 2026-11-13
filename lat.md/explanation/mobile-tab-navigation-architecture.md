@@ -5,17 +5,17 @@ lat:
 
 # Mobile drawer navigation architecture
 
-Why the mobile app's five drawer items each own a native stack, why some screens are registered in more than one stack, and the header/SafeArea conventions shared across them.
+Why the mobile app's six drawer items each own a native stack, why some screens are registered in more than one stack, and the header/SafeArea conventions shared across them.
 
 ## AppDrawer
 
-`AppDrawer` ([[mobile/src/navigation/AppDrawer.tsx]]) is a left drawer with five items. Each one holds its own set of screens: Home, Bills, Legislators, Organizations and Profile.
+`AppDrawer` ([[mobile/src/navigation/AppDrawer.tsx]]) is a left drawer with six items. Each one holds its own set of screens: Feed, Home, Bills, Legislators, Organizations and Profile.
 
-Five labelled items fit in a drawer at any screen size, where a bottom bar on a small phone such as the iPhone SE clips its labels against the bottom of the screen.
+Six labelled items fit in a drawer at any screen size, where a bottom bar on a small phone such as the iPhone SE clips its labels against the bottom of the screen.
 
-Deep links, the onboarding handoff and calls such as `navigate("Legislators")` address the items by their route names: `Home`, `Bills`, `Legislators`, `Orgs` and `Profile`.
+Deep links, the onboarding handoff and calls such as `navigate("Legislators")` address the items by their route names: `Feed`, `Home`, `Bills`, `Legislators`, `Orgs` and `Profile`.
 
-Each item carries a test id through `drawerItemTestID` (`drawer-item-home`, `drawer-item-bills`, `drawer-item-legislators`, `drawer-item-orgs`, `drawer-item-profile`), so Maestro flows tap an item by id rather than by its label.
+Each item carries a test id through `drawerItemTestID` (`drawer-item-feed`, `drawer-item-home`, `drawer-item-bills`, `drawer-item-legislators`, `drawer-item-orgs`, `drawer-item-profile`), so Maestro flows tap an item by id rather than by its label.
 
 Every colour comes from the shared design tokens: the active item is a filled `primary` pill with `primaryForeground` text, inactive items use the `foreground` colour, and the drawer itself sits on `card` beneath a brand block ([[mobile-chrome-and-scroll-layout#The drawer panel opens with a brand block]]). Without them, React Navigation falls back to its own blue and grey. The scene background is set to the `background` token for the same reason, because `NavigationContainer` is given no theme.
 
@@ -39,9 +39,9 @@ On a pushed screen such as Bill Detail, the same edge swipe is the iOS back gest
 
 ## HomeStack and BillsStack share the BillDetail route
 
-`HomeStack` (`mobile/src/navigation/HomeStack.tsx`) is the Home drawer item: the Bill of the Month, and one bill's detail.
+`FeedStack` ([[mobile/src/navigation/FeedStack.tsx]]) is the Feed drawer item: the reverse-chronological home feed (`FeedList`), and one bill's detail (`BillDetail`). `HomeStack` (`mobile/src/navigation/HomeStack.tsx`) is the Home drawer item: the Bill of the Month, and one bill's detail.
 
-The same detail screen is also registered in `BillsStack`. That is what lets a link to a bill open inside whichever section the reader was already in, rather than moving them to another one.
+The same detail screen is registered across `FeedStack`, `HomeStack`, `BillsStack`, and `LegislatorsStack`. That is what lets a link to a bill open inside whichever section the reader was already in, rather than moving them to another one.
 
 `BillsStack` (`mobile/src/navigation/BillsStack.tsx`) is the Bills drawer item: the list of bills (`BillsList` and `PastBillsOfTheMonth`), and one bill's detail. The detail screen is registered under the same route name here as it is in `HomeStack`, for the same reason.
 
@@ -73,7 +73,7 @@ Nobody sees this name; the drawer label is what people read.
 
 `mobile/src/navigation/headerOptions.ts` holds the shared header settings, mainly for the back button on inner screens.
 
-Every drawer item (Bills, Home, Legislators, Organizations, Profile) works the same way: no header on the first screen, and a header on any screen opened on top of it, carrying a white back arrow on a bar in the brand band colour. [[mobile/src/navigation/headerOptions.ts#pushedScreenOptions]] renders the Sway logo in the header center with `headerTitleAlign: "center"` (so Android does not left-align it) and colors the back arrow white against the band. Keeping these settings in one file is what stops the five stacks drifting apart.
+Every drawer item (Feed, Home, Bills, Legislators, Organizations, Profile) works the same way: no header on the first screen, and a header on any screen opened on top of it, carrying a white back arrow on a bar in the brand band colour. [[mobile/src/navigation/headerOptions.ts#pushedScreenOptions]] renders the Sway logo in the header center with `headerTitleAlign: "center"` (so Android does not left-align it) and colors the back arrow white against the band. Keeping these settings in one file is what stops the six stacks drifting apart.
 
 ## types.ts: why the route-name types are split per stack
 

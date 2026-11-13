@@ -2,8 +2,9 @@ import React from "react";
 import { Text } from "react-native";
 
 import { PARITY_COPY } from "../../../../app/frontend/sway_constants/parityCopy";
-import { OrganizationTile } from "./FeedAvatar";
-import { FeedBillActions, FeedBillBlock } from "./FeedBillBlock";
+import FeedAvatar from "./FeedAvatar";
+import FeedBillActions from "./FeedBillActions";
+import FeedBillBlock from "./FeedBillBlock";
 import FeedItemShell from "./FeedItemShell";
 import type { IFeedBill, IFeedItem } from "./types";
 
@@ -13,10 +14,10 @@ interface IProps {
     onShareBill: (bill: IFeedBill) => void;
 }
 
-const resolveStanceVerb = (support: string): string => {
-    if (support === "Support") return PARITY_COPY.feed.organizationStanceVerbs.Support;
-    if (support === "Oppose") return PARITY_COPY.feed.organizationStanceVerbs.Oppose;
-    return PARITY_COPY.feed.organizationStanceVerbs.Neutral;
+const resolvePositionVerb = (support: string): string => {
+    if (support === "Support") return PARITY_COPY.feed.organizationPositionVerbs.Support;
+    if (support === "Oppose") return PARITY_COPY.feed.organizationPositionVerbs.Oppose;
+    return PARITY_COPY.feed.organizationPositionVerbs.Neutral;
 };
 
 const OrganizationPositionTakenItem: React.FC<IProps> = ({ item, onPressBill, onShareBill }) => {
@@ -27,16 +28,16 @@ const OrganizationPositionTakenItem: React.FC<IProps> = ({ item, onPressBill, on
         return null;
     }
 
-    const stanceVerb = resolveStanceVerb(organization.support);
+    const positionVerb = resolvePositionVerb(organization.support);
 
     return (
         <FeedItemShell
             item={item}
-            avatar={<OrganizationTile name={organization.name} />}
+            avatar={<FeedAvatar kind="organization" organizationName={organization.name} />}
             whoLine={
                 <>
-                    <Text style={{ fontWeight: "700" }}>{organization.name}</Text>{" "}
-                    {PARITY_COPY.feed.organizationPositionTaken(stanceVerb, localeName)}
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{organization.name}</Text>{" "}
+                    {PARITY_COPY.feed.organizationPositionTaken(positionVerb, localeName)}
                 </>
             }
         >

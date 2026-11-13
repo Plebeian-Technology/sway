@@ -1,5 +1,5 @@
-import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
-import type { IFeedItem, TFeedItemKind } from "app/frontend/components/feed/types";
+import { PARITY_COPY } from "../../sway_constants/parityCopy";
+import type { IFeedItem, TFeedItemKind } from "./types";
 
 export interface IFeedDateGroup {
     heading: string;
@@ -12,9 +12,11 @@ interface ICalendarParts {
     day: number;
 }
 
+const MS_PER_DAY = 86_400_000;
+
 // @lat: [[legislator-botm-record#Release dates are read in UTC]]
-export const isUtcDateOnlyKind = (kind: TFeedItemKind): boolean =>
-    kind === "bill_of_the_month_released" || kind === "legislative_term_began";
+const isUtcDateOnly = (date: Date, kind: TFeedItemKind): boolean =>
+    kind === "bill_of_the_month_released" || kind === "legislative_term_began" || date.getTime() % MS_PER_DAY === 0;
 
 const getCalendarParts = (date: Date, useUtc: boolean): ICalendarParts =>
     useUtc
@@ -29,11 +31,11 @@ const getCalendarParts = (date: Date, useUtc: boolean): ICalendarParts =>
               day: date.getDate(),
           };
 
-const dayNumber = (parts: ICalendarParts): number => Date.UTC(parts.year, parts.month, parts.day) / 86_400_000;
+const dayNumber = (parts: ICalendarParts): number => Date.UTC(parts.year, parts.month, parts.day) / MS_PER_DAY;
 
 export const getDateGroupHeading = (occurredAt: string, kind: TFeedItemKind, now: Date = new Date()): string => {
     const date = new Date(occurredAt);
-    const useUtc = isUtcDateOnlyKind(kind);
+    const useUtc = isUtcDateOnly(date, kind);
     const itemParts = getCalendarParts(date, useUtc);
     const todayParts = getCalendarParts(now, useUtc);
     const diffDays = dayNumber(todayParts) - dayNumber(itemParts);
@@ -73,7 +75,7 @@ export const groupFeedItemsByDate = (items: IFeedItem[], now: Date = new Date())
 
 export const formatItemTimestamp = (occurredAt: string, kind: TFeedItemKind, now: Date = new Date()): string => {
     const date = new Date(occurredAt);
-    const useUtc = isUtcDateOnlyKind(kind);
+    const useUtc = isUtcDateOnly(date, kind);
     const itemParts = getCalendarParts(date, useUtc);
     const todayParts = getCalendarParts(now, useUtc);
     const diffDays = dayNumber(todayParts) - dayNumber(itemParts);

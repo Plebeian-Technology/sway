@@ -87,7 +87,7 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
-`profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those three answer `sway://` links from inside the app only.
+`feed`, `profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those four answer `sway://` links from inside the app only.
 
 ### Why androidPathData must never hand back a prefix containing a star
 

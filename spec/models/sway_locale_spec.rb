@@ -122,6 +122,26 @@ RSpec.describe SwayLocale, type: :model do
     end
   end
 
+  describe "#short_name" do
+    it "returns the titleized city for a city locale" do
+      sway_locale = create(:sway_locale, city: "New York", state: "NY", country: "US")
+
+      expect(sway_locale.short_name).to eq("New York")
+    end
+
+    it "returns the titleized region for a state locale" do
+      sway_locale = create(:sway_locale, city: "new_jersey", state: "NJ", country: "US")
+
+      expect(sway_locale.short_name).to eq("New Jersey")
+    end
+
+    it "returns U.S. Congress for the congress locale" do
+      congress = create(:sway_locale, city: "congress", state: "congress", country: "US")
+
+      expect(congress.short_name).to eq("U.S. Congress")
+    end
+  end
+
   describe "#load_geojson" do
     context "when a geojson file is requested" do
       it "loads the geojson file corresponding to its name" do

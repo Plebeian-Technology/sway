@@ -16,6 +16,8 @@ A release date is a calendar date sent as a date-only string, which a JavaScript
 
 Release dates are not pinned to the first of the month, but on the first that slip also changes the month shown. The month label is therefore formatted with the UTC zone, the same reasoning [[term-window-design#Why formatTermWindow (app/frontend/sway_utils/termWindow.ts) prefers the real day]] applies to term days.
 
+The home feed reads legislator vote dates the same way. The importers parse a date-only vote date into midnight UTC, so [[app/frontend/components/feed/dateGrouping.ts]] treats any item stamped at exactly midnight UTC as a calendar date. Read in local time, such a vote would land a day early, show a clock time nobody recorded, and split the Bill of the Month items of its day into repeated headings.
+
 ## Anonymous visitors see only the representative's vote
 
 The visitor's own vote and the agreed or disagreed badge appear only when someone is signed in, because an anonymous visitor has no votes to compare.

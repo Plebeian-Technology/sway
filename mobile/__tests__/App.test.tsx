@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { render, screen, waitFor, within } from "@testing-library/react-native";
 
 // @lat: [[mobile-jest-first-pass-test-notes#App test supplies the completed profile contract]]
 jest.mock("../src/hooks/useSession", () => ({
@@ -64,13 +64,22 @@ describe("App", () => {
     });
 
     it(
-        "renders the drawer with its 5 items and a menu button",
+        "renders the drawer with its 6 items and a menu button",
         async () => {
             render(<App />);
             // @lat: [[mobile-jest-first-pass-test-notes#App test supplies the completed profile contract]]
             await waitFor(() => expect(screen.getByLabelText("Open menu")).toBeTruthy());
-            for (const label of ["Home", "Bills", "Legislators", "Organizations", "Profile"]) {
-                expect(screen.getByText(label, { includeHiddenElements: true })).toBeTruthy();
+            const drawerItems = [
+                ["drawer-item-feed", "Feed"],
+                ["drawer-item-home", "Home"],
+                ["drawer-item-bills", "Bills"],
+                ["drawer-item-legislators", "Legislators"],
+                ["drawer-item-orgs", "Organizations"],
+                ["drawer-item-profile", "Profile"],
+            ] as const;
+            for (const [testId, label] of drawerItems) {
+                const drawerItem = screen.getByTestId(testId, { includeHiddenElements: true });
+                expect(within(drawerItem).getByText(label, { includeHiddenElements: true })).toBeTruthy();
             }
         },
         RENDER_BOUND_TIMEOUT_MS,

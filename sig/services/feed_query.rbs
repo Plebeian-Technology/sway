@@ -44,21 +44,24 @@ class FeedQuery
   @cursor: String?
   @per_page: Integer
   @query: String?
-  @items: Array[Item]
-  @next_cursor: String?
+  @matching_items: Array[Item]?
+  @page_result: [Array[Item], String?]?
   @declared_locales: Array[SwayLocale]
   @term_starts_by_locale_id: Hash[Integer, Date]
   @active_user_legislators: Array[UserLegislator]
-
-  attr_reader items: Array[Item]
-  attr_reader next_cursor: String?
 
   def self.term_start_on: (SwayLocale sway_locale) -> Date
 
   def initialize: (user: User, ?cursor: String?, ?per_page: Integer, ?query: String?) -> void
 
+  def items: () -> Array[Item]
+  def next_cursor: () -> String?
+  def match_count: () -> Integer
+
   private
 
+  def matching_items: () -> Array[Item]
+  def page_result: () -> [Array[Item], String?]
   def build_items: () -> Array[Item]
   def filter_by_query: (Array[Item] items) -> Array[Item]
   def item_matches_query?: (Item item, String query) -> bool

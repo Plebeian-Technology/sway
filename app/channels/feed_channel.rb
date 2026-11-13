@@ -5,7 +5,4 @@ class FeedChannel < ApplicationCable::Channel
 
     stream_from "feed_#{current_user.id}"
   end
-
-  def unsubscribed
-  end
 end

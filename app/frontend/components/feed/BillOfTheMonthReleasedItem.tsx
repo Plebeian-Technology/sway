@@ -1,6 +1,7 @@
 import { formatReleaseMonthUtc } from "app/frontend/components/feed/dateGrouping";
-import { LocaleTile } from "app/frontend/components/feed/FeedAvatar";
-import { FeedBillActions, FeedBillBlock } from "app/frontend/components/feed/FeedBillBlock";
+import FeedAvatar from "app/frontend/components/feed/FeedAvatar";
+import FeedBillActions from "app/frontend/components/feed/FeedBillActions";
+import FeedBillBlock from "app/frontend/components/feed/FeedBillBlock";
 import FeedItemShell from "app/frontend/components/feed/FeedItemShell";
 import type { IFeedItem } from "app/frontend/components/feed/types";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
@@ -16,11 +17,11 @@ const BillOfTheMonthReleasedItem: React.FC<IProps> = ({ item }) => {
     return (
         <FeedItemShell
             item={item}
-            avatar={<LocaleTile localeName={localeName} />}
+            avatar={<FeedAvatar kind="locale" localeName={localeName} />}
             whoLine={
                 <>
                     <strong className="font-semibold">{localeName}</strong>{" "}
-                    {PARITY_COPY.feed.billOfTheMonthReleased(localeName, monthName).slice(localeName.length + 1)}
+                    {PARITY_COPY.feed.billOfTheMonthReleasedSuffix(monthName)}
                 </>
             }
         >

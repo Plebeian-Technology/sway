@@ -72,6 +72,42 @@ RSpec.describe "Partial-reload contracts", type: :request do
     end
   end
 
+  describe "Feed page — cable/poll only: [newest_keys]" do
+    it "omits optional newest_keys on a full load and serves it without items on a partial reload of GET /feed" do
+      _sway_locale, _user = setup
+
+      get "/feed"
+      expect(inertia).to render_component(Pages::FEED)
+      expect(inertia.props.keys).to include("items")
+      expect(inertia.props.keys).not_to include("newest_keys")
+
+      inertia_versioned_reload_only("newest_keys")
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props.keys).to include("newest_keys")
+      expect(inertia.props[:newest_keys]).to be_an(Array)
+      expect(inertia.props.keys).not_to include("items")
+    end
+  end
+
+  describe "Feed page — search and refresh only: [items, feed_search, feed_match_count, newest_keys]" do
+    it "serves the search tuple and the refresh tuple on partial reloads of GET /feed" do
+      _sway_locale, _user = setup
+
+      get "/feed", params: {feed_search: "fare"}
+      expect(inertia).to render_component(Pages::FEED)
+
+      search_props = %w[items feed_search feed_match_count newest_keys]
+      inertia_versioned_reload_only(*search_props)
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props.keys).to include(*search_props)
+
+      refresh_props = %w[items feed_match_count newest_keys]
+      inertia_versioned_reload_only(*refresh_props)
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props.keys).to include(*refresh_props)
+    end
+  end
+
   # Three tabs of one admin page (Pages::BILL_CREATOR), each refreshing its own
   # prop list, which #edit and the LegislationPipelineRunSourcing share both serve.
   # @lat: [[bill-creator-positions-tab#Splitting the tab split the poll list]]

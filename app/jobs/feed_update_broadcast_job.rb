@@ -8,6 +8,6 @@ class FeedUpdateBroadcastJob < ApplicationJob
     ids = Array(user_ids).uniq
     return if ids.empty?
 
-    FeedBroadcaster.notify(User.where(id: ids))
+    FeedBroadcaster.notify(ids)
   end
 end

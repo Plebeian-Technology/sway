@@ -32,6 +32,7 @@ A `Bill` is a piece of proposed law within one locale. It is also the anchor for
 - `has_many :active_organization_bill_positions` — a filtered association, so `.includes` preloading still works
 - `has_many :campaigns` — testimony campaigns, destroyed with the bill
 - `has_many :user_bill_shares` — per-user share links with redemption tracking, destroyed with the bill
+- `has_many :bill_views` — per-user view records, destroyed with the bill
 
 ## Votes and positions
 
@@ -39,7 +40,7 @@ Three tables store `FOR` / `AGAINST` / `ABSTAIN`, and one of them refuses the th
 
 - `UserVote` — cast by a user; `FOR` or `AGAINST` only; one row per `(user_id, bill_id)`
 - `LegislatorVote` — cast by a legislator; all three values; carries a `source` recording where it came from
-- `OrganizationBillPosition` — held by an organization; stored as vote words, displayed as Support / Oppose / Neutral; one per `(bill_id, organization_id)`; `active` gates visibility
+- `OrganizationBillPosition` — held by an organization; stored as vote words, displayed as Support / Oppose / Neutral; one per `(bill_id, organization_id)`; `active` gates visibility (`activated_at` is set when `active` becomes true)
 - `RollCall` — the roll-call record rather than a cast vote; one row per bill; holds upstream roll-call numbers; unused by Baltimore
 
 ## Scores
@@ -64,6 +65,7 @@ A `User` is a verified phone number with passkeys, an address, and per-locale le
 - `Address` and `UserAddress` — the geocoded address registration resolves districts from
 - `Invite` and `UserInviteLink` — referral records feeding the sway count
 - [[app/models/user_bill_share.rb#UserBillShare]] — tracks per-user per-bill share link generation and redemption; unique on (user_id, bill_id) and share_uuid; feeds sway influence on redemption
+- [[app/models/bill_view.rb#BillView]] — one row per `(user_id, bill_id)` recording distinct signed-in bill views, destroyed with the user
 - `NotificationPreference`, `PushNotificationSubscription`, `UserBillReminder` — notification opt-ins, web push endpoints, per-bill reminders
 
 ## Organizations and campaigns
@@ -72,7 +74,7 @@ Organizations are advocacy groups scoped to a locale. They hold positions on bil
 
 - `Organization` — `belongs_to :sway_locale`; name unique per locale; followers via `organization_follows`
 - The `Sway` organization is seeded in every locale by `SeedSwayOrganization` during `db:seed`, before any other organization exists there
-- `OrganizationBillPosition` — `active`, `support`, `summary`; a change to any of the three notifies followers
+- `OrganizationBillPosition` — `active`, `support`, `summary` (a change to any of the three notifies followers); `activated_at` is set when `active` becomes true
 - `OrganizationBillPositionChange` — the audit trail of edits awaiting approval
 - `Campaign` — `belongs_to :bill`, optional `:organization`; name unique per bill; `organization_link_decision` records a four-state match outcome
 - `UserOrganizationMembership` — membership, with a separate invite record for pending ones

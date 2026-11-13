@@ -37,6 +37,7 @@ const FeedItemShell: React.FC<IProps> = ({ item, avatar, whoLine, subtitle, chil
                     <Text
                         style={{
                             flex: 1,
+                            fontFamily: "OpenSans-Regular",
                             fontSize: 15,
                             lineHeight: 21,
                             color: t.foreground,
@@ -44,12 +45,21 @@ const FeedItemShell: React.FC<IProps> = ({ item, avatar, whoLine, subtitle, chil
                     >
                         {whoLine}
                     </Text>
-                    <Text style={{ fontSize: 12, color: t.mutedForeground }}>
+                    <Text style={{ fontFamily: "OpenSans-Regular", fontSize: 12, color: t.mutedForeground }}>
                         {formatItemTimestamp(item.occurred_at, item.kind)}
                     </Text>
                 </View>
                 {subtitle ? (
-                    <Text style={{ marginTop: 2, fontSize: 12, color: t.mutedForeground }}>{subtitle}</Text>
+                    <Text
+                        style={{
+                            marginTop: 2,
+                            fontFamily: "OpenSans-Regular",
+                            fontSize: 12,
+                            color: t.mutedForeground,
+                        }}
+                    >
+                        {subtitle}
+                    </Text>
                 ) : null}
                 {children}
             </View>

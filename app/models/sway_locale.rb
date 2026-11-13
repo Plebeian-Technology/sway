@@ -237,6 +237,16 @@ class SwayLocale < ApplicationRecord
     name.split("-").map(&:titleize).uniq.join(", ").split("_").join(" ")
   end
 
+  def short_name
+    if congress?
+      "U.S. Congress"
+    elsif regional?
+      region_name.titleize
+    else
+      city_name.titleize
+    end
+  end
+
   # @lat: [[locale-name-is-derived#A locale's name is derived, not stored#The picker's options are formatted before they leave the server]]
   def to_select_option
     {

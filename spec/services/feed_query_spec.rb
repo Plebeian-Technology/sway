@@ -3,6 +3,10 @@
 require "rails_helper"
 
 RSpec.describe FeedQuery do
+  include ActiveSupport::Testing::TimeHelpers
+
+  around { |example| travel_to(Time.zone.local(2026, 6, 15, 12)) { example.run } }
+
   it "returns representatives_found, user_joined, and three legislative_term_began items newest first for a Baltimore user" do
     user = create(:user)
     create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
@@ -404,6 +408,38 @@ RSpec.describe FeedQuery do
       expect(items.map(&:sway_locale)).not_to include(congress)
     end
 
+    it "matches 'U.S. Congress' and 'u.s.' on Congress items via short_name and excludes non-Congress items" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore, maryland, congress = user.sway_locales
+      congress_term_start = described_class.term_start_on(congress)
+      congress_release_date = [congress_term_start, Time.zone.today - 1.day].max
+      congress_bill = create(
+        :bill,
+        sway_locale: congress,
+        external_id: "HR-101",
+        title: "Infrastructure Modernization",
+        scheduled_release_date_utc: congress_release_date
+      )
+      create(
+        :bill,
+        sway_locale: baltimore,
+        external_id: "24-0010",
+        title: "Local Harbor Maintenance",
+        scheduled_release_date_utc: Time.zone.today
+      )
+
+      ["U.S. Congress", "u.s."].each do |search_term|
+        items = described_class.new(user: user, query: search_term).items
+
+        expect(items.map(&:key)).to contain_exactly(
+          "legislative_term_began:#{congress.id}",
+          "bill_of_the_month_released:#{congress_bill.id}"
+        )
+        expect(items.map(&:sway_locale)).not_to include(baltimore, maryland)
+      end
+    end
+
     it "returns the full feed for a blank or whitespace query" do
       user = create(:user)
       create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
@@ -434,6 +470,89 @@ RSpec.describe FeedQuery do
       page2 = described_class.new(user: user, query: "Transit Fare", cursor: page1.next_cursor, per_page: 2)
       expect(page2.items.map(&:bill)).to eq([b1])
       expect(page2.next_cursor).to be_nil
+    end
+
+    it "counts every matching item across pages, not only the current page" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      term_start = described_class.term_start_on(baltimore)
+
+      3.times do |i|
+        create(:bill, sway_locale: baltimore, title: "Transit Fare #{i}", scheduled_release_date_utc: term_start + (i + 1).days)
+      end
+      create(:bill, sway_locale: baltimore, title: "Other Topic", scheduled_release_date_utc: term_start + 4.days)
+
+      page1 = described_class.new(user: user, query: "Transit Fare", per_page: 2)
+      page2 = described_class.new(user: user, query: "Transit Fare", cursor: page1.next_cursor, per_page: 2)
+
+      expect(page1.items.size).to eq(2)
+      expect(page1.match_count).to eq(3)
+      expect(page2.items.size).to eq(1)
+      expect(page2.match_count).to eq(3)
+    end
+  end
+
+  describe "cursor validation and lazy execution" do
+    it "falls back to the first page when cursor is malformed or has invalid types" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      rep = create(:legislator, sway_locale: user.sway_locales.first)
+      create(:user_legislator, user: user, legislator: rep)
+
+      expected_keys = described_class.new(user: user, per_page: 2).items.map(&:key)
+
+      invalid_cursors = [
+        "!!!not-base64!!!",
+        Base64.urlsafe_encode64("\xFF\xFE".b, padding: false),
+        Base64.urlsafe_encode64("not json", padding: false),
+        Base64.urlsafe_encode64("{}", padding: false),
+        Base64.urlsafe_encode64("123", padding: false),
+        Base64.urlsafe_encode64("[0]", padding: false),
+        Base64.urlsafe_encode64('["1700000000", 0, "user_joined:1"]', padding: false),
+        Base64.urlsafe_encode64('[1700000000, "0", "user_joined:1"]', padding: false),
+        Base64.urlsafe_encode64("[1700000000, 0, 123]", padding: false),
+        Base64.urlsafe_encode64('[1700000000.5, 0, "user_joined:1"]', padding: false),
+        Base64.urlsafe_encode64("[#{10**30}, 0, \"user_joined:1\"]", padding: false)
+      ]
+
+      invalid_cursors.each do |bad_cursor|
+        result = described_class.new(user: user, cursor: bad_cursor, per_page: 2)
+        expect(result.items.map(&:key)).to eq(expected_keys)
+      end
+    end
+
+    it "defers query execution until items or next_cursor is accessed and memoizes the result" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+
+      queries_during_init = 0
+      init_counter = lambda do |*, payload|
+        next if %w[SCHEMA TRANSACTION].include?(payload[:name])
+
+        queries_during_init += 1
+      end
+
+      feed_query = ActiveSupport::Notifications.subscribed(init_counter, "sql.active_record") do
+        described_class.new(user: user, per_page: 2)
+      end
+      raise "expected FeedQuery" unless feed_query.is_a?(FeedQuery)
+
+      expect(queries_during_init).to eq(0)
+
+      queries_after_first_access = 0
+      access_counter = lambda do |*, payload|
+        next if %w[SCHEMA TRANSACTION].include?(payload[:name])
+
+        queries_after_first_access += 1
+      end
+
+      expect(feed_query.next_cursor).to be_a(String)
+      ActiveSupport::Notifications.subscribed(access_counter, "sql.active_record") do
+        expect(feed_query.items.size).to eq(2)
+        expect(feed_query.next_cursor).to be_a(String)
+      end
+      expect(queries_after_first_access).to eq(0)
     end
   end
 end

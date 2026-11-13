@@ -1,7 +1,8 @@
 import { AlertTriangle, Check, CheckCircle2, Minus, X } from "lucide-react";
 
-import { LegislatorAvatar } from "app/frontend/components/feed/FeedAvatar";
-import { FeedBillActions, FeedBillBlock } from "app/frontend/components/feed/FeedBillBlock";
+import FeedAvatar from "app/frontend/components/feed/FeedAvatar";
+import FeedBillActions from "app/frontend/components/feed/FeedBillActions";
+import FeedBillBlock from "app/frontend/components/feed/FeedBillBlock";
 import FeedItemShell from "app/frontend/components/feed/FeedItemShell";
 import type { IFeedItem, TFeedSupport } from "app/frontend/components/feed/types";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
@@ -10,7 +11,7 @@ interface IProps {
     item: IFeedItem;
 }
 
-const VoteValue: React.FC<{ support: TFeedSupport }> = ({ support }) => {
+const renderVoteValue = (support: TFeedSupport) => {
     if (support === "FOR") {
         return (
             <span className="mt-0.5 inline-flex items-center gap-1 text-base font-bold text-vote-for">
@@ -35,7 +36,7 @@ const VoteValue: React.FC<{ support: TFeedSupport }> = ({ support }) => {
     );
 };
 
-const InlineSupportWord: React.FC<{ support: TFeedSupport }> = ({ support }) => {
+const renderInlineSupportWord = (support: TFeedSupport) => {
     if (support === "FOR") {
         return <span className="font-semibold text-vote-for">{PARITY_COPY.feed.voteLabels.for}</span>;
     }
@@ -77,8 +78,9 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item }) => {
         if (item.legislator_support === "FOR" || item.legislator_support === "AGAINST") {
             return (
                 <>
-                    <strong className="font-semibold">{legislator.full_name}</strong> voted{" "}
-                    <InlineSupportWord support={item.legislator_support} /> a {localeName} bill
+                    <strong className="font-semibold">{legislator.full_name}</strong>{" "}
+                    {PARITY_COPY.feed.legislatorVotedVerb}
+                    {renderInlineSupportWord(item.legislator_support)} {PARITY_COPY.feed.aLocaleBill(localeName)}
                 </>
             );
         }
@@ -89,7 +91,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item }) => {
     return (
         <FeedItemShell
             item={item}
-            avatar={<LegislatorAvatar legislator={legislator} />}
+            avatar={<FeedAvatar kind="legislator" legislator={legislator} />}
             whoLine={renderWhoLine()}
             subtitle={subtitle || undefined}
         >
@@ -99,7 +101,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item }) => {
                 <div className="mt-3.5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center overflow-hidden rounded-md border border-border">
                     <div className="bg-background px-4 py-3.5">
                         <div className="text-xs text-muted-foreground">{PARITY_COPY.feed.voteLabels.you}</div>
-                        <VoteValue support={item.user_support} />
+                        {renderVoteValue(item.user_support)}
                     </div>
 
                     {item.agreement === "agree" && (
@@ -118,7 +120,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item }) => {
 
                     <div className="bg-background px-4 py-3.5 text-right">
                         <div className="truncate text-xs text-muted-foreground">{legislator.full_name}</div>
-                        <VoteValue support={item.legislator_support} />
+                        {renderVoteValue(item.legislator_support)}
                     </div>
                 </div>
             )}

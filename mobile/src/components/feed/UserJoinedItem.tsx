@@ -29,12 +29,20 @@ const UserJoinedItem: React.FC<IProps> = ({ item }) => {
             }
             whoLine={
                 <>
-                    <Text style={{ fontWeight: "700" }}>{PARITY_COPY.feed.userJoinedActor}</Text>{" "}
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{PARITY_COPY.feed.userJoinedActor}</Text>{" "}
                     {PARITY_COPY.feed.userJoinedAction}
                 </>
             }
         >
-            <Text style={{ marginTop: 8, fontSize: 14, lineHeight: 20, color: t.mutedForeground }}>
+            <Text
+                style={{
+                    marginTop: 8,
+                    fontFamily: "OpenSans-Light",
+                    fontSize: 14,
+                    lineHeight: 20,
+                    color: t.mutedForeground,
+                }}
+            >
                 {PARITY_COPY.feed.userJoinedSummary}
             </Text>
         </FeedItemShell>

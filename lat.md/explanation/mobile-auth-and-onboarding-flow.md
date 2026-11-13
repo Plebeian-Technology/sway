@@ -17,7 +17,7 @@ Signed-out people see the sign-in screens. Signed-in people see onboarding until
 
 Until the saved session has been read out of the phone's keychain, [[mobile/src/screens/LoadingScreen.tsx#LoadingScreen]] shows the Sway logo and a spinner on the page background. Otherwise the sign-in screen would flash up for a moment on every launch, even for someone already signed in.
 
-For a signed-in person, the loading screen also shows while their first profile loads, and only while there is no user yet. Later profile refetches keep the app mounted and update screens in place, so returning from the background, polling or pull to refresh never drops the reader back on Home. A load that finishes with no user falls through to onboarding rather than leaving the loading screen up.
+For a signed-in person, the loading screen also shows while their first profile loads, and only while there is no user yet. Later profile refetches keep the app mounted and update screens in place, so returning from the background, polling or pull to refresh never drops the reader back on the landing screen. A load that finishes with no user falls through to onboarding rather than leaving the loading screen up.
 
 ## AuthStack
 
@@ -100,7 +100,7 @@ A just-registered user has a passkey and a session but no address yet, so no dis
 
 A single note passed from the sign-up screens to the main drawer, read once and then thrown away (`mobile/src/navigation/onboardingHandoff.ts`).
 
-When someone finishes entering their address, the drawer should open on Legislators rather than Home, so the first thing they see is the representatives the server just found for that address. Every launch after that should start on Home as usual.
+When someone finishes entering their address, the drawer opens on Legislators rather than Feed, so the first thing they see is the representatives the server just found for that address. Every launch after that starts on Feed as usual.
 
 This is a plain variable in a module rather than React state, because the address screen is taken down before the drawer is built, so there is no shared React state to pass it through. A module keeps its value across that swap.
 
@@ -108,7 +108,7 @@ This is a plain variable in a module rather than React state, because the addres
 
 Someone who has just finished signing up lands on the Legislators screen, so the first thing they see is the representatives found from their address.
 
-This is worked out once, when the drawer is first built: React keeps the answer through later renders, and reading the flag also clears it, so the next launch starts on Home as usual.
+This is worked out once, when the drawer is first built: React keeps the answer through later renders, and reading the flag also clears it, so the next launch starts on Feed as usual.
 
 ## AddressScreen
 
@@ -139,4 +139,4 @@ The button reads "Find My Representatives", and after a successful save the app 
 
 The handoff flag is set before refreshing so that the drawer can read it the very first time it renders.
 
-The chain is: refresh → the user now has an address → `RootNavigator` swaps stacks → the drawer mounts → it reads and clears the flag → it opens on Legislators. The web app likewise sends you to the legislators page after a successful save.
+The chain is: refresh → the user now has an address → `RootNavigator` swaps stacks → the drawer mounts → it reads and clears the flag → it opens on Legislators. On the web app, completing registration sends the user to the feed (`/feed`).

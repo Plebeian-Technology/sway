@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "react-native";
 
 import { PARITY_COPY } from "../../../../app/frontend/sway_constants/parityCopy";
-import { LocaleTile } from "./FeedAvatar";
+import FeedAvatar from "./FeedAvatar";
 import FeedItemShell from "./FeedItemShell";
 import type { IFeedItem } from "./types";
 
@@ -16,8 +16,12 @@ const LegislativeTermBeganItem: React.FC<IProps> = ({ item }) => {
     return (
         <FeedItemShell
             item={item}
-            avatar={<LocaleTile localeName={localeName} />}
-            whoLine={<Text style={{ fontWeight: "700" }}>{PARITY_COPY.feed.legislativeTermBegan(localeName)}</Text>}
+            avatar={<FeedAvatar kind="locale" localeName={localeName} />}
+            whoLine={
+                <Text style={{ fontFamily: "OpenSans-SemiBold" }}>
+                    {PARITY_COPY.feed.legislativeTermBegan(localeName)}
+                </Text>
+            }
         />
     );
 };

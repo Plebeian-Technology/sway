@@ -35,6 +35,16 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
         );
     });
 
+    test("FeedStack registers FeedList path and resolves /feed to Feed > FeedList", () => {
+        const feed = (linking.config as any).screens.Feed;
+        expect(feed.screens.FeedList).toBe("feed");
+        expect(feed.screens.BillDetail).toBeUndefined();
+
+        const state = getStateFromPath("/feed", { screens: { Feed: feed } } as typeof linking.config);
+        expect(state?.routes[0].name).toBe("Feed");
+        expect(state?.routes[0].state?.routes.map((route) => route.name)).toEqual(["FeedList"]);
+    });
+
     test("HomeStack registers BillOfTheMonth + BillDetail paths", () => {
         const home = (linking.config as any).screens.Home.screens;
         expect(home.BillOfTheMonth.path).toBe("bill_of_the_month");
@@ -81,7 +91,7 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
         expect(auth).toBe("sign-in");
     });
 
-    test("BillDetail screen is registered in BOTH HomeStack and BillsStack (cross-tab deep-link surface)", () => {
+    test("BillDetail screen is registered in BOTH HomeStack AND BillsStack (cross-tab deep-link surface)", () => {
         const home = (linking.config as any).screens.Home.screens;
         const bills = (linking.config as any).screens.Bills.screens;
         expect(home.BillDetail.path).toBe("bills/:id");

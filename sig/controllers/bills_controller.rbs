@@ -107,6 +107,7 @@ class BillsController < ApplicationController
     def meta_title: -> String
 
     include LegislationPipelineRunSourcing
+    include RecordsBillViews
 
     private
 
@@ -303,7 +304,4 @@ class BillsController < ApplicationController
     def bills_list_mode: -> ("all_bills" | "past_bills_of_the_month")
     def legislative_sessions_prop: -> untyped
     def selected_legislative_session_id_prop: -> Integer?
-    def record_bill_view: (Bill bill) -> BillView?
-    def inertia_partial_reload?: () -> bool
-    def prefetch_request?: () -> bool
 end

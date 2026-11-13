@@ -4,17 +4,18 @@ require "rails_helper"
 
 RSpec.describe FeedBroadcaster, type: :service do
   describe ".notify" do
-    it "broadcasts feed_updated to each given user's stream" do
-      user_a = create(:user)
-      user_b = create(:user)
-
-      expect { described_class.notify([user_a, user_b]) }
-        .to have_broadcasted_to("feed_#{user_a.id}").with(type: "feed_updated")
-        .and have_broadcasted_to("feed_#{user_b.id}").with(type: "feed_updated")
+    it "broadcasts feed_updated to each given user id's stream" do
+      expect { described_class.notify([11, 12]) }
+        .to have_broadcasted_to("feed_11").with(type: "feed_updated")
+        .and have_broadcasted_to("feed_12").with(type: "feed_updated")
     end
 
-    it "does nothing when given an empty collection" do
-      expect { described_class.notify([]) }.not_to raise_error
+    it "broadcasts nothing when given an empty collection" do
+      allow(ActionCable.server).to receive(:broadcast)
+
+      described_class.notify([])
+
+      expect(ActionCable.server).not_to have_received(:broadcast)
     end
   end
 

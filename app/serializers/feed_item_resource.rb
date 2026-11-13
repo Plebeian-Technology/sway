@@ -19,7 +19,7 @@ class FeedItemResource < ApplicationResource
 
     {
       id: locale.id,
-      name: FeedItemResource.short_locale_name(locale)
+      name: locale.short_name
     }
   end
 
@@ -30,12 +30,15 @@ class FeedItemResource < ApplicationResource
     vote_counts = params[:vote_counts_by_bill_id] || {}
     view_counts = params[:view_counts_by_bill_id] || {}
     share_counts = params[:share_counts_by_bill_id] || {}
+    # @lat: [[home-feed#Serving the feed]]
+    shows_summary = item.kind == "bill_of_the_month_released"
 
     {
       id: bill.id,
       external_id: bill.external_id,
       title: bill.title,
-      summary: bill.summary,
+      summary: shows_summary ? bill.summary : nil,
+      summary_ai_unreviewed: shows_summary && bill.summary_ai_unreviewed?,
       vote_count: vote_counts.fetch(bill.id, 0),
       view_count: view_counts.fetch(bill.id, 0),
       share_count: share_counts.fetch(bill.id, 0)
@@ -52,13 +55,15 @@ class FeedItemResource < ApplicationResource
 
   attribute :organization do |item|
     position = item.organization_bill_position
-    org = position&.organization
-    next nil unless position && org
+    organization = position&.organization
+    next nil unless position && organization
+
+    normalized_support = OrganizationBillPosition.normalize_support(position.support) || position.support
 
     {
-      id: org.id,
-      name: org.name,
-      support: ORGANIZATION_SUPPORT_LABELS.fetch(position.support, position.support)
+      id: organization.id,
+      name: organization.name,
+      support: ORGANIZATION_SUPPORT_LABELS.fetch(normalized_support, normalized_support)
     }
   end
 
@@ -77,16 +82,6 @@ class FeedItemResource < ApplicationResource
     next nil if user_support == "ABSTAIN" || legislator_support == "ABSTAIN"
 
     (user_support == legislator_support) ? "agree" : "differ"
-  end
-
-  def self.short_locale_name(locale)
-    if locale.congress?
-      "U.S. Congress"
-    elsif locale.regional?
-      locale.region_name.titleize.tr("_", " ")
-    else
-      locale.city_name.titleize.tr("_", " ")
-    end
   end
 
   def self.serialize_legislator(legislator)

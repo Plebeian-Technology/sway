@@ -1,6 +1,4 @@
 import { Head, InfiniteScroll, Link, router, usePoll } from "@inertiajs/react";
-import { useState } from "react";
-
 import FeedItemRow from "app/frontend/components/feed/FeedItemRow";
 import FeedSearchBar from "app/frontend/components/feed/FeedSearchBar";
 import ShowNewFeedItemsButton from "app/frontend/components/feed/ShowNewFeedItemsButton";
@@ -10,29 +8,30 @@ import { useDebouncedUrlSearch } from "app/frontend/hooks/useDebouncedUrlSearch"
 import { useFeedSubscription } from "app/frontend/hooks/useFeedSubscription";
 import { ROUTES } from "app/frontend/sway_constants";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
+import { notify } from "app/frontend/sway_utils";
+import { setQueryParamCleared } from "app/frontend/sway_utils/url_navigation";
 
 interface IProps {
     items: IFeedItem[];
     feed_search?: string | null;
+    feed_match_count: number;
     newest_keys?: string[];
 }
 
 const FEED_PAGE_SIZE = 20;
-const FEED_SEARCH_ONLY = ["items", "feed_search"];
+const FEED_SEARCH_ONLY = ["items", "feed_search", "feed_match_count", "newest_keys"];
 const FEED_SEARCH_RESET_PARAMS = ["feed_cursor"];
 const FEED_SEARCH_RESET = ["items"];
 const NEWEST_KEYS_ONLY = ["newest_keys"];
 const NEWEST_KEYS_POLL_OPTIONS = { only: NEWEST_KEYS_ONLY };
 const NEWEST_KEYS_POLL_CONFIG = { background: "pause" as const };
 const REFRESH_FEED_OPTIONS = {
-    only: ["items", "newest_keys"],
+    only: ["items", "feed_match_count", "newest_keys"],
     reset: ["items"],
     preserveState: true,
 };
 
-const Feed: React.FC<IProps> = ({ items, feed_search, newest_keys }) => {
-    const [dismissedNewestKeys, setDismissedNewestKeys] = useState<string[] | undefined>(undefined);
-
+const Feed: React.FC<IProps> = ({ items, feed_search, feed_match_count, newest_keys }) => {
     useFeedSubscription();
     usePoll(60000, NEWEST_KEYS_POLL_OPTIONS, NEWEST_KEYS_POLL_CONFIG);
 
@@ -47,15 +46,34 @@ const Feed: React.FC<IProps> = ({ items, feed_search, newest_keys }) => {
     const activeQuery = feed_search?.trim() ?? "";
     const isSearching = activeQuery.length > 0;
     const shownKeys = new Set(items.map((item) => item.key));
-    const activeNewestKeys = newest_keys && newest_keys !== dismissedNewestKeys ? newest_keys : [];
+    const activeNewestKeys = newest_keys ?? [];
     const newCount = activeNewestKeys.filter((key) => !shownKeys.has(key)).length;
     const isCapped = activeNewestKeys.length === FEED_PAGE_SIZE && newCount === activeNewestKeys.length;
     const groups = groupFeedItemsByDate(items);
 
     const handleShowNew = () => {
-        setDismissedNewestKeys(newest_keys);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        router.get(ROUTES.feed, activeQuery ? { feed_search: activeQuery } : {}, REFRESH_FEED_OPTIONS);
+        const currentParams = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams();
+        if (activeQuery) {
+            params.set("feed_search", activeQuery);
+        } else if (currentParams.has("feed_search")) {
+            setQueryParamCleared(params, "feed_search");
+        }
+        if (currentParams.has("feed_cursor")) {
+            setQueryParamCleared(params, "feed_cursor");
+        }
+        const qs = params.toString();
+        router.get(
+            `${ROUTES.feed}${qs ? `?${qs}` : ""}`,
+            {},
+            {
+                ...REFRESH_FEED_OPTIONS,
+                onSuccess: () => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                },
+                onError: () => notify({ level: "error", title: PARITY_COPY.feed.searchError }),
+            },
+        );
     };
 
     return (
@@ -67,7 +85,7 @@ const Feed: React.FC<IProps> = ({ items, feed_search, newest_keys }) => {
 
                 {isSearching && items.length > 0 && (
                     <p className="border-b border-border px-5 py-4 text-sm text-muted-foreground" aria-live="polite">
-                        {PARITY_COPY.feed.searchMatchCount(items.length, activeQuery)}
+                        {PARITY_COPY.feed.searchMatchCount(feed_match_count, activeQuery)}
                     </p>
                 )}
 

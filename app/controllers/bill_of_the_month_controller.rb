@@ -2,6 +2,8 @@
 
 # @lat: [[bill-of-the-month-no-redirect-on-empty#Why an empty Bill of the Month stays on the page]]
 class BillOfTheMonthController < ApplicationController
+  include RecordsBillViews
+
   skip_before_action :authenticate_sway_user!, only: %i[index]
 
   def index
@@ -16,24 +18,5 @@ class BillOfTheMonthController < ApplicationController
     enrich_with_first_legislator!(to_render)
 
     render_inertia_or_json(page: Pages::BILL_OF_THE_MONTH, props: to_render)
-  end
-
-  private
-
-  def record_bill_view(bill)
-    return if current_user.nil? || inertia_partial_reload? || prefetch_request?
-
-    BillView.record_for(user: current_user, bill:)
-  end
-
-  def inertia_partial_reload?
-    request.headers["X-Inertia-Partial-Data"].present? ||
-      request.headers["X-Inertia-Partial-Except"].present? ||
-      request.headers["X-Inertia-Partial-Component"].present?
-  end
-
-  def prefetch_request?
-    request.headers["Purpose"].to_s.casecmp?("prefetch") ||
-      request.headers["Sec-Purpose"].to_s.casecmp?("prefetch")
   end
 end

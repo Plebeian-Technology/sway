@@ -3,8 +3,9 @@ import { Text } from "react-native";
 
 import { PARITY_COPY } from "../../../../app/frontend/sway_constants/parityCopy";
 import { formatReleaseMonthUtc } from "./dateGrouping";
-import { LocaleTile } from "./FeedAvatar";
-import { FeedBillActions, FeedBillBlock } from "./FeedBillBlock";
+import FeedAvatar from "./FeedAvatar";
+import FeedBillActions from "./FeedBillActions";
+import FeedBillBlock from "./FeedBillBlock";
 import FeedItemShell from "./FeedItemShell";
 import type { IFeedBill, IFeedItem } from "./types";
 
@@ -17,15 +18,15 @@ interface IProps {
 const BillOfTheMonthReleasedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill }) => {
     const localeName = item.sway_locale?.name ?? "";
     const monthName = formatReleaseMonthUtc(item.occurred_at);
-    const tail = PARITY_COPY.feed.billOfTheMonthReleased(localeName, monthName).slice(localeName.length + 1);
 
     return (
         <FeedItemShell
             item={item}
-            avatar={<LocaleTile localeName={localeName} />}
+            avatar={<FeedAvatar kind="locale" localeName={localeName} />}
             whoLine={
                 <>
-                    <Text style={{ fontWeight: "700" }}>{localeName}</Text> {tail}
+                    <Text style={{ fontFamily: "OpenSans-SemiBold" }}>{localeName}</Text>{" "}
+                    {PARITY_COPY.feed.billOfTheMonthReleasedSuffix(monthName)}
                 </>
             }
         >

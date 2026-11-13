@@ -3,6 +3,7 @@
 class BillsController < ApplicationController
   include SwayGoogleCloudStorage
   include LegislationPipelineRunSourcing
+  include RecordsBillViews
 
   skip_before_action :authenticate_sway_user!, only: %i[index show past_of_the_month]
 
@@ -1600,22 +1601,5 @@ class BillsController < ApplicationController
           positions: %i[id bill_id summary support]
         )
       end
-  end
-
-  def record_bill_view(bill)
-    return if current_user.nil? || inertia_partial_reload? || prefetch_request?
-
-    BillView.record_for(user: current_user, bill:)
-  end
-
-  def inertia_partial_reload?
-    request.headers["X-Inertia-Partial-Data"].present? ||
-      request.headers["X-Inertia-Partial-Except"].present? ||
-      request.headers["X-Inertia-Partial-Component"].present?
-  end
-
-  def prefetch_request?
-    request.headers["Purpose"].to_s.casecmp?("prefetch") ||
-      request.headers["Sec-Purpose"].to_s.casecmp?("prefetch")
   end
 end

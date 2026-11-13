@@ -23,4 +23,9 @@ export const billHeadline = (title?: string | null): string => {
     return splitBillTitle(title).headline;
 };
 
+export const shortBillTitle = (title: string): string => {
+    const { headline, deck } = splitBillTitle(title);
+    return deck ? `${headline} — ${deck}` : headline;
+};
+
 export const hasMoreThanHeadline = (title: string): boolean => title.trim() !== billHeadline(title);

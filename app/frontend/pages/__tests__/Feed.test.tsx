@@ -1,12 +1,17 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { PendingVisit } from "@inertiajs/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { cleanFeedSummary } from "app/frontend/components/feed/feedSummary";
 import type { IFeedItem } from "app/frontend/components/feed/types";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
+import { applyNavigationCarryToVisit } from "app/frontend/sway_utils/queryParamNavigationCarry";
 
 const infiniteScrollCalls = vi.hoisted(() => [] as Array<Record<string, unknown>>);
 const routerGet = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
 const routerReload = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
 const usePollMock = vi.hoisted(() => vi.fn<(...args: unknown[]) => void>());
+const notifyMock = vi.hoisted(() => vi.fn<(...args: unknown[]) => string>(() => "toast-id"));
 const subscriptionUnsubscribe = vi.hoisted(() => vi.fn<() => void>());
 const channelCallbacks = vi.hoisted(() => ({
     current: null as { received?: (data: { type?: string }) => void } | null,
@@ -60,6 +65,14 @@ vi.mock("@inertiajs/react", () => ({
     ),
 }));
 
+vi.mock("app/frontend/sway_utils", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("app/frontend/sway_utils")>();
+    return {
+        ...actual,
+        notify: (...args: unknown[]) => notifyMock(...args),
+    };
+});
+
 vi.mock("app/frontend/components/bill/ShareBillButton", () => ({
     default: ({ bill }: { bill: { id: number; title: string } }) => (
         <button type="button" data-testid={`share-bill-${bill.id}`}>
@@ -91,6 +104,7 @@ beforeEach(() => {
     window.history.replaceState({}, "", "/feed");
     infiniteScrollCalls.length = 0;
     routerGet.mockReset();
+    notifyMock.mockClear();
 });
 
 afterEach(() => {
@@ -100,7 +114,7 @@ afterEach(() => {
 
 describe("Feed page", () => {
     it("renders the empty state when there are no items", () => {
-        render(<Feed items={[]} />);
+        render(<Feed feed_match_count={0} items={[]} />);
 
         expect(
             screen.getByText(
@@ -112,6 +126,7 @@ describe("Feed page", () => {
     it("wraps items in InfiniteScroll with data='items' and preserveUrl", () => {
         render(
             <Feed
+                feed_match_count={0}
                 items={[
                     makeItem({
                         key: "user_joined:1",
@@ -128,13 +143,13 @@ describe("Feed page", () => {
         expect(infiniteScrollCalls[0]?.preserveUrl).toBe(true);
     });
 
-    it("renders all six item kinds with expected copy", () => {
+    it("renders all six item kinds with expected copy and BAL locale abbreviation", () => {
         const items: IFeedItem[] = [
             makeItem({
                 key: "botm:1",
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
-                sway_locale: { id: 1, name: "Baltimore City" },
+                sway_locale: { id: 1, name: "Baltimore" },
                 bill: {
                     id: 101,
                     external_id: "Council Bill 26-0141",
@@ -143,6 +158,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
             }),
             makeItem({
@@ -158,6 +174,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 legislator: {
                     id: 10,
@@ -182,6 +199,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 organization: {
                     id: 5,
@@ -216,8 +234,9 @@ describe("Feed page", () => {
             }),
         ];
 
-        render(<Feed items={items} />);
+        render(<Feed feed_match_count={0} items={items} />);
 
+        expect(screen.getByText("BAL")).toBeTruthy();
         expect(screen.getByText(/released the November Bill of the Month/)).toBeTruthy();
         expect(
             screen.getByText(
@@ -231,6 +250,80 @@ describe("Feed page", () => {
         expect(screen.getByText(/found your representatives/)).toBeTruthy();
         expect(screen.getByText("See your representatives")).toBeTruthy();
         expect(screen.getByText("New legislative term for U.S. Congress!")).toBeTruthy();
+    });
+
+    it("strips 'FOR the purpose of' clauses from bill titles and cleans or omits pending/Markdown summaries", () => {
+        const items: IFeedItem[] = [
+            makeItem({
+                key: "botm:clean",
+                kind: "bill_of_the_month_released",
+                occurred_at: "2026-11-01T00:00:00Z",
+                sway_locale: { id: 1, name: "Baltimore" },
+                bill: {
+                    id: 601,
+                    external_id: "CB 26-0601",
+                    title: "Urban Tree Canopy - Street Planting FOR the purpose of requiring tree planting along arterial streets; and generally relating to urban forestry.",
+                    summary:
+                        "## OverviewNEWLINERequires **Baltimore** to plant [street trees](https://example.com/trees) on *arterial* corridors.ENDING",
+                    vote_count: 3,
+                    view_count: 11,
+                    share_count: 1,
+                    summary_ai_unreviewed: false,
+                },
+            }),
+            makeItem({
+                key: "botm:pending",
+                kind: "bill_of_the_month_released",
+                occurred_at: "2026-11-01T00:00:00Z",
+                sway_locale: { id: 2, name: "Maryland" },
+                bill: {
+                    id: 602,
+                    external_id: "HB 602",
+                    title: "Pending Summary Bill",
+                    summary: "Summary pending",
+                    vote_count: 0,
+                    view_count: 0,
+                    share_count: 0,
+                    summary_ai_unreviewed: false,
+                },
+            }),
+        ];
+
+        render(<Feed feed_match_count={0} items={items} />);
+
+        expect(screen.getByText("Urban Tree Canopy — Street Planting")).toBeTruthy();
+        expect(screen.queryByText(/FOR the purpose of/i)).toBeNull();
+        expect(
+            screen.getByText("Overview Requires Baltimore to plant street trees on arterial corridors."),
+        ).toBeTruthy();
+        expect(screen.queryByText(/NEWLINE|ENDING/)).toBeNull();
+        expect(screen.queryByText("Summary pending")).toBeNull();
+    });
+
+    it("shows the AI unreviewed notice under a Bill of the Month summary only when summary_ai_unreviewed is true", () => {
+        const makeBotm = (id: number, unreviewed: boolean): IFeedItem =>
+            makeItem({
+                key: `botm:${id}`,
+                kind: "bill_of_the_month_released",
+                occurred_at: "2026-11-01T00:00:00Z",
+                sway_locale: { id: 1, name: "Baltimore" },
+                bill: {
+                    id,
+                    external_id: `CB ${id}`,
+                    title: `Bill ${id}`,
+                    summary: "Funds new bus shelters.",
+                    vote_count: 0,
+                    view_count: 0,
+                    share_count: 0,
+                    summary_ai_unreviewed: unreviewed,
+                },
+            });
+
+        render(<Feed feed_match_count={0} items={[makeBotm(701, true), makeBotm(702, false)]} />);
+
+        expect(screen.getAllByText("Funds new bus shelters.")).toHaveLength(2);
+        expect(screen.getAllByTestId("ai-unreviewed-notice")).toHaveLength(1);
+        expect(screen.getByText(PARITY_COPY.bill.aiUnreviewedNotice)).toBeTruthy();
     });
 
     it("groups items under Today, Yesterday, Earlier this month, and older month headings in sentence case", () => {
@@ -253,6 +346,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 organization: { id: 5, name: "Bikemore", support: "Oppose" },
             }),
@@ -260,7 +354,7 @@ describe("Feed page", () => {
                 key: "earlier:1",
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
-                sway_locale: { id: 1, name: "Baltimore City" },
+                sway_locale: { id: 1, name: "Baltimore" },
                 bill: {
                     id: 101,
                     external_id: "CB 1",
@@ -269,6 +363,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
             }),
             makeItem({
@@ -284,11 +379,12 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
             }),
         ];
 
-        render(<Feed items={items} />);
+        render(<Feed feed_match_count={0} items={items} />);
 
         expect(screen.getByRole("heading", { name: "Today" })).toBeTruthy();
         expect(screen.getByRole("heading", { name: "Yesterday" })).toBeTruthy();
@@ -311,6 +407,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 legislator: {
                     id: 11,
@@ -336,6 +433,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 legislator: {
                     id: 12,
@@ -350,7 +448,7 @@ describe("Feed page", () => {
             }),
         ];
 
-        render(<Feed items={items} />);
+        render(<Feed feed_match_count={0} items={items} />);
 
         expect(screen.getByText("You agree")).toBeTruthy();
         expect(screen.getByText("You differ")).toBeTruthy();
@@ -363,7 +461,7 @@ describe("Feed page", () => {
                 key: "unvoted:1",
                 kind: "bill_of_the_month_released",
                 occurred_at: "2026-11-01T00:00:00Z",
-                sway_locale: { id: 1, name: "Baltimore City" },
+                sway_locale: { id: 1, name: "Baltimore" },
                 bill: {
                     id: 301,
                     external_id: "CB 1",
@@ -372,6 +470,7 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 user_support: null,
             }),
@@ -388,12 +487,13 @@ describe("Feed page", () => {
                     vote_count: 0,
                     view_count: 0,
                     share_count: 0,
+                    summary_ai_unreviewed: false,
                 },
                 user_support: "AGAINST",
             }),
         ];
 
-        render(<Feed items={items} />);
+        render(<Feed feed_match_count={0} items={items} />);
 
         const goVoteLink = screen.getByRole("link", { name: "Go vote" });
         expect(goVoteLink.getAttribute("href")).toBe("/bills/301");
@@ -409,9 +509,9 @@ describe("Feed page", () => {
         expect(screen.getByTestId("share-bill-302")).toBeTruthy();
     });
 
-    it("renders a labelled search input and debounces typing into feed_search with reset and dropped feed_cursor", () => {
+    it("renders a labelled search input and debounces typing into feed_search with newest_keys, reset, and dropped feed_cursor", () => {
         window.history.replaceState({}, "", "/feed?feed_cursor=abc123");
-        render(<Feed items={[]} />);
+        render(<Feed feed_match_count={0} items={[]} />);
 
         const input = screen.getByLabelText("Search your feed") as HTMLInputElement;
         expect(input.getAttribute("placeholder")).toBe("Search bills, places and legislators");
@@ -427,7 +527,7 @@ describe("Feed page", () => {
         expect(params.get("feed_search")).toBe("housing");
         expect(params.get("feed_cursor")).toBe("");
         expect(options).toMatchObject({
-            only: ["items", "feed_search"],
+            only: ["items", "feed_search", "feed_match_count", "newest_keys"],
             reset: ["items"],
         });
     });
@@ -436,6 +536,7 @@ describe("Feed page", () => {
         window.history.replaceState({}, "", "/feed?feed_search=housing&feed_cursor=abc123");
         render(
             <Feed
+                feed_match_count={0}
                 items={[
                     makeItem({
                         key: "user_joined:1",
@@ -457,20 +558,65 @@ describe("Feed page", () => {
         expect(params.get("feed_search")).toBe("");
         expect(params.get("feed_cursor")).toBe("");
         expect(options).toMatchObject({
-            only: ["items", "feed_search"],
+            only: ["items", "feed_search", "feed_match_count", "newest_keys"],
             reset: ["items"],
         });
     });
 
-    it("renders the match summary when feed_search has results and no-match message with all bills link when empty", () => {
+    it("refreshes newest_keys alongside search results so stale unfiltered newest_keys never show a bogus Show N new banner", () => {
+        const itemA = makeItem({ key: "item:a" });
+        const matchingItem = makeItem({
+            key: "botm:housing",
+            kind: "bill_of_the_month_released",
+            occurred_at: "2026-11-01T00:00:00Z",
+            sway_locale: { id: 1, name: "Baltimore" },
+            bill: {
+                id: 101,
+                external_id: "CB 101",
+                title: "Housing stability",
+                summary: null,
+                vote_count: 0,
+                view_count: 0,
+                share_count: 0,
+                summary_ai_unreviewed: false,
+            },
+        });
+
         const { rerender } = render(
             <Feed
+                feed_match_count={0}
+                items={[itemA, matchingItem]}
+                newest_keys={["unseen:1", "item:a", "botm:housing"]}
+            />,
+        );
+        expect(screen.getByRole("button", { name: "Show 1 new" })).toBeTruthy();
+
+        const input = screen.getByLabelText("Search your feed") as HTMLInputElement;
+        fireEvent.change(input, { target: { value: "housing" } });
+        vi.advanceTimersByTime(400);
+
+        expect(routerGet).toHaveBeenCalledTimes(1);
+        expect(routerGet.mock.calls[0]?.[2]).toMatchObject({
+            only: ["items", "feed_search", "feed_match_count", "newest_keys"],
+            reset: ["items"],
+        });
+
+        rerender(
+            <Feed feed_match_count={0} items={[matchingItem]} feed_search="housing" newest_keys={["botm:housing"]} />,
+        );
+        expect(screen.queryByRole("button", { name: /Show .* new/ })).toBeNull();
+    });
+
+    it("renders the match summary with the server's total match count, not the loaded item count, and no-match message with all bills link when empty", () => {
+        const { rerender } = render(
+            <Feed
+                feed_match_count={45}
                 items={[
                     makeItem({
                         key: "botm:1",
                         kind: "bill_of_the_month_released",
                         occurred_at: "2026-11-01T00:00:00Z",
-                        sway_locale: { id: 1, name: "Baltimore City" },
+                        sway_locale: { id: 1, name: "Baltimore" },
                         bill: {
                             id: 101,
                             external_id: "CB 1",
@@ -479,6 +625,7 @@ describe("Feed page", () => {
                             vote_count: 0,
                             view_count: 0,
                             share_count: 0,
+                            summary_ai_unreviewed: false,
                         },
                     }),
                     makeItem({
@@ -494,6 +641,7 @@ describe("Feed page", () => {
                             vote_count: 0,
                             view_count: 0,
                             share_count: 0,
+                            summary_ai_unreviewed: false,
                         },
                     }),
                 ]}
@@ -501,9 +649,10 @@ describe("Feed page", () => {
             />,
         );
 
-        expect(screen.getByText('2 items in your feed match "fare"')).toBeTruthy();
+        expect(screen.getByText('45 items in your feed match "fare"')).toBeTruthy();
+        expect(screen.queryByText('2 items in your feed match "fare"')).toBeNull();
 
-        rerender(<Feed items={[]} feed_search="fare" />);
+        rerender(<Feed feed_match_count={0} items={[]} feed_search="fare" />);
 
         expect(screen.getByText(/Nothing in your feed matches "fare"/)).toBeTruthy();
         const allBillsLink = screen.getByRole("link", { name: "all bills" });
@@ -516,7 +665,7 @@ describe("Feed page", () => {
         subscriptionsCreate.mockClear();
         subscriptionUnsubscribe.mockClear();
 
-        const { unmount } = render(<Feed items={[makeItem({ key: "item:1" })]} />);
+        const { unmount } = render(<Feed feed_match_count={0} items={[makeItem({ key: "item:1" })]} />);
 
         expect(subscriptionsCreate).toHaveBeenCalledWith("FeedChannel", expect.any(Object));
         expect(usePollMock).toHaveBeenCalledWith(60000, { only: ["newest_keys"] }, { background: "pause" });
@@ -529,23 +678,25 @@ describe("Feed page", () => {
         expect(subscriptionUnsubscribe).toHaveBeenCalledTimes(1);
     });
 
-    it("renders Show 1 new, Show N new, and Show 20+ new in a polite live region and reloads from top on click", () => {
+    it("renders Show 1 new, Show N new, and Show 20+ new in a polite live region, scrolling up only on router.get success and notifying on error", () => {
         routerGet.mockClear();
         const scrollToSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
 
         const shownItem = makeItem({ key: "shown:1" });
-        const { rerender } = render(<Feed items={[shownItem]} newest_keys={["shown:1"]} />);
+        const { rerender } = render(<Feed feed_match_count={0} items={[shownItem]} newest_keys={["shown:1"]} />);
         expect(screen.queryByRole("button", { name: /Show .* new/ })).toBeNull();
 
-        rerender(<Feed items={[shownItem]} newest_keys={["new:1", "shown:1"]} />);
+        rerender(<Feed feed_match_count={0} items={[shownItem]} newest_keys={["new:1", "shown:1"]} />);
         const oneButton = screen.getByRole("button", { name: "Show 1 new" });
         expect(oneButton.closest("[aria-live='polite']")).not.toBeNull();
 
         const twentyNewKeys = Array.from({ length: 20 }, (_, i) => `new:${i + 1}`);
-        rerender(<Feed items={[shownItem]} newest_keys={twentyNewKeys} />);
+        rerender(<Feed feed_match_count={0} items={[shownItem]} newest_keys={twentyNewKeys} />);
         expect(screen.getByRole("button", { name: "Show 20+ new" })).toBeTruthy();
 
-        rerender(<Feed items={[shownItem]} newest_keys={["new:1", "new:2", "new:3", "shown:1"]} />);
+        rerender(
+            <Feed feed_match_count={0} items={[shownItem]} newest_keys={["new:1", "new:2", "new:3", "shown:1"]} />,
+        );
         const threeButton = screen.getByRole("button", { name: "Show 3 new" });
         fireEvent.click(threeButton);
 
@@ -553,13 +704,77 @@ describe("Feed page", () => {
             "/feed",
             {},
             expect.objectContaining({
-                only: ["items", "newest_keys"],
+                only: ["items", "feed_match_count", "newest_keys"],
                 reset: ["items"],
                 preserveState: true,
+                onSuccess: expect.any(Function),
+                onError: expect.any(Function),
             }),
         );
+        const firstOptions = routerGet.mock.calls[0]?.[2] as {
+            onSuccess?: () => void;
+            onError?: (errors: Record<string, string>) => void;
+        };
+        expect(firstOptions).not.toHaveProperty("preserveScroll");
+        expect(screen.getByRole("button", { name: "Show 3 new" })).toBeTruthy();
+        expect(scrollToSpy).not.toHaveBeenCalled();
+
+        act(() => {
+            firstOptions.onError?.({});
+        });
+        expect(notifyMock).toHaveBeenCalledWith({
+            level: "error",
+            title: "Could not search your feed.",
+        });
+        expect(screen.getByRole("button", { name: "Show 3 new" })).toBeTruthy();
+        expect(scrollToSpy).not.toHaveBeenCalled();
+
+        act(() => {
+            firstOptions.onSuccess?.();
+        });
         expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: "smooth" });
+
+        const reloadedItems = ["new:1", "new:2", "new:3", "shown:1"].map((key) => makeItem({ key }));
+        rerender(
+            <Feed feed_match_count={0} items={reloadedItems} newest_keys={["new:1", "new:2", "new:3", "shown:1"]} />,
+        );
         expect(screen.queryByRole("button", { name: /Show .* new/ })).toBeNull();
+
+        scrollToSpy.mockRestore();
+    });
+
+    it("clears carried feed_cursor when clicking Show N new from a scrolled page URL", () => {
+        window.history.replaceState({}, "", "/feed?feed_cursor=some-cursor&feed_search=housing");
+        const scrollToSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+
+        const shownItem = makeItem({ key: "shown:1" });
+        render(
+            <Feed feed_match_count={0} items={[shownItem]} feed_search="housing" newest_keys={["new:1", "shown:1"]} />,
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "Show 1 new" }));
+
+        expect(routerGet).toHaveBeenCalledTimes(1);
+        const [calledUrl, calledData, calledOptions] = routerGet.mock.calls[0];
+        expect(calledOptions).toMatchObject({
+            only: ["items", "feed_match_count", "newest_keys"],
+            reset: ["items"],
+            preserveState: true,
+        });
+        expect(calledOptions).not.toHaveProperty("preserveScroll");
+
+        const visit = {
+            url: new URL(calledUrl as string, "http://localhost"),
+            method: "get",
+            data: calledData,
+            only: (calledOptions as { only: string[] }).only,
+        } as unknown as PendingVisit;
+        applyNavigationCarryToVisit(visit, {
+            currentUrl: "http://localhost/feed?feed_cursor=some-cursor&feed_search=housing",
+        });
+
+        expect((visit.url as URL).searchParams.has("feed_cursor")).toBe(false);
+        expect((visit.url as URL).searchParams.get("feed_search")).toBe("housing");
 
         scrollToSpy.mockRestore();
     });
@@ -567,12 +782,13 @@ describe("Feed page", () => {
     it("renders vote_count, view_count, and share_count with tabular-nums only on items that have a bill", () => {
         render(
             <Feed
+                feed_match_count={0}
                 items={[
                     makeItem({
                         key: "botm:counts",
                         kind: "bill_of_the_month_released",
                         occurred_at: "2026-11-12T15:00:00Z",
-                        sway_locale: { id: 1, name: "Baltimore City" },
+                        sway_locale: { id: 1, name: "Baltimore" },
                         bill: {
                             id: 501,
                             external_id: "CB 501",
@@ -581,6 +797,7 @@ describe("Feed page", () => {
                             vote_count: 42,
                             view_count: 108,
                             share_count: 9,
+                            summary_ai_unreviewed: false,
                         },
                     }),
                     makeItem({
@@ -604,5 +821,34 @@ describe("Feed page", () => {
         expect(screen.getAllByText(/voted$/)).toHaveLength(1);
         expect(screen.getAllByText(/viewed$/)).toHaveLength(1);
         expect(screen.getAllByText(/shared$/)).toHaveLength(1);
+    });
+});
+
+describe("cleanFeedSummary", () => {
+    it("strips *italic*, _italic_, **bold**, and __bold__ emphasis", () => {
+        expect(cleanFeedSummary("Requires _urgent_ and *immediate* **city** __action__.")).toBe(
+            "Requires urgent and immediate city action.",
+        );
+        expect(cleanFeedSummary("_Multi word italic_ and *another phrase*")).toBe(
+            "Multi word italic and another phrase",
+        );
+    });
+
+    it("preserves intra-word underscores, snake_case identifiers, and URLs containing underscores", () => {
+        expect(cleanFeedSummary("amends section 12_3_4")).toBe("amends section 12_3_4");
+        expect(cleanFeedSummary("compares fy_2026 and fy_2027")).toBe("compares fy_2026 and fy_2027");
+        expect(cleanFeedSummary("See https://en.wikipedia.org/wiki/Baltimore_City_Council for background.")).toBe(
+            "See https://en.wikipedia.org/wiki/Baltimore_City_Council for background.",
+        );
+        expect(
+            cleanFeedSummary("Read [Baltimore_City_Council](https://en.wikipedia.org/wiki/Baltimore_City_Council)"),
+        ).toBe("Read Baltimore_City_Council");
+    });
+
+    it("returns null for null, blank strings, and Summary pending placeholder", () => {
+        expect(cleanFeedSummary(null)).toBeNull();
+        expect(cleanFeedSummary(undefined)).toBeNull();
+        expect(cleanFeedSummary("   ")).toBeNull();
+        expect(cleanFeedSummary("Summary pending")).toBeNull();
     });
 });

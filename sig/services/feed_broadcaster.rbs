@@ -1,5 +1,5 @@
 class FeedBroadcaster
-  def self.notify: (Enumerable[User] | User | nil users) -> void
+  def self.notify: (Array[Integer] | Integer user_ids) -> void
 
   def self.users_for_locale: (SwayLocale sway_locale) -> User::ActiveRecord_Relation
 end

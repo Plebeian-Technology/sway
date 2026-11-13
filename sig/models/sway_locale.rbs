@@ -52,6 +52,7 @@ class SwayLocale < ApplicationRecord
     def legislators: (?bool active) -> Legislator::ActiveRecord_Relation
     def reversed_name: -> String
     def human_name: -> String
+    def short_name: -> String
     def to_select_option: -> { label: String, value: Integer }
     def nameify_country: -> String
     def nameify_region: -> String

@@ -9,10 +9,12 @@ export interface FeedApiResponse {
     items?: IFeedItem[];
     feed_cursor?: string | null;
     feed_search?: string | null;
+    feed_match_count?: number;
 }
 
 export interface UseFeedResult {
     items: IFeedItem[];
+    matchCount: number;
     loading: boolean;
     error: Error | null;
     loadingMore: boolean;
@@ -39,26 +41,49 @@ const buildFeedPath = (searchQuery: string, cursor?: string | null): string => {
 export function useFeed(searchQuery = ""): UseFeedResult {
     const trimmedQuery = searchQuery.trim();
     const [items, setItems] = useState<IFeedItem[]>([]);
+    const [matchCount, setMatchCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [pageError, setPageError] = useState<Error | null>(null);
+    const [prevQuery, setPrevQuery] = useState<string>(trimmedQuery);
+
+    if (trimmedQuery !== prevQuery) {
+        setPrevQuery(trimmedQuery);
+        setItems([]);
+        setMatchCount(0);
+        setNextCursor(null);
+        setLoading(true);
+        setError(null);
+        setPageError(null);
+    }
 
     const reach = useReachability();
     const mountedRef = useRef<boolean>(true);
     const loadingMoreRef = useRef<boolean>(false);
     const generationRef = useRef<number>(0);
 
+    useEffect(() => {
+        mountedRef.current = true;
+        return () => {
+            mountedRef.current = false;
+        };
+    }, []);
+
     const refresh = useCallback(async () => {
         generationRef.current += 1;
         const currentGen = generationRef.current;
-        setLoading(true);
+
         setError(null);
         setPageError(null);
-        setNextCursor(null);
         loadingMoreRef.current = false;
         setLoadingMore(false);
+
+        if (!reach.isResolved && !reach.isOnline) {
+            setLoading(true);
+            return;
+        }
 
         if (!reach.isOnline) {
             if (mountedRef.current && generationRef.current === currentGen) {
@@ -67,10 +92,14 @@ export function useFeed(searchQuery = ""): UseFeedResult {
             return;
         }
 
+        setLoading(true);
+
         try {
             const res = await apiClient.get<FeedApiResponse>(buildFeedPath(trimmedQuery));
             if (!mountedRef.current || generationRef.current !== currentGen) return;
-            setItems(res.items ?? []);
+            const nextItems = res.items ?? [];
+            setItems(nextItems);
+            setMatchCount(res.feed_match_count ?? 0);
             setNextCursor(res.feed_cursor ?? null);
         } catch (err) {
             if (mountedRef.current && generationRef.current === currentGen) {
@@ -81,24 +110,11 @@ export function useFeed(searchQuery = ""): UseFeedResult {
                 setLoading(false);
             }
         }
-    }, [reach.isOnline, trimmedQuery]);
+    }, [reach.isOnline, reach.isResolved, trimmedQuery]);
 
     useEffect(() => {
-        mountedRef.current = true;
         void refresh();
-        return () => {
-            mountedRef.current = false;
-        };
     }, [refresh]);
-
-    const wasOnlineRef = useRef<boolean>(reach.isOnline);
-    useEffect(() => {
-        const wasOnline = wasOnlineRef.current;
-        wasOnlineRef.current = reach.isOnline;
-        if (!wasOnline && reach.isOnline) {
-            void refresh();
-        }
-    }, [reach.isOnline, refresh]);
 
     const loadMore = useCallback(async () => {
         if (loadingMoreRef.current || loading || nextCursor === null || !reach.isOnline) return;
@@ -128,15 +144,18 @@ export function useFeed(searchQuery = ""): UseFeedResult {
                 setPageError(err instanceof Error ? err : new Error(String(err)));
             }
         } finally {
-            loadingMoreRef.current = false;
-            if (mountedRef.current && generationRef.current === currentGen) {
-                setLoadingMore(false);
+            if (generationRef.current === currentGen) {
+                loadingMoreRef.current = false;
+                if (mountedRef.current) {
+                    setLoadingMore(false);
+                }
             }
         }
     }, [loading, nextCursor, reach.isOnline, trimmedQuery]);
 
     return {
         items,
+        matchCount,
         loading,
         error,
         loadingMore,

@@ -1,0 +1,9 @@
+module RecordsBillViews : ApplicationController
+  extend ActiveSupport::Concern
+
+  private
+
+  def record_bill_view: (Bill bill) -> void
+  def inertia_partial_reload?: () -> bool
+  def prefetch_request?: () -> bool
+end

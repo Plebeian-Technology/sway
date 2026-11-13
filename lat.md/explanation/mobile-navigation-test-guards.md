@@ -31,9 +31,9 @@ It pins two things down by reading source text:
 2. The shared page titles for the bills, legislators, orgs, and profile
    screens still hold the exact wording they were given.
 
-### AppDrawer.labels.spec.ts: guard rail for the five drawer labels
+### AppDrawer.labels.spec.ts: guard rail for the six drawer labels
 
-Home, Bills, Legislators, Organizations, Profile.
+Feed, Home, Bills, Legislators, Organizations, Profile.
 
 It stops a later edit to `AppDrawer.tsx` from quietly bringing the short "Orgs" label back, or from dropping a `drawerLabel` and letting the item fall back to whatever the screen's `name=` prop happens to say.
 

@@ -9,6 +9,7 @@ const APP_DRAWER_SRC = fs.readFileSync(path.join(__dirname, "..", "..", "src", "
 
 describe("AppDrawer label parity guard", () => {
     it("declares drawerLabel for every drawer item", () => {
+        expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*PARITY_COPY\.feed\.title/);
         expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Home"/);
         expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Bills"/);
         expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Legislators"/);
