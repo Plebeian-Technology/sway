@@ -83,18 +83,6 @@ module Authentication
       end
     end
 
-    # @lat: [[phone-verification-rate-limits#Why the per-phone cap also guards registration]]
-    def sms_verification_rate_limited?(phone)
-      return false unless RateLimitConfig.enabled?(:phone_verify)
-
-      digest = PhoneCacheKey.digest(phone)
-      return false if digest.blank?
-
-      cache_key = "rate-limit:sms_phone_verify:#{digest}"
-      count = ApplicationController::RATE_LIMIT_STORE.increment(cache_key, 1, expires_in: 1.day) # steep:ignore
-      count.present? && count.to_i > 1
-    end
-
     # @lat: [[twilio-error-phone-redaction#Why verification_approved? catches nothing]]
     def verification_approved?(to:, code:)
       twilio_client

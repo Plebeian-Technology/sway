@@ -12,14 +12,6 @@ class PhoneVerificationController < ApplicationController
     if: -> { RateLimitConfig.enabled?(:phone_verify) },
     with: -> { render_rate_limited },
     store: ApplicationController::RATE_LIMIT_STORE
-  rate_limit to: 1, within: 1.day,
-    name: "create_phone",
-    # @lat: [[phone-cache-hashing]]
-    by: -> { PhoneCacheKey.digest(phone_verification_params[:phone]) },
-    only: :create,
-    if: -> { RateLimitConfig.enabled?(:phone_verify) },
-    with: -> { render_rate_limited },
-    store: ApplicationController::RATE_LIMIT_STORE
   rate_limit to: 10, within: 1.minute,
     name: "update_ip",
     by: -> { request.remote_ip },
@@ -40,10 +32,7 @@ class PhoneVerificationController < ApplicationController
     store: ApplicationController::RATE_LIMIT_STORE
 
   def create
-    raw_phone = phone_verification_params[:phone]
-    return render_rate_limited if sms_verification_rate_limited?(raw_phone)
-
-    phone = raw_phone.to_s.normalize_phone
+    phone = phone_verification_params[:phone].to_s.normalize_phone
     if phone.length != 10
       return render json: {success: false, error: "Phone must be 10 digits."}, status: :unprocessable_content
     end

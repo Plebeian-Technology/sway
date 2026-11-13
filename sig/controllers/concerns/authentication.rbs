@@ -11,8 +11,6 @@ module Authentication
     # does not touch the session — callers own session[:pending_email].
     def send_email_verification: (String? email) -> bool
 
-    def sms_verification_rate_limited?: (String? phone) -> bool
-
     # WS5.4: shared happy-path Twilio verification check (no internal rescue).
     def verification_approved?: (to: String, code: String) -> bool
 

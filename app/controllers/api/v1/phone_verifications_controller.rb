@@ -5,21 +5,13 @@ module Api
     class PhoneVerificationsController < BaseController
       include Authentication
 
-      # @lat: [[phone-verification-rate-limits#Why the per-phone cap also guards registration]]
+      # @lat: [[phone-verification-rate-limits#Why a one-time code has no per-phone daily cap]]
       rate_limit to: 5, within: 1.hour,
         name: "request_code_ip",
         by: -> { request.remote_ip },
         only: :request_code,
         if: -> { RateLimitConfig.enabled?(:phone_verify) },
         with: -> { render_error(code: "rate_limited", message: "Too many SMS requests", status: :too_many_requests) },
-        store: ApplicationController::RATE_LIMIT_STORE
-      rate_limit to: 1, within: 1.day,
-        name: "request_code_phone",
-        # @lat: [[phone-cache-hashing]]
-        by: -> { PhoneCacheKey.digest(params[:phone]) },
-        only: :request_code,
-        if: -> { RateLimitConfig.enabled?(:phone_verify) },
-        with: -> { render_error(code: "rate_limited", message: "Too many attempts for this number", status: :too_many_requests) },
         store: ApplicationController::RATE_LIMIT_STORE
       rate_limit to: 10, within: 1.minute,
         name: "verify_ip",
@@ -43,10 +35,6 @@ module Api
 
       def request_code
         phone = params.require(:phone).to_s.normalize_phone
-        if sms_verification_rate_limited?(phone)
-          return render_error(code: "rate_limited", message: "Too many attempts for this number", status: :too_many_requests)
-        end
-
         if phone.length != 10
           return render_error(code: "invalid_phone", message: "Phone must be a 10-digit US number", status: :unprocessable_content)
         end

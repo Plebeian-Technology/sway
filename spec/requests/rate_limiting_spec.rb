@@ -113,38 +113,72 @@ RSpec.describe "Rate limiting", type: :request do
     end
 
     context "in production with RATE_LIMIT_PHONE_VERIFY_ENABLED=true" do
-      it "returns 302/429 after 1 request with the same phone within 1 day (per-phone key)" do
-        with_rate_limit_enabled(:phone_verify) do
-          post "/phone_verification",
-            params: {phone_verification: {phone: "4105551212"}},
-            headers: {"REMOTE_ADDR" => "10.0.0.1"}
-          expect(response).to have_http_status(:ok)
-
-          post "/phone_verification",
-            params: {phone_verification: {phone: "4105551212"}},
-            headers: {"REMOTE_ADDR" => "10.0.0.2"}
-          expect(response).to rate_limited_status
-          expect(response.headers["Retry-After"]).to be_present
+      context "when Twilio sends the code" do
+        around do |example|
+          with_app_config(:dev_login, skip_phone_verification: false) { example.run }
         end
-      end
 
-      it "enforces the 1-per-day per-phone SMS limit across /phone_verification, /users/webauthn/sessions, and /api/v1/phone_verification" do
-        with_rate_limit_enabled(:phone_verify) do
-          post "/users/webauthn/sessions",
-            params: {phone: "4105559090"},
-            headers: {"REMOTE_ADDR" => "10.0.0.10"}
-          expect(response).to have_http_status(:ok)
+        # @lat: [[phone-verification-rate-limits#Why a one-time code has no per-phone daily cap]]
+        it "sends a second code to the same phone from another IP on /phone_verification" do
+          with_rate_limit_enabled(:phone_verify) do
+            2.times do |i|
+              post "/phone_verification",
+                params: {phone_verification: {phone: "4105551212"}},
+                headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"}
+              expect(response).to have_http_status(:ok)
+            end
 
-          post "/phone_verification",
-            params: {phone_verification: {phone: "4105559090"}},
-            headers: {"REMOTE_ADDR" => "10.0.0.11"}
-          expect(response).to rate_limited_status
+            expect(twilio_verifications_double).to have_received(:create).twice
+          end
+        end
 
-          post "/api/v1/phone_verification",
-            params: {phone: "4105559090"},
-            headers: {"REMOTE_ADDR" => "10.0.0.12"},
-            as: :json
-          expect(response).to have_http_status(:too_many_requests)
+        it "sends a second code to the same phone from another IP on /users/webauthn/sessions" do
+          with_rate_limit_enabled(:phone_verify) do
+            2.times do |i|
+              post "/users/webauthn/sessions",
+                params: {phone: "4105551212"},
+                headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"}
+              expect(response).to have_http_status(:ok)
+            end
+
+            expect(twilio_verifications_double).to have_received(:create).twice
+          end
+        end
+
+        it "sends a second code to the same phone from another IP on /api/v1/phone_verification" do
+          with_rate_limit_enabled(:phone_verify) do
+            2.times do |i|
+              post "/api/v1/phone_verification",
+                params: {phone: "4105551212"},
+                headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"},
+                as: :json
+              expect(response).to have_http_status(:no_content)
+            end
+
+            expect(twilio_verifications_double).to have_received(:create).twice
+          end
+        end
+
+        it "sends a code for the same phone on /users/webauthn/sessions, /phone_verification, and /api/v1/phone_verification" do
+          with_rate_limit_enabled(:phone_verify) do
+            post "/users/webauthn/sessions",
+              params: {phone: "4105559090"},
+              headers: {"REMOTE_ADDR" => "10.0.0.10"}
+            expect(response).to have_http_status(:ok)
+
+            post "/phone_verification",
+              params: {phone_verification: {phone: "4105559090"}},
+              headers: {"REMOTE_ADDR" => "10.0.0.11"}
+            expect(response).to have_http_status(:ok)
+
+            post "/api/v1/phone_verification",
+              params: {phone: "4105559090"},
+              headers: {"REMOTE_ADDR" => "10.0.0.12"},
+              as: :json
+            expect(response).to have_http_status(:no_content)
+
+            expect(twilio_verifications_double).to have_received(:create).exactly(3).times
+          end
         end
       end
 

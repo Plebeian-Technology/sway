@@ -54,8 +54,6 @@ module Users
           )
           render json: {flow: "passkey", options: get_options}
         elsif phone.present?
-          return render_rate_limited if sms_verification_rate_limited?(phone)
-
           if Sway::Settings.dev_login.skip_phone_verification
             session[:phone] = phone
             SwayLogging.info(
