@@ -26,6 +26,18 @@ export interface UseNominatimAddressAutocomplete {
 }
 
 export const NOMINATIM_DEBOUNCE_MS = 1000;
+
+const SELECTED_ADDRESS_FIELDS = [
+    "street",
+    "city",
+    "region",
+    "region_code",
+    "postal_code",
+    "country",
+    "latitude",
+    "longitude",
+    "place_types",
+];
 export const NOMINATIM_SEARCH_ENDPOINT = "/addresses/autocomplete";
 export const NOMINATIM_USER_AGENT = "Sway/1.0 (civic-tech-app; https://sway.vote)";
 
@@ -284,11 +296,14 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
         [locale, updateLoading],
     );
 
+    // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
     const handleInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const input = e.target.value;
             setValue(input);
-            (setData as (key: string, val: unknown) => void)("typed_address", input);
+            const setField = setData as (key: string, val: unknown) => void;
+            setField("typed_address", input);
+            SELECTED_ADDRESS_FIELDS.forEach((field) => setField(field, undefined));
 
             if (debounceRef.current) {
                 clearTimeout(debounceRef.current);
@@ -336,14 +351,11 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
             setValue(suggestion.description);
             clearSuggestions();
 
+            const setField = setData as (key: string, val: unknown) => void;
+            setField("typed_address", suggestion.description);
+            const parsed: Record<string, unknown> = place ? parseNominatimAddress(place) : {};
+            SELECTED_ADDRESS_FIELDS.forEach((field) => setField(field, parsed[field]));
             if (place) {
-                const parsed = parseNominatimAddress(place);
-                const setField = setData as (key: string, val: unknown) => void;
-                Object.entries(parsed).forEach(([key, val]) => {
-                    if (val !== undefined) {
-                        setField(key, val);
-                    }
-                });
                 const placeTypes = [place.type, place.class ?? place.category].filter(
                     (t): t is string => typeof t === "string" && t.length > 0,
                 );

@@ -258,6 +258,119 @@ describe("useNominatimAddressAutocomplete", () => {
         });
     });
 
+    describe("Selected address", () => {
+        const SELECTED_FIELDS = [
+            "street",
+            "city",
+            "region",
+            "region_code",
+            "postal_code",
+            "country",
+            "latitude",
+            "longitude",
+            "place_types",
+        ];
+
+        const typeText = (result: { current: ReturnType<typeof useNominatimAddressAutocomplete> }, text: string) => {
+            act(() => {
+                result.current.handleInput({
+                    target: { value: text },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+        };
+
+        const searchAndSelect = async (
+            result: { current: ReturnType<typeof useNominatimAddressAutocomplete> },
+            place: INominatimPlace,
+        ) => {
+            fetchMock.mockResolvedValueOnce(createFetchResponse([place]));
+            typeText(result, "100 Holliday");
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            act(() => {
+                result.current.handleSelect(result.current.suggestions[0])();
+            });
+        };
+
+        it("handleInput after a selection clears every selected field from the form", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            await searchAndSelect(result, createMockPlace());
+            expect(form.data).toMatchObject({ street: "100 Holliday Street", postal_code: "21202" });
+
+            typeText(result, "200 Other Street");
+
+            SELECTED_FIELDS.forEach((field) => {
+                expect((form.data as Record<string, unknown>)[field]).toBeUndefined();
+            });
+            expect(result.current.value).toBe("200 Other Street");
+            expect((form.data as Record<string, unknown>).typed_address).toBe("200 Other Street");
+        });
+
+        it("handleInput before any selection leaves the form without selected fields", () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            typeText(result, "100 Holl");
+
+            SELECTED_FIELDS.forEach((field) => {
+                expect((form.data as Record<string, unknown>)[field]).toBeUndefined();
+            });
+            expect((form.data as Record<string, unknown>).typed_address).toBe("100 Holl");
+        });
+
+        it("handleInput clears an address that was already on the form when the user edits the text", () => {
+            const form = buildMockForm({
+                street: "100 Holliday St",
+                city: "Baltimore",
+                region_code: "MD",
+                postal_code: "21202",
+            });
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            typeText(result, "5 Elm St");
+
+            expect(form.data.street).toBeUndefined();
+            expect(form.data.postal_code).toBeUndefined();
+        });
+
+        it("a selection without a postcode does not keep the postal_code of an earlier address", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            const placeWithoutPostcode = createMockPlace({
+                place_id: 200,
+                lat: "39.5",
+                lon: "-76.5",
+                address: { road: "Rural Road", city: "Towson", state: "Maryland", "ISO3166-2-lvl4": "US-MD" },
+            });
+            fetchMock.mockResolvedValueOnce(createFetchResponse([placeWithoutPostcode]));
+            typeText(result, "Rural Road");
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            Object.assign(form.data, { street: "100 Holliday Street", city: "Baltimore", postal_code: "21202" });
+
+            act(() => {
+                result.current.handleSelect(result.current.suggestions[0])();
+            });
+
+            const data = form.data as Record<string, unknown>;
+            expect(data.postal_code).toBeUndefined();
+            expect(data.street).toBeUndefined();
+            expect(data.city).toBe("Towson");
+            expect(data.latitude).toBe(39.5);
+        });
+
+        it("handleSelect records the text the box shows as typed_address", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            await searchAndSelect(result, createMockPlace());
+
+            expect((form.data as Record<string, unknown>).typed_address).toBe(result.current.value);
+        });
+    });
+
     describe("Debounce Timing & Rate Limiting", () => {
         it("does NOT trigger fetch before 1000ms debounce threshold expires (e.g. at 500ms or 999ms)", async () => {
             const form = buildMockForm();
