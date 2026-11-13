@@ -20,7 +20,7 @@ pnpm --dir mobile run android    # build and launch on an Android emulator
 Every script that resolves `app.config.ts` needs `APPLE_BUNDLE_ID` — see [Shipping your own build](#shipping-your-own-build). To build without unlocking a secret store, put it in `mobile/.env.local`:
 
 ```zsh
-echo 'APPLE_BUNDLE_ID=your.bundle.id' >> mobile/.env.local
+printf '\nAPPLE_BUNDLE_ID=%s\n' your.bundle.id >> mobile/.env.local
 ```
 
 The backend address comes from `EXPO_PUBLIC_API_URL`, which `app.config.ts` reads into `apiBaseUrl` (falling back to `https://app.sway.vote`). The `start`, `ios`, and `android` scripts set it to `https://localhost:3333`; `ios:dev`, `android:dev` and `android:dev:device` point at `https://$EXPO_PUBLIC_DEV_TUNNEL_HOST` instead. To reach a backend somewhere else, set it yourself:
