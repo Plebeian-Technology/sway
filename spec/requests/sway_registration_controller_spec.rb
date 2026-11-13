@@ -170,7 +170,7 @@ RSpec.describe "/registration", type: :request do
     let!(:maryland) { create(:sway_locale, :maryland) }
     let!(:congress) { create(:sway_locale, :congress) }
     let!(:mayor) do
-      create_seat_term(
+      create_titled_seat_term(
         district: create(:district, sway_locale: baltimore, name: "MD0"),
         seat_identifier: "baltimore-mayor",
         title: "Mayor",
@@ -178,7 +178,7 @@ RSpec.describe "/registration", type: :request do
       )
     end
     let!(:house_member) do
-      create_seat_term(
+      create_titled_seat_term(
         district: create(:district, sway_locale: congress, name: "MD7"),
         seat_identifier: "md-house-district-7",
         title: "Representative",
@@ -200,7 +200,7 @@ RSpec.describe "/registration", type: :request do
       }
     end
 
-    def create_seat_term(district:, seat_identifier:, title:, years:)
+    def create_titled_seat_term(district:, seat_identifier:, title:, years:)
       seat = Seat.create!(district:, seat_identifier:, title:, chamber: title)
       legislator = create(:legislator, district:)
       create(
@@ -262,7 +262,7 @@ RSpec.describe "/registration", type: :request do
 
     it "skips Maryland when OpenStates answers HTTP 500 and completes with the Baltimore links" do
       stub_census_body({features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => "07"}}]}.to_json)
-      create_seat_term(
+      create_titled_seat_term(
         district: create(:district, sway_locale: maryland, name: "MD46"),
         seat_identifier: "md-senate-district-46",
         title: "Senator",
