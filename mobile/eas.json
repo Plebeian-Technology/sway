@@ -16,7 +16,9 @@
             "autoIncrement": true,
             "env": {
                 "NODE_ENV": "production",
-                "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+                "EAS_BUILD_NO_EXPO_GO_WARNING": "true",
+                "FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT": "60",
+                "FASTLANE_XCODEBUILD_SETTINGS_RETRIES": "3"
             },
             "ios": {
                 "credentialsSource": "local"
