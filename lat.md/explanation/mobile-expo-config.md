@@ -123,6 +123,12 @@ Before it asks the secret store, the runner reads `KEY=value` lines from the git
 
 A development run needs only the bundle id, which is not secret, so unlocking a vault for it on every simulator build is friction with no benefit. Writing the id into a package script instead would put the maintainer's identifier back in the tracked tree. The file stays on one machine, and Expo already loads it into the app config, so one file serves both. Only names the caller requested are taken, and any name the file lacks still comes from the secret store, so a store build is unchanged.
 
+### The simulator build uses the dev tunnel when one is configured
+
+[[mobile/scripts/run-ios.sh]] points the app at `https://<tunnel>` when `DEV_TUNNEL_HOST` is set in `deploy/config/sway.env`, and at `https://localhost:3333` otherwise. An exported `EXPO_PUBLIC_DEV_TUNNEL_HOST` or `EXPO_PUBLIC_API_URL` wins.
+
+iOS creates or uses a passkey only for a domain whose association file it can fetch from the public internet, so against `localhost` every passkey ceremony fails with "not associated with domain". The tunnel host is the one name that works. Reading it from the file `scripts/dip/dev.sh` already loads means a single entry sets the Rails host, the passkey domain and the app's associated domain together, and two copies cannot drift. The fallback prints a warning that names the missing value, because the localhost build otherwise looks healthy until sign-in.
+
 ### The dev tunnel host is claimed only when set
 
 With `EXPO_PUBLIC_DEV_TUNNEL_HOST` unset, the developer-mode associated domains and the matching Android intent filter are left out; the `sway.vote` entries stay.

@@ -8,7 +8,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "EXPO_PUBLIC_API_URL=https://localhost:3333 scripts/with-vault-env.sh APPLE_BUNDLE_ID -- expo start --dev-client",
-    "ios": "scripts/xcode-node-env.sh && EXPO_PUBLIC_API_URL=https://localhost:3333 scripts/with-vault-env.sh APPLE_BUNDLE_ID -- expo run:ios",
+    "ios": "scripts/run-ios.sh",
     "ios:dev": "scripts/xcode-node-env.sh && scripts/with-vault-env.sh APPLE_BUNDLE_ID EXPO_PUBLIC_DEV_TUNNEL_HOST -- sh -c 'EXPO_PUBLIC_API_URL=https://$EXPO_PUBLIC_DEV_TUNNEL_HOST exec expo run:ios'",
     "android": "EXPO_PUBLIC_API_URL=https://localhost:3333 scripts/with-vault-env.sh APPLE_BUNDLE_ID -- expo run:android",
     "android:dev": "scripts/with-vault-env.sh APPLE_BUNDLE_ID EXPO_PUBLIC_DEV_TUNNEL_HOST -- sh -c 'EXPO_PUBLIC_API_URL=https://$EXPO_PUBLIC_DEV_TUNNEL_HOST exec expo run:android'",

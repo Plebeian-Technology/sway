@@ -13,7 +13,7 @@ This is a separate pnpm workspace. Run every command below from the repository r
 
 ```zsh
 pnpm --dir mobile start          # Metro + dev client, pointed at https://localhost:3333
-pnpm --dir mobile run ios        # build and launch on the iOS simulator
+pnpm --dir mobile run ios        # build and launch on the iOS simulator, through the dev tunnel when DEV_TUNNEL_HOST is set
 pnpm --dir mobile run android    # build and launch on an Android emulator
 ```
 
@@ -23,7 +23,7 @@ Every script that resolves `app.config.ts` needs `APPLE_BUNDLE_ID` — see [Ship
 printf '\nAPPLE_BUNDLE_ID=%s\n' your.bundle.id >> mobile/.env.local
 ```
 
-The backend address comes from `EXPO_PUBLIC_API_URL`, which `app.config.ts` reads into `apiBaseUrl` (falling back to `https://app.sway.vote`). The `start`, `ios`, and `android` scripts set it to `https://localhost:3333`; `ios:dev`, `android:dev` and `android:dev:device` point at `https://$EXPO_PUBLIC_DEV_TUNNEL_HOST` instead. To reach a backend somewhere else, set it yourself:
+The backend address comes from `EXPO_PUBLIC_API_URL`, which `app.config.ts` reads into `apiBaseUrl` (falling back to `https://app.sway.vote`). The `start` and `android` scripts set it to `https://localhost:3333`; `ios:dev`, `android:dev` and `android:dev:device` point at `https://$EXPO_PUBLIC_DEV_TUNNEL_HOST` instead. `ios` uses `https://$DEV_TUNNEL_HOST` when `deploy/config/sway.env` sets it, and localhost otherwise. Passkeys need the tunnel: iOS cannot associate the app with `localhost`. To reach a backend somewhere else, set it yourself:
 
 ```zsh
 EXPO_PUBLIC_API_URL=https://your-host pnpm --dir mobile start
