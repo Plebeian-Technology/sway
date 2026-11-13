@@ -310,6 +310,9 @@ export const PARITY_COPY = {
             registeringCopy: "Registering this device…",
         },
         errorSave: "Could not update preference.",
+        saved: "Notification preferences updated.",
+        saving: "Saving…",
+        saveError: "Couldn't save preferences. Try again.",
     },
 
     // @lat: [[theme-tokens#Why a token in the contract has to have a consumer]]

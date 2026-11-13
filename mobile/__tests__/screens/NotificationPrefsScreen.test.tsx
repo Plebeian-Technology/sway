@@ -54,7 +54,7 @@ jest.mock("../../src/api/client", () => ({
 // Watch react-native's Linking.openSettings without replacing the whole react-native
 // module — replacing it breaks the css-interop JSX runtime. Instead we swap out the
 // live module's openSettings property and put the original back afterwards.
-import { Linking as RNLinking } from "react-native";
+import { AccessibilityInfo, Linking as RNLinking } from "react-native";
 const mockOpenSettings = jest.fn();
 const originalOpenSettings = RNLinking.openSettings;
 RNLinking.openSettings = (...args: unknown[]) => {
@@ -66,12 +66,13 @@ afterAll(() => {
 });
 
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 import * as Notifications from "expo-notifications";
 
 import NotificationPrefsScreen from "../../src/screens/NotificationPrefsScreen";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
+import { ApiRequestError } from "../../src/api/errors";
 
 const wrap = (ui: React.ReactElement) => render(<ThemeProvider initialMode="light">{ui}</ThemeProvider>);
 
@@ -310,11 +311,136 @@ describe("NotificationPrefsScreen", () => {
 
         test("Save patches /api/v1/notification_preferences/org_defaults", async () => {
             wrap(<NotificationPrefsScreen />);
-            await screen.findByTestId("org-defaults-save");
+            await screen.findByTestId("org-default-toggle-new-position");
             fireEvent.press(screen.getByTestId("org-defaults-save"));
             await waitFor(() => expect(mockApiPatch).toHaveBeenCalled());
             const [path] = mockApiPatch.mock.calls[0];
             expect(path).toBe("/api/v1/notification_preferences/org_defaults");
+        });
+    });
+
+    // @lat: [[mobile-notification-prefs-screen#Save feedback and pinned footer]]
+    describe("Save Preferences footer and feedback", () => {
+        const loadedScreen = async () => {
+            wrap(<NotificationPrefsScreen />);
+            await screen.findByTestId("org-default-toggle-new-position");
+        };
+
+        test("the save button sits in a footer outside the scroll container", async () => {
+            await loadedScreen();
+            const scroll = screen.getByTestId("notification-prefs-screen");
+            expect(within(scroll).queryByTestId("org-defaults-save")).toBeNull();
+            const footer = screen.getByTestId("notification-prefs-footer");
+            expect(within(footer).getByTestId("org-defaults-save")).toBeTruthy();
+        });
+
+        test("success shows the web confirmation copy in a polite live region and announces it", async () => {
+            const announce = jest.spyOn(AccessibilityInfo, "announceForAccessibility").mockImplementation(() => {});
+            await loadedScreen();
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            const saved = await screen.findByTestId("notification-prefs-save-status");
+            expect(saved.props.accessibilityLiveRegion).toBe("polite");
+            expect(within(saved).getByText(PARITY_COPY.notifications.saved)).toBeTruthy();
+            expect(announce).toHaveBeenCalledWith(PARITY_COPY.notifications.saved);
+            announce.mockRestore();
+        });
+
+        test("the confirmation clears itself after a few seconds", async () => {
+            jest.useFakeTimers();
+            try {
+                await loadedScreen();
+                fireEvent.press(screen.getByTestId("org-defaults-save"));
+                await screen.findByTestId("notification-prefs-save-status");
+                await act(async () => {
+                    jest.advanceTimersByTime(5000);
+                });
+                expect(screen.queryByTestId("notification-prefs-save-status")).toBeNull();
+            } finally {
+                jest.useRealTimers();
+            }
+        });
+
+        test("editing a choice after a save clears the stale confirmation", async () => {
+            await loadedScreen();
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            await screen.findByTestId("notification-prefs-save-status");
+            fireEvent(screen.getByTestId("pref-switch-notify_on_new_position_default"), "valueChange", false);
+            expect(screen.queryByTestId("notification-prefs-save-status")).toBeNull();
+        });
+
+        test("failure shows a generic error and keeps the chosen values for a retry", async () => {
+            mockApiPatch.mockRejectedValueOnce(new Error("HTTP 500"));
+            await loadedScreen();
+            fireEvent(screen.getByTestId("pref-switch-notify_on_new_position_default"), "valueChange", false);
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            const err = await screen.findByTestId("notification-prefs-save-error");
+            expect(err.props.accessibilityRole).toBe("alert");
+            expect(within(err).getByText(PARITY_COPY.notifications.saveError)).toBeTruthy();
+            expect(screen.queryByTestId("notification-prefs-save-status")).toBeNull();
+            expect(screen.getByTestId("pref-switch-notify_on_new_position_default").props.value).toBe(false);
+
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            await waitFor(() => expect(mockApiPatch).toHaveBeenCalledTimes(2));
+            expect(mockApiPatch.mock.calls[1][1]).toMatchObject({ notify_on_new_position_default: false });
+            await screen.findByTestId("notification-prefs-save-status");
+            expect(screen.queryByTestId("notification-prefs-save-error")).toBeNull();
+        });
+
+        test("a client-error response shows the server's message", async () => {
+            mockApiPatch.mockRejectedValueOnce(
+                new ApiRequestError("invalid", "Cadence is not supported", undefined, 422),
+            );
+            await loadedScreen();
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            const err = await screen.findByTestId("notification-prefs-save-error");
+            expect(within(err).getByText("Cadence is not supported")).toBeTruthy();
+        });
+
+        test("a server-error response never leaks its raw message", async () => {
+            mockApiPatch.mockRejectedValueOnce(new ApiRequestError("http_500", "HTTP 500", undefined, 500));
+            await loadedScreen();
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            const err = await screen.findByTestId("notification-prefs-save-error");
+            expect(within(err).getByText(PARITY_COPY.notifications.saveError)).toBeTruthy();
+            expect(screen.queryByText("HTTP 500")).toBeNull();
+        });
+
+        test("a failed load of the defaults keeps Save disabled so placeholders never overwrite saved settings", async () => {
+            mockApiGet.mockRejectedValueOnce(new Error("HTTP 500"));
+            wrap(<NotificationPrefsScreen />);
+            await screen.findByTestId("org-defaults-error");
+            const save = screen.getByTestId("org-defaults-save");
+            expect(save.props.accessibilityState.disabled).toBe(true);
+            fireEvent.press(save);
+            expect(mockApiPatch).not.toHaveBeenCalled();
+        });
+
+        test("the button is busy and disabled while the request is in flight, so a second tap sends nothing", async () => {
+            let finish: () => void = () => {};
+            mockApiPatch.mockImplementationOnce(
+                () =>
+                    new Promise<undefined>((resolve) => {
+                        finish = () => resolve(undefined);
+                    }),
+            );
+            await loadedScreen();
+            const save = screen.getByTestId("org-defaults-save");
+            fireEvent.press(save);
+            await waitFor(() =>
+                expect(screen.getByTestId("org-defaults-save").props.accessibilityState.busy).toBe(true),
+            );
+            expect(screen.getByTestId("org-defaults-save").props.accessibilityState.disabled).toBe(true);
+            expect(
+                within(screen.getByTestId("org-defaults-save")).getByText(PARITY_COPY.notifications.saving),
+            ).toBeTruthy();
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            expect(mockApiPatch).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                finish();
+            });
+            await screen.findByTestId("notification-prefs-save-status");
+            expect(screen.getByTestId("org-defaults-save").props.accessibilityState.disabled).toBe(false);
         });
     });
 

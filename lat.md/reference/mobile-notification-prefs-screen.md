@@ -33,4 +33,14 @@ lat:
 
 - A rule this component must keep about push tokens is documented in [[docs/explanation/test-push-device-targeting.md|test-push-device-targeting.md]].
 
-- Styling is NativeWind classes only; no inline style tokens.
+- Styling is NativeWind classes only; no inline style tokens. The one inline style is the footer's bottom padding, which comes from the safe-area inset.
+
+## Save feedback and pinned footer
+
+The "Save preferences" button for the organization defaults card is pinned in a footer below the scroll view, so it needs no scrolling to find and always shows what the last save did.
+
+- The footer (`notification-prefs-footer`) is a sibling of the scroll view, padded by the larger of the bottom safe-area inset and 12pt.
+- The form state lives in `useOrgDefaultsForm`; the card only renders the fields, and the footer owns the button.
+- While the PATCH is in flight, while the defaults are still loading, or after they failed to load, the button is disabled with `busy` set and reads "Saving…"; a ref also blocks a second request.
+- Success shows `PARITY_COPY.notifications.saved` (the web flash wording) in a polite live region, announces it with `AccessibilityInfo`, and clears after four seconds or on the next edit.
+- Failure shows an alert in the footer and keeps every chosen value so the user can retry. A 4xx `ApiRequestError` message is shown as is; a network, 5xx or bare "HTTP nnn" message falls back to `PARITY_COPY.notifications.saveError`.

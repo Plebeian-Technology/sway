@@ -1,6 +1,15 @@
 // @lat: [[mobile-notification-prefs-screen#NotificationPrefsScreen]]
-import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Linking, Pressable as RNPressable, ScrollView, Text, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+    AccessibilityInfo,
+    ActivityIndicator,
+    Linking,
+    Pressable as RNPressable,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
 
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
@@ -9,6 +18,7 @@ import { Card } from "../components/ui/Card";
 import { Pressable } from "../components/ui/Pressable";
 import { useNotificationPrefs, type NotificationPrefKey } from "../hooks/useNotificationPrefs";
 import { apiClient } from "../api/client";
+import { ApiRequestError, NetworkError, RateLimitedError, UnauthorizedError } from "../api/errors";
 import { Routes } from "../api/routes";
 import { useDeviceRegistration } from "../state/DeviceRegistrationContext";
 import { useTheme } from "../theme/ThemeProvider";
@@ -73,31 +83,86 @@ interface OrgDefaultsPayload {
     notify_on_summary_change_default?: boolean;
 }
 
-// @lat: [[org-notification-cascade-and-defaults#Mobile: NotificationPrefsScreen organization position updates card]]
-function OrgDefaultsCard() {
-    const { colorScheme } = useTheme();
-    const [loading, setLoading] = useState<boolean>(true);
-    const [saving, setSaving] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+type SaveState = { kind: "idle" } | { kind: "saving" } | { kind: "saved" } | { kind: "error"; message: string };
 
-    const [notifyNewPos, setNotifyNewPos] = useState<boolean>(true);
-    const [notifySupportChange, setNotifySupportChange] = useState<boolean>(true);
-    const [notifySummaryChange, setNotifySummaryChange] = useState<boolean>(true);
-    const [cadence, setCadence] = useState<CadenceValue>("every_change");
+const SAVED_VISIBLE_MS = 4000;
+
+function saveErrorMessage(e: unknown): string {
+    if (
+        e instanceof ApiRequestError &&
+        !(e instanceof NetworkError) &&
+        !(e instanceof UnauthorizedError) &&
+        !(e instanceof RateLimitedError) &&
+        e.status !== undefined &&
+        e.status >= 400 &&
+        e.status < 500 &&
+        e.message &&
+        !/^HTTP \d+$/.test(e.message)
+    ) {
+        return e.message;
+    }
+    return PARITY_COPY.notifications.saveError;
+}
+
+// @lat: [[mobile-notification-prefs-screen#Save feedback and pinned footer]]
+function useOrgDefaultsForm() {
+    const [loading, setLoading] = useState<boolean>(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
+    const [saveState, setSaveState] = useState<SaveState>({ kind: "idle" });
+    const inFlight = useRef<boolean>(false);
+
+    const [notifyNewPos, setNotifyNewPosRaw] = useState<boolean>(true);
+    const [notifySupportChange, setNotifySupportChangeRaw] = useState<boolean>(true);
+    const [notifySummaryChange, setNotifySummaryChangeRaw] = useState<boolean>(true);
+    const [cadence, setCadenceRaw] = useState<CadenceValue>("every_change");
+
+    const dismissStatus = useCallback(() => {
+        setSaveState((prev) => (prev.kind === "saved" || prev.kind === "error" ? { kind: "idle" } : prev));
+    }, []);
+
+    const setNotifyNewPos = useCallback(
+        (v: boolean) => {
+            dismissStatus();
+            setNotifyNewPosRaw(v);
+        },
+        [dismissStatus],
+    );
+    const setNotifySupportChange = useCallback(
+        (v: boolean) => {
+            dismissStatus();
+            setNotifySupportChangeRaw(v);
+        },
+        [dismissStatus],
+    );
+    const setNotifySummaryChange = useCallback(
+        (v: boolean) => {
+            dismissStatus();
+            setNotifySummaryChangeRaw(v);
+        },
+        [dismissStatus],
+    );
+    const setCadence = useCallback(
+        (v: CadenceValue) => {
+            dismissStatus();
+            setCadenceRaw(v);
+        },
+        [dismissStatus],
+    );
 
     const loadDefaults = useCallback(async () => {
         setLoading(true);
-        setError(null);
+        setLoadError(null);
         try {
             const data = await apiClient.get<OrgDefaultsPayload>(Routes.orgNotificationDefaults());
-            if (data.notify_on_new_position_default !== undefined) setNotifyNewPos(data.notify_on_new_position_default);
+            if (data.notify_on_new_position_default !== undefined)
+                setNotifyNewPosRaw(data.notify_on_new_position_default);
             if (data.notify_on_support_change_default !== undefined)
-                setNotifySupportChange(data.notify_on_support_change_default);
+                setNotifySupportChangeRaw(data.notify_on_support_change_default);
             if (data.notify_on_summary_change_default !== undefined)
-                setNotifySummaryChange(data.notify_on_summary_change_default);
-            if (data.org_position_cadence_default !== undefined) setCadence(data.org_position_cadence_default);
+                setNotifySummaryChangeRaw(data.notify_on_summary_change_default);
+            if (data.org_position_cadence_default !== undefined) setCadenceRaw(data.org_position_cadence_default);
         } catch {
-            setError("Couldn't load organization defaults.");
+            setLoadError("Couldn't load organization defaults.");
         } finally {
             setLoading(false);
         }
@@ -107,9 +172,22 @@ function OrgDefaultsCard() {
         void loadDefaults();
     }, [loadDefaults]);
 
-    const handleSave = useCallback(async () => {
-        setSaving(true);
-        setError(null);
+    useEffect(() => {
+        if (saveState.kind === "saved") {
+            AccessibilityInfo.announceForAccessibility(PARITY_COPY.notifications.saved);
+            const timer = setTimeout(() => setSaveState({ kind: "idle" }), SAVED_VISIBLE_MS);
+            return () => clearTimeout(timer);
+        }
+        if (saveState.kind === "error") {
+            AccessibilityInfo.announceForAccessibility(saveState.message);
+        }
+        return undefined;
+    }, [saveState]);
+
+    const save = useCallback(async () => {
+        if (inFlight.current) return;
+        inFlight.current = true;
+        setSaveState({ kind: "saving" });
         try {
             await apiClient.patch(Routes.orgNotificationDefaults(), {
                 notify_on_new_position_default: notifyNewPos,
@@ -117,12 +195,47 @@ function OrgDefaultsCard() {
                 notify_on_summary_change_default: notifySummaryChange,
                 org_position_cadence_default: cadence,
             });
-        } catch {
-            setError("Couldn't save preferences. Try again.");
+            setSaveState({ kind: "saved" });
+        } catch (e) {
+            setSaveState({ kind: "error", message: saveErrorMessage(e) });
         } finally {
-            setSaving(false);
+            inFlight.current = false;
         }
     }, [notifyNewPos, notifySupportChange, notifySummaryChange, cadence]);
+
+    return {
+        loading,
+        loadError,
+        saveState,
+        save,
+        notifyNewPos,
+        setNotifyNewPos,
+        notifySupportChange,
+        setNotifySupportChange,
+        notifySummaryChange,
+        setNotifySummaryChange,
+        cadence,
+        setCadence,
+    };
+}
+
+type OrgDefaultsForm = ReturnType<typeof useOrgDefaultsForm>;
+
+// @lat: [[org-notification-cascade-and-defaults#Mobile: NotificationPrefsScreen organization position updates card]]
+function OrgDefaultsCard({ form }: { form: OrgDefaultsForm }) {
+    const { colorScheme } = useTheme();
+    const {
+        loading,
+        loadError,
+        notifyNewPos,
+        setNotifyNewPos,
+        notifySupportChange,
+        setNotifySupportChange,
+        notifySummaryChange,
+        setNotifySummaryChange,
+        cadence,
+        setCadence,
+    } = form;
 
     return (
         <View className="px-4 pt-4">
@@ -142,6 +255,16 @@ function OrgDefaultsCard() {
                         testID="org-defaults-loading"
                         accessibilityLabel="Loading organization defaults"
                     />
+                ) : null}
+
+                {loadError ? (
+                    <Text
+                        testID="org-defaults-error"
+                        accessibilityRole="alert"
+                        className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark"
+                    >
+                        {loadError}
+                    </Text>
                 ) : null}
 
                 {!loading ? (
@@ -214,28 +337,6 @@ function OrgDefaultsCard() {
                                 );
                             })}
                         </View>
-
-                        {error ? (
-                            <Text
-                                testID="org-defaults-error"
-                                accessibilityRole="alert"
-                                className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark"
-                            >
-                                {error}
-                            </Text>
-                        ) : null}
-
-                        <Pressable
-                            testID="org-defaults-save"
-                            accessibilityLabel={PARITY_COPY.orgNotifications.savePreferences}
-                            onPress={handleSave}
-                            disabled={saving}
-                            className="min-h-[44px]"
-                        >
-                            <Text className="text-sm font-open-sans-semibold text-white">
-                                {PARITY_COPY.orgNotifications.savePreferences}
-                            </Text>
-                        </Pressable>
                     </>
                 ) : null}
             </Card>
@@ -397,6 +498,10 @@ function PushTab() {
 
 export default function NotificationPrefsScreen() {
     const { prefs, loading, error: hookError, toggle } = useNotificationPrefs();
+    const orgForm = useOrgDefaultsForm();
+    const insets = useSafeAreaInsets();
+    const { saveState } = orgForm;
+    const saving = saveState.kind === "saving";
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState<NotificationPrefKey | null>(null);
 
@@ -415,57 +520,96 @@ export default function NotificationPrefsScreen() {
     const displayedError = error ?? (hookError ? PARITY_COPY.notifications.errorSave : null);
 
     return (
-        <ScrollView
-            className="flex-1 bg-dominant-light dark:bg-dominant-dark"
-            contentInsetAdjustmentBehavior="automatic"
-            testID="notification-prefs-screen"
-        >
-            <View className="p-6">
-                <Text className="text-2xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                    {PARITY_COPY.notifications.title}
-                </Text>
-                <Text className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-2">
-                    {PARITY_COPY.notifications.lead}
-                </Text>
-            </View>
-
-            {loading ? (
+        <View className="flex-1 bg-dominant-light dark:bg-dominant-dark">
+            <ScrollView
+                className="flex-1"
+                contentInsetAdjustmentBehavior="automatic"
+                testID="notification-prefs-screen"
+            >
                 <View className="p-6">
-                    <ActivityIndicator accessibilityLabel="Loading preferences" />
+                    <Text className="text-2xl font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                        {PARITY_COPY.notifications.title}
+                    </Text>
+                    <Text className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-2">
+                        {PARITY_COPY.notifications.lead}
+                    </Text>
                 </View>
-            ) : null}
 
-            <View className="px-4">
-                <Card testID="notification-prefs-card">
-                    {TOGGLE_ROWS.map((row) => {
-                        const pref = prefs.find((p) => p.key === row.key);
-                        return (
-                            <PreferenceToggle
-                                key={row.key}
-                                name={row.key}
-                                label={row.label}
-                                description={row.description}
-                                value={pref?.enabled ?? row.defaultEnabled}
-                                disabled={pending === row.key}
-                                onValueChange={(next) => onToggle(row.key, next)}
-                            />
-                        );
-                    })}
-                </Card>
-            </View>
+                {loading ? (
+                    <View className="p-6">
+                        <ActivityIndicator accessibilityLabel="Loading preferences" />
+                    </View>
+                ) : null}
 
-            <PushTab />
+                <View className="px-4">
+                    <Card testID="notification-prefs-card">
+                        {TOGGLE_ROWS.map((row) => {
+                            const pref = prefs.find((p) => p.key === row.key);
+                            return (
+                                <PreferenceToggle
+                                    key={row.key}
+                                    name={row.key}
+                                    label={row.label}
+                                    description={row.description}
+                                    value={pref?.enabled ?? row.defaultEnabled}
+                                    disabled={pending === row.key}
+                                    onValueChange={(next) => onToggle(row.key, next)}
+                                />
+                            );
+                        })}
+                    </Card>
+                </View>
 
-            <OrgDefaultsCard />
+                <PushTab />
 
-            {displayedError ? (
-                <Text
-                    testID="notification-prefs-error"
-                    className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark p-6"
+                <OrgDefaultsCard form={orgForm} />
+
+                {displayedError ? (
+                    <Text
+                        testID="notification-prefs-error"
+                        className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark p-6"
+                    >
+                        {displayedError}
+                    </Text>
+                ) : null}
+            </ScrollView>
+
+            <View
+                testID="notification-prefs-footer"
+                className="px-4 pt-3 gap-2 border-t border-border-strong-light dark:border-border-strong-dark bg-dominant-light dark:bg-dominant-dark"
+                style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+            >
+                {saveState.kind === "saved" ? (
+                    <View testID="notification-prefs-save-status" accessibilityLiveRegion="polite">
+                        <Text className="text-sm font-open-sans-semibold text-success-light dark:text-success-dark">
+                            {PARITY_COPY.notifications.saved}
+                        </Text>
+                    </View>
+                ) : null}
+                {saveState.kind === "error" ? (
+                    <View
+                        testID="notification-prefs-save-error"
+                        accessibilityRole="alert"
+                        accessibilityLiveRegion="assertive"
+                    >
+                        <Text className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark">
+                            {saveState.message}
+                        </Text>
+                    </View>
+                ) : null}
+                <Pressable
+                    testID="org-defaults-save"
+                    accessibilityLabel={PARITY_COPY.orgNotifications.savePreferences}
+                    accessibilityState={{ busy: saving }}
+                    onPress={orgForm.save}
+                    disabled={saving || orgForm.loading || orgForm.loadError !== null}
+                    className="min-h-[44px]"
                 >
-                    {displayedError}
-                </Text>
-            ) : null}
-        </ScrollView>
+                    <Text className="text-sm font-open-sans-semibold text-white">
+                        {saving ? PARITY_COPY.notifications.saving : PARITY_COPY.orgNotifications.savePreferences}
+                    </Text>
+                </Pressable>
+            </View>
+        </View>
     );
 }
