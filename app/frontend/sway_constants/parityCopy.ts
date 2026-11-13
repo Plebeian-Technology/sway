@@ -356,6 +356,7 @@ export const PARITY_COPY = {
     },
 
     address: {
+        requestFailed: "Something went wrong sending your address. Please try again.",
         complete: {
             heading: "Complete your registration",
             lead: "Sway needs a little more information to match you with your representatives.",

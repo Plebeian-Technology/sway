@@ -1,6 +1,6 @@
 // @lat: [[registration-dead-ends#Browser page state selectors]]
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, usePoll, useForm, type InertiaFormProps } from "@inertiajs/react";
 import { ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
@@ -53,6 +53,7 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isCorrectingAddress, setCorrectingAddress] = useState<boolean>(false);
     const [showSwitchConfirm, setShowSwitchConfirm] = useState<boolean>(false);
+    const loadingToastId = useRef<string | undefined>(undefined);
     const noRepresentativesNotice =
         registration_outcome?.reason === "no_representatives" ? (
             <div data-testid="no-representatives-message" role="alert">
@@ -63,7 +64,7 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
 
     const handleStart = useCallback(() => {
         setLoading(true);
-        notify({
+        loadingToastId.current = notify({
             level: "info",
             title: "Finding your representatives.",
             message: "Matching your address to your local and congressional legislators may take a minute...",
@@ -73,9 +74,15 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
 
     // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
     const handleFinish = useCallback(() => {
-        toast.dismiss();
+        toast.dismiss(loadingToastId.current);
         setLoading(false);
         setCorrectingAddress(false);
+    }, []);
+
+    // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
+    const handleRequestFailed = useCallback(() => {
+        notify({ level: "error", title: PARITY_COPY.address.requestFailed });
+        return false;
     }, []);
 
     useEffect(() => {
@@ -110,9 +117,13 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
                 ...(data.street?.trim() || !typed_address?.trim() ? {} : { street: typed_address.trim() }),
                 ...extraData,
             }));
-            form.post("/sway_registration", { onFinish: handleFinish });
+            form.post("/sway_registration", {
+                onHttpException: handleRequestFailed,
+                onNetworkError: handleRequestFailed,
+                onFinish: handleFinish,
+            });
         },
-        [form, handleStart, handleFinish],
+        [form, handleStart, handleRequestFailed, handleFinish],
     );
 
     const handleSubmit = useCallback(

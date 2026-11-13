@@ -16,6 +16,8 @@ The flag lives in the component rather than on the server because nothing about 
 
 It is cleared again when the server answers, in the form's `onFinish`. Without that the flag was one-way: a corrected address that failed for the same reasons as the first one re-rendered the page with the failed status and the reader still saw a bare form, with nothing saying the second attempt had failed either. Clearing it on every answer means the state the server reports is what decides which card shows, and the flag only ever covers the round trip.
 
+A request that fails without a server answer the page renders leaves the form usable. A non-Inertia error page or a dropped connection shows one error toast in `PARITY_COPY` and suppresses Inertia's raw-response dialog, and the address stays in the form with the submit button enabled so the reader can press it again. Finishing the visit dismisses only the loading toast, whose id the page keeps from the moment it starts, because Inertia runs the finish callback after the failure callbacks and a bare dismiss would remove the error toast, or the "page expired" flash that a refused CSRF write redirects with, the moment it appeared.
+
 ## An empty list says which kind of empty it is
 
 An empty legislators list has two meanings, and they call for opposite things
