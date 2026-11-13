@@ -84,7 +84,7 @@ export default function AddressScreen() {
 
     const onChange = (key: keyof AddressForm) => (val: string) => {
         setConfirmingAddressSwitch(false);
-        setForm((f) => ({ ...f, [key]: val }));
+        setForm((f) => ({ ...f, [key]: val, latitude: null, longitude: null }));
     };
 
     // @lat: [[identity-and-access#Registration is asynchronous by necessity]]
@@ -103,10 +103,6 @@ export default function AddressScreen() {
 
     const submitForm = async (toSubmit: AddressForm) => {
         setError(null);
-        if (toSubmit.latitude == null || toSubmit.longitude == null) {
-            setError("Please pick your address from the suggestions so we can locate your district.");
-            return;
-        }
         setSubmitting(true);
         try {
             const street = [toSubmit.street1, toSubmit.street2].filter(Boolean).join(" ").trim();
@@ -140,10 +136,6 @@ export default function AddressScreen() {
 
     const handleSubmitPress = () => {
         if (!isOnboarding && !confirmingAddressSwitch) {
-            if (form.latitude == null || form.longitude == null) {
-                setError("Please pick your address from the suggestions so we can locate your district.");
-                return;
-            }
             setConfirmingAddressSwitch(true);
             return;
         }
@@ -166,7 +158,8 @@ export default function AddressScreen() {
         setForm(next);
     };
 
-    const canSubmit = form.latitude != null && form.longitude != null;
+    const canSubmit = form.street1.trim() !== "";
+    const hasPickedCoordinates = form.latitude != null && form.longitude != null;
 
     // @lat: [[mobile-auth-and-onboarding-flow#Why isOnboarding only changes wording]]
     const submitLabel = isOnboarding ? PARITY_COPY.address.complete.cta : PARITY_COPY.address.edit.saveCta;
@@ -336,7 +329,7 @@ export default function AddressScreen() {
                         </View>
                     ) : null}
 
-                    {!showManual && canSubmit ? (
+                    {!showManual && hasPickedCoordinates ? (
                         <View
                             testID="selected-address-preview"
                             className="mb-4 p-3 border border-border-light dark:border-border-dark rounded-lg"

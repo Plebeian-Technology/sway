@@ -20,11 +20,12 @@ jest.mock("expo-haptics", () => ({
     ImpactFeedbackStyle: { Light: "Light" },
 }));
 
+const mockPlacesKeys: { googlePlacesApiKeyIOS?: string; googlePlacesApiKeyAndroid?: string } = {};
+
 jest.mock("expo-constants", () => ({
     expoConfig: {
-        extra: {
-            googlePlacesApiKeyIOS: "test-key",
-            googlePlacesApiKeyAndroid: "test-key-android",
+        get extra() {
+            return mockPlacesKeys;
         },
     },
 }));
@@ -85,6 +86,8 @@ let openURLSpy: jest.SpyInstance;
 
 beforeEach(() => {
     jest.clearAllMocks();
+    mockPlacesKeys.googlePlacesApiKeyIOS = "test-key";
+    mockPlacesKeys.googlePlacesApiKeyAndroid = "test-key-android";
     openURLSpy = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
 });
 
@@ -362,6 +365,157 @@ describe("AddressScreen", () => {
             expect(screen.getByText("Network failure")).toBeTruthy();
             expect(screen.queryByTestId("address-failed")).toBeNull();
             expect(screen.getByTestId("address-submit-cta")).toBeTruthy();
+        });
+    });
+
+    describe("manual entry without a Google Places key", () => {
+        const holliday = {
+            street1: "100 N Holliday St",
+            street2: "",
+            city: "Baltimore",
+            region_code: "MD",
+            postal_code: "21202",
+            country: "United States",
+            latitude: 39.29105,
+            longitude: -76.61069,
+            place_types: ["street_address"],
+        };
+
+        const type = (field: string, text: string) =>
+            fireEvent.changeText(screen.getByTestId(`address-input-${field}-input`), text);
+
+        const postedRegistration = () =>
+            (apiClient.post as jest.Mock).mock.calls[0][1].sway_registration as Record<string, unknown>;
+
+        beforeEach(() => {
+            mockPlacesKeys.googlePlacesApiKeyIOS = undefined;
+            mockPlacesKeys.googlePlacesApiKeyAndroid = undefined;
+            mockUseUserProfile.mockReturnValue({
+                user: { ...baseUser, address: undefined },
+                loading: false,
+                refresh: jest.fn(),
+            });
+        });
+
+        it("enables the submit button once the typed fields are filled and posts them with null coordinates", async () => {
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            type("city", "Baltimore");
+            type("region_code", "MD");
+            type("postal_code", "21202");
+
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(apiClient.post).toHaveBeenCalledWith(
+                "/sway_registration",
+                expect.objectContaining({
+                    sway_registration: expect.objectContaining({
+                        street: "100 N Holliday St",
+                        city: "Baltimore",
+                        region_code: "MD",
+                        postal_code: "21202",
+                        latitude: null,
+                        longitude: null,
+                    }),
+                }),
+            );
+        });
+
+        it("enables the submit button with only a street typed and posts blank other fields", async () => {
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(postedRegistration()).toEqual(
+                expect.objectContaining({ street: "100 N Holliday St", city: "", region_code: "", postal_code: "" }),
+            );
+            expect(postedRegistration().latitude).toBeNull();
+        });
+
+        it("keeps the submit button disabled while the street is empty", async () => {
+            wrap(<AddressScreen />);
+
+            type("city", "Baltimore");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(apiClient.post).not.toHaveBeenCalled();
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
+        });
+
+        it("posts null coordinates when a field is edited after a suggestion was picked", async () => {
+            mockPlacesKeys.googlePlacesApiKeyIOS = "test-key";
+            wrap(<AddressScreen />);
+
+            act(() => {
+                mockOnSelectAddress?.(holliday);
+            });
+            fireEvent.press(screen.getByTestId("btn-edit-address-manually"));
+            type("street1", "200 N Holliday St");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(postedRegistration()).toEqual(
+                expect.objectContaining({ street: "200 N Holliday St", latitude: null, longitude: null }),
+            );
+        });
+
+        it("posts the coordinates of a picked suggestion", async () => {
+            mockPlacesKeys.googlePlacesApiKeyIOS = "test-key";
+            wrap(<AddressScreen />);
+
+            act(() => {
+                mockOnSelectAddress?.(holliday);
+            });
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(postedRegistration()).toEqual(
+                expect.objectContaining({ street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069 }),
+            );
+        });
+
+        it("asks for the switch confirmation before posting a typed address in edit mode", async () => {
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: { street1: "123 Main St", city: "Baltimore", region_code: "MD", postal_code: "21201" },
+                },
+                loading: false,
+                refresh: jest.fn(),
+            });
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            fireEvent.press(screen.getByTestId("address-submit-cta"));
+
+            expect(screen.getByTestId("address-switch-confirm")).toBeTruthy();
+            expect(apiClient.post).not.toHaveBeenCalled();
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-confirm-deactivate-cta"));
+            });
+
+            expect(postedRegistration()).toEqual(
+                expect.objectContaining({
+                    street: "100 N Holliday St",
+                    latitude: null,
+                    longitude: null,
+                    confirm_deactivate_legislators: true,
+                }),
+            );
         });
     });
 

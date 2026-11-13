@@ -19,7 +19,7 @@ The SDK is set up once when the app starts, in App.tsx (see useGooglePlacesInit)
 
 There is no separate Android key yet — one locked to the package name and the app's SHA-256 signing fingerprint — so the component still renders on Android, but Google answers suggestion requests with a permission error.
 
-AddressScreen lets Android users type the address in by hand instead.
+AddressScreen lets Android users type the address in by hand instead: the screen posts the typed fields without coordinates, and the server accepts them (see [[mobile-auth-and-onboarding-flow#AddressScreen]]).
 
 ## MIN_QUERY_CHARS
 
