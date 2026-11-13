@@ -1,5 +1,7 @@
 module Sway
   class TwilioClient
+    HTTP_TIMEOUT_SECONDS: Integer
+
     def self.build: () -> Twilio::REST::Client
     def self.display_from_phone: () -> String?
   end

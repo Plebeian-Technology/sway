@@ -177,6 +177,14 @@ module Users
         twilio_code: e.code
       )
       false
+    rescue Twilio::REST::TwilioError => e
+      # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+      SwayLogging.warn(
+        "passkeys.add.confirm_failed",
+        user_id: current_user.id,
+        error_class: e.class.name
+      )
+      false
     end
   end
 end

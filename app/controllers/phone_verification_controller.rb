@@ -103,6 +103,14 @@ class PhoneVerificationController < ApplicationController
           return render json: {success: false, error: "Code not found."}, status: :ok
         end
         verification_error = "code=#{e.code}, status=#{e.status_code}"
+      rescue Twilio::REST::TwilioError => e
+        # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+        SwayLogging.warn(
+          "phone_verification.update_failed",
+          phone_last4: session_phone_last4,
+          error_class: e.class.name
+        )
+        return render json: {success: false, error: "Could not check the code. Please try again."}, status: :ok
       end
 
       # @lat: [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]]

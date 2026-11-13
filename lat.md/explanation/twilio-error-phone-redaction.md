@@ -57,6 +57,18 @@ Full exception messages are inspected solely to detect missing verification reco
 
 In `PhoneVerificationController#update`, `e.full_message` is read exclusively to determine whether Twilio returned a code `20404` verification-not-found error. The message is never logged or attached to re-raised errors because it may contain recipient phone numbers. Only numeric error codes and HTTP status values are logged and packaged into `Authentication::TwilioVerificationError`, which is raised after the rescue block completes to prevent Ruby from attaching raw errors as causes.
 
+## Why a Twilio network failure is answered, not raised
+
+A timeout or refused connection to Twilio is an outage, not a bad request, so every SMS endpoint answers it with a handled "try again" reply instead of a 500.
+
+The Twilio client turns a transport failure into `Twilio::REST::TwilioError`, the parent of `Twilio::REST::RestError`. A rescue that names only `RestError` lets it escape. Each SMS endpoint rescues it after its `RestError` rescue: the send helper returns false, the web code check answers a fixed retry message, the mobile endpoints answer 503 `verification_unavailable`, and the add-a-passkey check answers success false.
+
+The mobile code check answers 503 and not 401 `invalid_code`, because the code was never checked and may be right. The web code check returns its fixed message before the sanitized re-raise that unexpected `RestError`s reach, because an outage needs no stack trace.
+
+`TwilioError` carries no code and no status, and its message is the transport library's text, so the logs record only the error class. The send path reports a rebuilt [[app/controllers/concerns/authentication.rb#Authentication#TwilioVerificationError]] naming that class in production, with no cause attached.
+
+[[app/services/sway/twilio_client.rb#TwilioClient#HTTP_TIMEOUT_SECONDS]] bounds every Twilio call, so a stalled connection fails after ten seconds instead of holding the request open for the HTTP adapter's default. The SMS jobs share the client and so share the bound.
+
 ## Why update doesn't create a user on a verified phone
 
 Phone verification actions defer user record creation to prevent pre-registration credential assignment races.

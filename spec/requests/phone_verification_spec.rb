@@ -165,6 +165,25 @@ RSpec.describe "PhoneVerification", type: :request do
       expect(logged.join("\n")).not_to include("4105551212")
     end
 
+    it "answers a fixed retry message when Twilio cannot be reached" do
+      allow(twilio_verification_checks_double).to receive(:create).and_raise(
+        Twilio::REST::TwilioError.new("execution expired +14105551212")
+      )
+      logged = [] #: Array[String]
+      allow(Rails.logger).to receive(:warn) { |msg| logged << msg.to_s }
+
+      patch phone_verification_path("1"), params: params
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq(
+        {"success" => false, "error" => "Could not check the code. Please try again."}
+      )
+      expect(response.body).not_to include("4105551212")
+      expect(logged.join("\n")).to include("phone_verification.update_failed")
+      expect(logged.join("\n")).not_to include("4105551212")
+      expect(session_hash[:verified_phone]).to be_nil
+    end
+
     it "does not create a user after verification" do
       expect do
         patch phone_verification_path("1"), params: params

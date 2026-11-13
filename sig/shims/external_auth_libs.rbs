@@ -49,17 +49,28 @@ module Twilio
             end
         end
 
-        class RestError < StandardError
+        class TwilioError < StandardError
+        end
+
+        class RestError < TwilioError
             def code: -> (String | Integer | nil)
             def status_code: -> (Integer | nil)
             def full_message: -> String
         end
 
         class Client
-            def initialize: (String? account_sid, String? auth_token) -> void
+            def initialize: (String? account_sid, String? auth_token, ?String? account_sid_override, ?String? region, ?Twilio::HTTP::Client? http_client) -> void
+            def http_client: -> Twilio::HTTP::Client
             def verify: -> Twilio::REST::Verify::VerifyService
             def messages: -> Twilio::REST::Api::V2010::AccountContext::MessageList
             def messaging: -> Twilio::REST::Messaging::MessagingService
+        end
+    end
+
+    module HTTP
+        class Client
+            def initialize: (?timeout: Integer?) -> void
+            def timeout: -> Integer?
         end
     end
 

@@ -10,7 +10,12 @@ RSpec.describe Sway::TwilioClient do
 
       expect(described_class.build).to eq(fake_client)
       expect(Twilio::REST::Client).to have_received(:new)
-        .with(ENV["TWILIO_ACCOUNT_SID"], ENV["TWILIO_AUTH_TOKEN"])
+        .with(ENV["TWILIO_ACCOUNT_SID"], ENV["TWILIO_AUTH_TOKEN"], nil, nil, an_instance_of(Twilio::HTTP::Client))
+    end
+
+    # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+    it "gives the client a 10 second HTTP timeout" do
+      expect(described_class.build.http_client.timeout).to eq(10)
     end
   end
 

@@ -149,5 +149,41 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
       expect(logged.join("\n")).to include("api_v1.phone_verification.verify_failed")
       expect(logged.join("\n")).not_to include("4105550456")
     end
+
+    context "when Twilio cannot be reached" do
+      it "request_code answers 503 verification_unavailable" do
+        allow(twilio_verifications_double).to receive(:create).and_raise(
+          Twilio::REST::TwilioError.new("execution expired +14105550456")
+        )
+        logged = [] #: Array[String]
+        allow(Rails.logger).to receive(:warn) { |msg| logged << msg.to_s }
+
+        post "/api/v1/phone_verification", params: {phone: phone}, as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(json_body.dig(:error, :code)).to eq("verification_unavailable")
+        expect(response.body).not_to include("4105550456")
+        expect(logged.join("\n")).to include("api_v1.phone_verification.create_failed")
+        expect(logged.join("\n")).not_to include("4105550456")
+      end
+
+      it "verify answers 503 verification_unavailable, not invalid_code" do
+        allow(twilio_verification_checks_double).to receive(:create).and_raise(
+          Twilio::REST::TwilioError.new("execution expired +14105550456")
+        )
+        logged = [] #: Array[String]
+        allow(Rails.logger).to receive(:warn) { |msg| logged << msg.to_s }
+
+        post "/api/v1/phone_verification/verify",
+          params: {phone: phone, code: "000000"},
+          as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(json_body.dig(:error, :code)).to eq("verification_unavailable")
+        expect(response.body).not_to include("4105550456")
+        expect(logged.join("\n")).to include("api_v1.phone_verification.verify_failed")
+        expect(logged.join("\n")).not_to include("4105550456")
+      end
+    end
   end
 end

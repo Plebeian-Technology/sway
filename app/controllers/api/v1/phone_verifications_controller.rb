@@ -66,6 +66,14 @@ module Api
             twilio_code: e.code
           )
           render_error(code: "verification_unavailable", message: "Could not send verification code", status: :service_unavailable)
+        rescue Twilio::REST::TwilioError => e
+          # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+          SwayLogging.warn(
+            "api_v1.phone_verification.create_failed",
+            phone_last4: phone.last(4),
+            error_class: e.class.name
+          )
+          render_error(code: "verification_unavailable", message: "Could not send verification code", status: :service_unavailable)
         end
       end
 
@@ -91,6 +99,14 @@ module Api
             twilio_code: e.code
           )
           false
+        rescue Twilio::REST::TwilioError => e
+          # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+          SwayLogging.warn(
+            "api_v1.phone_verification.verify_failed",
+            phone_last4: phone.last(4),
+            error_class: e.class.name
+          )
+          return render_error(code: "verification_unavailable", message: "Could not check verification code", status: :service_unavailable)
         end
 
         unless approved

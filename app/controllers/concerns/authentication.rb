@@ -47,6 +47,19 @@ module Authentication
           )
         end
         false
+      rescue Twilio::REST::TwilioError => e
+        # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+        SwayLogging.warn(
+          "authentication.phone_verification_failed",
+          phone_last4: phone.last(4),
+          error_class: e.class.name
+        )
+        if Rails.env.production?
+          Sentry.capture_exception(
+            TwilioVerificationError.new("Twilio verification send failed (#{e.class.name})")
+          )
+        end
+        false
       end
     end
 

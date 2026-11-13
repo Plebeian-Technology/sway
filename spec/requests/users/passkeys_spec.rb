@@ -139,6 +139,31 @@ RSpec.describe "Users::Passkeys", type: :request do
       end
     end
 
+    it "confirm_phone returns success:false when Twilio cannot be reached" do
+      setup
+      allow(twilio_verification_checks_double).to receive(:create).and_raise(
+        Twilio::REST::TwilioError.new("execution expired")
+      )
+
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({"success" => false})
+      expect(session_hash[:add_passkey_verified_at]).to be_nil
+    end
+
+    it "verify_phone returns success:false when Twilio cannot be reached" do
+      setup
+      allow(twilio_verifications_double).to receive(:create).and_raise(
+        Twilio::REST::TwilioError.new("execution expired")
+      )
+
+      post verify_phone_users_passkeys_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({"success" => false})
+    end
+
     it "add_options refuses to issue a challenge without a fresh phone confirmation" do
       setup
 
