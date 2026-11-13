@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator<BillsStackParamList>();
 export default function BillsStack() {
     const { colorScheme } = useTheme();
     return (
-        <Stack.Navigator screenOptions={navigatorScreenOptions(colorScheme)}>
+        <Stack.Navigator initialRouteName="PastBillsOfTheMonth" screenOptions={navigatorScreenOptions(colorScheme)}>
             <Stack.Screen name="BillsList" component={BillsListScreen} />
             <Stack.Screen
                 name="PastBillsOfTheMonth"

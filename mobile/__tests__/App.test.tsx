@@ -71,7 +71,7 @@ describe("App", () => {
             await waitFor(() => expect(screen.getByLabelText("Open menu")).toBeTruthy());
             const drawerItems = [
                 ["drawer-item-feed", "Feed"],
-                ["drawer-item-home", "Home"],
+                ["drawer-item-home", "Bill of the Month"],
                 ["drawer-item-bills", "Bills"],
                 ["drawer-item-legislators", "Legislators"],
                 ["drawer-item-orgs", "Organizations"],
@@ -81,6 +81,10 @@ describe("App", () => {
                 const drawerItem = screen.getByTestId(testId, { includeHiddenElements: true });
                 expect(within(drawerItem).getByText(label, { includeHiddenElements: true })).toBeTruthy();
             }
+            // @lat: [[mobile-tab-navigation-architecture#AppDrawer#The drawer opens on Feed]]
+            expect(
+                screen.getByTestId("drawer-item-feed", { includeHiddenElements: true }).props.accessibilityState,
+            ).toEqual(expect.objectContaining({ selected: true }));
         },
         RENDER_BOUND_TIMEOUT_MS,
     );

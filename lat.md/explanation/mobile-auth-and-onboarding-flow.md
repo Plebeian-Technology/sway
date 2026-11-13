@@ -5,7 +5,7 @@ lat:
 
 # Mobile auth and onboarding flow
 
-How mobile's AuthStack, OnboardingStack, and RootNavigator fit together around a single AuthScreen, and how the onboarding handoff lands a new user on the Legislators screen.
+How mobile's AuthStack, OnboardingStack, and RootNavigator fit together around a single AuthScreen, and where a newly registered user lands.
 
 ## RootNavigator
 
@@ -96,20 +96,6 @@ The onboarding stack sits between creating a passkey and reaching the app.
 
 A just-registered user has a passkey and a session but no address yet, so no district either. `RootNavigator` keeps them in this stack until an address is saved; once `user.address` has a value the navigator switches to the app drawer.
 
-## onboardingHandoff
-
-A single note passed from the sign-up screens to the main drawer, read once and then thrown away (`mobile/src/navigation/onboardingHandoff.ts`).
-
-When someone finishes entering their address, the drawer opens on Legislators rather than Feed, so the first thing they see is the representatives the server just found for that address. Every launch after that starts on Feed as usual.
-
-This is a plain variable in a module rather than React state, because the address screen is taken down before the drawer is built, so there is no shared React state to pass it through. A module keeps its value across that swap.
-
-### AppDrawer's use of the handoff flag
-
-Someone who has just finished signing up lands on the Legislators screen, so the first thing they see is the representatives found from their address.
-
-This is worked out once, when the drawer is first built: React keeps the answer through later renders, and reading the flag also clears it, so the next launch starts on Feed as usual.
-
 ## AddressScreen
 
 `AddressScreen` (`mobile/src/screens/AddressScreen.tsx`) is where the user enters or changes their address.
@@ -133,10 +119,4 @@ The helper block matches the divider and three outside links on the web registra
 
 Onboarding mode means no address has been saved yet.
 
-The button reads "Find My Representatives", and after a successful save the app drawer opens on the Legislators screen. Edit mode (an address already exists) keeps "Save address" and goes back to the profile screens. `RootNavigator` and the onboarding stack already decide the routing, so this flag only changes wording and buttons.
-
-## Why the handoff flag is set before refreshing
-
-The handoff flag is set before refreshing so that the drawer can read it the very first time it renders.
-
-The chain is: refresh → the user now has an address → `RootNavigator` swaps stacks → the drawer mounts → it reads and clears the flag → it opens on Legislators. On the web app, completing registration sends the user to the feed (`/feed`).
+The button reads "Find My Representatives", and after a successful save the profile refresh moves `RootNavigator` to the app drawer, which opens on Feed. That matches the web app, which sends a newly registered user to `/feed` ([[mobile-tab-navigation-architecture#AppDrawer#The drawer opens on Feed]]). Edit mode (an address already exists) keeps "Save address" and goes back to the profile screens. `RootNavigator` and the onboarding stack already decide the routing, so this flag only changes wording and buttons.

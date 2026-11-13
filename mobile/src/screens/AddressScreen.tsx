@@ -12,7 +12,6 @@ import { clearCapturedCategories } from "../hooks/useBills";
 import { useSession } from "../hooks/useSession";
 import { useUserProfile } from "../hooks/useUserProfile";
 import AddressAutocomplete, { ParsedAddress } from "../components/AddressAutocomplete";
-import { onboardingHandoff } from "../navigation/onboardingHandoff";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { FormField } from "../components/ui/FormField";
 import { Pressable } from "../components/ui/Pressable";
@@ -129,8 +128,6 @@ export default function AddressScreen() {
             // @lat: [[mobile-sqlite-cache-design#Why address changes evict mobile SQLite caches]]
             clearCapturedCategories();
             await Promise.all([legislatorCache.clear().catch(() => {}), billCache.clear().catch(() => {})]);
-            // @lat: [[mobile-auth-and-onboarding-flow#Why the handoff flag is set before refreshing]]
-            if (isOnboarding) onboardingHandoff.setLandOnLegislators();
             await refresh();
             if (nav.canGoBack()) nav.goBack();
         } catch (e) {

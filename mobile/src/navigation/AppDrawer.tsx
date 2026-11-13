@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View } from "react-native";
 import {
     createDrawerNavigator,
@@ -7,7 +7,7 @@ import {
     type DrawerContentComponentProps,
 } from "@react-navigation/drawer";
 import { getFocusedRouteNameFromRoute, type RouteProp } from "@react-navigation/native";
-import { Home as HomeIcon, FileText, Newspaper, Users, Building2, User } from "lucide-react-native";
+import { Bookmark, FileText, Newspaper, Users, Building2, User } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,7 +23,6 @@ import BillsStack from "./BillsStack";
 import LegislatorsStack from "./LegislatorsStack";
 import OrgsStack from "./OrgsStack";
 import ProfileStack from "./ProfileStack";
-import { onboardingHandoff } from "./onboardingHandoff";
 
 // @lat: [[mobile-tab-navigation-architecture#AppDrawer]]
 const Drawer = createDrawerNavigator<AppDrawerParamList>();
@@ -60,11 +59,6 @@ const renderDrawerContent = (props: DrawerContentComponentProps): React.ReactEle
 };
 
 const AppDrawer: React.FC = () => {
-    // @lat: [[mobile-auth-and-onboarding-flow#onboardingHandoff#AppDrawer's use of the handoff flag]]
-    const [initialRouteName] = useState<keyof AppDrawerParamList>(() =>
-        onboardingHandoff.consumeLandOnLegislators() ? "Legislators" : "Feed",
-    );
-
     const { colorScheme } = useTheme();
     const t = swayTokens[colorScheme];
     const chrome = chromeColors(colorScheme);
@@ -80,7 +74,7 @@ const AppDrawer: React.FC = () => {
                 edges={["left", "right", "bottom"]}
             >
                 <Drawer.Navigator
-                    initialRouteName={initialRouteName}
+                    initialRouteName="Feed"
                     drawerContent={renderDrawerContent}
                     screenOptions={({ route }) => ({
                         headerShown: false,
@@ -116,10 +110,10 @@ const AppDrawer: React.FC = () => {
                         name="Home"
                         component={HomeStack}
                         options={{
-                            drawerLabel: "Home",
+                            drawerLabel: PARITY_COPY.billOfTheMonth.title,
                             drawerItemTestID: "drawer-item-home",
                             drawerIcon: ({ color, focused }) => (
-                                <HomeIcon color={color} size={24} strokeWidth={focused ? 2.5 : 2} />
+                                <Bookmark color={color} size={24} strokeWidth={focused ? 2.5 : 2} />
                             ),
                         }}
                     />

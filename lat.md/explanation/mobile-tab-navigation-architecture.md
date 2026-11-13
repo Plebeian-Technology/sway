@@ -13,7 +13,7 @@ Why the mobile app's six drawer items each own a native stack, why some screens 
 
 Six labelled items fit in a drawer at any screen size, where a bottom bar on a small phone such as the iPhone SE clips its labels against the bottom of the screen.
 
-Deep links, the onboarding handoff and calls such as `navigate("Legislators")` address the items by their route names: `Feed`, `Home`, `Bills`, `Legislators`, `Orgs` and `Profile`.
+Deep links and calls such as `navigate("Legislators")` address the items by their route names: `Feed`, `Home`, `Bills`, `Legislators`, `Orgs` and `Profile`. The `Home` route keeps its name for those links, but its drawer label is "Bill of the Month", the same label and bookmark icon the web navigation uses.
 
 Each item carries a test id through `drawerItemTestID` (`drawer-item-feed`, `drawer-item-home`, `drawer-item-bills`, `drawer-item-legislators`, `drawer-item-orgs`, `drawer-item-profile`), so Maestro flows tap an item by id rather than by its label.
 
@@ -24,6 +24,12 @@ The drawer's own header is hidden. Each top level screen renders [[mobile/src/co
 A view in the brand band colour, as tall as the top inset, covers the top edge, and `SafeAreaView` guards the other three. Nothing else in the layout leaves room for the home indicator. See [[mobile-chrome-and-scroll-layout#The brand band runs up under the status bar]].
 
 The drawer library stays on 7.13, and an override in [[mobile/pnpm-workspace.yaml]] holds its shared header package at 2.9.40, the release the native stack already uses. Later releases of both declare a newer navigation core than the app's 7.3 as a peer, and drawer 7.14 crashed on mount from that mismatch.
+
+### The drawer opens on Feed
+
+The drawer always opens on Feed, including right after a new user saves their address, which matches the web app's redirect to `/feed` after registration.
+
+No flag carries a destination from the onboarding screens to the drawer. Saving the address refreshes the profile, `RootNavigator` swaps to the drawer, and the drawer starts on its fixed initial route.
 
 ### Drawer panel padding comes from the root SafeAreaView
 
@@ -39,11 +45,11 @@ On a pushed screen such as Bill Detail, the same edge swipe is the iOS back gest
 
 ## HomeStack and BillsStack share the BillDetail route
 
-`FeedStack` ([[mobile/src/navigation/FeedStack.tsx]]) is the Feed drawer item: the reverse-chronological home feed (`FeedList`), and one bill's detail (`BillDetail`). `HomeStack` (`mobile/src/navigation/HomeStack.tsx`) is the Home drawer item: the Bill of the Month, and one bill's detail.
+`FeedStack` ([[mobile/src/navigation/FeedStack.tsx]]) is the Feed drawer item: the newest-first feed (`FeedList`) and one bill's detail (`BillDetail`). `HomeStack` (`mobile/src/navigation/HomeStack.tsx`) is the "Bill of the Month" drawer item: the Bill of the Month, and one bill's detail.
 
 The same detail screen is registered across `FeedStack`, `HomeStack`, `BillsStack`, and `LegislatorsStack`. That is what lets a link to a bill open inside whichever section the reader was already in, rather than moving them to another one.
 
-`BillsStack` (`mobile/src/navigation/BillsStack.tsx`) is the Bills drawer item: the list of bills (`BillsList` and `PastBillsOfTheMonth`), and one bill's detail. The detail screen is registered under the same route name here as it is in `HomeStack`, for the same reason.
+`BillsStack` (`mobile/src/navigation/BillsStack.tsx`) is the Bills drawer item: the list of bills (`BillsList` and `PastBillsOfTheMonth`), and one bill's detail. Its initial route is `PastBillsOfTheMonth`, so opening Bills from the drawer shows Past Bills of the Month ([[mobile-bills-list-screen#BillsListScreen#Opens on Past Bills of the Month]]). The detail screen is registered under the same route name here as it is in `HomeStack`, for the same reason.
 
 `BillsListScreen` serves both "All Bills" (`/bills`) and "Past Bills of the Month" (`/past_bills_of_the_month`) via an in-screen `SegmentedControl`, with `PastBillsOfTheMonth` registered in `BillsStack` so universal links to `/past_bills_of_the_month` open directly on the Past Bills of the Month segment.
 

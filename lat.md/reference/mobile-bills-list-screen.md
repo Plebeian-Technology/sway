@@ -27,6 +27,10 @@ lat:
 
 - The search box filters bill titles on the phone over the list already fetched. It's styled like `FormField`'s `TextInput`, with no visible label — the placeholder and the accessibility label do that job, which is how native search boxes normally work.
 
+## Opens on Past Bills of the Month
+
+The Bills drawer item opens on the "Past Bills of the Month" segment, because [[mobile/src/navigation/BillsStack.tsx]] starts on `PastBillsOfTheMonth`; a `/bills` deep link still opens "All Bills".
+
 ## Why the active-locale state re-derives during render instead of in a useEffect
 
 When `bootstrap` comes back with a different locale id, the picker resets to it.

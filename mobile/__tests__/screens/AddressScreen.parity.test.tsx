@@ -39,8 +39,6 @@ const mockHollidayPlaceDetail = {
 };
 
 const mockUseUserProfile = jest.fn();
-const mockSetLandOnLegislators = jest.fn((..._args: unknown[]): unknown => undefined);
-const mockConsumeLandOnLegislators = jest.fn((..._args: unknown[]): boolean => false);
 const mockApiPost = jest.fn(async (..._args: unknown[]): Promise<unknown> => ({ ok: true }));
 const mockGoBack = jest.fn();
 const mockCanGoBack = jest.fn(() => false);
@@ -49,13 +47,6 @@ const mockRefresh = jest.fn(async () => {});
 
 jest.mock("../../src/hooks/useUserProfile", () => ({
     useUserProfile: () => mockUseUserProfile(),
-}));
-
-jest.mock("../../src/navigation/onboardingHandoff", () => ({
-    onboardingHandoff: {
-        setLandOnLegislators: (...args: unknown[]) => mockSetLandOnLegislators(...args),
-        consumeLandOnLegislators: (...args: unknown[]) => mockConsumeLandOnLegislators(...args),
-    },
 }));
 
 jest.mock("../../src/api/client", () => ({
@@ -232,7 +223,7 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
     });
 
     describe("Test 2 — SC-3 onboarding-mode post-submit destination parity", () => {
-        it("onboardingHandoff.setLandOnLegislators is invoked on success (mirrors web redirect_to legislators_path)", async () => {
+        it("refreshes the profile on success so the app opens on the feed (mirrors web redirect to feed_path)", async () => {
             mockUseUserProfile.mockReturnValue({
                 user: mockOnboardingUser,
                 loading: false,
@@ -256,11 +247,9 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
                 await Promise.resolve();
             });
 
-            // Mirrors the web app: SwayRegistrationController#index redirects to legislators_path once
-            // is_registration_complete is true.
             await waitFor(() => {
                 expect(mockApiPost).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
-                expect(mockSetLandOnLegislators).toHaveBeenCalledTimes(1);
+                expect(mockRefresh).toHaveBeenCalledTimes(1);
             });
 
             // During first-time setup there is no earlier screen (canGoBack is
@@ -293,13 +282,13 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
             });
 
             await waitFor(() => expect(screen.getByText(message)).toBeTruthy());
-            expect(mockSetLandOnLegislators).not.toHaveBeenCalled();
+            expect(mockRefresh).not.toHaveBeenCalled();
             expect(mockGoBack).not.toHaveBeenCalled();
         });
     });
 
     describe("Test 3 — SC-3 edit-mode post-submit destination parity", () => {
-        it("onboardingHandoff.setLandOnLegislators NOT invoked; nav.goBack invoked after confirming address switch (edit mode pop-back)", async () => {
+        it("nav.goBack invoked after confirming address switch (edit mode pop-back)", async () => {
             mockUseUserProfile.mockReturnValue({
                 user: mockEditUser,
                 loading: false,
@@ -346,8 +335,6 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
                 );
             });
 
-            expect(mockSetLandOnLegislators).not.toHaveBeenCalled();
-
             // When editing there is a screen to return to (canGoBack is true),
             // so nav.goBack() does run.
             expect(mockGoBack).toHaveBeenCalledTimes(1);
@@ -390,7 +377,7 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
                 );
             });
 
-            expect(mockSetLandOnLegislators).toHaveBeenCalledTimes(1);
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
         });
 
         it("ticking the confirmation sends a true answer with the registration", async () => {

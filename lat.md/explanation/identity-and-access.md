@@ -181,7 +181,7 @@ with a false or missing field remains in onboarding until the bootstrap supplies
 authoritative true. The field name and boolean type stay stable in
 [[mobile/src/hooks/useUserProfile.ts]]; there is no address-presence fallback.
 [[app/models/user.rb#User#to_builder]] serializes the same derived boolean.
-`AddressScreen` uses it for onboarding copy and handoff decisions as well, so a
+`AddressScreen` uses it for onboarding copy as well, so a
 prefilled address does not complete registration.
 
 [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]]
@@ -191,7 +191,7 @@ synchronous resolution returns none, it returns HTTP 422 with the standard
 `{error: {code: "no_representatives", message: ...}}` envelope and a safe
 message; the browser path redirects with the same reason rather than claiming
 success from stale status. `AddressScreen` displays that HTTP error and does not
-set its onboarding handoff flag.
+refresh the profile, so the user stays in onboarding.
 
 ### Registration service results preserve their rows
 

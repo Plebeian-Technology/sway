@@ -11,13 +11,6 @@ jest.mock("../../src/hooks/useUserProfile", () => ({
     useUserProfile: () => mockUseUserProfile(),
 }));
 
-jest.mock("../../src/navigation/onboardingHandoff", () => ({
-    onboardingHandoff: {
-        setLandOnLegislators: jest.fn(),
-        consumeLandOnLegislators: jest.fn(() => false),
-    },
-}));
-
 jest.mock("../../src/api/client", () => ({
     apiClient: { post: jest.fn(async () => ({ ok: true })) },
 }));
