@@ -57,6 +57,12 @@ Without this, the payload loaded at cold start — when nobody was signed in, so
 - `signed_out` → fetch again; `current_user` goes back to null
 - `unauthenticated` → fetch again; the server called the token dead, so catch up
 
+## Why only the newest fetch may write
+
+Only the most recently started `fetchIt` may write state or the cache; an older one that resolves later is dropped and `refetch` resolves `false` for it.
+
+Cold start, a foreground return and `signed_in` can each start a fetch with nothing ordering them. An anonymous request begun before sign-in can resolve after the signed-in one and overwrite `current_user` with null, which would send a freshly enrolled user back to sign-in. A dropped fetch also leaves `loading` to the newer one.
+
 ## hooks/useBootstrap.ts is a pass-through
 
 `mobile/src/hooks/useBootstrap.ts` re-exports `useBootstrap` from `BootstrapContext.tsx`.

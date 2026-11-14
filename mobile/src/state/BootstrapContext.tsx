@@ -49,6 +49,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
     const [selectedSwayLocaleId, setSelectedSwayLocaleId] = useState<number | null>(null);
     const lastFetchedRef = useRef<number | null>(null);
     const hydratedRef = useRef<boolean>(false);
+    const latestFetchIdRef = useRef<number>(0);
 
     const applyLocaleOverride = useCallback(async (id: number | null) => {
         localeOverride.set(id);
@@ -59,6 +60,8 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
 
     const fetchIt = useCallback(
         async (swayLocaleId?: number): Promise<boolean> => {
+            const fetchId = ++latestFetchIdRef.current;
+            const isSuperseded = () => fetchId !== latestFetchIdRef.current;
             setLoading(true);
             setError(null);
             if (swayLocaleId != null) {
@@ -68,6 +71,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                 // @lat: [[mobile-bootstrap-lifecycle#Why the fetch checks whether it expected to be signed in]]
                 const hadBearer = (await tokenStore.get()) != null;
                 const b = await apiClient.get<Bootstrap>(Routes.bootstrap());
+                if (isSuperseded()) return false;
                 if (hadBearer && b.current_user == null) {
                     await tokenStore.clear();
                     await sessionStore.clear();
@@ -86,6 +90,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                 await bootstrapCache.set(userId, b);
                 return true;
             } catch (e: unknown) {
+                if (isSuperseded()) return false;
                 const err = e instanceof Error ? e : new Error(String(e));
                 setError(err);
                 // @lat: [[mobile-bootstrap-lifecycle#Why a 401 wipes the cache instead of falling back to it]]
@@ -104,7 +109,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                 }
                 return false;
             } finally {
-                setLoading(false);
+                if (!isSuperseded()) setLoading(false);
             }
         },
         [applyLocaleOverride],

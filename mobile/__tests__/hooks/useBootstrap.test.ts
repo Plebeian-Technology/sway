@@ -213,6 +213,65 @@ describe("BootstrapProvider / useBootstrap", () => {
         expect(result.current.bootstrap).toBeNull();
     });
 
+    describe("overlapping fetches", () => {
+        const anonymousBootstrap = { ...sampleBootstrap, current_user: null };
+
+        const deferred = <T>() => {
+            let resolve!: (value: T) => void;
+            const promise = new Promise<T>((r) => {
+                resolve = r;
+            });
+            return { promise, resolve };
+        };
+
+        test("an older anonymous response that resolves after sign-in does not overwrite the signed-in user", async () => {
+            const anonymousFetch = deferred<typeof anonymousBootstrap>();
+            mockApiGet.mockReturnValueOnce(anonymousFetch.promise);
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(1));
+
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+            await act(async () => {
+                authEvents.emit("signed_in");
+            });
+            await waitFor(() => expect(result.current.bootstrap).toEqual(sampleBootstrap));
+
+            await act(async () => {
+                anonymousFetch.resolve(anonymousBootstrap);
+            });
+
+            expect(result.current.bootstrap).toEqual(sampleBootstrap);
+            expect(mockCacheSet).not.toHaveBeenCalledWith("anonymous", anonymousBootstrap);
+        });
+
+        test("a superseded fetch is dropped and leaves loading to the newer fetch", async () => {
+            const olderFetch = deferred<typeof sampleBootstrap>();
+            const newerFetch = deferred<typeof sampleBootstrap>();
+            mockApiGet.mockReturnValueOnce(olderFetch.promise);
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(1));
+
+            mockApiGet.mockReturnValueOnce(newerFetch.promise);
+            await act(async () => {
+                void result.current.refetch();
+            });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+
+            await act(async () => {
+                olderFetch.resolve(sampleBootstrap);
+            });
+
+            expect(result.current.bootstrap).toBeNull();
+            expect(result.current.loading).toBe(true);
+
+            await act(async () => {
+                newerFetch.resolve(sampleBootstrap);
+            });
+            await waitFor(() => expect(result.current.loading).toBe(false));
+            expect(result.current.bootstrap).toEqual(sampleBootstrap);
+        });
+    });
+
     test("getConsumer destroys previous consumer when token changes", async () => {
         const createSpy = ActionCable.createConsumer as jest.Mock;
         createSpy.mockClear();
