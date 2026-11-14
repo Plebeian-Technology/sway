@@ -22,6 +22,7 @@
 #
 class UserInviteLink < ApplicationRecord
   has_shortened_urls
+  has_many :shortened_urls, class_name: "::Shortener::ShortenedUrl", as: :owner, dependent: :destroy
 
   SHORT_URL_BASE = "/s/%<unique_key>s"
   INVITE_URL_BASE = "/invite/%<user_id>s/%<uuid>s"
@@ -31,7 +32,7 @@ class UserInviteLink < ApplicationRecord
 
   before_create { self.invite_uuid = SecureRandom.uuid }
 
-  after_commit :shorten_url
+  after_commit :shorten_url, on: :create
 
   class << self
     def from(user:)

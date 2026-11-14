@@ -151,6 +151,17 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(UserOrganizationMembershipInvite.exists?(invite.id)).to be(false)
     end
 
+    it "destroys shortened invite URLs linked to the user's invite link" do
+      user.create_user_invite_url
+      invite_uuid = user.user_invite_link.invite_uuid
+      expect(Shortener::ShortenedUrl.where("url LIKE ?", "%#{invite_uuid}%")).to exist
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(Shortener::ShortenedUrl.where("url LIKE ?", "%#{invite_uuid}%")).not_to exist
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 
