@@ -62,9 +62,10 @@ const Privacy: React.FC = () => {
                 </p>
                 <ul className="mt-3 list-disc space-y-2 pl-6 text-sm text-muted-foreground">
                     <li>
-                        Service providers who help us operate Sway (for example, hosting and SMS delivery), bound to use
-                        your data only to provide that service. For example, we must share your phone number with our
-                        SMS provider, Twilio (as of this writing) in order to send you SMS messages.
+                        A few services help run Sway. Twilio sends the text message that verifies your phone number and
+                        the SMS alerts you opt into. Firebase delivers push notifications. Sentry receives error reports
+                        so we can fix bugs, and we configure it to leave out personal data. Google Cloud Storage holds
+                        our backups.
                     </li>
                     <li>When required by law, such as in response to a valid legal request.</li>
                     <li>

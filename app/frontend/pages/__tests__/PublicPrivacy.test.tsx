@@ -31,6 +31,13 @@ describe("public/Privacy", () => {
         expect(screen.getByText(/random visitor token/)).toBeTruthy();
     });
 
+    it("names the outside services that help run Sway", () => {
+        render(<Privacy />);
+        expect(screen.getByText(/Firebase/)).toBeTruthy();
+        expect(screen.getByText(/Sentry/)).toBeTruthy();
+        expect(screen.getByText(/Google Cloud Storage/)).toBeTruthy();
+    });
+
     it("states the mandatory carrier clause: phone numbers and SMS opt-in data are never sold or shared for marketing", () => {
         render(<Privacy />);
         expect(
