@@ -232,7 +232,7 @@ COMPOSE_RUN="docker compose -f .dockerdev/compose.yml -p sway run --rm --no-deps
 RSPEC_LANE_FLAGS="-e SWAY_TEST_DATABASE_DIR=/testdb -e SWAY_VITE_BUILD_DIR=\"$SWAY_VITE_BUILD_DIR\" -e SWAY_VERIFY_RUN_ID=\"$RUN_ID\""
 LANE_RERUN=(
     "bin/rubocop"
-    "pnpm test${JS_WORKER_FLAG:+ $JS_WORKER_FLAG}"
+    "pnpm test --coverage${JS_WORKER_FLAG:+ $JS_WORKER_FLAG}"
     "pnpm run tsc"
     "pnpm run lint:agent"
     "pnpm run fmt:check"
@@ -304,7 +304,7 @@ run_lane() {
             bin/rubocop
             ;;
         vitest)
-            pnpm test $JS_WORKER_FLAG
+            pnpm test --coverage $JS_WORKER_FLAG
             ;;
         tsc)
             pnpm run tsc

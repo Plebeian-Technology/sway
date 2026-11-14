@@ -39,7 +39,7 @@ The Rails helper configures isolated test data, HTTP access, coverage and browse
 Eleven lanes run directly on the host, needing no database.
 
 - `rubocop` — Standard Ruby, via `bin/rubocop`
-- `vitest` — frontend unit and component tests, worker pool capped
+- `vitest` — frontend unit and component tests, worker pool capped, with the [[verification-gates#Frontend onboarding coverage gate|onboarding coverage floors]] enforced
 - `tsc` — TypeScript types, excluding `mobile/`; rejects imports under `app/frontend/legacy/` as unresolved modules because that directory is absent, so no dedicated guard is needed
 - `oxlint` — JS/TS lint, config `.oxlintrc.json`
 - `oxfmt` — JS/TS formatting
@@ -136,6 +136,17 @@ Each red lane prints a copy-pasteable rerun beside its log path. Every Docker la
 - A line no test can reach, such as the `return nil unless change` guard in [[app/services/user_address_switch_service.rb]], keeps its file under 100 percent until the line is removed
 - `config/initializers/monkey_patches.rb` is not listed: SimpleCov's `rails` profile skips everything under `config/`, so the file can never appear in the report
 - Worker results from another rspec run in the same checkout while `verify` runs are merged too; they can only raise a file's numbers, never lower them
+
+## Frontend onboarding coverage gate
+
+The full vitest run fails when any frontend onboarding file in [[config/onboarding_coverage_floor.frontend.json]] is under its line or branch floor; the target for every file is 100 percent line and branch coverage.
+
+- [[vitest.config.ts]] builds one per-file threshold from each entry of the floor file and limits coverage to those files; coverage is not enabled by default, so `dip run vitest <file>` reports none and a partial run never trips a threshold
+- The `vitest` lane of `dip run verify` and the test step of `.github/workflows/vitest.yml` pass `--coverage`; a red lane names the file and the metric under its floor
+- The floor file is separate from [[config/onboarding_coverage_floor.yml]] so the Ruby checker never reads it
+- Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
+- Raising a floor: run `pnpm test --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
+- `app/frontend/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
 
 ## Known traps
 

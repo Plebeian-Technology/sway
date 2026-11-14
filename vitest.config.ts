@@ -1,6 +1,12 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+
+// @lat: [[verification-gates#Frontend onboarding coverage gate]]
+const onboardingFloors: Record<string, { line: number; branch: number }> = JSON.parse(
+    readFileSync(resolve(process.cwd(), "config/onboarding_coverage_floor.frontend.json"), "utf8"),
+);
 
 export default defineConfig({
     plugins: [react()],
@@ -15,6 +21,18 @@ export default defineConfig({
             "scripts/eval/__tests__/**/*.test.{ts,tsx}",
         ],
         exclude: ["**/node_modules/**"],
+        coverage: {
+            provider: "v8",
+            reportsDirectory: "coverage/vitest",
+            reporter: ["text"],
+            include: Object.keys(onboardingFloors),
+            thresholds: Object.fromEntries(
+                Object.entries(onboardingFloors).map(([file, floor]) => [
+                    file,
+                    { lines: floor.line, branches: floor.branch },
+                ]),
+            ),
+        },
         alias: {
             "@": resolve(process.cwd(), "app", "frontend"),
             "app/frontend": resolve(process.cwd(), "app", "frontend"),
