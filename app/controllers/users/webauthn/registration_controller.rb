@@ -22,7 +22,7 @@ module Users
         user = User.find_or_initialize_by(phone: session[:verified_phone])
         verified_phone_last4 = session[:verified_phone].to_s.last(4)
 
-        user.is_phone_verified = session[:verified_phone] == session[:phone]
+        user.is_phone_verified = session[:verified_phone].present? && session[:verified_phone] == session[:phone]
 
         if user.is_phone_verified
           if user.has_sway_passkey?

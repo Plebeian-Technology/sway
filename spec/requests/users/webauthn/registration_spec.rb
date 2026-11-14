@@ -106,6 +106,34 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
           }
         )
       end
+
+      it "returns the confirmation message when no phone was verified in the session" do
+        session_hash.delete(:phone)
+
+        post users_webauthn_registration_index_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
+      end
+
+      it "returns the confirmation message when the verified phone is not the submitted phone" do
+        session_hash[:verified_phone] = "4105559999"
+
+        post users_webauthn_registration_index_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
+      end
     end
   end
 

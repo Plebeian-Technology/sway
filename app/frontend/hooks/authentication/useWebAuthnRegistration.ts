@@ -16,6 +16,14 @@ const REGISTRATION_ROUTE = "/users/webauthn/registration";
 const CALLBACK_ROUTE = "/users/webauthn/registration/callback";
 const DISMISSAL_ERROR_NAMES = ["NotAllowedError", "AbortError"];
 
+interface RegistrationRefusal {
+    success: false;
+    message: string;
+}
+
+const isRegistrationRefusal = (result: unknown): result is RegistrationRefusal =>
+    typeof result === "object" && result !== null && (result as { success?: unknown }).success === false;
+
 export const useWebAuthnRegistration = (onThrottled?: (until: Date | null) => void) => {
     const http = useHttp<Record<string, any>>({});
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -31,7 +39,15 @@ export const useWebAuthnRegistration = (onThrottled?: (until: Date | null) => vo
             setPasskeyDismissed(false);
             try {
                 http.transform(() => ({ phone, passkey_label: "Sway" }));
-                const result = (await http.post(REGISTRATION_ROUTE)) as PublicKeyCredentialCreationOptionsJSON;
+                const result = (await http.post(REGISTRATION_ROUTE)) as
+                    | PublicKeyCredentialCreationOptionsJSON
+                    | RegistrationRefusal;
+
+                if (isRegistrationRefusal(result)) {
+                    setLoading(false);
+                    notify({ level: "error", title: result.message });
+                    return;
+                }
 
                 if (result) {
                     trackFunnelStep("passkey_prompt_shown");

@@ -63,6 +63,25 @@ describe("useWebAuthnRegistration", () => {
             expect(returned).toEqual(attestation);
         });
 
+        it("shows the confirm-your-phone message and starts no passkey prompt when the server refuses", async () => {
+            mocks.post.mockResolvedValue({ success: false, message: "Please confirm your phone number first." });
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+            let returned: unknown = "unset";
+
+            await act(async () => {
+                returned = await result.current.startRegistration(PHONE);
+            });
+
+            expect(returned).toBeUndefined();
+            expect(mocks.create).not.toHaveBeenCalled();
+            expect(mocks.notify).toHaveBeenCalledWith({
+                level: "error",
+                title: "Please confirm your phone number first.",
+            });
+            expect(mocks.handleError).not.toHaveBeenCalled();
+            expect(result.current.isLoading).toBe(false);
+        });
+
         it("shows a sign-up throttle toast and reports the throttle window on a 429", async () => {
             mocks.post.mockRejectedValue({ response: { status: 429, headers: { "retry-after": "45" } } });
             const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
