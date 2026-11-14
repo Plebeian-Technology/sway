@@ -187,26 +187,25 @@ const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps>
                         );
                     })}
                     {/* @lat: [[address-place-classification#Google Places results in the Nominatim shape]] */}
-                    {isFromGooglePlaces ? (
-                        <li
-                            role="presentation"
-                            aria-hidden="true"
-                            className="flex items-center justify-end border-t border-border bg-muted/30 px-3 py-1.5 text-xs font-normal text-[#5E5E5E] dark:text-white"
-                            data-testid="osm-attribution"
-                        >
+                    <li
+                        role="presentation"
+                        aria-hidden="true"
+                        className={
+                            isFromGooglePlaces
+                                ? "flex items-center justify-end border-t border-border bg-muted/30 px-3 py-1.5 text-xs font-normal text-[#5E5E5E] dark:text-white"
+                                : "flex items-center justify-between border-t border-border bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground"
+                        }
+                        data-testid="osm-attribution"
+                    >
+                        {isFromGooglePlaces ? (
                             <span translate="no">Google Maps</span>
-                        </li>
-                    ) : (
-                        <li
-                            role="presentation"
-                            aria-hidden="true"
-                            className="flex items-center justify-between border-t border-border bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground"
-                            data-testid="osm-attribution"
-                        >
-                            <span>Search by Nominatim</span>
-                            <span>© OpenStreetMap contributors</span>
-                        </li>
-                    )}
+                        ) : (
+                            <>
+                                <span>Search by Nominatim</span>
+                                <span>© OpenStreetMap contributors</span>
+                            </>
+                        )}
+                    </li>
                 </ul>
             )}
 
