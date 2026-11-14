@@ -45,7 +45,7 @@ interface IProps {
 const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_outcome, sway_locale, locale }) => {
     const activeLocale = locale ?? sway_locale ?? null;
     const logout = useLogout();
-    const requiresAddressSwitchConfirmation = Boolean(user?.is_registration_complete || user?.address);
+    const requiresAddressSwitchConfirmation = Boolean(user?.is_registration_complete);
     const form = useForm<IRegistrationFormData>({
         is_voter_registration_address_confirmed: false,
         ...(requiresAddressSwitchConfirmation ? { confirm_deactivate_legislators: false } : {}),

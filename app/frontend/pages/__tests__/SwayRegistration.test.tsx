@@ -276,11 +276,11 @@ describe("SwayRegistration — address switching confirmation", () => {
         expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
     });
 
-    it("requires confirmation when user.address is present and hides the dialog on cancel without posting", () => {
+    it("requires confirmation for a registered user with an address and hides the dialog on cancel without posting", () => {
         const userWithAddress = {
             id: 10,
-            registration_status: "pending",
-            is_registration_complete: false,
+            registration_status: "completed",
+            is_registration_complete: true,
             address: { street: "100 N Holliday St", city: "Baltimore", region_code: "MD", postal_code: "21202" },
         } as unknown as sway.IUser;
         render(<SwayRegistration user={userWithAddress} />);
@@ -294,6 +294,23 @@ describe("SwayRegistration — address switching confirmation", () => {
 
         expect(screen.queryByTestId("confirm-address-switch-dialog")).toBeNull();
         expect(post).not.toHaveBeenCalled();
+    });
+
+    it("submits directly without confirmation for a pending user whose earlier submission saved an address", () => {
+        const pendingUserWithAddress = {
+            id: 14,
+            registration_status: "pending",
+            is_registration_complete: false,
+            address: { street: "100 N Holliday St", city: "Baltimore", region_code: "MD", postal_code: "21202" },
+        } as unknown as sway.IUser;
+        render(<SwayRegistration user={pendingUserWithAddress} />);
+
+        fireEvent.change(screen.getByTestId("address-field"), { target: { value: "100 Holl" } });
+        fireEvent.click(screen.getByTestId("pick-suggestion"));
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(screen.queryByTestId("confirm-address-switch-dialog")).toBeNull();
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
     });
 
     it("submits directly without confirmation for a first-time user with no existing address", () => {
