@@ -129,16 +129,16 @@ module Api
             aaguid: webauthn_credential.try(:aaguid)
           )
           passkey.validate!
-
-          unless SmsVerificationToken.consume!(cached[:sms_verified_token], phone: cached[:phone])
-            invalid_sms_token = true
-            raise ActiveRecord::Rollback
-          end
-
           passkey.save!
           NotificationPreference.seed_defaults_for(user)
 
           result = build_bearer_token_payload(user, platform: p[:platform])
+
+          # @lat: [[sms-verification-token-design#Why the token is spent last]]
+          unless SmsVerificationToken.consume!(cached[:sms_verified_token], phone: cached[:phone])
+            invalid_sms_token = true
+            raise ActiveRecord::Rollback
+          end
         end
 
         if invalid_sms_token

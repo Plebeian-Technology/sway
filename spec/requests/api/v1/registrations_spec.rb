@@ -289,6 +289,114 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         expect(User.find_by(phone: phone)).to be_nil
       end
     end
+
+    context "when account creation fails after the passkey is verified" do
+      include_context "WebAuthnDouble"
+
+      it "keeps the sms_verified_token when seeding notification preferences raises" do
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-seed-fail",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+        allow(NotificationPreference).to receive(:seed_defaults_for).and_raise(StandardError, "seed failed")
+
+        expect {
+          post "/api/v1/registrations/callback",
+            params: {registration: {challenge_id: "reg-seed-fail", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+            as: :json
+        }.to raise_error(StandardError, "seed failed")
+
+        expect(User.find_by(phone: phone)).to be_nil
+        expect(Passkey.count).to eq(0)
+        expect(UserDevice.count).to eq(0)
+        expect(SmsVerificationToken.peek(token)).to be_present
+      end
+
+      it "keeps the sms_verified_token when saving the passkey raises ActiveRecord::RecordNotUnique" do
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-save-fail",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+        allow_any_instance_of(Passkey).to receive(:save!).and_raise(ActiveRecord::RecordNotUnique) # rubocop:disable RSpec/AnyInstance
+
+        expect {
+          post "/api/v1/registrations/callback",
+            params: {registration: {challenge_id: "reg-save-fail", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+            as: :json
+        }.to raise_error(ActiveRecord::RecordNotUnique)
+
+        expect(User.find_by(phone: phone)).to be_nil
+        expect(Passkey.count).to eq(0)
+        expect(UserDevice.count).to eq(0)
+        expect(SmsVerificationToken.peek(token)).to be_present
+      end
+
+      it "returns 409 phone_already_registered and keeps the token when the phone gains a passkey before the callback" do
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-raced",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+        create(:passkey, user: create(:user, phone: phone))
+
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-raced", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:conflict)
+        expect(json_body.dig(:error, :code)).to eq("phone_already_registered")
+        expect(SmsVerificationToken.peek(token)).to be_present
+      end
+
+      it "returns 401 invalid_sms_token, creates nothing and deletes the challenge when consume! returns false" do
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-consume-false",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+        allow(SmsVerificationToken).to receive(:consume!).and_return(false)
+
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-consume-false", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(json_body.dig(:error, :code)).to eq("invalid_sms_token")
+        expect(User.find_by(phone: phone)).to be_nil
+        expect(Passkey.count).to eq(0)
+        expect(UserDevice.count).to eq(0)
+        expect(Rails.cache.read("webauthn:challenge:reg-consume-false")).to be_nil
+      end
+    end
+
+    context "when the phone has a user with no passkey and an unverified phone" do
+      include_context "WebAuthnDouble"
+
+      it "reuses that user and marks the phone verified" do
+        existing = create(:user, phone: phone, is_phone_verified: false)
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-existing",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-existing", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(User.where(phone: phone).count).to eq(1)
+        expect(existing.reload.is_phone_verified).to be(true)
+        expect(Passkey.find_by!(external_id: fake_credential_id).user).to eq(existing)
+      end
+    end
   end
 
   # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
