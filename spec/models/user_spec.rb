@@ -530,6 +530,20 @@ RSpec.describe User, type: :model do
       ].freeze
     end
 
+    let(:allowed_nullify_keys) do
+      [
+        ["bill_summary_reports", "resolved_by_id"]
+      ].freeze
+    end
+
+    let(:allowed_nullify_associations) do
+      %i[
+        resolved_bill_summary_reports
+        approved_position_changes
+        rejected_position_changes
+      ].freeze
+    end
+
     let(:pending_foreign_keys) do
       [].freeze
     end
@@ -537,19 +551,38 @@ RSpec.describe User, type: :model do
     it "fails when a foreign key to users is neither handled nor allowlisted" do
       conn = ActiveRecord::Base.connection
       user_fks = conn.tables.flat_map { |t| conn.foreign_keys(t).select { |fk| fk.to_table == "users" } }
-      handled_assocs = User.reflect_on_all_associations.select do |assoc|
-        assoc.options[:dependent].in?(%i[destroy delete_all nullify])
+
+      destroy_assocs = User.reflect_on_all_associations.select do |assoc|
+        assoc.options[:dependent].in?(%i[destroy delete_all])
       end.map { |a| [a.table_name, a.foreign_key.to_s] }.to_set
 
-      unhandled = user_fks.reject do |fk|
+      nullify_assocs = User.reflect_on_all_associations.select do |assoc|
+        assoc.options[:dependent] == :nullify
+      end
+
+      handled_assocs = (destroy_assocs + nullify_assocs.map { |a| [a.table_name, a.foreign_key.to_s] }).to_set
+
+      unhandled_fks = user_fks.reject do |fk|
         pair = [fk.from_table, fk.column.to_s]
-        fk.on_delete.in?(%i[cascade nullify]) ||
-          admin_actor_foreign_keys.include?(pair) ||
-          pending_foreign_keys.include?(pair) ||
+        next true if admin_actor_foreign_keys.include?(pair)
+        next true if pending_foreign_keys.include?(pair)
+        next true if fk.on_delete == :cascade
+        next true if destroy_assocs.include?(pair)
+
+        if fk.on_delete == :nullify
+          allowed_nullify_keys.include?(pair)
+        else
           handled_assocs.include?(pair)
+        end
       end.map { |fk| "#{fk.from_table}.#{fk.column}" }
 
-      expect(unhandled).to be_empty, "Unhandled foreign keys to users: #{unhandled.join(", ")}"
+      disallowed_assocs = nullify_assocs.reject do |assoc|
+        allowed_nullify_associations.include?(assoc.name)
+      end.map(&:name).map(&:to_s)
+
+      offenses = unhandled_fks + disallowed_assocs
+
+      expect(offenses).to be_empty, "Unhandled foreign keys or disallowed nullify associations: #{offenses.join(", ")}"
     end
   end
 end
