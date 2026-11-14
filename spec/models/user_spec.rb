@@ -73,6 +73,34 @@ RSpec.describe User, type: :model do
       expect(user.reload.registration_status).to eq("pending")
       expect(user.is_registration_complete).to be(false)
     end
+
+    it "returns true when the user has no legislator pairing but waits for a locale's representatives" do
+      user = create(:user, is_registration_complete: false)
+      user.add_pending_representative_locale(create(:sway_locale, :congress))
+
+      expect(user.registered?).to be(true)
+    end
+
+    it "returns false when every legislator pairing is inactive and no locale is pending" do
+      user = create(:user)
+      create(:user_legislator, user: user).update!(active: false)
+
+      expect(user.pending_representative_locale_ids).to eq([])
+      expect(user.registered?).to be(false)
+    end
+  end
+
+  describe "#complete! for a user waiting for representatives" do
+    it "moves a pending user with no legislator pairing to completed" do
+      user = create(:user, is_registration_complete: false)
+      user.add_pending_representative_locale(create(:sway_locale, :congress))
+
+      user.complete!
+
+      expect(user.reload.registration_status).to eq("completed")
+      expect(user.is_registration_complete).to be(true)
+      expect(user.user_legislators).to be_empty
+    end
   end
 
   describe "registration completion" do

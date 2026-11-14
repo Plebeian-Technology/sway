@@ -354,7 +354,7 @@ class User < ApplicationRecord
 
   # @lat: [[identity-and-access#Registration is asynchronous by necessity]]
   def registered?
-    user_legislators.where(active: true).exists?
+    pending_representative_locale_ids.any? || user_legislators.where(active: true).exists?
   end
 
   # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried]]
