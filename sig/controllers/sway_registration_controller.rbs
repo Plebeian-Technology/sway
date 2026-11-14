@@ -3,6 +3,7 @@ class SwayRegistrationController < ApplicationController
     REGISTRATION_NO_REPRESENTATIVES_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_CONFIRMATION_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_COOLDOWN_MESSAGE: ::String
+    REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE: ::String
 
     @submitted_normalized_key: String?
 
@@ -20,6 +21,8 @@ class SwayRegistrationController < ApplicationController
     def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
 
     def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
+
+    def render_address_switch_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
 
     def report_skipped_locale: (User u, Address address_instance, SwayLocale sway_locale, StandardError exception) -> void
 

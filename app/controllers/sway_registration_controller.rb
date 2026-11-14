@@ -14,6 +14,8 @@ class SwayRegistrationController < ApplicationController
     "Switching your address deactivates your current representative links. Please confirm to continue."
   REGISTRATION_ADDRESS_SWITCH_COOLDOWN_MESSAGE =
     "You recently changed your address. To prevent cross-district voting abuse, please wait before switching addresses again."
+  REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE =
+    "We couldn't change your address right now. Please try again in a few minutes."
 
   def index
     u = current_user
@@ -119,6 +121,8 @@ class SwayRegistrationController < ApplicationController
         UserAddressSwitchService.new(u, previous_address: previous_address, new_address: new_address).call
       rescue SwayGeocode::ServiceUnavailableError => e
         return render_geocoding_unavailable(u, new_address, e)
+      rescue => e
+        return render_address_switch_unavailable(u, new_address, e)
       end
 
     if change
@@ -141,6 +145,29 @@ class SwayRegistrationController < ApplicationController
     respond_json_or_redirect(
       status: :service_unavailable,
       json: {error: {code: "geocoding_unavailable", message: REGISTRATION_UNAVAILABLE_MESSAGE}},
+      redirect: sway_registration_index_path
+    )
+  end
+
+  # @lat: [[registration-dead-ends#A failed address switch changes nothing]]
+  def render_address_switch_unavailable(u, address_instance, exception)
+    SwayLogging.log_exception(
+      "sway_registration.address_switch_failed",
+      exception: exception,
+      user_id: u.id,
+      address_id: address_instance.id
+    )
+    Sentry.capture_exception(exception, extra: {user_id: u.id, address_id: address_instance.id})
+    flash[:alert] = REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE
+    error = RegistrationErrorResource.new(
+      {
+        code: "registration_unavailable",
+        message: REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE
+      }
+    ).serializable_hash
+    respond_json_or_redirect(
+      status: :service_unavailable,
+      json: {error: error},
       redirect: sway_registration_index_path
     )
   end

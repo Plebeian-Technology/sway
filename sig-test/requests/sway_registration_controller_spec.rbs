@@ -10,3 +10,9 @@ class Object
   def form_body: () -> Hash[Symbol, untyped]
   def expect_stored_form_address: () -> void
 end
+
+# Helpers of the confirmed-address-switch failure describe block.
+class Object
+  def address_before_switch: () -> Address
+  def address_switch_params: () -> Hash[Symbol, Hash[Symbol, untyped]]
+end

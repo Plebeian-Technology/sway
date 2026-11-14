@@ -770,6 +770,75 @@ RSpec.describe "/registration", type: :request do
     end
   end
 
+  describe "POST /sway_registration when a confirmed address switch fails to resolve" do
+    let!(:sway_locale) { create(:sway_locale, city: "Baltimore", state: "MD", country: "US") }
+    let!(:legislator) { create(:legislator, sway_locale: sway_locale) }
+    let!(:user) { complete_registration_with_active_link(create(:user), legislator: legislator) }
+    let!(:address_before_switch) { create(:address, street: "100 N Holliday St", city: "Baltimore", region_code: "MD", postal_code: "21202") }
+    let(:address_switch_params) do
+      {
+        sway_registration: {
+          street: "100 Light St",
+          city: "Baltimore",
+          region_code: "MD",
+          postal_code: "21202",
+          country: "US",
+          latitude: 39.2851,
+          longitude: -76.6141,
+          confirm_deactivate_legislators: true
+        }
+      }
+    end
+
+    before do
+      UserAddress.create!(user: user, address: address_before_switch)
+      sign_in(user)
+      allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 registration_unavailable and changes nothing (JSON)" do
+      error = RuntimeError.new("unexpected resolution failure")
+      allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_raise(error) # rubocop:disable RSpec/AnyInstance
+
+      expect {
+        post "/sway_registration", params: address_switch_params, headers: {"Accept" => "application/json"}
+      }.not_to change(UserAddressChange, :count)
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body["error"]).to eq(
+        "code" => "registration_unavailable",
+        "message" => SwayRegistrationController::REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE
+      )
+      expect(user.reload.address).to eq(address_before_switch)
+      expect(UserLegislator.find_by!(user: user, legislator: legislator).active).to be(true)
+      expect(Sentry).to have_received(:capture_exception)
+        .with(error, extra: {user_id: user.id, address_id: Address.order(:id).last&.id})
+    end
+
+    it "redirects back to registration with the switch alert (web)" do
+      allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_raise(RuntimeError, "unexpected resolution failure") # rubocop:disable RSpec/AnyInstance
+
+      post "/sway_registration", params: address_switch_params
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      expect(flash[:alert]).to eq(SwayRegistrationController::REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE)
+      expect(user.reload.address).to eq(address_before_switch)
+      expect(UserLegislator.find_by!(user: user, legislator: legislator).active).to be(true)
+    end
+
+    it "still answers geocoding_unavailable when a geocoding service is down" do
+      allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_raise(SwayGeocode::ServiceUnavailableError, "Census TIGERweb geocoding is unavailable") # rubocop:disable RSpec/AnyInstance
+
+      post "/sway_registration", params: address_switch_params, headers: {"Accept" => "application/json"}
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("geocoding_unavailable")
+      expect(user.reload.address).to eq(address_before_switch)
+      expect(Sentry).not_to have_received(:capture_exception)
+    end
+  end
+
   # @lat: [[address-normalized-key#Finding an address during registration]]
   describe "POST /sway_registration address de-duplication" do
     let(:user) { create(:user) }

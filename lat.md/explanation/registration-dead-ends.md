@@ -18,6 +18,21 @@ It is cleared again when the server answers, in the form's `onFinish`. Without t
 
 A request that fails without a server answer the page renders leaves the form usable. A non-Inertia error page or a dropped connection shows one error toast in `PARITY_COPY` and suppresses Inertia's raw-response dialog, and the address stays in the form with the submit button enabled so the reader can press it again. Finishing the visit dismisses only the loading toast, whose id the page keeps from the moment it starts, because Inertia runs the finish callback after the failure callbacks and a bare dismiss would remove the error toast, or the "page expired" flash that a refused CSRF write redirects with, the moment it appeared.
 
+## A failed address switch changes nothing
+
+A registered user's confirmed address switch that fails while resolving the new address answers `registration_unavailable` with HTTP 503 and leaves the old address and links in place.
+
+A first registration completes with whatever resolves, because a new user has
+nothing to lose. A switch is the opposite case: the user already has active
+representatives, and a half-applied switch would deactivate links they still
+hold. [[app/services/user_address_switch_service.rb#UserAddressSwitchService]]
+resolves every locale before it writes anything, so an error raised during
+resolution leaves the account as it was. The controller turns any such error,
+other than the geocoding outage that keeps its own `geocoding_unavailable`
+answer, into a retryable message and a Sentry report instead of a 500. The
+browser gets the message as a flash alert on the registration page, and a JSON
+client gets it in the error body.
+
 ## An empty list says which kind of empty it is
 
 An empty legislators list has two meanings, and they call for opposite things
