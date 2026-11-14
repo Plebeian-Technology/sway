@@ -6,7 +6,7 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 
 import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError } from "../../src/auth/passkeyAuth";
 import { smsAuth } from "../../src/auth/smsAuth";
-import { ApiRequestError } from "../../src/api/errors";
+import { ApiRequestError, NetworkError, RateLimitedError, UnauthorizedError } from "../../src/api/errors";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -47,6 +47,16 @@ jest.mock("expo-haptics", () => ({
     impactAsync: jest.fn(async () => {}),
     ImpactFeedbackStyle: { Light: "Light" },
 }));
+
+// Mobile-local sentences the code step shows in place of server codes and runtime text.
+const CODE_STEP_MESSAGES = {
+    invalidCode: "That code did not work. Check the code and try again.",
+    rateLimited: "Too many attempts. Please try again later.",
+    network: "Sway could not be reached. Check your connection and try again.",
+    expiredToken: "Your code expired. Request a new code to continue.",
+    alreadyRegistered: "This phone already has an account. Sign in with your passkey.",
+    passkeyFailed: "Passkey setup failed. Please try again.",
+};
 
 // Import AuthScreen only after the fakes above are in place.
 import AuthScreen from "../../src/screens/AuthScreen";
@@ -177,7 +187,7 @@ describe("AuthScreen", () => {
     });
 
     // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
-    test("a cancelled passkey enrolment leaves the code box up with no error text", async () => {
+    test("a cancelled passkey enrolment leaves the code box up with no raw error text", async () => {
         (passkeyAuth.signIn as jest.Mock).mockRejectedValue(new NoPasskeyError());
         (smsAuth.requestCode as jest.Mock).mockResolvedValue(undefined);
         (smsAuth.verifyCode as jest.Mock).mockResolvedValue({ sms_verified_token: "tok-1", expires_at: "2099" });
@@ -294,10 +304,174 @@ describe("AuthScreen", () => {
             await reachCodeBox(getByTestId);
 
             await confirmCode(getByTestId);
-            expect(getByText("SMS verification token invalid or expired")).toBeTruthy();
+            expect(getByText(CODE_STEP_MESSAGES.expiredToken)).toBeTruthy();
+            await reachCodeBox(getByTestId);
             await confirmCode(getByTestId);
 
             expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe("code step failures", () => {
+        const reachCodeBox = async (getByTestId: ReturnType<typeof render>["getByTestId"]) => {
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+        };
+
+        const pressConfirmCode = async (getByTestId: ReturnType<typeof render>["getByTestId"]) => {
+            fireEvent.changeText(getByTestId("auth-code-field"), "123456");
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-loading-panel")).toBeTruthy());
+            await waitFor(() => expect(() => getByTestId("auth-loading-panel")).toThrow());
+        };
+
+        const rawText = "raw server or runtime text";
+        const serverError = (Klass: typeof ApiRequestError, code: string, status: number) =>
+            new Klass(code, rawText, undefined, status);
+
+        beforeEach(() => {
+            (passkeyAuth.signIn as jest.Mock).mockRejectedValue(new NoPasskeyError());
+            (smsAuth.requestCode as jest.Mock).mockResolvedValue(undefined);
+            (smsAuth.verifyCode as jest.Mock).mockResolvedValue({ sms_verified_token: "tok-1", expires_at: "2099" });
+            (passkeyAuth.register as jest.Mock).mockResolvedValue(undefined);
+        });
+
+        test("an unsupported device after a valid code goes to the device help screen without the raw text", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValue(new PasskeyUnsupportedError());
+            const { getByTestId, queryByText } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+
+            expect(mockNavigate).toHaveBeenCalledWith("DeviceUnsupported");
+            expect(queryByText("passkey_unsupported")).toBeNull();
+        });
+
+        test.each([
+            [
+                "a wrong code",
+                "verify",
+                () => serverError(UnauthorizedError, "invalid_code", 401),
+                CODE_STEP_MESSAGES.invalidCode,
+            ],
+            [
+                "too many attempts on the code check",
+                "verify",
+                () => serverError(RateLimitedError, "rate_limited", 429),
+                CODE_STEP_MESSAGES.rateLimited,
+            ],
+            [
+                "too many attempts on the passkey step",
+                "register",
+                () => serverError(RateLimitedError, "rate_limited", 429),
+                CODE_STEP_MESSAGES.rateLimited,
+            ],
+            [
+                "no network on the code check",
+                "verify",
+                () => new NetworkError("network_error", "Network request failed"),
+                CODE_STEP_MESSAGES.network,
+            ],
+            [
+                "no network on the passkey step",
+                "register",
+                () => new NetworkError("network_error", "Network request failed"),
+                CODE_STEP_MESSAGES.network,
+            ],
+            [
+                "a server error on the code check",
+                "verify",
+                () => serverError(ApiRequestError, "http_500", 500),
+                PARITY_COPY.auth.passkeyPanel.verifyError,
+            ],
+            [
+                "a server error on the passkey step",
+                "register",
+                () => serverError(ApiRequestError, "http_503", 503),
+                PARITY_COPY.auth.passkeyPanel.verifyError,
+            ],
+            [
+                "a rejected passkey",
+                "register",
+                () => serverError(ApiRequestError, "invalid_passkey", 422),
+                CODE_STEP_MESSAGES.passkeyFailed,
+            ],
+            [
+                "rejected passkey credentials",
+                "register",
+                () => serverError(UnauthorizedError, "invalid_credentials", 401),
+                CODE_STEP_MESSAGES.passkeyFailed,
+            ],
+            [
+                "an unknown native error",
+                "register",
+                () => new Error("native library detail"),
+                PARITY_COPY.auth.passkeyPanel.verifyError,
+            ],
+            [
+                "a cancelled passkey sheet",
+                "register",
+                () => new NoPasskeyError(),
+                PARITY_COPY.auth.passkeyPanel.passkeyDismissed,
+            ],
+        ] as const)("%s shows a readable message and keeps the code box", async (_label, step, makeError, message) => {
+            const mock = step === "verify" ? smsAuth.verifyCode : passkeyAuth.register;
+            (mock as jest.Mock).mockRejectedValue(makeError());
+            const { getByTestId, getByText, queryByText } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+
+            expect(getByText(message)).toBeTruthy();
+            expect(queryByText(rawText)).toBeNull();
+            expect(queryByText("Network request failed")).toBeNull();
+            expect(queryByText("native library detail")).toBeNull();
+            expect(getByTestId("auth-code-field")).toBeTruthy();
+        });
+
+        test("a rejected passkey keeps the held token, so the retry skips the code check", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(
+                serverError(ApiRequestError, "invalid_passkey", 422),
+            );
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+            await pressConfirmCode(getByTestId);
+
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(1);
+            expect(passkeyAuth.register).toHaveBeenCalledTimes(2);
+        });
+
+        test("an expired token returns to the phone form and asks for a new code", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValue(
+                serverError(UnauthorizedError, "invalid_sms_token", 401),
+            );
+            const { getByTestId, getByText, queryByTestId, queryByText } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+
+            expect(getByText(CODE_STEP_MESSAGES.expiredToken)).toBeTruthy();
+            expect(queryByText(rawText)).toBeNull();
+            expect(queryByTestId("auth-code-field")).toBeNull();
+            expect(getByText(PARITY_COPY.auth.passkeyPanel.continuePhone)).toBeTruthy();
+        });
+
+        test("an existing account returns to the phone form with the passkey sign-in button", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValue(
+                serverError(ApiRequestError, "phone_already_registered", 409),
+            );
+            const { getByTestId, getByText, queryByTestId, queryByText } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+
+            expect(getByText(CODE_STEP_MESSAGES.alreadyRegistered)).toBeTruthy();
+            expect(queryByText(rawText)).toBeNull();
+            expect(queryByTestId("auth-code-field")).toBeNull();
+            expect(getByTestId("auth-passkey-cta")).toBeTruthy();
         });
     });
 

@@ -63,7 +63,7 @@ What happens when something goes wrong:
   switch to the code box
 - sending the SMS code fails → show the prepared `requestCodeError` message (never the raw API error string) and leave the code box hidden
 - the first code never arrives → the code box offers "Send a new code", which requests another code for the same phone with no client-side counter, clears the code field and confirms with `codeResent`; a refused resend shows `requestCodeError` and keeps the code box open
-- anything else → show the error text on the screen
+- anything else → show a prepared message, never the raw error text (see [[mobile-auth-and-onboarding-flow#AuthScreen#Code step failure messages]])
 
 Returning users also get a one-tap discoverable passkey button (`signInDiscoverable`) above the phone field when `isConfirmingPhone` is false; if the user cancels or has no synced passkey (`NoPasskeyError`), nothing is shown and the phone form remains ready. On mobile, the primary submit button sits above the secondary Cancel / Preview Sway button, and the three hero feature cards stack vertically rather than in three columns.
 
@@ -71,7 +71,21 @@ Returning users also get a one-tap discoverable passkey button (`signInDiscovera
 
 After the code is accepted, AuthScreen keeps the returned `sms_verified_token` in a ref until the passkey step succeeds, the server calls it invalid, or the user taps Cancel.
 
-Twilio approves a code once, so a second code check with the same digits answers invalid_code and tells the user a correct code is wrong. The server only peeks at the token when it mints the passkey challenge and consumes it on a successful callback, so a cancelled or failed enrollment can reuse the same token for up to 10 minutes. A press of Confirm code with a held token skips the code check and goes straight to the passkey sheet. An `invalid_sms_token` answer means the token expired, so the ref is emptied and the next press checks the code again.
+Twilio approves a code once, so a second code check with the same digits answers invalid_code and tells the user a correct code is wrong. The server only peeks at the token when it mints the passkey challenge and consumes it on a successful callback, so a cancelled or failed enrollment can reuse the same token for up to 10 minutes. A press of Confirm code with a held token skips the code check and goes straight to the passkey sheet. An `invalid_sms_token` answer means the token expired, so the ref is emptied and the screen returns to the phone form to request a new code.
+
+### Code step failure messages
+
+When Confirm code fails, AuthScreen shows one prepared sentence for the failure class and never the server code or the runtime text.
+
+Mapping from error to outcome:
+
+- a wrong code, a rejected passkey (`invalid_passkey`, `invalid_credentials`), too many attempts (`RateLimitedError`) and no network (`NetworkError`) each get their own sentence under the code box; the held token stays
+- a cancelled passkey sheet shows the shared `passkeyDismissed` hint
+- a server error or an unknown native error shows the shared `verifyError` copy
+- a device that cannot do passkeys goes to `DeviceUnsupported`, as sign-in does
+- an expired token (`invalid_sms_token`) and an existing account (`phone_already_registered`) reset like Cancel and return to the phone form, where the message asks for a new code or points at the passkey sign-in button
+
+The sentences live in `AuthScreen.tsx` because the web passkey panel has no equivalent states, and `parityCopy.ts` holds only copy both clients share. Each failure ends on a screen the user can act from: either the code box with the Confirm code button, or the phone form with the passkey button.
 
 ### Why "Preview Sway" opens a browser instead of navigating
 

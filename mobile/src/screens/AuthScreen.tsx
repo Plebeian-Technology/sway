@@ -14,7 +14,7 @@ import {
     View,
 } from "react-native";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
-import { ApiRequestError } from "../api/errors";
+import { ApiRequestError, NetworkError, RateLimitedError } from "../api/errors";
 import { NoPasskeyError, passkeyAuth, PasskeyUnsupportedError } from "../auth/passkeyAuth";
 import { smsAuth } from "../auth/smsAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
@@ -25,6 +25,36 @@ import { shadowBold } from "../theme/effects";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "../utils/phone";
+
+const CODE_STEP_MESSAGES = {
+    invalidCode: "That code did not work. Check the code and try again.",
+    rateLimited: "Too many attempts. Please try again later.",
+    network: "Sway could not be reached. Check your connection and try again.",
+    expiredToken: "Your code expired. Request a new code to continue.",
+    alreadyRegistered: "This phone already has an account. Sign in with your passkey.",
+    passkeyFailed: "Passkey setup failed. Please try again.",
+};
+
+const CODE_STEP_MESSAGE_BY_SERVER_CODE: Record<string, string> = {
+    invalid_code: CODE_STEP_MESSAGES.invalidCode,
+    invalid_sms_token: CODE_STEP_MESSAGES.expiredToken,
+    phone_already_registered: CODE_STEP_MESSAGES.alreadyRegistered,
+    invalid_passkey: CODE_STEP_MESSAGES.passkeyFailed,
+    invalid_credentials: CODE_STEP_MESSAGES.passkeyFailed,
+};
+
+// @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Code step failure messages]]
+const codeStepErrorMessage = (e: unknown): string => {
+    if (e instanceof NoPasskeyError) return PARITY_COPY.auth.passkeyPanel.passkeyDismissed;
+    if (e instanceof NetworkError) return CODE_STEP_MESSAGES.network;
+    if (e instanceof RateLimitedError) return CODE_STEP_MESSAGES.rateLimited;
+    if (e instanceof ApiRequestError) {
+        return CODE_STEP_MESSAGE_BY_SERVER_CODE[e.code] ?? PARITY_COPY.auth.passkeyPanel.verifyError;
+    }
+    return PARITY_COPY.auth.passkeyPanel.verifyError;
+};
+
+const CODE_STEP_RESTART_CODES = ["invalid_sms_token", "phone_already_registered"];
 
 // @lat: [[mobile-auth-and-onboarding-flow#AuthStack#types.ts's AuthStackParamList]]
 type Nav = NativeStackNavigationProp<AuthStackParamList, "Auth">;
@@ -67,10 +97,14 @@ export default function AuthScreen() {
                 await passkeyAuth.register(phone, heldSmsVerifiedToken.current);
                 heldSmsVerifiedToken.current = null;
             } catch (e) {
-                if (e instanceof ApiRequestError && e.code === "invalid_sms_token") heldSmsVerifiedToken.current = null;
                 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
-                if (e instanceof NoPasskeyError) return;
-                setError(e instanceof Error ? e.message : PARITY_COPY.auth.passkeyPanel.verifyError);
+                if (e instanceof PasskeyUnsupportedError) {
+                    nav.navigate("DeviceUnsupported");
+                    return;
+                }
+                const message = codeStepErrorMessage(e);
+                if (e instanceof ApiRequestError && CODE_STEP_RESTART_CODES.includes(e.code)) handleCancel();
+                setError(message);
             } finally {
                 setLoading(false);
             }
