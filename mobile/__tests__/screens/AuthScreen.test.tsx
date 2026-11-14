@@ -301,6 +301,65 @@ describe("AuthScreen", () => {
         });
     });
 
+    describe("sending a new code", () => {
+        const reachCodeStep = async (getByTestId: ReturnType<typeof render>["getByTestId"]) => {
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+        };
+
+        beforeEach(() => {
+            (passkeyAuth.signIn as jest.Mock).mockRejectedValue(new NoPasskeyError());
+            (smsAuth.requestCode as jest.Mock).mockResolvedValue(undefined);
+        });
+
+        test("pressing Send a new code requests another code for the same phone, clears the code and confirms", async () => {
+            const { getByTestId, getByText, queryByText, getByPlaceholderText } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+            fireEvent.changeText(getByTestId("auth-code-field"), "123456");
+            expect(getByPlaceholderText(PARITY_COPY.auth.passkeyPanel.codePlaceholder).props.value).toBe("123456");
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeNull();
+
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeTruthy());
+            expect(smsAuth.requestCode).toHaveBeenCalledTimes(2);
+            expect(smsAuth.requestCode).toHaveBeenLastCalledWith("4105550199");
+            expect(getByPlaceholderText(PARITY_COPY.auth.passkeyPanel.codePlaceholder).props.value).toBe("");
+        });
+
+        test("pressing it twice requests two more codes", async () => {
+            const { getByTestId, getByText } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+            await waitFor(() => expect(smsAuth.requestCode).toHaveBeenCalledTimes(2));
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeTruthy());
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+
+            await waitFor(() => expect(smsAuth.requestCode).toHaveBeenCalledTimes(3));
+        });
+
+        test("a refused resend shows the request-code error and keeps the code step open", async () => {
+            const { getByTestId, getByText, queryByText } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+            (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(new Error("rate limited"));
+
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.requestCodeError)).toBeTruthy());
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeNull();
+            expect(getByTestId("auth-code-field")).toBeTruthy();
+            expect(getByTestId("auth-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
+        });
+
+        test("the button is not offered before the code step", () => {
+            const { queryByText } = wrap(<AuthScreen />);
+
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.resendCode)).toBeNull();
+        });
+    });
+
     test.each(["phone", "discoverable"] as const)(
         "shows retry guidance for unexpected %s sign-in errors",
         async (flow) => {

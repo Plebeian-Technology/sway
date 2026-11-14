@@ -62,6 +62,7 @@ What happens when something goes wrong:
 - no passkey found for that phone → send an SMS code first, and only then
   switch to the code box
 - sending the SMS code fails → show the prepared `requestCodeError` message (never the raw API error string) and leave the code box hidden
+- the first code never arrives → the code box offers "Send a new code", which requests another code for the same phone with no client-side counter, clears the code field and confirms with `codeResent`; a refused resend shows `requestCodeError` and keeps the code box open
 - anything else → show the error text on the screen
 
 Returning users also get a one-tap discoverable passkey button (`signInDiscoverable`) above the phone field when `isConfirmingPhone` is false; if the user cancels or has no synced passkey (`NoPasskeyError`), nothing is shown and the phone form remains ready. On mobile, the primary submit button sits above the secondary Cancel / Preview Sway button, and the three hero feature cards stack vertically rather than in three columns.

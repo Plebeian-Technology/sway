@@ -40,6 +40,7 @@ export default function AuthScreen() {
     const [isConfirmingPhone, setConfirmingPhone] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
     // @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Held SMS-verified token]]
     const heldSmsVerifiedToken = useRef<string | null>(null);
 
@@ -53,6 +54,7 @@ export default function AuthScreen() {
             return;
         }
         setError(null);
+        setNotice(null);
 
         if (isConfirmingPhone) {
             if (!code.trim()) return;
@@ -98,6 +100,21 @@ export default function AuthScreen() {
         }
     };
 
+    const handleResendCode = async () => {
+        setError(null);
+        setNotice(null);
+        setLoading(true);
+        try {
+            await smsAuth.requestCode(phone);
+            setCode("");
+            setNotice(PARITY_COPY.auth.passkeyPanel.codeResent);
+        } catch (_smsErr) {
+            setError(PARITY_COPY.auth.passkeyPanel.requestCodeError);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleDiscoverableSignIn = async () => {
         setLoading(true);
         setError(null);
@@ -120,6 +137,7 @@ export default function AuthScreen() {
         setCode("");
         setConfirmingPhone(false);
         setError(null);
+        setNotice(null);
     };
 
     // @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Why "Preview Sway" opens a browser instead of navigating]]
@@ -265,6 +283,30 @@ export default function AuthScreen() {
                                 {submitLabel}
                             </Text>
                         </Pressable>
+
+                        {isConfirmingPhone && (
+                            <>
+                                {notice && (
+                                    <Text
+                                        testID="auth-code-notice"
+                                        className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+                                    >
+                                        {notice}
+                                    </Text>
+                                )}
+                                <Pressable
+                                    testID="auth-resend-cta"
+                                    variant="outline"
+                                    onPress={handleResendCode}
+                                    disabled={isLoading}
+                                    accessibilityLabel={PARITY_COPY.auth.passkeyPanel.resendCode}
+                                >
+                                    <Text className="text-foreground-light dark:text-foreground-dark text-sm font-open-sans-semibold">
+                                        {PARITY_COPY.auth.passkeyPanel.resendCode}
+                                    </Text>
+                                </Pressable>
+                            </>
+                        )}
 
                         {isConfirmingPhone ? (
                             <Pressable
