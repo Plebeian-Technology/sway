@@ -827,6 +827,26 @@ describe("useNominatimAddressAutocomplete", () => {
             expect(result.current.loading).toBe(false);
         });
 
+        it("keeps each place on its suggestion as raw_place, so the credit can read its source", async () => {
+            const place = { ...createMockPlace({ place_id: 103 }), source: "google_places" };
+            fetchMock.mockResolvedValueOnce(createFetchResponse([place]));
+
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "100 Holliday" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+
+            expect(result.current.suggestions[0].raw_place).toEqual(place);
+        });
+
         it("sets status='ZERO_RESULTS' and suggestions=[] when Nominatim returns an empty array", async () => {
             fetchMock.mockResolvedValueOnce(createFetchResponse([]));
 

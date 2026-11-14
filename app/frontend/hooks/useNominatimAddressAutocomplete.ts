@@ -274,7 +274,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
                     if (!item || typeof item !== "object") continue;
                     const suggestion = nominatimPlaceToSuggestion(item);
                     placesRef.current.set(suggestion.place_id, item);
-                    mapped.push(suggestion);
+                    mapped.push({ ...suggestion, raw_place: item });
                 }
 
                 setSuggestions(mapped);
