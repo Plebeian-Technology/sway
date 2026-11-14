@@ -58,7 +58,9 @@ const Privacy: React.FC = () => {
 
                 <h2 className="mt-8 text-lg font-black text-foreground">Who we share it with</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                    We do not sell your personal information. We share data only in these limited cases:
+                    Does Sway sell my data? No. Will Sway ever sell my data? Never. We may one day offer a way for you
+                    to sell your own data, and only with your explicit permission. If we do, we would likely take a
+                    small percentage of any proceeds. We share data only in these limited cases:
                 </p>
                 <ul className="mt-3 list-disc space-y-2 pl-6 text-sm text-muted-foreground">
                     <li>

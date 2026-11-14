@@ -38,6 +38,11 @@ describe("public/Privacy", () => {
         expect(screen.getByText(/Google Cloud Storage/)).toBeTruthy();
     });
 
+    it("states that data is never sold without explicit permission", () => {
+        render(<Privacy />);
+        expect(screen.getByText(/explicit permission/)).toBeTruthy();
+    });
+
     it("states the mandatory carrier clause: phone numbers and SMS opt-in data are never sold or shared for marketing", () => {
         render(<Privacy />);
         expect(
