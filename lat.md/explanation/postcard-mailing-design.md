@@ -166,9 +166,61 @@ Printing the constituent's residential address with explicit user consent offers
 
 The application presents the voter's street address in the pre-send preview modal, asking for explicit confirmation before queueing the print job. For voters who decline to print a full street address, the system provides a fallback format displaying their name, city, and ZIP code alongside Sway's return address. This compromise preserves partial constituent recognition while honoring personal privacy preferences.
 
+## Privacy impact and external data flows
+
+Mailing a physical postcard transmits constituent personal data outside Sway's self-hosted infrastructure to an external print vendor.
+
+Unlike digital votes, which Sway aggregates anonymously, physical postal delivery requires transmitting constituent identity attributes to PostGrid for USPS printing and delivery.
+
+### Personal data transmitted to the print vendor
+
+Postcard dispatch requires transmitting five personal data fields across the vendor API boundary.
+
+When a voter confirms postcard delivery, the application transmits the following payload to PostGrid's `POST /print-mail/v1/postcards` endpoint:
+
+- **Voter full name**: `current_user.full_name`, printed in the return address block.
+- **Voter residential address**: `current_user.address` (street, unit, city, state, postal code), printed as the return address for constituent verification.
+- **Recipient legislator name and office address**: Extracted from the target representative's profile.
+- **Voter stance and bill details**: The official bill number, title, and the voter's recorded vote stance.
+- **Constituent custom message**: Custom personal message text up to 300 characters composed by the voter.
+
+### Vendor retention and data handling
+
+PostGrid stores rendered postcard assets temporarily before automated deletion.
+
+As detailed in [[postcard-vendor-comparison]], PostGrid's data processing policy purges rendered PDF artwork, recipient address labels, and message text after 30 days. Order metadata, including delivery status timestamps and carrier tracking identifiers, persists in PostGrid transaction logs. PostGrid does not sell constituent data or repurpose mailing lists for third-party marketing.
+
+### Privacy policy modifications
+
+Introducing physical postcard mailing requires updating the public privacy policy at `about.sway.vote/html/privacy.html`.
+
+Two specific sections on the public privacy page require updated wording before enabling live postcard delivery:
+
+In "Which other services does Sway use?", the current text reads:
+
+> "A few services help run Sway. Twilio sends the text message that verifies your phone number. Firebase delivers push notifications. Sentry receives error reports so we can fix bugs, and we configure it to leave out personal data. Google Cloud Storage holds our backups."
+
+The proposed revision names PostGrid explicitly:
+
+> "A few services help run Sway. Twilio sends the text message that verifies your phone number. Firebase delivers push notifications. Sentry receives error reports so we can fix bugs, and we configure it to leave out personal data. Google Cloud Storage holds our backups. PostGrid prints and mails physical postcards when you choose to send one to your representatives, retaining print assets for 30 days to complete delivery."
+
+In "When does Sway share information?", the current text reads:
+
+> "We show vote totals in the app that cannot be linked to you. We disclose information when the law requires it, such as in response to a valid court order."
+
+The proposed revision clarifies constituent-initiated disclosure:
+
+> "We show vote totals in the app that cannot be linked to you. When you choose to mail a physical postcard to an elected representative, we transmit your name, mailing address, and message to our print vendor and the representative's office. We disclose information when the law requires it, such as in response to a valid court order."
+
 ## Open decisions for the owner
 
 Key architectural and product choices requiring owner confirmation, presented with recommended answers based on current system capabilities.
+
+### Privacy policy disclosure timing
+
+When should the public privacy policy be updated to name PostGrid?
+
+Recommendation: Update `about.sway.vote/html/privacy.html` and the in-app `app/frontend/pages/public/Privacy.tsx` simultaneously with the deployment of the postcard feature flag, before opening physical delivery to voters.
 
 ### Return address format
 
