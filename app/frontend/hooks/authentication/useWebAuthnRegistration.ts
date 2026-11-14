@@ -43,6 +43,7 @@ export const useWebAuthnRegistration = (onThrottled?: (until: Date | null) => vo
                     | PublicKeyCredentialCreationOptionsJSON
                     | RegistrationRefusal;
 
+                // @lat: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]
                 if (isRegistrationRefusal(result)) {
                     setLoading(false);
                     notify({ level: "error", title: result.message });
