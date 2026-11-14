@@ -133,6 +133,20 @@ RSpec.describe "UserLegislators", type: :request do
 
         expect(user.user_legislators.reload.pluck(:id, :legislator_id, :active)).to eq(links_before)
       end
+
+      it "rolls back a link saved before the lookup raised" do
+        user = setup_user_with_address
+        links_before = user.user_legislators.pluck(:id)
+        allow_any_instance_of(SwayRegistrationService).to receive(:call) do
+          create(:user_legislator, user:)
+          raise "boom"
+        end
+
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(user.user_legislators.reload.pluck(:id)).to eq(links_before)
+      end
     end
   end
 end

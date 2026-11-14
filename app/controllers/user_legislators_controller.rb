@@ -21,12 +21,15 @@ class UserLegislatorsController < ApplicationController
     end
 
     begin
-      SwayRegistrationService.new(
-        u,
-        u.address,
-        current_sway_locale,
-        invited_by_id: invited_by_id
-      ).call
+      # @lat: [[user-legislators-controller-format-split#Why UserLegislatorsController.create splits its response by format#A failed lookup leaves the links alone]]
+      ActiveRecord::Base.transaction do
+        SwayRegistrationService.new(
+          u,
+          u.address,
+          current_sway_locale,
+          invited_by_id: invited_by_id
+        ).call
+      end
     rescue => e
       return render_representatives_unavailable(u, e)
     end
