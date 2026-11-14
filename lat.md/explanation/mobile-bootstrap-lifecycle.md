@@ -45,7 +45,7 @@ For any other failure — no network, a server error — the provider keeps work
 
 The provider fetches again whenever the sign-in state changes.
 
-Without this, the payload loaded at cold start — when nobody was signed in, so `current_user` was null — would still be sitting there after signing in. `RootNavigator` would then see a signed-in user with no user record and send them into onboarding, so people who already have an address would be bounced to the address screen on every fresh launch and sign-in.
+Without this, the payload loaded at cold start — when nobody was signed in, so `current_user` was null — would still be sitting there after signing in. `RootNavigator` would then see a signed-in user with no user record and show its could-not-load screen, so people who already have an address would be stopped at a retry prompt on every fresh launch and sign-in.
 
 - `signed_in` → fetch again; there is a token now, so `current_user` fills in
 - `signed_out` → fetch again; `current_user` goes back to null
