@@ -90,14 +90,18 @@ RSpec.describe NominatimService do
       stub_request(:get, search_url)
         .to_return(status: 429, body: "Too Many Requests")
 
-      expect(described_class.search(query: "Crash Test")).to eq([])
+      with_env("GOOGLE_MAPS_API_KEY" => nil) do
+        expect(described_class.search(query: "Crash Test")).to eq([])
+      end
     end
 
     it "handles Faraday connection errors gracefully by returning empty array" do
       stub_request(:get, search_url)
         .to_raise(Faraday::ConnectionFailed.new("Failed to connect"))
 
-      expect(described_class.search(query: "Offline Test")).to eq([])
+      with_env("GOOGLE_MAPS_API_KEY" => nil) do
+        expect(described_class.search(query: "Offline Test")).to eq([])
+      end
     end
   end
 
@@ -109,6 +113,10 @@ RSpec.describe NominatimService do
     let(:place) { sample_place }
 
     before { allow(Rails).to receive(:cache).and_return(memory_cache) }
+
+    around do |example|
+      with_env("GOOGLE_MAPS_API_KEY" => nil) { example.run }
+    end
 
     def search_holliday
       described_class.search(query: "100 Holliday St")
@@ -161,6 +169,87 @@ RSpec.describe NominatimService do
 
       expect([search_holliday, search_holliday]).to eq([[], []])
       expect(stub).to have_been_requested.once
+    end
+  end
+
+  describe ".search when Nominatim gives no answer" do
+    google_url = "https://places.googleapis.com/v1/places:searchText"
+    google_place = {
+      "id" => "ChIJholliday",
+      "formattedAddress" => "100 Holliday St, Baltimore, MD 21202, USA",
+      "location" => {"latitude" => 39.2904, "longitude" => -76.6122},
+      "types" => ["street_address"],
+      "addressComponents" => []
+    }
+    google_success = {status: 200, body: {"places" => [google_place]}.to_json, headers: {"Content-Type" => "application/json"}}
+    let(:holliday_query) { hash_including("q" => "100 Holliday St") }
+
+    before do
+      allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)
+    end
+
+    it "returns the Google Places answer when Nominatim answers with an error status" do
+      stub_request(:get, search_url).with(query: holliday_query).to_return(status: 429, body: "Too Many Requests")
+      google = stub_request(:post, google_url).to_return(google_success)
+
+      results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
+        described_class.search(query: "100 Holliday St")
+      end
+
+      expect(google).to have_been_requested.once
+      expect(results.map { |result| result.values_at("place_id", "source") }).to eq([["ChIJholliday", "google_places"]])
+    end
+
+    it "asks Nominatim again on the next search once it recovers, without caching the Google answer" do
+      stub_request(:get, search_url).with(query: holliday_query)
+        .to_return(status: 429, body: "Too Many Requests").then
+        .to_return(status: 200, body: [sample_place].to_json, headers: {"Content-Type" => "application/json"})
+      google = stub_request(:post, google_url).to_return(google_success)
+
+      first, second = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
+        [described_class.search(query: "100 Holliday St"), described_class.search(query: "100 Holliday St")]
+      end
+
+      expect(first.pluck("source")).to eq(["google_places"])
+      expect(second).to eq([sample_place])
+      expect(google).to have_been_requested.once
+    end
+
+    it "does not ask Google when Nominatim answers with a genuine empty array" do
+      stub_request(:get, search_url).with(query: holliday_query)
+        .to_return(status: 200, body: [].to_json, headers: {"Content-Type" => "application/json"})
+      google = stub_request(:post, google_url).to_return(google_success)
+
+      results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
+        described_class.search(query: "100 Holliday St")
+      end
+
+      expect(results).to eq([])
+      expect(google).not_to have_been_requested
+    end
+
+    it "returns an empty array without asking Google when there is no Google key" do
+      stub_request(:get, search_url).with(query: holliday_query).to_return(status: 429, body: "Too Many Requests")
+      google = stub_request(:post, google_url).to_return(google_success)
+
+      results = with_env("GOOGLE_MAPS_API_KEY" => nil) do
+        described_class.search(query: "100 Holliday St")
+      end
+
+      expect(results).to eq([])
+      expect(google).not_to have_been_requested
+    end
+
+    it "returns an empty array when Google fails too" do
+      stub_request(:get, search_url).with(query: holliday_query).to_return(status: 429, body: "Too Many Requests")
+      google = stub_request(:post, google_url).to_return(status: 400, body: {"error" => {"status" => "INVALID_ARGUMENT"}}.to_json)
+
+      results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
+        described_class.search(query: "100 Holliday St")
+      end
+
+      expect(results).to eq([])
+      expect(google).to have_been_requested.once
     end
   end
 end

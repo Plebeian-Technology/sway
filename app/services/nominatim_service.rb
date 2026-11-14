@@ -32,9 +32,16 @@ class NominatimService
     params = build_params(query: q, viewbox: viewbox, bounded: bounded, countrycodes: countrycodes, limit: clamped_limit)
     cache_key = build_cache_key(params)
 
-    Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
+    places = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
       fetch_from_nominatim(params)
-    end || []
+    end
+    places || GooglePlaces::Client.new.search(
+      query: q,
+      viewbox: viewbox,
+      bounded: bounded,
+      countrycodes: countrycodes,
+      limit: clamped_limit
+    ) || []
   rescue => e
     SwayLogging.error("nominatim_service.search_failed", error: e.message, query: q)
     []

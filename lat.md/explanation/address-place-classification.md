@@ -53,7 +53,9 @@ To satisfy upstream policy and eliminate browser CORS blocks, autocomplete queri
 
 The controller forwards only parameters that arrive as plain text. A query that is not text, is blank, or is longer than [[app/controllers/addresses_controller.rb#AddressesController#MAX_QUERY_LENGTH|200 characters]] gets an empty answer without a Nominatim call; an optional parameter sent as an array or nested hash is dropped, so bot probes neither reach the shared public service nor log an application error.
 
-Only a successful answer is cached: a 200 response whose body is a JSON array, including a genuine empty array, which is a real "no match" answer the usage policy expects Sway to reuse. A failed or malformed answer (a non-200 status, a dropped connection, a body that is not JSON, or a JSON body that is not an array) is logged and returned as an empty array but is not cached, so a brief Nominatim outage does not make the same query answer "no results" for a day after Nominatim recovers.
+Only a successful answer is cached: a 200 response whose body is a JSON array, including a genuine empty array, which is a real "no match" answer the usage policy expects Sway to reuse. A failed or malformed answer (a non-200 status, a dropped connection, a body that is not JSON, or a JSON body that is not an array) is logged but not cached, so a brief Nominatim outage does not make the same query answer "no results" for a day after Nominatim recovers.
+
+When Nominatim gives no answer, the service asks [[app/services/google_places/client.rb#GooglePlaces#Client|Google Places]] the same query and returns its places uncached, or an empty array when Google has no key or no usable answer either; a genuine empty Nominatim answer never reaches Google.
 
 
 ## Nominatim address payload mapping
