@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require Rails.root.join("db", "seeds", "models", "legislator")
 
 RSpec.describe "/registration", type: :request do
   include_context "SessionDouble"
@@ -1052,6 +1053,147 @@ RSpec.describe "/registration", type: :request do
       post_json_body({sway_registration: {}})
 
       expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  # @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
+  describe "POST /sway_registration for a brand-new user through the real address-to-district path" do
+    let!(:baltimore) { create(:sway_locale, :baltimore) }
+    let!(:maryland) { create(:sway_locale, :maryland) }
+    let!(:congress) { create(:sway_locale, :congress) }
+    let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+
+    def city_hall_address
+      {
+        street: "100 N Holliday St",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21202",
+        country: "US",
+        latitude: 39.29105,
+        longitude: -76.61069
+      }
+    end
+
+    def columbus_address
+      {
+        street: "90 W Broad St",
+        city: "Columbus",
+        region_code: "OH",
+        postal_code: "43215",
+        country: "US",
+        latitude: 39.96173,
+        longitude: -83.00067
+      }
+    end
+
+    def stub_census(status:, body:)
+      stub_request(:get, %r{tigerweb\.geo\.census\.gov/arcgis/rest/services/TIGERweb/})
+        .to_return(status:, body:)
+    end
+
+    def census_district_body(district)
+      {features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => district}}]}.to_json
+    end
+
+    def post_address(address)
+      with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+        post "/sway_registration", params: {sway_registration: address}, headers: {"Accept" => "application/json"}
+      end
+    end
+
+    def linked_seats
+      UserLegislator.where(user:, active: true).map do |user_legislator|
+        term = user_legislator.legislator.active_term
+        [term.district.sway_locale.name, term.district.name, term.seat.title]
+      end
+    end
+
+    def active_district_names
+      UserDistrict.where(user:, active: true).map { |user_district| [user_district.district.sway_locale.name, user_district.district.name] }
+    end
+
+    before do
+      SeedLegislator.run([baltimore, maryland, congress])
+      sign_in(user)
+      allow(Sentry).to receive(:capture_exception)
+      stub_request(:get, %r{v3\.openstates\.org/people\.geo}).to_return(status: 200, body: {results: []}.to_json)
+    end
+
+    it "links a Baltimore City Hall address to its city, state and Congress representatives" do
+      stub_census(status: 200, body: census_district_body("07"))
+      expect(UserLegislator.where(user:)).to be_empty
+      expect(UserAddress.where(user:)).to be_empty
+
+      post_address(city_hall_address)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(user.reload.registered?).to be(true)
+      expect(user.pending_representative_locale_ids).to eq([])
+      expect(UserAddress.where(user:).count).to eq(1)
+      expect(Address.count).to eq(1)
+      expect(user.address.normalized_key).to eq(Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069))
+      expect(linked_seats).to contain_exactly(
+        [baltimore.name, "MD0", "Mayor"],
+        [baltimore.name, "MD0", "Council President"],
+        [baltimore.name, "MD11", "Council Member"],
+        [maryland.name, "MD0", "Governor"],
+        [congress.name, "MD0", "Sen."],
+        [congress.name, "MD0", "Sen."],
+        [congress.name, "MD7", "Rep."]
+      )
+      expect(active_district_names).to contain_exactly(
+        [baltimore.name, "MD0"],
+        [baltimore.name, "MD11"],
+        [maryland.name, "MD0"],
+        [congress.name, "MD0"],
+        [congress.name, "MD7"]
+      )
+      expect(Sentry).not_to have_received(:capture_exception)
+    end
+
+    census_failures = [
+      ["answers HTTP 502 with HTML", 502, "<html><body>Bad Gateway</body></html>"],
+      ["answers HTTP 200 with an error object", 200, {error: {code: 500, message: "Unable to complete operation."}}.to_json]
+    ] #: Array[[String, Integer, String]]
+    census_failures.each do |census_failure, status, body|
+      it "completes with the Senators and records Congress for later when Census #{census_failure}" do
+        stub_census(status:, body:)
+
+        post_address(city_hall_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["registration_status"]).to eq("completed")
+        expect(response.parsed_body.dig("error", "code")).to be_nil
+        expect(UserAddress.where(user:).count).to eq(1)
+        expect(linked_seats).to contain_exactly(
+          [baltimore.name, "MD0", "Mayor"],
+          [baltimore.name, "MD0", "Council President"],
+          [baltimore.name, "MD11", "Council Member"],
+          [maryland.name, "MD0", "Governor"],
+          [congress.name, "MD0", "Sen."],
+          [congress.name, "MD0", "Sen."]
+        )
+        expect(user.reload.pending_representative_locale_ids).to eq([congress.id])
+        expect(Sentry).to have_received(:capture_exception)
+          .with(an_instance_of(SwayGeocode::ServiceUnavailableError), level: :warning)
+      end
+    end
+
+    it "links an address in a place Sway does not support to its Congress representatives only" do
+      stub_census(status: 200, body: census_district_body("03"))
+
+      post_address(columbus_address)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(user.reload.registered?).to be(true)
+      expect(linked_seats).to contain_exactly(
+        [congress.name, "OH0", "Sen."],
+        [congress.name, "OH0", "Sen."],
+        [congress.name, "OH3", "Rep."]
+      )
     end
   end
 end

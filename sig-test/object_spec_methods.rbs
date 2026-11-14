@@ -3784,6 +3784,13 @@ class Object
     def stub_census_body: (String body) -> untyped
     def active_legislator_ids: () -> Array[Integer]
     def post_with_every_lookup_answering: () -> untyped
+    def city_hall_address: () -> Hash[Symbol, untyped]
+    def columbus_address: () -> Hash[Symbol, untyped]
+    def stub_census: (status: Integer, body: String) -> untyped
+    def census_district_body: (String district) -> String
+    def post_address: (Hash[Symbol, untyped] address) -> untyped
+    def linked_seats: () -> Array[[String, String?, String?]]
+    def active_district_names: () -> Array[[String, String?]]
     def baltimore_service: () -> SwayRegistrationService
     def create_supported_term: (legislator: Legislator, district: District, ?office_identity: String) -> LegislatorTerm
         | (legislator: Legislator, district: District, ?seat: Seat, ?office_identity: String, **untyped term_attributes)
