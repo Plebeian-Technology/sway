@@ -117,6 +117,8 @@ The main path is one Google Places autocomplete box. Whether it is available dep
 - this platform's build has no Google Places API key
 - the user taps "Edit address fields" to correct what was parsed
 
+A failed save keeps the form as typed and leaves the submit button usable, so the user can press it again. The error line shows the server's own sentence for a JSON error envelope, such as the address-change cooldown. A request that never reaches the server, including the 15-second timeout, shows a fixed connection sentence, because the platform's abort text (for example `Aborted`) tells the user nothing. An HTML error page shows the client's friendly fallback sentence.
+
 `RootNavigator` and the onboarding stack decide who gets sent here; the `isOnboarding` flag only swaps the wording and the buttons. Onboarding mode reuses the web registration page's wording, edit mode uses mobile-only wording, and the helper block at the bottom carries the same three outside links as the web page.
 
 The two buttons are built from the shared `Pressable` component. Cancel logs the user out during onboarding, or goes back one screen when editing; the web has no counterpart for this. Submit reads "Find My Representatives" during onboarding, or "Save address" when editing.

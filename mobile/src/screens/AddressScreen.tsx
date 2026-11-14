@@ -6,6 +6,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
 
 import { apiClient } from "../api/client";
+import { NetworkError } from "../api/errors";
 import * as legislatorCache from "../cache/legislatorCache";
 import * as billCache from "../cache/billCache";
 import { clearCapturedCategories } from "../hooks/useBills";
@@ -18,6 +19,8 @@ import { Pressable } from "../components/ui/Pressable";
 import { PreferenceToggle } from "../components/PreferenceToggle";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import type { ProfileStackParamList } from "../navigation/types";
+
+const CONNECTION_ERROR_MESSAGE = "Could not reach Sway. Check your connection and try again.";
 
 type Nav = NativeStackNavigationProp<ProfileStackParamList, "Address">;
 
@@ -131,7 +134,8 @@ export default function AddressScreen() {
             await refresh();
             if (nav.canGoBack()) nav.goBack();
         } catch (e) {
-            setError(e instanceof Error ? e.message : "Could not update address.");
+            if (e instanceof NetworkError) setError(CONNECTION_ERROR_MESSAGE);
+            else setError(e instanceof Error ? e.message : "Could not update address.");
         } finally {
             setSubmitting(false);
             setConfirmingAddressSwitch(false);
