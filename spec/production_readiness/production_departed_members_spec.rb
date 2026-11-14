@@ -7,6 +7,9 @@ require Rails.root.join("db", "seeds", "models", "sway_locale")
 # @lat: [[seed-legislator-terms-add-correct-retire#What production_departed_members_spec.rb verifies]]
 RSpec.describe "Production snapshot departed members of Congress", :production_snapshot, type: :model do
   include_context "production snapshot (migrated)"
+  include ActiveSupport::Testing::TimeHelpers
+
+  around { |example| travel_to(Date.new(2026, 11, 14)) { example.run } }
 
   let(:congress) do
     SwayLocale.find_by!(city: "congress", state: "congress", country: "united_states")
@@ -139,8 +142,6 @@ RSpec.describe "Production snapshot departed members of Congress", :production_s
 
     missing = roster_entries.filter_map { |entry|
       next if entry["currentMember"] == false
-      # The President is deliberately given no term, so he is never in office.
-      next if entry["bioguideId"] == LegislatorsCache::POTUS_BIOGUIDE_ID
 
       legislator = Legislator.find_by(external_id: entry["bioguideId"], sway_locale: congress)
       next if legislator && TermWindow.running_on(Date.current, legislator.legislator_terms.to_a)
@@ -205,14 +206,18 @@ RSpec.describe "Production snapshot departed members of Congress", :production_s
       expect(current_bills).to be_a(ActiveRecord::Relation)
     end
 
-    it "retires the un-evidenced POTUS term in US0 while preserving person and identifier" do
+    it "gives the existing POTUS person one current, seated President term in US0" do
       seed_all_locales!
 
       potus = Legislator.find_by!(external_id: "POTUS", sway_locale: congress)
       us0 = District.find_by!(sway_locale: congress, name: "US0")
 
-      expect(potus.legislator_terms.where(district: us0)).to be_empty
-      expect(potus.legislator_terms).to be_empty
+      term = us0.legislator_terms.current.sole
+      expect(term.legislator).to eq(potus)
+      expect(term.began_on).to eq(Date.new(2025, 1, 20))
+      expect(term.seat&.seat_identifier).to eq("us-president")
+      expect(term.seat&.chamber).to eq("Executive")
+      expect(Legislator.where(external_id: "POTUS", sway_locale: congress).count).to eq(1)
       expect(potus.first_name).to eq("Donald")
       expect(potus.last_name).to eq("Trump")
 
