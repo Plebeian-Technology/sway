@@ -32,9 +32,9 @@ class NominatimService
     params = build_params(query: q, viewbox: viewbox, bounded: bounded, countrycodes: countrycodes, limit: clamped_limit)
     cache_key = build_cache_key(params)
 
-    Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
+    Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
       fetch_from_nominatim(params)
-    end
+    end || []
   rescue => e
     SwayLogging.error("nominatim_service.search_failed", error: e.message, query: q)
     []
@@ -72,14 +72,19 @@ class NominatimService
     response = @conn.get("search", params)
     unless response.status == 200
       SwayLogging.warn("nominatim_service.http_error", status: response.status)
-      return []
+      return nil
     end
 
     parsed = response.body
     parsed = JSON.parse(parsed) if parsed.is_a?(String)
-    Array(parsed)
+    unless parsed.is_a?(Array)
+      SwayLogging.warn("nominatim_service.unexpected_body", body_class: parsed.class.name)
+      return nil
+    end
+
+    parsed
   rescue => e
     SwayLogging.warn("nominatim_service.fetch_error", error: e.message)
-    []
+    nil
   end
 end

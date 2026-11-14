@@ -100,4 +100,67 @@ RSpec.describe NominatimService do
       expect(described_class.search(query: "Offline Test")).to eq([])
     end
   end
+
+  describe ".search after a failed or malformed answer" do
+    let(:memory_cache) { ActiveSupport::Cache::MemoryStore.new }
+    let(:holliday_url) { search_url }
+    let(:holliday_query) { hash_including("q" => "100 Holliday St") }
+    let(:success_response) { {status: 200, body: [sample_place].to_json, headers: {"Content-Type" => "application/json"}} }
+    let(:place) { sample_place }
+
+    before { allow(Rails).to receive(:cache).and_return(memory_cache) }
+
+    def search_holliday
+      described_class.search(query: "100 Holliday St")
+    end
+
+    def expect_next_search_to_reach_nominatim
+      expect(search_holliday).to eq([])
+
+      stub_request(:get, holliday_url).with(query: holliday_query).to_return(success_response)
+
+      expect(search_holliday).to eq([place])
+    end
+
+    def expect_two_upstream_requests
+      expect(a_request(:get, holliday_url).with(query: holliday_query)).to have_been_made.twice
+    end
+
+    it "does not cache an HTTP 403 answer" do
+      stub_request(:get, search_url).with(query: holliday_query).to_return(status: 403, body: "Forbidden")
+
+      expect_next_search_to_reach_nominatim
+      expect_two_upstream_requests
+    end
+
+    it "does not cache a connection failure" do
+      stub_request(:get, search_url).with(query: holliday_query).to_raise(Faraday::ConnectionFailed.new("Failed to connect"))
+
+      expect_next_search_to_reach_nominatim
+    end
+
+    it "does not cache an HTTP 200 answer whose body is an HTML page" do
+      stub_request(:get, search_url).with(query: holliday_query)
+        .to_return(status: 200, body: "<html><body>Service unavailable</body></html>", headers: {"Content-Type" => "text/html"})
+
+      expect_next_search_to_reach_nominatim
+      expect_two_upstream_requests
+    end
+
+    it "returns an empty array, not key and value pairs, for an HTTP 200 JSON object and does not cache it" do
+      stub_request(:get, search_url).with(query: holliday_query)
+        .to_return(status: 200, body: {"error" => "Rate limited"}.to_json, headers: {"Content-Type" => "application/json"})
+
+      expect_next_search_to_reach_nominatim
+      expect_two_upstream_requests
+    end
+
+    it "caches a genuine empty answer" do
+      stub = stub_request(:get, search_url).with(query: holliday_query)
+        .to_return(status: 200, body: [].to_json, headers: {"Content-Type" => "application/json"})
+
+      expect([search_holliday, search_holliday]).to eq([[], []])
+      expect(stub).to have_been_requested.once
+    end
+  end
 end

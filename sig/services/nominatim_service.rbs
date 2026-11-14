@@ -35,5 +35,5 @@ class NominatimService
 
   def build_cache_key: (Hash[Symbol, untyped] params) -> String
 
-  def fetch_from_nominatim: (Hash[Symbol, untyped] params) -> Array[Hash[String, untyped]]
+  def fetch_from_nominatim: (Hash[Symbol, untyped] params) -> Array[Hash[String, untyped]]?
 end
