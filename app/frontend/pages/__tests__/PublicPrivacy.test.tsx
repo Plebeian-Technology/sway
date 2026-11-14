@@ -26,6 +26,11 @@ describe("public/Privacy", () => {
         expect(screen.getByText("Votes you cast on legislation")).toBeTruthy();
     });
 
+    it("describes sign-up telemetry using random visitor tokens", () => {
+        render(<Privacy />);
+        expect(screen.getByText(/random visitor token/)).toBeTruthy();
+    });
+
     it("states the mandatory carrier clause: phone numbers and SMS opt-in data are never sold or shared for marketing", () => {
         render(<Privacy />);
         expect(

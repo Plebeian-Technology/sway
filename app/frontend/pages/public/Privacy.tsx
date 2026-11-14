@@ -15,6 +15,13 @@ const Privacy: React.FC = () => {
                 </p>
 
                 <h2 className="mt-8 text-lg font-black text-foreground">What we collect</h2>
+                <p className="mt-3 text-sm text-muted-foreground">
+                    We collect the information you give us. We also count how far visitors get through sign-up. For that
+                    we give each browser a random visitor token and record the sign-up step it reaches and the link that
+                    referred it. These records hold no phone numbers or street addresses. We store them ourselves and
+                    send them to no analytics service. When you create an account, we link them to it. We do not show
+                    ads.
+                </p>
                 <ul className="mt-3 list-disc space-y-2 pl-6 text-sm text-muted-foreground">
                     <li>
                         <span className="font-semibold text-foreground">Phone number</span> — used to create and secure
