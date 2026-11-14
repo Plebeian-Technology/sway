@@ -77,6 +77,12 @@ development:
         queue: background
         args: []
         schedule: "0 6 * * *"
+    # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#The hourly job assigns what was skipped]]
+    assign_pending_representatives:
+        class: AssignPendingRepresentativesJob
+        queue: background
+        args: []
+        schedule: "15 * * * *"
     # @lat: [[scheduled-job-monitoring#Scheduled job monitoring#Why a job that sends real messages is scheduled in production only]]
 
 production:
@@ -199,6 +205,12 @@ production:
         queue: background
         args: []
         schedule: "0 6 * * *"
+    # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#The hourly job assigns what was skipped]]
+    assign_pending_representatives:
+        class: AssignPendingRepresentativesJob
+        queue: background
+        args: []
+        schedule: "15 * * * *"
     # @lat: [[sway-google-cloud-storage#Sway Google Cloud Storage#What the bucket says about caching audio]]
     audio_cache_control:
         class: AudioCacheControlJob
