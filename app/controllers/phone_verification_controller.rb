@@ -7,7 +7,7 @@ class PhoneVerificationController < ApplicationController
 
   skip_before_action :authenticate_sway_user!
 
-  rate_limit to: 10, within: 1.hour,
+  rate_limit to: 30, within: 1.hour,
     name: "create_ip",
     by: -> { request.remote_ip },
     only: :create,

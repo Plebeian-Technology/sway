@@ -222,21 +222,27 @@ RSpec.describe "Rate limiting", type: :request do
         end
       end
 
-      it "returns 302/429 after 10 requests from the same IP (per-IP key)" do
+      it "lets 30 requests from the same IP through and refuses the 31st (per-IP key)" do
         with_rate_limit_enabled(:phone_verify) do
-          11.times do |i|
+          30.times do |i|
             post "/phone_verification",
               params: {phone_verification: {phone: "410555#{i.to_s.rjust(4, "0")}"}},
               headers: {"REMOTE_ADDR" => "10.0.0.1"}
+            expect(response).to have_http_status(:ok)
           end
+
+          post "/phone_verification",
+            params: {phone_verification: {phone: "4105550030"}},
+            headers: {"REMOTE_ADDR" => "10.0.0.1"}
+
           expect(response).to rate_limited_status
           expect(response.headers["Retry-After"]).to be_present
         end
       end
 
-      it "answers the 11th JSON code request from one IP with 429 and a one-hour Retry-After" do
+      it "answers the 31st JSON code request from one IP with 429 and a one-hour Retry-After" do
         with_rate_limit_enabled(:phone_verify) do
-          11.times do |i|
+          31.times do |i|
             post "/phone_verification",
               params: {phone_verification: {phone: "410555#{i.to_s.rjust(4, "0")}"}},
               headers: {"REMOTE_ADDR" => "10.0.5.1"},

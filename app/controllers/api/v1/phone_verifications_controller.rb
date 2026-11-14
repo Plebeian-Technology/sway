@@ -7,7 +7,7 @@ module Api
       include OnboardingSafetyNet
 
       # @lat: [[phone-verification-rate-limits#Why a one-time code has no per-phone daily cap]]
-      rate_limit to: 5, within: 1.hour,
+      rate_limit to: 30, within: 1.hour,
         name: "request_code_ip",
         by: -> { request.remote_ip },
         only: :request_code,

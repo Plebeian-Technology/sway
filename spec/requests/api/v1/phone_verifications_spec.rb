@@ -251,16 +251,19 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
         expect(twilio_verifications_double).not_to have_received(:create)
       end
 
-      it "refuses the 6th request from one IP within an hour with 429 rate_limited" do
+      it "lets 30 requests from one IP through and refuses the 31st with 429 rate_limited" do
         with_rate_limit_enabled(:phone_verify) do
-          6.times do |i|
+          30.times do |i|
             post "/api/v1/phone_verification", params: {phone: "410555#{i.to_s.rjust(4, "0")}"}, as: :json
+            expect(response).to have_http_status(:no_content)
           end
+
+          post "/api/v1/phone_verification", params: {phone: "4105550030"}, as: :json
 
           expect(response).to have_http_status(:too_many_requests)
           expect(json_body.dig(:error, :code)).to eq("rate_limited")
           expect(response.headers["Retry-After"]).to eq("3600")
-          expect(twilio_verifications_double).to have_received(:create).exactly(5).times
+          expect(twilio_verifications_double).to have_received(:create).exactly(30).times
         end
       end
     end
