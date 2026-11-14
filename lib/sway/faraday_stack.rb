@@ -68,6 +68,16 @@ module Sway
       exceptions: TRANSPORT_RETRY_EXCEPTIONS
     }.freeze #: retry_options
 
+    # @lat: [[faraday-stack-retry-and-connection-design#Why the Nominatim profile does not retry 429]]
+    NOMINATIM_DEFAULTS = {
+      max: 3,
+      interval: 0.5, # seconds
+      backoff_factor: 2,
+      retry_statuses: [500, 502, 503, 504],
+      methods: %i[get],
+      exceptions: TRANSPORT_RETRY_EXCEPTIONS
+    }.freeze #: retry_options
+
     # @lat: [[faraday-stack-retry-and-connection-design#OpenRouter retries and upstream User-Agent headers]]
     NOMINATIM_USER_AGENT = "Sway/1.0 (civic-tech-app; https://sway.vote)"
 
@@ -167,7 +177,7 @@ module Sway
       build(
         base_url: Sway::Settings.upstream.nominatim_api_base_url,
         timeout_seconds: timeout_seconds,
-        retry_options: OPEN_DATA_DEFAULTS
+        retry_options: NOMINATIM_DEFAULTS
       ) do |conn|
         conn.headers["User-Agent"] = NOMINATIM_USER_AGENT
         conn.headers["Accept"] = "application/json"

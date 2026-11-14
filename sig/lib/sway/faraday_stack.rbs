@@ -45,6 +45,7 @@ module Sway
     GITHUB_DEFAULTS: retry_options
     GITHUB_USER_AGENT: String
     OPEN_DATA_DEFAULTS: retry_options
+    NOMINATIM_DEFAULTS: retry_options
     NOMINATIM_USER_AGENT: String
 
     def self.build: (base_url: String, ?timeout_seconds: Integer, ?retry_options: retry_options) ?{ (Faraday::Connection) -> void } -> Faraday::Connection

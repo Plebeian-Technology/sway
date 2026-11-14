@@ -43,6 +43,16 @@ RSpec.describe Sway::FaradayStack do
     end
   end
 
+  describe "NOMINATIM_DEFAULTS" do
+    it "is frozen and retries server errors but not 429" do
+      expect(described_class::NOMINATIM_DEFAULTS).to be_frozen
+      expect(described_class::NOMINATIM_DEFAULTS).to include(
+        retry_statuses: [500, 502, 503, 504],
+        exceptions: described_class::TRANSPORT_RETRY_EXCEPTIONS
+      )
+    end
+  end
+
   # @lat: [[outbound-fetch-safety#A dropped connection is retried where repeating is safe]]
   describe "TRANSPORT_RETRY_EXCEPTIONS" do
     it "extends faraday-retry's defaults with connection-reset classes and is frozen" do
@@ -55,7 +65,7 @@ RSpec.describe Sway::FaradayStack do
 
     it "wires the transport exceptions into every idempotent GET profile" do
       [described_class::LEGISTAR_DEFAULTS, described_class::OPEN_DATA_DEFAULTS,
-        described_class::GITHUB_DEFAULTS].each do |profile|
+        described_class::GITHUB_DEFAULTS, described_class::NOMINATIM_DEFAULTS].each do |profile|
         expect(profile[:exceptions]).to include(Faraday::ConnectionFailed, Faraday::SSLError)
       end
     end
@@ -121,6 +131,28 @@ RSpec.describe Sway::FaradayStack do
 
       conn = described_class.legistar
       expect { conn.get("/test-non-attachment-failure") }.to raise_error(Faraday::ConnectionFailed)
+      expect(req_stub).to have_been_made.times(4)
+    end
+  end
+
+  describe "retry attempt counts on the Nominatim connection" do
+    it "makes exactly one request for an HTTP 429 answer" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_return(status: 429, body: "Too Many Requests")
+
+      described_class.nominatim.get("search", q: "x")
+
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly 4 attempts for an HTTP 503 answer" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_return(status: 503, body: "Service Unavailable")
+
+      described_class.nominatim.get("search", q: "x")
+
       expect(req_stub).to have_been_made.times(4)
     end
   end

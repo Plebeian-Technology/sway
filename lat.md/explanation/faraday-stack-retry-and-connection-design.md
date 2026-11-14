@@ -98,3 +98,9 @@ One example still has to prove a real environment variable reaches this call sit
 [[lib/sway/faraday_stack.rb]] restricts `OPENROUTER_DEFAULTS` retries to HTTP `429` and transport exceptions, and attaches explicit `User-Agent` headers on the GitHub and Nominatim connection profiles.
 
 Retrying `5xx` responses against OpenRouter could trigger duplicate paid model executions when an upstream request already started, whereas `api.github.com` and Nominatim reject or throttle requests that omit an identifying `User-Agent`.
+
+## Why the Nominatim profile does not retry 429
+
+[[lib/sway/faraday_stack.rb#FaradayStack#nominatim]] uses `NOMINATIM_DEFAULTS`, which retries server errors and transport failures but not HTTP `429`.
+
+A `429` from the public Nominatim server means Sway is over its usage limit of about one request per second. Retrying adds load at the moment the server asks Sway to slow down, and the user waits about 3.5 seconds longer for an empty answer. Server errors (`500`, `502`, `503`, `504`) and dropped connections are transient upstream faults, so they keep the same three retries as `OPEN_DATA_DEFAULTS`, which every other open-data upstream still uses, `429` included.
