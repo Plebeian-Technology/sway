@@ -1,5 +1,11 @@
 class UserLegislatorsController < ApplicationController
+    REPRESENTATIVES_UNAVAILABLE_MESSAGE: ::String
+
     def index: -> untyped
 
     def create: -> untyped
+
+    private
+
+    def render_representatives_unavailable: (User u, StandardError exception) -> untyped
 end

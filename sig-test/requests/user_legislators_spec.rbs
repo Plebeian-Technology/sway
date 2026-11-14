@@ -1,0 +1,4 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def setup_user_with_address: () -> User
+end
