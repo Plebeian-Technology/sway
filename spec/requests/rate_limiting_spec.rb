@@ -78,13 +78,52 @@ RSpec.describe "Rate limiting", type: :request do
     end
 
     context "in production with RATE_LIMIT_SIGN_UP_ENABLED=true" do
+      include_context "SessionDouble"
+
       around { |example| with_app_config(:webauthn, rp_id: "app.example.test", allowed_origins: "https://app.example.test") { example.run } }
 
-      it "returns 302/429 after 5 requests from the same IP within 1 hour" do
+      def verify_phone_in_session(phone)
+        session_hash[:phone] = phone
+        session_hash[:verified_phone] = phone
+        session_hash[:verified_phone_at] = Time.current.to_i
+      end
+
+      it "lets six verified phones from one IP start enrollment within 1 hour" do
         with_rate_limit_enabled(:sign_up) do
-          6.times { post "/users/webauthn/registration", params: {phone: "4105551212"} }
+          6.times do |i|
+            verify_phone_in_session("410555#{i.to_s.rjust(4, "0")}")
+            post "/users/webauthn/registration", headers: {"REMOTE_ADDR" => "10.0.3.1"}
+            expect(response).to have_http_status(:ok)
+          end
+        end
+      end
+
+      it "refuses the 21st start for one verified phone across many IPs with Retry-After 3600" do
+        verify_phone_in_session("4105551212")
+        with_rate_limit_enabled(:sign_up) do
+          20.times do |i|
+            post "/users/webauthn/registration", headers: {"REMOTE_ADDR" => "10.0.4.#{i + 1}"}
+            expect(response).to have_http_status(:ok)
+          end
+
+          post "/users/webauthn/registration", headers: {"REMOTE_ADDR" => "10.0.4.99"}
+
           expect(response).to rate_limited_status
-          expect(response.headers["Retry-After"]).to eq("60")
+          expect(response.headers["Retry-After"]).to eq("3600")
+        end
+      end
+
+      it "refuses the 21st start from one IP whose session has no verified phone" do
+        with_rate_limit_enabled(:sign_up) do
+          20.times do
+            post "/users/webauthn/registration", headers: {"REMOTE_ADDR" => "10.0.5.1"}
+            expect(response).to have_http_status(:ok)
+          end
+
+          post "/users/webauthn/registration", headers: {"REMOTE_ADDR" => "10.0.5.1"}
+
+          expect(response).to rate_limited_status
+          expect(response.headers["Retry-After"]).to eq("3600")
         end
       end
     end

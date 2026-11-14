@@ -11,11 +11,18 @@ module Users
       ALREADY_REGISTERED_MESSAGE = "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access."
       SIGN_IN_FAILED_MESSAGE = "Your passkey was saved, but Sway couldn't sign you in. Sign in with your passkey to continue."
 
-      rate_limit to: 5, within: 1.hour,
-        by: -> { request.remote_ip },
+      # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
+      rate_limit to: 20, within: 1.hour,
+        name: "create",
+        # @lat: [[phone-cache-hashing]]
+        by: -> {
+          # @type self: Users::Webauthn::RegistrationController
+          verified_phone = session[:verified_phone]
+          verified_phone.present? ? PhoneCacheKey.digest(verified_phone) : request.remote_ip
+        },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_up) },
-        with: -> { render_rate_limited },
+        with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
         store: ApplicationController::RATE_LIMIT_STORE
 
       skip_before_action :authenticate_sway_user!

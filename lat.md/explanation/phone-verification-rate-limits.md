@@ -33,7 +33,9 @@ An earlier bare `gsub(/\D/, "")` kept a leading `"1"`, so `"+1 (410)..."` and `"
 
 Answering `409 phone_already_registered` for a number that already has an account doubles as an oracle: without a limit, an attacker could learn which phone numbers are registered on Sway by submitting them one at a time.
 
-The 5-per-IP-per-hour limit (`RateLimitConfig.enabled?(:sign_up)`, shared with `Users::Webauthn::RegistrationController`) is what bounds that. It sat inactive in production until a later change enabled it — the `spec/requests/api/v1/registrations_spec.rb` rate-limiting example ties the limit specifically to the `create` action, so detaching the two fails the test rather than silently going quiet again.
+The 5-per-IP-per-hour limit (`RateLimitConfig.enabled?(:sign_up)`) is what bounds that. It sat inactive in production until a later change enabled it — the `spec/requests/api/v1/registrations_spec.rb` rate-limiting example ties the limit specifically to the `create` action, so detaching the two fails the test rather than silently going quiet again.
+
+The web enrollment start, `Users::Webauthn::RegistrationController#create`, shares the kill switch but is keyed on the session's verified phone, 20 starts an hour, with the client IP as the key only when the session has no verified phone. The 409 answer needs a verified phone, so a limit per verified phone still bounds the oracle, while many people behind one carrier, café or event network can all start enrollment, and one person's cancelled passkey prompts no longer use up a shared IP's allowance. A refused start sends `Retry-After: 3600`. The limiter carries its own name, because Rails builds an unnamed limiter's cache key from the controller and the key value alone, which would share one counter with the application-wide per-IP limiter and count each request twice.
 
 ## Why the sign-in challenge throttles two ways
 
