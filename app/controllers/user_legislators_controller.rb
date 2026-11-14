@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class UserLegislatorsController < ApplicationController
+  include OnboardingSafetyNet
+
   REPRESENTATIVES_UNAVAILABLE_MESSAGE =
     "We couldn't look up your representatives right now. Please try again in a few minutes."
 

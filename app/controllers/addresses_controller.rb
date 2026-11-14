@@ -2,6 +2,8 @@
 
 # @lat: [[address-place-classification#Nominatim place classification and usage constraints]]
 class AddressesController < ApplicationController
+  include OnboardingSafetyNet
+
   MAX_QUERY_LENGTH = 200
 
   skip_before_action :authenticate_sway_user!

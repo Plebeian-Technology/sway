@@ -153,4 +153,19 @@ RSpec.describe "Addresses", type: :request do
       end
     end
   end
+
+  describe "an unexpected error" do
+    before do
+      allow(NominatimService).to receive(:search).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable and reports the error" do
+      get "/addresses/autocomplete", params: {q: "100 Holliday"}, headers: {"Accept" => "application/json"}
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+  end
 end

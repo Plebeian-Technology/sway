@@ -4,6 +4,7 @@ module Users
   module Webauthn
     class RegistrationController < ApplicationController
       include VerifiedPhoneSession
+      include OnboardingSafetyNet
 
       class AlreadyRegistered < StandardError; end
 

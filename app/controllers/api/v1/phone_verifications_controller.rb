@@ -4,6 +4,7 @@ module Api
   module V1
     class PhoneVerificationsController < BaseController
       include Authentication
+      include OnboardingSafetyNet
 
       # @lat: [[phone-verification-rate-limits#Why a one-time code has no per-phone daily cap]]
       rate_limit to: 5, within: 1.hour,

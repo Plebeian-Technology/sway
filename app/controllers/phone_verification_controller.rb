@@ -3,6 +3,7 @@
 class PhoneVerificationController < ApplicationController
   include Authentication
   include VerifiedPhoneSession
+  include OnboardingSafetyNet
 
   skip_before_action :authenticate_sway_user!
 

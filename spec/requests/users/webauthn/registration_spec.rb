@@ -597,4 +597,36 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       end
     end
   end
+
+  describe "an unexpected error" do
+    let(:phone) { "4105552100" }
+
+    before do
+      session_hash[:phone] = phone
+      session_hash[:verified_phone] = phone
+      session_hash[:verified_phone_at] = Time.current.to_i
+      allow(User).to receive(:find_or_initialize_by).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable to the JSON enrollment start and reports the error" do
+      post users_webauthn_registration_index_path, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+
+    it "redirects the web callback with a retry message, reports the error and clears the challenge" do
+      session_hash[:current_registration] = {"challenge" => fake_challenge, "user_attributes" => {"phone" => phone}}
+
+      post callback_users_webauthn_registration_index_path,
+        params: {id: fake_credential_id, rawId: Base64.strict_encode64(fake_credential_id)}
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(OnboardingSafetyNet::ONBOARDING_UNAVAILABLE_MESSAGE)
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+      expect(session_hash[:current_registration]).to be_nil
+    end
+  end
 end

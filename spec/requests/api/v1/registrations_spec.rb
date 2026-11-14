@@ -293,7 +293,7 @@ RSpec.describe "Api::V1::Registrations", type: :request do
     context "when account creation fails after the passkey is verified" do
       include_context "WebAuthnDouble"
 
-      it "keeps the sms_verified_token when seeding notification preferences raises" do
+      it "answers 503 and keeps the sms_verified_token when seeding notification preferences raises" do
         token = SmsVerificationToken.issue!(phone)
         Rails.cache.write(
           "webauthn:challenge:reg-seed-fail",
@@ -302,11 +302,12 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         )
         allow(NotificationPreference).to receive(:seed_defaults_for).and_raise(StandardError, "seed failed")
 
-        expect {
-          post "/api/v1/registrations/callback",
-            params: {registration: {challenge_id: "reg-seed-fail", credential: {id: "x", type: "public-key"}, platform: "ios"}},
-            as: :json
-        }.to raise_error(StandardError, "seed failed")
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-seed-fail", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(json_body.dig(:error, :code)).to eq("onboarding_unavailable")
 
         expect(User.find_by(phone: phone)).to be_nil
         expect(Passkey.count).to eq(0)
@@ -314,7 +315,7 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         expect(SmsVerificationToken.peek(token)).to be_present
       end
 
-      it "keeps the sms_verified_token when saving the passkey raises ActiveRecord::RecordNotUnique" do
+      it "answers 503 and keeps the sms_verified_token when saving the passkey raises ActiveRecord::RecordNotUnique" do
         token = SmsVerificationToken.issue!(phone)
         Rails.cache.write(
           "webauthn:challenge:reg-save-fail",
@@ -323,11 +324,12 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         )
         allow_any_instance_of(Passkey).to receive(:save!).and_raise(ActiveRecord::RecordNotUnique) # rubocop:disable RSpec/AnyInstance
 
-        expect {
-          post "/api/v1/registrations/callback",
-            params: {registration: {challenge_id: "reg-save-fail", credential: {id: "x", type: "public-key"}, platform: "ios"}},
-            as: :json
-        }.to raise_error(ActiveRecord::RecordNotUnique)
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-save-fail", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(json_body.dig(:error, :code)).to eq("onboarding_unavailable")
 
         expect(User.find_by(phone: phone)).to be_nil
         expect(Passkey.count).to eq(0)
@@ -495,6 +497,23 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         expect(response).to have_http_status(:too_many_requests)
         expect(json_body.dig(:error, :code)).to eq("rate_limited")
       end
+    end
+  end
+
+  describe "an unexpected error" do
+    before do
+      allow(SmsVerificationToken).to receive(:peek).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable and reports the error" do
+      post "/api/v1/registrations",
+        params: {registration: {sms_verified_token: "token", phone: phone}},
+        as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(json_body.dig(:error, :code)).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
     end
   end
 end

@@ -552,4 +552,19 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:inertia_clear_history]).to be true
     end
   end
+
+  describe "an unexpected error" do
+    before do
+      allow(User).to receive(:find_by).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable to the JSON sign-in start and reports the error" do
+      post users_webauthn_sessions_path, params: {phone: "4105553000"}, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+  end
 end

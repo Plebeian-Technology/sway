@@ -149,4 +149,18 @@ RSpec.describe "UserLegislators", type: :request do
       end
     end
   end
+
+  describe "an unexpected error" do
+    it "answers 503 onboarding_unavailable to the JSON list and reports the error" do
+      setup
+      allow(Sentry).to receive(:capture_exception)
+      allow(UserLegislatorResource).to receive(:new).and_raise(RuntimeError, "boom")
+
+      get user_legislators_path, headers: {"Accept" => "application/json"}
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+  end
 end

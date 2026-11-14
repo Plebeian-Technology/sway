@@ -8,6 +8,7 @@ module Users
     class SessionsController < ApplicationController
       include Authentication
       include VerifiedPhoneSession
+      include OnboardingSafetyNet
 
       rate_limit to: 10, within: 5.minutes,
         by: -> { request.remote_ip },

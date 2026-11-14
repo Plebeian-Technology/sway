@@ -3,6 +3,7 @@
 class PhoneVerificationController < ApplicationController
     include Authentication
     include VerifiedPhoneSession
+    include OnboardingSafetyNet
 
     def create: -> untyped
 

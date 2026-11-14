@@ -252,6 +252,7 @@ Why Sway is built the way it is. These pages carry every why-comment's reasoning
 - [Notification delivery browser coverage](notification-delivery-browser-coverage.md) — The browser example proves that an opted-in user can complete the notification flow and invoke delivery.
 - [Official service evidence](official-service-evidence.md) — An official service fact enters civic records only when a configured trusted source supports the person, office, dates, and locale in that exact interval.
 - [Offline telemetry](offline-telemetry.md) — Four events name the moments worth knowing about when the app is used offline. Nothing transmits them: \`trackOfflineEvent\` writes to the development console and returns.
+- [Onboarding safety net](onboarding-safety-net.md) — Why the onboarding controllers answer an error nobody planned for with a logged, retryable reply instead of a raw 500.
 - [Org-notification cascade and defaults](org-notification-cascade-and-defaults.md) — Organization notification preferences support account-wide default settings alongside per-organization overrides across web and mobile clients.
 - [Organization follows controller](organization-follows-controller.md) — Signed-in readers can follow organizations and change only their own follow rows.
 - [Organization invitation controller](organization-invitation-controller.md) — The invitation controller returns browser redirects or mobile JSON while preserving the invite's validation and authorization rules.

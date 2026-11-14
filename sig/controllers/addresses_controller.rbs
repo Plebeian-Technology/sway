@@ -1,4 +1,6 @@
 class AddressesController < ApplicationController
+  include OnboardingSafetyNet
+
   MAX_QUERY_LENGTH: Integer
 
   def autocomplete: () -> untyped

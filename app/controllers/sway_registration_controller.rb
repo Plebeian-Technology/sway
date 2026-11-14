@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SwayRegistrationController < ApplicationController
+  include OnboardingSafetyNet
+
   skip_before_action :authenticate_sway_user!
 
   # @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
@@ -99,6 +101,15 @@ class SwayRegistrationController < ApplicationController
 
     u.complete!(false)
     u.save!(validate: false)
+  end
+
+  # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
+  def render_onboarding_unavailable
+    u = current_user
+    return super unless u&.user_legislators&.where(active: true)&.exists?
+
+    complete_registration(u)
+    respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: feed_path)
   end
 
   def handle_address_switch(u, previous_address, new_address)

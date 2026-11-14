@@ -441,4 +441,40 @@ RSpec.describe "PhoneVerification", type: :request do
       end
     end
   end
+
+  describe "an unexpected error" do
+    let(:params) { {phone_verification: {phone: "(410) 555-1212"}} }
+
+    around do |example|
+      with_app_config(:dev_login, skip_phone_verification: false) { example.run }
+    end
+
+    before do
+      allow(Sway::TwilioClient).to receive(:build).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable to a JSON request and reports the error" do
+      post phone_verification_index_path, params: params, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+
+    it "redirects a web request with a retry message and reports the error" do
+      post phone_verification_index_path, params: params
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(OnboardingSafetyNet::ONBOARDING_UNAVAILABLE_MESSAGE)
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+
+    it "still answers a missing parameter with 400" do
+      post phone_verification_index_path, params: {}, as: :json
+
+      expect(response).to have_http_status(:bad_request)
+      expect(Sentry).not_to have_received(:capture_exception)
+    end
+  end
 end

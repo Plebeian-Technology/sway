@@ -8,6 +8,7 @@ module Users
 
             include Authentication
             include VerifiedPhoneSession
+            include OnboardingSafetyNet
 
             def create: -> untyped
 

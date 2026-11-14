@@ -1,4 +1,6 @@
 class SwayRegistrationController < ApplicationController
+    include OnboardingSafetyNet
+
     REGISTRATION_UNAVAILABLE_MESSAGE: ::String
     REGISTRATION_NO_REPRESENTATIVES_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_CONFIRMATION_MESSAGE: ::String
@@ -19,6 +21,8 @@ class SwayRegistrationController < ApplicationController
     private
 
     def complete_registration: (User u) -> void
+
+    def render_onboarding_unavailable: () -> void
 
     def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
 

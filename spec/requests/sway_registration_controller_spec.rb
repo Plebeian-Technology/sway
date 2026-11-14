@@ -1468,4 +1468,74 @@ RSpec.describe "/registration", type: :request do
       }
     end
   end
+
+  describe "POST /sway_registration when an unexpected error is raised" do
+    let!(:sway_locale) { create(:sway_locale, city: "Baltimore", state: "MD", country: "US") }
+    let!(:legislator) { create(:legislator, district: create(:district, sway_locale: sway_locale)) }
+    let!(:reg_user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+    let(:address_params) do
+      {
+        street: "100 N Holliday St",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21202",
+        country: "US",
+        latitude: 39.29105,
+        longitude: -76.61069
+      }
+    end
+
+    before do
+      sign_in(reg_user)
+      allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    context "before the user has a representative link" do
+      before { allow(UserAddress).to receive(:create!).and_raise(RuntimeError, "boom") }
+
+      it "answers 503 onboarding_unavailable to a JSON request and reports the error" do
+        post "/sway_registration", params: {sway_registration: address_params}, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+        expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+        expect(reg_user.reload.registration_status).to eq("pending")
+      end
+
+      it "redirects a web request with a retry message" do
+        post "/sway_registration", params: {sway_registration: address_params}
+
+        expect(response).to have_http_status(:redirect)
+        expect(flash[:alert]).to eq(OnboardingSafetyNet::ONBOARDING_UNAVAILABLE_MESSAGE)
+      end
+    end
+
+    context "after the user gained an active representative link" do
+      before do
+        allow(SwayRegistrationService).to receive(:new).and_wrap_original do |original, *args, **kwargs|
+          original.call(*args, **kwargs).tap do |service|
+            allow(service).to receive(:call) { UserLegislator.find_or_create_by!(user: reg_user, legislator: legislator) }
+          end
+        end
+        allow(PendingVoteReconciliationService).to receive(:call).and_raise(RuntimeError, "boom")
+      end
+
+      it "answers the normal completion to a JSON request, completes the user and reports the error" do
+        post "/sway_registration", params: {sway_registration: address_params}, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"ok" => true, "registration_status" => "completed"})
+        expect(reg_user.reload.completed?).to be(true)
+        expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+      end
+
+      it "redirects a web request to the feed" do
+        post "/sway_registration", params: {sway_registration: address_params}
+
+        expect(response).to redirect_to(feed_path)
+        expect(reg_user.reload.completed?).to be(true)
+      end
+    end
+  end
 end

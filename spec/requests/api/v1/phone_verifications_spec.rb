@@ -306,4 +306,31 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
       end
     end
   end
+
+  describe "an unexpected error" do
+    around do |ex|
+      with_app_config(:dev_login, skip_phone_verification: false) { ex.run }
+    end
+
+    before do
+      allow(Sway::TwilioClient).to receive(:build).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable and reports the error" do
+      post "/api/v1/phone_verification", params: {phone: phone}, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(json_body.dig(:error, :code)).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+
+    it "keeps the 400 bad_request answer for a missing phone" do
+      post "/api/v1/phone_verification", params: {}, as: :json
+
+      expect(response).to have_http_status(:bad_request)
+      expect(json_body.dig(:error, :code)).to eq("bad_request")
+      expect(Sentry).not_to have_received(:capture_exception)
+    end
+  end
 end

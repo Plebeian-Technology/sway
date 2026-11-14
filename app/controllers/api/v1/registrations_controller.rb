@@ -5,6 +5,7 @@ module Api
     # @lat: [[passkey-only-sms-bootstrap#Api::V1::RegistrationsController: the two-step enrollment shape and token handling]]
     class RegistrationsController < BaseController
       include RelyingParty
+      include OnboardingSafetyNet
 
       # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
       rate_limit to: 5, within: 1.hour,

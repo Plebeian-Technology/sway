@@ -1,4 +1,6 @@
 class UserLegislatorsController < ApplicationController
+    include OnboardingSafetyNet
+
     REPRESENTATIVES_UNAVAILABLE_MESSAGE: ::String
 
     def index: -> untyped

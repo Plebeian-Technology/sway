@@ -2,6 +2,7 @@ module Api
   module V1
     class RegistrationsController < BaseController
       include RelyingParty
+      include OnboardingSafetyNet
 
       def create: -> untyped
       def callback: -> untyped
