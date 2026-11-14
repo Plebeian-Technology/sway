@@ -422,6 +422,16 @@ module SimpleCov
 
     # 64-07: one command name per parallel_tests worker, read before .start.
     def self.command_name: (?String? name) -> String
+
+    # lib/onboarding_coverage_check.rb merges per-worker results with these.
+    module ResultMerger
+        def self.merge_valid_results: (Hash[String, untyped] results, ?ignore_timeout: bool) -> [Array[Array[String]], Hash[String, untyped]?]
+    end
+
+    class SourceFile
+        def initialize: (String filename, Hash[String, untyped] coverage_data, ?loaded: bool) -> void
+        def covered_percent: (?Symbol criterion) -> Float?
+    end
 end
 
 module Geocoder

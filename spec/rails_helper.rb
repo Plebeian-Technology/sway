@@ -3,6 +3,32 @@ require "spec_helper"
 ENV["RAILS_ENV"] = "test"
 puts "RAILS_ENV is #{ENV["RAILS_ENV"]}"
 
+require "active_support/core_ext/object/blank"
+require "simplecov"
+require "yaml"
+
+# @lat: [[verification-gates#RSpec runtime contracts]]
+SimpleCov.command_name "rspec-#{ENV["SWAY_TEST_LANE"].presence || "all"}-worker-#{ENV["TEST_ENV_NUMBER"].presence || 1}"
+
+SimpleCov.start "rails" do
+  # @lat: [[verification-gates#Onboarding coverage gate]]
+  enable_coverage :branch
+
+  group "Models", "app/models"
+  group "Services", "app/services"
+  group "Jobs", "app/jobs"
+  group "Channels", "app/channels"
+  group "Controllers", "app/controllers"
+  group "Mailers", "app/mailers"
+
+  # @lat: [[verification-gates#RSpec runtime contracts]]
+  cover "{app/models,app/services,app/jobs,app/channels,app/controllers}/**/*.rb"
+  # @lat: [[verification-gates#Onboarding coverage gate]]
+  cover(*YAML.load_file(File.expand_path("../../config/onboarding_coverage_floor.yml", __FILE__)).keys)
+
+  skip "/app/channels/application_cable/"
+end
+
 require_relative "../config/environment"
 # Prevent database truncation if the environment is production
 if Rails.env.production?
@@ -16,7 +42,6 @@ require "support/live_llm_gate"
 require "inertia_rails/rspec"
 require "faker"
 require "geocoder"
-require "simplecov"
 require "pry"
 require "capybara/rails"
 require "capybara/rspec"
@@ -63,23 +88,6 @@ require "support/inertia_flash_probe_controller"
 # Anthropic's count_tokens only when the live-LLM opt-in is on, and otherwise estimates
 # from the number of characters.
 require "support/cache_prefix_tokenizer"
-
-# @lat: [[verification-gates#RSpec runtime contracts]]
-SimpleCov.command_name "rspec-#{ENV["SWAY_TEST_LANE"].presence || "all"}-worker-#{ENV["TEST_ENV_NUMBER"].presence || 1}"
-
-SimpleCov.start "rails" do
-  group "Models", "app/models"
-  group "Services", "app/services"
-  group "Jobs", "app/jobs"
-  group "Channels", "app/channels"
-  group "Controllers", "app/controllers"
-  group "Mailers", "app/mailers"
-
-  # @lat: [[verification-gates#RSpec runtime contracts]]
-  cover "{app/models,app/services,app/jobs,app/channels,app/controllers}/**/*.rb"
-
-  skip "/app/channels/application_cable/"
-end
 
 GOOGLE_MAPS_API_KEY_REGEX = /AIza[A-Za-z0-9_-]{35}/
 

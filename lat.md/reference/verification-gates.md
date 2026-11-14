@@ -11,7 +11,7 @@ lat:
 The script takes no arguments and refuses them.
 
 - `0` — every lane green
-- `1` — a lane failed
+- `1` — a lane failed, or the [[verification-gates#Onboarding coverage gate|onboarding coverage check]] failed
 - `2` — a lane did not complete
 
 ## How lane durations are measured
@@ -27,7 +27,7 @@ The `seconds` a lane reports in `summary.json` runs from its start to the moment
 The Rails helper configures isolated test data, HTTP access, coverage and browser transport for both focused runs and the full gate.
 
 - [[spec/support/live_llm_gate.rb#LiveLlmGate|LiveLlmGate]] applies WebMock permissions and VCR exclusions together. Only RUN_LIVE_LLM_TESTS=1 permits Anthropic and OpenRouter HTTP; credentials alone grant no network access. Localhost and local error collectors remain reachable. Anthropic live token checks use a fifteen-second timeout; OpenRouter uses its configured adapter timeout.
-- SimpleCov cover limits reporting to models, services, jobs, channels and controllers. track_files adds unloaded files without excluding unrelated loaded files, which changes the denominator between browser and unit runs. Mailers remain outside the coverage glob. Command names include lane and worker to prevent concurrent reports from overwriting each other.
+- SimpleCov starts before the Rails environment loads, so files loaded at boot or by eager loading under `CI` are measured; it records line and branch coverage. Its cover limits reporting to models, services, jobs, channels and controllers, plus the onboarding files [[config/onboarding_coverage_floor.yml]] lists. track_files adds unloaded files without excluding unrelated loaded files, which changes the denominator between browser and unit runs. Mailers remain outside the coverage glob. Command names include lane and worker to prevent concurrent reports from overwriting each other.
 - Application tables are emptied before the suite and after system examples. System examples disable transactional fixtures because Puma-thread writes can escape the example transaction; other examples retain transactional cleanup. Schema and migration metadata are preserved.
 - Examples restore User::ADMIN_PHONES and User::API_USER_PHONES after temporary overrides so an admin fixture cannot grant access in another example.
 - Capybara uses ordinary Puma threading; rails_vite does not require the old single-thread restriction for directory changes. The server suppresses deployment config loading with config_files set to a dash, avoiding unused cluster hooks.
@@ -123,6 +123,19 @@ Each red lane prints a copy-pasteable rerun beside its log path. Every Docker la
 - `rubocop --force-exclusion --autocorrect` over the staged Ruby files, safe cops only, followed by `git update-index --again`, which re-stages whole files
 - A literal-value check on each staged `.kamal/secrets*` file, then `gitleaks` over the staged index on every commit
 - Vitest does not run in this hook
+
+## Onboarding coverage gate
+
+`sway:coverage:onboarding` fails when any onboarding file listed in [[config/onboarding_coverage_floor.yml]] is under its line or branch floor, or is absent from the coverage report; the target for every file is 100 percent line and branch coverage.
+
+- [[lib/onboarding_coverage_check.rb#OnboardingCoverageCheck]] merges the per-worker results in `coverage/.resultset.json` with SimpleCov's own result merger and scores each listed file with SimpleCov's own source-file statistics, so its numbers match the HTML report
+- `dip run verify` runs the task in its own container once both rspec lanes are green, passing the run's start time so only this run's worker results are merged; it prints every file's numbers under `onboarding coverage:` after the lane table, and a red check makes the run exit `1`. The check is not a lane and is absent from `summary.json`
+- CI runs the task after the rspec step in `.github/workflows/rspec.yml`, where the one fresh worker result is the whole report
+- Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
+- Raising a floor: measure the file after the change that adds coverage, then write the new percentage, rounded down to one decimal place, into the floor file in the same commit; a floor is never lowered to make a run pass
+- A line no test can reach, such as the `return nil unless change` guard in [[app/services/user_address_switch_service.rb]], keeps its file under 100 percent until the line is removed
+- `config/initializers/monkey_patches.rb` is not listed: SimpleCov's `rails` profile skips everything under `config/`, so the file can never appear in the report
+- Worker results from another rspec run in the same checkout while `verify` runs are merged too; they can only raise a file's numbers, never lower them
 
 ## Known traps
 

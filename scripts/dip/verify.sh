@@ -252,6 +252,8 @@ LANE_COUNT=${#LANE_NAMES[@]}
 # Named ahead of the trap so an interrupt during the build barrier (below,
 # before any lane starts) is cleaned up the same way a lane container is.
 BUILD_CONTAINER="sway-verify-build-$RUN_ID"
+# @lat: [[verification-gates#Onboarding coverage gate]]
+COVERAGE_CONTAINER="sway-verify-coverage-$RUN_ID"
 
 LANE_CONTAINER=(
     "" "" "" "" ""
@@ -489,13 +491,16 @@ write_summary() {
 cleanup() {
     status=$?
     trap - EXIT INT TERM
-    for pid in "${INSTALL_PID:-}" "${RBS_INSTALL_PID:-}" "${BUILD_PID:-}"; do
+    for pid in "${INSTALL_PID:-}" "${RBS_INSTALL_PID:-}" "${BUILD_PID:-}" "${COVERAGE_PID:-}"; do
         if [ -n "$pid" ]; then
             kill -TERM "-$pid" >/dev/null 2>&1 || true
         fi
     done
     if [ -n "${BUILD_CONTAINER:-}" ]; then
         docker rm -f "$BUILD_CONTAINER" >/dev/null 2>&1 || true
+    fi
+    if [ -n "${COVERAGE_CONTAINER:-}" ]; then
+        docker rm -f "$COVERAGE_CONTAINER" >/dev/null 2>&1 || true
     fi
     idx=0
     while [ "$idx" -lt "$LANE_COUNT" ]; do
@@ -762,6 +767,34 @@ while [ "$idx" -lt "$LANE_COUNT" ]; do
     idx=$((idx + 1))
 done
 
+# --- Onboarding coverage, once both rspec lanes are green ---------------------
+# @lat: [[verification-gates#Onboarding coverage gate]]
+COVERAGE_LOG="$RUN_DIR/onboarding-coverage.log"
+COVERAGE_STATE="not checked, because an rspec lane is not green"
+RSPEC_LANES_GREEN=true
+idx=0
+while [ "$idx" -lt "$LANE_COUNT" ]; do
+    case "${LANE_NAMES[$idx]}" in
+        rspec-*) [ "${LANE_STATE[$idx]}" = "green" ] || RSPEC_LANES_GREEN=false ;;
+    esac
+    idx=$((idx + 1))
+done
+if [ "$RSPEC_LANES_GREEN" = "true" ]; then
+    progress "checking onboarding coverage against config/onboarding_coverage_floor.yml"
+    docker compose -f .dockerdev/compose.yml -p sway run --rm --no-deps \
+        --name "$COVERAGE_CONTAINER" \
+        rspec bundle exec rake "sway:coverage:onboarding[${RUN_ID#*-}]" \
+        >"$COVERAGE_LOG" 2>&1 </dev/null &
+    COVERAGE_PID=$!
+    if wait "$COVERAGE_PID"; then
+        COVERAGE_STATE="green"
+    else
+        COVERAGE_STATE="red"
+        [ "$EXIT_CODE" -lt 1 ] && EXIT_CODE=1
+    fi
+    COVERAGE_PID=""
+fi
+
 # --- Summary -----------------------------------------------
 FACTS_FILE="$RUN_DIR/.lane-facts.tsv"
 : >"$FACTS_FILE"
@@ -795,6 +828,12 @@ while [ "$idx" -lt "$LANE_COUNT" ]; do
     printf '%-16s %-6s %-16s %8s\n' "${LANE_NAMES[$idx]}" "${LANE_WHERE[$idx]}" "${LANE_STATE[$idx]}" "${LANE_DURATION[$idx]}"
     idx=$((idx + 1))
 done
+
+echo ""
+echo "onboarding coverage: $COVERAGE_STATE"
+if [ -f "$COVERAGE_LOG" ]; then
+    cat "$COVERAGE_LOG"
+fi
 
 REPORTED_RED=0
 idx=0

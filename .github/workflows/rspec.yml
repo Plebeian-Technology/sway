@@ -150,6 +150,10 @@ jobs:
           set -o pipefail
           bundle exec rspec 2>&1 | tee tmp/rspec-ci.log
 
+      # @lat: [[verification-gates#Onboarding coverage gate]]
+      - name: Check onboarding coverage floors
+        run: bundle exec rake sway:coverage:onboarding
+
       # Failing examples become check-run annotations, which are readable via
       # the REST API even when the raw log/artifact blob endpoints are not.
       - name: Surface failing examples as annotations
