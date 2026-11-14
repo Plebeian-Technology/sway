@@ -136,7 +136,7 @@ const PasskeyPanel: React.FC<IProps> = ({
 
                 if (typeof publicKey === "boolean") {
                     if (!publicKey) {
-                        notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.validationPhoneInvalid });
+                        notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.requestCodeError });
                     }
                     setConfirmingPhone(publicKey);
                     return;

@@ -263,3 +263,71 @@ describe("PasskeyPanel — a dismissed browser passkey prompt", () => {
         expect(captured.clearPasskeyDismissed).toHaveBeenCalled();
     });
 });
+
+describe("PasskeyPanel — the phone step", () => {
+    beforeEach(() => {
+        vi.useRealTimers();
+        Element.prototype.scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
+    });
+
+    it("says the code could not be sent, and not that the number is wrong, when the send failed", async () => {
+        captured.startAuthentication.mockResolvedValue(false);
+        render(<PasskeyPanel />);
+
+        await submitPhone();
+
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "error",
+            title: PARITY_COPY.auth.passkeyPanel.requestCodeError,
+        });
+        expect(captured.notify).toHaveBeenCalledTimes(1);
+        expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
+    });
+
+    it("warns about a phone with fewer than 10 digits and starts nothing", async () => {
+        render(<PasskeyPanel />);
+        fireEvent.change(screen.getByLabelText(/phone/i), { target: { value: "410555" } });
+
+        await act(async () => {
+            fireEvent.submit(document.querySelector("form") as HTMLFormElement);
+        });
+
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "warning",
+            title: PARITY_COPY.auth.passkeyPanel.validationPhone,
+        });
+        expect(captured.startAuthentication).not.toHaveBeenCalled();
+        expect(captured.confirm).not.toHaveBeenCalled();
+    });
+
+    it("warns about an empty code and does not confirm", async () => {
+        captured.startAuthentication.mockResolvedValue(true);
+        render(<PasskeyPanel />);
+        await submitPhone();
+        await screen.findByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel);
+
+        await act(async () => {
+            fireEvent.submit(document.querySelector("form") as HTMLFormElement);
+        });
+
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "warning",
+            title: "Please enter your confirmation code.",
+        });
+        expect(captured.confirm).not.toHaveBeenCalled();
+    });
+
+    it("returns to the phone form when Cancel is pressed", async () => {
+        captured.startAuthentication.mockResolvedValue(true);
+        render(<PasskeyPanel />);
+        await submitPhone();
+        const codeBox = await screen.findByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel);
+        fireEvent.change(codeBox, { target: { value: "123" } });
+        expect((screen.getByLabelText(/phone/i) as HTMLInputElement).disabled).toBe(true);
+
+        fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.cancelCta }));
+
+        expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
+        expect((screen.getByLabelText(/phone/i) as HTMLInputElement).disabled).toBe(false);
+    });
+});
