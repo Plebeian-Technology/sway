@@ -461,6 +461,19 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(session_hash[:current_registration]).to be_nil
     end
 
+    it "enrolls the verified phone when the stored registration carries no user attributes" do
+      session_hash[:current_registration] = {"challenge" => fake_challenge}
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.to change(User, :count).by(1).and change(Passkey, :count).by(1)
+
+      expect(Passkey.last!.user).to eq(User.find_by!(phone: phone))
+      expect(response).to redirect_to(sway_registration_index_path)
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
     it "does not create records when current_registration is missing" do
       session_hash.delete(:current_registration)
 
@@ -595,6 +608,14 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
         expect(session_hash[:user_id]).to be_nil
         expect(session_hash[:current_registration]).to be_nil
       end
+    end
+  end
+
+  describe "phone_taken?" do
+    it "treats an error that is neither a failed validation nor a unique-index hit as no phone conflict" do
+      error = StandardError.new("UNIQUE constraint failed: users.phone")
+
+      expect(Users::Webauthn::RegistrationController.new.send(:phone_taken?, error)).to be(false)
     end
   end
 
