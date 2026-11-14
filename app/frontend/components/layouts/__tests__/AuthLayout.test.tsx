@@ -75,7 +75,7 @@ import { AuthLayout } from "app/frontend/components/layouts/AuthLayout";
 
 const setPage = (overrides: {
     url?: string;
-    user?: Partial<{ id: number; is_admin: boolean; is_registration_complete: boolean; beszel_url?: string }>;
+    user?: Partial<{ id: number; is_admin: boolean; is_registration_complete: boolean; beszel_url?: string }> | null;
 }) => {
     inertia.usePage.mockReturnValue({
         url: overrides.url ?? "/",
@@ -83,7 +83,10 @@ const setPage = (overrides: {
             // Defaults come FIRST so overrides win — this order used to be
             // reversed, which meant any overrides.user.id was silently
             // overwritten by `id: 1`.
-            user: { id: 1, is_admin: false, is_registration_complete: true, ...overrides.user },
+            user:
+                overrides.user === null
+                    ? null
+                    : { id: 1, is_admin: false, is_registration_complete: true, ...overrides.user },
         } as Record<string, unknown>,
     });
 };
@@ -367,5 +370,33 @@ describe("AuthLayout — offline banner colour", () => {
         const banner = getByTestId("offline-banner");
         expect(banner.textContent).toContain("Still offline. Reconnect to load pages and vote.");
         expect(banner.className).not.toContain("bg-destructive");
+    });
+});
+
+describe("AuthLayout — Support bubble", () => {
+    it("renders the Support button for signed-in users", () => {
+        setPage({ url: "/legislators", user: { is_admin: false } });
+        const { getByRole } = renderV2(<AuthLayout />);
+
+        expect(getByRole("button", { name: "Support" })).toBeInTheDocument();
+    });
+
+    it("renders the Support button for guests (user null)", () => {
+        setPage({ url: "/", user: null });
+        const { getByRole } = renderV2(<AuthLayout />);
+
+        expect(getByRole("button", { name: "Support" })).toBeInTheDocument();
+    });
+
+    it("keeps the Support button outside the inert treated region during a qualifying visit", () => {
+        setPage({ url: "/legislators", user: { is_admin: false } });
+        const { getByRole } = renderV2(<AuthLayout />);
+
+        dispatchInertia("before", {
+            visit: pendingVisitFixture({ url: new URL("/bill_of_the_month", window.location.href) }),
+        });
+
+        const supportButton = getByRole("button", { name: "Support" });
+        expect(supportButton.closest("[inert]")).toBeNull();
     });
 });
