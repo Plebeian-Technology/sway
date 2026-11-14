@@ -43,7 +43,7 @@ const mockApiPost = jest.fn(async (..._args: unknown[]): Promise<unknown> => ({ 
 const mockGoBack = jest.fn();
 const mockCanGoBack = jest.fn(() => false);
 const mockNavigate = jest.fn();
-const mockRefresh = jest.fn(async () => {});
+const mockRefresh = jest.fn(async (): Promise<boolean | void> => {});
 
 jest.mock("../../src/hooks/useUserProfile", () => ({
     useUserProfile: () => mockUseUserProfile(),
@@ -284,6 +284,74 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
             await waitFor(() => expect(screen.getByText(message)).toBeTruthy());
             expect(mockRefresh).not.toHaveBeenCalled();
             expect(mockGoBack).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("Test 2b — the bootstrap refresh after a saved address fails", () => {
+        async function submitPickedHollidayAddress() {
+            await typeAndWaitForPredictions("100 N Holliday");
+            await waitFor(() => {
+                expect(screen.queryByTestId("address-suggestion-PLACE_HOLLIDAY_1")).toBeTruthy();
+            });
+            await pickPrediction("address-suggestion-PLACE_HOLLIDAY_1");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+        }
+
+        // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why a failed refresh after a saved address shows a recovery card]]
+        it("shows a recovery card instead of the address form when refresh resolves false", async () => {
+            mockUseUserProfile.mockReturnValue({ user: mockOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(false);
+            mockRefresh.mockResolvedValue(false);
+
+            wrap(<AddressScreen />);
+            await submitPickedHollidayAddress();
+
+            await waitFor(() => expect(screen.getByTestId("address-saved-recovery")).toBeTruthy());
+            expect(screen.getByText("Your address was saved")).toBeTruthy();
+            expect(
+                screen.getByText("We could not load your account yet. Check your connection and try again."),
+            ).toBeTruthy();
+            expect(screen.getByTestId("address-saved-recovery-retry-cta")).toBeTruthy();
+            expect(screen.queryByTestId("address-submit-cta")).toBeNull();
+        });
+
+        it("retry reloads the account and posts nothing", async () => {
+            mockUseUserProfile.mockReturnValue({ user: mockOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(false);
+            mockRefresh.mockResolvedValue(false);
+
+            wrap(<AddressScreen />);
+            await submitPickedHollidayAddress();
+            await waitFor(() => expect(screen.getByTestId("address-saved-recovery")).toBeTruthy());
+            expect(mockApiPost).toHaveBeenCalledTimes(1);
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-saved-recovery-retry-cta"));
+                await Promise.resolve();
+            });
+
+            expect(mockRefresh).toHaveBeenCalledTimes(2);
+            expect(mockApiPost).toHaveBeenCalledTimes(1);
+        });
+
+        it.each([
+            ["true", true],
+            ["no value", undefined],
+        ])("shows no recovery card when refresh resolves with %s", async (_label, resolved) => {
+            mockUseUserProfile.mockReturnValue({ user: mockOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(true);
+            mockRefresh.mockResolvedValue(resolved);
+
+            wrap(<AddressScreen />);
+            await submitPickedHollidayAddress();
+
+            await waitFor(() => expect(mockGoBack).toHaveBeenCalledTimes(1));
+            expect(screen.queryByTestId("address-saved-recovery")).toBeNull();
         });
     });
 

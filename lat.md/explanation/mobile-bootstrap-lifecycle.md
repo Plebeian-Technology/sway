@@ -41,6 +41,12 @@ Falling back to the SQLite cache here would quietly redraw personal data for an 
 
 For any other failure — no network, a server error — the provider keeps working offline by drawing the last payload known to be good. It tries the row saved for the signed-in user first, then the anonymous row.
 
+## Why refetch reports whether it applied a payload
+
+`refetch` resolves `true` when it applied a fresh payload, and `false` when it fell back to the cache, wiped the cache after a 401, or cleared a dead token.
+
+The cache fallback hides a failed fetch from callers, because `bootstrap` still holds a usable payload. A caller that must know whether the server's current answer arrived reads the result. [[mobile-auth-and-onboarding-flow#AddressScreen#Why a failed refresh after a saved address shows a recovery card]] is the one that does; callers that ignore the result are unaffected.
+
 ## Why refetch listens to auth events
 
 The provider fetches again whenever the sign-in state changes.

@@ -24,7 +24,7 @@ export interface UserProfile {
 export interface UseUserProfileResult {
     user: UserProfile | null;
     loading: boolean;
-    refresh: () => Promise<void>;
+    refresh: () => Promise<boolean>;
 }
 
 export function useUserProfile(): UseUserProfileResult {

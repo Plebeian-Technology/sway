@@ -21,6 +21,9 @@ import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import type { ProfileStackParamList } from "../navigation/types";
 
 const CONNECTION_ERROR_MESSAGE = "Could not reach Sway. Check your connection and try again.";
+const SAVED_RECOVERY_TITLE = "Your address was saved";
+const SAVED_RECOVERY_MESSAGE = "We could not load your account yet. Check your connection and try again.";
+const SAVED_RECOVERY_RETRY_LABEL = "Try again";
 
 type Nav = NativeStackNavigationProp<ProfileStackParamList, "Address">;
 
@@ -74,6 +77,7 @@ export default function AddressScreen() {
     const [showManual, setShowManual] = useState(!autocompleteAvailable);
     const [isRetrying, setIsRetrying] = useState(false);
     const [confirmingAddressSwitch, setConfirmingAddressSwitch] = useState(false);
+    const [savedButNotLoaded, setSavedButNotLoaded] = useState(false);
 
     useEffect(() => {
         const a = user?.address;
@@ -131,7 +135,11 @@ export default function AddressScreen() {
             // @lat: [[mobile-sqlite-cache-design#Why address changes evict mobile SQLite caches]]
             clearCapturedCategories();
             await Promise.all([legislatorCache.clear().catch(() => {}), billCache.clear().catch(() => {})]);
-            await refresh();
+            const loaded = await refresh();
+            if (loaded === false && isOnboarding) {
+                setSavedButNotLoaded(true);
+                return;
+            }
             if (nav.canGoBack()) nav.goBack();
         } catch (e) {
             if (e instanceof NetworkError) setError(CONNECTION_ERROR_MESSAGE);
@@ -182,6 +190,40 @@ export default function AddressScreen() {
     // @lat: [[mobile-auth-and-onboarding-flow#Why isOnboarding only changes wording]]
     const submitLabel = isOnboarding ? PARITY_COPY.address.complete.cta : PARITY_COPY.address.edit.saveCta;
     const cancelLabel = isOnboarding ? PARITY_COPY.address.complete.cancelCta : PARITY_COPY.address.edit.cancelCta;
+
+    // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why a failed refresh after a saved address shows a recovery card]]
+    if (savedButNotLoaded) {
+        return (
+            <ScrollView
+                className="flex-1 bg-dominant-light dark:bg-dominant-dark p-6"
+                contentInsetAdjustmentBehavior="automatic"
+                testID="address-screen"
+            >
+                <Card testID="address-saved-recovery">
+                    <CardHeader>
+                        <CardTitle>{SAVED_RECOVERY_TITLE}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Text className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                            {SAVED_RECOVERY_MESSAGE}
+                        </Text>
+                        <View className="mt-4">
+                            <Pressable
+                                testID="address-saved-recovery-retry-cta"
+                                variant="default"
+                                onPress={() => void refresh()}
+                                accessibilityLabel={SAVED_RECOVERY_RETRY_LABEL}
+                            >
+                                <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
+                                    {SAVED_RECOVERY_RETRY_LABEL}
+                                </Text>
+                            </Pressable>
+                        </View>
+                    </CardContent>
+                </Card>
+            </ScrollView>
+        );
+    }
 
     if (isProcessing) {
         return (

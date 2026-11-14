@@ -94,6 +94,35 @@ describe("BootstrapProvider / useBootstrap", () => {
         expect(result.current.error).not.toBeNull();
     });
 
+    test("refetch resolves true when it applied a fresh payload", async () => {
+        mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+        const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+        await waitFor(() => expect(result.current.bootstrap).not.toBeNull());
+
+        mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+        let applied: boolean | undefined;
+        await act(async () => {
+            applied = await result.current.refetch();
+        });
+
+        expect(applied).toBe(true);
+    });
+
+    test("refetch resolves false when the fetch fails and the cached payload is used", async () => {
+        mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+        const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+        await waitFor(() => expect(result.current.bootstrap).not.toBeNull());
+
+        mockApiGet.mockRejectedValueOnce(new Error("offline"));
+        mockCacheGet.mockResolvedValue({ payload: sampleBootstrap, fetchedAt: new Date(500_000) });
+        let applied: boolean | undefined;
+        await act(async () => {
+            applied = await result.current.refetch();
+        });
+
+        expect(applied).toBe(false);
+    });
+
     test("successful fetch writes to bootstrapCache.set (NOT tokenStore)", async () => {
         mockApiGet.mockResolvedValueOnce(sampleBootstrap);
         renderHook(() => useBootstrap(), { wrapper: wrap });

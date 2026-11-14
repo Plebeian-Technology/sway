@@ -32,7 +32,7 @@ export interface BootstrapContextValue {
     loading: boolean;
     error: Error | null;
     // @lat: [[mobile-locale-override-design#The lifecycle of the override value]]
-    refetch: (swayLocaleId?: number) => Promise<void>;
+    refetch: (swayLocaleId?: number) => Promise<boolean>;
     selectedSwayLocaleId: number | null;
     needsUpdate: boolean;
 }
@@ -58,7 +58,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const fetchIt = useCallback(
-        async (swayLocaleId?: number) => {
+        async (swayLocaleId?: number): Promise<boolean> => {
             setLoading(true);
             setError(null);
             if (swayLocaleId != null) {
@@ -78,12 +78,13 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                     await prefsCache.delete(PREFS_KEYS.selectedSwayLocaleId);
                     setBootstrap(null);
                     authEvents.emit("unauthenticated");
-                    return;
+                    return false;
                 }
                 setBootstrap(b);
                 lastFetchedRef.current = Date.now();
                 const userId = b.current_user?.id ? String(b.current_user.id) : "anonymous";
                 await bootstrapCache.set(userId, b);
+                return true;
             } catch (e: unknown) {
                 const err = e instanceof Error ? e : new Error(String(e));
                 setError(err);
@@ -91,7 +92,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                 if (err instanceof UnauthorizedError) {
                     setBootstrap(null);
                     await bootstrapCache.purge();
-                    return;
+                    return false;
                 }
                 const sess = await sessionStore.get();
                 const cached =
@@ -101,6 +102,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                     setBootstrap(cached.payload);
                     lastFetchedRef.current = cached.fetchedAt.getTime();
                 }
+                return false;
             } finally {
                 setLoading(false);
             }

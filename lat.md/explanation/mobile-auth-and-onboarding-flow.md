@@ -125,6 +125,14 @@ The two buttons are built from the shared `Pressable` component. Cancel logs the
 
 The helper block matches the divider and three outside links on the web registration page: a note about being a registered voter, then the same three links in the same order. `[platform]`: these open with `Linking.openURL` on mobile, where the web opens a new browser tab.
 
+### Why a failed refresh after a saved address shows a recovery card
+
+During onboarding, a failed payload reload after a saved address swaps the form for a card with a "Try again" button that only reloads the payload.
+
+After a successful post, `AddressScreen` reloads the startup payload, and `refetch` resolves `true` only when it applied a fresh payload. When it resolves `false`, the card says the address was saved and the account could not be loaded yet.
+
+A failed reload falls back to the cached payload from before registration, which still says registration is incomplete, so `RootNavigator` keeps the onboarding stack. Showing the bare form again would invite the user to retype the address. A retyped address is an address switch, and the server answers `confirmation_required` because onboarding never sends the confirmation. The retry button posts nothing, so it cannot trigger that refusal. When the reload succeeds, `RootNavigator` swaps in the app on its own. Outside onboarding a `false` result changes nothing: the screen still goes back, because the user is already registered and the stale payload still shows their previous address. Callers that ignore the result of `refetch` are unaffected.
+
 ## Why isOnboarding only changes wording
 
 Onboarding mode means no address has been saved yet.
