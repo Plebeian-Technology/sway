@@ -216,7 +216,9 @@ The resolver reads its key once and reuses that value for both the blank
 check and request, so the value checked is the value sent.
 [[app/services/sway_registration_service.rb#SwayRegistrationService#find_legislators_from_open_states_geo_endpoint]]
 uses the configured connection profile, wraps non-success responses as an
-unavailable service, and treats a missing results array as no matches. It
+unavailable service, and treats a missing results array as no matches. A body
+that is not an object, or a results array holding anything but objects, is
+refused as an unavailable service too. It
 matches returned person ids to each seeded legislator's external id. A blank
 key returns no matches and sends one error-level Sentry message naming the key,
 so registration still completes with the locale-wide officers while the gap

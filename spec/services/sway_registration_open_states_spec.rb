@@ -46,6 +46,54 @@ RSpec.describe SwayRegistrationService, "#find_legislators_from_open_states_geo_
     expect(service.send(:find_legislators_from_open_states_geo_endpoint)).to eq([])
   end
 
+  {
+    "a top-level array" => "[]",
+    "a top-level null" => "null",
+    "a top-level string" => '"text"',
+    "a results array holding a string" => '{"results":["x"]}'
+  }.each do |shape, body|
+    it "raises ServiceUnavailableError for #{shape}" do
+      conn = Faraday.new do |c|
+        c.adapter(:test) do |stub|
+          stub.get("people.geo") { [200, {"Content-Type" => "application/json"}, body] }
+        end
+      end
+      allow(Sway::FaradayStack).to receive(:open_states).and_return(conn)
+
+      expect {
+        service.send(:find_legislators_from_open_states_geo_endpoint)
+      }.to raise_error(SwayGeocode::ServiceUnavailableError, /unexpected shape/)
+    end
+  end
+
+  it "raises ServiceUnavailableError for a 200 HTML page" do
+    conn = Faraday.new do |c|
+      c.adapter(:test) do |stub|
+        stub.get("people.geo") { [200, {"Content-Type" => "text/html"}, "<html><body>Bad gateway</body></html>"] }
+      end
+    end
+    allow(Sway::FaradayStack).to receive(:open_states).and_return(conn)
+
+    expect {
+      service.send(:find_legislators_from_open_states_geo_endpoint)
+    }.to raise_error(SwayGeocode::ServiceUnavailableError, /unavailable/)
+  end
+
+  [Faraday::TimeoutError, Faraday::ConnectionFailed].each do |error_class|
+    it "raises ServiceUnavailableError when the connection raises #{error_class}" do
+      conn = Faraday.new do |c|
+        c.adapter(:test) do |stub|
+          stub.get("people.geo") { raise error_class, "upstream down" }
+        end
+      end
+      allow(Sway::FaradayStack).to receive(:open_states).and_return(conn)
+
+      expect {
+        service.send(:find_legislators_from_open_states_geo_endpoint)
+      }.to raise_error(SwayGeocode::ServiceUnavailableError, /upstream down/)
+    end
+  end
+
   it "returns the locale legislator whose external_id matches a region-matched result" do
     legislator = create(:legislator, district: district, external_id: "ocd-person/abc", active: true)
     # SwayLocale#legislators now selects Legislator.serving, worked out

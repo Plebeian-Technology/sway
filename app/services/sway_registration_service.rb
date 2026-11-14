@@ -286,7 +286,12 @@ class SwayRegistrationService
     end
 
     # @lat: [[identity-and-access#Registration is asynchronous by necessity#Regional lookup uses one configured request path]]
-    result = Array(JSON.parse(response.body)["results"]) #: Array[untyped]
+    body = JSON.parse(response.body)
+    unless body.is_a?(Hash) && Array(body["results"]).all?(Hash)
+      raise SwayGeocode::ServiceUnavailableError,
+        "OpenStates geocoding response had an unexpected shape"
+    end
+    result = Array(body["results"]) #: Array[untyped]
 
     filtered =
       result
