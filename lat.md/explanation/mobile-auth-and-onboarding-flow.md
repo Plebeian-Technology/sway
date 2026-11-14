@@ -64,6 +64,12 @@ What happens when something goes wrong:
 
 Returning users also get a one-tap discoverable passkey button (`signInDiscoverable`) above the phone field when `isConfirmingPhone` is false; if the user cancels or has no synced passkey (`NoPasskeyError`), nothing is shown and the phone form remains ready. On mobile, the primary submit button sits above the secondary Cancel / Preview Sway button, and the three hero feature cards stack vertically rather than in three columns.
 
+### Held SMS-verified token
+
+After the code is accepted, AuthScreen keeps the returned `sms_verified_token` in a ref until the passkey step succeeds, the server calls it invalid, or the user taps Cancel.
+
+Twilio approves a code once, so a second code check with the same digits answers invalid_code and tells the user a correct code is wrong. The server only peeks at the token when it mints the passkey challenge and consumes it on a successful callback, so a cancelled or failed enrollment can reuse the same token for up to 10 minutes. A press of Confirm code with a held token skips the code check and goes straight to the passkey sheet. An `invalid_sms_token` answer means the token expired, so the ref is emptied and the next press checks the code again.
+
 ### Why "Preview Sway" opens a browser instead of navigating
 
 The "Preview Sway" button opens a web URL with `Linking.openURL` instead of navigating inside the app.

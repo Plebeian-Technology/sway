@@ -6,6 +6,7 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 
 import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError } from "../../src/auth/passkeyAuth";
 import { smsAuth } from "../../src/auth/smsAuth";
+import { ApiRequestError } from "../../src/api/errors";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -196,6 +197,108 @@ describe("AuthScreen", () => {
         expect(queryByText("no_credential")).toBeNull();
         expect(queryByText(PARITY_COPY.auth.passkeyPanel.verifyError)).toBeNull();
         expect(getByTestId("auth-code-field")).toBeTruthy();
+    });
+
+    describe("held SMS-verified token", () => {
+        const reachCodeBox = async (getByTestId: ReturnType<typeof render>["getByTestId"]) => {
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+        };
+
+        const confirmCode = async (getByTestId: ReturnType<typeof render>["getByTestId"], code = "123456") => {
+            fireEvent.changeText(getByTestId("auth-code-field"), code);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-loading-panel")).toBeTruthy());
+            await waitFor(() => expect(() => getByTestId("auth-loading-panel")).toThrow());
+        };
+
+        beforeEach(() => {
+            (passkeyAuth.signIn as jest.Mock).mockRejectedValue(new NoPasskeyError());
+            (smsAuth.requestCode as jest.Mock).mockResolvedValue(undefined);
+            (smsAuth.verifyCode as jest.Mock).mockResolvedValue({ sms_verified_token: "tok-1", expires_at: "2099" });
+        });
+
+        test.each([
+            ["a cancelled passkey sheet", () => new NoPasskeyError()],
+            ["a generic error", () => new Error("boom")],
+            ["an unsupported device", () => new PasskeyUnsupportedError()],
+        ])("retries register with the held token after %s, checking the code once", async (_label, makeError) => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(makeError()).mockResolvedValueOnce(undefined);
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await confirmCode(getByTestId);
+            await confirmCode(getByTestId);
+
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(1);
+            expect(passkeyAuth.register).toHaveBeenCalledTimes(2);
+            expect(passkeyAuth.register).toHaveBeenNthCalledWith(1, "4105550199", "tok-1");
+            expect(passkeyAuth.register).toHaveBeenNthCalledWith(2, "4105550199", "tok-1");
+        });
+
+        test("clears the held token after a successful register", async () => {
+            (passkeyAuth.register as jest.Mock).mockResolvedValue(undefined);
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await confirmCode(getByTestId);
+            await confirmCode(getByTestId, "654321");
+
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
+            expect(smsAuth.verifyCode).toHaveBeenLastCalledWith("4105550199", "654321");
+        });
+
+        test("Cancel clears the held token", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(new NoPasskeyError());
+            (passkeyAuth.register as jest.Mock).mockResolvedValue(undefined);
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+            await confirmCode(getByTestId);
+
+            fireEvent.press(getByTestId("auth-secondary-cta"));
+            await reachCodeBox(getByTestId);
+            await confirmCode(getByTestId, "654321");
+
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
+        });
+
+        test("a failing verifyCode holds nothing, so the next press checks the code again", async () => {
+            (smsAuth.verifyCode as jest.Mock)
+                .mockRejectedValueOnce(new Error("invalid code"))
+                .mockResolvedValueOnce({ sms_verified_token: "tok-2", expires_at: "2099" });
+            (passkeyAuth.register as jest.Mock).mockResolvedValue(undefined);
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await confirmCode(getByTestId);
+            await confirmCode(getByTestId);
+
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
+            expect(passkeyAuth.register).toHaveBeenCalledTimes(1);
+            expect(passkeyAuth.register).toHaveBeenCalledWith("4105550199", "tok-2");
+        });
+
+        test("an expired held token is dropped, so the next press checks the code again", async () => {
+            (passkeyAuth.register as jest.Mock)
+                .mockRejectedValueOnce(
+                    new ApiRequestError(
+                        "invalid_sms_token",
+                        "SMS verification token invalid or expired",
+                        undefined,
+                        401,
+                    ),
+                )
+                .mockResolvedValue(undefined);
+            const { getByTestId, getByText } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await confirmCode(getByTestId);
+            expect(getByText("SMS verification token invalid or expired")).toBeTruthy();
+            await confirmCode(getByTestId);
+
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
+        });
     });
 
     test.each(["phone", "discoverable"] as const)(

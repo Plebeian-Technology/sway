@@ -2,7 +2,7 @@
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { KeyRound, Landmark, Megaphone, Vote } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     ActivityIndicator,
     Image,
@@ -14,6 +14,7 @@ import {
     View,
 } from "react-native";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
+import { ApiRequestError } from "../api/errors";
 import { NoPasskeyError, passkeyAuth, PasskeyUnsupportedError } from "../auth/passkeyAuth";
 import { smsAuth } from "../auth/smsAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
@@ -39,6 +40,8 @@ export default function AuthScreen() {
     const [isConfirmingPhone, setConfirmingPhone] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    // @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Held SMS-verified token]]
+    const heldSmsVerifiedToken = useRef<string | null>(null);
 
     const submitLabel = isConfirmingPhone
         ? PARITY_COPY.auth.passkeyPanel.confirmCode
@@ -55,9 +58,14 @@ export default function AuthScreen() {
             if (!code.trim()) return;
             setLoading(true);
             try {
-                const { sms_verified_token } = await smsAuth.verifyCode(phone, code);
-                await passkeyAuth.register(phone, sms_verified_token);
+                if (!heldSmsVerifiedToken.current) {
+                    const { sms_verified_token } = await smsAuth.verifyCode(phone, code);
+                    heldSmsVerifiedToken.current = sms_verified_token;
+                }
+                await passkeyAuth.register(phone, heldSmsVerifiedToken.current);
+                heldSmsVerifiedToken.current = null;
             } catch (e) {
+                if (e instanceof ApiRequestError && e.code === "invalid_sms_token") heldSmsVerifiedToken.current = null;
                 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
                 if (e instanceof NoPasskeyError) return;
                 setError(e instanceof Error ? e.message : PARITY_COPY.auth.passkeyPanel.verifyError);
@@ -108,6 +116,7 @@ export default function AuthScreen() {
     };
 
     const handleCancel = () => {
+        heldSmsVerifiedToken.current = null;
         setCode("");
         setConfirmingPhone(false);
         setError(null);
