@@ -107,3 +107,11 @@ in a build.
 These build values deliberately do not reach the running container. The final
 stage never sees them and the container takes its own copies from `env: clear:`,
 so changing a bucket later costs a redeploy rather than a rebuild.
+
+## Why a missing OpenStates key stops the deploy in a hook
+
+The OpenStates key is checked by `.kamal/hooks/pre-deploy` and not by this initializer, so a production deploy without it stops before containers switch over while the image build stays unchanged.
+
+Maryland legislators come from OpenStates, so without the key registration would finish with only the Governor. The initializer cannot hold the check: it runs inside `assets:precompile`, so the name would need a build `ARG`, which would bake the secret into an image layer. Kamal hands the hook every secret in `.kamal/secrets-common` because `pre-deploy` runs with `secrets: true`, and the hook runs on the deploying machine, never in the image.
+
+Only a deploy, redeploy or rollback runs it. Development and test never do, and a restart that skips hooks is not checked. A present but wrong key passes, as with the bucket names above.

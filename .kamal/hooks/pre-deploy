@@ -11,7 +11,13 @@
 #              docs/secret-scanning.md).
 #   Deep     — SWAY_DEEP_IMAGE_SCAN=1: full trufflehog layer-content scan,
 #              fail-closed. Slow (minutes); run it before a release.
+# @lat: [[deploy-values-boot-check#Why a missing OpenStates key stops the deploy in a hook]]
 set -eu
+
+if [ -z "${OPEN_STATES_API_KEY:-}" ]; then
+  echo "pre-deploy: OPEN_STATES_API_KEY is missing or blank; refusing to deploy." >&2
+  exit 1
+fi
 
 warn_only=1
 
