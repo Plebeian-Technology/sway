@@ -228,6 +228,7 @@ class SwayRegistrationService
     districts.presence || [0]
   rescue SwayGeocode::ServiceUnavailableError => e
     @skipped_resolution_errors << e
+    @skipped_legislator_ids.concat(state_house_legislator_ids)
     SwayLogging.warn(
       "sway_registration.house_district_skipped",
       sway_locale: sway_locale.name,
@@ -235,6 +236,13 @@ class SwayRegistrationService
     )
     Sentry.capture_exception(e, level: :warning)
     [0]
+  end
+
+  def state_house_legislator_ids
+    @legislators.filter_map do |legislator|
+      district = legislator.active_term&.district
+      legislator.id if district && district.region_code == address.us_state_code && district.number != 0
+    end
   end
 
   def find_legislators_from_open_states_geo_endpoint

@@ -55,6 +55,8 @@ class SwayRegistrationService
 
     def congress_district_numbers: -> ::Array[Integer]
 
+    def state_house_legislator_ids: -> ::Array[Integer]
+
     def find_legislators_from_open_states_geo_endpoint: -> (::Array[untyped] | untyped)
 
     def create_invite: -> (nil | untyped)

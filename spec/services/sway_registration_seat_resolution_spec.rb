@@ -621,6 +621,20 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
         .once.with(an_instance_of(SwayGeocode::ServiceUnavailableError), level: :warning)
     end
 
+    it "skips the state's House members, and only them, when Census fails" do
+      allow_any_instance_of(Census::Congress).to receive(:congressional_district) # rubocop:disable RSpec/AnyInstance
+        .and_raise(Faraday::ConnectionFailed, "connection refused")
+      create_seat_term(
+        district: create(:district, sway_locale: congress, name: "MD3"),
+        office_identity: "md-house-district-3",
+        last_name: "Elsewhere"
+      )
+      service = congress_fallback_service(virginia_address)
+      service.district_legislators
+
+      expect(service.skipped_legislator_ids).to contain_exactly(house_member.id)
+    end
+
     it "returns the President and both Senators without asking Census when the address has no coordinates" do
       allow(Geocoder).to receive(:search).and_return([])
       unlocated = create(:address, city: "Richmond", region_code: "VA")

@@ -194,6 +194,52 @@ RSpec.describe UserAddressSwitchService do
         .once.with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
     end
 
+    it "keeps the House member's links within the same state when Census fails" do
+      allow(Sentry).to receive(:capture_exception)
+      allow_any_instance_of(Census::Congress).to receive(:congressional_district) # rubocop:disable RSpec/AnyInstance
+        .and_raise(Faraday::ConnectionFailed, "connection refused")
+      user = create(:user)
+      congress = create(:sway_locale, :congress)
+      old_address = create(:address, street: "100 E Pratt St", region_code: "MD", latitude: "39.28", longitude: "-76.61")
+      new_address = create(:address, street: "200 E Pratt St", region_code: "MD", latitude: "39.29", longitude: "-76.62")
+      create(:user_address, user: user, address: old_address)
+
+      senate_district = create(:district, sway_locale: congress, name: "MD0")
+      senator = create(:legislator, sway_locale: congress, last_name: "Senator")
+      senate_seat = Seat.create!(
+        district: senate_district,
+        seat_identifier: "md-senate-class-1",
+        title: "United States Senator",
+        chamber: "Senate"
+      )
+      create(:legislator_term, legislator: senator, district: senate_district, seat: senate_seat)
+      senator_ul = create(:user_legislator, user: user, legislator: senator, active: true)
+
+      house_district = create(:district, sway_locale: congress, name: "MD3")
+      house_member = create(:legislator, sway_locale: congress, last_name: "Representative")
+      house_seat = Seat.create!(
+        district: house_district,
+        seat_identifier: "md-congress-district-3",
+        title: "Representative",
+        chamber: "House"
+      )
+      create(:legislator_term, legislator: house_member, district: house_district, seat: house_seat)
+      house_ul = create(:user_legislator, user: user, legislator: house_member, active: true)
+      house_ud = create(:user_district, user: user, district: house_district, active: true)
+
+      allow(new_address).to receive(:sway_locales).and_return([congress])
+
+      change = described_class.new(user, previous_address: old_address, new_address: new_address).call
+
+      expect(senator_ul.reload.active).to be(true)
+      expect(house_ul.reload.active).to be(true)
+      expect(house_ud.reload.active).to be(true)
+      expect(change.deactivated_legislator_ids).to be_empty
+      expect(change.deactivated_district_ids).to be_empty
+      expect(Sentry).to have_received(:capture_exception)
+        .once.with(an_instance_of(SwayGeocode::ServiceUnavailableError), level: :warning)
+    end
+
     it "returns nil and makes zero database writes when the new address resolves zero legislators" do
       user = create(:user)
       sway_locale = create(:sway_locale)
