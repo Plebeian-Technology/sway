@@ -137,6 +137,29 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         end
       end
 
+      it "answers with exactly the session envelope keys the mobile app stores" do
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-envelope",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-envelope", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:ok)
+        body = json_body
+        expect(body.keys).to match_array(%i[bearer_token device_id user expires_at])
+        expect(body[:bearer_token]).to match(/\A\h{64}\z/)
+
+        user = User.find_by!(phone: phone)
+        expect(body[:device_id]).to eq(UserDevice.find_by!(user: user).id)
+        expect(body.dig(:user, :id)).to eq(user.id)
+        expect(Time.iso8601(body[:expires_at])).to be_between(89.days.from_now, 91.days.from_now)
+      end
+
       it "rejects a second callback minted from the same sms_verified_token with 401 invalid_sms_token" do
         token = SmsVerificationToken.issue!(phone)
         post "/api/v1/registrations",
