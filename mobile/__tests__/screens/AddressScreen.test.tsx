@@ -556,6 +556,28 @@ describe("AddressScreen", () => {
             expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
         });
 
+        it("keeps Save disabled for a prefilled address whose apartment is saved separately", () => {
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: {
+                        street: "123 Main St",
+                        street2: "Apt 2",
+                        city: "Baltimore",
+                        region_code: "MD",
+                        postal_code: "21201",
+                    },
+                },
+                loading: false,
+                refresh: jest.fn(),
+            });
+            wrap(<AddressScreen />);
+
+            expect(screen.getByTestId("address-input-street1-input").props.value).toBe("123 Main St");
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
+        });
+
         it("asks for the switch confirmation before posting a typed address in edit mode", async () => {
             mockUseUserProfile.mockReturnValue({
                 user: {
