@@ -219,6 +219,45 @@ RSpec.describe "PhoneVerification", type: :request do
       end
     end
 
+    it "answers the fixed retry message and reports the failure when Twilio's error carries no code" do
+      twilio_error = Twilio::REST::RestError.allocate
+      allow(twilio_error).to receive(:code).and_return(nil)
+      allow(twilio_error).to receive(:status_code).and_return(500)
+      allow(twilio_error).to receive(:full_message).and_return("Internal Server Error")
+      allow(twilio_verification_result).to receive(:status).and_raise(twilio_error)
+      allow(Rails.env).to receive(:production?).and_return(true)
+      allow(Sentry).to receive(:capture_exception)
+
+      patch phone_verification_path("1"), params: params
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq(
+        {"success" => false, "error" => "Could not check the code. Please try again."}
+      )
+      expect(Sentry).to have_received(:capture_exception)
+        .with(an_instance_of(Authentication::TwilioVerificationError)
+          .and(having_attributes(message: include("code=, status=500")))).once
+      expect(session_hash[:verified_phone]).to be_nil
+    end
+
+    it "answers the used-up message without reporting to Sentry outside production" do
+      twilio_error = Twilio::REST::RestError.allocate
+      allow(twilio_error).to receive(:code).and_return(60_202)
+      allow(twilio_error).to receive(:status_code).and_return(429)
+      allow(twilio_error).to receive(:full_message).and_return("Max check attempts reached")
+      allow(twilio_verification_result).to receive(:status).and_raise(twilio_error)
+      allow(Sentry).to receive(:capture_exception)
+
+      patch phone_verification_path("1"), params: params
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq(
+        {"success" => false, "error" => "This code can no longer be used. Please request a new code."}
+      )
+      expect(Sentry).not_to have_received(:capture_exception)
+      expect(session_hash[:verified_phone]).to be_nil
+    end
+
     it "answers a fixed retry message when Twilio cannot be reached" do
       allow(twilio_verification_checks_double).to receive(:create).and_raise(
         Twilio::REST::TwilioError.new("execution expired +14105551212")
