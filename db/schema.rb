@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_14_140001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -1459,7 +1459,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_000002) do
   add_foreign_key "historical_score_explanations", "historical_repair_candidates"
   add_foreign_key "historical_score_explanations", "historical_repair_previews"
   add_foreign_key "historical_score_explanations", "legislators"
-  add_foreign_key "historical_score_explanations", "users"
+  add_foreign_key "historical_score_explanations", "users", on_delete: :cascade
   add_foreign_key "invites", "users", column: "invitee_id"
   add_foreign_key "invites", "users", column: "inviter_id"
   add_foreign_key "law_sections", "sway_locales"

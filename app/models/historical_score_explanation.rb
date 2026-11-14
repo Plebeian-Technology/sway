@@ -37,7 +37,7 @@
 #  historical_repair_candidate_id  (historical_repair_candidate_id => historical_repair_candidates.id)
 #  historical_repair_preview_id    (historical_repair_preview_id => historical_repair_previews.id)
 #  legislator_id                   (legislator_id => legislators.id)
-#  user_id                         (user_id => users.id)
+#  user_id                         (user_id => users.id) ON DELETE => cascade
 #
 class HistoricalScoreExplanation < ApplicationRecord
   belongs_to :user

@@ -532,7 +532,6 @@ RSpec.describe User, type: :model do
 
     let(:pending_foreign_keys) do
       [
-        ["historical_score_explanations", "user_id"],
         ["historical_repair_deliveries", "user_id"]
       ].freeze
     end

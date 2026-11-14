@@ -82,6 +82,17 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(position_change.reload.rejected_by_id).to be_nil
     end
 
+    it "cascades historical score explanations when user is deleted" do
+      skip "historical_score_explanations table not present" unless ActiveRecord::Base.connection.table_exists?(:historical_score_explanations)
+
+      explanation = create(:historical_score_explanation, user: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(HistoricalScoreExplanation.exists?(explanation.id)).to be(false)
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 
