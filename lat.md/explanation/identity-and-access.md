@@ -707,4 +707,6 @@ legislators that follow from it.
 
 [[app/controllers/users_controller.rb#UsersController#destroy]] revokes all mobile device tokens before destroying the authenticated [[app/models/user.rb#User]] record and clearing the web session cookie.
 
-Self-service account deletion satisfies App Store account removal requirements while revoking bearer tokens first so no active mobile session survives the cascading deletion of votes, notifications, memberships, and passkeys.
+Self-service account deletion satisfies App Store account removal requirements while revoking bearer tokens first so no active mobile session survives the cascading deletion of user records. Account deletion cascades dependents across user-owned tables: user votes, notifications, memberships, passkeys, invites (`invites`), sent organization invites (`user_organization_membership_invites`), authored position changes (`organization_bill_position_changes`), historical score explanations (`historical_score_explanations`), and historical repair deliveries (`historical_repair_deliveries`).
+
+When an account is deleted, organization bill position changes approved or rejected by that user retain their finalized history while clearing the `approved_by_id` and `rejected_by_id` columns via nullify cascades. An automated guard spec in [[spec/models/user_spec.rb]] walks every foreign key in the database pointing to `users`, failing if any key is neither handled nor present in the admin-actor allowlist. The full set of dependent cascades is defined on [[app/models/user.rb#User]].
