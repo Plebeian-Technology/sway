@@ -138,31 +138,38 @@ RSpec.describe "PhoneVerification", type: :request do
       expect(session_hash[:verified_phone]).to be_nil
     end
 
-    # @lat: [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]]
-    it "raises a sanitized error carrying no recipient phone on unexpected Twilio errors" do
-      twilio_error = Twilio::REST::RestError.allocate
-      allow(twilio_error).to receive(:code).and_return(50_000)
-      allow(twilio_error).to receive(:status_code).and_return(500)
-      leaky = "The 'To' number +14105551212 is not a valid phone number."
-      allow(twilio_error).to receive(:message).and_return(leaky)
-      allow(twilio_error).to receive(:full_message).and_return(leaky)
-      allow(twilio_verification_result).to receive(:status).and_raise(twilio_error)
+    {
+      60_200 => "Could not check the code. Please try again.",
+      60_202 => "This code can no longer be used. Please request a new code.",
+      20_429 => "Could not check the code. Please try again."
+    }.each do |twilio_code, message|
+      # @lat: [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]]
+      it "answers a fixed message and reports a sanitized error carrying no recipient phone when Twilio returns #{twilio_code}" do
+        twilio_error = Twilio::REST::RestError.allocate
+        allow(twilio_error).to receive(:code).and_return(twilio_code)
+        allow(twilio_error).to receive(:status_code).and_return(400)
+        leaky = "The 'To' number +14105551212 is not a valid phone number."
+        allow(twilio_error).to receive(:message).and_return(leaky)
+        allow(twilio_error).to receive(:full_message).and_return(leaky)
+        allow(twilio_verification_result).to receive(:status).and_raise(twilio_error)
+        allow(Rails.env).to receive(:production?).and_return(true)
+        reported = [] #: Array[Exception]
+        allow(Sentry).to receive(:capture_exception) { |error| reported << error }
+        logged = [] #: Array[String]
+        allow(Rails.logger).to receive(:warn) { |msg| logged << msg.to_s }
 
-      logged = [] #: Array[String]
-      allow(Rails.logger).to receive(:warn) { |msg| logged << msg.to_s }
-
-      raised = nil #: Authentication::TwilioVerificationError?
-      expect do
         patch phone_verification_path("1"), params: params
-      end.to raise_error(Authentication::TwilioVerificationError) { |e| raised = e }
 
-      # The `&.` keeps the type checker happy, since `raised` may be nil. If it
-      # were nil the message would be empty, so the include below would fail
-      # rather than pass on a technicality.
-      expect(raised&.message.to_s).to include("code=50000")
-      expect(raised&.message.to_s).not_to include("4105551212")
-      expect(raised&.cause).to be_nil
-      expect(logged.join("\n")).not_to include("4105551212")
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"success" => false, "error" => message})
+        expect(response.body).not_to include("4105551212")
+        expect(session_hash[:verified_phone]).to be_nil
+        expect(reported.map(&:class)).to eq([Authentication::TwilioVerificationError])
+        expect(reported.first&.message.to_s).to include("code=#{twilio_code}")
+        expect(reported.first&.message.to_s).not_to include("4105551212")
+        expect(reported.first&.cause).to be_nil
+        expect(logged.join("\n")).not_to include("4105551212")
+      end
     end
 
     it "answers a fixed retry message when Twilio cannot be reached" do

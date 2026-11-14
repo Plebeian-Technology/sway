@@ -83,6 +83,7 @@ class PhoneVerificationController < ApplicationController
     else
       approved = false
       verification_error = nil
+      code_used_up = false
       begin
         approved = verification_approved?(
           to: "+1#{phone}",
@@ -106,6 +107,7 @@ class PhoneVerificationController < ApplicationController
           return render json: {success: false, error: "Code not found."}, status: :ok
         end
         verification_error = "code=#{e.code}, status=#{e.status_code}"
+        code_used_up = e.code&.to_s == "60202"
       rescue Twilio::REST::TwilioError => e
         # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
         SwayLogging.warn(
@@ -116,8 +118,16 @@ class PhoneVerificationController < ApplicationController
         return render json: {success: false, error: "Could not check the code. Please try again."}, status: :ok
       end
 
-      # @lat: [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]]
-      raise Authentication::TwilioVerificationError, "Twilio verification check failed (#{verification_error})" if verification_error
+      # @lat: [[twilio-error-phone-redaction#Why a failed Twilio code check is reported and answered]]
+      if verification_error
+        if Rails.env.production?
+          Sentry.capture_exception(
+            Authentication::TwilioVerificationError.new("Twilio verification check failed (#{verification_error})")
+          )
+        end
+        error = code_used_up ? "This code can no longer be used. Please request a new code." : "Could not check the code. Please try again."
+        return render json: {success: false, error: error}, status: :ok
+      end
 
       if approved
         # @lat: [[identity-and-access#Identity and access#The phone number is the account]]

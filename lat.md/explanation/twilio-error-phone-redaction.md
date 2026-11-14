@@ -15,9 +15,9 @@ When an API request fails (for instance, with error code 21211 indicating an inv
 
 Standard logging infrastructure traverses exception cause chains. Sanitizing the error representation to include only the numeric code and HTTP status code ensures recipient phone numbers are completely stripped before error reporting occurs.
 
-[[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] applies the same boundary: it logs only the session phone's last four digits and Twilio code, and rebuilds unexpected provider errors from code and status after the rescue block so neither the provider message nor its cause reaches the error reporter. The 20404 browser response is defined by [[identity-and-access#Identity and access#The phone number is the account#A verification-not-found reply has one safe browser outcome]].
+[[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] applies the same boundary: it logs only the session phone's last four digits and Twilio code, and rebuilds unexpected provider errors from code and status after the rescue block so neither the provider message nor its cause reaches the error reporter (see [[twilio-error-phone-redaction#Why a failed Twilio code check is reported and answered]]). The 20404 browser response is defined by [[identity-and-access#Identity and access#The phone number is the account#A verification-not-found reply has one safe browser outcome]].
 
-[[spec/requests/phone_verification_spec.rb]] checks the XHR and plain 20404 responses, redaction, and unset verified-phone session value; its unexpected-error example checks the sanitized message, absent cause, and logs. [[spec/system/phone_verification_error_spec.rb]] checks the browser copy, redaction, halted enrollment, and absence of a created user.
+[[spec/requests/phone_verification_spec.rb]] checks the XHR and plain 20404 responses, redaction, and unset verified-phone session value; its unexpected-error examples check the fixed reply, the sanitized report, absent cause, and logs. [[spec/system/phone_verification_error_spec.rb]] checks the browser copy, redaction, halted enrollment, and absence of a created user.
 
 ## Why SmsDeliveryJob raises DeliveryError outside the rescue block
 
@@ -37,7 +37,7 @@ Email verification helpers sanitize provider errors while leaving session state 
 
 The verification check helper avoids rescuing exceptions so caller controllers handle specific provider error behaviors.
 
-`Authentication#verification_approved?` provides shared verification logic for `PhoneVerificationController` and `Api::V1::PhoneVerificationsController`. It catches no exceptions because web and mobile controllers implement distinct error flows: the web redirects on code 20404 ("not found") and re-raises other errors, while mobile returns false. The method verifies both phone numbers and email addresses.
+`Authentication#verification_approved?` provides shared verification logic for `PhoneVerificationController` and `Api::V1::PhoneVerificationsController`. It catches no exceptions because web and mobile controllers implement distinct error flows: the web answers code 20404 ("not found") with a fixed message and every other failure with a reported, fixed reply, while mobile returns false. The method verifies both phone numbers and email addresses.
 
 ## Why the TWILIO_FROM_PHONE blank check has a known gap
 
@@ -55,7 +55,7 @@ Per-user rescues in voting reminder jobs log structured attributes and error cla
 
 Full exception messages are inspected solely to detect missing verification records and are never logged or re-raised.
 
-In `PhoneVerificationController#update`, `e.full_message` is read exclusively to determine whether Twilio returned a code `20404` verification-not-found error. The message is never logged or attached to re-raised errors because it may contain recipient phone numbers. Only numeric error codes and HTTP status values are logged and packaged into `Authentication::TwilioVerificationError`, which is raised after the rescue block completes to prevent Ruby from attaching raw errors as causes.
+In `PhoneVerificationController#update`, `e.full_message` is read exclusively to determine whether Twilio returned a code `20404` verification-not-found error. The message is never logged or attached to re-raised errors because it may contain recipient phone numbers. Only numeric error codes and HTTP status values are logged and packaged into `Authentication::TwilioVerificationError`, which is built and reported after the rescue block completes to prevent Ruby from attaching raw errors as causes.
 
 ## Why a Twilio network failure is answered, not raised
 
@@ -63,11 +63,19 @@ A timeout or refused connection to Twilio is an outage, not a bad request, so ev
 
 The Twilio client turns a transport failure into `Twilio::REST::TwilioError`, the parent of `Twilio::REST::RestError`. A rescue that names only `RestError` lets it escape. Each SMS endpoint rescues it after its `RestError` rescue: the send helper returns false, the web code check answers a fixed retry message, the mobile endpoints answer 503 `verification_unavailable`, and the add-a-passkey check answers success false.
 
-The mobile code check answers 503 and not 401 `invalid_code`, because the code was never checked and may be right. The web code check returns its fixed message before the sanitized re-raise that unexpected `RestError`s reach, because an outage needs no stack trace.
+The mobile code check answers 503 and not 401 `invalid_code`, because the code was never checked and may be right. The web code check returns its fixed message without a report, because an outage needs no stack trace; an unexpected `RestError` is reported first, see [[twilio-error-phone-redaction#Why a failed Twilio code check is reported and answered]].
 
 `TwilioError` carries no code and no status, and its message is the transport library's text, so the logs record only the error class. The send path reports a rebuilt [[app/controllers/concerns/authentication.rb#Authentication#TwilioVerificationError]] naming that class in production, with no cause attached.
 
 [[app/services/sway/twilio_client.rb#TwilioClient#HTTP_TIMEOUT_SECONDS]] bounds every Twilio call, so a stalled connection fails after ten seconds instead of holding the request open for the HTTP adapter's default. The SMS jobs share the client and so share the bound.
+
+## Why a failed Twilio code check is reported and answered
+
+A code check that Twilio refuses for a reason other than "not found" is reported to Sentry and answered with a fixed message, never raised as a 500.
+
+Twilio answers 60200 for a code it cannot parse, 60202 when the check attempts are used up and 20429 when it rate limits the account. [[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] answers each with HTTP 200 and `success: false`. Code 60202 says the code can no longer be used and asks for a new one; the others say the code could not be checked.
+
+The controller still reports a [[app/controllers/concerns/authentication.rb#Authentication#TwilioVerificationError]] built from the code and status, in production only, so the failure stays visible. It builds that error after the rescue block ends, so no raw provider error becomes its cause.
 
 ## Why update doesn't create a user on a verified phone
 
