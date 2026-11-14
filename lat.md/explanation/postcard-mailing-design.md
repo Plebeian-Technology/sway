@@ -66,9 +66,33 @@ Supporting physical mailings requires extending the database schema to store pos
 
 Adding columns directly to the `legislators` table (`street_address`, `street_address2`, `city`, `state_code`, and `postal_code`) mirrors the existing storage pattern used for `phone` and `email`. This approach avoids join overhead when loading representative profiles for postcard preview cards.
 
+## Vendor recommendation
+
+PostGrid serves as the primary print-and-mail vendor for physical postcard fulfillment across all jurisdictions.
+
+### Why PostGrid fits Sway
+
+PostGrid matches Sway's on-demand delivery architecture without requiring upfront capital or monthly subscriptions.
+
+As documented in [[postcard-vendor-comparison]], PostGrid provides a pay-as-you-go model with no monthly base fees. Postcards mail at a single-unit cost of $0.902 for 4x6 First-Class delivery. The REST API (`POST /print-mail/v1/postcards`) supports dispatching individual postcards as voters complete their actions, avoiding batch queuing delays.
+
+Address verification represents another decisive factor. Because state and congressional legislative addresses originate from diverse public sources, automated postal standardization protects against delivery failures. PostGrid includes CASS-certified US address verification within its base API without the per-lookup overage fees charged by competing platforms. Furthermore, the application repository already configures `POSTGRID_TEST_API_KEY` and `POSTGRID_LIVE_API_KEY`, accelerating implementation and testing.
+
+### Conditions for switching vendors
+
+Sway would evaluate alternative print providers if monthly sending volume expands significantly or API reliability falters.
+
+If constituent postcard volume exceeds 1,500 pieces per month, Lob's Growth subscription ($260 monthly fee with $0.645 per postcard) yields lower total unit costs despite the monthly platform commitment. Similarly, if PostGrid encounters API availability problems, Click2Mail provides an unmetered on-demand fallback using standard REST endpoints.
+
 ## Open decisions for the owner
 
 Key architectural and product choices requiring owner confirmation, presented with recommended answers based on current system capabilities.
+
+### Primary print-and-mail vendor (Decided)
+
+Which vendor handles physical postcard printing and USPS delivery?
+
+Status: Decided. PostGrid is the chosen vendor. The owner holds an existing account, and environment secrets (`POSTGRID_TEST_API_KEY` and `POSTGRID_LIVE_API_KEY`) are already provisioned.
 
 ### Entry surfaces for postcard sending
 
