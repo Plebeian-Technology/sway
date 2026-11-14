@@ -375,9 +375,32 @@ describe("useNominatimAddressAutocomplete", () => {
 
             const data = form.data as Record<string, unknown>;
             expect(data.postal_code).toBeUndefined();
-            expect(data.street).toBeUndefined();
+            expect(data.street).toBe("Rural Road");
             expect(data.city).toBe("Towson");
             expect(data.latitude).toBe(39.5);
+        });
+
+        it("a selection without a house number keeps the typed text as the street", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            const roadOnlyPlace = createMockPlace({
+                display_name: "Holliday Street, Downtown, Baltimore, Maryland, 21202, United States",
+                address: {
+                    road: "Holliday Street",
+                    city: "Baltimore",
+                    state: "Maryland",
+                    "ISO3166-2-lvl4": "US-MD",
+                    postcode: "21202",
+                },
+            });
+
+            await searchAndSelect(result, roadOnlyPlace);
+
+            const data = form.data as Record<string, unknown>;
+            expect(data.street).toBe("100 Holliday");
+            expect(data.city).toBe("Baltimore");
+            expect(data.postal_code).toBe("21202");
+            expect(data.typed_address).toBe(roadOnlyPlace.display_name);
         });
 
         it("handleSelect records the text the box shows as typed_address", async () => {

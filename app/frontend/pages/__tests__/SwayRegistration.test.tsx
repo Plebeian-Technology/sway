@@ -4,6 +4,12 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { sway } from "sway";
+import type { InertiaFormProps } from "@inertiajs/react";
+
+import {
+    nominatimPlaceToSuggestion,
+    useNominatimAddressAutocomplete,
+} from "app/frontend/hooks/useNominatimAddressAutocomplete";
 
 const post = vi.fn<(url: string, options?: Record<string, unknown>) => void>();
 const transform = vi.fn<(callback: (data: Record<string, unknown>) => Record<string, unknown>) => void>();
@@ -38,61 +44,88 @@ vi.mock("@inertiajs/react", () => ({
 
 vi.mock("app/frontend/hooks/users/useLogout", () => ({ useLogout: () => () => Promise.resolve() }));
 
+const ROAD_ONLY_PLACE = {
+    place_id: 300,
+    lat: "39.29",
+    lon: "-76.61",
+    class: "highway",
+    type: "residential",
+    display_name: "Holliday Street, Baltimore, Maryland, 21202, United States",
+    address: {
+        road: "Holliday Street",
+        city: "Baltimore",
+        state: "Maryland",
+        "ISO3166-2-lvl4": "US-MD",
+        postcode: "21202",
+        country: "United States",
+    },
+};
+
 const ROAD_ONLY_SUGGESTION = {
+    city: "Baltimore",
+    region: "Maryland",
+    region_code: "MD",
+    postal_code: "21202",
+    country: "United States",
+    latitude: 39.29,
+    longitude: -76.61,
+    place_types: ["residential", "highway"],
+};
+
+const COMPLETE_SUGGESTION = {
     city: "Baltimore",
     region_code: "MD",
     postal_code: "21202",
     country: "United States",
     latitude: 39.29,
     longitude: -76.61,
+    street: "100 Holliday Street",
 };
-
-const COMPLETE_SUGGESTION = { ...ROAD_ONLY_SUGGESTION, street: "100 Holliday Street" };
 
 const { postal_code: _postalCode, ...NO_POSTCODE_SUGGESTION } = COMPLETE_SUGGESTION;
 
 // Mock address autocomplete components to isolate registration page tests from external APIs/networking.
 vi.mock("app/frontend/components/user/NominatimAddressAutocomplete", () => ({
     __esModule: true,
-    default: ({
+    default: function NominatimAddressAutocomplete({
         locale,
         form,
     }: {
         locale?: sway.ISwayLocale | null;
-        form: { setData: (key: string, value: unknown) => void };
-    }) => (
-        <>
-            <input
-                data-testid="address-field"
-                data-locale={locale?.name ?? ""}
-                onChange={(e) => form.setData("typed_address", e.target.value)}
-            />
-            <button
-                type="button"
-                data-testid="pick-suggestion"
-                aria-label="pick-suggestion"
-                onClick={() => {
-                    Object.entries(COMPLETE_SUGGESTION).forEach(([key, value]) => form.setData(key, value));
-                }}
-            />
-            <button
-                type="button"
-                data-testid="pick-no-postcode-suggestion"
-                aria-label="pick-no-postcode-suggestion"
-                onClick={() => {
-                    Object.entries(NO_POSTCODE_SUGGESTION).forEach(([key, value]) => form.setData(key, value));
-                }}
-            />
-            <button
-                type="button"
-                data-testid="pick-road-only-suggestion"
-                aria-label="pick-road-only-suggestion"
-                onClick={() => {
-                    Object.entries(ROAD_ONLY_SUGGESTION).forEach(([key, value]) => form.setData(key, value));
-                }}
-            />
-        </>
-    ),
+        form: InertiaFormProps<Record<string, unknown>>;
+    }) {
+        const { handleInput, handleSelect } = useNominatimAddressAutocomplete(form);
+        return (
+            <>
+                <input data-testid="address-field" data-locale={locale?.name ?? ""} onChange={handleInput} />
+                <button
+                    type="button"
+                    data-testid="pick-suggestion"
+                    aria-label="pick-suggestion"
+                    onClick={() => {
+                        Object.entries(COMPLETE_SUGGESTION).forEach(([key, value]) => form.setData(key, value));
+                    }}
+                />
+                <button
+                    type="button"
+                    data-testid="pick-no-postcode-suggestion"
+                    aria-label="pick-no-postcode-suggestion"
+                    onClick={() => {
+                        Object.entries(NO_POSTCODE_SUGGESTION).forEach(([key, value]) => form.setData(key, value));
+                    }}
+                />
+                <button
+                    type="button"
+                    data-testid="pick-road-only-suggestion"
+                    aria-label="pick-road-only-suggestion"
+                    onClick={handleSelect({
+                        ...nominatimPlaceToSuggestion(ROAD_ONLY_PLACE),
+                        raw_place: ROAD_ONLY_PLACE,
+                    })}
+                />
+            </>
+        );
+    },
 }));
 vi.mock("app/frontend/components/user/AddressAutocomplete", () => ({
     __esModule: true,
@@ -318,7 +351,7 @@ describe("SwayRegistration — the typed address is submitted as a fact", () => 
 
         expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
         expect(postedBody).toEqual({ is_voter_registration_address_confirmed: false, ...NO_POSTCODE_SUGGESTION });
-        expect(postedBody).not.toHaveProperty("postal_code");
+        expect(postedBody?.postal_code).toBeUndefined();
     });
 
     it("posts a complete suggestion without the typed text", () => {

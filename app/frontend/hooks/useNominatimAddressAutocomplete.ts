@@ -183,7 +183,8 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
         [address],
     );
 
-    const value = address.typed_address ?? defaultValue;
+    const typedAddress = address.typed_address;
+    const value = typedAddress ?? defaultValue;
     const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
     const [status, setStatus] = useState("IDLE");
     const [loading, setInternalLoading] = useState(false);
@@ -350,8 +351,11 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
             clearSuggestions();
 
             const setField = setData as (key: string, val: unknown) => void;
-            setField("typed_address", suggestion.description);
             const parsed: Record<string, unknown> = place ? parseNominatimAddress(place) : {};
+            if (!parsed.street && typedAddress?.trim()) {
+                parsed.street = typedAddress.trim();
+            }
+            setField("typed_address", suggestion.description);
             SELECTED_ADDRESS_FIELDS.forEach((field) => setField(field, parsed[field]));
             if (place) {
                 const placeTypes = [place.type, place.class ?? place.category].filter(
@@ -362,7 +366,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
 
             updateLoading(false);
         },
-        [clearSuggestions, setData, updateLoading],
+        [clearSuggestions, setData, typedAddress, updateLoading],
     );
 
     useEffect(() => {

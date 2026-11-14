@@ -66,7 +66,7 @@ The instruction used to name an action the screen did not offer: there was no bu
 
 The page posts what the user typed. The structured fields exist only after a suggestion is picked, so the autocomplete keeps the typed text in the form, the box shows it from there, and the submit fills `street` from it when no street is held.
 
-The operator decided that a user's address is accepted as a fact, so a missing house number or postcode must not stop a sign-up. A road-only or postcode-less suggestion keeps its other fields and gains the typed text as its street, and a complete suggestion posts as before. The typed-text key is removed from the body at request-build time, and nothing on the page blocks or warns before the post.
+The operator decided that a user's address is accepted as a fact, so a missing house number or postcode must not stop a sign-up. A road-only or postcode-less suggestion keeps its other fields and gains the typed text as its street, and a complete suggestion posts as before. A pick of a place with no house number takes its street from the text typed before the pick, because the pick then replaces the typed text with the place's full description, and that description is not a street. The typed-text key is removed from the body at request-build time, and nothing on the page blocks or warns before the post.
 
 The structured fields always describe the text in the box. Editing the text clears every field a pick filled, and a pick replaces all of them, writing an empty value for any the place lacks and recording its description as the typed text. A stale street, postcode or coordinate from an earlier pick therefore never posts under a newer address.
 
