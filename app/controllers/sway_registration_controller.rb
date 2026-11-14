@@ -51,7 +51,12 @@ class SwayRegistrationController < ApplicationController
     if existing_link
       existing_link.update!(address: address_instance)
     else
-      UserAddress.create!(user: u, address: address_instance)
+      begin
+        UserAddress.create!(user: u, address: address_instance)
+      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+        # @lat: [[identity-and-access#A user holds one address]]
+        UserAddress.find_by!(user: u).update!(address: address_instance)
+      end
     end
 
     if u.user_legislators.where(active: true).exists?

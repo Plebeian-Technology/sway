@@ -632,6 +632,43 @@ RSpec.describe "/registration", type: :request do
       expect(user.user_legislators.where(active: true).count).to eq(1)
     end
 
+    describe "when a concurrent request stored the link first" do
+      def city_hall_address_id
+        Address.find_by!(normalized_key: Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069)).id
+      end
+
+      before do
+        allow_any_instance_of(User).to receive(:user_address).and_return(nil) # rubocop:disable RSpec/AnyInstance
+      end
+
+      it "answers 200 with one link to the submitted address when the uniqueness validation refuses the insert" do
+        UserAddress.create!(user:, address: create(:address, street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069))
+        register_address(street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069)
+
+        expect(response).to have_http_status(:ok)
+        expect(UserAddress.where(user:).pluck(:address_id)).to eq([city_hall_address_id])
+      end
+
+      it "answers 200 with one link to the submitted address when the unique index refuses the insert" do
+        UserAddress.create!(user:, address: create(:address, street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069))
+        allow(UserAddress).to receive(:create!).and_raise(ActiveRecord::RecordNotUnique)
+
+        register_address(street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069)
+
+        expect(response).to have_http_status(:ok)
+        expect(UserAddress.where(user:).pluck(:address_id)).to eq([city_hall_address_id])
+      end
+
+      it "updates the stored link to the submitted address, as a sequential repeat does, when the other request stored a different address" do
+        UserAddress.create!(user:, address: create(:address, street: "100 Light St", latitude: 39.2851, longitude: -76.6141))
+
+        register_address(street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069)
+
+        expect(response).to have_http_status(:ok)
+        expect(UserAddress.where(user:).pluck(:address_id)).to eq([city_hall_address_id])
+      end
+    end
+
     it "returns 422 confirmation_required without changing address or deactivating legislators when confirm_deactivate_legislators is false or omitted" do
       register_address(street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069)
       first_address = user.reload.address
@@ -1248,6 +1285,20 @@ RSpec.describe "/registration", type: :request do
         expect(Sentry).to have_received(:capture_exception)
           .with(an_instance_of(SwayGeocode::ServiceUnavailableError), level: :warning)
       end
+    end
+
+    it "still resolves representatives when a concurrent request stored the address link first" do
+      stub_census(status: 200, body: census_district_body("07"))
+      UserAddress.create!(user:, address: create(:address, **city_hall_address.except(:country)))
+      allow_any_instance_of(User).to receive(:user_address).and_return(nil) # rubocop:disable RSpec/AnyInstance
+
+      post_address(city_hall_address)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(UserAddress.where(user:).count).to eq(1)
+      expect(user.reload.registered?).to be(true)
+      expect(linked_seats).to include([baltimore.name, "MD0", "Mayor"], [congress.name, "MD7", "Rep."])
     end
 
     it "links an address in a place Sway does not support to its Congress representatives only" do

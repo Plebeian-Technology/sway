@@ -293,6 +293,8 @@ fails with a validation error rather than a database exception. The migration
 that adds the index deletes older duplicates first, keeping the newest row per
 user; those rows are not recoverable from a rollback.
 
+Two submits from one user, such as a double-click, can both find no link before either stores one. The request whose insert loses, to the validation or to the index, re-reads the stored row and points it at its own submitted address, as a sequential repeat does, so both requests answer success and the user keeps one row.
+
 The provisioner is also why a system spec that calls `register_passkey_user`
 already has a join row before its own setup runs. Those specs re-point that row
 through `set_user_address` rather than adding a second one.

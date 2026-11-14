@@ -16,3 +16,8 @@ class Object
   def address_before_switch: () -> Address
   def address_switch_params: () -> Hash[Symbol, Hash[Symbol, untyped]]
 end
+
+# Helpers of the concurrent-link describe block.
+class Object
+  def city_hall_address_id: () -> Integer
+end
