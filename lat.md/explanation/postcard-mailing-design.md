@@ -138,9 +138,43 @@ Third, platform-funded postcards require constituent address verification: only 
 
 Fourth, a monthly platform safety cap (for example, $500 or approximately 554 postcards) pauses platform-funded mailings when reached, alerting administrators and prompting voters to use email instead.
 
+## Return address and constituent verification
+
+The return address on a postcard establishes constituent credibility and provides a reply path for legislative offices.
+
+Legislative staff prioritize communications from documented district constituents while filtering out nationwide advocacy campaigns. In physical mail, the return address serves as the primary proof of local residence.
+
+### Comparison with email reply routing
+
+The physical mail return address combines delivery routing and sender identity into a single printed block.
+
+In the email pipeline (`app/mailers/user_legislator_email_mailer.rb`), outbound messages set `from` to `"outreach@sway.vote"`, carbon-copy the voter (`cc: user.email`), and set `reply_to` to `@user_legislator_email.user.email`. Because sway.vote email addresses are catch-alls, the platform handles sender authentication while routing replies directly to the constituent. In physical mail, no secondary reply routing exists: the single printed return address dictates where USPS delivers return-to-sender cards and where legislative staff mail formal written replies.
+
+### Return address options
+
+Three return address strategies balance constituent authenticity against personal privacy.
+
+Under the first option, the postcard prints the voter's full name and residential street address (`user.address`). Legislative staff verify the voter against voter registration files, giving the card maximal advocacy weight. The voter also receives physical response letters directly in their home mailbox. The trade-off is postal visibility: postal workers and household members can view the address printed openly on the card.
+
+Under the second option, the card prints a centralized Sway mailing address (such as a Baltimore post office box). This option conceals the voter's street address, but legislative staff often discard mail without a local constituent address as out-of-district lobbying. Furthermore, legislative replies would accumulate at Sway rather than reaching the constituent.
+
+Under the third option, the card omits a return address entirely. Omitting the return address risks USPS delivery rejections for automated First-Class processing and guarantees that legislative caseworkers disregard the message.
+
+### Return address recommendation
+
+Printing the constituent's residential address with explicit user consent offers the strongest legislative impact.
+
+The application presents the voter's street address in the pre-send preview modal, asking for explicit confirmation before queueing the print job. For voters who decline to print a full street address, the system provides a fallback format displaying their name, city, and ZIP code alongside Sway's return address. This compromise preserves partial constituent recognition while honoring personal privacy preferences.
+
 ## Open decisions for the owner
 
 Key architectural and product choices requiring owner confirmation, presented with recommended answers based on current system capabilities.
+
+### Return address format
+
+What return address should be printed on constituent postcards?
+
+Recommendation: Print the constituent's full name and verified residential street address by default with explicit UI confirmation, offering a city-and-ZIP privacy fallback for voters who prefer not to display their street address.
 
 ### Postcard rate limits and idempotency
 
