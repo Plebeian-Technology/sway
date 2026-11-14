@@ -37,3 +37,9 @@ A value outside them, or one that is not a finite number, is stored as no
 coordinate. One bad coordinate drops both, since a lone latitude places nothing.
 
 
+
+## United States spellings
+
+`RegionUtil.from_country_code_to_name` reads US, USA, U.S., U.S.A., United States and United States of America, in any case and with surrounding spaces, as the United States.
+
+Clients send the country as free text: the web form sends the Nominatim country name and the mobile app sends the ISO code. Locale names are built from that text, so an unmapped spelling would build a locale such as `baltimore-maryland-usa` that holds no legislators, and the Congress fallback in [[representative-resolution#Congress fallback]] would treat the US state as unknown. Every spelling in [[lib/region_util.rb#RegionUtil#UNITED_STATES_SPELLINGS]] therefore maps to the same name as the code US. Any other country keeps its title-cased text.

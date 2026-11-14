@@ -25,11 +25,22 @@ RSpec.describe RegionUtil do
     it "maps US to United States" do
       expect(described_class.from_country_code_to_name("US")).to eq("United States")
     end
+
+    it "maps every spelling of the United States to United States" do
+      ["USA", "usa", "U.S.", "U.S.A.", "United States", "United States of America", "  USA  "].each do |spelling|
+        expect(described_class.from_country_code_to_name(spelling)).to eq("United States"), spelling
+      end
+    end
+
+    it "title-cases a country name that is not the United States" do
+      expect(described_class.from_country_code_to_name("canada")).to eq("Canada")
+    end
   end
 
   describe "constant hashes" do
     it "are frozen" do
       expect(described_class::COUNTRY_CODES_NAMES).to be_frozen
+      expect(described_class::UNITED_STATES_SPELLINGS).to be_frozen
       expect(described_class::STATE_NAMES_CODES).to be_frozen
       expect(described_class::STATE_CODES_NAMES).to be_frozen
     end

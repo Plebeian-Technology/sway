@@ -1,6 +1,7 @@
 module RegionUtil
   def self.from_country_code_to_name(code)
     return nil if code.blank?
+    return "United States" if UNITED_STATES_SPELLINGS.include?(code.strip.upcase.delete("."))
     return code.titlecase.strip if code.length > 2
 
     COUNTRY_CODES_NAMES.fetch(code.upcase.strip.to_sym, code)
@@ -9,6 +10,9 @@ module RegionUtil
   COUNTRY_CODES_NAMES = {
     US: "United States"
   }.freeze
+
+  # @lat: [[address-normalization#United States spellings]]
+  UNITED_STATES_SPELLINGS = ["US", "USA", "UNITED STATES", "UNITED STATES OF AMERICA"].freeze
 
   def self.from_region_name_to_region_code(name)
     return nil if name.blank?
