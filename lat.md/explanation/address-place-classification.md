@@ -61,3 +61,30 @@ Only a successful answer is cached: a 200 response whose body is a JSON array, i
 [[app/frontend/sway_utils/parseNominatimAddress.ts#parseNominatimAddress]] maps OpenStreetMap Nominatim search responses into Sway's address structure.
 
 Nominatim returns address components across structured properties (`house_number`, `road`, `city`, `state`, `country`, `postcode`) while supplying coordinates in top-level `lat` and `lon` fields. The parser converts coordinates to floating-point numbers and resolves standardized state abbreviations so downstream registration geocoding and district lookups remain consistent.
+
+## Google Places results in the Nominatim shape
+
+[[app/services/google_places/client.rb#GooglePlaces#Client]] answers a web address search from Google Places Text Search when Nominatim cannot, and returns each place in Nominatim's own shape.
+
+Returning the Nominatim shape means the browser's existing parser and suggestion
+hook read a Google answer without knowing where it came from. Each place carries
+`source: "google_places"` so a caller can still tell the two apart. The client
+takes the same keywords as `NominatimService.search`. A Nominatim viewbox lists
+the top latitude before the bottom one, and Google rejects a rectangle whose low
+latitude is above its high one, so the client sorts the corners. The viewbox is
+a hard limit only when `bounded` is one of the values Nominatim treats as on;
+the browser sends the string `"0"` for an unbounded locale, and that string is
+true in Ruby.
+
+Unlike a Nominatim answer, a Google answer is never cached. Google's terms
+forbid storing Places content beyond the place id, and the fallback runs only
+while Nominatim is failing or capped, so repeated identical queries are rare.
+
+The server reads the same `GOOGLE_MAPS_API_KEY` that the browser's map loader
+uses. That key may be restricted to web referrers or lack Places API (New), in
+which case Google answers every server call with HTTP 403. A 403 is therefore
+reported to Sentry as a warning, with only the status, so a refused key is
+visible rather than silently disabling the fallback. Other failures are only
+logged. The connection retries a server error or a dropped connection once,
+because a text search changes nothing on Google's side, and never retries a
+429, which would only spend more of the quota that caused it.

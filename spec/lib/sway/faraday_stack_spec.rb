@@ -157,6 +157,54 @@ RSpec.describe Sway::FaradayStack do
     end
   end
 
+  describe "GOOGLE_PLACES_DEFAULTS" do
+    it "is frozen, retries server errors and dropped connections once for POST, and never retries 429" do
+      expect(described_class::GOOGLE_PLACES_DEFAULTS).to be_frozen
+      expect(described_class::GOOGLE_PLACES_DEFAULTS).to include(
+        max: 1,
+        retry_statuses: [500, 502, 503, 504],
+        methods: %i[post],
+        exceptions: described_class::TRANSPORT_RETRY_EXCEPTIONS
+      )
+    end
+  end
+
+  describe "retry attempt counts on the Google Places connection" do
+    it "makes exactly one request for an HTTP 429 answer" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText")
+        .to_return(status: 429, body: "Too Many Requests")
+
+      described_class.google_places.post("/v1/places:searchText", "{}")
+
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly 2 attempts for an HTTP 503 answer" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText")
+        .to_return(status: 503, body: "Service Unavailable")
+
+      described_class.google_places.post("/v1/places:searchText", "{}")
+
+      expect(req_stub).to have_been_made.times(2)
+    end
+  end
+
+  describe ".google_places" do
+    it "reads the base URL from the upstream settings and times out after 5 seconds" do
+      with_app_config(:upstream, google_places_api_base_url: "https://places.example") do
+        conn = described_class.google_places
+
+        expect(conn.url_prefix.to_s.start_with?("https://places.example")).to be(true)
+        expect(conn.builder.handlers).to include(Faraday::Retry::Middleware)
+        expect(conn.options.timeout).to eq(5)
+      end
+    end
+
+    it "defaults to the public Google Places API base URL" do
+      expect(described_class.google_places.url_prefix.to_s.start_with?("https://places.googleapis.com")).to be(true)
+    end
+  end
+
   describe ".build" do
     it "returns a Faraday::Connection with retry middleware mounted" do
       conn = described_class.build(base_url: "https://example.test")

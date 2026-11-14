@@ -38,4 +38,8 @@ module EnvSecret
   def self.brave_search_api_key!
     fetch!("BRAVE_SEARCH_API_KEY")
   end
+
+  def self.google_maps_api_key
+    read("GOOGLE_MAPS_API_KEY")
+  end
 end

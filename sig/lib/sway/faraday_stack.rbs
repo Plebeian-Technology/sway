@@ -47,6 +47,7 @@ module Sway
     OPEN_DATA_DEFAULTS: retry_options
     NOMINATIM_DEFAULTS: retry_options
     NOMINATIM_USER_AGENT: String
+    GOOGLE_PLACES_DEFAULTS: retry_options
 
     def self.build: (base_url: String, ?timeout_seconds: Integer, ?retry_options: retry_options) ?{ (Faraday::Connection) -> void } -> Faraday::Connection
 
@@ -63,6 +64,8 @@ module Sway
     def self.congress_legislators: (?timeout_seconds: Integer) -> Faraday::Connection
 
     def self.nominatim: (?timeout_seconds: Integer) -> Faraday::Connection
+
+    def self.google_places: (?timeout_seconds: Integer) -> Faraday::Connection
 
     def self.brave_search: (?timeout_seconds: Integer) -> Faraday::Connection
   end

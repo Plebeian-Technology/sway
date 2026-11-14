@@ -1,0 +1,9 @@
+# Helpers defined above RSpec.describe in spec/services/google_places/client_spec.rb.
+module GooglePlacesClientSpecHelpers
+  SEARCH_URL: String
+  API_KEY: String
+  FIELD_MASK: String
+  BALTIMORE_PLACE: Hash[String, untyped]
+
+  def self.places_body: (*Hash[String, untyped] places) -> String
+end

@@ -1,0 +1,42 @@
+module GooglePlaces
+  class Client
+    SEARCH_PATH: String
+    FIELD_MASK: String
+    DEFAULT_LIMIT: Integer
+    MAX_LIMIT: Integer
+    SOURCE: String
+    BOUNDED_VALUES: Array[bool | Integer | String]
+
+    @connection: Faraday::Connection
+
+    def initialize: (?connection: Faraday::Connection?) -> void
+
+    def search: (
+      query: String,
+      ?viewbox: String?,
+      ?bounded: (bool | String | Integer)?,
+      ?countrycodes: String?,
+      ?limit: (Integer | String)?
+    ) -> Array[Hash[String, untyped]]?
+
+    private
+
+    def build_body: (
+      query: String,
+      viewbox: String?,
+      bounded: (bool | String | Integer)?,
+      countrycodes: String?,
+      limit: (Integer | String)?
+    ) -> Hash[Symbol, untyped]
+
+    def viewbox_rectangle: (String? viewbox) -> Hash[Symbol, Hash[Symbol, Float]]?
+
+    def parse_response: (Faraday::Response response) -> Array[Hash[String, untyped]]?
+
+    def to_nominatim_place: (Hash[String, untyped] place) -> Hash[String, untyped]
+
+    def nominatim_address: (Array[Hash[String, untyped]] components) -> Hash[String, String]
+
+    def find_component: (Array[Hash[String, untyped]] components, String type) -> Hash[String, untyped]?
+  end
+end
