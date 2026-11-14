@@ -86,7 +86,10 @@ class PersonalDetailScanner
       "The development seed graph's generated addresses on Sway's own " \
       "dev-baltimore.sway.vote subdomain. The local part is the row index, no " \
       "mailbox exists, and no person is named.",
-    "lat.md/explanation/phone-cache-hashing.md" => PLACEHOLDER_PHONE
+    "lat.md/explanation/phone-cache-hashing.md" => PLACEHOLDER_PHONE,
+    "mobile/.maestro/README.md" =>
+      "Baltimore City Hall's public street address (100 N Holliday St) as the sign-up flow's " \
+      "sample address, beside 555-01xx placeholder phones -- #{PUBLIC_GOV_CONTACT}"
   }.freeze
 
   STREET_TYPE_SUFFIXES = %w[
