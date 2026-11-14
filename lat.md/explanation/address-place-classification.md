@@ -80,6 +80,13 @@ Unlike a Nominatim answer, a Google answer is never cached. Google's terms
 forbid storing Places content beyond the place id, and the fallback runs only
 while Nominatim is failing or capped, so repeated identical queries are rare.
 
+The suggestion list credits "Google Maps" in place of OpenStreetMap whenever
+any suggestion's place has that source, following Google's Places API (New)
+policy page as read on 2026-11-13: attribution is the Google Maps logo when
+possible, otherwise the unmodified, untranslated text "Google Maps" at 12sp to
+16sp in #5E5E5E or white, placed inside the same container as the content. The
+list uses the text form, because no logo asset ships with the app.
+
 The server reads the same `GOOGLE_MAPS_API_KEY` that the browser's map loader
 uses. That key may be restricted to web referrers or lack Places API (New), in
 which case Google answers every server call with HTTP 403. A 403 is therefore

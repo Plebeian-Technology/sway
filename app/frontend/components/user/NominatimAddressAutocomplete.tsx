@@ -40,6 +40,7 @@ const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps>
     const listboxId = useId();
     const optionId = (index: number) => `${listboxId}-option-${index}`;
     const isOpen = status === "OK" && suggestions.length > 0;
+    const isFromGooglePlaces = suggestions.some((suggestion) => suggestion.raw_place?.source === "google_places");
     const searchMessage = loading ? null : SEARCH_MESSAGES[status];
 
     const formErrors = (form.errors ?? {}) as Record<string, string | undefined>;
@@ -185,15 +186,27 @@ const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps>
                             </li>
                         );
                     })}
-                    <li
-                        role="presentation"
-                        aria-hidden="true"
-                        className="flex items-center justify-between border-t border-border bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground"
-                        data-testid="osm-attribution"
-                    >
-                        <span>Search by Nominatim</span>
-                        <span>© OpenStreetMap contributors</span>
-                    </li>
+                    {/* @lat: [[address-place-classification#Google Places results in the Nominatim shape]] */}
+                    {isFromGooglePlaces ? (
+                        <li
+                            role="presentation"
+                            aria-hidden="true"
+                            className="flex items-center justify-end border-t border-border bg-muted/30 px-3 py-1.5 text-xs font-normal text-[#5E5E5E] dark:text-white"
+                            data-testid="osm-attribution"
+                        >
+                            <span translate="no">Google Maps</span>
+                        </li>
+                    ) : (
+                        <li
+                            role="presentation"
+                            aria-hidden="true"
+                            className="flex items-center justify-between border-t border-border bg-muted/30 px-3 py-1.5 text-[11px] text-muted-foreground"
+                            data-testid="osm-attribution"
+                        >
+                            <span>Search by Nominatim</span>
+                            <span>© OpenStreetMap contributors</span>
+                        </li>
+                    )}
                 </ul>
             )}
 

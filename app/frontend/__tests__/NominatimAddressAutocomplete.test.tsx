@@ -269,6 +269,42 @@ describe("NominatimAddressAutocomplete", () => {
 
             expect(screen.getByText(/OpenStreetMap/i)).toBeTruthy();
         });
+
+        it("credits Google Maps, not OpenStreetMap, when a suggestion came from Google Places", () => {
+            const googleSuggestion: AddressSuggestion = {
+                ...createSuggestion("g-1", "100 Holliday St", "Baltimore, MD"),
+                raw_place: { place_id: "g-1", source: "google_places" },
+            };
+            mockHook({
+                value: "100",
+                status: "OK",
+                suggestions: [googleSuggestion],
+            });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            const credit = screen.getByTestId("osm-attribution");
+            expect(credit.textContent).toBe("Google Maps");
+            expect(screen.getByText("Google Maps").getAttribute("translate")).toBe("no");
+            expect(screen.queryByText(/OpenStreetMap|Nominatim/i)).toBeNull();
+        });
+
+        it("keeps the OpenStreetMap credit when a suggestion's place has another source", () => {
+            const nominatimSuggestion: AddressSuggestion = {
+                ...createSuggestion("n-1", "100 Holliday St", "Baltimore, MD"),
+                raw_place: { place_id: "n-1" },
+            };
+            mockHook({
+                value: "100",
+                status: "OK",
+                suggestions: [nominatimSuggestion],
+            });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            expect(screen.getByTestId("osm-attribution").textContent).toContain("OpenStreetMap");
+            expect(screen.queryByText(/Google/i)).toBeNull();
+        });
     });
 
     describe("3. WAI-ARIA 1.2 Combobox Accessibility", () => {
