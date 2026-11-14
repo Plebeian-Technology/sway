@@ -10,7 +10,7 @@ Registration can end on a card with nothing on it to press. Each such card carri
 
 [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] keeps a local flag that, once set, lets the reader past the failed card and back to the address form on the same page.
 
-An address lookup can fail because of a typo, an address outside the supported jurisdictions, or a temporary upstream outage. For a first registration a failed lookup in one locale is skipped and reported, and registration completes with the locales that resolved ([[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]); only a registered user's address switch still answers the outage message, which the browser sees as a flash and JSON clients receive as the same safe error in their response format. A synchronous lookup that succeeds but creates no active representative link is a different outcome: it returns `no_representatives` with a safe message rather than marking registration complete.
+An address lookup can fail because of a typo, an address outside the supported jurisdictions, or a temporary upstream outage. For a first registration a failed lookup in one locale is skipped and reported, and registration completes with the locales that resolved ([[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]); only a registered user's address switch still answers the outage message, which the browser sees as a flash and JSON clients receive as the same safe error in their response format. A first registration never ends with no representatives ([[registration-dead-ends#An empty list says which kind of empty it is]]); only a registered user's address switch that resolves nobody returns `no_representatives` with a safe message.
 
 The flag lives in the component rather than on the server because nothing about the account changes when the reader decides to try again. `SwayRegistrationController#create` accepts a fresh address whatever the current registration status is, so the corrected address takes the same path the first one did. The page asks for the address-switch confirmation only when `is_registration_complete` is true, as the server does, because an unfinished first submission already saved an address but created no representative links to deactivate.
 
@@ -23,10 +23,24 @@ A request that fails without a server answer the page renders leaves the form us
 An empty legislators list has two meanings, and they call for opposite things
 from the reader.
 
-Waiting for registration to finish means the answer is coming and there is
-nothing to do; having no representatives means something needs correcting. One
-set of words for both leaves a reader either acting on a screen that is about
-to fill itself, or waiting for a screen that never will.
+Waiting for representatives means the answer is coming and there is nothing to
+do; having no representatives means something needs correcting. One set of words
+for both leaves a reader either acting on a screen that is about to fill itself,
+or waiting for a screen that never will.
+
+A first registration never ends in the second meaning. The address is accepted
+as a fact and always reaches the Congress locale
+([[representative-resolution#Congress fallback]]). When every locale's lookup
+finishes with no active link and no locale recorded for a retry,
+[[app/controllers/sway_registration_controller.rb#SwayRegistrationController#wait_for_congress_representatives]]
+logs it, reports it to Sentry as a warning naming the user and the locales,
+records the Congress locale on the waiting list
+([[registration-dead-ends#A skipped lookup is recorded so it can be retried]]),
+and the user is completed with the ordinary completion answer. An address whose
+US state is unknown reaches this today, because the seeded roster has no current
+President term; the hourly job links the user once one exists. The
+`no_representatives` refusal remains only for a registered user's address
+switch that resolves nobody, which keeps the previous address and links.
 
 The active-link success rule and browser, JSON, and mobile response shapes are
 owned by [[identity-and-access#Registration is asynchronous by necessity]]. A
@@ -38,11 +52,11 @@ leave a finished lookup in `processing` when it created no active link.
 
 ### The browser example waits for the address form beacon
 
-The no-representatives message reaches the page through the flash, which lives in the session cookie, so a concurrent request can lose it before the page reads it.
+The browser example for an address that resolves nobody holds its POST until the page's mount beacon has answered, so the POST's session cookie is the last one the browser applies.
 
-Mounting [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] sends an `address_form_viewed` beacon through [[app/frontend/sway_utils/funnelTracker.ts#trackFunnelStepOnce]]. The beacon is an ordinary request to a controller under `ApplicationController`, whose after-action [[app/controllers/application_controller.rb#ApplicationController#forbid_storing_a_one_time_secret]] reads the flash.
+Mounting [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] sends an `address_form_viewed` beacon through [[app/frontend/sway_utils/funnelTracker.ts#trackFunnelStepOnce]]. The beacon is an ordinary request to a controller under `ApplicationController`, whose after-action [[app/controllers/application_controller.rb#ApplicationController#forbid_storing_a_one_time_secret]] reads the flash, and its response rewrites the session cookie.
 
-Two orderings lose the message. A beacon sent before the address POST answers carries the older cookie, and its response replaces the cookie that holds the flash. A beacon sent after the POST answers carries the flash, consumes it, and responds without it. Either way the page renders a complete address form with no message and nothing rerenders it, so a longer wait on the message cannot help.
+The wait was added when the example read the no-representatives message from the flash, which lives in the session cookie. A beacon sent before the POST answered carried the older cookie and its response replaced the one holding the flash; a beacon sent after the POST consumed the flash. The example now checks the completed user and the feed redirect instead, which carry nothing in the flash, and keeps the wait so the POST still follows the page's own mount request as a person's submit would.
 
 Unloaded, the beacon finishes about 30 ms before the example's POST, and load removes that margin. [[spec/system/user_registration_spec.rb]] holds the POST until the page's Resource Timing buffer lists the beacon. An entry appears only once the response has arrived, so the browser has already applied its cookie.
 

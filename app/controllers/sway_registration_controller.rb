@@ -78,12 +78,9 @@ class SwayRegistrationController < ApplicationController
     skipped_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) }
 
     u.reload
-    if u.registered?
-      u.complete! unless u.completed? && u.is_registration_complete
-      redirect_after_registration_completion(u)
-    else
-      render_no_representatives
-    end
+    wait_for_congress_representatives(u, address_instance) unless u.registered?
+    u.complete! unless u.completed? && u.is_registration_complete
+    redirect_after_registration_completion(u)
   end
 
   private
@@ -160,6 +157,20 @@ class SwayRegistrationController < ApplicationController
       exception,
       extra: {user_id: u.id, address_id: address_instance.id, sway_locale: sway_locale.name}
     )
+  end
+
+  # @lat: [[registration-dead-ends#An empty list says which kind of empty it is]]
+  def wait_for_congress_representatives(u, address_instance)
+    sway_locales = address_instance.sway_locales
+    sway_locale_names = sway_locales.map(&:name)
+    SwayLogging.warn("sway_registration.no_representatives_resolved", user_id: u.id, sway_locales: sway_locale_names)
+    Sentry.capture_message(
+      "sway_registration.no_representatives_resolved",
+      level: :warning,
+      extra: {user_id: u.id, sway_locales: sway_locale_names}
+    )
+    congress = sway_locales.find(&:congress?)
+    u.add_pending_representative_locale(congress) if congress
   end
 
   def render_no_representatives

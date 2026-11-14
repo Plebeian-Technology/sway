@@ -93,36 +93,43 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
   end
 
   describe "registration no-representatives responses (Alba)" do
-    let!(:sway_locale) { create(:sway_locale, city: "Baltimore", state: "MD", country: "US") }
-    let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
-    let(:address_params) do
-      {
-        sway_registration: {
-          street: "100 N Holliday St",
-          city: "Baltimore",
-          region_code: "MD",
-          postal_code: "21202",
-          country: "US",
-          latitude: 39.29105,
-          longitude: -76.61069
-        }
-      }
+    let(:user) { create(:user) }
+    let(:legislator) { create(:legislator) }
+    let(:base_params) { {city: "Baltimore", region_code: "MD", postal_code: "21202", country: "US"} }
+
+    def post_switched_address(headers: {})
+      post "/sway_registration",
+        params: {
+          sway_registration: base_params.merge(
+            street: "100 Light St",
+            latitude: 39.2851,
+            longitude: -76.6141,
+            confirm_deactivate_legislators: true
+          )
+        },
+        headers:
     end
 
     before do
       sign_in(user)
-      allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
-      allow_any_instance_of(SwayRegistrationService).to receive(:call).and_return([]) # rubocop:disable RSpec/AnyInstance
+      UserLegislator.find_or_create_by!(user:, legislator:)
+      allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(legislator.sway_locale)
+      allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_return([]) # rubocop:disable RSpec/AnyInstance
+      post "/sway_registration",
+        params: {sway_registration: base_params.merge(street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069)},
+        headers: {"Accept" => "application/json"}
     end
 
     it "ships exactly code/message in JSON and reason/message in the Registration prop" do
-      post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+      post_switched_address(headers: {"Accept" => "application/json"})
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body.dig("error").keys).to match_array(%w[code message])
+      expect(response.parsed_body.dig("error", "code")).to eq("no_representatives")
 
-      post "/sway_registration", params: address_params
+      post_switched_address
       expect(response).to redirect_to(sway_registration_index_path)
+      UserLegislator.where(user:).update_all(active: false)
       get sway_registration_index_path,
         headers: {
           "X-Inertia" => "true",

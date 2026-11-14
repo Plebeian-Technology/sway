@@ -238,10 +238,8 @@ RSpec.describe "/registration", type: :request do
       expect(active_legislator_ids).to eq([mayor.id])
       expect(UserLegislator.where(user:, legislator: house_member)).to be_empty
       expect(user.reload.registration_status).to eq("completed")
-      expect(Sentry).to have_received(:capture_exception).with(
-        an_instance_of(SwayGeocode::ServiceUnavailableError),
-        extra: hash_including(user_id: user.id, sway_locale: congress.name)
-      )
+      expect(Sentry).to have_received(:capture_exception)
+        .with(an_instance_of(SwayGeocode::ServiceUnavailableError), level: :warning)
     end
 
     it "follows the normal completion redirect with no flash alert (web)" do
@@ -282,16 +280,21 @@ RSpec.describe "/registration", type: :request do
       )
     end
 
-    it "reports every locale and ends without a 500 when every locale is skipped" do
+    it "reports every locale and completes with every locale waiting when every locale is skipped" do
       allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise( # rubocop:disable RSpec/AnyInstance
         SwayGeocode::ServiceUnavailableError,
         "geocoding is unavailable"
       )
 
+      allow(Sentry).to receive(:capture_message)
+
       post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
 
-      expect(response).not_to have_http_status(:internal_server_error)
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
       expect(UserLegislator.where(user:)).to be_empty
+      expect(user.reload.pending_representative_locale_ids).to contain_exactly(baltimore.id, maryland.id, congress.id)
+      expect(Sentry).not_to have_received(:capture_message)
       [baltimore, maryland, congress].each do |sway_locale|
         expect(Sentry).to have_received(:capture_exception).with(
           an_instance_of(SwayGeocode::ServiceUnavailableError),
@@ -390,73 +393,73 @@ RSpec.describe "/registration", type: :request do
     end
   end
 
-  describe "POST /sway_registration when no representatives match the address" do
-    let!(:sway_locale) { create(:sway_locale, city: "Baltimore", state: "MD", country: "US") }
+  describe "POST /sway_registration when no Sway locale resolves the address" do
+    let!(:congress) { create(:sway_locale, :congress) }
     let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
-    let(:address_params) do
+    let(:toronto_params) do
       {
         sway_registration: {
-          street: "100 N Holliday St",
-          city: "Baltimore",
-          region_code: "MD",
-          postal_code: "21202",
-          country: "US",
-          latitude: 39.29105,
-          longitude: -76.61069
+          street: "100 Queen St W",
+          city: "Toronto",
+          region_code: "ON",
+          postal_code: "M5H 2N2",
+          country: "Canada",
+          latitude: 43.65323,
+          longitude: -79.38318
         }
       }
+    end
+
+    def create_us_president
+      us_district = create(:district, sway_locale: congress, name: "US0")
+      seat = Seat.create!(district: us_district, seat_identifier: "us-president", title: "President", chamber: "White House")
+      legislator = create(:legislator, district: us_district)
+      create(:legislator_term, legislator:, district: us_district, seat:, term_start_year: 2025, term_end_year: 2029)
+      legislator
     end
 
     before do
       sign_in(user)
-      allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
-      allow_any_instance_of(SwayRegistrationService).to receive(:call).and_return([]) # rubocop:disable RSpec/AnyInstance
+      allow(Sentry).to receive(:capture_message)
     end
 
-    it "returns the safe 422 error envelope for mobile callers" do
-      post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+    it "completes a user outside the United States with the President as the only link (JSON)" do
+      president = create_us_president
 
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(response.parsed_body.keys).to eq(["error"])
-      expect(response.parsed_body.fetch("error").keys).to match_array(%w[code message])
-      expect(response.parsed_body.dig("error", "code")).to eq("no_representatives")
-      expect(response.parsed_body.dig("error", "message")).to eq(
-        SwayRegistrationController::REGISTRATION_NO_REPRESENTATIVES_MESSAGE
-      )
-      expect(user.reload.registration_status).to eq("pending")
-      expect(user.is_registration_complete).to be(false)
-    end
-
-    it "carries the reason into the Registration page props after a browser redirect" do
-      post "/sway_registration", params: address_params
-
-      expect(response).to redirect_to(sway_registration_index_path)
-      get sway_registration_index_path,
-        headers: {
-          "X-Inertia" => "true",
-          "X-Inertia-Version" => InertiaRails.configuration.version.to_s,
-          "User-Agent" => "RSpec Browser"
-        }
+      post "/sway_registration", params: toronto_params, headers: {"Accept" => "application/json"}
 
       expect(response).to have_http_status(:ok)
-      expect(inertia).to render_component(Pages::REGISTRATION)
-      expect(inertia).to have_props { |props|
-        outcome = props[:registration_outcome] || props["registration_outcome"]
-        outcome.present? && outcome[:reason].to_s == "no_representatives" &&
-          outcome[:message] == SwayRegistrationController::REGISTRATION_NO_REPRESENTATIVES_MESSAGE
-      }
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(UserLegislator.where(user:, active: true).pluck(:legislator_id)).to eq([president.id])
+      expect(user.reload.pending_representative_locale_ids).to eq([])
+      expect(Sentry).not_to have_received(:capture_message)
     end
 
-    it "does not report success from a stale completed status with no active pairing" do
-      user.update_columns(registration_status: "completed", is_registration_complete: true)
+    context "when no current President term exists" do
+      it "completes the user with the Congress locale waiting and reports it (JSON)" do
+        post "/sway_registration", params: toronto_params, headers: {"Accept" => "application/json"}
 
-      post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["registration_status"]).to eq("completed")
+        expect(response.parsed_body.dig("error", "code")).to be_nil
+        expect(user.reload.registration_status).to eq("completed")
+        expect(user.is_registration_complete).to be(true)
+        expect(user.pending_representative_locale_ids).to eq([congress.id])
+        expect(UserLegislator.where(user:)).to be_empty
+        expect(Sentry).to have_received(:capture_message).once.with(
+          "sway_registration.no_representatives_resolved",
+          level: :warning,
+          extra: hash_including(user_id: user.id, sway_locales: include(congress.name))
+        )
+      end
 
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(response.parsed_body.dig("error", "code")).to eq("no_representatives")
-      expect(user.reload.registration_status).to eq("completed")
-      expect(user.is_registration_complete).to be(true)
-      expect(user.registered?).to be(false)
+      it "redirects a browser to the feed" do
+        post "/sway_registration", params: toronto_params
+
+        expect(response).to redirect_to(feed_path)
+        expect(user.reload.registration_status).to eq("completed")
+        expect(user.pending_representative_locale_ids).to eq([congress.id])
+      end
     end
   end
 
@@ -950,11 +953,7 @@ RSpec.describe "/registration", type: :request do
       )
     end
 
-    context "when locale resolution is stubbed out for a blank region and country" do
-      before do
-        allow_any_instance_of(Address).to receive(:sway_locales).and_return([]) # rubocop:disable RSpec/AnyInstance
-      end
-
+    context "when the body carries no address" do
       [
         ["no sway_registration key is sent", {}],
         ["sway_registration is an empty object", {sway_registration: {}}],
@@ -994,7 +993,6 @@ RSpec.describe "/registration", type: :request do
     end
 
     it "answers neither 400 nor 500 when the address has no region and no country" do
-      pending "locale resolution still raises on a blank region or country"
       post "/sway_registration", params: {}, headers: json_headers
 
       expect_neither_400_nor_500
