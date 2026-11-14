@@ -356,6 +356,38 @@ RSpec.describe "/registration", type: :request do
         expect(user.reload.pending_representative_locale_ids.count(congress.id)).to eq(1)
       end
     end
+
+    describe "when a user waiting for representatives submits a different address" do
+      before do
+        UserAddress.create!(user:, address: create(:address, street: "1 Old Saved Rd"))
+        user.add_pending_representative_locale(congress)
+        user.update_columns(registration_status: "completed", is_registration_complete: true)
+      end
+
+      it "replaces the address and looks the new one up without asking to confirm a switch" do
+        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["registration_status"]).to eq("completed")
+        expect(response.parsed_body.dig("error", "code")).to be_nil
+        expect(user.reload.address.street).to eq("100 N Holliday St")
+        expect(active_legislator_ids).to eq([mayor.id])
+      end
+
+      it "still asks a user with an active legislator link to confirm the switch" do
+        linked_user = create(:user, :registered)
+        linked_address = create(:address, street: "2 Old Saved Rd")
+        UserAddress.create!(user: linked_user, address: linked_address)
+        linked_user.add_pending_representative_locale(congress)
+        sign_in(linked_user)
+
+        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("confirmation_required")
+        expect(linked_user.reload.address).to eq(linked_address)
+      end
+    end
   end
 
   describe "POST /sway_registration when no representatives match the address" do

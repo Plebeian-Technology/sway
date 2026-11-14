@@ -42,7 +42,7 @@ class SwayRegistrationController < ApplicationController
     # @lat: [[identity-and-access#A user holds one address]]
     address_instance = address
     existing_link = u.user_address
-    if u.registered? && existing_link.present? && existing_link.address_id != address_instance.id
+    if u.user_legislators.where(active: true).exists? && existing_link.present? && existing_link.address_id != address_instance.id
       return handle_address_switch(u, existing_link.address, address_instance)
     end
 
@@ -52,7 +52,7 @@ class SwayRegistrationController < ApplicationController
       UserAddress.create!(user: u, address: address_instance)
     end
 
-    if u.registered?
+    if u.user_legislators.where(active: true).exists?
       u.complete! unless u.completed? && u.is_registration_complete
       return redirect_after_registration_completion(u)
     end
