@@ -511,4 +511,54 @@ RSpec.describe User, type: :model do
       expect(user.default_sway_locale).to be_nil
     end
   end
+
+  describe "account deletion foreign-key guard" do
+    let(:admin_actor_foreign_keys) do
+      [
+        ["admin_bill_views", "admin_user_id"],
+        ["admin_settings", "updated_by_id"],
+        ["bill_news_articles", "approved_by_id"],
+        ["bill_news_articles", "stance_by_id"],
+        ["bill_summary_revisions", "actor_id"],
+        ["historical_repair_audit_events", "admin_user_id"],
+        ["news_article_discovery_requests", "requested_by_id"],
+        ["news_article_source_snapshots", "actor_id"],
+        ["news_article_text_versions", "actor_id"],
+        ["pipeline_activity_log_entries", "actor_user_id"],
+        ["sending_service_domains", "confirmed_by_id"],
+        ["testimony_coverage_acknowledgements", "acknowledged_by_id"]
+      ].freeze
+    end
+
+    let(:pending_foreign_keys) do
+      [
+        ["invites", "inviter_id"],
+        ["invites", "invitee_id"],
+        ["user_organization_membership_invites", "inviter_id"],
+        ["organization_bill_position_changes", "updated_by_id"],
+        ["organization_bill_position_changes", "approved_by_id"],
+        ["organization_bill_position_changes", "rejected_by_id"],
+        ["historical_score_explanations", "user_id"],
+        ["historical_repair_deliveries", "user_id"]
+      ].freeze
+    end
+
+    it "fails when a foreign key to users is neither handled nor allowlisted" do
+      conn = ActiveRecord::Base.connection
+      user_fks = conn.tables.flat_map { |t| conn.foreign_keys(t).select { |fk| fk.to_table == "users" } }
+      handled_assocs = User.reflect_on_all_associations.select do |assoc|
+        assoc.options[:dependent].in?(%i[destroy delete_all nullify])
+      end.map { |a| [a.table_name, a.foreign_key.to_s] }.to_set
+
+      unhandled = user_fks.reject do |fk|
+        pair = [fk.from_table, fk.column.to_s]
+        fk.on_delete.in?(%i[cascade nullify]) ||
+          admin_actor_foreign_keys.include?(pair) ||
+          pending_foreign_keys.include?(pair) ||
+          handled_assocs.include?(pair)
+      end.map { |fk| "#{fk.from_table}.#{fk.column}" }
+
+      expect(unhandled).to be_empty, "Unhandled foreign keys to users: #{unhandled.join(", ")}"
+    end
+  end
 end
