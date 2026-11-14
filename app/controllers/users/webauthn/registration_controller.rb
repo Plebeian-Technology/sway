@@ -11,7 +11,7 @@ module Users
       ALREADY_REGISTERED_MESSAGE = "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access."
       SIGN_IN_FAILED_MESSAGE = "Your passkey was saved, but Sway couldn't sign you in. Sign in with your passkey to continue."
 
-      # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
+      # @lat: [[phone-verification-rate-limits#Why passkey enrollment starts are rate-limited per verified phone]]
       rate_limit to: 20, within: 1.hour,
         name: "create",
         # @lat: [[phone-cache-hashing]]

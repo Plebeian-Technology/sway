@@ -7,12 +7,21 @@ module Api
       include RelyingParty
       include OnboardingSafetyNet
 
-      # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
-      rate_limit to: 5, within: 1.hour,
-        by: -> { request.remote_ip },
+      # @lat: [[phone-verification-rate-limits#Why passkey enrollment starts are rate-limited per verified phone]]
+      rate_limit to: 20, within: 1.hour,
+        name: "create",
+        # @lat: [[phone-cache-hashing]]
+        by: -> {
+          # @type self: Api::V1::RegistrationsController
+          SmsVerificationToken.peek(params.dig(:registration, :sms_verified_token))&.dig(:phone) || request.remote_ip
+        },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_up) },
-        with: -> { render_error(code: "rate_limited", message: "Too many registration attempts", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::RegistrationsController
+          response.set_header("Retry-After", 1.hour.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many registration attempts", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
 
       def public_endpoint?

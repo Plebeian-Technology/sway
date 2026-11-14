@@ -15,7 +15,7 @@ The web send allows 10 per hour per IP and the mobile send 5 per hour per IP, bo
 
 A one-time code goes through Twilio Verify, a separate API from SMS send, so the operator decided it does not count against a per-phone daily SMS limit. The earlier cap of one code per phone per day locked out any new user who cancelled the passkey prompt, reloaded the page, or never received the first text: no second code could arrive for up to 24 hours, so sign-up could not finish that day. `Users::Webauthn::SessionsController#create`, which sends the code for a new user's phone-first sign-up, has no per-phone daily cap either.
 
-Registration spam needs a verified code, and a verified code needs a code request, so the chain `/verify -> sms_verified_token -> /registrations` is bounded by the per-IP code-request limits, the sign-in limiters on the phone-first path, the per-IP registration-start limits, and Twilio Verify's own limits on a phone number. Code checks keep their per-phone limit (5 per 10 minutes), which bounds guessing a code rather than sending one.
+Registration spam needs a verified code, and a verified code needs a code request, so the chain `/verify -> sms_verified_token -> /registrations` is bounded by the per-IP code-request limits, the sign-in limiters on the phone-first path, the per-verified-phone registration-start limits, and Twilio Verify's own limits on a phone number. Code checks keep their per-phone limit (5 per 10 minutes), which bounds guessing a code rather than sending one.
 
 ## Why spec/requests/rate_limiting_spec.rb stubs Twilio with a double
 
@@ -29,13 +29,17 @@ Without a stand-in, these examples would pass only where the `TWILIO_*` variable
 
 An earlier bare `gsub(/\D/, "")` kept a leading `"1"`, so `"+1 (410)..."` and `"410..."` counted as two different numbers, doubling an attacker's per-phone budget. This same normalization is used everywhere a phone number becomes a rate-limit key: `Api::V1::PhoneVerificationsController`, `Api::V1::SessionsController`, and `Users::Webauthn::SessionsController`.
 
-## Why Api::V1::RegistrationsController.create is rate-limited per IP
+## Why passkey enrollment starts are rate-limited per verified phone
 
 Answering `409 phone_already_registered` for a number that already has an account doubles as an oracle: without a limit, an attacker could learn which phone numbers are registered on Sway by submitting them one at a time.
 
-The 5-per-IP-per-hour limit (`RateLimitConfig.enabled?(:sign_up)`) is what bounds that. It sat inactive in production until a later change enabled it — the `spec/requests/api/v1/registrations_spec.rb` rate-limiting example ties the limit specifically to the `create` action, so detaching the two fails the test rather than silently going quiet again.
+Both enrollment starts answer that 409 only for a phone verified by SMS, so both are limited per verified phone: 20 starts an hour, behind the `RateLimitConfig.enabled?(:sign_up)` kill switch. The web start, `Users::Webauthn::RegistrationController#create`, keys on the session's verified phone. The mobile start, `Api::V1::RegistrationsController#create`, keys on the phone digest stored with the SMS verification token the request carries. A start with no verified phone, or with a token that is missing or unknown, is keyed on the client IP with the same limit, so probing without a verified phone stays bounded per IP.
 
-The web enrollment start, `Users::Webauthn::RegistrationController#create`, shares the kill switch but is keyed on the session's verified phone, 20 starts an hour, with the client IP as the key only when the session has no verified phone. The 409 answer needs a verified phone, so a limit per verified phone still bounds the oracle, while many people behind one carrier, café or event network can all start enrollment, and one person's cancelled passkey prompts no longer use up a shared IP's allowance. A refused start sends `Retry-After: 3600`. The limiter carries its own name, because Rails builds an unnamed limiter's cache key from the controller and the key value alone, which would share one counter with the application-wide per-IP limiter and count each request twice.
+A limit per IP would refuse the sixth new user an hour behind one carrier, café or event network, after their SMS was already sent and paid for, and one person cancelling the passkey prompt a few times would use up a shared IP's allowance. A limit per verified phone still bounds the oracle, because each probe costs a verified phone, and Twilio Verify's own limits bound how many phones one person can verify. A refused start sends `Retry-After: 3600`, the limiter's window.
+
+The mobile limiter reads the token with a nested lookup that tolerates a request with no registration parameter, so such a request is counted against its IP and reaches the controller's own missing-parameter answer. Each limiter carries its own name, because Rails builds an unnamed limiter's cache key from the controller and the key value alone, which would share one counter with the application-wide per-IP limiter and count each request twice.
+
+The `spec/requests/api/v1/registrations_spec.rb` rate-limiting examples tie the mobile limit to the `create` action, so detaching the two fails the test rather than silently going quiet again.
 
 ## Why the sign-in challenge throttles two ways
 

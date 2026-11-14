@@ -484,18 +484,81 @@ RSpec.describe "Api::V1::Registrations", type: :request do
     end
   end
 
-  # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
+  # @lat: [[phone-verification-rate-limits#Why passkey enrollment starts are rate-limited per verified phone]]
   describe "rate limiting (account-enumeration bound)" do
-    it "throttles registration starts per IP after 5 attempts" do
+    around { |example| with_app_config(:webauthn, rp_id: "app.example.test", allowed_origins: "https://app.example.test") { example.run } }
+
+    it "lets six verified phones from one IP start enrollment within an hour" do
       with_rate_limit_enabled(:sign_up) do
-        6.times do
+        6.times do |i|
+          start_phone = "410555#{(7000 + i).to_s.rjust(4, "0")}"
           post "/api/v1/registrations",
-            params: {registration: {sms_verified_token: "deadbeef", phone: phone}},
+            params: {registration: {sms_verified_token: SmsVerificationToken.issue!(start_phone), phone: start_phone}},
+            headers: {"REMOTE_ADDR" => "10.0.6.1"},
             as: :json
+
+          expect(response).to have_http_status(:ok)
         end
+      end
+    end
+
+    it "refuses the 21st start for one verified phone across many IPs with Retry-After 3600" do
+      token = SmsVerificationToken.issue!(phone)
+      with_rate_limit_enabled(:sign_up) do
+        20.times do |i|
+          post "/api/v1/registrations",
+            params: {registration: {sms_verified_token: token, phone: phone}},
+            headers: {"REMOTE_ADDR" => "10.0.7.#{i + 1}"},
+            as: :json
+
+          expect(response).to have_http_status(:ok)
+        end
+
+        post "/api/v1/registrations",
+          params: {registration: {sms_verified_token: token, phone: phone}},
+          headers: {"REMOTE_ADDR" => "10.0.7.99"},
+          as: :json
 
         expect(response).to have_http_status(:too_many_requests)
         expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        expect(response.headers["Retry-After"]).to eq("3600")
+      end
+    end
+
+    it "counts a start with no registration parameter against the IP without raising" do
+      with_rate_limit_enabled(:sign_up) do
+        20.times do
+          post "/api/v1/registrations", params: {}, headers: {"REMOTE_ADDR" => "10.0.8.1"}, as: :json
+
+          expect(response).to have_http_status(:bad_request)
+          expect(json_body.dig(:error, :code)).to eq("bad_request")
+        end
+
+        post "/api/v1/registrations", params: {}, headers: {"REMOTE_ADDR" => "10.0.8.1"}, as: :json
+
+        expect(response).to have_http_status(:too_many_requests)
+      end
+    end
+
+    it "refuses the 21st start from one IP with an invalid token" do
+      with_rate_limit_enabled(:sign_up) do
+        20.times do
+          post "/api/v1/registrations",
+            params: {registration: {sms_verified_token: "deadbeef", phone: phone}},
+            headers: {"REMOTE_ADDR" => "10.0.9.1"},
+            as: :json
+
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        post "/api/v1/registrations",
+          params: {registration: {sms_verified_token: "deadbeef", phone: phone}},
+          headers: {"REMOTE_ADDR" => "10.0.9.1"},
+          as: :json
+
+        expect(response).to have_http_status(:too_many_requests)
+        expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        expect(response.headers["Retry-After"]).to eq("3600")
       end
     end
   end
