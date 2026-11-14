@@ -45,6 +45,10 @@ class EnvCredentialScanner
     ".kamal/hooks/pre-deploy.sample" =>
       "A .sample file. Kamal executes .kamal/hooks/<name> only — the .sample suffix " \
       "is what makes it a template rather than a hook — so this never runs.",
+    ".kamal/hooks/pre-deploy" =>
+      "Tests only whether OPEN_STATES_API_KEY is empty, to refuse a deploy without it. " \
+      "The hook never sends the value anywhere, so an untrimmed value cannot degrade " \
+      "silently here; the running app reads the key through EnvSecret.",
     "scripts/twilio/approve-verification.sh" =>
       "A manual operator curl run from a laptop against Twilio's Verify API, not a " \
       "deployed process. It genuinely CONSUMES the credentials (curl -u), so it is " \
