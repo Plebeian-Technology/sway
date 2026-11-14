@@ -563,6 +563,14 @@ RSpec.describe "Api::V1::Registrations", type: :request do
     end
   end
 
+  describe "phone_taken?" do
+    it "treats an error that is neither a failed validation nor a unique-index hit as no phone conflict" do
+      error = StandardError.new("UNIQUE constraint failed: users.phone")
+
+      expect(Api::V1::RegistrationsController.new.send(:phone_taken?, error)).to be(false)
+    end
+  end
+
   describe "an unexpected error" do
     before do
       allow(SmsVerificationToken).to receive(:peek).and_raise(RuntimeError, "boom")
