@@ -212,9 +212,93 @@ The proposed revision clarifies constituent-initiated disclosure:
 
 > "We show vote totals in the app that cannot be linked to you. When you choose to mail a physical postcard to an elected representative, we transmit your name, mailing address, and message to our print vendor and the representative's office. We disclose information when the law requires it, such as in response to a valid court order."
 
+## Proposed implementation issues
+
+A sequenced series of discrete engineering issues required to implement physical postcard mailing in the application.
+
+Implementation issues remain proposals until owner approval. Once approved, tasks can be created in the issue tracker following this dependency order.
+
+### Issue 1: PostGrid API client and credential configuration
+
+Provides an authenticated PostGrid client and configures test and live API credentials.
+
+- **Outcome**: The backend provides an authenticated `PostGrid::Client` capable of validating postal addresses and dispatching single-piece postcard orders in test mode.
+- **Owned files**: `app/services/post_grid/client.rb`, `app/lib/env_secret.rb`, `lib/sway/settings/post_grid.rb`, `.kamal/secrets-common`, `config/deploy.yml`, `spec/services/post_grid/client_spec.rb`, `sig/app/services/post_grid/client.rbs`.
+- **Blockers**: None.
+
+### Issue 2: Legislator mailing address schema and database migrations
+
+Adds address columns to legislators and establishes the postcard delivery tracking table.
+
+- **Outcome**: The primary database stores physical street addresses on the `legislators` table and records constituent postcard dispatches in a new `user_legislator_postcards` table with a unique index on `[user_legislator_id, bill_id]`.
+- **Owned files**: `db/migrate/*_add_postal_address_to_legislators.rb`, `db/migrate/*_create_user_legislator_postcards.rb`, `db/schema.rb`, `app/models/legislator.rb`, `app/models/user_legislator_postcard.rb`, `spec/models/user_legislator_postcard_spec.rb`, `sig/app/models/user_legislator_postcard.rbs`.
+- **Blockers**: None.
+
+### Issue 3: State and federal legislator postal address ingestion
+
+Enriches roster sync pipelines with physical office addresses for Maryland and US Congress.
+
+- **Outcome**: Maryland state legislators and US Congress members receive verified physical office addresses during database seeding and automated roster refreshes.
+- **Owned files**: `app/services/legislation/adapters/generic_roster_adapter.rb`, `app/services/seed_preparers/legislators/maryland_general_assembly.rb`, `db/seeds/data/united_states/maryland/maryland/legislators.json`, `db/seeds/data/united_states/congress/congress/legislators.json`, `spec/services/legislation/adapters/generic_roster_adapter_spec.rb`.
+- **Blockers**: Issue 2.
+
+### Issue 4: Postcard dispatch controller, background job, and rate limiting
+
+Implements the backend endpoint and background job queueing constituent postcard dispatches.
+
+- **Outcome**: Authenticated constituents can submit postcard requests through an idempotent controller action that validates residential eligibility and enqueues asynchronous print jobs.
+- **Owned files**: `app/controllers/user_legislator_postcards_controller.rb`, `app/jobs/send_user_legislator_postcard_job.rb`, `config/routes.rb`, `spec/requests/user_legislator_postcards_spec.rb`, `spec/jobs/send_user_legislator_postcard_job_spec.rb`.
+- **Blockers**: Issue 1, Issue 2.
+
+### Issue 5: PostGrid delivery status webhook endpoint
+
+Receives external delivery event webhooks from PostGrid to update postcard lifecycle states.
+
+- **Outcome**: Incoming authenticated PostGrid webhooks update postcard records through lifecycle states (`queued`, `printed`, `delivered`, `undeliverable`).
+- **Owned files**: `app/controllers/webhooks/post_grid_controller.rb`, `config/routes.rb`, `spec/requests/webhooks/post_grid_spec.rb`.
+- **Blockers**: Issue 2, Issue 4.
+
+### Issue 6: Web frontend postcard composition and preview modals
+
+Adds interactive postcard composition dialogs to web legislator and Bill of the Month pages.
+
+- **Outcome**: Web users can compose 300-character messages, review visual postcard front and back previews, and dispatch mailings from legislator profiles and Bill of the Month pages.
+- **Owned files**: `app/frontend/components/bill/MailPostcardModal.tsx`, `app/frontend/components/bill/__tests__/MailPostcardModal.test.tsx`, `app/frontend/pages/Legislator.tsx`, `app/frontend/pages/BillOfTheMonth.tsx`.
+- **Blockers**: Issue 4.
+
+### Issue 7: Mobile Expo app postcard composition and preview screens
+
+Integrates postcard composition and preview dialogs into the mobile application.
+
+- **Outcome**: Mobile app users can compose messages, preview 4x6 cards, and initiate postcard dispatches on iOS and Android platforms.
+- **Owned files**: `mobile/src/components/bill/MailPostcardModal.tsx`, `mobile/src/screens/LegislatorDetailScreen.tsx`, `mobile/src/screens/BillOfTheMonthScreen.tsx`, `mobile/src/api/client.ts`.
+- **Blockers**: Issue 4.
+
+### Issue 8: Privacy policy and disclosure updates
+
+Updates public and in-app privacy disclosures to name PostGrid and specify data retention.
+
+- **Outcome**: The marketing website and in-app privacy disclosures name PostGrid as a service provider, describe the 30-day print asset retention window, and clarify constituent-initiated physical disclosures.
+- **Owned files**: `app/frontend/pages/public/Privacy.tsx`, `app/frontend/pages/__tests__/PublicPrivacy.test.tsx`, `lat.md/explanation/public-disclosure-pages.md`.
+- **Blockers**: Issue 6, Issue 7.
+
+### Issue 9: Production live key activation
+
+Switches production deployment from test mode to live PostGrid dispatch after owner approval.
+
+- **Outcome**: Production configurations transition from `POSTGRID_TEST_API_KEY` to `POSTGRID_LIVE_API_KEY`, sending physical mail to representatives.
+- **Owned files**: `config/deploy.yml`, `docs/operations.md`.
+- **Blockers**: Issue 1, Issue 2, Issue 3, Issue 4, Issue 5, Issue 6, Issue 7, Issue 8.
+
 ## Open decisions for the owner
 
 Key architectural and product choices requiring owner confirmation, presented with recommended answers based on current system capabilities.
+
+### Production API key transition (Decided)
+
+How should production credentials be managed during rollout?
+
+Status: Decided. Production receives both `POSTGRID_TEST_API_KEY` and `POSTGRID_LIVE_API_KEY`. Deployment starts using the test key until the owner verifies the end-to-end flow. Switching production to the live key is isolated to Issue 9.
 
 ### Privacy policy disclosure timing
 
