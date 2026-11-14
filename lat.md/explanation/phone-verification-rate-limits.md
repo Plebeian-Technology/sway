@@ -9,11 +9,13 @@ Why a one-time code request has no per-phone daily cap, what bounds registration
 
 ## Why a one-time code has no per-phone daily cap
 
-A one-time code request is limited per IP only: 10 per hour on the web (`PhoneVerificationController#create`) and 5 per hour on mobile (`Api::V1::PhoneVerificationsController#request_code`).
+A one-time code request has three send paths, and none has a per-phone daily cap. Each is limited per IP: [[app/controllers/phone_verification_controller.rb#PhoneVerificationController#create]] (web) and [[app/controllers/api/v1/phone_verifications_controller.rb#PhoneVerificationsController#request_code]] (mobile), and [[app/controllers/users/webauthn/sessions_controller.rb#SessionsController#create]] (web sign-up).
+
+The web send allows 10 per hour per IP and the mobile send 5 per hour per IP, both behind the `:phone_verify` kill switch. The sign-up send is the main web path. It uses the sign-in limiters instead: 10 per 5 minutes per IP and 5 per 5 minutes per phone, behind the `:sign_in` kill switch.
 
 A one-time code goes through Twilio Verify, a separate API from SMS send, so the operator decided it does not count against a per-phone daily SMS limit. The earlier cap of one code per phone per day locked out any new user who cancelled the passkey prompt, reloaded the page, or never received the first text: no second code could arrive for up to 24 hours, so sign-up could not finish that day. `Users::Webauthn::SessionsController#create`, which sends the code for a new user's phone-first sign-up, has no per-phone daily cap either.
 
-Registration spam needs a verified code, and a verified code needs a code request, so the chain `/verify -> sms_verified_token -> /registrations` is bounded by the per-IP code-request limits, the per-IP registration-start limits, and Twilio Verify's own limits on a phone number. Code checks keep their per-phone limit (5 per 10 minutes), which bounds guessing a code rather than sending one.
+Registration spam needs a verified code, and a verified code needs a code request, so the chain `/verify -> sms_verified_token -> /registrations` is bounded by the per-IP code-request limits, the sign-in limiters on the phone-first path, the per-IP registration-start limits, and Twilio Verify's own limits on a phone number. Code checks keep their per-phone limit (5 per 10 minutes), which bounds guessing a code rather than sending one.
 
 ## Why spec/requests/rate_limiting_spec.rb stubs Twilio with a double
 
