@@ -75,7 +75,7 @@ RSpec.describe UserAddressSwitchService do
       expect(LegislatorDistrictScore.find_by(legislator_term: old_term)&.count_agreed).to eq(1)
 
       allow(new_address).to receive(:sway_locales).and_return([new_locale])
-      reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator])
+      reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
         .with(user, new_address, new_locale, invited_by_id: nil, async: false)
         .and_return(reg_double)
@@ -133,7 +133,7 @@ RSpec.describe UserAddressSwitchService do
       prior_ud_b = create(:user_district, user: user, district: district_b, active: false)
 
       allow(new_address).to receive(:sway_locales).and_return([sway_locale])
-      reg_double = instance_double(SwayRegistrationService, district_legislators: [legislator_b])
+      reg_double = instance_double(SwayRegistrationService, district_legislators: [legislator_b], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
         .with(user, new_address, sway_locale, invited_by_id: nil, async: false)
         .and_return(reg_double)
@@ -144,6 +144,54 @@ RSpec.describe UserAddressSwitchService do
 
       expect(prior_ul_b.reload.active).to be(true)
       expect(prior_ud_b.reload.active).to be(true)
+    end
+
+    # @lat: [[representative-resolution-tests#Address switch around a skipped term#Keeps the skipped legislator's links]]
+    it "keeps the links of a legislator whose term is skipped and switches the rest" do
+      allow(Sentry).to receive(:capture_exception)
+      user = create(:user)
+      congress = create(:sway_locale, :congress)
+      old_address = create(:address, street: "100 E Pratt St", region_code: "MD")
+      new_address = create(:address, street: "200 E Pratt St", region_code: "MD")
+      create(:user_address, user: user, address: old_address)
+
+      locale_wide = create(:district, sway_locale: congress, name: "US0")
+      skipped_legislator = create(:legislator, sway_locale: congress, last_name: "Unseated")
+      create(:legislator_term, legislator: skipped_legislator, district: locale_wide)
+      skipped_ul = create(:user_legislator, user: user, legislator: skipped_legislator, active: true)
+      skipped_ud = create(:user_district, user: user, district: locale_wide, active: true)
+
+      old_district = create(:district, sway_locale: congress, name: "MD3")
+      old_legislator = create(:legislator, sway_locale: congress, last_name: "Old")
+      create(:legislator_term, legislator: old_legislator, district: old_district)
+      old_ul = create(:user_legislator, user: user, legislator: old_legislator, active: true)
+      old_ud = create(:user_district, user: user, district: old_district, active: true)
+
+      new_district = create(:district, sway_locale: congress, name: "MD7")
+      new_seat = Seat.create!(
+        district: new_district,
+        seat_identifier: "md-congress-district-7",
+        title: "Representative",
+        chamber: "House"
+      )
+      new_legislator = create(:legislator, sway_locale: congress, last_name: "New")
+      create(:legislator_term, legislator: new_legislator, district: new_district, seat: new_seat)
+
+      allow(new_address).to receive(:sway_locales).and_return([congress])
+      allow(SwayGeocode).to receive(:build).and_return(double(districts: [7]))
+
+      change = described_class.new(user, previous_address: old_address, new_address: new_address).call
+
+      expect(skipped_ul.reload.active).to be(true)
+      expect(skipped_ud.reload.active).to be(true)
+      expect(old_ul.reload.active).to be(false)
+      expect(old_ud.reload.active).to be(false)
+      expect(UserLegislator.find_by!(user: user, legislator: new_legislator).active).to be(true)
+      expect(change.deactivated_legislator_ids).to eq([old_legislator.id])
+      expect(change.deactivated_district_ids).to eq([old_district.id])
+      expect(change.activated_legislator_ids).to eq([new_legislator.id])
+      expect(Sentry).to have_received(:capture_exception)
+        .once.with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
     end
 
     it "returns nil and makes zero database writes when the new address resolves zero legislators" do
@@ -159,7 +207,7 @@ RSpec.describe UserAddressSwitchService do
       active_ud = create(:user_district, user: user, district: district, active: true)
 
       allow(new_address).to receive(:sway_locales).and_return([sway_locale])
-      reg_double = instance_double(SwayRegistrationService, district_legislators: [])
+      reg_double = instance_double(SwayRegistrationService, district_legislators: [], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
         .with(user, new_address, sway_locale, invited_by_id: nil, async: false)
         .and_return(reg_double)
@@ -186,7 +234,7 @@ RSpec.describe UserAddressSwitchService do
       active_ud = create(:user_district, user: user, district: district, active: true)
 
       allow(new_address).to receive(:sway_locales).and_return([sway_locale])
-      reg_double = instance_double(SwayRegistrationService)
+      reg_double = instance_double(SwayRegistrationService, skipped_legislator_ids: [])
       allow(reg_double).to receive(:district_legislators).and_raise(SwayGeocode::ServiceUnavailableError, "timeout")
       allow(SwayRegistrationService).to receive(:new)
         .with(user, new_address, sway_locale, invited_by_id: nil, async: false)

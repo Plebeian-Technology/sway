@@ -30,7 +30,7 @@ Candidate terms, seats, districts, and legislators must agree on the selected lo
 
 [[app/services/sway_registration_service.rb#SwayRegistrationService#skip_unresolved_terms]] records each skip once in the `skipped_resolution_errors` reader, as the `Seats::UnresolvedSeatError` or `Seats::OverlapValidator::OverlapError` the check would have raised, logs it with term ids, district and locale names, and reports it to Sentry at warning level. An overlapping seat yields one error for all of its occupants.
 
-Reconciliation still refuses. [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#call]] resolves the complete set before [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#apply_diff]] and raises the first recorded skip, so a skipped term never deactivates a stored link.
+A skipped term never deactivates a stored link. Reconciliation still refuses: [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#call]] resolves the complete set before [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService#apply_diff]] and raises the first recorded skip. An address switch skips like registration does, because raising there would answer the user with a server error. [[app/services/user_address_switch_service.rb#UserAddressSwitchService#call]] leaves out of its stale set every legislator in the `skipped_legislator_ids` reader, and that legislator's district, so their links stay active.
 
 ## Unconfigured offices
 

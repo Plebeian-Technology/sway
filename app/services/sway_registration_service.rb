@@ -4,7 +4,7 @@
 class SwayRegistrationService
   include SwayGeocode
 
-  attr_reader :address, :sway_locale, :skipped_resolution_errors
+  attr_reader :address, :sway_locale, :skipped_resolution_errors, :skipped_legislator_ids
 
   def initialize(user, address, sway_locale, invited_by_id:, async: true)
     @user = user
@@ -20,6 +20,7 @@ class SwayRegistrationService
 
     @skipped_resolution_errors = []
     @skipped_term_ids = []
+    @skipped_legislator_ids = []
   end
 
   def call
@@ -188,6 +189,7 @@ class SwayRegistrationService
     return if (term_ids - @skipped_term_ids).empty?
 
     @skipped_term_ids.concat(term_ids)
+    @skipped_legislator_ids.concat(terms.map(&:legislator_id))
     @skipped_resolution_errors << error
     SwayLogging.warn(
       "sway_registration.unresolved_term_skipped",

@@ -107,6 +107,14 @@ Reconciliation raises the recorded `Seats::UnresolvedSeatError` while a Baltimor
 
 Reconciliation raises on a current locale-wide term lacking persisted seat identity before updating links.
 
+## Address switch around a skipped term
+
+An address switch skips an unresolvable term like registration does, and changes no stored link for the skipped legislator.
+
+### Keeps the skipped legislator's links
+
+The legislator and district links of a skipped locale-wide term stay active, while the other stale links are deactivated and the new seated link is activated.
+
 ## Reconciliation keeps co-serving seats
 
 Reconciliation retains every current supported occupant in a district and applies locale-wide links idempotently.
