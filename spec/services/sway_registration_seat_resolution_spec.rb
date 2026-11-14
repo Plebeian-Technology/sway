@@ -740,4 +740,52 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       expect(congress_fallback_service(no_region).district_legislators).to contain_exactly(us_president)
     end
   end
+
+  context "when a Baltimore address registers against the seeded roster" do
+    let(:baltimore) { create(:sway_locale, :baltimore) }
+    let(:city_hall) do
+      create(
+        :address,
+        street: "100 N Holliday St",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21202",
+        latitude: 39.29105,
+        longitude: -76.61069
+      )
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Resolves the seeded Baltimore roster]]
+    it "returns the Mayor, the Council President and one Council Member" do
+      SeedLegislator.run([baltimore])
+      create(:user_address, user:, address: city_hall)
+      service = described_class.new(user, city_hall, baltimore, invited_by_id: nil, async: false)
+
+      reps = service.district_legislators
+
+      expect(reps.map(&:title)).to contain_exactly("Mayor", "Council President", "Council Member")
+      expect(service.skipped_resolution_errors).to be_empty
+      expect { ReconcileUserDistrictsService.new(user, baltimore).call }.not_to raise_error
+      expect(user.user_legislators.where(active: true).pluck(:legislator_id)).to match_array(reps.map(&:id))
+    end
+  end
+
+  context "when a Maryland address registers against the seeded Congress roster" do
+    let(:seeded_congress) { create(:sway_locale, :congress) }
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Resolves the seeded Congress roster]]
+    it "returns two Senators and one Representative and no President" do
+      SeedLegislator.run([seeded_congress])
+      create(:user_address, user:, address:)
+      allow(SwayGeocode).to receive(:build).and_return(double(districts: [0, 3]))
+      service = described_class.new(user, address, seeded_congress, invited_by_id: nil, async: false)
+
+      reps = service.district_legislators
+
+      expect(reps.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
+      expect(service.skipped_resolution_errors).to be_empty
+      expect { ReconcileUserDistrictsService.new(user, seeded_congress).call }.not_to raise_error
+      expect(user.user_legislators.where(active: true).pluck(:legislator_id)).to match_array(reps.map(&:id))
+    end
+  end
 end

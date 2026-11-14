@@ -91,6 +91,14 @@ Once the previous term ends and the successor's term holds the seat, resolution 
 
 A seeded Annapolis address in districts 0 and 1 returns the Mayor and the Ward 1 Alderperson, because their curated terms carry seats, and records no skip.
 
+### Resolves the seeded Baltimore roster
+
+Registration against the seeded Baltimore roster, with the shipped council boundaries, returns the Mayor, the Council President and one Council Member for City Hall, and reconciliation keeps the same links.
+
+### Resolves the seeded Congress roster
+
+Registration against the seeded Congress roster for a Maryland address returns two Senators and one Representative and no President, and reconciliation keeps the same links.
+
 ## Reconciliation refusal
 
 A recorded resolution skip refuses reconciliation before it mutates stored representative links.

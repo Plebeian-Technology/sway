@@ -4,4 +4,6 @@ class Object
   def seed_annapolis: () -> SwayLocale
   def annapolis_officers: (SwayLocale annapolis) -> Array[Legislator]
   def annapolis_service: (SwayLocale annapolis) -> SwayRegistrationService
+  def city_hall: () -> Address
+  def seeded_congress: () -> SwayLocale
 end
