@@ -55,6 +55,15 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(UserOrganizationMembershipInvite.exists?(invite.id)).to be(false)
     end
 
+    it "destroys organization bill position changes authored by the user" do
+      position_change = create(:organization_bill_position_change, updated_by: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(OrganizationBillPositionChange.exists?(position_change.id)).to be(false)
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 

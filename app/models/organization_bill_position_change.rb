@@ -32,7 +32,7 @@
 #  updated_by_id                  (updated_by_id => users.id)
 #
 class OrganizationBillPositionChange < ApplicationRecord
-  belongs_to :updated_by, class_name: "User"
+  belongs_to :updated_by, class_name: "User", inverse_of: :authored_position_changes
   belongs_to :approved_by, class_name: "User", optional: true
   belongs_to :rejected_by, class_name: "User", optional: true
 

@@ -110,6 +110,11 @@ class User < ApplicationRecord
 
   has_many :user_organization_memberships, dependent: :destroy
   has_many :organizations, through: :user_organization_memberships
+  has_many :authored_position_changes,
+    class_name: "OrganizationBillPositionChange",
+    foreign_key: :updated_by_id,
+    inverse_of: :updated_by,
+    dependent: :destroy
   has_many :sent_organization_invites,
     class_name: "UserOrganizationMembershipInvite",
     foreign_key: :inviter_id,

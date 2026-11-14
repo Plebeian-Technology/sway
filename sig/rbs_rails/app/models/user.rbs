@@ -1139,6 +1139,10 @@ class ::User < ::ApplicationRecord
   def sent_organization_invites=: (::UserOrganizationMembershipInvite::ActiveRecord_Associations_CollectionProxy | ::Array[::UserOrganizationMembershipInvite]) -> (::UserOrganizationMembershipInvite::ActiveRecord_Associations_CollectionProxy | ::Array[::UserOrganizationMembershipInvite])
   def sent_organization_invite_ids: () -> ::Array[::Integer]
   def sent_organization_invite_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def authored_position_changes: () -> ::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy
+  def authored_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
+  def authored_position_change_ids: () -> ::Array[::Integer]
+  def authored_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
   def user_address: () -> ::UserAddress?
   def user_address=: (::UserAddress?) -> ::UserAddress?

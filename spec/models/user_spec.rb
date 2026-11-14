@@ -532,7 +532,6 @@ RSpec.describe User, type: :model do
 
     let(:pending_foreign_keys) do
       [
-        ["organization_bill_position_changes", "updated_by_id"],
         ["organization_bill_position_changes", "approved_by_id"],
         ["organization_bill_position_changes", "rejected_by_id"],
         ["historical_score_explanations", "user_id"],
