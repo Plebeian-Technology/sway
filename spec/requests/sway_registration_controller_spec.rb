@@ -505,6 +505,57 @@ RSpec.describe "/registration", type: :request do
       expect(user.reload.registration_status).to eq("completed")
       expect(user.is_voter_registration_address_confirmed).to be(false)
     end
+
+    context "when the user row fails a validation added after it was saved" do
+      before { user.update_column(:full_name, "Zoe 9") }
+
+      it "stores the ticked confirmation and completes registration" do
+        post "/sway_registration",
+          params: {sway_registration: address_params.merge(is_voter_registration_address_confirmed: true)},
+          headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.is_voter_registration_address_confirmed).to be(true)
+        expect(user.registration_status).to eq("completed")
+      end
+
+      it "stores false when the field is omitted" do
+        user.update_column(:is_voter_registration_address_confirmed, true)
+
+        post "/sway_registration", params: {sway_registration: address_params}, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.is_voter_registration_address_confirmed).to be(false)
+        expect(user.registration_status).to eq("completed")
+      end
+
+      it "completes a first registration that resolves representatives" do
+        UserLegislator.where(user: user).delete_all
+        allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
+        allow_any_instance_of(SwayRegistrationService).to receive(:call) do # rubocop:disable RSpec/AnyInstance
+          UserLegislator.find_or_create_by!(user: user, legislator: legislator)
+        end
+
+        post "/sway_registration", params: {sway_registration: address_params}, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.registration_status).to eq("completed")
+        expect(user.is_registration_complete).to be(true)
+      end
+
+      it "switches a completed registration to a new address" do
+        user.update_columns(registration_status: "completed", is_registration_complete: true)
+        create(:user_address, user: user, address: create(:address))
+        allow_any_instance_of(UserAddressSwitchService).to receive(:call).and_return(true) # rubocop:disable RSpec/AnyInstance
+
+        post "/sway_registration",
+          params: {sway_registration: address_params.merge(confirm_deactivate_legislators: true)},
+          headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.registration_status).to eq("completed")
+      end
+    end
   end
 
   # @lat: [[address-place-classification#Why an empty list is not a rejection]]

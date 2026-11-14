@@ -18,6 +18,8 @@ class SwayRegistrationController < ApplicationController
 
     private
 
+    def complete_registration: (User u) -> void
+
     def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
 
     def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception) -> untyped

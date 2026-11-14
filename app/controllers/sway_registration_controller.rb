@@ -39,7 +39,8 @@ class SwayRegistrationController < ApplicationController
     end
 
     # @lat: [[identity-and-access#Two voter-registration flags mean different things]]
-    u.update!(is_voter_registration_address_confirmed: registered_voter_address_confirmed)
+    # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
+    u.update_column(:is_voter_registration_address_confirmed, registered_voter_address_confirmed)
 
     # @lat: [[identity-and-access#A user holds one address]]
     address_instance = address
@@ -60,7 +61,7 @@ class SwayRegistrationController < ApplicationController
     end
 
     if u.user_legislators.where(active: true).exists?
-      u.complete! unless u.completed? && u.is_registration_complete
+      complete_registration(u)
       return redirect_after_registration_completion(u)
     end
 
@@ -86,11 +87,19 @@ class SwayRegistrationController < ApplicationController
 
     u.reload
     wait_for_congress_representatives(u, address_instance) unless u.registered?
-    u.complete! unless u.completed? && u.is_registration_complete
+    complete_registration(u)
     redirect_after_registration_completion(u)
   end
 
   private
+
+  # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
+  def complete_registration(u)
+    return if u.completed? && u.is_registration_complete
+
+    u.complete!(false)
+    u.save!(validate: false)
+  end
 
   def handle_address_switch(u, previous_address, new_address)
     unless confirm_deactivate_legislators?

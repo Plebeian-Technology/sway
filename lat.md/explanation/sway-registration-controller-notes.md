@@ -23,6 +23,12 @@ Only `StandardError` is caught, and only around one locale's call, so the rest o
 
 When an already-registered user with an existing [[app/models/user_address.rb#UserAddress]] submits a different address, `#create` requires confirmation and delegates cross-locale reconciliation and [[app/models/user_address_change.rb#UserAddressChange]] auditing to [[app/services/user_address_switch_service.rb#UserAddressSwitchService]]. A first registration has no active link, so the early exit does not fire and every locale goes through the service loop; the locale-parity spec drives that whole loop ([[sway-registration-controller-notes#What AddressScreen.parity.test.tsx deliberately does not cover]]).
 
+## Why create's own user writes skip unrelated validations
+
+A user row saved under older rules can fail a validation added since, such as the full-name format, and that must not stop the user from registering or changing address.
+
+`#create` writes two things to the user itself: the voter-registration confirmation flag and the completed registration status. Neither value is covered by any validation, so both writes skip validation. The flag is written with `update_column`. [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#complete_registration]] fires the `complete` event without its save, which still checks that the user has representatives and runs the event's callbacks, then saves the user without validation, so `is_registration_complete` is stored as well. The validations on [[app/models/user.rb#User]] are unchanged for every other write, including the profile forms where a user can correct the invalid field.
+
 ## Why mobile gets JSON instead of following the web redirect
 
 Mobile can't follow a redirect into the web Inertia flow — it 500s rendering an Inertia page for a JSON-only request — so `respond_json_or_redirect` gives it JSON instead; web keeps its redirect.

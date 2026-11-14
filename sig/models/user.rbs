@@ -51,7 +51,7 @@ class User < ApplicationRecord
 
     def processing?: -> bool
     def completed?: -> bool
-    def complete!: -> void
+    def complete!: (?bool run_action) -> void
     def mark_failed!: -> void
 
     # Phase 61 D-15: org_position_cadence_default enum predicate methods.
