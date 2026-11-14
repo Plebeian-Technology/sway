@@ -297,7 +297,7 @@ account's creation time.
 The reset guards against session fixation; the identity stamp guards against a
 recycled user id resolving to a different account.
 
-Web credential callbacks wait for [[client-caches-and-identity#Identity changes wait for network-only pages|identity-cache preparation]] before submitting. Credential payloads are JSON produced by credential.toJSON(); their casts bridge Inertia RequestPayload typing without changing the wire data.
+Web credential callbacks wait for [[client-caches-and-identity#Identity changes wait for network-only pages|identity-cache preparation]] before submitting. Credential payloads are JSON produced by credential.toJSON(), or built by hand in [[app/frontend/sway_utils/webauthn.ts#create|webauthn.ts]] with the same keys when the browser lacks the WebAuthn JSON helpers; their casts bridge Inertia RequestPayload typing without changing the wire data.
 
 Phone confirmation uses PUT through Inertia's shared HTTP client because verification changes session state and requires CSRF protection. Successful confirmation awaits passkey creation and verification before returning, and includes registration loading in the panel busy state. Phone-first and discoverable callers also await verification so failures reach their existing error feedback. Discoverable cancellation leaves the phone form available; unexpected failures show retry guidance.
 
