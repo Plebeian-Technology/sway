@@ -175,7 +175,7 @@ class User < ApplicationRecord
   has_one :refresh_token, dependent: :destroy
 
   has_many :push_notification_subscriptions, dependent: :destroy
-  has_many :bill_summary_reports, inverse_of: :user, dependent: :nullify
+  has_many :bill_summary_reports, inverse_of: :user, dependent: :destroy
   has_many :resolved_bill_summary_reports,
     class_name: "BillSummaryReport",
     foreign_key: :resolved_by_id,

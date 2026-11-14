@@ -133,6 +133,15 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(RegistrationFunnelEvent.exists?(event.id)).to be(false)
     end
 
+    it "destroys bill summary reports written by the user" do
+      report = create(:bill_summary_report, user: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(BillSummaryReport.exists?(report.id)).to be(false)
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 
