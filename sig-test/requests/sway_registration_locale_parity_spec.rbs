@@ -1,0 +1,11 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def annapolis: () -> SwayLocale
+  def stub_census_district: (String number) -> untyped
+  def stub_open_states_delegation: (Array[Legislator] delegation) -> untyped
+  def current_members: (SwayLocale sway_locale, *String district_names) -> Array[Legislator]
+  def maryland_members: (*String full_names) -> Array[Legislator]
+  def maryland_governor: () -> Legislator
+  def register_from: (Symbol client, Hash[Symbol, String | Float] address_params) -> void
+  def expect_completed_with: (Array[Legislator] legislators) -> void
+end

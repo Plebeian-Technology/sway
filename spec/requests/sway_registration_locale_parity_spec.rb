@@ -3,56 +3,130 @@
 # @lat: [[sway-registration-controller-notes#What AddressScreen.parity.test.tsx deliberately does not cover]]
 
 require "rails_helper"
+require Rails.root.join("db", "seeds", "models", "sway_locale")
+require Rails.root.join("db", "seeds", "models", "legislator")
 
-RSpec.describe "POST /sway_registration locale parity (SC-2b)", type: :request do
+RSpec.describe "POST /sway_registration locale parity", type: :request do
   include_context "SessionDouble"
 
-  # Build the Baltimore locale the controller path should resolve to.
-  let!(:baltimore_locale) do
-    create(:sway_locale, city: "Baltimore", state: "MD", country: "US")
-  end
-
-  # Supporting records needed to create a UserLegislator during the stub.
-  let!(:district) { create(:district, sway_locale: baltimore_locale) }
-  let!(:legislator) { create(:legislator, district: district) }
-
-  # Pre-registration user (no address, no legislators yet).
   let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+  let(:annapolis) { SwayLocale.resolve_by_computed_name("annapolis-maryland-united_states") || raise("Annapolis not seeded") }
+  let(:maryland) { SwayLocale.resolve_by_computed_name("maryland-maryland-united_states") || raise("Maryland not seeded") }
+  let(:congress) { SwayLocale.resolve_by_computed_name("congress-congress-united_states") || raise("Congress not seeded") }
 
   before do
-    sign_in(user)
-
-    # Address#sway_locales calls this three times: city, state and congress.
-    # Return baltimore_locale every time, so the loop that follows still runs
-    # without real geocoding or extra database rows.
-    allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(baltimore_locale)
-
-    # @lat: [[sway-registration-controller-notes#What AddressScreen.parity.test.tsx deliberately does not cover]]
-    UserLegislator.find_or_create_by!(user: user, legislator: legislator)
-
-    allow_any_instance_of(SwayRegistrationService).to receive(:call) # rubocop:disable RSpec/AnyInstance
+    SeedSwayLocale.run
+    SeedLegislator.run([annapolis, maryland, congress])
   end
 
-  it "resolves the user's sway_locales to include the Baltimore locale for a Baltimore address" do
-    post "/sway_registration", params: {
-      sway_registration: {
-        street: "100 N Holliday St",
-        street2: "",
-        city: "Baltimore",
-        region_code: "MD",
-        postal_code: "21202",
-        country: "US",
-        latitude: 39.29105,
-        longitude: -76.61069
-      }
-    }, headers: {"Accept" => "application/json"}
+  def stub_census_district(number)
+    stub_request(:get, %r{tigerweb\.geo\.census\.gov/arcgis/rest/services/TIGERweb/})
+      .to_return(status: 200, body: {features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => number}}]}.to_json)
+  end
 
-    expect(response).to have_http_status(:ok)
+  def stub_open_states_delegation(delegation)
+    stub_request(:get, %r{v3\.openstates\.org/people\.geo})
+      .to_return(
+        status: 200,
+        body: {results: delegation.map { |legislator| {id: legislator.external_id, jurisdiction: {name: "Maryland"}} }}.to_json,
+        headers: {"Content-Type" => "application/json"}
+      )
+  end
 
-    # user.sway_locales hands off to user.address.sway_locales, which calls
-    # find_or_create_by_normalized! — faked above to return baltimore_locale.
-    # This is the same locale lookup the web and mobile clients both use.
-    locale_ids = user.reload.sway_locales.map(&:id)
-    expect(locale_ids).to include(baltimore_locale.id)
+  def current_members(sway_locale, *district_names)
+    sway_locale.legislators.with_active_term.select { |legislator| district_names.include?(legislator.active_term.district.name) }
+  end
+
+  def maryland_members(*full_names)
+    full_names.map do |full_name|
+      first_name, last_name = full_name.split
+      maryland.legislators.find_by!(first_name:, last_name:)
+    end
+  end
+
+  def maryland_governor
+    maryland_members("Wes Moore").first
+  end
+
+  def register_from(client, address_params)
+    with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+      if client == :web
+        sign_in(user)
+        post "/sway_registration", params: {sway_registration: address_params}
+        expect(response).to redirect_to(feed_path)
+      else
+        post "/sway_registration", params: {sway_registration: address_params}, headers: authenticate_as(user)
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"ok" => true, "registration_status" => "completed"})
+      end
+    end
+  end
+
+  def expect_completed_with(legislators)
+    expect(user.reload.registration_status).to eq("completed")
+    expect(UserLegislator.where(user:, active: true).pluck(:legislator_id)).to match_array(legislators.map(&:id))
+  end
+
+  [:web, :bearer].each do |client|
+    context "with the #{client} client" do
+      it "links the Annapolis officers, the Maryland Governor and delegation, and the Congress members for an Annapolis address" do
+        delegation = maryland_members("Shaneka Henson", "Dana Jones", "Dylan Behler")
+        stub_open_states_delegation(delegation)
+        stub_census_district("03")
+
+        register_from(client, {
+          street: "160 Duke of Gloucester St",
+          city: "Annapolis",
+          region_code: "MD",
+          postal_code: "21401",
+          country: "United States",
+          latitude: 38.9784,
+          longitude: -76.4922
+        })
+
+        annapolis_officers = annapolis.legislators.where(external_id: ["annapolis-mayor", "annapolis-ward-1"]).to_a
+        congress_members = current_members(congress, "MD0", "MD3")
+        expect(congress_members.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
+        expect_completed_with(annapolis_officers + [maryland_governor] + delegation + congress_members)
+      end
+
+      it "links Maryland and Congress members and no city officer for a Towson address" do
+        delegation = maryland_members("Chris West", "Nino Mangione")
+        stub_open_states_delegation(delegation)
+        stub_census_district("02")
+
+        register_from(client, {
+          street: "400 Washington Ave",
+          city: "Towson",
+          region_code: "MD",
+          postal_code: "21204",
+          country: "United States",
+          latitude: 39.4015,
+          longitude: -76.6019
+        })
+
+        congress_members = current_members(congress, "MD0", "MD2")
+        expect(congress_members.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
+        expect_completed_with([maryland_governor] + delegation + congress_members)
+      end
+
+      it "links only the Virginia Congress members for a Richmond address" do
+        stub_census_district("04")
+
+        register_from(client, {
+          street: "900 E Broad St",
+          city: "Richmond",
+          region_code: "VA",
+          postal_code: "23219",
+          country: "United States",
+          latitude: 37.5407,
+          longitude: -77.4336
+        })
+
+        virginia_members = current_members(congress, "VA0", "VA4")
+        expect(virginia_members.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
+        expect_completed_with(virginia_members)
+      end
+    end
   end
 end
