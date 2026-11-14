@@ -33,6 +33,10 @@ interface AddressForm {
     place_types: string[];
 }
 
+function joinedStreet(form: AddressForm): string {
+    return [form.street1, form.street2].filter(Boolean).join(" ").trim();
+}
+
 function emptyForm(): AddressForm {
     return {
         street1: "",
@@ -105,7 +109,7 @@ export default function AddressScreen() {
         setError(null);
         setSubmitting(true);
         try {
-            const street = [toSubmit.street1, toSubmit.street2].filter(Boolean).join(" ").trim();
+            const street = joinedStreet(toSubmit);
             await apiClient.post("/sway_registration", {
                 sway_registration: {
                     street,
@@ -162,8 +166,7 @@ export default function AddressScreen() {
     const savedAddress = user?.address;
     const matchesSavedAddress =
         savedAddress != null &&
-        form.street1 === (savedAddress.street ?? "") &&
-        form.street2 === (savedAddress.street2 ?? "") &&
+        joinedStreet(form) === (savedAddress.street ?? "") &&
         form.city === (savedAddress.city ?? "") &&
         form.region_code === (savedAddress.region_code ?? "") &&
         form.postal_code === (savedAddress.postal_code ?? "") &&
