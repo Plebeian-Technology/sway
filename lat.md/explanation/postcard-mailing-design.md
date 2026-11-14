@@ -114,9 +114,45 @@ A hybrid model starting with platform-funded priority postcards offers the highe
 
 For the initial implementation, Sway funds postcards directly for the featured Bill of the Month, bounded by strict rate limits of one card per voter per representative. This design delivers immediate constituent utility without the development overhead of integrating Stripe. Once constituent demand is verified, Sway can introduce organization-sponsored campaign budgets to support broader bill catalogs.
 
+## Sending limits and abuse prevention
+
+Strict rate limits protect legislative offices from spam and insulate the platform against unbounded mailing expenditures.
+
+Because postcards incur immediate marginal costs ($0.902 per piece under the recommended funding model), volume controls are more critical for physical mail than electronic messaging. Sway adapts proven constraints from its existing email outreach infrastructure to govern postcard dispatch.
+
+### Comparison with existing email constraints
+
+The email pipeline establishes baseline consent, rate-limiting, and constituent identity verification patterns.
+
+In `app/controllers/user_legislator_emails_controller.rb`, sending requires authenticated users with verified names (`current_user.full_name`) and verified email addresses (`current_user.email_sendable?`). A controller-level sliding window enforces a limit of 10 submissions per hour per user. At the database layer, `app/models/user_legislator_email.rb` enforces a unique index on `[user_legislator_id, bill_id]`, guaranteeing that a voter contacts a specific representative exactly once per bill. The voter provides explicit consent through `app/frontend/components/bill/EmailLegislatorsModal.tsx` before delivery.
+
+### Recommended postcard sending limits
+
+Postcard delivery requires layered per-bill, per-hour, and platform-wide budget ceilings.
+
+First, the system enforces a strict one-card limit per voter per representative per bill. Mirroring `user_legislator_emails`, a unique database constraint on `[user_legislator_id, bill_id]` within the proposed `user_legislator_postcards` table prevents duplicate physical mailings.
+
+Second, a controller-level rate limit restricts postcard dispatches to 10 per hour per user, preventing automated script execution.
+
+Third, platform-funded postcards require constituent address verification: only voters with geocoded residential addresses confirmed within the representative's electoral district can mail cards.
+
+Fourth, a monthly platform safety cap (for example, $500 or approximately 554 postcards) pauses platform-funded mailings when reached, alerting administrators and prompting voters to use email instead.
+
 ## Open decisions for the owner
 
 Key architectural and product choices requiring owner confirmation, presented with recommended answers based on current system capabilities.
+
+### Postcard rate limits and idempotency
+
+What rate limits should govern constituent postcard mailings?
+
+Recommendation: Enforce one card per voter per representative per bill using a database uniqueness constraint on `[user_legislator_id, bill_id]`, coupled with a 10 cards per hour per user burst limit.
+
+### Platform budget safety cap
+
+Should platform-funded postcards have a monthly spend ceiling?
+
+Recommendation: Yes. Implement an automated monthly spending cap of $500 for platform-funded postcards, after which the interface falls back to email outreach until the next billing cycle.
 
 ### Postcard funding model
 
