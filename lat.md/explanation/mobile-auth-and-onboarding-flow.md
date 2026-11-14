@@ -17,7 +17,9 @@ Signed-out people see the sign-in screens. Signed-in people see onboarding until
 
 Until the saved session has been read out of the phone's keychain, [[mobile/src/screens/LoadingScreen.tsx#LoadingScreen]] shows the Sway logo and a spinner on the page background. Otherwise the sign-in screen would flash up for a moment on every launch, even for someone already signed in.
 
-For a signed-in person, the loading screen also shows while their first profile loads, and only while there is no user yet. Later profile refetches keep the app mounted and update screens in place, so returning from the background, polling or pull to refresh never drops the reader back on the landing screen. A load that finishes with no user falls through to onboarding rather than leaving the loading screen up.
+For a signed-in person, the loading screen also shows while their first profile loads, and only while there is no user yet. Later profile refetches keep the app mounted and update screens in place, so returning from the background, polling or pull to refresh never drops the reader back on the landing screen. A load that finishes with no user shows a "We could not load your account" screen with a "Try again" button that refetches the profile, and the loading screen replaces it while the refetch runs.
+
+Onboarding is only for a user whose profile loaded and says registration is incomplete. Without the retry screen, a person who finished sign-up long ago and signs in on a new phone during a brief outage would hold no cached profile, receive the signed-out payload with no user, and land on the address form meant for brand-new users.
 
 ## AuthStack
 

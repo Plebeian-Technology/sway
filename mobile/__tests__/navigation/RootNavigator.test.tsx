@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, within } from "@testing-library/react-native";
+import { fireEvent, render, screen, within } from "@testing-library/react-native";
 
 const mockUseSession = jest.fn();
 const mockUseUserProfile = jest.fn();
@@ -113,12 +113,58 @@ describe("RootNavigator loading state", () => {
         expect(screen.getByTestId("root-navigator-loading")).toBeTruthy();
     });
 
-    it("falls through to onboarding when a signed-in profile load finishes with no user", () => {
+    // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator]]
+    it("offers a retry instead of onboarding when a signed-in profile load finishes with no user", () => {
+        const refresh = jest.fn();
         mockUseSession.mockReturnValue({ isAuthenticated: true, loading: false });
+        mockUseUserProfile.mockReturnValue({ user: null, loading: false, refresh });
 
         render(<RootNavigator />);
 
+        expect(screen.getByTestId("root-navigator-load-failed")).toBeTruthy();
+        expect(screen.getByText("We could not load your account")).toBeTruthy();
+        expect(screen.queryByTestId("onboarding-stack")).toBeNull();
         expect(screen.queryByTestId("root-navigator-loading")).toBeNull();
-        expect(screen.getByTestId("onboarding-stack")).toBeTruthy();
+
+        fireEvent.press(screen.getByTestId("root-navigator-load-failed-cta"));
+
+        expect(refresh).toHaveBeenCalledTimes(1);
+    });
+
+    it("swaps the retry screen for the loading screen while the retry runs", () => {
+        mockUseSession.mockReturnValue({ isAuthenticated: true, loading: false });
+        mockUseUserProfile.mockReturnValue({ user: null, loading: false, refresh: jest.fn() });
+        const { rerender } = render(<RootNavigator />);
+
+        mockUseUserProfile.mockReturnValue({ user: null, loading: true, refresh: jest.fn() });
+        rerender(<RootNavigator />);
+
+        expect(screen.queryByTestId("root-navigator-load-failed")).toBeNull();
+        expect(screen.getByTestId("root-navigator-loading")).toBeTruthy();
+    });
+
+    it("lands on the app drawer when the retry loads a registered user", () => {
+        mockUseSession.mockReturnValue({ isAuthenticated: true, loading: false });
+        mockUseUserProfile.mockReturnValue({ user: null, loading: false, refresh: jest.fn() });
+        const { rerender } = render(<RootNavigator />);
+
+        mockUseUserProfile.mockReturnValue({
+            user: { id: 1, is_registration_complete: true },
+            loading: false,
+            refresh: jest.fn(),
+        });
+        rerender(<RootNavigator />);
+
+        expect(screen.queryByTestId("root-navigator-load-failed")).toBeNull();
+        expect(screen.getByTestId("app-drawer")).toBeTruthy();
+    });
+
+    it("shows the sign-in stack, not the retry screen, when signed out", () => {
+        mockUseSession.mockReturnValue({ isAuthenticated: false, loading: false });
+
+        render(<RootNavigator />);
+
+        expect(screen.getByTestId("auth-stack")).toBeTruthy();
+        expect(screen.queryByTestId("root-navigator-load-failed")).toBeNull();
     });
 });
