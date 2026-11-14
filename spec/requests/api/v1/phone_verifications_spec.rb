@@ -186,4 +186,66 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
       end
     end
   end
+
+  describe "with the skip switch off (Twilio answers)" do
+    include_context "TwilioDouble"
+
+    around do |ex|
+      with_app_config(:dev_login, skip_phone_verification: false) { ex.run }
+    end
+
+    describe "POST /api/v1/phone_verification" do
+      it "sends an SMS code to the normalized +1 number and answers 204" do
+        post "/api/v1/phone_verification", params: {phone: "(410) 555-0456"}, as: :json
+
+        expect(response).to have_http_status(:no_content)
+        expect(twilio_verifications_double).to have_received(:create).with(to: "+14105550456", channel: "sms").once
+      end
+
+      it "refuses the 6th request from one IP within an hour with 429 rate_limited" do
+        with_rate_limit_enabled(:phone_verify) do
+          6.times do |i|
+            post "/api/v1/phone_verification", params: {phone: "410555#{i.to_s.rjust(4, "0")}"}, as: :json
+          end
+
+          expect(response).to have_http_status(:too_many_requests)
+          expect(json_body.dig(:error, :code)).to eq("rate_limited")
+          expect(twilio_verifications_double).to have_received(:create).exactly(5).times
+        end
+      end
+    end
+
+    describe "POST /api/v1/phone_verification/verify" do
+      it "issues a token bound to the phone digest when Twilio approves the code" do
+        post "/api/v1/phone_verification/verify", params: {phone: phone, code: "123456"}, as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(twilio_verification_checks_double).to have_received(:create).with(to: "+14105550456", code: "123456")
+        body = json_body
+        expect(body[:expires_at]).to be_present
+        stored = Rails.cache.read("sms_verified_token:#{body[:sms_verified_token]}")
+        expect(stored[:phone]).to eq(PhoneCacheKey.digest(phone))
+        expect(stored[:phone]).not_to eq(phone)
+      end
+
+      context "when Twilio answers pending" do
+        let(:twilio_verification_status) { "pending" }
+
+        it "answers 401 invalid_code and issues no token" do
+          written_keys = [] #: Array[String]
+          allow(Rails.cache).to receive(:write).and_wrap_original do |original, key, *rest, **options|
+            written_keys << key.to_s
+            original.call(key, *rest, **options)
+          end
+
+          post "/api/v1/phone_verification/verify", params: {phone: phone, code: "123456"}, as: :json
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(json_body.dig(:error, :code)).to eq("invalid_code")
+          expect(json_body).not_to have_key(:sms_verified_token)
+          expect(written_keys.grep(/\Asms_verified_token:/)).to be_empty
+        end
+      end
+    end
+  end
 end
