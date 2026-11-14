@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Users::Webauthn::Registration", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "WebAuthnDouble"
 
@@ -11,6 +13,45 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       before do
         session_hash[:phone] = phone
         session_hash[:verified_phone] = phone
+        session_hash[:verified_phone_at] = Time.current.to_i
+      end
+
+      it "still issues options just inside the verification window" do
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW - 1.minute) do
+          post users_webauthn_registration_index_path
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["challenge"]).to eq(fake_challenge)
+      end
+
+      it "returns the confirmation message once the verification is older than the window" do
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          post users_webauthn_registration_index_path
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
+        expect(session_hash[:current_registration]).to be_nil
+      end
+
+      it "returns the confirmation message when the verified phone carries no verification time" do
+        session_hash.delete(:verified_phone_at)
+
+        post users_webauthn_registration_index_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
       end
 
       it "returns 422 when user attributes are invalid" do
@@ -149,6 +190,7 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
 
     before do
       session_hash[:verified_phone] = phone
+      session_hash[:verified_phone_at] = Time.current.to_i
       session_hash[:current_registration] = {
         "challenge" => fake_challenge,
         "user_attributes" => {
@@ -156,6 +198,29 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
           "is_registration_complete" => false
         }
       }
+    end
+
+    it "redirects with the expired message and saves nothing once the verification is older than the window" do
+      expect do
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          post callback_users_webauthn_registration_index_path, params: callback_params
+        end
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects with the expired message when the verified phone carries no verification time" do
+      session_hash.delete(:verified_phone_at)
+
+      expect do
+        post callback_users_webauthn_registration_index_path, params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
     end
 
     ["existing passkey", "first passkey added after options", "new account enrolled after options"].each do |scenario|
@@ -458,6 +523,7 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
     before do
       session_hash[:phone] = phone
       session_hash[:verified_phone] = phone
+      session_hash[:verified_phone_at] = Time.current.to_i
     end
 
     it "gives a brand-new phone exactly one account and one passkey" do

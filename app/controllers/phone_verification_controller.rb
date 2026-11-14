@@ -2,6 +2,7 @@
 
 class PhoneVerificationController < ApplicationController
   include Authentication
+  include VerifiedPhoneSession
 
   skip_before_action :authenticate_sway_user!
 
@@ -70,13 +71,13 @@ class PhoneVerificationController < ApplicationController
     end
 
     # @lat: [[identity-and-access#Identity and access#The phone number is the account#A phone verified in this session confirms again without Twilio]]
-    return render json: {success: true}, status: :ok if session[:verified_phone] == phone
+    return render json: {success: true}, status: :ok if verified_phone_current?(phone)
 
     session_phone_last4 = phone.last(4)
 
     if Sway::Settings.dev_login.skip_phone_verification
       session[:phone] = phone
-      session[:verified_phone] = phone
+      remember_verified_phone(phone)
       approved = true
 
       SkipPhoneVerificationProvisioner.call(phone: phone)
@@ -131,7 +132,7 @@ class PhoneVerificationController < ApplicationController
 
       if approved
         # @lat: [[identity-and-access#Identity and access#The phone number is the account]]
-        session[:verified_phone] = phone
+        remember_verified_phone(phone)
       end
     end
 

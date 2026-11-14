@@ -3,6 +3,8 @@
 module Users
   module Webauthn
     class RegistrationController < ApplicationController
+      include VerifiedPhoneSession
+
       class AlreadyRegistered < StandardError; end
 
       ALREADY_REGISTERED_MESSAGE = "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access."
@@ -23,7 +25,7 @@ module Users
         user = User.find_or_initialize_by(phone: session[:verified_phone])
         verified_phone_last4 = session[:verified_phone].to_s.last(4)
 
-        user.is_phone_verified = session[:verified_phone].present? && session[:verified_phone] == session[:phone]
+        user.is_phone_verified = verified_phone_current?(session[:phone])
 
         if user.is_phone_verified
           if user.has_sway_passkey?
@@ -90,7 +92,7 @@ module Users
           current_registration&.dig(:user_attributes)
         verified_phone = session[:verified_phone]
 
-        if registration_challenge.blank? || verified_phone.blank?
+        if registration_challenge.blank? || !verified_phone_current?(verified_phone)
           SwayLogging.warn("webauthn.registration.challenge_missing")
           redirect_to root_path, alert: "Registration session expired. Please try again."
           return

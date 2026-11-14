@@ -18,6 +18,7 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         client = MalformedWebauthnCredentials.client
         challenge = MalformedWebauthnCredentials.challenge
         session_hash[:verified_phone] = MalformedWebauthnCredentials::PHONE
+        session_hash[:verified_phone_at] = Time.current.to_i
         session_hash[:current_registration] = {
           "challenge" => challenge,
           "user_attributes" => {"webauthn_id" => WebAuthn.generate_user_id}

@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Users::Webauthn::Sessions", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "WebAuthnDouble"
   include_context "TwilioDouble"
@@ -174,6 +176,20 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         post users_webauthn_registration_index_path
 
         expect(response.parsed_body["challenge"]).to eq(fake_challenge)
+      end
+
+      it "sends a new SMS once the confirmation is older than the window" do
+        post users_webauthn_sessions_path, params: {phone: phone}
+        patch phone_verification_path("0"), params: {phone_verification: {code: "123456"}}
+        expect(session_hash[:verified_phone]).to eq(phone)
+
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          post users_webauthn_sessions_path, params: {phone: phone}
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
+        expect(twilio_verifications_double).to have_received(:create).twice
       end
 
       it "sends an SMS when the session confirmed a different phone" do

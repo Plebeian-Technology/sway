@@ -7,6 +7,7 @@ module Users
 
     class SessionsController < ApplicationController
       include Authentication
+      include VerifiedPhoneSession
 
       rate_limit to: 10, within: 5.minutes,
         by: -> { request.remote_ip },
@@ -58,7 +59,7 @@ module Users
           redirect_to(root_path, inertia: {errors: {phone: "Enter a valid US phone number."}})
         elsif phone.present?
           # @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#A phone confirmed in this session resumes enrollment]]
-          if session[:verified_phone] == phone
+          if verified_phone_current?(phone)
             session[:phone] = phone
             SwayLogging.info(
               "webauthn.session.phone_verification_resumed",

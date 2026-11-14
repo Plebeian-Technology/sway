@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "PhoneVerification", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "TwilioDouble"
 
@@ -115,6 +117,14 @@ RSpec.describe "PhoneVerification", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq({"success" => true})
       expect(session_hash[:verified_phone]).to eq("4105551212")
+    end
+
+    it "stamps the verification time beside verified_phone when approved" do
+      freeze_time do
+        patch phone_verification_path("1"), params: params
+
+        expect(session_hash[:verified_phone_at]).to eq(Time.current.to_i)
+      end
     end
 
     it "returns 422 when session phone or code is blank or invalid" do
@@ -265,6 +275,30 @@ RSpec.describe "PhoneVerification", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to eq({"success" => true})
         expect(session_hash[:verified_phone]).to eq("4105551212")
+        expect(twilio_verification_checks_double).to have_received(:create).once
+      end
+
+      it "calls Twilio again once the verification is older than the window" do
+        patch phone_verification_path("1"), params: params
+        expect(session_hash[:verified_phone]).to eq("4105551212")
+
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          allow(twilio_verification_result).to receive(:status).and_return("pending")
+
+          patch phone_verification_path("1"), params: params
+
+          expect(response.parsed_body).to eq({"success" => false})
+          expect(twilio_verification_checks_double).to have_received(:create).twice
+        end
+      end
+
+      it "calls Twilio again when the verified phone carries no verification time" do
+        session_hash[:verified_phone] = "4105551212"
+        allow(twilio_verification_result).to receive(:status).and_return("pending")
+
+        patch phone_verification_path("1"), params: params
+
+        expect(response.parsed_body).to eq({"success" => false})
         expect(twilio_verification_checks_double).to have_received(:create).once
       end
 

@@ -7,6 +7,7 @@ module Users
             @phone: untyped
 
             include Authentication
+            include VerifiedPhoneSession
 
             def create: -> untyped
 

@@ -2,6 +2,7 @@
 # https://www.twilio.com/docs/verify/quickstarts/python-flask
 class PhoneVerificationController < ApplicationController
     include Authentication
+    include VerifiedPhoneSession
 
     def create: -> untyped
 
