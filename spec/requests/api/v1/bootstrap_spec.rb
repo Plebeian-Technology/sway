@@ -98,6 +98,60 @@ RSpec.describe "Api::V1::Bootstrap", type: :request do
       expect(address_data).to have_key(:city)
     end
 
+    it "sends the current_user keys the mobile app routes on, with a null address, for an unregistered user" do
+      user = create(:user)
+      headers = authenticate_as(user)
+
+      get "/api/v1/bootstrap", headers: headers, as: :json
+      expect(response).to have_http_status(:ok)
+
+      current_user = json_body[:current_user]
+      expect(current_user.keys).to include(
+        :id, :full_name, :email, :phone, :is_registration_complete, :registration_status,
+        :is_registered_to_vote, :sms_notifications_enabled, :theme_mode, :address
+      )
+      expect(current_user[:is_registration_complete]).to be(false)
+      expect(current_user[:registration_status]).to eq("pending")
+      expect(current_user[:address]).to be_nil
+    end
+
+    it "sends the phone of the signed-in user" do
+      user = create(:user)
+      headers = authenticate_as(user)
+
+      get "/api/v1/bootstrap", headers: headers, as: :json
+      expect(response).to have_http_status(:ok)
+
+      expect(json_body[:current_user][:phone]).to be_present
+      expect(json_body[:current_user][:phone]).to eq(user.phone)
+    end
+
+    # @lat: [[bootstrap-caching-and-rate-limiting#Why the user address has an explicit payload]]
+    it "sends exactly the address keys the mobile app reads" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address))
+      headers = authenticate_as(user)
+
+      get "/api/v1/bootstrap", headers: headers, as: :json
+      expect(response).to have_http_status(:ok)
+
+      expect(json_body[:current_user][:address].keys).to match_array(
+        %i[id street street2 city region_code country postal_code full_address]
+      )
+    end
+
+    it "sends is_registration_complete as the JSON boolean true for a registered user" do
+      user = create(:user, :registered)
+      headers = authenticate_as(user)
+
+      get "/api/v1/bootstrap", headers: headers, as: :json
+      expect(response).to have_http_status(:ok)
+
+      current_user = json_body[:current_user]
+      expect(current_user[:is_registration_complete]).to be(true)
+      expect(current_user[:registration_status]).to eq("completed")
+    end
+
     # The same "these fields must be absent" check that shared_data_spec.rb makes,
     # applied to the current_user the mobile app receives. Columns that do exist on
     # User but are deliberately left out must not reach a non-admin client.
