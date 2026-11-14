@@ -78,5 +78,79 @@ RSpec.describe "Addresses", type: :request do
         expect(response).to have_http_status(:too_many_requests)
       end
     end
+
+    context "with malformed query parameters" do
+      search_url = "https://nominatim.openstreetmap.org/search"
+      viewbox = "-76.7114,39.3720,-76.5297,39.1972"
+
+      before do
+        stub_request(:get, search_url).with(query: hash_including({}))
+          .to_return(status: 200, body: "[]", headers: {"Content-Type" => "application/json"})
+      end
+
+      [
+        ["q as an array", "q[]=100+Holliday"],
+        ["q as a nested hash", "q[a]=100+Holliday"],
+        ["a 5000-character q", "q=#{"a" * 5000}"]
+      ].each do |description, query_string|
+        it "answers an empty array without calling Nominatim for #{description}" do
+          get "/addresses/autocomplete?#{query_string}"
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to eq([])
+          expect(a_request(:get, search_url).with(query: hash_including({}))).not_to have_been_made
+        end
+      end
+
+      [
+        ["viewbox as an array", "viewbox[]=#{viewbox}", "viewbox"],
+        ["bounded as an array", "viewbox=#{viewbox}&bounded[]=1", "bounded"],
+        ["countrycodes as an array", "countrycodes[]=us", "countrycodes"]
+      ].each do |description, query_string, dropped_key|
+        it "searches without the #{dropped_key} parameter for #{description}" do
+          get "/addresses/autocomplete?q=100+Holliday&#{query_string}"
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to eq([])
+          expect(
+            a_request(:get, search_url).with(query: hash_including("q" => "100 Holliday", "limit" => "5"))
+          ).to have_been_made.once
+          expect(a_request(:get, search_url).with(query: hash_excluding(dropped_key))).to have_been_made.once
+        end
+      end
+
+      [
+        ["limit as an array", "limit[]=1"],
+        ["limit as a nested hash", "limit[a]=1"]
+      ].each do |description, query_string|
+        it "searches with the default limit and logs no error for #{description}" do
+          expect(SwayLogging).not_to receive(:error)
+
+          get "/addresses/autocomplete?q=100+Holliday&#{query_string}"
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to eq([])
+          expect(a_request(:get, search_url).with(query: hash_including("q" => "100 Holliday", "limit" => "5")))
+            .to have_been_made.once
+        end
+      end
+
+      [
+        ["limit abc", "q=100+Holliday&limit=abc", "100 Holliday", "1"],
+        ["limit -5", "q=100+Holliday&limit=-5", "100 Holliday", "1"],
+        ["limit 99999", "q=100+Holliday&limit=99999", "100 Holliday", "10"],
+        ["an accented street name", "q=#{CGI.escape("Calle Peñalver")}", "Calle Peñalver", "5"]
+      ].each do |description, query_string, forwarded_query, forwarded_limit|
+        it "searches Nominatim with a clamped limit for #{description}" do
+          get "/addresses/autocomplete?#{query_string}"
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to eq([])
+          expect(
+            a_request(:get, search_url).with(query: hash_including("q" => forwarded_query, "limit" => forwarded_limit))
+          ).to have_been_made.once
+        end
+      end
+    end
   end
 end

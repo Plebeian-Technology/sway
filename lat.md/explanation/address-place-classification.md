@@ -51,6 +51,8 @@ Nominatim's acceptable use policy limits search requests to a maximum of one req
 
 To satisfy upstream policy and eliminate browser CORS blocks, autocomplete queries route through the Rails backend (`GET /addresses/autocomplete` serviced by `NominatimService`). The service queries Nominatim with Faraday using an identifying User-Agent (`Sway/1.0 (civic-tech-app; https://sway.vote)`), caches responses in `Rails.cache` for 24 hours, and applies client debounce and controller-level rate limiting (60 requests per minute).
 
+The controller forwards only parameters that arrive as plain text. A query that is not text, is blank, or is longer than [[app/controllers/addresses_controller.rb#AddressesController#MAX_QUERY_LENGTH|200 characters]] gets an empty answer without a Nominatim call; an optional parameter sent as an array or nested hash is dropped, so bot probes neither reach the shared public service nor log an application error.
+
 Only a successful answer is cached: a 200 response whose body is a JSON array, including a genuine empty array, which is a real "no match" answer the usage policy expects Sway to reuse. A failed or malformed answer (a non-200 status, a dropped connection, a body that is not JSON, or a JSON body that is not an array) is logged and returned as an empty array but is not cached, so a brief Nominatim outage does not make the same query answer "no results" for a day after Nominatim recovers.
 
 

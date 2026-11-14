@@ -1,3 +1,9 @@
 class AddressesController < ApplicationController
+  MAX_QUERY_LENGTH: Integer
+
   def autocomplete: () -> untyped
+
+  private
+
+  def string_param: (Symbol key) -> String?
 end
