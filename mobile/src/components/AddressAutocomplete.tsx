@@ -44,7 +44,8 @@ function parsePlace(place: Place): ParsedAddress {
         city: pickComponent(c, "locality") || pickComponent(c, "sublocality") || pickComponent(c, "postal_town"),
         region_code: pickComponent(c, "administrative_area_level_1", "shortName"),
         postal_code: pickComponent(c, "postal_code"),
-        country: pickComponent(c, "country") || "United States",
+        // @lat: [[mobile-address-autocomplete-design#The country is the ISO code]]
+        country: pickComponent(c, "country", "shortName") || "United States",
         latitude: place.coordinate?.latitude ?? null,
         longitude: place.coordinate?.longitude ?? null,
         formatted: place.formattedAddress ?? "",

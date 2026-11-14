@@ -155,12 +155,42 @@ describe("AddressAutocomplete", () => {
             city: "Baltimore",
             region_code: "MD",
             postal_code: "21202",
-            country: "United States",
+            country: "US",
             latitude: coordinate.latitude,
             longitude: coordinate.longitude,
             formatted: "100 N Holliday St, Baltimore, MD 21202, USA",
             place_types: ["street_address", "geocode"],
         });
+    });
+
+    it("passes the ISO country code when the device language localizes the country name", async () => {
+        mockFetchPlaceByID.mockResolvedValue({
+            addressComponents: [
+                ...street,
+                locality,
+                state,
+                postalCode,
+                { types: ["country"], name: "Estados Unidos", shortName: "US" },
+            ],
+            coordinate,
+        });
+        renderComponent();
+
+        await typeAndPick();
+
+        expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ country: "US" }));
+    });
+
+    it("falls back to United States when the place has no country component", async () => {
+        mockFetchPlaceByID.mockResolvedValue({
+            addressComponents: [...street, locality, state, postalCode],
+            coordinate,
+        });
+        renderComponent();
+
+        await typeAndPick();
+
+        expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ country: "United States" }));
     });
 
     it("ignores the response of an earlier query once a newer one is sent", async () => {

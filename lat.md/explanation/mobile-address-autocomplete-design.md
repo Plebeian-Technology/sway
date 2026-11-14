@@ -40,3 +40,9 @@ There are at most 5 suggestions, so a plain map is enough. It also keeps a scrol
 Whatever place the user picks reaches AddressScreen through onSelect, with empty strings or null coordinates for the parts Google did not return.
 
 The server accepts an address as a fact and resolves it generically, so the component has no reason to refuse an incomplete place. A failed search or details lookup tells the user a fixed sentence that points to the typing option; the raw library text (a permission or quota code) is never shown, because it reads as a developer string and tells the user nothing to do.
+
+## The country is the ISO code
+
+A picked place posts its country as the ISO code (`US`), read from the component's short name, not its long name.
+
+The native Places SDK localizes the long name, so a phone set to Spanish reports `Estados Unidos`, which the server's country mapping does not recognise; the state is read as an ISO code for the same reason. A place with no country component still falls back to `United States`.
