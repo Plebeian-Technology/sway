@@ -110,6 +110,11 @@ class User < ApplicationRecord
 
   has_many :user_organization_memberships, dependent: :destroy
   has_many :organizations, through: :user_organization_memberships
+  has_many :sent_organization_invites,
+    class_name: "UserOrganizationMembershipInvite",
+    foreign_key: :inviter_id,
+    inverse_of: :inviter,
+    dependent: :destroy
   has_many :received_organization_invites,
     class_name: "UserOrganizationMembershipInvite",
     foreign_key: :invitee_user_id,
