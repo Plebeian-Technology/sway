@@ -697,6 +697,110 @@ describe("useNominatimAddressAutocomplete", () => {
         });
     });
 
+    describe("Strict viewbox fallback", () => {
+        const searchFor = async (
+            locale: sway.ISwayLocale,
+            text: string,
+        ): Promise<{ current: UseNominatimAddressAutocomplete }> => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form, undefined, locale));
+            act(() => {
+                result.current.handleInput({ target: { value: text } } as React.ChangeEvent<HTMLInputElement>);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            return result;
+        };
+
+        it("repeats an empty strict-box search without viewbox and bounded, keeping countrycodes", async () => {
+            const towson = createMockPlace({ place_id: 777, display_name: "1 Towson Way, Towson, Maryland, 21204" });
+            fetchMock
+                .mockResolvedValueOnce(createFetchResponse([]))
+                .mockResolvedValueOnce(createFetchResponse([towson]));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "1 Towson Way");
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            const first = new URL(getRequestedUrl(0));
+            expect(first.searchParams.get("viewbox")).toBe(BALTIMORE_LOCALE.nominatim_viewbox);
+            expect(first.searchParams.get("bounded")).toBe("1");
+            const second = new URL(getRequestedUrl(1));
+            expect(second.searchParams.get("q")).toBe("1 Towson Way");
+            expect(second.searchParams.has("viewbox")).toBe(false);
+            expect(second.searchParams.has("bounded")).toBe(false);
+            expect(second.searchParams.get("countrycodes")).toBe("us");
+            expect(result.current.status).toBe("OK");
+            expect(result.current.suggestions.map((s) => s.place_id)).toEqual(["777"]);
+        });
+
+        it("makes one request when the strict-box search finds places", async () => {
+            await searchFor(BALTIMORE_LOCALE, "100 Holliday");
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+        });
+
+        it("makes one request for a locale without a box when the search finds nothing", async () => {
+            fetchMock.mockResolvedValueOnce(createFetchResponse([]));
+
+            const result = await searchFor(CONGRESS_LOCALE, "Nowhere Lane");
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result.current.status).toBe("ZERO_RESULTS");
+        });
+
+        it("reports ZERO_RESULTS when the strict-box search and the repeat both find nothing", async () => {
+            fetchMock.mockResolvedValue(createFetchResponse([]));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "Nowhere Lane");
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(result.current.status).toBe("ZERO_RESULTS");
+            expect(result.current.suggestions).toEqual([]);
+            expect(result.current.loading).toBe(false);
+        });
+
+        it("does not repeat a failed strict-box search", async () => {
+            fetchMock.mockResolvedValueOnce(createFetchResponse({}, 500, "Server Error"));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "100 Holliday");
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result.current.status).toBe("ERROR");
+        });
+
+        it("drops the repeat's answer when the user types again before it arrives", async () => {
+            let resolveRepeat!: (res: Response) => void;
+            const pendingRepeat = new Promise<Response>((resolve) => {
+                resolveRepeat = resolve;
+            });
+            const newer = createMockPlace({ place_id: 2, display_name: "2 Newer Street, Baltimore, Maryland" });
+            fetchMock
+                .mockResolvedValueOnce(createFetchResponse([]))
+                .mockReturnValueOnce(pendingRepeat)
+                .mockResolvedValueOnce(createFetchResponse([newer]));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "1 Older Street");
+            const repeatSignal = fetchMock.mock.calls[1]?.[1]?.signal;
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "2 Newer Street" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            expect(repeatSignal?.aborted).toBe(true);
+
+            await act(async () => {
+                resolveRepeat(createFetchResponse([createMockPlace({ place_id: 1, display_name: "1 Older Street" })]));
+            });
+
+            expect(result.current.suggestions.map((s) => s.place_id)).toEqual(["2"]);
+        });
+    });
+
     describe("Response Parsing, Suggestions & Status Updates", () => {
         it("updates suggestions, sets status='OK', and resets loading on successful search", async () => {
             const place1 = createMockPlace({ place_id: 101, display_name: "100 Holliday St, Baltimore, MD" });

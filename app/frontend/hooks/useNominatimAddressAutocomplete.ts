@@ -231,27 +231,27 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
             updateLoading(true);
 
             try {
-                const url = buildNominatimUrl(query, locale);
+                const search = async (searchLocale?: sway.ISwayLocale | null): Promise<unknown> => {
+                    const response = await fetch(buildNominatimUrl(query, searchLocale), {
+                        signal: abortController.signal,
+                        headers: {
+                            "User-Agent": NOMINATIM_USER_AGENT,
+                            Accept: "application/json",
+                        },
+                    });
+                    return response.ok ? ((await response.json()) as unknown) : null;
+                };
 
-                const response = await fetch(url, {
-                    signal: abortController.signal,
-                    headers: {
-                        "User-Agent": NOMINATIM_USER_AGENT,
-                        Accept: "application/json",
-                    },
-                });
-
+                let json = await search(locale);
                 if (requestId !== requestIdRef.current) return;
 
-                if (!response.ok) {
-                    placesRef.current.clear();
-                    setSuggestions([]);
-                    setStatus("ERROR");
-                    return;
+                // @lat: [[locale-extension#Nominatim geographic configuration]]
+                const strictViewboxLocale =
+                    locale?.nominatim_viewbox?.trim() && locale.nominatim_bounded ? locale : null;
+                if (strictViewboxLocale && Array.isArray(json) && json.length === 0) {
+                    json = await search({ ...strictViewboxLocale, nominatim_viewbox: null });
+                    if (requestId !== requestIdRef.current) return;
                 }
-
-                const json: unknown = await response.json();
-                if (requestId !== requestIdRef.current) return;
 
                 if (!Array.isArray(json)) {
                     placesRef.current.clear();
