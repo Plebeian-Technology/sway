@@ -1,4 +1,5 @@
 import { Link as InertiaLink, usePage } from "@inertiajs/react";
+import copy from "copy-to-clipboard";
 import { ArrowRight, Info, KeyRound, TriangleAlert } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -16,6 +17,7 @@ import { notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { trackFunnelStep } from "app/frontend/sway_utils/funnelTracker";
+import { isInAppBrowser } from "app/frontend/sway_utils/inAppBrowser";
 import { isPasskeySupported } from "app/frontend/sway_utils/webauthn";
 
 interface IProps {
@@ -45,6 +47,7 @@ const PasskeyPanel: React.FC<IProps> = ({
     const [isConfirmingPhone, setConfirmingPhone] = useState(false);
     const [throttledUntil, setThrottledUntil] = useState<Date | null>(null);
     const errors = (usePage().props.errors ?? {}) as Record<string, string | undefined>;
+    const inAppBrowser = isInAppBrowser();
 
     // @lat: [[identity-and-access#The rate limit store swaps in after boot]]
     const markThrottled = useCallback((until: Date | null) => {
@@ -232,6 +235,12 @@ const PasskeyPanel: React.FC<IProps> = ({
         }
     }, [phone, resendPhoneVerification]);
 
+    const handleCopyLink = useCallback(async () => {
+        if (await copy(window.location.href)) {
+            notify({ level: "info", title: PARITY_COPY.auth.passkeyPanel.inAppBrowserLinkCopied });
+        }
+    }, []);
+
     const handleCancel = useCallback(() => {
         setCode("");
         setConfirmingPhone(false);
@@ -260,144 +269,182 @@ const PasskeyPanel: React.FC<IProps> = ({
             </CardHeader>
 
             <CardContent>
-                {!isConfirmingPhone && (
-                    <div className="mb-5 space-y-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full gap-2 font-semibold"
-                            onClick={handleDiscoverableSignIn}
-                            disabled={isLoading}
-                        >
-                            <KeyRound className="size-4" aria-hidden="true" />
-                            {PARITY_COPY.auth.passkeyPanel.signInWithPasskey}
+                {/* @lat: [[passkey-only-sms-bootstrap#Why an in-app browser is turned away before the SMS]] */}
+                {inAppBrowser ? (
+                    <div className="space-y-4">
+                        <Alert variant="warning" data-testid="in-app-browser-notice">
+                            <TriangleAlert aria-hidden="true" />
+                            <AlertDescription className="space-y-1 text-foreground">
+                                <strong className="block font-semibold">
+                                    {PARITY_COPY.auth.passkeyPanel.inAppBrowserTitle}
+                                </strong>
+                                <span className="block">{PARITY_COPY.auth.passkeyPanel.inAppBrowserMessage}</span>
+                            </AlertDescription>
+                        </Alert>
+                        <Button type="button" className="w-full" onClick={handleCopyLink}>
+                            {PARITY_COPY.auth.passkeyPanel.inAppBrowserCopyLink}
                         </Button>
-                        {discoverableFailure && (
-                            <Alert variant="warning" id="v2-passkey-fallback" data-testid="passkey-fallback-notice">
-                                <TriangleAlert aria-hidden="true" />
-                                <AlertDescription className="font-semibold text-foreground">
-                                    {PARITY_COPY.auth.passkeyPanel.passkeyFallback}
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            <span className="h-px flex-1 bg-border" aria-hidden="true" />
-                            <span className="shrink-0">{PARITY_COPY.auth.passkeyPanel.orContinueWithPhone}</span>
-                            <span className="h-px flex-1 bg-border" aria-hidden="true" />
-                        </div>
                     </div>
-                )}
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                    <div className="space-y-2">
-                        <Label htmlFor="v2-phone">{PARITY_COPY.auth.passkeyPanel.phoneLabel}</Label>
-                        <Input
-                            id="v2-phone"
-                            ref={phoneRef}
-                            maxLength={16}
-                            type="tel"
-                            name="phone"
-                            // @lat: [[discoverable-passkey-design#Why the phone input carries the webauthn autocomplete token]]
-                            autoComplete="tel webauthn"
-                            aria-invalid={Boolean(errors.phone)}
-                            aria-describedby={phoneDescribedBy}
-                            value={PHONE_INPUT_TRANSFORMER.input(phone)}
-                            onChange={(event) => setPhone(PHONE_INPUT_TRANSFORMER.output(event))}
-                            disabled={isConfirmingPhone || isLoading}
-                            placeholder={PARITY_COPY.auth.passkeyPanel.phonePlaceholder}
-                        />
-                        <p id="v2-phone-hint" className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                            <span>
-                                Your browser may ask for permission to discover passkeys on your phone or other devices.
-                            </span>
-                        </p>
-                        {errors.phone && (
-                            <p id="v2-phone-error" role="alert" className="text-sm font-semibold text-destructive">
-                                {errors.phone}
-                            </p>
+                ) : (
+                    <>
+                        {!isConfirmingPhone && (
+                            <div className="mb-5 space-y-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full gap-2 font-semibold"
+                                    onClick={handleDiscoverableSignIn}
+                                    disabled={isLoading}
+                                >
+                                    <KeyRound className="size-4" aria-hidden="true" />
+                                    {PARITY_COPY.auth.passkeyPanel.signInWithPasskey}
+                                </Button>
+                                {discoverableFailure && (
+                                    <Alert
+                                        variant="warning"
+                                        id="v2-passkey-fallback"
+                                        data-testid="passkey-fallback-notice"
+                                    >
+                                        <TriangleAlert aria-hidden="true" />
+                                        <AlertDescription className="font-semibold text-foreground">
+                                            {PARITY_COPY.auth.passkeyPanel.passkeyFallback}
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                                <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                    <span className="h-px flex-1 bg-border" aria-hidden="true" />
+                                    <span className="shrink-0">
+                                        {PARITY_COPY.auth.passkeyPanel.orContinueWithPhone}
+                                    </span>
+                                    <span className="h-px flex-1 bg-border" aria-hidden="true" />
+                                </div>
+                            </div>
                         )}
-                    </div>
-
-                    {isConfirmingPhone && (
-                        <div ref={codeRef} className="space-y-2 animate-in fade-in duration-200">
-                            <Label htmlFor="v2-code">{PARITY_COPY.auth.passkeyPanel.codeLabel}</Label>
-                            <Input
-                                id="v2-code"
-                                maxLength={6}
-                                type="text"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                name="code"
-                                autoComplete="one-time-code"
-                                aria-invalid={Boolean(errors.code)}
-                                aria-describedby={errors.code ? "v2-code-error" : undefined}
-                                // @lat: [[passkey-panel-test-design#Why the code-input binding check is deliberately weak]]
-                                value={code}
-                                onChange={(event) => setCode(event.target.value)}
-                                disabled={isLoading}
-                                placeholder={PARITY_COPY.auth.passkeyPanel.codePlaceholder}
-                            />
-                            {errors.code && (
-                                <p id="v2-code-error" role="alert" className="text-sm font-semibold text-destructive">
-                                    {errors.code}
+                        <form className="space-y-4" onSubmit={handleSubmit}>
+                            <div className="space-y-2">
+                                <Label htmlFor="v2-phone">{PARITY_COPY.auth.passkeyPanel.phoneLabel}</Label>
+                                <Input
+                                    id="v2-phone"
+                                    ref={phoneRef}
+                                    maxLength={16}
+                                    type="tel"
+                                    name="phone"
+                                    // @lat: [[discoverable-passkey-design#Why the phone input carries the webauthn autocomplete token]]
+                                    autoComplete="tel webauthn"
+                                    aria-invalid={Boolean(errors.phone)}
+                                    aria-describedby={phoneDescribedBy}
+                                    value={PHONE_INPUT_TRANSFORMER.input(phone)}
+                                    onChange={(event) => setPhone(PHONE_INPUT_TRANSFORMER.output(event))}
+                                    disabled={isConfirmingPhone || isLoading}
+                                    placeholder={PARITY_COPY.auth.passkeyPanel.phonePlaceholder}
+                                />
+                                <p
+                                    id="v2-phone-hint"
+                                    className="flex items-start gap-1.5 text-xs text-muted-foreground"
+                                >
+                                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                                    <span>
+                                        Your browser may ask for permission to discover passkeys on your phone or other
+                                        devices.
+                                    </span>
                                 </p>
+                                {errors.phone && (
+                                    <p
+                                        id="v2-phone-error"
+                                        role="alert"
+                                        className="text-sm font-semibold text-destructive"
+                                    >
+                                        {errors.phone}
+                                    </p>
+                                )}
+                            </div>
+
+                            {isConfirmingPhone && (
+                                <div ref={codeRef} className="space-y-2 animate-in fade-in duration-200">
+                                    <Label htmlFor="v2-code">{PARITY_COPY.auth.passkeyPanel.codeLabel}</Label>
+                                    <Input
+                                        id="v2-code"
+                                        maxLength={6}
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        name="code"
+                                        autoComplete="one-time-code"
+                                        aria-invalid={Boolean(errors.code)}
+                                        aria-describedby={errors.code ? "v2-code-error" : undefined}
+                                        // @lat: [[passkey-panel-test-design#Why the code-input binding check is deliberately weak]]
+                                        value={code}
+                                        onChange={(event) => setCode(event.target.value)}
+                                        disabled={isLoading}
+                                        placeholder={PARITY_COPY.auth.passkeyPanel.codePlaceholder}
+                                    />
+                                    {errors.code && (
+                                        <p
+                                            id="v2-code-error"
+                                            role="alert"
+                                            className="text-sm font-semibold text-destructive"
+                                        >
+                                            {errors.code}
+                                        </p>
+                                    )}
+                                    {passkeyDismissed && !isLoading && (
+                                        <output className="block text-sm font-semibold text-foreground">
+                                            {PARITY_COPY.auth.passkeyPanel.passkeyDismissed}
+                                        </output>
+                                    )}
+                                </div>
                             )}
-                            {passkeyDismissed && !isLoading && (
-                                <output className="block text-sm font-semibold text-foreground">
-                                    {PARITY_COPY.auth.passkeyPanel.passkeyDismissed}
+
+                            <div className="flex flex-col gap-2.5 pt-1">
+                                <Button type="submit" className="w-full" disabled={isLoading || isThrottled}>
+                                    {isConfirmingPhone
+                                        ? PARITY_COPY.auth.passkeyPanel.confirmCode
+                                        : PARITY_COPY.auth.passkeyPanel.continuePhone}
+                                </Button>
+
+                                {isConfirmingPhone ? (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={handleResend}
+                                            disabled={isLoading}
+                                        >
+                                            {PARITY_COPY.auth.passkeyPanel.resendCode}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={handleCancel}
+                                            disabled={isLoading}
+                                        >
+                                            {PARITY_COPY.auth.passkeyPanel.cancelCta}
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button variant="outline" className="w-full" asChild>
+                                        <InertiaLink href={ROUTES.billOfTheMonth}>
+                                            {PARITY_COPY.auth.passkeyPanel.previewSway}
+                                            <ArrowRight className="size-4" aria-hidden="true" />
+                                        </InertiaLink>
+                                    </Button>
+                                )}
+                            </div>
+
+                            {isLoading && (
+                                <output
+                                    aria-live="polite"
+                                    className="flex items-center justify-center gap-3 rounded-xl border-neo border-border bg-card px-4 py-3 text-sm font-semibold text-muted-foreground shadow-neo"
+                                >
+                                    <img src="/images/loading.svg" alt="" className="size-5" aria-hidden="true" />
+                                    <span>{PARITY_COPY.auth.passkeyPanel.workingOn}</span>
                                 </output>
                             )}
-                        </div>
-                    )}
-
-                    <div className="flex flex-col gap-2.5 pt-1">
-                        <Button type="submit" className="w-full" disabled={isLoading || isThrottled}>
-                            {isConfirmingPhone
-                                ? PARITY_COPY.auth.passkeyPanel.confirmCode
-                                : PARITY_COPY.auth.passkeyPanel.continuePhone}
-                        </Button>
-
-                        {isConfirmingPhone ? (
-                            <>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={handleResend}
-                                    disabled={isLoading}
-                                >
-                                    {PARITY_COPY.auth.passkeyPanel.resendCode}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={handleCancel}
-                                    disabled={isLoading}
-                                >
-                                    {PARITY_COPY.auth.passkeyPanel.cancelCta}
-                                </Button>
-                            </>
-                        ) : (
-                            <Button variant="outline" className="w-full" asChild>
-                                <InertiaLink href={ROUTES.billOfTheMonth}>
-                                    {PARITY_COPY.auth.passkeyPanel.previewSway}
-                                    <ArrowRight className="size-4" aria-hidden="true" />
-                                </InertiaLink>
-                            </Button>
-                        )}
-                    </div>
-
-                    {isLoading && (
-                        <output
-                            aria-live="polite"
-                            className="flex items-center justify-center gap-3 rounded-xl border-neo border-border bg-card px-4 py-3 text-sm font-semibold text-muted-foreground shadow-neo"
-                        >
-                            <img src="/images/loading.svg" alt="" className="size-5" aria-hidden="true" />
-                            <span>{PARITY_COPY.auth.passkeyPanel.workingOn}</span>
-                        </output>
-                    )}
-                </form>
+                        </form>
+                    </>
+                )}
             </CardContent>
         </Card>
     );

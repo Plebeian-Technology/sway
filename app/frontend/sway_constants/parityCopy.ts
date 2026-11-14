@@ -243,6 +243,11 @@ export const PARITY_COPY = {
             resendCode: "Send a new code",
             codeResent: "We sent you a new code.",
             passkeyUnsupported: "This browser can't use passkeys yet. Update your browser or try another one.",
+            inAppBrowserTitle: "Open Sway in your browser",
+            inAppBrowserMessage:
+                "This app's built-in browser can't set up a passkey. Copy the link, then open it in Safari or Chrome to sign up.",
+            inAppBrowserCopyLink: "Copy link",
+            inAppBrowserLinkCopied: "Link copied. Paste it into Safari or Chrome.",
             passkeyDismissed: "Passkey setup was cancelled. Press Confirm code to try again.",
             workingOn: "Working on it",
             validationPhone: "Your phone number must be 10 digits.",

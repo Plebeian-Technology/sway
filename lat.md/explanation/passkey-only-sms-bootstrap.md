@@ -57,3 +57,13 @@ The server accepts an `sms_verified_token` once, and only within 10 minutes; sen
 [[app/controllers/api/v1/sessions_controller.rb#SessionsController#callback]] deletes the cached WebAuthn challenge inside the same transaction that updates the passkey and issues the bearer token.
 
 Spending the challenge inside the transaction guarantees that a challenge can be used once and only once. If token issuance rolls back, the challenge is not silently lost before a retry; once the transaction commits — or if verification raises `WebAuthn::Error` or [[app/controllers/users/webauthn/sessions_controller.rb#UnknownPasskeyError]] — the challenge key is removed from `Rails.cache` so replaying the same challenge returns an invalid-challenge refusal.
+
+## Why an in-app browser is turned away before the SMS
+
+[[app/frontend/components/auth/PasskeyPanel.tsx#PasskeyPanel]] shows an "open in your browser" notice instead of the phone form when [[app/frontend/sway_utils/inAppBrowser.ts#isInAppBrowser]] recognises the user agent of a social app's built-in browser.
+
+Links shared on Instagram, Facebook, TikTok and similar apps open in a webview that often cannot create a passkey. A user there would receive the text, type the code, and then fail at enrollment, and every retry in the same webview would fail the same way and spend another text.
+
+Turning the user away before any text is sent costs no SMS and points them at a browser that works, with a copy-link button to carry the address across. Offering an SMS-only account instead was rejected, because it breaks the rule in [[passkey-only-sms-bootstrap#Why sign-in accepts only a passkey]] that a text alone never signs anyone in.
+
+The check reads published user agent tokens, not a device test, so a webview the list does not name still reaches the phone form and meets the passkey-support check there.

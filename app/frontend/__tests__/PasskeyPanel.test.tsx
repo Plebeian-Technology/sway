@@ -24,6 +24,11 @@ const captured = vi.hoisted(() => ({
     startRegistration: vi.fn<(phone: string) => Promise<unknown>>(),
     verifyRegistration: vi.fn<(phone: string, credential: unknown) => Promise<void>>(),
     isPasskeySupported: vi.fn<() => boolean>(),
+    copy: vi.fn<(text: string) => boolean>(),
+}));
+
+vi.mock("copy-to-clipboard", () => ({
+    default: (text: string) => captured.copy(text),
 }));
 
 vi.mock("app/frontend/sway_utils/webauthn", () => ({
@@ -104,6 +109,8 @@ beforeEach(() => {
     captured.verifyRegistration.mockReset();
     captured.isPasskeySupported.mockReset();
     captured.isPasskeySupported.mockReturnValue(true);
+    captured.copy.mockReset();
+    captured.copy.mockReturnValue(true);
 });
 
 afterEach(() => {
@@ -489,5 +496,72 @@ describe("PasskeyPanel — asking for a new code when the first never arrives", 
 
         expect(screen.getByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeTruthy();
         expect(confirmButton().disabled).toBe(false);
+    });
+});
+
+describe("PasskeyPanel — in-app browsers", () => {
+    const INSTAGRAM_USER_AGENT =
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/21E219 Instagram 345.0.1.20.103 (iPhone14,5; iOS 17_4; en_US; en-US; scale=3.00; 1170x2532; 640439420)";
+    const DESKTOP_CHROME_USER_AGENT =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+    const useUserAgent = (userAgent: string) => {
+        vi.spyOn(window.navigator, "userAgent", "get").mockReturnValue(userAgent);
+    };
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    // @lat: [[passkey-only-sms-bootstrap#Why an in-app browser is turned away before the SMS]]
+    it("shows the open-in-your-browser notice and no phone form or passkey button in Instagram's browser", () => {
+        useUserAgent(INSTAGRAM_USER_AGENT);
+        render(<PasskeyPanel />);
+
+        expect(screen.getByText(PARITY_COPY.auth.passkeyPanel.inAppBrowserTitle)).toBeTruthy();
+        expect(screen.getByText(PARITY_COPY.auth.passkeyPanel.inAppBrowserMessage)).toBeTruthy();
+        expect(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.inAppBrowserCopyLink })).toBeTruthy();
+        expect(screen.queryByLabelText(/phone/i)).toBeNull();
+        expect(document.querySelector("form")).toBeNull();
+        expect(screen.queryByRole("button", { name: PARITY_COPY.auth.passkeyPanel.signInWithPasskey })).toBeNull();
+        expect(captured.sendPhoneVerification).not.toHaveBeenCalled();
+        expect(captured.startAuthentication).not.toHaveBeenCalled();
+        expect(captured.startDiscoverableAuthentication).not.toHaveBeenCalled();
+    });
+
+    it("copies the page address and says so when the copy button is pressed", async () => {
+        useUserAgent(INSTAGRAM_USER_AGENT);
+        render(<PasskeyPanel />);
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.inAppBrowserCopyLink }));
+        });
+
+        expect(captured.copy).toHaveBeenCalledWith(window.location.href);
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "info",
+            title: PARITY_COPY.auth.passkeyPanel.inAppBrowserLinkCopied,
+        });
+    });
+
+    it("stays silent when the browser refuses the copy", async () => {
+        useUserAgent(INSTAGRAM_USER_AGENT);
+        captured.copy.mockReturnValue(false);
+        render(<PasskeyPanel />);
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.inAppBrowserCopyLink }));
+        });
+
+        expect(captured.notify).not.toHaveBeenCalled();
+    });
+
+    it("renders the phone form and no notice in a regular browser", () => {
+        useUserAgent(DESKTOP_CHROME_USER_AGENT);
+        render(<PasskeyPanel />);
+
+        expect(screen.getByLabelText(/phone/i)).toBeTruthy();
+        expect(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.signInWithPasskey })).toBeTruthy();
+        expect(screen.queryByText(PARITY_COPY.auth.passkeyPanel.inAppBrowserTitle)).toBeNull();
     });
 });
