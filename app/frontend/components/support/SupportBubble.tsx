@@ -14,6 +14,7 @@ import {
 
 const WALKTHROUGH_MAILTO = "mailto:info@sway.vote?subject=Privacy%20walkthrough%20request";
 
+// @lat: [[support-bubble#Support bubble placement]]
 const SupportBubble: React.FC = () => {
     return (
         <Dialog>
