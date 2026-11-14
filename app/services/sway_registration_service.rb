@@ -261,6 +261,11 @@ class SwayRegistrationService
       SwayLogging.error(
         "\n####################################################################################\n"
       )
+      Sentry.capture_message(
+        "OPEN_STATES_API_KEY is blank; state legislators were not assigned at registration",
+        level: :error,
+        extra: {user_id: @user.id, sway_locale: @sway_locale.name}
+      )
       return []
     end
 

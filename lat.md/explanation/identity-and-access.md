@@ -217,7 +217,10 @@ check and request, so the value checked is the value sent.
 [[app/services/sway_registration_service.rb#SwayRegistrationService#find_legislators_from_open_states_geo_endpoint]]
 uses the configured connection profile, wraps non-success responses as an
 unavailable service, and treats a missing results array as no matches. It
-matches returned person ids to each seeded legislator's external id.
+matches returned person ids to each seeded legislator's external id. A blank
+key returns no matches and sends one error-level Sentry message naming the key,
+so registration still completes with the locale-wide officers while the gap
+reaches the operator.
 
 ### Invite bookkeeping cannot abort registration
 

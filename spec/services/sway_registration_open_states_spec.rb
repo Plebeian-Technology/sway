@@ -63,6 +63,29 @@ RSpec.describe SwayRegistrationService, "#find_legislators_from_open_states_geo_
     expect(service.send(:find_legislators_from_open_states_geo_endpoint)).to include(legislator)
   end
 
+  context "when the OpenStates key is blank" do
+    before { ENV["OPEN_STATES_API_KEY"] = " " }
+
+    it "returns [] and sends one error-level Sentry message naming the key" do
+      allow(Sentry).to receive(:capture_message)
+      expect(Sway::FaradayStack).not_to receive(:open_states)
+
+      expect(service.send(:find_legislators_from_open_states_geo_endpoint)).to eq([])
+      expect(Sentry).to have_received(:capture_message).once
+      expect(Sentry).to have_received(:capture_message).with(/OPEN_STATES_API_KEY/, hash_including(level: :error))
+    end
+
+    it "still links the locale-wide officers during registration" do
+      allow(Sentry).to receive(:capture_message)
+      state_wide = create(:district, sway_locale:, name: "MD0")
+      seat = Seat.create!(district: state_wide, seat_identifier: "maryland-governor", title: "Governor", chamber: "Executive")
+      governor = create(:legislator, sway_locale:, last_name: "Governor")
+      create(:legislator_term, legislator: governor, district: state_wide, seat:)
+
+      expect(service.call.map(&:legislator)).to contain_exactly(governor)
+    end
+  end
+
   it "sends no request for an address without coordinates and still resolves the locale-wide officers" do
     stub_request(:get, /people\.geo/).to_return(status: 200, body: {results: []}.to_json)
     allow(Geocoder).to receive(:search).and_return([])
