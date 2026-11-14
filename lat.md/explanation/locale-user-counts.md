@@ -23,6 +23,8 @@ registration, where a locale the system has not seen before should come into
 being. This runs behind an admin page load, where it must not: a page that
 reports how many locales exist cannot be the thing that invents one.
 
+When two registrations create the same new locale at once, [[app/models/sway_locale.rb#SwayLocale|SwayLocale.find_or_create_by_normalized!]] still reads first, and the caller whose insert loses the race reads the winner's row instead of failing.
+
 ## Why only the distinct address components are read
 
 The service asks the database for the distinct city, region code and country
