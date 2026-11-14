@@ -76,6 +76,12 @@ RSpec.describe SwayGeocode do
       expect_census_geocoding_unavailable
     end
 
+    it "raises ServiceUnavailableError for HTTP 200 with features that are not feature objects" do
+      census_tigerweb_stub.to_return(status: 200, body: {features: [{attributes: "x"}]}.to_json)
+
+      expect_census_geocoding_unavailable
+    end
+
     it "raises ServiceUnavailableError when the request times out" do
       census_tigerweb_stub.to_timeout
 

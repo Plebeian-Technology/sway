@@ -46,5 +46,23 @@ RSpec.describe Census::Congress do
 
       expect(subject.congressional_district).to eq("07")
     end
+
+    it "returns nil for a feature without attributes" do
+      stub_request(:get, census_query_url).to_return(status: 200, body: {features: [{}]}.to_json)
+
+      expect(subject.congressional_district).to be_nil
+    end
+
+    [
+      {features: "x"},
+      {features: [1]},
+      {features: [{attributes: "x"}]}
+    ].each do |body|
+      it "raises Faraday::ParsingError for #{body.to_json}" do
+        stub_request(:get, census_query_url).to_return(status: 200, body: body.to_json)
+
+        expect { subject.congressional_district }.to raise_error(Faraday::ParsingError)
+      end
+    end
   end
 end

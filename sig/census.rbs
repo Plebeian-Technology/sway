@@ -53,6 +53,8 @@ module Census
 
         def parse: (untyped body) -> ::Hash[::String, untyped]
 
+        def feature_list?: (untyped features) -> bool
+
         def query_url: -> untyped
     end
 end

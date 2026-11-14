@@ -41,10 +41,17 @@ module Census
       parsed = JSON.parse(body)
       raise Faraday::ParsingError, "body is not a JSON object" unless parsed.is_a?(Hash)
       raise Faraday::ParsingError, "error object: #{parsed["error"].to_json}" if parsed.key?("error")
+      raise Faraday::ParsingError, "features is not a list of feature objects" if parsed.key?("features") && !feature_list?(parsed["features"])
 
       parsed
     rescue JSON::ParserError => e
       raise Faraday::ParsingError, e
+    end
+
+    def feature_list?(features)
+      features.is_a?(Array) && features.all? do |feature|
+        feature.is_a?(Hash) && (feature["attributes"].nil? || feature["attributes"].is_a?(Hash))
+      end
     end
 
     def query_url
