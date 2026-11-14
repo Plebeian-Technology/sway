@@ -360,6 +360,10 @@ export const PARITY_COPY = {
 
     address: {
         requestFailed: "Something went wrong sending your address. Please try again.",
+        search: {
+            noResults: "No matching addresses found. You can still submit the address as you typed it.",
+            failed: "Address search is unavailable right now. You can still submit the address as you typed it.",
+        },
         complete: {
             heading: "Complete your registration",
             lead: "Sway needs a little more information to match you with your representatives.",

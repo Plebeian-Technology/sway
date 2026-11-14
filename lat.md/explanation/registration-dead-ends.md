@@ -119,6 +119,14 @@ The operator decided that a user's address is accepted as a fact, so a missing h
 
 The structured fields always describe the text in the box. Editing the text clears every field a pick filled, and a pick replaces all of them, writing an empty value for any the place lacks and recording its description as the typed text. A stale street, postcode or coordinate from an earlier pick therefore never posts under a newer address.
 
+## An address search that finds nothing or fails still says the typed address can be submitted
+
+Under the address box, a polite status message follows each finished search that gave no list, so the user is never left with a silent empty box.
+
+The autocomplete hook reports `ZERO_RESULTS` for an empty answer and `ERROR` when the request fails or returns the wrong shape, and the component picks one of two `PARITY_COPY.address.search` sentences from that status. Both sentences say the address can still be submitted as typed, which is true because the page posts the typed text. The message is hidden while a search is loading, because the hook keeps the previous status until the new answer arrives. It uses `role="status"` and leaves the input's `aria-invalid` alone, since the form error display is separate.
+
+The server answers an empty list when Nominatim itself fails, so an upstream outage reaches the browser as `ZERO_RESULTS` and shows the no-results sentence rather than the unavailable one. The `ERROR` sentence appears only when the browser cannot reach the autocomplete endpoint or gets a malformed answer.
+
 ## Browser page state selectors
 
 The browser and component specs use stable selectors to identify registration outcomes.

@@ -8,6 +8,7 @@ import { useNominatimAddressAutocomplete } from "app/frontend/hooks/useNominatim
 import { Input } from "app/frontend/components/ui/input";
 import { Label } from "app/frontend/components/ui/label";
 import { cn } from "app/frontend/lib/utils";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 
 export interface INominatimAddressAutocompleteProps<T = sway.IUser, TForm extends object = Record<string, unknown>> {
     form: InertiaFormProps<TForm>;
@@ -16,6 +17,12 @@ export interface INominatimAddressAutocompleteProps<T = sway.IUser, TForm extend
     locale?: sway.ISwayLocale | null;
     placeholder?: string;
 }
+
+// @lat: [[registration-dead-ends#An address search that finds nothing or fails still says the typed address can be submitted]]
+const SEARCH_MESSAGES: Record<string, string | undefined> = {
+    ZERO_RESULTS: PARITY_COPY.address.search.noResults,
+    ERROR: PARITY_COPY.address.search.failed,
+};
 
 const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps> = ({
     form,
@@ -33,6 +40,7 @@ const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps>
     const listboxId = useId();
     const optionId = (index: number) => `${listboxId}-option-${index}`;
     const isOpen = status === "OK" && suggestions.length > 0;
+    const searchMessage = loading ? null : SEARCH_MESSAGES[status];
 
     const formErrors = (form.errors ?? {}) as Record<string, string | undefined>;
     const { code: _errorCode, ...errorsWithoutCode } = formErrors;
@@ -132,6 +140,17 @@ const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps>
                     </div>
                 )}
             </div>
+
+            {searchMessage && (
+                <p
+                    data-testid="address-search-message"
+                    // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role lat:ignore
+                    role="status"
+                    className="text-sm text-muted-foreground"
+                >
+                    {searchMessage}
+                </p>
+            )}
 
             {isOpen && (
                 <ul

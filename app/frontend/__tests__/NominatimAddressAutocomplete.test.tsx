@@ -250,10 +250,12 @@ describe("NominatimAddressAutocomplete", () => {
             mockHook({ status: "ZERO_RESULTS", suggestions: [] });
             rerender(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
             expect(screen.queryByRole("listbox")).toBeNull();
+            expect(screen.getByTestId("address-search-message")).toBeTruthy();
 
             mockHook({ status: "ERROR", suggestions: [] });
             rerender(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
             expect(screen.queryByRole("listbox")).toBeNull();
+            expect(screen.getByTestId("address-search-message")).toBeTruthy();
         });
 
         it("renders OpenStreetMap attribution notice in suggestions listbox", () => {
@@ -694,6 +696,38 @@ describe("NominatimAddressAutocomplete", () => {
             expect(screen.queryByRole("alert")).toBeNull();
             expect(input.getAttribute("aria-invalid")).toBe("false");
             expect(input.getAttribute("aria-describedby")).toBeNull();
+        });
+    });
+
+    describe("9. Search Outcome Messages", () => {
+        it.each([
+            ["ZERO_RESULTS", "No matching addresses found. You can still submit the address as you typed it."],
+            ["ERROR", "Address search is unavailable right now. You can still submit the address as you typed it."],
+        ])("shows a polite status message for %s that does not mark the input invalid", (status, message) => {
+            mockHook({ value: "100 Nowhere", status, suggestions: [], loading: false });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            const note = screen.getByTestId("address-search-message");
+            expect(note.getAttribute("role")).toBe("status");
+            expect(note.textContent).toBe(message);
+            expect(screen.getByRole("combobox").getAttribute("aria-invalid")).toBe("false");
+        });
+
+        it.each(["OK", "IDLE", ""])("shows no message for status %j", (status) => {
+            mockHook({ status, suggestions: [] });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            expect(screen.queryByTestId("address-search-message")).toBeNull();
+        });
+
+        it.each(["ZERO_RESULTS", "ERROR"])("shows no message for %s while a search is loading", (status) => {
+            mockHook({ status, suggestions: [], loading: true });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            expect(screen.queryByTestId("address-search-message")).toBeNull();
         });
     });
 });
