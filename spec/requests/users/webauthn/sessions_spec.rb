@@ -453,6 +453,18 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:discoverable_authentication]).to be_nil
     end
 
+    it "sends a user with a passkey and no address to the registration form" do
+      user = create(:user, phone: phone)
+      create(:passkey, user: user, external_id: fake_credential_id)
+
+      post discoverable_callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      expect(session_hash[:user_id]).to eq(user.id)
+      expect(session_hash[:verified_phone]).to eq(phone)
+      expect(session_hash[:discoverable_authentication]).to be_nil
+    end
+
     it "redirects to root when the discoverable challenge is missing" do
       session_hash.delete(:discoverable_authentication)
 
