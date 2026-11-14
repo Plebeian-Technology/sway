@@ -65,6 +65,7 @@ Neutral maps of the machinery: what exists, what it is called, and what it is bo
 - [resolveJsonPointerOffset](json-pointer-offset-resolution.md) — Turns a JSON Pointer into a character position in the raw text, as best it can.
 - [Rules for photo addresses in committed seed files](legislator-seed-photo-address-rules.md) — A photo address in the seed files is only ever used once: Sway fetches the file and keeps its own copy, then serves the copy.
 - [RunLegislationPipelineJob behavior](legislation-pipeline-job.md) — \`RunLegislationPipelineJob\` is the one background job that runs the whole legislation pipeline — fetching bills, extracting text, summarizing, and so on — on Solid Queue.
+- [Seat chamber coverage tests](seat-chamber-coverage-tests.md) — These specifications check every declared locale's seed roster against the seat chambers its locale document declares.
 - [Seat occupancy adversarial tests](seat-occupancy-adversarial-tests.md) — These independent checks verify refusal and transaction behavior for writes to an already resolved elected seat.
 - [Seedable: the shared re-seed-or-skip rule](seedable-module.md) — \`Seedable\` is the shared "should this record be re-seeded or left alone?" rule for every seeder in \`db/seeds/models/\`. It is included into \`SeedSwayLocale\` and \`SeedLegislator\`; \`SeedBill\` applies it where the data is ingested.
 - [Seeded legislator title tests](seed-legislator-title-tests.md) — Regression checks for official title fills during legislator seeding.

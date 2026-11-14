@@ -66,6 +66,7 @@ class SeedLegislator
   def self.official_service_result_for: (untyped sway_locale) -> untyped
   def self.retire_unevidenced_executive_terms!: (untyped sway_locale, official_service_result: untyped, executive_preparers: untyped) -> untyped
   def seed: () -> untyped
+  def unconfigured_executive_office?: () -> bool
   def legislator: () -> untyped
 end
 
