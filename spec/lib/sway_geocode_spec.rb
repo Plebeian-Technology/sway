@@ -100,4 +100,47 @@ RSpec.describe SwayGeocode do
       expect(subject).to eq([0, 7])
     end
   end
+
+  # @lat: [[census-and-geocode-implementation-notes#Why SwayGeocode::Congress and SwayGeocode::Local are plain nested classes]]
+  describe "Local#districts" do
+    let(:baltimore) { create(:sway_locale, :baltimore) }
+
+    def local_districts(sway_locale, latitude:, longitude:)
+      address = build_stubbed(:address, latitude:, longitude:)
+      SwayGeocode::Local.new(sway_locale, address).districts
+    end
+
+    it "returns the district pair for City Hall in Baltimore district 11" do
+      expect(local_districts(baltimore, latitude: 39.29105, longitude: -76.61069)).to eq([0, 11])
+    end
+
+    it "returns an empty array for Towson, just outside the city" do
+      expect(local_districts(baltimore, latitude: 39.4015, longitude: -76.6025)).to eq([])
+    end
+
+    it "returns an empty array for coordinates 0 and 0" do
+      expect(local_districts(baltimore, latitude: 0, longitude: 0)).to eq([])
+    end
+
+    it "returns an empty array for a blank latitude and longitude" do
+      expect(local_districts(baltimore, latitude: nil, longitude: nil)).to eq([])
+    end
+
+    it "returns an empty array and logs once for a locale with no geojson file" do
+      maryland = create(:sway_locale, :maryland)
+      allow(SwayLogging).to receive(:info)
+
+      expect(local_districts(maryland, latitude: 39.29105, longitude: -76.61069)).to eq([])
+      expect(SwayLogging).to have_received(:info).with(/has no geojson file/).once
+    end
+
+    it "loads the geojson once for two lookups inside a district" do
+      address = build_stubbed(:address, latitude: 39.29105, longitude: -76.61069)
+      geocoder = SwayGeocode.build(baltimore, address)
+      allow(baltimore).to receive(:load_geojson).and_call_original
+
+      expect([geocoder.districts, geocoder.districts]).to eq([[0, 11], [0, 11]])
+      expect(baltimore).to have_received(:load_geojson).once
+    end
+  end
 end
