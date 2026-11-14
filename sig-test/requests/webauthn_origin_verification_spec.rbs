@@ -1,0 +1,9 @@
+class Object
+  def post_web_enrollment: (WebAuthn::FakeClient client, rp_id: String) -> untyped
+  def expect_web_enrollment_refused: () -> void
+  def configured_certificate: () -> String
+  def configured_fingerprint: () -> String
+  def sms_token: () -> String
+  def android_origin: (String certificate) -> String
+  def post_mobile_enrollment: (String origin) -> untyped
+end
