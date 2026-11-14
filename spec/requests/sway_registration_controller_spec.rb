@@ -1423,4 +1423,49 @@ RSpec.describe "/registration", type: :request do
       expect_stored_form_address
     end
   end
+
+  describe "GET /sway_registration page props for a pending user" do
+    it "has no registration_outcome prop on a plain render" do
+      setup_pre_registration
+
+      get sway_registration_index_path
+
+      expect(inertia).to render_component Pages::REGISTRATION
+      expect(inertia).to have_no_prop(:registration_outcome)
+    end
+
+    it "shares the pending status, an incomplete registration and no address for a user with no address" do
+      _sway_locale, user = setup_pre_registration
+
+      get sway_registration_index_path
+
+      expect(inertia).to have_props { |props|
+        props[:user].slice("id", "registration_status", "is_registration_complete", "address") ==
+          {"id" => user.id, "registration_status" => "pending", "is_registration_complete" => false, "address" => nil}
+      }
+    end
+
+    it "shares the address fields the address-switch warning reads for a user with an address" do
+      _sway_locale, user = setup_pre_registration
+      address = create(:address)
+      UserAddress.create!(user:, address:)
+
+      get sway_registration_index_path
+
+      expect(inertia).to have_props { |props|
+        props[:user].slice("registration_status", "is_registration_complete") ==
+          {"registration_status" => "pending", "is_registration_complete" => false} &&
+          props[:user]["address"] == {
+            "id" => address.id,
+            "street" => address.street,
+            "street2" => address.street2,
+            "city" => address.city,
+            "region_code" => address.region_code,
+            "country" => address.country,
+            "postal_code" => address.postal_code,
+            "full_address" => address.full_address
+          }
+      }
+    end
+  end
 end
