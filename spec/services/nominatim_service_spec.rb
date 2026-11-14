@@ -359,4 +359,40 @@ RSpec.describe NominatimService, ".search over the request cap" do
     expect(nominatim_requests(calvert_query)).to have_been_made.once
     expect(google).not_to have_been_requested
   end
+
+  context "with registered users" do
+    registered_rows = ->(count) { Array.new(count) { |index| {phone: (4105550000 + index).to_s, is_registration_complete: true} } }
+
+    it "keeps the cap with exactly 100 registered users" do
+      User.insert_all(registered_rows.call(100) + [{phone: "4105559000", is_registration_complete: false}])
+
+      search_for("100 Holliday St")
+      search_for("200 Calvert St")
+
+      expect(nominatim_requests(calvert_query)).not_to have_been_made
+      expect(google).to have_been_requested.once
+    end
+
+    context "when more than 100 users are registered" do
+      before { User.insert_all(registered_rows.call(101)) }
+
+      it "sends two searches in the same second to Nominatim" do
+        search_for("100 Holliday St")
+        search_for("200 Calvert St")
+
+        expect(nominatim_requests(holliday_query)).to have_been_made.once
+        expect(nominatim_requests(calvert_query)).to have_been_made.once
+        expect(google).not_to have_been_requested
+      end
+
+      it "still answers a Nominatim failure from Google" do
+        stub_request(:get, search_url).with(query: hash_including({})).to_return(status: 503, body: "")
+
+        results = search_for("100 Holliday St")
+
+        expect(results.map { |result| result.values_at("place_id", "source") }).to eq([["ChIJcapped", "google_places"]])
+        expect(google).to have_been_requested.once
+      end
+    end
+  end
 end

@@ -3,6 +3,7 @@ class NominatimService
   DEFAULT_LIMIT: Integer
   MAX_LIMIT: Integer
   REQUESTS_PER_SECOND: Integer
+  UNCAPPED_ABOVE_REGISTERED_USERS: Integer
 
   @conn: Faraday::Connection
 
@@ -35,6 +36,8 @@ class NominatimService
   ) -> Hash[Symbol, untyped]
 
   def build_cache_key: (Hash[Symbol, untyped] params) -> String
+
+  def request_cap_applies?: () -> bool
 
   def over_request_cap?: () -> bool
 

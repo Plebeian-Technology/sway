@@ -8,6 +8,7 @@ class NominatimService
   DEFAULT_LIMIT = 5
   MAX_LIMIT = 10
   REQUESTS_PER_SECOND = 1
+  UNCAPPED_ABOVE_REGISTERED_USERS = 100
 
   class << self
     def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT)
@@ -34,7 +35,7 @@ class NominatimService
     cache_key = build_cache_key(params)
 
     places = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
-      fetch_from_nominatim(params) unless over_request_cap?
+      fetch_from_nominatim(params) unless request_cap_applies? && over_request_cap?
     end
     places || GooglePlaces::Client.new.search(
       query: q,
@@ -74,6 +75,10 @@ class NominatimService
 
   def build_cache_key(params)
     "nominatim:search:#{Digest::SHA256.hexdigest(params.to_a.sort_by(&:first).to_json)}"
+  end
+
+  def request_cap_applies?
+    User.where(is_registration_complete: true).count <= UNCAPPED_ABOVE_REGISTERED_USERS
   end
 
   def over_request_cap?
