@@ -3,7 +3,13 @@
  */
 import * as SecureStore from "expo-secure-store";
 import { apiClient } from "../../src/api/client";
-import { ApiRequestError, UnauthorizedError, RateLimitedError, NetworkError } from "../../src/api/errors";
+import {
+    ApiRequestError,
+    UnauthorizedError,
+    RateLimitedError,
+    NetworkError,
+    GENERIC_ERROR_MESSAGE,
+} from "../../src/api/errors";
 import { BEARER_TOKEN_KEY, SESSION_ENVELOPE_KEY, API_BASE_URL } from "../../src/constants/api";
 import { localeOverride } from "../../src/state/localeOverride";
 
@@ -212,5 +218,116 @@ describe("apiClient", () => {
             mockFetchResponse({ error: { code: "internal", message: "boom" } }, { status: 500 }),
         );
         await expect(apiClient.get("/x")).rejects.toBeInstanceOf(ApiRequestError);
+    });
+    describe("fallback message when the body has no usable text", () => {
+        beforeEach(() => {
+            (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+        });
+
+        const rejection = async () => {
+            try {
+                await apiClient.get("/x");
+            } catch (e) {
+                return e as ApiRequestError;
+            }
+            throw new Error("expected apiClient.get to reject");
+        };
+
+        test("an HTML error page gives the friendly message and keeps the http_<status> code", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse("<html><body>Internal Server Error</body></html>", { status: 500 }),
+            );
+            const e = await rejection();
+            expect(e).toBeInstanceOf(ApiRequestError);
+            expect(e.code).toBe("http_500");
+            expect(e.status).toBe(500);
+            expect(e.message).toBe(GENERIC_ERROR_MESSAGE);
+            expect(e.message).not.toMatch(/^HTTP/);
+        });
+
+        test("an empty body gives the same message", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse("", { status: 502 }));
+            const e = await rejection();
+            expect(e.code).toBe("http_502");
+            expect(e.message).toBe(GENERIC_ERROR_MESSAGE);
+        });
+
+        test("a JSON errors entry with no title and no detail keeps its code and gets the message", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse({ errors: [{ code: "boom" }] }, { status: 500 }),
+            );
+            const e = await rejection();
+            expect(e.code).toBe("boom");
+            expect(e.message).toBe(GENERIC_ERROR_MESSAGE);
+        });
+
+        test("a JSON errors entry with nothing in it gets the http_<status> code and the message", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse({ errors: [{}] }, { status: 500 }));
+            const e = await rejection();
+            expect(e.code).toBe("http_500");
+            expect(e.message).toBe(GENERIC_ERROR_MESSAGE);
+        });
+
+        test("an error object with a code and no message keeps the code and gets the message", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse({ error: { code: "internal" } }, { status: 500 }),
+            );
+            const e = await rejection();
+            expect(e.code).toBe("internal");
+            expect(e.message).toBe(GENERIC_ERROR_MESSAGE);
+        });
+
+        test("a title or message in the body still wins over the fallback", async () => {
+            (global.fetch as jest.Mock)
+                .mockResolvedValueOnce(mockFetchResponse({ errors: [{ title: "Bill not found" }] }, { status: 404 }))
+                .mockResolvedValueOnce(mockFetchResponse({ error: { code: "x", message: "Nope" } }, { status: 422 }));
+            expect((await rejection()).message).toBe("Bill not found");
+            expect((await rejection()).message).toBe("Nope");
+        });
+    });
+
+    describe("timeout and caller abort", () => {
+        const fetchThatRejectsOnAbort = () =>
+            (global.fetch as jest.Mock).mockImplementation(
+                (_url: string, init: RequestInit) =>
+                    new Promise((_resolve, reject) => {
+                        init.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+                    }),
+            );
+
+        beforeEach(() => {
+            jest.useFakeTimers();
+            (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+            fetchThatRejectsOnAbort();
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test("a request that outlives the default 15 seconds ends in a NetworkError", async () => {
+            const settled = apiClient.get("/x").catch((e: unknown) => e);
+            await jest.advanceTimersByTimeAsync(14_999);
+            await expect(Promise.race([settled, "pending"])).resolves.toBe("pending");
+            await jest.advanceTimersByTimeAsync(1);
+            await expect(settled).resolves.toBeInstanceOf(NetworkError);
+        });
+
+        test("a custom timeoutMs replaces the default", async () => {
+            const settled = apiClient.get("/x", { timeoutMs: 2_000 }).catch((e: unknown) => e);
+            await jest.advanceTimersByTimeAsync(2_000);
+            await expect(settled).resolves.toBeInstanceOf(NetworkError);
+        });
+
+        test("aborting the caller signal while pending throws ApiRequestError with code aborted", async () => {
+            const caller = new AbortController();
+            const settled = apiClient.get("/x", { signal: caller.signal }).catch((e: unknown) => e);
+            await jest.advanceTimersByTimeAsync(0);
+            caller.abort();
+            const e = (await settled) as ApiRequestError;
+            expect(e).toBeInstanceOf(ApiRequestError);
+            expect(e).not.toBeInstanceOf(NetworkError);
+            expect(e.code).toBe("aborted");
+        });
     });
 });

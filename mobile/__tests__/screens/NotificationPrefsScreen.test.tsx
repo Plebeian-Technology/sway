@@ -72,7 +72,7 @@ import * as Notifications from "expo-notifications";
 import NotificationPrefsScreen from "../../src/screens/NotificationPrefsScreen";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
-import { ApiRequestError } from "../../src/api/errors";
+import { ApiRequestError, GENERIC_ERROR_MESSAGE } from "../../src/api/errors";
 
 const wrap = (ui: React.ReactElement) => render(<ThemeProvider initialMode="light">{ui}</ThemeProvider>);
 
@@ -403,6 +403,15 @@ describe("NotificationPrefsScreen", () => {
             const err = await screen.findByTestId("notification-prefs-save-error");
             expect(within(err).getByText(PARITY_COPY.notifications.saveError)).toBeTruthy();
             expect(screen.queryByText("HTTP 500")).toBeNull();
+        });
+
+        test("a client-error response carrying the generic fallback message shows the screen's own copy", async () => {
+            mockApiPatch.mockRejectedValueOnce(new ApiRequestError("http_400", GENERIC_ERROR_MESSAGE, undefined, 400));
+            await loadedScreen();
+            fireEvent.press(screen.getByTestId("org-defaults-save"));
+            const err = await screen.findByTestId("notification-prefs-save-error");
+            expect(within(err).getByText(PARITY_COPY.notifications.saveError)).toBeTruthy();
+            expect(screen.queryByText(GENERIC_ERROR_MESSAGE)).toBeNull();
         });
 
         test("a failed load of the defaults keeps Save disabled so placeholders never overwrite saved settings", async () => {

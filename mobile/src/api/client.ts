@@ -3,7 +3,7 @@
 import { API_BASE_URL } from "../constants/api";
 import { tokenStore } from "../auth/tokenStore";
 import { sessionStore } from "../auth/sessionStore";
-import { ApiRequestError, UnauthorizedError, RateLimitedError, NetworkError } from "./errors";
+import { ApiRequestError, UnauthorizedError, RateLimitedError, NetworkError, GENERIC_ERROR_MESSAGE } from "./errors";
 import { authEvents } from "../auth/authEvents";
 import { localeOverride } from "../state/localeOverride";
 import { logDev } from "../utils/logging";
@@ -65,7 +65,7 @@ function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
             const first = errors[0] ?? {};
             return {
                 code: first.code ?? `http_${fallbackStatus}`,
-                message: first.title ?? first.detail ?? `HTTP ${fallbackStatus}`,
+                message: first.title ?? first.detail ?? GENERIC_ERROR_MESSAGE,
                 // @lat: [[mobile-api-client-contract#Why both server error envelope shapes are converted the same way]]
                 details: first.detail ? { detail: [first.detail] } : undefined,
             };
@@ -75,13 +75,13 @@ function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
             if (err && typeof err === "object") {
                 return {
                     code: err.code ?? `http_${fallbackStatus}`,
-                    message: err.message ?? `HTTP ${fallbackStatus}`,
+                    message: err.message ?? GENERIC_ERROR_MESSAGE,
                     details: err.details,
                 };
             }
         }
     }
-    return { code: `http_${fallbackStatus}`, message: `HTTP ${fallbackStatus}` };
+    return { code: `http_${fallbackStatus}`, message: GENERIC_ERROR_MESSAGE };
 }
 
 async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {

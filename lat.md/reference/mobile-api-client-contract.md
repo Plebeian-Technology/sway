@@ -32,6 +32,9 @@ The server may send either error shape; `apiClient` accepts both — the JSON:AP
 - `429` → throws `RateLimitedError`
 - any other non-2xx → throws `ApiRequestError`
 - `fetch` itself failing (DNS, TCP) → throws `NetworkError`
+- the request outliving its timeout (15 seconds unless `timeoutMs` is passed) → throws `NetworkError`
+- the caller's signal aborting → throws `ApiRequestError` with code `aborted`
+- an error body with no usable text (an HTML page, an empty body, an entry with no title, detail or message) → the message is [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] and the code stays `http_<status>` unless the body carries one
 
 ## Security
 
@@ -59,6 +62,7 @@ Once the user has switched to another locale (a city, state, or federal jurisdic
 
 The array form (`{ errors: [...] }`) is what the server is meant to send; some older endpoints still send the older `{ error: {...} }` shape.
 
+- When either shape lacks a title, detail or message, the converted error carries [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] rather than `HTTP <status>`, so no screen prints a bare status line. Screens that show server messages for 4xx errors compare against that constant to fall back to their own copy.
 - Either way `apiClient` converts it to the same internal error object, so the `code` checks in `passkeyAuth` and the SMS fallback keep matching (`"no_passkey_enrolled"` and the rest). `detail` (and `source` where useful) passes through as `details`, so screens can keep showing the specifics.
 
 ## Why the error classes are separate subclasses

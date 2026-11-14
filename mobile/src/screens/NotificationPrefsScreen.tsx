@@ -18,7 +18,13 @@ import { Card } from "../components/ui/Card";
 import { Pressable } from "../components/ui/Pressable";
 import { useNotificationPrefs, type NotificationPrefKey } from "../hooks/useNotificationPrefs";
 import { apiClient } from "../api/client";
-import { ApiRequestError, NetworkError, RateLimitedError, UnauthorizedError } from "../api/errors";
+import {
+    ApiRequestError,
+    GENERIC_ERROR_MESSAGE,
+    NetworkError,
+    RateLimitedError,
+    UnauthorizedError,
+} from "../api/errors";
 import { Routes } from "../api/routes";
 import { useDeviceRegistration } from "../state/DeviceRegistrationContext";
 import { useTheme } from "../theme/ThemeProvider";
@@ -97,7 +103,7 @@ function saveErrorMessage(e: unknown): string {
         e.status >= 400 &&
         e.status < 500 &&
         e.message &&
-        !/^HTTP \d+$/.test(e.message)
+        e.message !== GENERIC_ERROR_MESSAGE
     ) {
         return e.message;
     }

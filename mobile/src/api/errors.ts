@@ -1,4 +1,6 @@
 // @lat: [[mobile-api-client-contract#Errors]]
+export const GENERIC_ERROR_MESSAGE = "Something went wrong. Please try again.";
+
 export class ApiRequestError extends Error {
     public readonly code: string;
     public readonly details?: Record<string, string[]>;
