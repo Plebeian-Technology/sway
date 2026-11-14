@@ -3,4 +3,5 @@
 class Object
   def census_tigerweb_stub: () -> untyped
   def expect_census_geocoding_unavailable: () -> untyped
+  def local_districts: (SwayLocale sway_locale, latitude: Numeric?, longitude: Numeric?) -> Array[Integer]
 end
