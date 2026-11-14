@@ -10,6 +10,7 @@ import { Label } from "app/frontend/components/ui/label";
 import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification";
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
+import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWebAuthnRegistration";
 import { ROUTES } from "app/frontend/sway_constants";
 import { notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
@@ -82,6 +83,11 @@ const PasskeyPanel: React.FC<IProps> = ({
         discoverableFailure,
         isLoading: isLoadingAuthentication,
     } = useWebAuthnAuthentication(markThrottled);
+    const {
+        startRegistration,
+        verifyRegistration,
+        isLoading: isLoadingRegistration,
+    } = useWebAuthnRegistration(markThrottled);
 
     // @lat: [[discoverable-passkey-design#What the reader sees during passkey fallback and why it names no cause]]
     useEffect(() => {
@@ -102,8 +108,8 @@ const PasskeyPanel: React.FC<IProps> = ({
     );
 
     const isLoading = useMemo(
-        () => [isLoadingSend, isLoadingConfirm, isLoadingAuthentication].some(Boolean),
-        [isLoadingAuthentication, isLoadingConfirm, isLoadingSend],
+        () => [isLoadingSend, isLoadingConfirm, isLoadingAuthentication, isLoadingRegistration].some(Boolean),
+        [isLoadingAuthentication, isLoadingConfirm, isLoadingRegistration, isLoadingSend],
     );
 
     const handleSubmit = useCallback(
@@ -133,6 +139,15 @@ const PasskeyPanel: React.FC<IProps> = ({
 
             try {
                 const publicKey = await startAuthentication(phone);
+
+                // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#A phone confirmed in this session resumes enrollment]]
+                if (publicKey === "enroll") {
+                    const credential = await startRegistration(phone);
+                    if (credential) {
+                        await verifyRegistration(phone, credential);
+                    }
+                    return;
+                }
 
                 if (typeof publicKey === "boolean") {
                     if (!publicKey) {
@@ -177,7 +192,9 @@ const PasskeyPanel: React.FC<IProps> = ({
             phone,
             sendPhoneVerification,
             startAuthentication,
+            startRegistration,
             verifyAuthentication,
+            verifyRegistration,
         ],
     );
 

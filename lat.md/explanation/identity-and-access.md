@@ -425,6 +425,12 @@ and five per number every five minutes, on both endpoints. Discoverable
 sign-in remains genuinely blind: it names no phone number, so it has nothing
 to disclose.
 
+### A phone confirmed in this session resumes enrollment
+
+The web endpoint answers `enroll` instead of sending an SMS when the submitted phone has no passkey and equals the phone this browser session already confirmed.
+
+A reload or a later return to the tab shows the phone form again, and without this branch the same number would cost a second SMS and a second code for a phone the session has already proved it owns. [[app/controllers/users/webauthn/sessions_controller.rb#SessionsController#create]] records the submitted phone as the session phone and answers `enroll`, and [[app/frontend/components/auth/PasskeyPanel.tsx#PasskeyPanel]] starts passkey enrollment straight away. Recording the phone grants nothing new: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]] already accepts that verified phone, and a different number still takes the SMS branch. A phone with a passkey still gets the passkey flow first.
+
 ### Discoverable callback resolves the credential owner
 
 The credential, not a phone lookup, identifies the account in a discoverable

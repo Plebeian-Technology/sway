@@ -83,6 +83,19 @@ describe("useWebAuthnAuthentication", () => {
             expect(mocks.get).not.toHaveBeenCalled();
         });
 
+        it("returns enroll without a WebAuthn get() when the server answers the enroll flow", async () => {
+            mocks.post.mockResolvedValue({ flow: "enroll" });
+            const { result } = renderHook(() => useWebAuthnAuthentication(onThrottled));
+
+            let returned;
+            await act(async () => {
+                returned = await result.current.startAuthentication(PHONE);
+            });
+
+            expect(returned).toBe("enroll");
+            expect(mocks.get).not.toHaveBeenCalled();
+        });
+
         it("drives the WebAuthn get() ceremony when the server returns the passkey flow", async () => {
             const options = { challenge: "abc", allowCredentials: [] };
             const assertion = { id: "cred-1", type: "public-key" };

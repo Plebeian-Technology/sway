@@ -54,7 +54,15 @@ module Users
           )
           render json: {flow: "passkey", options: get_options}
         elsif phone.present?
-          if Sway::Settings.dev_login.skip_phone_verification
+          # @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#A phone confirmed in this session resumes enrollment]]
+          if session[:verified_phone] == phone
+            session[:phone] = phone
+            SwayLogging.info(
+              "webauthn.session.phone_verification_resumed",
+              phone_last4: phone_last4
+            )
+            render json: {flow: "enroll"}
+          elsif Sway::Settings.dev_login.skip_phone_verification
             session[:phone] = phone
             SwayLogging.info(
               "webauthn.session.phone_verification_skipped",

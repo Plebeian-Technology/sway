@@ -139,6 +139,42 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       end
     end
 
+    context "when this session already confirmed the phone" do
+      it "answers the enroll flow without a second SMS and lets enrollment start" do
+        post users_webauthn_sessions_path, params: {phone: phone}
+        patch phone_verification_path("0"), params: {phone_verification: {code: "123456"}}
+        expect(session_hash[:verified_phone]).to eq(phone)
+        session_hash[:phone] = "4105553999"
+
+        post users_webauthn_sessions_path, params: {phone: phone}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"flow" => "enroll"})
+        expect(twilio_verifications_double).to have_received(:create).once
+        expect(session_hash[:phone]).to eq(phone)
+
+        post users_webauthn_registration_index_path
+
+        expect(response.parsed_body["challenge"]).to eq(fake_challenge)
+      end
+
+      it "sends an SMS when the session confirmed a different phone" do
+        session_hash[:verified_phone] = "4105553999"
+
+        post users_webauthn_sessions_path, params: {phone: phone}
+
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
+        expect(twilio_verifications_double).to have_received(:create).once
+      end
+
+      it "sends an SMS when the session confirmed no phone" do
+        post users_webauthn_sessions_path, params: {phone: phone}
+
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
+        expect(twilio_verifications_double).to have_received(:create).once
+      end
+    end
+
     # @lat: [[identity-and-access#The sign-in challenge says which ceremony to run]]
     context "account enumeration" do
       it "answers 200 with a flow envelope for passkey, passkey-less, and unknown phones alike" do

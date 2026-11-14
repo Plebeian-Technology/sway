@@ -19,6 +19,8 @@ const captured = vi.hoisted(() => ({
     confirm: vi.fn<(phone: string, code: string) => Promise<void>>(),
     clearPasskeyDismissed: vi.fn<() => void>(),
     passkeyDismissed: false,
+    startRegistration: vi.fn<(phone: string) => Promise<unknown>>(),
+    verifyRegistration: vi.fn<(phone: string, credential: unknown) => Promise<void>>(),
 }));
 
 vi.mock("@inertiajs/react", () => ({
@@ -43,6 +45,13 @@ vi.mock("app/frontend/hooks/authentication/useWebAuthnAuthentication", () => ({
             isLoading: false,
         };
     },
+}));
+vi.mock("app/frontend/hooks/authentication/useWebAuthnRegistration", () => ({
+    useWebAuthnRegistration: () => ({
+        startRegistration: captured.startRegistration,
+        verifyRegistration: captured.verifyRegistration,
+        isLoading: false,
+    }),
 }));
 vi.mock("app/frontend/hooks/authentication/phone/useSendPhoneVerification", () => ({
     useSendPhoneVerification: () => ({ send: captured.sendPhoneVerification, isLoading: false }),
@@ -73,6 +82,8 @@ beforeEach(() => {
     captured.confirm.mockReset();
     captured.clearPasskeyDismissed.mockReset();
     captured.passkeyDismissed = false;
+    captured.startRegistration.mockReset();
+    captured.verifyRegistration.mockReset();
 });
 
 afterEach(() => {
@@ -268,6 +279,21 @@ describe("PasskeyPanel — the phone step", () => {
     beforeEach(() => {
         vi.useRealTimers();
         Element.prototype.scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
+    });
+
+    it("starts passkey enrollment without the code field when this session already confirmed the phone", async () => {
+        const credential = { id: "cred-1", type: "public-key" };
+        captured.startAuthentication.mockResolvedValue("enroll");
+        captured.startRegistration.mockResolvedValue(credential);
+        render(<PasskeyPanel />);
+
+        await submitPhone();
+
+        expect(captured.startRegistration).toHaveBeenCalledWith("4105551234");
+        expect(captured.verifyRegistration).toHaveBeenCalledWith("4105551234", credential);
+        expect(captured.sendPhoneVerification).not.toHaveBeenCalled();
+        expect(captured.notify).not.toHaveBeenCalled();
+        expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
     });
 
     it("says the code could not be sent, and not that the number is wrong, when the send failed", async () => {
