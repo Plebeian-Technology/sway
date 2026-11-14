@@ -4,7 +4,7 @@ import React from "react";
 import { Linking } from "react-native";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
 
-import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError } from "../../src/auth/passkeyAuth";
+import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError, SessionSaveError } from "../../src/auth/passkeyAuth";
 import { smsAuth } from "../../src/auth/smsAuth";
 import { ApiRequestError, NetworkError, RateLimitedError, UnauthorizedError } from "../../src/api/errors";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
@@ -31,10 +31,17 @@ jest.mock("../../src/auth/passkeyAuth", () => {
             this.name = "NoPasskeyError";
         }
     }
+    class SessionSaveError extends Error {
+        constructor() {
+            super("This device could not save your sign-in. Sign in with your passkey.");
+            this.name = "SessionSaveError";
+        }
+    }
     return {
         passkeyAuth: { signIn: jest.fn(), signInDiscoverable: jest.fn(), register: jest.fn() },
         PasskeyUnsupportedError,
         NoPasskeyError,
+        SessionSaveError,
     };
 });
 
@@ -472,6 +479,24 @@ describe("AuthScreen", () => {
             expect(queryByText(rawText)).toBeNull();
             expect(queryByTestId("auth-code-field")).toBeNull();
             expect(getByTestId("auth-passkey-cta")).toBeTruthy();
+        });
+
+        // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation#A session the device cannot save]]
+        test("an account whose session the device cannot save returns to the phone form and says to sign in with the passkey", async () => {
+            const sessionSaveError = new SessionSaveError();
+            (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(sessionSaveError);
+            const { getByTestId, getByText, queryByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+
+            expect(getByText(sessionSaveError.message)).toBeTruthy();
+            expect(queryByTestId("auth-code-field")).toBeNull();
+            expect(getByTestId("auth-passkey-cta")).toBeTruthy();
+
+            await reachCodeBox(getByTestId);
+            await pressConfirmCode(getByTestId);
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
         });
     });
 

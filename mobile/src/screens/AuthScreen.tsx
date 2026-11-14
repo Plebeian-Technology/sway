@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { ApiRequestError, NetworkError, RateLimitedError } from "../api/errors";
-import { NoPasskeyError, passkeyAuth, PasskeyUnsupportedError } from "../auth/passkeyAuth";
+import { NoPasskeyError, passkeyAuth, PasskeyUnsupportedError, SessionSaveError } from "../auth/passkeyAuth";
 import { smsAuth } from "../auth/smsAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { FormField } from "../components/ui/FormField";
@@ -100,6 +100,12 @@ export default function AuthScreen() {
                 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
                 if (e instanceof PasskeyUnsupportedError) {
                     nav.navigate("DeviceUnsupported");
+                    return;
+                }
+                // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation#A session the device cannot save]]
+                if (e instanceof SessionSaveError) {
+                    handleCancel();
+                    setError(e.message);
                     return;
                 }
                 const message = codeStepErrorMessage(e);

@@ -23,6 +23,15 @@ export class NoPasskeyError extends Error {
     }
 }
 
+export class SessionSaveError extends Error {
+    constructor(
+        message = "Your account is ready, but this device could not save your sign-in. Sign in with your passkey.",
+    ) {
+        super(message);
+        this.name = "SessionSaveError";
+    }
+}
+
 interface AuthCallbackResponse {
     bearer_token: string;
     device_id: number;
@@ -37,16 +46,22 @@ type RegistrationOptions = PasskeyCreateRequest & { challenge_id: string };
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run]]
 type ChallengeResponse = { flow: "sms" } | { flow: "passkey"; challenge_id: string; options: PasskeyGetRequest };
 
+// @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation#A session the device cannot save]]
 async function persistSession(resp: AuthCallbackResponse): Promise<void> {
-    await tokenStore.set(resp.bearer_token);
-    const envelope: SessionEnvelope = {
-        bearer_token: resp.bearer_token,
-        device_id: resp.device_id,
-        user_id: resp.user.id,
-        expires_at: resp.expires_at,
-    };
-    await sessionStore.set(envelope);
-    authEvents.emit("signed_in");
+    try {
+        await tokenStore.set(resp.bearer_token);
+        const envelope: SessionEnvelope = {
+            bearer_token: resp.bearer_token,
+            device_id: resp.device_id,
+            user_id: resp.user.id,
+            expires_at: resp.expires_at,
+        };
+        await sessionStore.set(envelope);
+        authEvents.emit("signed_in");
+    } catch {
+        await Promise.allSettled([tokenStore.clear(), sessionStore.clear()]);
+        throw new SessionSaveError();
+    }
 }
 
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]

@@ -2,7 +2,7 @@
 import { Passkey } from "react-native-passkey";
 import { Platform } from "react-native";
 
-import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError } from "../../src/auth/passkeyAuth";
+import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError, SessionSaveError } from "../../src/auth/passkeyAuth";
 import { apiClient } from "../../src/api/client";
 import { tokenStore } from "../../src/auth/tokenStore";
 import { sessionStore } from "../../src/auth/sessionStore";
@@ -255,6 +255,58 @@ describe("passkeyAuth", () => {
             });
             expect(emitSpy).toHaveBeenCalledWith("signed_in");
             expect(result.user.id).toBe(7);
+        });
+
+        describe("when the device cannot save the new session", () => {
+            const regOpts = { ...challengeOpts, user: { id: "u_7", name: "x", displayName: "x" } };
+
+            beforeEach(() => {
+                (apiClient.post as jest.Mock).mockResolvedValueOnce(regOpts).mockResolvedValueOnce(callbackResp);
+            });
+
+            test.each([
+                [
+                    "sessionStore.set",
+                    () => (sessionStore.set as jest.Mock).mockRejectedValueOnce(new Error("keychain locked")),
+                ],
+                [
+                    "tokenStore.set",
+                    () => (tokenStore.set as jest.Mock).mockRejectedValueOnce(new Error("keychain locked")),
+                ],
+            ])("rejects with SessionSaveError and clears both stores when %s fails", async (_store, failWrite) => {
+                failWrite();
+                const emitSpy = jest.spyOn(authEvents, "emit");
+
+                const attempt = passkeyAuth.register("+15551112222", "smsv_token_abc");
+
+                await expect(attempt).rejects.toBeInstanceOf(SessionSaveError);
+                await expect(attempt).rejects.toThrow(/sign in with (your|the) passkey/i);
+                expect(tokenStore.clear).toHaveBeenCalled();
+                expect(sessionStore.clear).toHaveBeenCalled();
+                expect(emitSpy).not.toHaveBeenCalledWith("signed_in");
+            });
+
+            test("still rejects with SessionSaveError when clearing a store also fails", async () => {
+                (sessionStore.set as jest.Mock).mockRejectedValueOnce(new Error("keychain locked"));
+                (tokenStore.clear as jest.Mock).mockRejectedValueOnce(new Error("keychain locked"));
+
+                await expect(passkeyAuth.register("+15551112222", "smsv_token_abc")).rejects.toBeInstanceOf(
+                    SessionSaveError,
+                );
+                expect(sessionStore.clear).toHaveBeenCalled();
+            });
+        });
+
+        test.each([
+            ["UserCancelled", NoPasskeyError],
+            ["NoCredentials", NoPasskeyError],
+            ["NotSupported", PasskeyUnsupportedError],
+        ])("maps a create ceremony that throws {error: %s} to %p", async (error, expected) => {
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(challengeOpts);
+            (Passkey.create as jest.Mock).mockRejectedValueOnce({ error, message: "native message" });
+
+            await expect(passkeyAuth.register("+15551112222", "smsv_token_abc")).rejects.toBeInstanceOf(expected);
+            expect(apiClient.post).toHaveBeenCalledTimes(1);
         });
     });
 

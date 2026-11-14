@@ -475,6 +475,14 @@ Phone-first sign-in treats this outcome as the SMS path. The flow: sms response 
 
 NotSupported maps to PasskeyUnsupportedError. Other failures retain native details internally instead of being reclassified as missing passkeys. Development-only logging retains native details for diagnosis; the error tests use the library's actual object shape rather than an invented Error subclass.
 
+#### A session the device cannot save
+
+When the keychain refuses the bearer token or the session envelope after a successful callback, both stores are cleared and SessionSaveError is raised, so no half session remains.
+
+By the time [[mobile/src/auth/passkeyAuth.ts#persistSession]] runs, the registration callback has already created the account, saved the passkey and consumed the SMS-verified token. Retrying the code step can only fail with an expired token, and a new code cannot help because the account exists. The only working path is passkey sign-in, which needs no SMS, so the error's message names it. Errors from clearing the stores are ignored, because the user's next step does not depend on them.
+
+The code step answers SessionSaveError by returning to the phone form, which drops the held SMS-verified token and shows the passkey sign-in button, and displays the error's message. Sign-in shares the same callback path and keeps its existing sign-in error copy.
+
 ### Mobile passkey ceremonies
 
 Discoverable sign-in sends no phone number, allowing the returned passkey to identify its account. Adding a passkey instead requires a fresh SMS verification token for the signed-in account.
