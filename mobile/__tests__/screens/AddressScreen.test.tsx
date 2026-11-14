@@ -466,7 +466,12 @@ describe("AddressScreen", () => {
             });
 
             expect(postedRegistration()).toEqual(
-                expect.objectContaining({ street: "200 N Holliday St", latitude: null, longitude: null }),
+                expect.objectContaining({
+                    street: "200 N Holliday St",
+                    latitude: null,
+                    longitude: null,
+                    place_types: [],
+                }),
             );
         });
 
@@ -484,6 +489,30 @@ describe("AddressScreen", () => {
             expect(postedRegistration()).toEqual(
                 expect.objectContaining({ street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069 }),
             );
+        });
+
+        it("keeps Save disabled in edit mode until a field differs from the saved address", () => {
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: { street1: "123 Main St", city: "Baltimore", region_code: "MD", postal_code: "21201" },
+                },
+                loading: false,
+                refresh: jest.fn(),
+            });
+            wrap(<AddressScreen />);
+
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
+            fireEvent.press(screen.getByTestId("address-submit-cta"));
+            expect(screen.queryByTestId("address-switch-confirm")).toBeNull();
+
+            type("city", "Towson");
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
+
+            type("city", "Baltimore");
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
+            expect(apiClient.post).not.toHaveBeenCalled();
         });
 
         it("asks for the switch confirmation before posting a typed address in edit mode", async () => {

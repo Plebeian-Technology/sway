@@ -84,7 +84,7 @@ export default function AddressScreen() {
 
     const onChange = (key: keyof AddressForm) => (val: string) => {
         setConfirmingAddressSwitch(false);
-        setForm((f) => ({ ...f, [key]: val, latitude: null, longitude: null }));
+        setForm((f) => ({ ...f, [key]: val, latitude: null, longitude: null, place_types: [] }));
     };
 
     // @lat: [[identity-and-access#Registration is asynchronous by necessity]]
@@ -158,8 +158,17 @@ export default function AddressScreen() {
         setForm(next);
     };
 
-    const canSubmit = form.street1.trim() !== "";
     const hasPickedCoordinates = form.latitude != null && form.longitude != null;
+    const savedAddress = user?.address;
+    const matchesSavedAddress =
+        savedAddress != null &&
+        form.street1 === (savedAddress.street1 ?? "") &&
+        form.street2 === (savedAddress.street2 ?? "") &&
+        form.city === (savedAddress.city ?? "") &&
+        form.region_code === (savedAddress.region_code ?? "") &&
+        form.postal_code === (savedAddress.postal_code ?? "") &&
+        form.country === (savedAddress.country ?? "United States");
+    const canSubmit = form.street1.trim() !== "" && (isOnboarding || hasPickedCoordinates || !matchesSavedAddress);
 
     // @lat: [[mobile-auth-and-onboarding-flow#Why isOnboarding only changes wording]]
     const submitLabel = isOnboarding ? PARITY_COPY.address.complete.cta : PARITY_COPY.address.edit.saveCta;
