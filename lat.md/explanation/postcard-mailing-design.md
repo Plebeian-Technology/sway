@@ -84,9 +84,51 @@ Sway would evaluate alternative print providers if monthly sending volume expand
 
 If constituent postcard volume exceeds 1,500 pieces per month, Lob's Growth subscription ($260 monthly fee with $0.645 per postcard) yields lower total unit costs despite the monthly platform commitment. Similarly, if PostGrid encounters API availability problems, Click2Mail provides an unmetered on-demand fallback using standard REST endpoints.
 
+## Funding and payment models
+
+Delivering physical mail incurs tangible marginal costs requiring a clear payment mechanism.
+
+At PostGrid's unit price of $0.902 per 4x6 card (detailed in [[postcard-vendor-comparison]]), each delivered postcard consumes real capital. Three distinct funding models present practical trade-offs between user friction, operational complexity, and budgetary predictability.
+
+### Option 1: Platform-funded civic allocation
+
+Sway absorbs the cost of postcard printing and postage as core civic infrastructure.
+
+Under this model, the platform funds postcards directly from its operating budget, subject to per-user rate limits. Voters encounter zero checkout friction, maximizing civic participation and representative outreach on priority legislation such as the Bill of the Month. The primary trade-off involves financial exposure: an unexpected surge in voter engagement directly increases monthly vendor invoices.
+
+### Option 2: Voter-funded micropayments
+
+Voters pay for their own postcards directly through a credit card or mobile wallet payment flow.
+
+This approach requires integrating a payment gateway such as Stripe (`app/controllers/` currently contains no payment handling). Charging voters $1.25 to $1.50 per card covers PostGrid's $0.902 unit cost plus credit card interchange fees (2.9% + $0.30). While this model eliminates platform financial liability, checkout friction significantly reduces the proportion of voters who complete the mailing action.
+
+### Option 3: Organization-sponsored campaigns
+
+Community organizations sponsor postcard budgets for specific legislation aligned with their civic mission.
+
+Organizations already exist as first-class domain models in Sway (`app/models/organization.rb`). Under this approach, an advocacy group allocates a prepaid credit balance (for example, $500 for approximately 550 postcards) to an active bill. Voters in designated districts can then dispatch sponsored postcards at zero personal cost until the organization's campaign budget depletes.
+
+### Payment recommendation
+
+A hybrid model starting with platform-funded priority postcards offers the highest civic impact.
+
+For the initial implementation, Sway funds postcards directly for the featured Bill of the Month, bounded by strict rate limits of one card per voter per representative. This design delivers immediate constituent utility without the development overhead of integrating Stripe. Once constituent demand is verified, Sway can introduce organization-sponsored campaign budgets to support broader bill catalogs.
+
 ## Open decisions for the owner
 
 Key architectural and product choices requiring owner confirmation, presented with recommended answers based on current system capabilities.
+
+### Postcard funding model
+
+Who pays for physical postcard printing and postage?
+
+Recommendation: Platform-funded for the initial rollout. Sway covers the $0.902 unit cost for Bill of the Month postcards under strict per-voter rate limits, deferring payment gateway integration until user demand warrants it.
+
+### Organization sponsorship integration
+
+Should organizations be permitted to sponsor postcard campaigns for specific bills?
+
+Recommendation: Yes, as a phase two enhancement. Organizations defined in `app/models/organization.rb` can purchase campaign postcard balances, allowing district constituents to send sponsored cards without personal expense.
 
 ### Primary print-and-mail vendor (Decided)
 
