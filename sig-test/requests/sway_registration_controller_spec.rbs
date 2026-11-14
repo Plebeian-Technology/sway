@@ -8,6 +8,5 @@ class Object
   def expect_blank_address: (untyped address) -> void
   def pending: (String message) -> void
   def form_body: () -> Hash[Symbol, untyped]
-  def inertia_headers: () -> Hash[String, String]
   def expect_stored_form_address: () -> void
 end
