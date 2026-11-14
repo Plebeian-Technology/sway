@@ -74,7 +74,7 @@ A Twilio verification-not-found reply returns one fixed message and stops the pa
 
 For Twilio error 20404, [[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] returns HTTP 200 JSON with `success: false` and `error: "Code not found."`. [[app/frontend/hooks/authentication/phone/useConfirmPhoneVerification.ts#useConfirmPhoneVerification]] shows that error as the notification title, falls back to `Incorrect Code` when the field is absent, and does not start passkey enrollment on failure. A rejected code leaves `verified_phone` unset and creates no user. Rate limiting remains a separate response path.
 
-The controller logs only the phone's last four digits and provider code. It does not log the provider message or recipient digits; other provider failures become a sanitized application error after the rescue block, with no raw provider exception as its cause. [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]] documents the redaction boundary.
+The controller logs only the phone's last four digits and provider code. It does not log the provider message or recipient digits; other provider failures are answered with HTTP 200, `success: false` and a fixed message, and reported to Sentry as a sanitized error built after the rescue block, with no raw provider exception as its cause ([[twilio-error-phone-redaction#Why a failed Twilio code check is reported and answered]]). [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]] documents the redaction boundary.
 
 ### A phone verified in this session confirms again without Twilio
 
