@@ -76,9 +76,12 @@ export default function AddressAutocomplete({ initialValue = "", onSelect, onErr
                 });
                 if (seq !== requestSeqRef.current) return;
                 setPredictions(results);
-            } catch (e) {
+            } catch {
                 if (seq !== requestSeqRef.current) return;
-                onError(e instanceof Error ? e.message : "Address lookup failed.");
+                // @lat: [[mobile-address-autocomplete-design#Every picked place is passed on, and library text never shows]]
+                onError(
+                    "Address search is unavailable right now. Tap Edit address fields manually to type your address.",
+                );
                 setPredictions([]);
             } finally {
                 if (seq === requestSeqRef.current) setLoading(false);
@@ -113,8 +116,8 @@ export default function AddressAutocomplete({ initialValue = "", onSelect, onErr
                     PLACE_FIELDS.TYPES,
                 ]);
                 onSelect(parsePlace(place));
-            } catch (e) {
-                onError(e instanceof Error ? e.message : "Could not load address details.");
+            } catch {
+                onError("Could not load address details. Tap Edit address fields manually to type your address.");
             } finally {
                 setLoading(false);
             }

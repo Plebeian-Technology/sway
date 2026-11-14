@@ -34,3 +34,9 @@ Without remembering that here, the effect below would run again and re-open the 
 ## Predictions list: no FlatList
 
 There are at most 5 suggestions, so a plain map is enough. It also keeps a scrolling list out of the ScrollView above, which React Native warns about: "VirtualizedLists should never be nested inside plain ScrollViews".
+
+## Every picked place is passed on, and library text never shows
+
+Whatever place the user picks reaches AddressScreen through onSelect, with empty strings or null coordinates for the parts Google did not return.
+
+The server accepts an address as a fact and resolves it generically, so the component has no reason to refuse an incomplete place. A failed search or details lookup tells the user a fixed sentence that points to the typing option; the raw library text (a permission or quota code) is never shown, because it reads as a developer string and tells the user nothing to do.
