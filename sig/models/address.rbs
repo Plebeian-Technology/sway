@@ -10,6 +10,8 @@ class Address < ApplicationRecord
     def sway_locales: -> Array[SwayLocale]
     def self.sway_locale_attribute_sets_for: (city: String?, region_code: String?, country: String?) -> Array[Hash[Symbol, String?]]
     def sway_locale_attribute_sets: -> Array[Hash[Symbol, String?]]
+    def us_state_code: -> String?
+    def located?: -> bool
     def to_cartesian: -> untyped
     def to_builder: -> Jbuilder
 

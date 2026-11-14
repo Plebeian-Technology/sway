@@ -22,6 +22,18 @@ The locale document identifies its locale-wide district by the exact stored name
 
 Congress declares `US0`; Maryland and Baltimore declare `MD0`. This avoids treating the first numeric-zero district in Congress as nationwide when state Senate seats also use names such as `MD0`.
 
+## Congress fallback
+
+Every address is resolved against the US Congress locale, whatever country it names, so a user outside every supported place still gets the federal officials the address reaches.
+
+[[app/models/address.rb#Address#sway_locale_attribute_sets_for]] always gives the Congress set the country `US`. The city set needs a city and a region, and the state set needs a region, because neither names a place without them; a blank country counts as the United States, the column's default. A set built from blank parts used to fail while naming its locale, which answered the user with a server error.
+
+Within Congress the address's state comes from [[app/models/address.rb#Address#us_state_code]]: a region that is a US state code other than `US` itself, with a country that is blank or the United States. The Senators sit in the state's district 0 ([[representative-resolution#Congress seat identity conventions]]), so a known state always yields its two Senators. The House member is added only when Census places the coordinates in a district. [[app/services/sway_registration_service.rb#SwayRegistrationService#congress_district_numbers]] asks Census only for a located address, keeps district 0 alone when Census finds no district, and keeps district 0 alone when Census fails.
+
+A Census failure is recorded in `skipped_resolution_errors` and reported to Sentry at warning level, the way a skipped term is ([[representative-resolution#Resolution branches]]). Registration therefore keeps the Senators, records the Congress locale for a later retry, and reconciliation keeps refusing to change links while Census is down.
+
+When the state is unknown no geographic term is kept, so only the occupants of the locale-wide district remain ([[representative-resolution#Locale-wide district]]), which for Congress is the President. The seeded roster has no current President term, so such an address can still resolve nobody; registration then completes the user with the Congress locale waiting ([[registration-dead-ends#An empty list says which kind of empty it is]]).
+
 ## Resolution branches
 
 [[app/services/sway_registration_service.rb#SwayRegistrationService#district_legislators]] applies one seat validation to geographic and OpenStates regional candidates, then adds the locale-wide district's current occupants.

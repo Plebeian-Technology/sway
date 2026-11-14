@@ -99,11 +99,26 @@ class Address < ApplicationRecord
 
   # @lat: [[locale-user-counts#Why the attribute sets are reachable without a record]]
   def self.sway_locale_attribute_sets_for(city:, region_code:, country:)
-    [
-      {city:, state: region_code, country:},
-      {city: RegionUtil.from_region_code_to_region_name(region_code), state: region_code, country:},
-      {city: "congress", state: "congress", country:}
-    ]
+    country = country.presence || "US"
+    sets = [] #: Array[Hash[Symbol, String?]]
+    if region_code.present?
+      sets << {city:, state: region_code, country:} if city.present?
+      sets << {city: RegionUtil.from_region_code_to_region_name(region_code), state: region_code, country:}
+    end
+    sets << {city: "congress", state: "congress", country: "US"}
+  end
+
+  # @lat: [[representative-resolution#Congress fallback]]
+  def us_state_code
+    code = RegionUtil.from_region_name_to_region_code(region_code)
+    return nil if code.nil? || code == "US" || !RegionUtil::STATE_CODES_NAMES.key?(code.to_sym)
+    return nil unless country.blank? || RegionUtil.from_country_code_to_name(country) == "United States"
+
+    code
+  end
+
+  def located?
+    latitude.present? && longitude.present?
   end
 
   def sway_locale_attribute_sets

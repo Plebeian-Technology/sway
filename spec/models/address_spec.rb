@@ -80,6 +80,70 @@ RSpec.describe Address, type: :model do
     end
   end
 
+  describe ".sway_locale_attribute_sets_for" do
+    it "names the United States in the Congress set whatever country was submitted" do
+      sets = Address.sway_locale_attribute_sets_for(city: "Toronto", region_code: "ON", country: "Canada")
+
+      expect(sets.last).to eq({city: "congress", state: "congress", country: "US"})
+    end
+
+    it "leaves out the city set when the city is blank" do
+      sets = Address.sway_locale_attribute_sets_for(city: "", region_code: "VA", country: "US")
+
+      expect(sets).to eq([
+        {city: "Virginia", state: "VA", country: "US"},
+        {city: "congress", state: "congress", country: "US"}
+      ])
+    end
+
+    it "leaves out the city and state sets when the region is blank" do
+      sets = Address.sway_locale_attribute_sets_for(city: "Toronto", region_code: "", country: "Canada")
+
+      expect(sets).to eq([{city: "congress", state: "congress", country: "US"}])
+    end
+
+    it "gives the city and state sets the United States when the country is blank" do
+      sets = Address.sway_locale_attribute_sets_for(city: "Richmond", region_code: "VA", country: "")
+
+      expect(sets.pluck(:country)).to eq(%w[US US US])
+    end
+  end
+
+  describe "#us_state_code" do
+    def address_with_region(region_code:, country:)
+      Address.new(street: "1 Main St", city: "Somewhere", region_code:, country:, postal_code: "00000")
+    end
+
+    ["US", "United States", ""].each do |country|
+      it "returns VA for region VA and country #{country.inspect}" do
+        expect(address_with_region(region_code: "VA", country:).us_state_code).to eq("VA")
+      end
+    end
+
+    it "returns nil for region ON and country Canada" do
+      expect(address_with_region(region_code: "ON", country: "Canada").us_state_code).to be_nil
+    end
+
+    it "returns nil for a blank region" do
+      expect(address_with_region(region_code: "", country: "US").us_state_code).to be_nil
+    end
+
+    it "returns nil for region US" do
+      expect(address_with_region(region_code: "US", country: "US").us_state_code).to be_nil
+    end
+  end
+
+  describe "#located?" do
+    it "is true when latitude and longitude are both present" do
+      expect(Address.new(latitude: "38.9", longitude: "-77.0").located?).to be(true)
+    end
+
+    it "is false when either coordinate is missing" do
+      expect(Address.new(latitude: "38.9", longitude: nil).located?).to be(false)
+      expect(Address.new(latitude: nil, longitude: "-77.0").located?).to be(false)
+    end
+  end
+
   # The tidying moved into a before_validation hook. An empty Address no longer
   # blows up on a nil city or region_code, and values are cleaned up as they are
   # written.

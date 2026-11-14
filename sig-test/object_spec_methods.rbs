@@ -3766,6 +3766,16 @@ class Object
         -> [Legislator, LegislatorTerm, Seat]
     def create_unseated_md0_term: (SwayLocale maryland, title: String?, last_name: String) -> Legislator
     def maryland_service: (SwayLocale maryland, ?geo_candidates: Array[Legislator]) -> SwayRegistrationService
+    def us_president: () -> Legislator
+    def virginia_senator_a: () -> Legislator
+    def virginia_senator_b: () -> Legislator
+    def virginia_senate: () -> District
+    def virginia_address: () -> Address
+    def congress_fallback_service: (Address for_address) -> SwayRegistrationService
+    def address_with_region: (region_code: String, country: String) -> Address
+    def create_us_president: () -> Legislator
+    def toronto_params: () -> Hash[Symbol, Hash[Symbol, untyped]]
+    def post_switched_address: (?headers: Hash[String, String]) -> untyped
     def seed_unseated_successor: () -> [Legislator, Legislator]
     def mayor_entry: () -> Hash[String, untyped]
     def successor_entry: () -> Hash[String, untyped]

@@ -76,3 +76,7 @@ The count has component triples, not addresses, and building a throwaway
 record to reach a rule that never depended on having one. Splitting the rule out
 keeps a single definition of what the three sets are, shared by registration —
 which has a record — and by the count, which does not.
+
+The Congress set always names the United States, whatever country the address
+carries, so every address counts towards Congress
+([[representative-resolution#Congress fallback]]).

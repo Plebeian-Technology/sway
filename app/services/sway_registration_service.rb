@@ -80,6 +80,13 @@ class SwayRegistrationService
     else
       candidates = if sway_locale.regional?
         find_legislators_from_open_states_geo_endpoint
+      elsif sway_locale.congress?
+        state_code = address.us_state_code
+        district_numbers = state_code ? congress_district_numbers : []
+        @legislators.filter do |legislator|
+          term = legislator.active_term
+          term && term.district.region_code == state_code && district_numbers.include?(term.district.number)
+        end
       else
         @legislators.filter do |legislator|
           term = legislator.active_term
@@ -212,6 +219,22 @@ class SwayRegistrationService
 
   def districts
     @districts ||= SwayGeocode.build(sway_locale, address).districts
+  end
+
+  # @lat: [[representative-resolution#Congress fallback]]
+  def congress_district_numbers
+    return [0] unless address.located?
+
+    districts.presence || [0]
+  rescue SwayGeocode::ServiceUnavailableError => e
+    @skipped_resolution_errors << e
+    SwayLogging.warn(
+      "sway_registration.house_district_skipped",
+      sway_locale: sway_locale.name,
+      error_class: e.class.name
+    )
+    Sentry.capture_exception(e, level: :warning)
+    [0]
   end
 
   def find_legislators_from_open_states_geo_endpoint

@@ -15,7 +15,7 @@ class SwayRegistrationService
 
     @districts: untyped
 
-    @skipped_resolution_errors: ::Array[Seats::UnresolvedSeatError | Seats::OverlapValidator::OverlapError]
+    @skipped_resolution_errors: ::Array[Seats::UnresolvedSeatError | Seats::OverlapValidator::OverlapError | SwayGeocode::ServiceUnavailableError]
 
     @skipped_term_ids: ::Array[Integer]
 
@@ -27,7 +27,7 @@ class SwayRegistrationService
 
     attr_reader sway_locale: untyped
 
-    attr_reader skipped_resolution_errors: ::Array[Seats::UnresolvedSeatError | Seats::OverlapValidator::OverlapError]
+    attr_reader skipped_resolution_errors: ::Array[Seats::UnresolvedSeatError | Seats::OverlapValidator::OverlapError | SwayGeocode::ServiceUnavailableError]
 
     attr_reader skipped_legislator_ids: ::Array[Integer]
 
@@ -52,6 +52,8 @@ class SwayRegistrationService
     def unseated_unconfigured_office?: (LegislatorTerm term) -> bool
 
     def districts: -> untyped
+
+    def congress_district_numbers: -> ::Array[Integer]
 
     def find_legislators_from_open_states_geo_endpoint: -> (::Array[untyped] | untyped)
 

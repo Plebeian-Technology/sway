@@ -562,4 +562,84 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       expect(stored_district.reload.active).to be(true)
     end
   end
+
+  context "when Congress falls back on the address's state" do
+    let(:virginia_senate) { create(:district, sway_locale: congress, name: "VA0") }
+    let!(:us_president) do
+      create_seat_term(
+        district: create(:district, sway_locale: congress, name: "US0"),
+        office_identity: "us-president",
+        last_name: "President"
+      ).first
+    end
+    let!(:virginia_senator_a) do
+      create_seat_term(district: virginia_senate, office_identity: "va-senate-class-1", last_name: "SenatorA").first
+    end
+    let!(:virginia_senator_b) do
+      create_seat_term(district: virginia_senate, office_identity: "va-senate-class-2", last_name: "SenatorB").first
+    end
+    let!(:house_member) do
+      create_seat_term(
+        district: create(:district, sway_locale: congress, name: "VA4"),
+        office_identity: "va-house-district-4",
+        last_name: "Representative"
+      ).first
+    end
+    let(:virginia_address) { create(:address, city: "Richmond", region_code: "VA") }
+
+    def stub_census_body(body)
+      stub_request(:get, %r{tigerweb\.geo\.census\.gov/arcgis/rest/services/TIGERweb/})
+        .to_return(status: 200, body:)
+    end
+
+    def congress_fallback_service(for_address)
+      described_class.new(user, for_address, congress, invited_by_id: nil, async: false)
+    end
+
+    it "returns the President, both Senators and the House member Census places the address in" do
+      stub_census_body({features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => "04"}}]}.to_json)
+
+      expect(congress_fallback_service(virginia_address).district_legislators)
+        .to contain_exactly(us_president, virginia_senator_a, virginia_senator_b, house_member)
+    end
+
+    it "returns the President and both Senators when Census finds no district" do
+      stub_census_body({features: []}.to_json)
+
+      expect(congress_fallback_service(virginia_address).district_legislators)
+        .to contain_exactly(us_president, virginia_senator_a, virginia_senator_b)
+    end
+
+    it "returns the President and both Senators and records the skipped House lookup when Census fails" do
+      allow_any_instance_of(Census::Congress).to receive(:congressional_district) # rubocop:disable RSpec/AnyInstance
+        .and_raise(Faraday::ConnectionFailed, "connection refused")
+      service = congress_fallback_service(virginia_address)
+
+      expect(service.district_legislators).to contain_exactly(us_president, virginia_senator_a, virginia_senator_b)
+      expect(service.skipped_resolution_errors).to contain_exactly(an_instance_of(SwayGeocode::ServiceUnavailableError))
+      expect(Sentry).to have_received(:capture_exception)
+        .once.with(an_instance_of(SwayGeocode::ServiceUnavailableError), level: :warning)
+    end
+
+    it "returns the President and both Senators without asking Census when the address has no coordinates" do
+      allow(Geocoder).to receive(:search).and_return([])
+      unlocated = create(:address, city: "Richmond", region_code: "VA")
+
+      expect(unlocated.located?).to be(false)
+      expect(congress_fallback_service(unlocated).district_legislators).to contain_exactly(us_president, virginia_senator_a, virginia_senator_b)
+      expect(a_request(:get, /tigerweb\.geo\.census\.gov/)).not_to have_been_made
+    end
+
+    it "returns only the President for an address outside the United States" do
+      toronto = create(:address, city: "Toronto", region_code: "ON", country: "Canada")
+
+      expect(congress_fallback_service(toronto).district_legislators).to contain_exactly(us_president)
+    end
+
+    it "returns only the President for an address with a blank region" do
+      no_region = create(:address, city: "Richmond", region_code: "")
+
+      expect(congress_fallback_service(no_region).district_legislators).to contain_exactly(us_president)
+    end
+  end
 end
