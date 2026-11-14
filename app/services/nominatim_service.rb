@@ -7,6 +7,7 @@ class NominatimService
   CACHE_EXPIRY = 24.hours
   DEFAULT_LIMIT = 5
   MAX_LIMIT = 10
+  REQUESTS_PER_SECOND = 1
 
   class << self
     def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT)
@@ -33,7 +34,7 @@ class NominatimService
     cache_key = build_cache_key(params)
 
     places = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
-      fetch_from_nominatim(params)
+      fetch_from_nominatim(params) unless over_request_cap?
     end
     places || GooglePlaces::Client.new.search(
       query: q,
@@ -73,6 +74,14 @@ class NominatimService
 
   def build_cache_key(params)
     "nominatim:search:#{Digest::SHA256.hexdigest(params.to_a.sort_by(&:first).to_json)}"
+  end
+
+  def over_request_cap?
+    count = Rails.cache.increment("nominatim:requests:#{Time.current.to_i}", 1, expires_in: 5.seconds)
+    return false if count.nil? || count <= REQUESTS_PER_SECOND
+
+    SwayLogging.warn("nominatim_service.rate_capped")
+    true
   end
 
   def fetch_from_nominatim(params)

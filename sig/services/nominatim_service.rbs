@@ -2,6 +2,7 @@ class NominatimService
   CACHE_EXPIRY: ActiveSupport::Duration
   DEFAULT_LIMIT: Integer
   MAX_LIMIT: Integer
+  REQUESTS_PER_SECOND: Integer
 
   @conn: Faraday::Connection
 
@@ -34,6 +35,8 @@ class NominatimService
   ) -> Hash[Symbol, untyped]
 
   def build_cache_key: (Hash[Symbol, untyped] params) -> String
+
+  def over_request_cap?: () -> bool
 
   def fetch_from_nominatim: (Hash[Symbol, untyped] params) -> Array[Hash[String, untyped]]?
 end

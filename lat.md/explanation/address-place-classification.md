@@ -55,7 +55,7 @@ The controller forwards only parameters that arrive as plain text. A query that 
 
 Only a successful answer is cached: a 200 response whose body is a JSON array, including a genuine empty array, which is a real "no match" answer the usage policy expects Sway to reuse. A failed or malformed answer (a non-200 status, a dropped connection, a body that is not JSON, or a JSON body that is not an array) is logged but not cached, so a brief Nominatim outage does not make the same query answer "no results" for a day after Nominatim recovers.
 
-When Nominatim gives no answer, the service asks [[app/services/google_places/client.rb#GooglePlaces#Client|Google Places]] the same query and returns its places uncached, or an empty array when Google has no key or no usable answer either; a genuine empty Nominatim answer never reaches Google.
+To stay inside the usage policy, the service sends at most [[app/services/nominatim_service.rb#NominatimService#REQUESTS_PER_SECOND|one uncached search per second]] across all of Sway's processes, counted in the shared cache; a search over the cap is not sent and counts as no answer, and a cache that cannot count, such as the test environment's null store, caps nothing. When Nominatim gives no answer, the service asks [[app/services/google_places/client.rb#GooglePlaces#Client|Google Places]] the same query and returns its places uncached, or an empty array when Google has no key or no usable answer either; a genuine empty Nominatim answer never reaches Google.
 
 
 ## Nominatim address payload mapping
