@@ -93,6 +93,37 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(HistoricalScoreExplanation.exists?(explanation.id)).to be(false)
     end
 
+    it "cascades historical repair deliveries when user is deleted" do
+      conn = ActiveRecord::Base.connection
+      skip "historical_repair_deliveries table not present" unless conn.table_exists?(:historical_repair_deliveries)
+
+      locale = create(:sway_locale)
+      dedup = "dedup-#{SecureRandom.hex(8)}"
+      conn.execute(
+        "INSERT INTO historical_repair_candidates (sway_locale_id, candidate_type, target_type, target_id, deduplication_key, current_values, proposed_values, status, version, created_at, updated_at) " \
+        "VALUES (#{locale.id}, 'legislator_vote', 'Legislator', 1, '#{dedup}', '{}', '{}', 'unapplied', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      candidate_id = conn.select_value("SELECT last_insert_rowid()")
+      token = "tok-#{SecureRandom.hex(8)}"
+      conn.execute(
+        "INSERT INTO historical_repair_previews (historical_repair_candidate_id, preview_token, calculation_status, status, created_at, updated_at) " \
+        "VALUES (#{candidate_id}, '#{token}', 'ready_for_review', 'previewed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      preview_id = conn.select_value("SELECT last_insert_rowid()")
+
+      conn.execute(
+        "INSERT INTO historical_repair_deliveries (historical_repair_candidate_id, historical_repair_preview_id, user_id, channel, status, created_at, updated_at) " \
+        "VALUES (#{candidate_id}, #{preview_id}, #{user.id}, 'sms', 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      delivery_id = conn.select_value("SELECT last_insert_rowid()")
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      count = conn.select_value("SELECT COUNT(*) FROM historical_repair_deliveries WHERE id = #{delivery_id}")
+      expect(count).to eq(0)
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 

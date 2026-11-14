@@ -531,9 +531,7 @@ RSpec.describe User, type: :model do
     end
 
     let(:pending_foreign_keys) do
-      [
-        ["historical_repair_deliveries", "user_id"]
-      ].freeze
+      [].freeze
     end
 
     it "fails when a foreign key to users is neither handled nor allowlisted" do
