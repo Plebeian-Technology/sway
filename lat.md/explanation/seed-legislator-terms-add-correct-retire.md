@@ -67,9 +67,9 @@ Later, `correct_terms!` deliberately leaves the seat alone too: moving a term to
 
 `CongressDotGov#terms_from_history?` reads the `termsSource` key.
 
-`LegislatorsCache::BaseRefresh` writes this key onto every Congress entry whose terms it replaced with the full history. congress.gov's own terms never carry it, so an entry the history source could not answer for is correctly read as a partial list.
+`LegislatorsCache::BaseRefresh` writes this key onto every Congress entry whose terms it replaced with the full history. congress.gov's own terms never carry it, so an entry the history source could not answer for is correctly read as a partial list. The President row carries its own curated value instead ([[official-service-evidence#The curated President record]]), and the refresh copies that row unchanged.
 
-The shape is checked as well as the mark. The seeder deletes stored terms this list does not name, and one stray key in a hand-edited roster would be the whole defence against cutting a senator's six-year term down to two. Every term the history source writes carries an end year; congress.gov's own current term never does. Verified against the committed roster: all 553 marked entries pass, and the one unmarked entry is the President.
+The shape is checked as well as the mark. The seeder deletes stored terms this list does not name, and one stray key in a hand-edited roster would be the whole defence against cutting a senator's six-year term down to two. Every term the history source writes carries an end year; congress.gov's own current term never does. Verified against the committed roster: all 546 entries carry the mark and pass, the curated President entry among them.
 
 ## The locale gate on published dates
 

@@ -3,6 +3,9 @@ require_relative "base"
 module SeedPreparers
   module Legislators
     class CongressDotGov < Base
+      CURATED_PRESIDENT_TERMS_SOURCE = "sway-curated-constitution"
+      PRESIDENT_OFFICE_IDENTITY = "us-president"
+
       def external_id
         @external_id ||= json.fetch("bioguideId")
       end
@@ -36,6 +39,7 @@ module SeedPreparers
 
       # @lat: [[representative-resolution#Congress seat identity conventions]]
       def current_office_identity
+        return PRESIDENT_OFFICE_IDENTITY if curated_president?
         return nil if executive? || potus?
         return nil unless current_member?
 
@@ -103,10 +107,18 @@ module SeedPreparers
         Array(json.dig("terms", "item")).filter_map { |item| term_from(item) }
       end
 
-      # By design, the President (and, if ever seeded, a VP) never gets a
-      # scoreable LegislatorTerm — only a Legislator person row.
+      # @lat: [[official-service-evidence#The curated President record]]
       def executive?
         potus?
+      end
+
+      # @lat: [[official-service-evidence#The curated President record]]
+      def curated_president?
+        potus? &&
+          json["termsSource"] == CURATED_PRESIDENT_TERMS_SOURCE &&
+          current_term.present? &&
+          current_term["beganOn"].present? &&
+          current_term["endedOn"].present?
       end
 
       def first_name

@@ -52,8 +52,9 @@ logs it, reports it to Sentry as a warning naming the user and the locales,
 records the Congress locale on the waiting list
 ([[registration-dead-ends#A skipped lookup is recorded so it can be retried]]),
 and the user is completed with the ordinary completion answer. An address whose
-US state is unknown reaches this today, because the seeded roster has no current
-President term; the hourly job links the user once one exists. The
+US state is unknown still resolves the President from the seeded roster
+([[official-service-evidence#The curated President record]]), so it does not
+reach this path. The
 `no_representatives` refusal remains only for a registered user's address
 switch that resolves nobody, which keeps the previous address and links.
 
@@ -99,7 +100,7 @@ A JSON column on the user is the simplest storage that fits: the list holds at m
 
 Each retry is one [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService]] call for the user and the locale, against the user's current address. That service raises while an upstream is down or while a term is still skipped, so a call that returns means the whole lookup of that locale succeeded and its difference is applied. A user with no pending locale is never looked up, so a cleared record ends the retries for that user.
 
-The id comes off the list only when the call returns and the user then has at least one active representative link. A lookup that returns but still gives a user no link at all, such as Congress while no current President term exists, keeps the id, so that user stays waiting and the next run tries again. A call that raises also keeps the id. The failure is logged for that user, and the job goes on to the next locale and the next user. The job never changes the registration status.
+The id comes off the list only when the call returns and the user then has at least one active representative link. A lookup that returns but still gives a user no link at all keeps the id, so that user stays waiting and the next run tries again. A call that raises also keeps the id. The failure is logged for that user, and the job goes on to the next locale and the next user. The job never changes the registration status.
 
 A lookup can stay down for hours while many users wait on the same locale, so one report per user per run would bury one outage under copies of itself. The job therefore counts failed users per locale during the run and, after the loop, sends one Sentry report per failing locale, carrying the first error, the locale name and that count. A locale that keeps failing produces at most one report each hour.
 

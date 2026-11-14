@@ -27,7 +27,7 @@ Only the fuller history written by `CongressTermHistory` carries those two keys 
 
 `#current_term` and `#term_start_year` both pick the current (newest) term by `startYear`, using `max_by` rather than position.
 
-`#current_term` and `#term_start_year` both pick the current (newest) term by `startYear`, using `max_by` rather than position: `terms.item` is NEWEST-first for POTUS (`[2025, 2021]`) but oldest-first for senators and representatives — a positional `.last` would read POTUS's old 2021 term. `max_by` finds the current term for both orderings. When the blob has no `terms.item` at all (a thin blob for a genuinely new member), `#term_start_year` falls back to the current odd year, since Congresses convene in odd years.
+`#current_term` and `#term_start_year` both pick the current (newest) term by `startYear`, using `max_by` rather than position: a hand-written row may list `terms.item` NEWEST-first (`[2025, 2021]`) while congress.gov lists senators and representatives oldest-first — a positional `.last` would read the older 2021 term. `max_by` finds the current term for both orderings. When the blob has no `terms.item` at all (a thin blob for a genuinely new member), `#term_start_year` falls back to the current odd year, since Congresses convene in odd years.
 
 ## authoritative_term?
 

@@ -3340,6 +3340,11 @@ class Object
 
     def baltimore_row_for: (Hash[String, untyped] entry) -> Legislator?
 
+    # seed_legislator_spec.rb: the committed curated President row and the
+    # current terms in its locale-wide district.
+    def curated_potus_json: () -> Hash[String, untyped]
+    def current_president_terms: () -> Array[LegislatorTerm]
+
     # legislator_identifier_spec.rb: the identity under test.
     def identity: () -> LegislatorIdentity
 

@@ -6,7 +6,7 @@ RSpec.describe "LegislatorsController", type: :request do
   include_context "Setup"
 
   describe "GET /index" do
-    # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#Unsupported President remains absent on a fresh installation]]
+    # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#A presidential row without the curated marker creates no person]]
     it "does not turn a legacy presidential roster row into a reader representative" do
       _home_locale, = setup
       congress = create(:sway_locale, city: "congress", state: "congress", country: "United States")

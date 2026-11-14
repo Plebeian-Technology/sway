@@ -6,6 +6,7 @@ class Object
   def current_members: (SwayLocale sway_locale, *String district_names) -> Array[Legislator]
   def maryland_members: (*String full_names) -> Array[Legislator]
   def maryland_governor: () -> Legislator
+  def president: () -> Legislator
   def register_from: (Symbol client, Hash[Symbol, String | Float] address_params) -> void
   def expect_completed_with: (Array[Legislator] legislators) -> void
 end

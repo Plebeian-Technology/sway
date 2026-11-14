@@ -97,7 +97,11 @@ Registration against the seeded Baltimore roster, with the shipped council bound
 
 ### Resolves the seeded Congress roster
 
-Registration against the seeded Congress roster for a Maryland address returns two Senators and one Representative and no President, and reconciliation keeps the same links.
+Registration against the seeded Congress roster for a Maryland address returns two Senators, one Representative and the President, and reconciliation keeps the same links.
+
+### Resolves only the President without a US state
+
+Registration against the seeded Congress roster for an address whose US state cannot be determined returns the President alone, from the locale-wide district.
 
 ### Leaves city-wide officers off outside the city boundary
 
