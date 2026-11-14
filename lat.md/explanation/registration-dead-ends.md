@@ -94,6 +94,8 @@ A registration that skips part of a locale records that locale's id on the user,
 
 A JSON column on the user is the simplest storage that fits: the list holds at most the three locales one address reaches, belongs to one user, and is never queried by locale. A registration with no skip leaves it empty. Only the hourly job below reads the list, and no prop or JSON body exposes it.
 
+[[app/jobs/reconcile_user_districts_job.rb#ReconcileUserDistrictsJob]] records the same list for an existing user. It runs after every locale seed, and when one user's reconcile raises (a Census outage, a skipped term) it adds that locale to the user's list before moving on, so the hourly job below retries it. This is how users registered before the President term existed receive the President: the seed's reconcile run links them, silently ([[representative-reassignment-notifications#Notification delivery and preference governance#The President is linked without a notice]]), and an outage during that run defers the link to the hourly job instead of dropping it. A user with no address has nothing to look up and is skipped.
+
 ### The hourly job assigns what was skipped
 
 [[app/jobs/assign_pending_representatives_job.rb#AssignPendingRepresentativesJob]] runs at quarter past every hour in development and production, and retries each recorded locale for every user whose list is not empty.
