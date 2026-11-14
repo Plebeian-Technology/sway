@@ -113,6 +113,91 @@ RSpec.describe UserAddressSwitchService do
       expect(UserLegislatorTermScore.find_by(user_legislator: new_ul, legislator_term: new_term)).to be_present
     end
 
+    it "creates the user's address link when the user has none and activates the resolved legislator" do
+      user = create(:user)
+      new_locale = create(:sway_locale, :maryland)
+      previous_address = create(:address, street: "100 E Pratt St", city: "Baltimore", region_code: "MD", postal_code: "21202")
+      new_address = create(:address, street: "1 State Cir", city: "Annapolis", region_code: "MD", postal_code: "21401")
+
+      new_district = create(:district, sway_locale: new_locale, name: "MD2")
+      new_legislator = create(:legislator, district: new_district, sway_locale: new_locale)
+      new_seat = Seat.find_or_create_by_identity!(
+        district: new_district,
+        office_identity: "new-seat-2",
+        title: "Representative",
+        chamber: "House"
+      )
+      create(:legislator_term, legislator: new_legislator, district: new_district, seat: new_seat)
+
+      allow(new_address).to receive(:sway_locales).and_return([new_locale])
+      reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
+      allow(SwayRegistrationService).to receive(:new)
+        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .and_return(reg_double)
+
+      expect {
+        described_class.new(user, previous_address: previous_address, new_address: new_address).call
+      }.to change(UserAddress, :count).by(1)
+
+      change = UserAddressChange.sole
+      expect(user.reload.address).to eq(new_address)
+      expect(change.previous_address_id).to eq(previous_address.id)
+      expect(change.new_address_id).to eq(new_address.id)
+      expect(UserLegislator.find_by!(user: user, legislator: new_legislator).active).to be(true)
+      expect(UserDistrict.find_by!(user: user, district: new_district).active).to be(true)
+    end
+
+    it "records the previous address's locales when the user has no active links" do
+      user = create(:user)
+      new_locale = create(:sway_locale, :maryland)
+      previous_address = create(:address, street: "100 E Pratt St", city: "Baltimore", region_code: "MD", postal_code: "21202")
+      new_address = create(:address, street: "1 State Cir", city: "Annapolis", region_code: "MD", postal_code: "21401")
+      create(:user_address, user: user, address: previous_address)
+
+      new_district = create(:district, sway_locale: new_locale, name: "MD2")
+      new_legislator = create(:legislator, district: new_district, sway_locale: new_locale)
+      create(:legislator_term, legislator: new_legislator, district: new_district)
+
+      allow(new_address).to receive(:sway_locales).and_return([new_locale])
+      reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
+      allow(SwayRegistrationService).to receive(:new)
+        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .and_return(reg_double)
+
+      change = described_class.new(user, previous_address: previous_address, new_address: new_address).call
+
+      expected_locale_ids = previous_address.sway_locales.map(&:id).uniq
+      expect(expected_locale_ids).not_to be_empty
+      expect(change.previous_sway_locale_ids).to match_array(expected_locale_ids)
+    end
+
+    it "records the active links' locales rather than the previous address's when the user has active links" do
+      user = create(:user)
+      old_locale = create(:sway_locale, :baltimore)
+      new_locale = create(:sway_locale, :maryland)
+      previous_address = create(:address, street: "100 E Pratt St", city: "Baltimore", region_code: "MD", postal_code: "21202")
+      new_address = create(:address, street: "1 State Cir", city: "Annapolis", region_code: "MD", postal_code: "21401")
+      create(:user_address, user: user, address: previous_address)
+
+      old_district = create(:district, sway_locale: old_locale, name: "MD1")
+      create(:user_district, user: user, district: old_district, active: true)
+
+      new_district = create(:district, sway_locale: new_locale, name: "MD2")
+      new_legislator = create(:legislator, district: new_district, sway_locale: new_locale)
+      create(:legislator_term, legislator: new_legislator, district: new_district)
+
+      allow(new_address).to receive(:sway_locales).and_return([new_locale])
+      reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
+      allow(SwayRegistrationService).to receive(:new)
+        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .and_return(reg_double)
+
+      change = described_class.new(user, previous_address: previous_address, new_address: new_address).call
+
+      expect(previous_address.sway_locales.map(&:id)).not_to eq([old_locale.id])
+      expect(change.previous_sway_locale_ids).to eq([old_locale.id])
+    end
+
     it "re-activates previously deactivated UserLegislator and UserDistrict rows in place without creating duplicates" do
       user = create(:user)
       sway_locale = create(:sway_locale)
