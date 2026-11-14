@@ -14,9 +14,13 @@ Address normalization executes during ActiveRecord's `before_validation` callbac
 
 Full state and territory names are resolved to two-letter uppercase postal abbreviations through `RegionUtil`. Input that is already two letters is upcased directly, and unrecognized state names are retained and upcased without raising errors.
 
+Before trimming, every Unicode space separator becomes an ordinary space and zero-width characters are removed, because text pasted from a web page or map result often carries a non-breaking or zero-width space that would otherwise make `MD` fail to equal `MD` and send the user to no state locale.
+
 ## City titleization
 
 City strings are titleized via ActiveSupport, standardising casing across user input while handling multi-word names appropriately.
+
+The city gets the same invisible-space cleanup as the region code first, so a pasted `Baltimore` with a trailing non-breaking space builds the same locale name as a typed one.
 
 ## Nominatim address parsing into canonical address attributes
 

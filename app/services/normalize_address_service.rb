@@ -37,8 +37,8 @@ class NormalizeAddressService
     def normalize_region_code(region_code)
       return region_code if region_code.blank?
 
-      str = region_code.to_s.strip
-      return region_code if str.blank?
+      str = with_plain_spaces(region_code.to_s).strip
+      return str if str.blank?
 
       code = if str.length > 2
         RegionUtil.from_region_name_to_region_code(str) || str
@@ -52,7 +52,14 @@ class NormalizeAddressService
     def normalize_city(city)
       return city if city.blank?
 
-      city.to_s.strip.titleize
+      with_plain_spaces(city.to_s).strip.titleize
+    end
+
+    private
+
+    # @lat: [[address-normalization#Region code resolution and casing]]
+    def with_plain_spaces(text)
+      text.gsub(/\p{Zs}/, " ").delete("\u200B-\u200D\u2060\uFEFF")
     end
   end
 
