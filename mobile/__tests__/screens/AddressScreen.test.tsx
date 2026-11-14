@@ -496,13 +496,14 @@ describe("AddressScreen", () => {
                 user: {
                     ...baseUser,
                     is_registration_complete: true,
-                    address: { street1: "123 Main St", city: "Baltimore", region_code: "MD", postal_code: "21201" },
+                    address: { street: "123 Main St", city: "Baltimore", region_code: "MD", postal_code: "21201" },
                 },
                 loading: false,
                 refresh: jest.fn(),
             });
             wrap(<AddressScreen />);
 
+            type("street1", "123 Main St");
             expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
             fireEvent.press(screen.getByTestId("address-submit-cta"));
             expect(screen.queryByTestId("address-switch-confirm")).toBeNull();

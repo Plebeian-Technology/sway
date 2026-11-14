@@ -162,7 +162,7 @@ export default function AddressScreen() {
     const savedAddress = user?.address;
     const matchesSavedAddress =
         savedAddress != null &&
-        form.street1 === (savedAddress.street1 ?? "") &&
+        form.street1 === (savedAddress.street ?? "") &&
         form.street2 === (savedAddress.street2 ?? "") &&
         form.city === (savedAddress.city ?? "") &&
         form.region_code === (savedAddress.region_code ?? "") &&
