@@ -56,6 +56,14 @@ still-processing user failed. Permanent errors mark the user failed
 immediately. The failure helper uses `find_by` so a deleted user cannot hide
 the original job error with a second `RecordNotFound`.
 
+## A skipped lookup is recorded so it can be retried
+
+A registration that skips part of a locale records that locale's id on the user, in `pending_representative_locale_ids`, so its representatives can be assigned once the upstream recovers.
+
+[[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] records two kinds of skip: a locale whose lookup raised, and a locale whose [[app/services/sway_registration_service.rb#SwayRegistrationService]] run skipped a term whose seat could not be resolved. A locale id is enough for both, because a retry of a locale re-runs every part of it, so the record does not need to say which part failed. [[app/models/user.rb#User#add_pending_representative_locale]] adds an id only once, so a locale skipped again leaves one copy, and [[app/models/user.rb#User#remove_pending_representative_locale]] takes it off.
+
+A JSON column on the user is the simplest storage that fits: the list holds at most the three locales one address reaches, belongs to one user, and is never queried by locale. A registration with no skip leaves it empty. No job reads the list yet, and no prop or JSON body exposes it.
+
 ## Reaching sign-in from an expired session
 
 The card shown when the page loads without a user says to sign in again, so it carries a link to `ROUTES.signin` — the same route the signed-out nav item uses.

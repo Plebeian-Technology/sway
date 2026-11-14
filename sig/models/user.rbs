@@ -44,6 +44,8 @@ class User < ApplicationRecord
     def is_sway_api_user?: -> bool
     def has_sway_passkey?: -> bool
     def registered?: -> bool
+    def add_pending_representative_locale: (SwayLocale sway_locale) -> void
+    def remove_pending_representative_locale: (SwayLocale sway_locale) -> void
     def create_user_invite_url: -> UserInviteLink?
     def invite_url: -> String?
 

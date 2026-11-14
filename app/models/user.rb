@@ -21,6 +21,7 @@
 #  notify_on_summary_change_default        :boolean          default(TRUE), not null
 #  notify_on_support_change_default        :boolean          default(TRUE), not null
 #  org_position_cadence_default            :integer          default("every_change"), not null
+#  pending_representative_locale_ids       :json             not null
 #  phone                                   :string
 #  registration_status                     :string           default("pending")
 #  sign_in_count                           :integer          default(0), not null
@@ -354,6 +355,19 @@ class User < ApplicationRecord
   # @lat: [[identity-and-access#Registration is asynchronous by necessity]]
   def registered?
     user_legislators.where(active: true).exists?
+  end
+
+  # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried]]
+  def add_pending_representative_locale(sway_locale)
+    return if pending_representative_locale_ids.include?(sway_locale.id)
+
+    update!(pending_representative_locale_ids: pending_representative_locale_ids + [sway_locale.id])
+  end
+
+  def remove_pending_representative_locale(sway_locale)
+    return unless pending_representative_locale_ids.include?(sway_locale.id)
+
+    update!(pending_representative_locale_ids: pending_representative_locale_ids - [sway_locale.id])
   end
 
   def create_user_invite_url

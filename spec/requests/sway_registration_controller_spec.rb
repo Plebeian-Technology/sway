@@ -299,6 +299,63 @@ RSpec.describe "/registration", type: :request do
         )
       end
     end
+
+    describe "recording the locales to assign later" do
+      def post_with_every_lookup_answering
+        stub_census_body({features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => "07"}}]}.to_json)
+        stub_request(:get, %r{v3\.openstates\.org/people\.geo}).to_return(status: 200, body: {results: []}.to_json)
+        with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+          post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+        end
+      end
+
+      it "records the locale whose lookup failed and not the locale that resolved" do
+        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(active_legislator_ids).to eq([mayor.id])
+        expect(user.reload.pending_representative_locale_ids).to include(congress.id)
+        expect(user.pending_representative_locale_ids).not_to include(baltimore.id)
+      end
+
+      it "records nothing when every lookup answers and no term is skipped" do
+        post_with_every_lookup_answering
+
+        expect(response).to have_http_status(:ok)
+        expect(active_legislator_ids).to contain_exactly(mayor.id, house_member.id)
+        expect(user.reload.pending_representative_locale_ids).to eq([])
+      end
+
+      it "records the locale of a term whose seat cannot be resolved" do
+        md0 = District.find_by!(sway_locale: baltimore, name: "MD0")
+        create(
+          :legislator_term,
+          legislator: create(:legislator, district: md0),
+          district: md0,
+          seat: nil,
+          title: nil,
+          term_start_year: 2024,
+          term_end_year: 2028
+        )
+
+        post_with_every_lookup_answering
+
+        expect(response).to have_http_status(:ok)
+        expect(active_legislator_ids).to contain_exactly(mayor.id, house_member.id)
+        expect(user.reload.pending_representative_locale_ids).to eq([baltimore.id])
+        expect(Sentry).to have_received(:capture_exception)
+          .with(an_instance_of(Seats::UnresolvedSeatError), level: :warning)
+      end
+
+      it "keeps one copy of a locale id that a second registration skips again" do
+        user.update!(pending_representative_locale_ids: [congress.id])
+
+        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.pending_representative_locale_ids.count(congress.id)).to eq(1)
+      end
+    end
   end
 
   describe "POST /sway_registration when no representatives match the address" do

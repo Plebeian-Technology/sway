@@ -60,19 +60,22 @@ class SwayRegistrationController < ApplicationController
     skipped_locales = [] #: Array[SwayLocale]
     # @lat: [[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]
     address_instance.sway_locales.each do |sway_locale|
-      ActiveRecord::Base.transaction do
-        SwayRegistrationService.new(
-          u,
-          address_instance,
-          sway_locale,
-          invited_by_id: invited_by_id,
-          async: false
-        ).call
-      end
+      service = SwayRegistrationService.new(
+        u,
+        address_instance,
+        sway_locale,
+        invited_by_id: invited_by_id,
+        async: false
+      )
+      ActiveRecord::Base.transaction { service.call }
+      skipped_locales << sway_locale if service.skipped_resolution_errors.any?
     rescue => e
       report_skipped_locale(u, address_instance, sway_locale, e)
       skipped_locales << sway_locale
     end
+
+    # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried]]
+    skipped_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) }
 
     u.reload
     if u.registered?
