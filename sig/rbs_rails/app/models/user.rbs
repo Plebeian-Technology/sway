@@ -1143,6 +1143,14 @@ class ::User < ::ApplicationRecord
   def authored_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
   def authored_position_change_ids: () -> ::Array[::Integer]
   def authored_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def approved_position_changes: () -> ::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy
+  def approved_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
+  def approved_position_change_ids: () -> ::Array[::Integer]
+  def approved_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def rejected_position_changes: () -> ::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy
+  def rejected_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
+  def rejected_position_change_ids: () -> ::Array[::Integer]
+  def rejected_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
   def user_address: () -> ::UserAddress?
   def user_address=: (::UserAddress?) -> ::UserAddress?

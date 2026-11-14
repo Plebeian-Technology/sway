@@ -115,6 +115,16 @@ class User < ApplicationRecord
     foreign_key: :updated_by_id,
     inverse_of: :updated_by,
     dependent: :destroy
+  has_many :approved_position_changes,
+    class_name: "OrganizationBillPositionChange",
+    foreign_key: :approved_by_id,
+    inverse_of: :approved_by,
+    dependent: :nullify
+  has_many :rejected_position_changes,
+    class_name: "OrganizationBillPositionChange",
+    foreign_key: :rejected_by_id,
+    inverse_of: :rejected_by,
+    dependent: :nullify
   has_many :sent_organization_invites,
     class_name: "UserOrganizationMembershipInvite",
     foreign_key: :inviter_id,

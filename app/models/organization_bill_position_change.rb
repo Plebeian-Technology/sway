@@ -33,8 +33,8 @@
 #
 class OrganizationBillPositionChange < ApplicationRecord
   belongs_to :updated_by, class_name: "User", inverse_of: :authored_position_changes
-  belongs_to :approved_by, class_name: "User", optional: true
-  belongs_to :rejected_by, class_name: "User", optional: true
+  belongs_to :approved_by, class_name: "User", optional: true, inverse_of: :approved_position_changes
+  belongs_to :rejected_by, class_name: "User", optional: true, inverse_of: :rejected_position_changes
 
   belongs_to :organization_bill_position
 

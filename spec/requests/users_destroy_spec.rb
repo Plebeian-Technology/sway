@@ -64,6 +64,24 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(OrganizationBillPositionChange.exists?(position_change.id)).to be(false)
     end
 
+    it "nullifies approved_by_id on position changes approved by the user" do
+      position_change = create(:organization_bill_position_change, approved_by: user, status: :approved)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(position_change.reload.approved_by_id).to be_nil
+    end
+
+    it "nullifies rejected_by_id on position changes rejected by the user" do
+      position_change = create(:organization_bill_position_change, rejected_by: user, status: :rejected, rejected_at: Time.current)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(position_change.reload.rejected_by_id).to be_nil
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 
