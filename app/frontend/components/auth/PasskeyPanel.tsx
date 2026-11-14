@@ -68,8 +68,12 @@ const PasskeyPanel: React.FC<IProps> = ({
     }, [isConfirmingPhone]);
 
     const { send: sendPhoneVerification, isLoading: isLoadingSend } = useSendPhoneVerification(markThrottled);
-    const { confirm: confirmPhoneVerification, isLoading: isLoadingConfirm } =
-        useConfirmPhoneVerification(markThrottled);
+    const {
+        confirm: confirmPhoneVerification,
+        isLoading: isLoadingConfirm,
+        passkeyDismissed,
+        clearPasskeyDismissed,
+    } = useConfirmPhoneVerification(markThrottled);
     const {
         startAuthentication,
         verifyAuthentication,
@@ -192,7 +196,8 @@ const PasskeyPanel: React.FC<IProps> = ({
     const handleCancel = useCallback(() => {
         setCode("");
         setConfirmingPhone(false);
-    }, []);
+        clearPasskeyDismissed();
+    }, [clearPasskeyDismissed]);
 
     return (
         <Card className="bg-card">
@@ -297,6 +302,11 @@ const PasskeyPanel: React.FC<IProps> = ({
                                 <p id="v2-code-error" role="alert" className="text-sm font-semibold text-destructive">
                                     {errors.code}
                                 </p>
+                            )}
+                            {passkeyDismissed && !isLoading && (
+                                <output className="block text-sm font-semibold text-foreground">
+                                    {PARITY_COPY.auth.passkeyPanel.passkeyDismissed}
+                                </output>
                             )}
                         </div>
                     )}

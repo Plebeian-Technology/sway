@@ -240,6 +240,7 @@ export const PARITY_COPY = {
             previewSwayUrl: "https://sway.vote/bill_of_the_month",
             continuePhone: "Continue with Phone",
             confirmCode: "Confirm code",
+            passkeyDismissed: "Passkey setup was cancelled. Press Confirm code to try again.",
             workingOn: "Working on it",
             validationPhone: "Your phone number must be 10 digits.",
             validationPhoneInvalid: "Please enter a valid phone number.",

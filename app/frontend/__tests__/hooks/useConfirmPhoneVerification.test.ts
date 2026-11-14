@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
     isRegistering: false,
+    passkeyDismissed: false,
+    clearPasskeyDismissed: vi.fn<() => void>(),
     transform: vi.fn<() => void>(),
     put: vi.fn<(path: string) => Promise<unknown>>(),
     notify: vi.fn<(message: unknown) => void>(),
@@ -26,6 +28,8 @@ vi.mock("app/frontend/sway_utils", () => ({
 vi.mock("app/frontend/hooks/authentication/useWebAuthnRegistration", () => ({
     useWebAuthnRegistration: () => ({
         isLoading: mocks.isRegistering,
+        passkeyDismissed: mocks.passkeyDismissed,
+        clearPasskeyDismissed: mocks.clearPasskeyDismissed,
         startRegistration: mocks.startRegistration,
         verifyRegistration: mocks.verifyRegistration,
     }),
@@ -42,6 +46,7 @@ describe("useConfirmPhoneVerification", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mocks.isRegistering = false;
+        mocks.passkeyDismissed = false;
         mocks.verifyRegistration.mockResolvedValue(undefined);
         onThrottled = vi.fn<(until: Date | null) => void>();
     });
@@ -66,6 +71,15 @@ describe("useConfirmPhoneVerification", () => {
         mocks.isRegistering = true;
         const { result } = renderHook(() => useConfirmPhoneVerification(onThrottled));
         expect(result.current.isLoading).toBe(true);
+    });
+
+    it("passes the passkey dismissal through to the panel", () => {
+        mocks.passkeyDismissed = true;
+        const { result } = renderHook(() => useConfirmPhoneVerification(onThrottled));
+
+        expect(result.current.passkeyDismissed).toBe(true);
+        result.current.clearPasskeyDismissed();
+        expect(mocks.clearPasskeyDismissed).toHaveBeenCalled();
     });
 
     it("handles a rejected registration verification before confirmation returns", async () => {

@@ -95,6 +95,72 @@ describe("useWebAuthnRegistration", () => {
             expect(result.current.isLoading).toBe(false);
         });
 
+        it.each(["NotAllowedError", "AbortError"])(
+            "treats a %s from the passkey prompt as a dismissal, not a failure",
+            async (name) => {
+                mocks.post.mockResolvedValue({ challenge: "abc" });
+                mocks.create.mockRejectedValue(new DOMException("cancelled", name));
+                const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+                let returned: unknown = "unset";
+
+                await act(async () => {
+                    returned = await result.current.startRegistration(PHONE);
+                });
+
+                expect(returned).toBeUndefined();
+                expect(mocks.handleError).not.toHaveBeenCalled();
+                expect(mocks.notify).not.toHaveBeenCalled();
+                expect(result.current.isLoading).toBe(false);
+                expect(result.current.passkeyDismissed).toBe(true);
+            },
+        );
+
+        it("sends other passkey prompt errors to handleError without flagging a dismissal", async () => {
+            const boom = new TypeError("boom");
+            mocks.post.mockResolvedValue({ challenge: "abc" });
+            mocks.create.mockRejectedValue(boom);
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+
+            await act(async () => {
+                await result.current.startRegistration(PHONE);
+            });
+
+            expect(mocks.handleError).toHaveBeenCalledWith(boom);
+            expect(result.current.passkeyDismissed).toBe(false);
+        });
+
+        it("clears the dismissal when a new attempt starts", async () => {
+            mocks.post.mockResolvedValue({ challenge: "abc" });
+            mocks.create.mockRejectedValueOnce(new DOMException("cancelled", "NotAllowedError"));
+            mocks.create.mockResolvedValueOnce({ id: "cred-1" });
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+
+            await act(async () => {
+                await result.current.startRegistration(PHONE);
+            });
+            expect(result.current.passkeyDismissed).toBe(true);
+
+            await act(async () => {
+                await result.current.startRegistration(PHONE);
+            });
+            expect(result.current.passkeyDismissed).toBe(false);
+        });
+
+        it("clears the dismissal on request", async () => {
+            mocks.post.mockResolvedValue({ challenge: "abc" });
+            mocks.create.mockRejectedValue(new DOMException("cancelled", "NotAllowedError"));
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+
+            await act(async () => {
+                await result.current.startRegistration(PHONE);
+            });
+            act(() => {
+                result.current.clearPasskeyDismissed();
+            });
+
+            expect(result.current.passkeyDismissed).toBe(false);
+        });
+
         it("routes non-429 errors through handleError without re-throwing", async () => {
             const boom = { response: { status: 500 } };
             mocks.post.mockRejectedValue(boom);

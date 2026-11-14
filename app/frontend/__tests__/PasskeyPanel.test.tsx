@@ -16,6 +16,9 @@ const captured = vi.hoisted(() => ({
     // The panel reads this straight off the hook, so a test can put the panel
     // into the after-a-failure state without running a WebAuthn ceremony.
     discoverableFailure: null as string | null,
+    confirm: vi.fn<(phone: string, code: string) => Promise<void>>(),
+    clearPasskeyDismissed: vi.fn<() => void>(),
+    passkeyDismissed: false,
 }));
 
 vi.mock("@inertiajs/react", () => ({
@@ -45,7 +48,12 @@ vi.mock("app/frontend/hooks/authentication/phone/useSendPhoneVerification", () =
     useSendPhoneVerification: () => ({ send: captured.sendPhoneVerification, isLoading: false }),
 }));
 vi.mock("app/frontend/hooks/authentication/phone/useConfirmPhoneVerification", () => ({
-    useConfirmPhoneVerification: () => ({ confirm: vi.fn<(code: string) => Promise<void>>(), isLoading: false }),
+    useConfirmPhoneVerification: () => ({
+        confirm: captured.confirm,
+        isLoading: false,
+        passkeyDismissed: captured.passkeyDismissed,
+        clearPasskeyDismissed: captured.clearPasskeyDismissed,
+    }),
 }));
 
 import PasskeyPanel from "app/frontend/components/auth/PasskeyPanel";
@@ -62,6 +70,9 @@ beforeEach(() => {
     captured.sendPhoneVerification.mockReset();
     captured.notify.mockReset();
     captured.discoverableFailure = null;
+    captured.confirm.mockReset();
+    captured.clearPasskeyDismissed.mockReset();
+    captured.passkeyDismissed = false;
 });
 
 afterEach(() => {
@@ -198,4 +209,57 @@ it("reports a rejected discoverable verification instead of leaving an unhandled
         fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.signInWithPasskey }));
     });
     expect(captured.notify).toHaveBeenCalledWith({ level: "error", title: PARITY_COPY.auth.passkeyPanel.signInError });
+});
+
+describe("PasskeyPanel — a dismissed browser passkey prompt", () => {
+    beforeEach(() => {
+        vi.useRealTimers();
+        Element.prototype.scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
+        captured.startAuthentication.mockResolvedValue(true);
+    });
+
+    const openCodeStep = async () => {
+        await submitPhone();
+        await screen.findByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel);
+    };
+
+    it("shows the retry message on the code step", async () => {
+        captured.passkeyDismissed = true;
+        render(<PasskeyPanel />);
+        await openCodeStep();
+
+        expect(screen.getByText(PARITY_COPY.auth.passkeyPanel.passkeyDismissed)).toBeTruthy();
+    });
+
+    it("shows no message when the prompt was not dismissed", async () => {
+        render(<PasskeyPanel />);
+        await openCodeStep();
+
+        expect(screen.queryByText(PARITY_COPY.auth.passkeyPanel.passkeyDismissed)).toBeNull();
+    });
+
+    it("confirms the code again when Confirm code is pressed", async () => {
+        captured.passkeyDismissed = true;
+        render(<PasskeyPanel />);
+        await openCodeStep();
+        fireEvent.change(screen.getByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel), {
+            target: { value: "123456" },
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.confirmCode }));
+        });
+
+        expect(captured.confirm).toHaveBeenCalledWith("4105551234", "123456");
+    });
+
+    it("clears the dismissal when Cancel is pressed", async () => {
+        captured.passkeyDismissed = true;
+        render(<PasskeyPanel />);
+        await openCodeStep();
+
+        fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.cancelCta }));
+
+        expect(captured.clearPasskeyDismissed).toHaveBeenCalled();
+    });
 });
