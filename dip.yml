@@ -113,7 +113,7 @@ interaction:
                 description: db:seed (locales+legislators) followed by db:seed:bills
                 service: rails
                 command: |
-                    bash -lc "bundle exec rails db:seed && bundle exec rails db:seed:bills && bundle exec rails sway:scores:recompute_all"
+                    bash -lc "bundle exec rails db:seed && bundle exec rails db:seed:bills && bundle exec rails sway:scores:recompute_all && bundle exec rails sway:locales:verify_registration"
             c:
                 description: Rails console
                 service: rails

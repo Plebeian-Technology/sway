@@ -1,0 +1,6 @@
+class Object
+  def annapolis_name: () -> String
+  def baltimore_name: () -> String
+  def run_task: () -> Integer?
+  def record_counts: () -> [Integer, Integer, Integer]
+end
