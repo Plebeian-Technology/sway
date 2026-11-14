@@ -49,10 +49,10 @@ RSpec.describe RegistrationFunnelEvent, type: :model do
       expect(event.user).to eq(user)
     end
 
-    it "nullifies user association when user is destroyed" do
+    it "destroys event when user is destroyed" do
       event = described_class.create!(visitor_token: "v-token-123", step: :landing, user:)
       user.destroy!
-      expect(event.reload.user_id).to be_nil
+      expect(described_class.exists?(event.id)).to be false
     end
   end
 
