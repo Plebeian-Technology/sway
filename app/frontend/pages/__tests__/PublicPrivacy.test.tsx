@@ -43,6 +43,11 @@ describe("public/Privacy", () => {
         expect(screen.getByText(/explicit permission/)).toBeTruthy();
     });
 
+    it("states that voters can remove all data at any point", () => {
+        render(<Privacy />);
+        expect(screen.getAllByText(/You can remove all your data at any point\./).length).toBeGreaterThan(0);
+    });
+
     it("states the mandatory carrier clause: phone numbers and SMS opt-in data are never sold or shared for marketing", () => {
         render(<Privacy />);
         expect(
