@@ -134,12 +134,17 @@ module SeedPreparers
       def proven_terms: () -> Array[Hash[Symbol, untyped]]
       def terms_from_history?: () -> bool
       def executive?: () -> bool
+      def curated_president?: () -> bool
       def congress?: () -> bool
     end
 
     class CongressDotGov < Base
+      CURATED_PRESIDENT_TERMS_SOURCE: String
+      PRESIDENT_OFFICE_IDENTITY: String
+
       def potus?: () -> bool
       def executive?: () -> bool
+      def curated_president?: () -> bool
       def current_member?: () -> bool
       def terms_from_history?: () -> bool
       def current_office_identity: () -> String?

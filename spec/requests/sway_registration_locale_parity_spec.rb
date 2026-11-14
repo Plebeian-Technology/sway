@@ -8,11 +8,14 @@ require Rails.root.join("db", "seeds", "models", "legislator")
 
 RSpec.describe "POST /sway_registration locale parity", type: :request do
   include_context "SessionDouble"
+  include ActiveSupport::Testing::TimeHelpers
 
   let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
   let(:annapolis) { SwayLocale.resolve_by_computed_name("annapolis-maryland-united_states") || raise("Annapolis not seeded") }
   let(:maryland) { SwayLocale.resolve_by_computed_name("maryland-maryland-united_states") || raise("Maryland not seeded") }
   let(:congress) { SwayLocale.resolve_by_computed_name("congress-congress-united_states") || raise("Congress not seeded") }
+
+  around { |example| travel_to(Date.new(2026, 11, 14)) { example.run } }
 
   before do
     SeedSwayLocale.run
@@ -46,6 +49,10 @@ RSpec.describe "POST /sway_registration locale parity", type: :request do
 
   def maryland_governor
     maryland_members("Wes Moore").first
+  end
+
+  def president
+    congress.legislators.find_by!(external_id: "POTUS")
   end
 
   def register_from(client, address_params)
@@ -87,7 +94,7 @@ RSpec.describe "POST /sway_registration locale parity", type: :request do
         annapolis_officers = annapolis.legislators.where(external_id: ["annapolis-mayor", "annapolis-ward-1"]).to_a
         congress_members = current_members(congress, "MD0", "MD3")
         expect(congress_members.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
-        expect_completed_with(annapolis_officers + [maryland_governor] + delegation + congress_members)
+        expect_completed_with(annapolis_officers + [maryland_governor] + delegation + congress_members + [president])
       end
 
       it "links Maryland and Congress members and no city officer for a Towson address" do
@@ -107,10 +114,10 @@ RSpec.describe "POST /sway_registration locale parity", type: :request do
 
         congress_members = current_members(congress, "MD0", "MD2")
         expect(congress_members.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
-        expect_completed_with([maryland_governor] + delegation + congress_members)
+        expect_completed_with([maryland_governor] + delegation + congress_members + [president])
       end
 
-      it "links only the Virginia Congress members for a Richmond address" do
+      it "links only the Virginia Congress members and the President for a Richmond address" do
         stub_census_district("04")
 
         register_from(client, {
@@ -125,7 +132,7 @@ RSpec.describe "POST /sway_registration locale parity", type: :request do
 
         virginia_members = current_members(congress, "VA0", "VA4")
         expect(virginia_members.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
-        expect_completed_with(virginia_members)
+        expect_completed_with(virginia_members + [president])
       end
     end
   end

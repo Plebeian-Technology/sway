@@ -35,6 +35,12 @@ Outbound notifications respect user channel preferences and debounce multi-seat 
 
 Users control outbound delivery through the `legislator_updates` key in `NotificationPreference`, which defaults to disabled. When transitions occur, an asynchronous delivery job executes with a two-minute debounce delay. The job atomically claims all pending delivery records for the user within a database transaction, sending a single digest email via ActionMailer and dispatching push notifications.
 
+### The President is linked without a notice
+
+Linking the President, who every user receives, records no reassignment and sends no push or email.
+
+[[app/services/representative_reassignment_observer.rb#RepresentativeReassignmentObserver]] drops a newly linked legislator whose current term holds the `us-president` seat before it classifies the diff. The operator decided on 2026-11-14 that existing users get the President silently when the term is first seeded, because the link is not a change of the user's own representatives. Any other new legislator in the same run still records a reassignment and enqueues delivery. Only the new side is filtered: the President is one `POTUS` person row across administrations ([[official-service-evidence#The curated President record]]), so a turnover creates no new legislator to announce.
+
 ## Frontend presentation and banner dismissal
 
 Active reassignments render in an alert banner at the top of authenticated pages above the main content slot. Users review updated representation and dismiss banners with immediate persistence.

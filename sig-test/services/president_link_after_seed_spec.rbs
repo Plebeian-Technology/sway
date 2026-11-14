@@ -1,0 +1,8 @@
+class Object
+  def stub_census_outage: () -> untyped
+  def register_user_before_the_president_existed: () -> User
+  def reseed_congress: () -> void
+  def president_links: (User user) -> ActiveRecord::Relation
+  def expect_active_president_link_and_district: (User user) -> void
+  def us0: () -> District
+end

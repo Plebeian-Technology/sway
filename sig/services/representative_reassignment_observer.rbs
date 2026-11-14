@@ -1,4 +1,6 @@
 class RepresentativeReassignmentObserver
+  PRESIDENT_SEAT_IDENTIFIER: String
+
   def self.observe_diff!: (
     user: User,
     stale_district_ids: Array[Integer],
@@ -21,6 +23,8 @@ class RepresentativeReassignmentObserver
     stored_user_districts: Array[untyped],
     resolved_districts: Array[District]
   ) -> void
+
+  def president?: (Legislator legislator) -> bool
 
   def district_for: (Legislator legislator) -> District?
 

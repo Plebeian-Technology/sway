@@ -86,7 +86,7 @@ class SeedLegislator
           )
         next unless seed_legislator.present? && seed_legislator.prepared.present?
         next if seed_legislator.unconfigured_executive_office?
-        if seed_legislator.prepared.executive?
+        if seed_legislator.uncurated_executive?
           executive_preparers << seed_legislator.prepared
           next
         end
@@ -256,9 +256,14 @@ class SeedLegislator
     !chambers.key?(title) && !chambers.key?(SeedLegislatorTerms::TITLE_ALIASES.fetch(title, title))
   end
 
+  # @lat: [[official-service-evidence#The curated President record]]
+  def uncurated_executive?
+    prepared.executive? && !prepared.curated_president?
+  end
+
   def legislator
     return nil if prepared.json.nil?
-    return nil if prepared.executive?
+    return nil if uncurated_executive?
 
     Rails.logger.info(
       "Seeding #{sway_locale.city.titleize} Legislator external_id: #{prepared.external_id}"
@@ -302,7 +307,7 @@ class SeedLegislator
     LegislatorIdentifier.record!(legislator: l, identity: identity)
 
     # @lat: [[current-legislator-term#Which term a legislator is serving now#Roster identity during seeding]]
-    SeedLegislatorTerms.new(l, prepared, first_sighting: first_sighting).call unless prepared.executive?
+    SeedLegislatorTerms.new(l, prepared, first_sighting: first_sighting).call unless uncurated_executive?
 
     l
   end

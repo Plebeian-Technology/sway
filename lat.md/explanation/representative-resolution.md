@@ -34,7 +34,7 @@ Within Congress the address's state comes from [[app/models/address.rb#Address#u
 
 A Census failure is recorded in `skipped_resolution_errors` and reported to Sentry at warning level, the way a skipped term is ([[representative-resolution#Resolution branches]]). Registration therefore keeps the Senators, records the Congress locale for a later retry, and reconciliation keeps refusing to change links while Census is down. The failure also adds every House member of the address's state to `skipped_legislator_ids`, so an address switch within that state keeps the user's current House link instead of treating it as stale.
 
-When the state is unknown no geographic term is kept, so only the occupants of the locale-wide district remain ([[representative-resolution#Locale-wide district]]), which for Congress is the President. The seeded roster has no current President term, so such an address can still resolve nobody; registration then completes the user with the Congress locale waiting ([[registration-dead-ends#An empty list says which kind of empty it is]]).
+When the state is unknown no geographic term is kept, so only the occupants of the locale-wide district remain ([[representative-resolution#Locale-wide district]]), which for Congress is the President. The seeded roster holds a current President term ([[official-service-evidence#The curated President record]]); if that term is missing, such an address resolves nobody, and registration completes the user with the Congress locale waiting ([[registration-dead-ends#An empty list says which kind of empty it is]]).
 
 ## Resolution branches
 
@@ -76,7 +76,7 @@ House representatives occupy single-member district seats scoped to their state 
 
 Senators represent their entire state and attach to the state's `XX0` district (such as `MD0` or `WI0`). Because each state seats two co-serving Senators with staggered six-year terms, their seats are distinguished by constitutional class using the format `<state_downcase>-senate-class-<1|2|3>` (for example, `md-senate-class-1` and `md-senate-class-3`). The Senate class is read strictly from the published `term["class"]` field populated from `unitedstates/congress-legislators` by [[app/services/legislators_cache/congress_term_history.rb|LegislatorsCache::CongressTermHistory]] into `legislators.json`. It is never guessed or inferred from `endYear` or election cycles, because mid-term appointments, special elections, and term window widening produce end years that deviate from regular six-year cycles.
 
-The nationwide `US0` executive district holds no legislative seat. Unevidenced presidential sentinel terms are retired during seeding when official service evidence is unsupported, and `seat_chambers` for Congress covers only `Sen.` and `Rep.`.
+The nationwide `US0` executive district holds one seat, `us-president`, with chamber `Executive` and title `Pres.`, which the curated President row fills ([[official-service-evidence#The curated President record]]). `seat_chambers` for Congress maps `Sen.`, `Rep.` and `Pres.`. Unevidenced presidential sentinel terms from any other executive row are retired during seeding when official service evidence is unsupported.
 
 ## Maryland seat identity conventions
 

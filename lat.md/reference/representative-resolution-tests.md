@@ -97,7 +97,11 @@ Registration against the seeded Baltimore roster, with the shipped council bound
 
 ### Resolves the seeded Congress roster
 
-Registration against the seeded Congress roster for a Maryland address returns two Senators and one Representative and no President, and reconciliation keeps the same links.
+Registration against the seeded Congress roster for a Maryland address returns two Senators, one Representative and the President, and reconciliation keeps the same links.
+
+### Resolves only the President without a US state
+
+Registration against the seeded Congress roster for an address whose US state cannot be determined returns the President alone, from the locale-wide district.
 
 ### Leaves city-wide officers off outside the city boundary
 
@@ -150,3 +154,31 @@ Two active links for separate current seats in one district stay active after re
 ### Reactivates locale-wide link idempotently
 
 Reconciliation reactivates an inactive nationwide-office link and its district link, then leaves both active on a second run.
+
+## President link after a Congress seed
+
+A Congress seed gives every registered user with an address the President, silently, and retries what a lookup outage skipped.
+
+### Links a registered user to the President
+
+A registered user with an address and no President link gets an active President link and an active `US0` district link after a Congress seed.
+
+### Reactivates an inactive President link
+
+A user whose only President link and `US0` link were inactive gets both reactivated by the same seed.
+
+### Leaves one President link per user
+
+Two seeds in a row leave exactly one link per legislator for the user, so the President link is never duplicated.
+
+### Retries a skipped Congress lookup
+
+A Census outage during the reconcile run leaves no President link and records Congress as a pending representative locale, and the next hourly assignment run links the President and clears the record.
+
+### Links the President without a notice
+
+Linking the President to an existing user records no reassignment and enqueues no reassignment delivery.
+
+### Still notifies for another new legislator
+
+A newly linked legislator who does not hold the President seat still records a reassignment and enqueues delivery in the same run that silently links the President.

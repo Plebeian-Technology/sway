@@ -4,8 +4,7 @@ require "rails_helper"
 
 # @lat: [[legislator-term-write-guard-history#Why term writing must not sit behind the guard]]
 RSpec.describe "the committed Congress roster" do
-  # The President is written by hand and is deliberately not scoreable, so the
-  # rules below are about everybody else.
+  # @lat: [[official-service-evidence#The curated President record]]
   let(:members) do
     path = Rails.root.join("db", "seeds", "data", "united_states", "congress", "congress", "legislators.json")
     JSON.parse(File.read(path)).reject { |m| m["bioguideId"] == LegislatorsCache::POTUS_BIOGUIDE_ID }

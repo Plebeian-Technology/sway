@@ -138,10 +138,13 @@ module SeedPreparers
         false
       end
 
-      # By design, Presidents and VPs get a Legislator person row but never a
-      # scoreable LegislatorTerm. Only CongressDotGov's roster can contain an
-      # executive; every other preparer is non-executive by construction.
+      # @lat: [[official-service-evidence#The curated President record]]
       def executive?
+        false
+      end
+
+      # @lat: [[official-service-evidence#The curated President record]]
+      def curated_president?
         false
       end
 

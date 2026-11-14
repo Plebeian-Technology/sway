@@ -824,11 +824,15 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     end
   end
 
-  context "when a Maryland address registers against the seeded Congress roster" do
+  context "when an address registers against the seeded Congress roster" do
+    include ActiveSupport::Testing::TimeHelpers
+
     let(:seeded_congress) { create(:sway_locale, :congress) }
 
+    around { |example| travel_to(Date.new(2026, 11, 14)) { example.run } }
+
     # @lat: [[representative-resolution-tests#Registration seat resolution#Resolves the seeded Congress roster]]
-    it "returns two Senators and one Representative and no President" do
+    it "returns two Senators, one Representative and the President for a Maryland address" do
       SeedLegislator.run([seeded_congress])
       create(:user_address, user:, address:)
       allow(SwayGeocode).to receive(:build).and_return(double(districts: [0, 3]))
@@ -836,10 +840,22 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
 
       reps = service.district_legislators
 
-      expect(reps.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.")
+      expect(reps.map(&:title)).to contain_exactly("Sen.", "Sen.", "Rep.", "Pres.")
       expect(service.skipped_resolution_errors).to be_empty
       expect { ReconcileUserDistrictsService.new(user, seeded_congress).call }.not_to raise_error
       expect(user.user_legislators.where(active: true).pluck(:legislator_id)).to match_array(reps.map(&:id))
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Resolves only the President without a US state]]
+    it "returns only the President for an address with no US state" do
+      SeedLegislator.run([seeded_congress])
+      stateless = create(:address, region_code: "US")
+      service = described_class.new(user, stateless, seeded_congress, invited_by_id: nil, async: false)
+
+      reps = service.district_legislators
+
+      expect(reps.map(&:external_id)).to eq(["POTUS"])
+      expect(service.skipped_resolution_errors).to be_empty
     end
   end
 end

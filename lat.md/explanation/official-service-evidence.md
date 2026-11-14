@@ -6,7 +6,7 @@ An official service fact enters civic records only when a configured trusted sou
 
 An optional service profile declares whether exact official facts can be read.
 
-The generic roster adapter reads `roster_rules.official_service`. An absent or malformed profile returns an unsupported result without making a request. Current locale configuration declares no profile, so presidential service remains unavailable until a verified source and exact field mapping are configured.
+The generic roster adapter reads `roster_rules.official_service`. An absent or malformed profile returns an unsupported result without making a request. Current locale configuration declares no profile, because no official machine-readable President roster exists. The current President term comes instead from one curated roster row, described in [[official-service-evidence#The curated President record]].
 
 The profile pins the official URL, publisher, jurisdiction, identity source, fixed office identity, record path, and field paths. The reader requests that URL directly and checks the response URL before retaining evidence. A mirror roster request cannot be attributed to an official source by changing labels after retrieval.
 
@@ -27,3 +27,19 @@ Supported present facts enter civic records through the existing term writer.
 An existing person is matched by its typed LegislatorIdentifier identity. A raw external ID from another source cannot claim that person. Existing term data is preserved when it conflicts with the official fact, and the result reports the conflict rather than treating it as a successful write. [[app/models/legislator_identifier.rb#LegislatorIdentifier]] owns typed identity matching.
 
 The prepared official service entry is term evidence, not a roster history. It never treats omitted executive history as proof that a previous term ended. An exact current fact is current only when `start_date <= today < end_date`.
+
+## The curated President record
+
+Every registered user receives the President through the Congress locale-wide district US0, so one current, seated President term there is the floor that registration relies on.
+
+No official source publishes the President in machine-readable form: the Congress.gov API has no President endpoint, whitehouse.gov is HTML, and data.gov has no roster. The operator therefore approved one curated row in the committed Congress roster instead of a fetched source.
+
+The row is the `POTUS` entry. Its identity is attributed to the White House administration page, and its dates follow the Constitution: Amendment XX, section 1 ends a term and starts the next at noon on 20 January, and Article II, section 1 sets a four-year term. The current term runs from 2025-01-20 to 2029-01-20, end exclusive.
+
+[[db/seeds/seed_preparers/legislators/congress_dot_gov.rb#CongressDotGov#curated_president?]] accepts a row only when its id is `POTUS`, its `termsSource` equals [[db/seeds/seed_preparers/legislators/congress_dot_gov.rb#CongressDotGov#CURATED_PRESIDENT_TERMS_SOURCE]], and its newest term carries both a start and an end day. The base preparer answers false. Only an accepted row passes the executive gates in [[db/seeds/models/legislator.rb#SeedLegislator#uncurated_executive?]]; every other executive row still creates no person, and its unevidenced terms are still retired.
+
+An accepted row is seeded like any other Congress member. The `termsSource` mark and the end year make its terms a complete history, so the seeder may correct and retire against them, and the current term takes the seat `us-president` with the chamber `Executive` that the locale's `seat_chambers` declares for `Pres.`. The serving term is stored with no end day, so it ends at the Congress convening day in 2029; the January 2029 handover is not modelled yet.
+
+`POTUS` names the office, not the person. The seeder finds the existing `POTUS` legislator by that id, so a production row that has no terms receives the new term, and a later President updates the same row rather than adding a second one.
+
+The committed-roster checks in `spec/db/seeds/congress_roster_spec.rb` leave this row out, because its term names no state and no House district.

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class RepresentativeReassignmentObserver
+  PRESIDENT_SEAT_IDENTIFIER = "us-president"
+
   def self.observe_diff!(
     user:,
     stale_district_ids:,
@@ -29,7 +31,7 @@ class RepresentativeReassignmentObserver
     created_any = false
 
     stale_legs = stored_uls.select { |ul| stale_legislator_ids.include?(ul.legislator_id) }.map(&:legislator).compact
-    new_legs = resolved_legislators.select { |l| new_legislator_ids.include?(l.id) }
+    new_legs = resolved_legislators.select { |l| new_legislator_ids.include?(l.id) }.reject { |l| president?(l) }
     stale_dists = stored_user_districts.select { |ud| stale_district_ids.include?(ud.district_id) }.map(&:district).compact.uniq(&:id)
     new_dists = resolved_districts.select { |d| new_district_ids.include?(d.id) }.uniq(&:id)
 
@@ -101,6 +103,10 @@ class RepresentativeReassignmentObserver
   end
 
   private
+
+  def president?(legislator)
+    legislator.active_term&.seat&.seat_identifier == PRESIDENT_SEAT_IDENTIFIER
+  end
 
   def district_for(legislator)
     legislator.district || legislator.legislator_terms.order(term_start_year: :desc, id: :desc).first&.district
