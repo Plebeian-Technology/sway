@@ -129,7 +129,7 @@ describe("AddressScreen", () => {
                     ...baseUser,
                     is_registration_complete: false,
                     address: {
-                        street1: "100 N Holliday St",
+                        street: "100 N Holliday St",
                         city: "Baltimore",
                         region_code: "MD",
                         postal_code: "21202",
@@ -190,7 +190,7 @@ describe("AddressScreen", () => {
                     ...baseUser,
                     is_registration_complete: true,
                     address: {
-                        street1: "123 Main St",
+                        street: "123 Main St",
                         city: "Baltimore",
                         region_code: "MD",
                         postal_code: "21201",
@@ -561,7 +561,7 @@ describe("AddressScreen", () => {
                 user: {
                     ...baseUser,
                     is_registration_complete: true,
-                    address: { street1: "123 Main St", city: "Baltimore", region_code: "MD", postal_code: "21201" },
+                    address: { street: "123 Main St", city: "Baltimore", region_code: "MD", postal_code: "21201" },
                 },
                 loading: false,
                 refresh: jest.fn(),
@@ -586,6 +586,33 @@ describe("AddressScreen", () => {
                     confirm_deactivate_legislators: true,
                 }),
             );
+        });
+    });
+
+    describe("prefill from the saved address", () => {
+        it("fills the street lines from the street and street2 keys the server sends", () => {
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: false,
+                    address: {
+                        street: "100 N Holliday St",
+                        street2: "Apt 2",
+                        city: "Baltimore",
+                        region_code: "MD",
+                        postal_code: "21202",
+                        country: "United States",
+                    },
+                },
+                loading: false,
+                refresh: jest.fn(),
+            });
+
+            wrap(<AddressScreen />);
+            fireEvent.press(screen.getByTestId("btn-edit-address-manually"));
+
+            expect(screen.getByTestId("address-input-street1-input").props.value).toBe("100 N Holliday St");
+            expect(screen.getByTestId("address-input-street2-input").props.value).toBe("Apt 2");
         });
     });
 

@@ -84,7 +84,7 @@ export default function AddressScreen() {
         if (!a) return;
         setForm((f) => ({
             ...f,
-            street1: a.street1 ?? "",
+            street1: a.street ?? "",
             street2: a.street2 ?? "",
             city: a.city ?? "",
             region_code: a.region_code ?? "",

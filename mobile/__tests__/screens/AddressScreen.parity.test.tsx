@@ -136,7 +136,7 @@ const mockEditUser = {
     id: 2,
     is_registration_complete: true,
     address: {
-        street1: "123 Main St",
+        street: "123 Main St",
         city: "Baltimore",
         region_code: "MD",
         postal_code: "21201",
@@ -262,7 +262,7 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
             mockUseUserProfile.mockReturnValue({
                 user: {
                     ...mockOnboardingUser,
-                    address: { street1: "100 N Holliday St", city: "Baltimore", region_code: "MD" },
+                    address: { street: "100 N Holliday St", city: "Baltimore", region_code: "MD" },
                 },
                 loading: false,
                 refresh: mockRefresh,

@@ -33,7 +33,7 @@ describe("RootNavigator registration gate", () => {
         mockUseUserProfile.mockReturnValue({
             user: {
                 id: 1,
-                address: { street1: "100 N Holliday St", city: "Baltimore", region_code: "MD" },
+                address: { street: "100 N Holliday St", city: "Baltimore", region_code: "MD" },
                 is_registration_complete: false,
             },
             loading: false,
@@ -64,7 +64,7 @@ describe("RootNavigator registration gate", () => {
 
     it("keeps a missing completion field in onboarding even when the address exists", () => {
         mockUseUserProfile.mockReturnValue({
-            user: { id: 1, address: { street1: "100 N Holliday St" } },
+            user: { id: 1, address: { street: "100 N Holliday St" } },
             loading: false,
         });
 

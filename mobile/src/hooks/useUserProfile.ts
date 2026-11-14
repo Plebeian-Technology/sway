@@ -11,7 +11,6 @@ export interface UserProfile {
     sms_notifications_enabled?: boolean;
     theme_mode?: "auto" | "light" | "dark" | null;
     address?: {
-        street1?: string | null;
         street?: string | null;
         street2?: string | null;
         city?: string | null;
