@@ -1,0 +1,6 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def hook: () -> String
+
+  def run_hook: (String? open_states_api_key) -> [String, Process::Status]
+end
