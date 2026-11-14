@@ -1,0 +1,3 @@
+class AssignPendingRepresentativesJob < ApplicationJob
+  def perform: () -> void
+end

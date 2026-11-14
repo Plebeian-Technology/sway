@@ -62,7 +62,19 @@ A registration that skips part of a locale records that locale's id on the user,
 
 [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] records two kinds of skip: a locale whose lookup raised, and a locale whose [[app/services/sway_registration_service.rb#SwayRegistrationService]] run skipped a term whose seat could not be resolved. A locale id is enough for both, because a retry of a locale re-runs every part of it, so the record does not need to say which part failed. [[app/models/user.rb#User#add_pending_representative_locale]] adds an id only once, so a locale skipped again leaves one copy, and [[app/models/user.rb#User#remove_pending_representative_locale]] takes it off.
 
-A JSON column on the user is the simplest storage that fits: the list holds at most the three locales one address reaches, belongs to one user, and is never queried by locale. A registration with no skip leaves it empty. No job reads the list yet, and no prop or JSON body exposes it.
+A JSON column on the user is the simplest storage that fits: the list holds at most the three locales one address reaches, belongs to one user, and is never queried by locale. A registration with no skip leaves it empty. Only the hourly job below reads the list, and no prop or JSON body exposes it.
+
+### The hourly job assigns what was skipped
+
+[[app/jobs/assign_pending_representatives_job.rb#AssignPendingRepresentativesJob]] runs at quarter past every hour in development and production, and retries each recorded locale for every user whose list is not empty.
+
+Each retry is one [[app/services/reconcile_user_districts_service.rb#ReconcileUserDistrictsService]] call for the user and the locale, against the user's current address. That service raises while an upstream is down or while a term is still skipped, so a call that returns means the whole lookup of that locale succeeded and its difference is applied. A user with no pending locale is never looked up, so a cleared record ends the retries for that user.
+
+The id comes off the list only when the call returns and the user then has at least one active representative link. A lookup that returns but still gives a user no link at all, such as Congress while no current President term exists, keeps the id, so that user stays waiting and the next run tries again. A call that raises also keeps the id. The failure is logged for that user, and the job goes on to the next locale and the next user. The job never changes the registration status.
+
+A lookup can stay down for hours while many users wait on the same locale, so one report per user per run would bury one outage under copies of itself. The job therefore counts failed users per locale during the run and, after the loop, sends one Sentry report per failing locale, carrying the first error, the locale name and that count. A locale that keeps failing produces at most one report each hour.
+
+The schedule entry has its own presence check in `spec/config/recurring_spec.rb`, because the job spec proves only that the job works when something runs it ([[recurring-yml-registration-checks#Why spec/config/recurring_spec.rb checks registration, not just shape#Why specific tasks get their own "is registered" guard, not just the generic checks]]).
 
 ## Reaching sign-in from an expired session
 

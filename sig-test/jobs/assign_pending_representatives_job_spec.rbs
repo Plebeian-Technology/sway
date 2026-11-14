@@ -1,0 +1,6 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def pending_user: (*SwayLocale sway_locales) -> User
+  def stub_lookup: (User user, SwayLocale sway_locale) { (*untyped) -> untyped } -> untyped
+  def failing_lookup: (User user, SwayLocale sway_locale, String message) -> untyped
+end
