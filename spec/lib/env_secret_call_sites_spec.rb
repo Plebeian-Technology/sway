@@ -7,7 +7,7 @@ RSpec.describe "ENV secret whitespace stripping" do
   describe "Sway::TwilioClient.build (TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN)" do
     it "hands Twilio the stripped sid and token" do
       with_env("TWILIO_ACCOUNT_SID" => "AC123\n", "TWILIO_AUTH_TOKEN" => "tok456\n") do
-        expect(Twilio::REST::Client).to receive(:new).with("AC123", "tok456")
+        expect(Twilio::REST::Client).to receive(:new).with("AC123", "tok456", nil, nil, an_instance_of(Twilio::HTTP::Client))
 
         Sway::TwilioClient.build
       end
