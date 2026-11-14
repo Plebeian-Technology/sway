@@ -1,0 +1,5 @@
+# Integration-session method used in spec/requests/api/v1/registrations_spec.rb.
+class Object
+  # Starts a fresh integration session with an empty cookie jar.
+  def reset!: () -> void
+end

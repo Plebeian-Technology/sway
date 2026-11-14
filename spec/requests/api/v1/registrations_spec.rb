@@ -160,6 +160,49 @@ RSpec.describe "Api::V1::Registrations", type: :request do
         expect(Time.iso8601(body[:expires_at])).to be_between(89.days.from_now, 91.days.from_now)
       end
 
+      it "issues a bearer token that alone can complete address registration" do
+        sway_locale = create(:sway_locale, city: "Baltimore", state: "MD", country: "US")
+        legislator = create(:legislator, district: create(:district, sway_locale: sway_locale))
+        allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
+        allow_any_instance_of(SwayRegistrationService).to receive(:call) do # rubocop:disable RSpec/AnyInstance
+          UserLegislator.find_or_create_by!(user: User.find_by!(phone: phone), legislator: legislator)
+        end
+        token = SmsVerificationToken.issue!(phone)
+        Rails.cache.write(
+          "webauthn:challenge:reg-address",
+          {challenge: fake_challenge, sms_verified_token: token, phone: phone},
+          expires_in: 5.minutes
+        )
+
+        post "/api/v1/registrations/callback",
+          params: {registration: {challenge_id: "reg-address", credential: {id: "x", type: "public-key"}, platform: "ios"}},
+          as: :json
+        expect(response).to have_http_status(:ok)
+        bearer_token = json_body[:bearer_token]
+        reset!
+
+        post "/sway_registration",
+          params: {
+            sway_registration: {
+              street: "100 N Holliday St",
+              street2: "",
+              city: "Baltimore",
+              region_code: "MD",
+              postal_code: "21202",
+              country: "US",
+              latitude: 39.29105,
+              longitude: -76.61069
+            }
+          },
+          headers: {"Authorization" => "Bearer #{bearer_token}", "Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        user = User.find_by!(phone: phone)
+        expect(user).to be_registered
+        expect(UserLegislator.find_by!(user: user, legislator: legislator).active).to be(true)
+      end
+
       it "rejects a second callback minted from the same sms_verified_token with 401 invalid_sms_token" do
         token = SmsVerificationToken.issue!(phone)
         post "/api/v1/registrations",
