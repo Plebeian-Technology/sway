@@ -359,7 +359,7 @@ RSpec.describe RetireDepartedLegislatorsService do
       expect(legislator.reload.serving?).to be(true)
 
       # Downstream reconciliation resolution checks serving?
-      reg_service = instance_double(SwayRegistrationService)
+      reg_service = instance_double(SwayRegistrationService, skipped_resolution_errors: [])
       allow(SwayRegistrationService).to receive(:new).and_return(reg_service)
       allow(reg_service).to receive(:district_legislators).and_return(legislator.serving? ? [legislator] : [])
 
