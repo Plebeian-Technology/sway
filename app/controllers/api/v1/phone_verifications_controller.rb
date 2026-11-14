@@ -11,14 +11,22 @@ module Api
         by: -> { request.remote_ip },
         only: :request_code,
         if: -> { RateLimitConfig.enabled?(:phone_verify) },
-        with: -> { render_error(code: "rate_limited", message: "Too many SMS requests", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::PhoneVerificationsController
+          response.set_header("Retry-After", 1.hour.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many SMS requests", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
       rate_limit to: 10, within: 1.minute,
         name: "verify_ip",
         by: -> { request.remote_ip },
         only: :verify,
         if: -> { RateLimitConfig.enabled?(:phone_verify) },
-        with: -> { render_error(code: "rate_limited", message: "Too many verification attempts", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::PhoneVerificationsController
+          response.set_header("Retry-After", 1.minute.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many verification attempts", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
       rate_limit to: 5, within: 10.minutes,
         name: "verify_phone",
@@ -26,7 +34,11 @@ module Api
         by: -> { PhoneCacheKey.digest(params[:phone]) },
         only: :verify,
         if: -> { RateLimitConfig.enabled?(:phone_verify) },
-        with: -> { render_error(code: "rate_limited", message: "Too many attempts for this number", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::PhoneVerificationsController
+          response.set_header("Retry-After", 10.minutes.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many attempts for this number", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
 
       def public_endpoint?

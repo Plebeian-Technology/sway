@@ -84,6 +84,7 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
 
         expect(response).to have_http_status(:too_many_requests)
         expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        expect(response.headers["Retry-After"]).to eq("600")
       end
     end
 
@@ -98,6 +99,7 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
 
         expect(response).to have_http_status(:too_many_requests)
         expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        expect(response.headers["Retry-After"]).to eq("60")
       end
     end
   end
@@ -218,6 +220,7 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
 
           expect(response).to have_http_status(:too_many_requests)
           expect(json_body.dig(:error, :code)).to eq("rate_limited")
+          expect(response.headers["Retry-After"]).to eq("3600")
           expect(twilio_verifications_double).to have_received(:create).exactly(5).times
         end
       end

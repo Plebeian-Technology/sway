@@ -20,6 +20,17 @@ const readHeader = (headers: ThrottleResponse["headers"], name: string): string 
     return record[name] ?? record[name.toLowerCase()] ?? null;
 };
 
+const waitLabelFor = (seconds: number): string => {
+    if (seconds < 60) {
+        return `${seconds} seconds`;
+    }
+    if (seconds < 3600) {
+        return `${Math.ceil(seconds / 60)} minutes`;
+    }
+    const hours = Math.round(seconds / 3600);
+    return hours === 1 ? "about an hour" : `about ${hours} hours`;
+};
+
 export function parseRetryAfter(response: ThrottleResponse | null): RateLimitResult {
     if (!response || response.status !== 429) {
         return { throttledUntil: null, waitLabel: null };
@@ -32,10 +43,9 @@ export function parseRetryAfter(response: ThrottleResponse | null): RateLimitRes
     if (isNaN(seconds) || seconds < 0) {
         return { throttledUntil: new Date(Date.now() + 60_000), waitLabel: null };
     }
-    const waitLabel = seconds >= 60 ? `${Math.ceil(seconds / 60)} minutes` : `${seconds} seconds`;
     return {
         throttledUntil: new Date(Date.now() + seconds * 1000),
-        waitLabel,
+        waitLabel: waitLabelFor(seconds),
     };
 }
 

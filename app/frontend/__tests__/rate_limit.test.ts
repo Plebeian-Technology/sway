@@ -48,6 +48,20 @@ describe("parseRetryAfter", () => {
         expect(result.throttledUntil).toEqual(new Date(NOW.getTime() + 90_000));
     });
 
+    it("words a one-hour Retry-After as about an hour", () => {
+        const result = parseRetryAfter({ status: 429, headers: { "retry-after": "3600" } });
+        expect(result.waitLabel).toBe("about an hour");
+        expect(result.throttledUntil).toEqual(new Date(NOW.getTime() + 3_600_000));
+        expect(throttleCopy("phone", result.waitLabel)).toBe(
+            "Too many verification attempts. Please wait about an hour before trying again.",
+        );
+    });
+
+    it("words a Retry-After of several hours in hours", () => {
+        const result = parseRetryAfter({ status: 429, headers: { "retry-after": "7200" } });
+        expect(result.waitLabel).toBe("about 2 hours");
+    });
+
     it("falls back to a 60s throttle with a null label when the header is absent", () => {
         const result = parseRetryAfter({ status: 429, headers: {} });
         expect(result.waitLabel).toBeNull();

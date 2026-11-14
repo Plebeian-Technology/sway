@@ -26,7 +26,7 @@ RSpec.describe "Rate limiting", type: :request do
         with_rate_limit_enabled(:sign_in) do
           11.times { post "/users/webauthn/sessions", params: {phone: "4105551212"} }
           expect(response).to rate_limited_status
-          expect(response.headers["Retry-After"]).to be_present
+          expect(response.headers["Retry-After"]).to eq("300")
         end
       end
 
@@ -38,7 +38,7 @@ RSpec.describe "Rate limiting", type: :request do
               headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"}
           end
           expect(response).to rate_limited_status
-          expect(response.headers["Retry-After"]).to be_present
+          expect(response.headers["Retry-After"]).to eq("300")
         end
       end
 
@@ -84,6 +84,7 @@ RSpec.describe "Rate limiting", type: :request do
         with_rate_limit_enabled(:sign_up) do
           6.times { post "/users/webauthn/registration", params: {phone: "4105551212"} }
           expect(response).to rate_limited_status
+          expect(response.headers["Retry-After"]).to eq("60")
         end
       end
     end
@@ -193,6 +194,35 @@ RSpec.describe "Rate limiting", type: :request do
           expect(response.headers["Retry-After"]).to be_present
         end
       end
+
+      it "answers the 11th JSON code request from one IP with 429 and a one-hour Retry-After" do
+        with_rate_limit_enabled(:phone_verify) do
+          11.times do |i|
+            post "/phone_verification",
+              params: {phone_verification: {phone: "410555#{i.to_s.rjust(4, "0")}"}},
+              headers: {"REMOTE_ADDR" => "10.0.5.1"},
+              as: :json
+          end
+          expect(response).to have_http_status(:too_many_requests)
+          expect(response.headers["Retry-After"]).to eq("3600")
+        end
+      end
+
+      it "answers the 6th code check for one phone with 429 and a ten-minute Retry-After" do
+        with_app_config(:dev_login, skip_phone_verification: false) do
+          with_rate_limit_enabled(:phone_verify) do
+            post "/phone_verification", params: {phone_verification: {phone: "4105551212"}}, as: :json
+            6.times do |i|
+              put "/phone_verification/1",
+                params: {phone_verification: {code: "000000"}},
+                headers: {"REMOTE_ADDR" => "10.0.6.#{i + 1}"},
+                as: :json
+            end
+            expect(response).to have_http_status(:too_many_requests)
+            expect(response.headers["Retry-After"]).to eq("600")
+          end
+        end
+      end
     end
 
     context "in production with phone_verify_enabled=false (kill switch)" do
@@ -279,10 +309,10 @@ RSpec.describe "Rate limiting", type: :request do
   end
 
   describe "render_rate_limited response shape" do
-    it "sets Retry-After header to '60' on HTML request" do
+    it "sets Retry-After header to the sign-in window on HTML request" do
       with_rate_limit_enabled(:sign_in) do
         11.times { post "/users/webauthn/sessions", params: {phone: "4105551212"} }
-        expect(response.headers["Retry-After"]).to eq("60")
+        expect(response.headers["Retry-After"]).to eq("300")
       end
     end
 
@@ -414,7 +444,7 @@ RSpec.describe "Rate limiting", type: :request do
             headers: {"REMOTE_ADDR" => "10.0.0.1"}
         end
         expect(response).to rate_limited_status
-        expect(response.headers["Retry-After"]).to eq("60")
+        expect(response.headers["Retry-After"]).to eq("300")
       end
     end
 
@@ -430,7 +460,7 @@ RSpec.describe "Rate limiting", type: :request do
             headers: {"REMOTE_ADDR" => "10.0.0.1"}
         end
         expect(response).to rate_limited_status
-        expect(response.headers["Retry-After"]).to eq("60")
+        expect(response.headers["Retry-After"]).to eq("300")
       end
     end
   end

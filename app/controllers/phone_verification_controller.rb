@@ -10,14 +10,14 @@ class PhoneVerificationController < ApplicationController
     by: -> { request.remote_ip },
     only: :create,
     if: -> { RateLimitConfig.enabled?(:phone_verify) },
-    with: -> { render_rate_limited },
+    with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
     store: ApplicationController::RATE_LIMIT_STORE
   rate_limit to: 10, within: 1.minute,
     name: "update_ip",
     by: -> { request.remote_ip },
     only: :update,
     if: -> { RateLimitConfig.enabled?(:phone_verify) },
-    with: -> { render_rate_limited },
+    with: -> { render_rate_limited(retry_after: 1.minute.to_i) },
     store: ApplicationController::RATE_LIMIT_STORE
   rate_limit to: 5, within: 10.minutes,
     name: "update_phone",
@@ -28,7 +28,7 @@ class PhoneVerificationController < ApplicationController
     },
     only: :update,
     if: -> { RateLimitConfig.enabled?(:phone_verify) },
-    with: -> { render_rate_limited },
+    with: -> { render_rate_limited(retry_after: 10.minutes.to_i) },
     store: ApplicationController::RATE_LIMIT_STORE
 
   def create

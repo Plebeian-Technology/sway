@@ -12,14 +12,14 @@ module Users
         by: -> { request.remote_ip },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_in) },
-        with: -> { render_rate_limited },
+        with: -> { render_rate_limited(retry_after: 5.minutes.to_i) },
         store: ApplicationController::RATE_LIMIT_STORE
       rate_limit to: 5, within: 5.minutes,
         # @lat: [[phone-cache-hashing]]
         by: -> { PhoneCacheKey.digest(session_params[:phone]) },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_in) },
-        with: -> { render_rate_limited },
+        with: -> { render_rate_limited(retry_after: 5.minutes.to_i) },
         store: ApplicationController::RATE_LIMIT_STORE
 
       skip_before_action :authenticate_sway_user!

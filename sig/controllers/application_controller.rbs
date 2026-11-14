@@ -137,7 +137,7 @@ class ApplicationController < ActionController::Base
     TRACKED_ARTICLE_BILL_CLICKS_SESSION_KEY: Symbol
     MAX_TRACKED_ARTICLE_BILL_CLICKS: Integer
 
-    def render_rate_limited: () -> untyped
+    def render_rate_limited: (?retry_after: Integer) -> untyped
     def report_repeated_rate_limit: () -> void
 
     def capture_attribution_param: () -> void

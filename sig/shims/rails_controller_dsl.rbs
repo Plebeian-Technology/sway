@@ -28,7 +28,7 @@ class ActionController::Base
     def self.allow_forgery_protection=: (bool value) -> bool
     # Singleton-context stubs for rate_limit with:/by: lambda bodies.
     # Rails evaluates these via instance_exec; Steep sees them in singleton scope.
-    def self.render_rate_limited: () -> untyped
+    def self.render_rate_limited: (?retry_after: Integer) -> untyped
 
     def redirect_back_or_to: (*untyped args, **untyped kwargs) -> untyped
 

@@ -25,10 +25,10 @@ RSpec.describe "Rate limit throttle toast", type: :system, js: true do
       fill_in "Phone number", with: "4105550777"
       click_button "Continue with Phone"
 
-      # The exact wording the frontend builds: a Retry-After of 60 seconds
-      # becomes "1 minutes".
+      # The exact wording the frontend builds: a Retry-After of 300 seconds
+      # becomes "5 minutes".
       expect(page).to have_text(
-        "Too many sign-in attempts. Please wait 1 minutes before trying again.", wait: 10
+        "Too many sign-in attempts. Please wait 5 minutes before trying again.", wait: 10
       )
       expect(page).to have_button("Continue with Phone", disabled: true)
     end
