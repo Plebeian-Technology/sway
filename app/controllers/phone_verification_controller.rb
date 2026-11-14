@@ -69,6 +69,9 @@ class PhoneVerificationController < ApplicationController
       return render json: {success: false, error: "Invalid verification request."}, status: :unprocessable_content
     end
 
+    # @lat: [[identity-and-access#Identity and access#The phone number is the account#A phone verified in this session confirms again without Twilio]]
+    return render json: {success: true}, status: :ok if session[:verified_phone] == phone
+
     session_phone_last4 = phone.last(4)
 
     if Sway::Settings.dev_login.skip_phone_verification

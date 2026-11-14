@@ -76,6 +76,12 @@ For Twilio error 20404, [[app/controllers/phone_verification_controller.rb#Phone
 
 The controller logs only the phone's last four digits and provider code. It does not log the provider message or recipient digits; other provider failures become a sanitized application error after the rescue block, with no raw provider exception as its cause. [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]] documents the redaction boundary.
 
+### A phone verified in this session confirms again without Twilio
+
+A second Confirm code for the session phone that this session already verified answers success without asking Twilio again.
+
+Twilio deletes a verification once it approves it, so a second check for the same phone answers 20404 and the user would see "Code not found." after dismissing the passkey prompt. [[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] therefore answers `success: true` when `verified_phone` already equals the normalized session phone, after the blank and length checks and before any Twilio call. That branch writes nothing to the session: `verified_phone` is still set only by a Twilio approval or by the skip switch, and a different session phone still goes to Twilio. The answer grants nothing new, because the web enrollment start already accepts that verified phone for the rest of the session. Retried confirms still count against the update rate limits.
+
 ## Two voter-registration flags mean different things
 
 `users` carries two booleans whose names read alike and whose meanings do not

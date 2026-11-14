@@ -184,6 +184,59 @@ RSpec.describe "PhoneVerification", type: :request do
       expect(session_hash[:verified_phone]).to be_nil
     end
 
+    context "when the session phone is already verified" do
+      it "returns success without calling Twilio when the session phone is already verified" do
+        patch phone_verification_path("1"), params: params
+        expect(session_hash[:verified_phone]).to eq("4105551212")
+
+        allow(twilio_verification_checks_double).to receive(:create).and_raise(verification_not_found_error)
+        patch phone_verification_path("1"), params: params
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"success" => true})
+        expect(session_hash[:verified_phone]).to eq("4105551212")
+        expect(twilio_verification_checks_double).to have_received(:create).once
+      end
+
+      it "still calls Twilio for a different session phone and does not mark it verified unless approved" do
+        session_hash[:verified_phone] = "4105551212"
+        session_hash[:phone] = "4105550000"
+        allow(twilio_verification_result).to receive(:status).and_return("pending")
+
+        patch phone_verification_path("1"), params: params
+
+        expect(response.parsed_body).to eq({"success" => false})
+        expect(twilio_verification_checks_double).to have_received(:create).with(to: "+14105550000", code: "123456")
+        expect(session_hash[:verified_phone]).to eq("4105551212")
+      end
+
+      it "still returns 422 for a blank code" do
+        session_hash[:verified_phone] = "4105551212"
+
+        patch phone_verification_path("1"), params: {phone_verification: {code: "   "}}
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it "still returns 422 when the session has no phone" do
+        session_hash[:verified_phone] = "4105551212"
+        session_hash[:phone] = nil
+
+        patch phone_verification_path("1"), params: params
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    it "calls Twilio for a never-verified session phone and leaves verified_phone nil when pending" do
+      allow(twilio_verification_result).to receive(:status).and_return("pending")
+
+      patch phone_verification_path("1"), params: params
+
+      expect(twilio_verification_checks_double).to have_received(:create).once
+      expect(session_hash[:verified_phone]).to be_nil
+    end
+
     it "does not create a user after verification" do
       expect do
         patch phone_verification_path("1"), params: params
