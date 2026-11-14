@@ -53,6 +53,9 @@ module Users
             passkey_count: user.passkeys.count
           )
           render json: {flow: "passkey", options: get_options}
+        # @lat: [[identity-and-access#Identity and access#The phone number is the account#A number no US phone can have never reaches Twilio]]
+        elsif !phone.possible_us_phone?
+          redirect_to(root_path, inertia: {errors: {phone: "Enter a valid US phone number."}})
         elsif phone.present?
           # @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#A phone confirmed in this session resumes enrollment]]
           if session[:verified_phone] == phone

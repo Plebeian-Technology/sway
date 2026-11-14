@@ -41,6 +41,20 @@ RSpec.describe "PhoneVerification", type: :request do
         expect(session_hash[:phone]).to eq("4105551212")
       end
 
+      it "returns 422 without calling Twilio for a number no US phone can have" do
+        post phone_verification_index_path, params: {phone_verification: {phone: "1234567890"}}
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body).to eq({"success" => false, "error" => "Enter a valid US phone number."})
+        expect(twilio_verifications_double).not_to have_received(:create)
+      end
+
+      it "calls Twilio for a possible US number" do
+        post phone_verification_index_path, params: params
+
+        expect(twilio_verifications_double).to have_received(:create).once
+      end
+
       it "returns false when Twilio raises an error" do
         allow_any_instance_of(PhoneVerificationController).to receive(
           :send_phone_verification

@@ -202,6 +202,14 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
         expect(twilio_verifications_double).to have_received(:create).with(to: "+14105550456", channel: "sms").once
       end
 
+      it "answers 422 invalid_phone without calling Twilio for a number no US phone can have" do
+        post "/api/v1/phone_verification", params: {phone: "1234567890"}, as: :json
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_body.dig(:error, :code)).to eq("invalid_phone")
+        expect(twilio_verifications_double).not_to have_received(:create)
+      end
+
       it "refuses the 6th request from one IP within an hour with 429 rate_limited" do
         with_rate_limit_enabled(:phone_verify) do
           6.times do |i|
@@ -226,6 +234,14 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
         stored = Rails.cache.read("sms_verified_token:#{body[:sms_verified_token]}")
         expect(stored[:phone]).to eq(PhoneCacheKey.digest(phone))
         expect(stored[:phone]).not_to eq(phone)
+      end
+
+      it "answers 422 invalid_phone without calling Twilio for a number no US phone can have" do
+        post "/api/v1/phone_verification/verify", params: {phone: "1234567890", code: "123456"}, as: :json
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_body.dig(:error, :code)).to eq("invalid_phone")
+        expect(twilio_verification_checks_double).not_to have_received(:create)
       end
 
       context "when Twilio answers pending" do

@@ -34,6 +34,24 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         expect(response).to redirect_to(root_path)
       end
 
+      it "redirects with the phone error and sends no SMS for a number no US phone can have" do
+        post users_webauthn_sessions_path, params: {phone: "1234567890"}
+
+        expect(response).to redirect_to(root_path)
+        expect(session_hash[:inertia_errors]).to eq({phone: "Enter a valid US phone number."})
+        expect(twilio_verifications_double).not_to have_received(:create)
+      end
+
+      it "still answers the passkey flow for a stored phone no US phone can have" do
+        user = create(:user, :registered, phone: "1234567890")
+        create(:passkey, user: user, external_id: fake_credential_id)
+
+        post users_webauthn_sessions_path, params: {phone: "1234567890"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["flow"]).to eq("passkey")
+      end
+
       it "accepts an 11-digit input that starts with country code 1 by normalizing to 10 digits" do
         user = create(:user, :registered, phone: "4105553000")
         create(:passkey, user: user, external_id: fake_credential_id)

@@ -33,8 +33,8 @@ class PhoneVerificationController < ApplicationController
 
   def create
     phone = phone_verification_params[:phone].to_s.normalize_phone
-    if phone.length != 10
-      return render json: {success: false, error: "Phone must be 10 digits."}, status: :unprocessable_content
+    unless phone.possible_us_phone?
+      return render json: {success: false, error: "Enter a valid US phone number."}, status: :unprocessable_content
     end
 
     phone_last4 = phone.last(4)

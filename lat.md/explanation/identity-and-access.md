@@ -68,6 +68,14 @@ can establish the cause without copying raw messages into application reports.
 Code 60200 alone is insufficient evidence for changing phone validation or
 silencing all verification failures.
 
+### A number no US phone can have never reaches Twilio
+
+The SMS endpoints refuse a number that North American numbering cannot assign before any Twilio call, because Twilio would only reject it after spending the user's attempt.
+
+[[config/initializers/monkey_patches.rb#String#possible_us_phone?]] accepts exactly ten digits whose area code and exchange each start with 2 to 9, after the usual normalization strips a leading country code 1. The web code request, the mobile code request and the mobile code check answer 422 with "Enter a valid US phone number." for anything else. This rests on the numbering rule, not on Twilio error 60200 (see [[identity-and-access#Identity and access#The phone number is the account#A rejected verification needs a parameter diagnosis]]).
+
+[[app/controllers/users/webauthn/sessions_controller.rb#SessionsController#create|The web sign-in start]] applies the rule only after its passkey branch, where it would otherwise send an SMS. A stored account whose phone fails the rule still gets the passkey flow, so the rule never locks out an existing user; the stored phone and the account model's own phone validation are unchanged.
+
 ### A verification-not-found reply has one safe browser outcome
 
 A Twilio verification-not-found reply returns one fixed message and stops the passkey flow.

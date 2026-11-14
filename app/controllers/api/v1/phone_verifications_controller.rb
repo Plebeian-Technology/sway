@@ -35,8 +35,8 @@ module Api
 
       def request_code
         phone = params.require(:phone).to_s.normalize_phone
-        if phone.length != 10
-          return render_error(code: "invalid_phone", message: "Phone must be a 10-digit US number", status: :unprocessable_content)
+        unless phone.possible_us_phone?
+          return render_error(code: "invalid_phone", message: "Enter a valid US phone number.", status: :unprocessable_content)
         end
 
         if Sway::Settings.dev_login.skip_phone_verification
@@ -81,8 +81,8 @@ module Api
         phone = params.require(:phone).to_s.normalize_phone
         code = params.fetch(:code).to_s.strip
 
-        if phone.length != 10
-          return render_error(code: "invalid_phone", message: "Phone must be a 10-digit US number", status: :unprocessable_content)
+        unless phone.possible_us_phone?
+          return render_error(code: "invalid_phone", message: "Enter a valid US phone number.", status: :unprocessable_content)
         end
 
         if code.blank?
