@@ -15,6 +15,10 @@ RSpec.shared_context "TwilioDouble" do
     )
   end
 
+  around do |example|
+    with_env("TWILIO_VERIFY_SERVICE_SID" => "VA00000000000000000000000000000000") { example.run }
+  end
+
   before do
     allow(Twilio::REST::Client).to receive(:new).and_return(
       twilio_client_double

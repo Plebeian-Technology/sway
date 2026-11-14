@@ -189,6 +189,45 @@ RSpec.describe "Api::V1::PhoneVerifications", type: :request do
     end
   end
 
+  describe "when the Twilio Verify service id is not set" do
+    include_context "TwilioDouble"
+
+    around do |ex|
+      with_app_config(:dev_login, skip_phone_verification: false) do
+        with_env(
+          "TWILIO_ACCOUNT_SID" => "AC00000000000000000000000000000000",
+          "TWILIO_AUTH_TOKEN" => "test-auth-token",
+          "TWILIO_VERIFY_SERVICE_SID" => nil
+        ) { ex.run }
+      end
+    end
+
+    before do
+      allow(Twilio::REST::Client).to receive(:new).and_call_original
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "request_code answers 503 verification_unavailable and reports the missing setting" do
+      post "/api/v1/phone_verification", params: {phone: phone}, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(json_body.dig(:error, :code)).to eq("verification_unavailable")
+      expect(Sentry).to have_received(:capture_exception)
+        .with(an_instance_of(Authentication::VerifyServiceNotConfiguredError)).once
+    end
+
+    it "verify answers 503 verification_unavailable and reports the missing setting" do
+      post "/api/v1/phone_verification/verify",
+        params: {phone: phone, code: "000000"},
+        as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(json_body.dig(:error, :code)).to eq("verification_unavailable")
+      expect(Sentry).to have_received(:capture_exception)
+        .with(an_instance_of(Authentication::VerifyServiceNotConfiguredError)).once
+    end
+  end
+
   describe "with the skip switch off (Twilio answers)" do
     include_context "TwilioDouble"
 

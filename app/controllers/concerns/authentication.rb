@@ -6,6 +6,8 @@ module Authentication
   # @lat: [[twilio-error-phone-redaction#Why VotingReminderJob's inner rescue logs only structured fields and the error class]]
   class TwilioVerificationError < StandardError; end
 
+  class VerifyServiceNotConfiguredError < Twilio::REST::TwilioError; end
+
   included do
     def send_phone_verification(session, phone_)
       # @lat: [[twilio-error-phone-redaction#Why the session guard checks for nil, not blank?]]
@@ -46,6 +48,8 @@ module Authentication
             TwilioVerificationError.new("Twilio verification send failed (code=#{e.code}, status=#{e.status_code})")
           )
         end
+        false
+      rescue VerifyServiceNotConfiguredError
         false
       rescue Twilio::REST::TwilioError => e
         # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
@@ -115,7 +119,13 @@ module Authentication
 
     # @lat: [[env-secret-blank-value-handling#The two failure modes are not equally noisy]]
     def service_sid
-      EnvSecret.read("TWILIO_VERIFY_SERVICE_SID")
+      sid = EnvSecret.read("TWILIO_VERIFY_SERVICE_SID")
+      return sid if sid
+
+      # @lat: [[twilio-error-phone-redaction#Why a missing Verify service id is answered like an outage]]
+      error = VerifyServiceNotConfiguredError.new("TWILIO_VERIFY_SERVICE_SID is not set")
+      Sentry.capture_exception(error)
+      raise error
     end
   end
 end

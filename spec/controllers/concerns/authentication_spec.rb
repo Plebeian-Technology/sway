@@ -94,6 +94,31 @@ RSpec.describe Authentication, type: :controller do
         expect(reported.first&.message.to_s).not_to include("4105551212")
         expect(reported.first&.cause).to be_nil
       end
+
+      context "when the Twilio Verify service id is not set" do
+        around do |example|
+          with_env(
+            "TWILIO_ACCOUNT_SID" => "AC00000000000000000000000000000000",
+            "TWILIO_AUTH_TOKEN" => "test-auth-token",
+            "TWILIO_VERIFY_SERVICE_SID" => nil
+          ) { example.run }
+        end
+
+        before { allow(Twilio::REST::Client).to receive(:new).and_call_original }
+
+        it "returns false and reports the missing setting once, by name only" do
+          allow(Rails.env).to receive(:production?).and_return(true)
+          reported = [] #: Array[Exception]
+          allow(Sentry).to receive(:capture_exception) { |error| reported << error }
+
+          result = controller.send(:send_phone_verification, session_store, phone)
+
+          expect(result).to be(false)
+          expect(reported.map(&:class)).to eq([Authentication::VerifyServiceNotConfiguredError])
+          expect(reported.first&.message).to eq("TWILIO_VERIFY_SERVICE_SID is not set")
+          expect(session_store).not_to have_key(:phone)
+        end
+      end
     end
 
     it "returns false when session or phone is missing" do

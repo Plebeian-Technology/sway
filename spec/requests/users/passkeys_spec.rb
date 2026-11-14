@@ -164,6 +164,37 @@ RSpec.describe "Users::Passkeys", type: :request do
       expect(response.parsed_body).to eq({"success" => false})
     end
 
+    context "when the Twilio Verify service id is not set" do
+      around do |example|
+        with_env(
+          "TWILIO_ACCOUNT_SID" => "AC00000000000000000000000000000000",
+          "TWILIO_AUTH_TOKEN" => "test-auth-token",
+          "TWILIO_VERIFY_SERVICE_SID" => nil
+        ) { example.run }
+      end
+
+      before do
+        allow(Twilio::REST::Client).to receive(:new).and_call_original
+        allow(Sentry).to receive(:capture_exception)
+      end
+
+      it "verify_phone and confirm_phone answer success:false and report the missing setting" do
+        setup
+
+        post verify_phone_users_passkeys_path
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"success" => false})
+
+        post confirm_phone_users_passkeys_path, params: {code: "123456"}
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"success" => false})
+        expect(session_hash[:add_passkey_verified_at]).to be_nil
+
+        expect(Sentry).to have_received(:capture_exception)
+          .with(an_instance_of(Authentication::VerifyServiceNotConfiguredError)).twice
+      end
+    end
+
     it "add_options refuses to issue a challenge without a fresh phone confirmation" do
       setup
 

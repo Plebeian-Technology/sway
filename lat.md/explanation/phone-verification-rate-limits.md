@@ -21,7 +21,7 @@ Registration spam needs a verified code, and a verified code needs a code reques
 
 The endpoints this spec drives call `send_phone_verification` and `send_email_verification`, which build a real Twilio client out of environment variables.
 
-Without a stand-in, these examples would pass only where the `TWILIO_*` variables happen to be set, and 500 on a bare CI runner with `ArgumentError: sid cannot be nil` from `services(nil)` — an error the controller's `Twilio::REST::RestError` rescue does not catch, since it isn't a `RestError` at all. Swapping in `TwilioDouble` isolates the rate limiting these examples are actually about from that unrelated credential dependency.
+Without a stand-in, these examples would pass only where the `TWILIO_*` variables happen to be set. On a bare CI runner the Verify service id is missing, and every send and check answers the handled outage reply described in [[twilio-error-phone-redaction#Why a missing Verify service id is answered like an outage]] instead of reaching the rate limiter. `TwilioDouble` sets a placeholder service id and stubs the client, which isolates the rate limiting these examples are actually about from that unrelated credential dependency.
 
 ## Why every phone-keyed limiter normalizes the number first
 

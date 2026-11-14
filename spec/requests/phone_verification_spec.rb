@@ -55,6 +55,29 @@ RSpec.describe "PhoneVerification", type: :request do
         expect(twilio_verifications_double).to have_received(:create).once
       end
 
+      context "when the Twilio Verify service id is not set" do
+        around do |example|
+          with_env(
+            "TWILIO_ACCOUNT_SID" => "AC00000000000000000000000000000000",
+            "TWILIO_AUTH_TOKEN" => "test-auth-token",
+            "TWILIO_VERIFY_SERVICE_SID" => nil
+          ) { example.run }
+        end
+
+        before { allow(Twilio::REST::Client).to receive(:new).and_call_original }
+
+        it "answers success false and reports the missing setting" do
+          allow(Sentry).to receive(:capture_exception)
+
+          post phone_verification_index_path, params: params
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to eq({"success" => false})
+          expect(Sentry).to have_received(:capture_exception)
+            .with(an_instance_of(Authentication::VerifyServiceNotConfiguredError)).once
+        end
+      end
+
       it "returns false when Twilio raises an error" do
         allow_any_instance_of(PhoneVerificationController).to receive(
           :send_phone_verification
@@ -203,6 +226,32 @@ RSpec.describe "PhoneVerification", type: :request do
       expect(logged.join("\n")).to include("phone_verification.update_failed")
       expect(logged.join("\n")).not_to include("4105551212")
       expect(session_hash[:verified_phone]).to be_nil
+    end
+
+    context "when the Twilio Verify service id is not set" do
+      around do |example|
+        with_env(
+          "TWILIO_ACCOUNT_SID" => "AC00000000000000000000000000000000",
+          "TWILIO_AUTH_TOKEN" => "test-auth-token",
+          "TWILIO_VERIFY_SERVICE_SID" => nil
+        ) { example.run }
+      end
+
+      before { allow(Twilio::REST::Client).to receive(:new).and_call_original }
+
+      it "answers the fixed retry message and reports the missing setting" do
+        allow(Sentry).to receive(:capture_exception)
+
+        patch phone_verification_path("1"), params: params
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {"success" => false, "error" => "Could not check the code. Please try again."}
+        )
+        expect(Sentry).to have_received(:capture_exception)
+          .with(an_instance_of(Authentication::VerifyServiceNotConfiguredError)).once
+        expect(session_hash[:verified_phone]).to be_nil
+      end
     end
 
     context "when the session phone is already verified" do

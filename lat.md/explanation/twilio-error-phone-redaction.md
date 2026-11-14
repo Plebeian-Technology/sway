@@ -101,3 +101,12 @@ Session availability guards test for nil rather than blank state because fresh s
 
 `send_phone_verification` verifies `session.nil? || phone_.blank?` rather than invoking `session.blank?`. Brand-new `ActionDispatch::Request::Session` instances report `empty?` as true on initial visits, causing `blank?` checks to misidentify valid sessions as uninitialized.
 
+## Why a missing Verify service id is answered like an outage
+
+A missing `TWILIO_VERIFY_SERVICE_SID` is a configuration fault that sends no SMS, so every SMS endpoint answers it the way it answers a Twilio outage.
+
+Passed a nil id, `services(nil)` raises `ArgumentError` inside the Twilio gem, which no SMS endpoint rescues, so a bad deploy or secret rotation would turn every sign-up into a 500 that does not name its cause. `Authentication#service_sid` instead raises [[app/controllers/concerns/authentication.rb#Authentication#VerifyServiceNotConfiguredError]], a subclass of `Twilio::REST::TwilioError`, so the network-failure rescues in [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]] already catch it at every call site.
+
+The method reports the error to Sentry itself, in every environment, before raising, because most of those rescues do not report. The message names the setting and never a value. The send helper rescues this class ahead of its generic `TwilioError` rescue, so a production send reports the fault once and not twice.
+
+The email verification endpoints share the method but rescue only `RestError`, so a missing service id still raises there, as this named and reported error.
