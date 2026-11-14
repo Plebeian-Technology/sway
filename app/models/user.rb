@@ -134,7 +134,7 @@ class User < ApplicationRecord
     class_name: "UserOrganizationMembershipInvite",
     foreign_key: :invitee_user_id,
     inverse_of: :invitee_user,
-    dependent: :nullify
+    dependent: :destroy
   # @lat: [[domain-entities#Organizations and campaigns]]
   has_many :organization_follows, dependent: :destroy
   has_many :followed_organizations, through: :organization_follows, source: :organization
