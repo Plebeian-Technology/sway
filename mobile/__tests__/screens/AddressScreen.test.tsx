@@ -491,6 +491,23 @@ describe("AddressScreen", () => {
             );
         });
 
+        it("enables Save for a picked suggestion that has coordinates but no street", async () => {
+            mockPlacesKeys.googlePlacesApiKeyIOS = "test-key";
+            wrap(<AddressScreen />);
+
+            act(() => {
+                mockOnSelectAddress?.({ ...holliday, street1: "" });
+            });
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(postedRegistration()).toEqual(
+                expect.objectContaining({ street: "", latitude: 39.29105, longitude: -76.61069 }),
+            );
+        });
+
         it("keeps Save disabled in edit mode until a field differs from the saved address", () => {
             mockUseUserProfile.mockReturnValue({
                 user: {

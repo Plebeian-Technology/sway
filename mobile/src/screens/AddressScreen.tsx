@@ -171,7 +171,9 @@ export default function AddressScreen() {
         form.region_code === (savedAddress.region_code ?? "") &&
         form.postal_code === (savedAddress.postal_code ?? "") &&
         form.country === (savedAddress.country ?? "United States");
-    const canSubmit = form.street1.trim() !== "" && (isOnboarding || hasPickedCoordinates || !matchesSavedAddress);
+    const canSubmit =
+        (form.street1.trim() !== "" || hasPickedCoordinates) &&
+        (isOnboarding || hasPickedCoordinates || !matchesSavedAddress);
 
     // @lat: [[mobile-auth-and-onboarding-flow#Why isOnboarding only changes wording]]
     const submitLabel = isOnboarding ? PARITY_COPY.address.complete.cta : PARITY_COPY.address.edit.saveCta;
