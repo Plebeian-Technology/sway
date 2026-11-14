@@ -6,6 +6,7 @@ module Users
       class AlreadyRegistered < StandardError; end
 
       ALREADY_REGISTERED_MESSAGE = "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access."
+      SIGN_IN_FAILED_MESSAGE = "Your passkey was saved, but Sway couldn't sign you in. Sign in with your passkey to continue."
 
       rate_limit to: 5, within: 1.hour,
         by: -> { request.remote_ip },
@@ -128,7 +129,20 @@ module Users
         end
 
         if passkey_saved && user
-          sign_in(user)
+          begin
+            sign_in(user)
+          rescue => e
+            SwayLogging.log_exception(
+              "webauthn.registration.sign_in_failed",
+              exception: e,
+              user_id: user.id,
+              passkey_id: passkey.id,
+              phone_last4: verified_phone.to_s.last(4)
+            )
+            Sentry.capture_exception(e, extra: {user_id: user.id, passkey_id: passkey.id})
+            redirect_to root_path, alert: SIGN_IN_FAILED_MESSAGE
+            return
+          end
           SwayLogging.info(
             "webauthn.registration.completed",
             user_id: user.id,
@@ -167,6 +181,15 @@ module Users
           errors: e.record.errors.full_messages
         )
         redirect_to root_path, alert: "Registration failed: #{e.record.errors.full_messages.join(", ")}"
+      rescue ActiveRecord::RecordNotUnique => e
+        SwayLogging.log_exception(
+          "webauthn.registration.passkey_save_failed",
+          exception: e,
+          level: :warn,
+          user_id: user&.id,
+          phone_last4: verified_phone.to_s.last(4)
+        )
+        redirect_to root_path, alert: "Couldn't register your Passkey"
       ensure
         session.delete(:current_registration)
       end

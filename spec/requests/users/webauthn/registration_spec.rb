@@ -326,13 +326,73 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(session_hash[:current_registration]).to be_nil
     end
 
-    it "returns an error response when current_registration is missing" do
+    it "redirects to root with the expired-session alert when current_registration is missing" do
       session_hash.delete(:current_registration)
 
       post callback_users_webauthn_registration_index_path,
         params: callback_params
 
-      expect(response).not_to have_http_status(:ok)
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects to root with the expired-session alert when the verified phone is blank" do
+      session_hash.delete(:verified_phone)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects to root with the retry alert when another passkey has the same credential id" do
+      create(:passkey, external_id: fake_credential_id)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(session_hash[:user_id]).to be_nil
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Couldn't register your Passkey")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects to root with the retry alert when another passkey has the same public key" do
+      create(:passkey, public_key: fake_public_key)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(session_hash[:user_id]).to be_nil
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Couldn't register your Passkey")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "keeps the saved account and redirects with the sign-in alert when signing in fails" do
+      sign_in_error = RuntimeError.new("sign in failed")
+      allow_any_instance_of(Users::Webauthn::RegistrationController).to receive(:sign_in).and_raise(sign_in_error)
+      allow(Sentry).to receive(:capture_exception)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.to change(User, :count).by(1).and change(Passkey, :count).by(1)
+
+      expect(Passkey.last!.user).to eq(User.find_by!(phone: phone))
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::SIGN_IN_FAILED_MESSAGE)
+      expect(flash[:alert]).to include("Sign in with your passkey")
+      expect(Sentry).to have_received(:capture_exception).with(sign_in_error, anything)
       expect(session_hash[:current_registration]).to be_nil
     end
 
