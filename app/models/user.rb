@@ -194,7 +194,7 @@ class User < ApplicationRecord
 
   has_many :user_devices, dependent: :destroy
   has_many :notification_preferences, dependent: :destroy
-  has_many :registration_funnel_events, dependent: :nullify
+  has_many :registration_funnel_events, dependent: :destroy
   has_many :representative_reassignments, dependent: :destroy
 
   attr_accessor :transient_funnel_metadata
