@@ -5,5 +5,6 @@ class Object
   def annapolis_officers: (SwayLocale annapolis) -> Array[Legislator]
   def annapolis_service: (SwayLocale annapolis) -> SwayRegistrationService
   def city_hall: () -> Address
+  def towson: () -> Address
   def seeded_congress: () -> SwayLocale
 end

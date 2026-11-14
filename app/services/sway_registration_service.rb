@@ -113,8 +113,9 @@ class SwayRegistrationService
 
   def locale_wide_candidates
     unless sway_locale.congress?
+      # @lat: [[representative-resolution#Locale-wide district]]
       matches_locale = address.region_code == sway_locale.state_code &&
-        (sway_locale.regional? || address.city.to_s.casecmp?(sway_locale.city.to_s))
+        (sway_locale.regional? || districts.any?)
       return [] unless matches_locale
     end
 

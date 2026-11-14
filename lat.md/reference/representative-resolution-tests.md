@@ -99,6 +99,18 @@ Registration against the seeded Baltimore roster, with the shipped council bound
 
 Registration against the seeded Congress roster for a Maryland address returns two Senators and one Representative and no President, and reconciliation keeps the same links.
 
+### Leaves city-wide officers off outside the city boundary
+
+An address whose mailing city is Baltimore but whose point lies outside the shipped Baltimore boundary resolves no Baltimore representative, neither a council member nor the Mayor or Council President.
+
+### Keeps regional locale-wide officers for any city
+
+A Maryland address whose mailing city is not the state's name still resolves the seeded Governor from the Maryland locale-wide district.
+
+### Keeps Congress locale-wide officers outside every city
+
+The same out-of-city address resolves the Congress locale-wide officer when Census places it in no House district.
+
 ## Reconciliation refusal
 
 A recorded resolution skip refuses reconciliation before it mutates stored representative links.

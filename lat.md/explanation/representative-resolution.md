@@ -22,6 +22,8 @@ The locale document identifies its locale-wide district by the exact stored name
 
 Congress declares `US0`; Maryland and Baltimore declare `MD0`. This avoids treating the first numeric-zero district in Congress as nationwide when state Senate seats also use names such as `MD0`.
 
+A city locale attaches its locale-wide officers only when its boundary file places the address point inside the city ([[app/services/sway_registration_service.rb#SwayRegistrationService#districts]] is not empty), because a mailing city such as Baltimore also names county addresses outside the city. A regional locale attaches them to every address in its state, and Congress to every address.
+
 ## Congress fallback
 
 Every address is resolved against the US Congress locale, whatever country it names, so a user outside every supported place still gets the federal officials the address reaches.

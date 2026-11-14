@@ -770,6 +770,60 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     end
   end
 
+  context "when an address with a Baltimore mailing city lies outside the city boundary" do
+    let(:towson) do
+      create(
+        :address,
+        street: "400 Washington Ave",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21204",
+        latitude: 39.4015,
+        longitude: -76.6019
+      )
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Leaves city-wide officers off outside the city boundary]]
+    it "returns no Baltimore representative" do
+      baltimore = create(:sway_locale, :baltimore)
+      SeedLegislator.run([baltimore])
+      create(:user_address, user:, address: towson)
+
+      service = described_class.new(user, towson, baltimore, invited_by_id: nil, async: false)
+
+      expect(service.district_legislators).to be_empty
+      expect(service.skipped_resolution_errors).to be_empty
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Keeps regional locale-wide officers for any city]]
+    it "still returns the Maryland Governor when the mailing city is not the state's" do
+      SeedLegislator.run([maryland_locale])
+      towson.update!(city: "Towson")
+      allow_any_instance_of(described_class) # rubocop:disable RSpec/AnyInstance
+        .to receive(:find_legislators_from_open_states_geo_endpoint)
+        .and_return([])
+
+      service = described_class.new(user, towson, maryland_locale, invited_by_id: nil, async: false)
+
+      expect(service.district_legislators.map(&:last_name)).to include("Moore")
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Keeps Congress locale-wide officers outside every city]]
+    it "still returns the Congress locale-wide officer when Census finds no district" do
+      stub_request(:get, %r{tigerweb\.geo\.census\.gov/arcgis/rest/services/TIGERweb/})
+        .to_return(status: 200, body: {features: []}.to_json)
+      president, = create_seat_term(
+        district: create(:district, sway_locale: congress, name: "US0"),
+        office_identity: "us-president",
+        last_name: "President"
+      )
+
+      service = described_class.new(user, towson, congress, invited_by_id: nil, async: false)
+
+      expect(service.district_legislators).to contain_exactly(president)
+    end
+  end
+
   context "when a Maryland address registers against the seeded Congress roster" do
     let(:seeded_congress) { create(:sway_locale, :congress) }
 
