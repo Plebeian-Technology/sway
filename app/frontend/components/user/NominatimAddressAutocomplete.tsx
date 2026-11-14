@@ -35,7 +35,8 @@ const NominatimAddressAutocomplete: React.FC<INominatimAddressAutocompleteProps>
     const isOpen = status === "OK" && suggestions.length > 0;
 
     const formErrors = (form.errors ?? {}) as Record<string, string | undefined>;
-    const errorMessage = formErrors[field.name as string] ?? Object.values(formErrors)[0];
+    const { code: _errorCode, ...errorsWithoutCode } = formErrors;
+    const errorMessage = formErrors[field.name as string] ?? formErrors.message ?? Object.values(errorsWithoutCode)[0];
     const errorId = `${field.name}-error`;
 
     const handleInputChange = useCallback(

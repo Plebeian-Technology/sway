@@ -642,6 +642,48 @@ describe("NominatimAddressAutocomplete", () => {
             expect(input.getAttribute("aria-describedby")).toBe(alert.id);
         });
 
+        it.each([
+            [
+                "address_switch_cooldown",
+                "You recently changed your address. To prevent cross-district voting abuse, please wait before switching addresses again.",
+            ],
+            [
+                "geocoding_unavailable",
+                "We couldn't verify your address right now — the district lookup service is temporarily unavailable. Please try again in a few minutes.",
+            ],
+        ])("shows the message and never the %s code from a { code, message } error", (code, message) => {
+            const form = buildForm({ errors: { code, message } });
+
+            render(<NominatimAddressAutocomplete form={form} field={REGISTRATION_FIELD} />);
+
+            const input = screen.getByRole("combobox");
+            const alert = screen.getByRole("alert");
+
+            expect(alert.textContent).toBe(message);
+            expect(screen.queryByText(code)).toBeNull();
+            expect(document.body.textContent).not.toContain(code);
+            expect(input.getAttribute("aria-invalid")).toBe("true");
+            expect(input.getAttribute("aria-describedby")).toBe(alert.id);
+        });
+
+        it("prefers the error under the field name over a { code, message } error", () => {
+            const form = buildForm({
+                errors: { address: "We couldn't verify that address.", code: "some_code", message: "Other." },
+            });
+
+            render(<NominatimAddressAutocomplete form={form} field={REGISTRATION_FIELD} />);
+
+            expect(screen.getByRole("alert").textContent).toBe("We couldn't verify that address.");
+        });
+
+        it("shows an error under another key such as base next to a code", () => {
+            const form = buildForm({ errors: { code: "some_code", base: "Base problem." } });
+
+            render(<NominatimAddressAutocomplete form={form} field={REGISTRATION_FIELD} />);
+
+            expect(screen.getByRole("alert").textContent).toBe("Base problem.");
+        });
+
         it("does not render error or invalid attributes when form.errors is empty", () => {
             const form = buildForm({ errors: {} });
 
