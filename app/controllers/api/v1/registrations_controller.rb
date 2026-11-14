@@ -159,17 +159,45 @@ module Api
 
         render json: result
       rescue ActiveRecord::RecordInvalid => e
+        return render_phone_already_registered if phone_taken?(e)
+
         render_error(
           code: "invalid_passkey",
           message: e.record.errors.full_messages.to_sentence,
           status: :unprocessable_content
         )
+      rescue ActiveRecord::RecordNotUnique => e
+        raise unless phone_taken?(e)
+
+        render_phone_already_registered
       rescue WebAuthn::Error
         Rails.cache.delete(cache_key) if cache_key
         render_error(
           code: "invalid_credentials",
           message: "Passkey registration failed",
           status: :unauthorized
+        )
+      end
+
+      private
+
+      # @lat: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]
+      def phone_taken?(error)
+        case error
+        when ActiveRecord::RecordInvalid
+          error.record.is_a?(User) && error.record.errors.of_kind?(:phone, :taken)
+        when ActiveRecord::RecordNotUnique
+          error.message.include?("users.phone")
+        else
+          false
+        end
+      end
+
+      def render_phone_already_registered
+        render_error(
+          code: "phone_already_registered",
+          message: "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access.",
+          status: :conflict
         )
       end
     end

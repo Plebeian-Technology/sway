@@ -444,4 +444,91 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(Passkey.count).to eq(0)
     end
   end
+
+  describe "only a phone that already has an account is refused" do
+    let(:phone) { "4105553000" }
+    let(:callback_params) do
+      {
+        id: fake_credential_id,
+        rawId: Base64.strict_encode64(fake_credential_id),
+        passkey_label: "MacBook"
+      }
+    end
+
+    before do
+      session_hash[:phone] = phone
+      session_hash[:verified_phone] = phone
+    end
+
+    it "gives a brand-new phone exactly one account and one passkey" do
+      post users_webauthn_registration_index_path
+      expect(response).to have_http_status(:ok)
+
+      post callback_users_webauthn_registration_index_path, params: callback_params
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      user = User.find_by!(phone: phone)
+      expect(User.where(phone: phone).count).to eq(1)
+      expect(user.passkeys.count).to eq(1)
+    end
+
+    it "lets a user row without a passkey enroll its first passkey without a second row" do
+      user = create(:user, phone: phone, is_phone_verified: true)
+
+      post users_webauthn_registration_index_path
+      expect(response).to have_http_status(:ok)
+
+      expect do
+        post callback_users_webauthn_registration_index_path, params: callback_params
+      end.not_to change(User, :count)
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      expect(user.passkeys.count).to eq(1)
+    end
+
+    it "refuses a phone that already has a passkey at the start" do
+      create(:passkey, user: create(:user, phone: phone))
+
+      post users_webauthn_registration_index_path
+
+      expect(response).to have_http_status(:conflict)
+      expect(response.parsed_body["errors"]).to eq([Users::Webauthn::RegistrationController::ALREADY_REGISTERED_MESSAGE])
+    end
+
+    context "when a concurrent enrollment saved the phone after this callback looked it up" do
+      before do
+        post users_webauthn_registration_index_path
+        expect(response).to have_http_status(:ok)
+        create(:passkey, user: create(:user, phone: phone))
+      end
+
+      it "answers already registered when the save fails the phone uniqueness validation" do
+        allow(User).to receive(:find_or_initialize_by).and_return(User.new(phone: phone))
+
+        expect do
+          post callback_users_webauthn_registration_index_path, params: callback_params
+        end.not_to(change { [User.count, Passkey.count] })
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::ALREADY_REGISTERED_MESSAGE)
+        expect(session_hash[:user_id]).to be_nil
+        expect(session_hash[:current_registration]).to be_nil
+      end
+
+      it "answers already registered when the save hits the unique phone index" do
+        unsaved_duplicate = User.new(phone: phone)
+        allow(unsaved_duplicate).to receive(:save!).and_wrap_original { |original| original.call(validate: false) }
+        allow(User).to receive(:find_or_initialize_by).and_return(unsaved_duplicate)
+
+        expect do
+          post callback_users_webauthn_registration_index_path, params: callback_params
+        end.not_to(change { [User.count, Passkey.count] })
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::ALREADY_REGISTERED_MESSAGE)
+        expect(session_hash[:user_id]).to be_nil
+        expect(session_hash[:current_registration]).to be_nil
+      end
+    end
+  end
 end

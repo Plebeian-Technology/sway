@@ -1,5 +1,11 @@
-# Integration-session method used in spec/requests/api/v1/registrations_spec.rb.
+# Integration-session method and example helpers used in spec/requests/api/v1/registrations_spec.rb.
 class Object
   # Starts a fresh integration session with an empty cookie jar.
   def reset!: () -> void
+
+  def start_registration: () -> Integer
+
+  def finish_registration: (String challenge_id) -> Integer
+
+  def challenge_id: () -> String
 end

@@ -399,6 +399,89 @@ RSpec.describe "Api::V1::Registrations", type: :request do
     end
   end
 
+  describe "only a phone that already has an account is refused" do
+    include_context "WebAuthnDouble"
+
+    def start_registration
+      token = SmsVerificationToken.issue!(phone)
+      post "/api/v1/registrations",
+        params: {registration: {sms_verified_token: token, phone: phone}},
+        as: :json
+    end
+
+    def finish_registration(challenge_id)
+      post "/api/v1/registrations/callback",
+        params: {registration: {challenge_id: challenge_id, credential: {id: "x", type: "public-key"}, platform: "ios"}},
+        as: :json
+    end
+
+    it "gives a brand-new phone exactly one account and one passkey" do
+      start_registration
+      expect(response).to have_http_status(:ok)
+
+      finish_registration(json_body[:challenge_id])
+
+      expect(response).to have_http_status(:ok)
+      expect(User.where(phone: phone).count).to eq(1)
+      expect(User.find_by!(phone: phone).passkeys.count).to eq(1)
+    end
+
+    it "lets a user row without a passkey enroll its first passkey without a second row" do
+      user = create(:user, phone: phone)
+
+      start_registration
+      expect(response).to have_http_status(:ok)
+
+      expect { finish_registration(json_body[:challenge_id]) }.not_to change(User, :count)
+
+      expect(response).to have_http_status(:ok)
+      expect(user.passkeys.count).to eq(1)
+    end
+
+    it "refuses a phone that already has a passkey at the start" do
+      create(:passkey, user: create(:user, phone: phone))
+
+      start_registration
+
+      expect(response).to have_http_status(:conflict)
+      expect(json_body.dig(:error, :code)).to eq("phone_already_registered")
+    end
+
+    context "when a concurrent registration saved the phone after this callback looked it up" do
+      let!(:challenge_id) do
+        start_registration
+        expect(response).to have_http_status(:ok)
+        json_body[:challenge_id]
+      end
+
+      before do
+        create(:passkey, user: create(:user, phone: phone))
+        allow(User).to receive(:find_by).and_call_original
+        allow(User).to receive(:find_by).with(phone: phone).and_return(nil)
+      end
+
+      it "answers 409 phone_already_registered when the create fails the phone uniqueness validation" do
+        expect { finish_registration(challenge_id) }
+          .not_to(change { [User.count, Passkey.count, UserDevice.count] })
+
+        expect(response).to have_http_status(:conflict)
+        expect(json_body.dig(:error, :code)).to eq("phone_already_registered")
+      end
+
+      it "answers 409 phone_already_registered when the create hits the unique phone index" do
+        allow(User).to receive(:create!).and_wrap_original do |_original, **attributes|
+          User.new(attributes).tap { |user| user.save!(validate: false) }
+        end
+
+        expect { finish_registration(challenge_id) }
+          .not_to(change { [User.count, Passkey.count, UserDevice.count] })
+
+        expect(response).to have_http_status(:conflict)
+        expect(json_body.dig(:error, :code)).to eq("phone_already_registered")
+      end
+    end
+  end
+
   # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
   describe "rate limiting (account-enumeration bound)" do
     it "throttles registration starts per IP after 5 attempts" do

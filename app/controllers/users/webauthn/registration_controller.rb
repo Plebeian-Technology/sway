@@ -172,6 +172,8 @@ module Users
         )
         redirect_to root_path, alert: "Verification failed: #{e.message}"
       rescue ActiveRecord::RecordInvalid => e
+        return redirect_to(root_path, alert: ALREADY_REGISTERED_MESSAGE) if phone_taken?(e)
+
         SwayLogging.log_exception(
           "webauthn.registration.record_invalid",
           exception: e,
@@ -182,6 +184,8 @@ module Users
         )
         redirect_to root_path, alert: "Registration failed: #{e.record.errors.full_messages.join(", ")}"
       rescue ActiveRecord::RecordNotUnique => e
+        return redirect_to(root_path, alert: ALREADY_REGISTERED_MESSAGE) if phone_taken?(e)
+
         SwayLogging.log_exception(
           "webauthn.registration.passkey_save_failed",
           exception: e,
@@ -195,6 +199,18 @@ module Users
       end
 
       private
+
+      # @lat: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]
+      def phone_taken?(error)
+        case error
+        when ActiveRecord::RecordInvalid
+          error.record.is_a?(User) && error.record.errors.of_kind?(:phone, :taken)
+        when ActiveRecord::RecordNotUnique
+          error.message.include?("users.phone")
+        else
+          false
+        end
+      end
 
       def sanitized_user_attributes(attributes, verified_phone)
         empty_attributes = {}

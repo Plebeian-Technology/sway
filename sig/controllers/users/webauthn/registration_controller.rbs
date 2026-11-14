@@ -13,6 +13,8 @@ module Users
 
             private
 
+            def phone_taken?: (ActiveRecord::RecordInvalid | ActiveRecord::RecordNotUnique error) -> bool
+
             def sanitized_user_attributes: (untyped attributes, untyped verified_phone) -> untyped
 
             def read_attribute: (untyped attributes, untyped key) -> untyped

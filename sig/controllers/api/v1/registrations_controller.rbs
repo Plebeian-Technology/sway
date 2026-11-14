@@ -5,6 +5,12 @@ module Api
 
       def create: -> untyped
       def callback: -> untyped
+
+      private
+
+      def phone_taken?: (ActiveRecord::RecordInvalid | ActiveRecord::RecordNotUnique error) -> bool
+
+      def render_phone_already_registered: () -> untyped
     end
   end
 end
