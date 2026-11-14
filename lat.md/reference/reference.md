@@ -58,6 +58,7 @@ Neutral maps of the machinery: what exists, what it is called, and what it is bo
 - [PipelineActivityLogEntry.inspect_query](pipeline-activity-log-inspect-query.md) — \`#inspect_query\` builds an ActiveRecord query, as text, for an operator to copy out of the activity log panel and paste into a console.
 - [PipelinePreviewService's reply shape](pipeline-preview-reply-shape.md) — For why the service is built the way it is, see \[\[docs/explanation/pipeline-preview-service-design.md|pipeline-preview-service-design.md\]\].
 - [POST /bills/run_pipeline request contract](run-pipeline-request-contract.md) — The parameters an operator can send when starting a pipeline run:
+- [Postcard vendor comparison](postcard-vendor-comparison.md) — Print-and-mail API vendors compared across price, single-piece dispatch, address cleansing, and privacy policies for constituent postcards.
 - [ProfileScreen and DeleteAccountScreen](mobile-profile-and-delete-account-screens.md) — Layout of ProfileScreen's eight rows and the wording/order DeleteAccountScreen must keep exactly.
 - [Release metadata values](release-metadata-values.md) — \`Sway::Release\` exposes four canonical values describing the running deploy:
 - [Representative history reason tests](representative-history-reason-tests.md) — These request tests pin how inactive representative links are labelled in history.
