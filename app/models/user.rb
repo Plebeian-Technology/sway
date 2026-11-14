@@ -142,6 +142,16 @@ class User < ApplicationRecord
   ].freeze
 
   has_one :user_invite_link, inverse_of: :user, dependent: :destroy
+  has_many :sent_invites,
+    class_name: "Invite",
+    foreign_key: :inviter_id,
+    inverse_of: :inviter,
+    dependent: :destroy
+  has_many :received_invites,
+    class_name: "Invite",
+    foreign_key: :invitee_id,
+    inverse_of: :invitee,
+    dependent: :destroy
   has_one :refresh_token, dependent: :destroy
 
   has_many :push_notification_subscriptions, dependent: :destroy

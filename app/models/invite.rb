@@ -26,8 +26,8 @@
 # an Invite whose inviter_id is the <user_id> from the long URL and whose
 # invitee_id is the new user's id.
 class Invite < ApplicationRecord
-  belongs_to :inviter, class_name: "User"
-  belongs_to :invitee, class_name: "User"
+  belongs_to :inviter, class_name: "User", inverse_of: :sent_invites
+  belongs_to :invitee, class_name: "User", inverse_of: :received_invites
 
   validate :prevent_self_invite
 

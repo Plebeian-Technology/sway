@@ -25,6 +25,26 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(UserDevice.where(user_id: user_id)).to be_empty
     end
 
+    it "destroys invites where the user is the inviter" do
+      invitee = create(:user)
+      invite = Invite.create!(inviter: user, invitee: invitee)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(Invite.exists?(invite.id)).to be(false)
+    end
+
+    it "destroys invites where the user is the invitee" do
+      inviter = create(:user)
+      invite = Invite.create!(inviter: inviter, invitee: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(Invite.exists?(invite.id)).to be(false)
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 

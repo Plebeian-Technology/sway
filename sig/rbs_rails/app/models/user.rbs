@@ -1127,6 +1127,14 @@ class ::User < ::ApplicationRecord
   def registration_funnel_events=: (::RegistrationFunnelEvent::ActiveRecord_Associations_CollectionProxy | ::Array[::RegistrationFunnelEvent]) -> (::RegistrationFunnelEvent::ActiveRecord_Associations_CollectionProxy | ::Array[::RegistrationFunnelEvent])
   def registration_funnel_event_ids: () -> ::Array[::Integer]
   def registration_funnel_event_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def sent_invites: () -> ::Invite::ActiveRecord_Associations_CollectionProxy
+  def sent_invites=: (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite]) -> (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite])
+  def sent_invite_ids: () -> ::Array[::Integer]
+  def sent_invite_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def received_invites: () -> ::Invite::ActiveRecord_Associations_CollectionProxy
+  def received_invites=: (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite]) -> (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite])
+  def received_invite_ids: () -> ::Array[::Integer]
+  def received_invite_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
   def user_address: () -> ::UserAddress?
   def user_address=: (::UserAddress?) -> ::UserAddress?
