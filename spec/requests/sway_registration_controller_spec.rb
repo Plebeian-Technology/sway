@@ -1196,4 +1196,60 @@ RSpec.describe "/registration", type: :request do
       )
     end
   end
+
+  describe "POST /sway_registration with the flat JSON body the registration form sends" do
+    let(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+    let(:form_body) do
+      {
+        is_voter_registration_address_confirmed: false,
+        street: "100 Holliday Street",
+        city: "Baltimore",
+        region: "Maryland",
+        region_code: "MD",
+        postal_code: "21202",
+        country: "United States",
+        latitude: 39.2904,
+        longitude: -76.6122,
+        place_types: ["house", "place"]
+      }
+    end
+
+    let(:inertia_headers) do
+      {"Accept" => "text/html, application/xhtml+xml", "X-Requested-With" => "XMLHttpRequest", "X-Inertia" => "true"}
+    end
+
+    before { sign_in(user) }
+
+    def expect_stored_form_address
+      expect(response).not_to have_http_status(:bad_request)
+      expect(response).to redirect_to(feed_path)
+      expect(Address.count).to eq(1)
+
+      address = Address.sole
+      expect(UserAddress.where(user:).pluck(:address_id)).to eq([address.id])
+      expect(address.street).to eq("100 Holliday Street")
+      expect(address.city).to eq("Baltimore")
+      expect(address.region_code).to eq("MD")
+      expect(address.postal_code).to eq("21202")
+      expect(address.country).to eq("United States")
+      expect(address.latitude.to_f).to be_within(0.00001).of(39.2904)
+      expect(address.longitude.to_f).to be_within(0.00001).of(-76.6122)
+      expect(address.place_types).to eq(["house", "place"])
+    end
+
+    it "stores the address and links it to the user when the coordinates are numbers" do
+      post "/sway_registration", params: form_body, headers: inertia_headers, as: :json
+
+      expect_stored_form_address
+    end
+
+    it "stores the address and links it to the user when the coordinates are numeric strings" do
+      post "/sway_registration",
+        params: form_body.merge(latitude: "39.2904", longitude: "-76.6122"),
+        headers: inertia_headers,
+        as: :json
+
+      expect_stored_form_address
+    end
+  end
 end
