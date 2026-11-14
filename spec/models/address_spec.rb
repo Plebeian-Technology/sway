@@ -47,6 +47,74 @@ RSpec.describe Address, type: :model do
         expect(address.longitude).to be_truthy
       end
     end
+
+    context "when the production callback geocodes after commit" do
+      def raw(address, column)
+        ActiveRecord::Base.connection.select_value("SELECT #{column} FROM addresses WHERE id = #{address.id}")
+      end
+
+      typed_fields = {street: "100 N Holliday St", city: "Baltimore", region_code: "MD", postal_code: "21202"}
+
+      before do
+        allow(Rails.env).to receive(:test?).and_return(false)
+        allow(SwayLogging).to receive(:log_exception)
+        allow(Sentry).to receive(:capture_exception)
+      end
+
+      it "saves the coordinates as ciphertext" do
+        address = Address.create!(**typed_fields)
+
+        reloaded = Address.find(address.id)
+        expect(reloaded.latitude.to_f).to eq(39.29105)
+        expect(reloaded.longitude.to_f).to eq(-76.61069)
+        expect(raw(address, "latitude")).not_to eq("39.29105")
+        expect(raw(address, "longitude")).not_to eq("-76.61069")
+      end
+
+      it "saves the normalized key of the coordinates it found" do
+        address = Address.create!(**typed_fields)
+
+        expect(Address.find(address.id).normalized_key)
+          .to eq(Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069))
+      end
+
+      [
+        Geocoder::OverQueryLimitError.new("over limit"),
+        Timeout::Error.new("execution expired"),
+        SocketError.new("getaddrinfo failed")
+      ].each do |error|
+        it "keeps the row unlocated and reports a #{error.class}" do
+          allow(Geocoder).to receive(:search).and_raise(error)
+
+          expect { Address.create!(**typed_fields) }.not_to raise_error
+
+          reloaded = Address.sole
+          expect(reloaded.located?).to be(false)
+          expect(reloaded.normalized_key).to be_nil
+          expect(SwayLogging).to have_received(:log_exception)
+            .with("address.geocode_failed", exception: error, address_id: reloaded.id)
+          expect(Sentry).to have_received(:capture_exception).with(error, extra: {address_id: reloaded.id})
+        end
+      end
+
+      it "leaves the row unchanged when the geocoder finds nothing" do
+        allow(Geocoder).to receive(:search).and_return([])
+        expect { Address.create!(**typed_fields) }.not_to raise_error
+
+        reloaded = Address.sole
+        expect(reloaded.located?).to be(false)
+        expect(reloaded.updated_at).to eq(reloaded.created_at)
+        expect(Sentry).not_to have_received(:capture_exception)
+      end
+
+      it "does not look up an address that already has coordinates" do
+        allow(Geocoder).to receive(:search).and_call_original
+
+        Address.create!(**typed_fields, latitude: 39.3, longitude: -76.6)
+
+        expect(Geocoder).not_to have_received(:search)
+      end
+    end
   end
 
   describe "#sway_locale" do

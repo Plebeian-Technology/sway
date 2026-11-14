@@ -477,6 +477,22 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     expect(stored_district.reload.active).to be(true)
   end
 
+  it "returns no city district member and makes no geographic lookup for an address without coordinates" do
+    baltimore = create(:sway_locale, :baltimore)
+    council_district = create(:district, sway_locale: baltimore, name: "MD1")
+    council_member, = create_seat_term(district: council_district, office_identity: "baltimore-council-1", last_name: "Council")
+    allow(Geocoder).to receive(:search).and_return([])
+    unlocated = create(:address, city: "Baltimore", region_code: "MD")
+    allow(unlocated).to receive(:to_cartesian).and_call_original
+    allow(SwayGeocode).to receive(:build).and_call_original
+
+    reps = described_class.new(user, unlocated, baltimore, invited_by_id: nil, async: false).district_legislators
+
+    expect(reps).not_to include(council_member)
+    expect(SwayGeocode).not_to have_received(:build)
+    expect(unlocated).not_to have_received(:to_cartesian)
+  end
+
   context "when a configured office's successor term has no seat yet" do
     let(:baltimore) { create(:sway_locale, :baltimore) }
     let(:mayor_entry) do

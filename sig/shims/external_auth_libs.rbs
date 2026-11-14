@@ -145,6 +145,12 @@ end
 module Geocoder
     def self.search: (*untyped args, **untyped kwargs) -> Array[untyped]
     def self.configure: (*top args, **top kwargs) -> top
+
+    class Error < StandardError
+    end
+
+    class OverQueryLimitError < Error
+    end
 end
 
 # @lat: [[rbs-signatures#Why the state_machines DSL is declared on Class]]

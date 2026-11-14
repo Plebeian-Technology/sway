@@ -218,6 +218,8 @@ class SwayRegistrationService
   end
 
   def districts
+    return [] unless address.located?
+
     @districts ||= SwayGeocode.build(sway_locale, address).districts
   end
 
@@ -261,6 +263,8 @@ class SwayRegistrationService
       )
       return []
     end
+
+    return [] unless address.located?
 
     # @lat: [[identity-and-access#Registration is asynchronous by necessity#Regional lookup uses one configured request path]]
     response =

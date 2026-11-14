@@ -18,5 +18,6 @@ class Address < ApplicationRecord
     private
 
     def geocode: -> void
+    def geocode_and_save: -> void
     def normalize_address: -> Address
 end

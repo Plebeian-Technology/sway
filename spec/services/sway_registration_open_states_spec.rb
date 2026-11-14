@@ -62,4 +62,19 @@ RSpec.describe SwayRegistrationService, "#find_legislators_from_open_states_geo_
 
     expect(service.send(:find_legislators_from_open_states_geo_endpoint)).to include(legislator)
   end
+
+  it "sends no request for an address without coordinates and still resolves the locale-wide officers" do
+    stub_request(:get, /people\.geo/).to_return(status: 200, body: {results: []}.to_json)
+    allow(Geocoder).to receive(:search).and_return([])
+    unlocated = create(:address, region_code: "MD")
+    state_wide = create(:district, sway_locale:, name: "MD0")
+    seat = Seat.create!(district: state_wide, seat_identifier: "maryland-governor", title: "Governor", chamber: "Executive")
+    governor = create(:legislator, sway_locale:, last_name: "Governor")
+    create(:legislator_term, legislator: governor, district: state_wide, seat:)
+    unlocated_service = described_class.new(user, unlocated, sway_locale, invited_by_id: nil, async: false)
+
+    expect(unlocated_service.send(:find_legislators_from_open_states_geo_endpoint)).to eq([])
+    expect(unlocated_service.district_legislators).to contain_exactly(governor)
+    expect(a_request(:get, /people\.geo/)).not_to have_been_made
+  end
 end

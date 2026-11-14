@@ -74,6 +74,24 @@ gets later.
 A nil key is therefore the honest value for a row that cannot yet be compared,
 rather than a placeholder that would collide with every other unlocated row.
 
+The after-commit lookup runs outside the write transaction because the SQLite
+write lock is held for the whole of an immediate transaction, and a slow HTTP
+call must not hold it. When the lookup finds a point it saves the coordinates
+and the key from those coordinates in one update, because the row is now
+comparable and a nil key would hide it from the next registration of the same
+building. The registration controller creates the address outside any
+transaction, so the callback finishes before `create!` returns and resolution
+sees the located row.
+
+A geocoder failure (an over-limit or denied reply, a timeout, a socket error)
+is logged and reported to Sentry instead of raised, because the row is already
+committed and an error raised from an after-commit callback would turn a saved
+address into a failed request. A failure or an empty result leaves the row
+unlocated. Resolution then makes no district lookup and no OpenStates request
+for it, rather than testing the point 0,0, and the address resolves by its
+state: the locale-wide officers and, through
+[[representative-resolution#Congress fallback]], the state's Senators.
+
 ## Why the backfill reports collisions instead of merging
 
 The data migration (`db/data/20261111000001_backfill_address_normalized_keys.rb`) fills the column on rows written before it existed and lists, by address id, the rows that now share a key, but moves no data.

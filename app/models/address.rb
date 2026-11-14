@@ -29,12 +29,8 @@ class Address < ApplicationRecord
   before_validation :normalize_address
 
   after_validation :geocode, if: ->(_address) { Rails.env.test? }
-  after_commit :geocode,
-    unless:
-      lambda { |address|
-        Rails.env.test? ||
-          (address&.latitude.present? && address&.longitude.present?)
-      }
+  # @lat: [[address-normalized-key#Why an unlocated address has no key]]
+  after_commit :geocode_and_save, unless: ->(_address) { Rails.env.test? }
 
   # @lat: [[personal-detail-encryption#What is encrypted on an address]]
   encrypts :street
@@ -136,6 +132,18 @@ class Address < ApplicationRecord
 
     results = Geocoder.search(full_address)
     self.latitude, self.longitude = results.first&.coordinates || []
+  end
+
+  def geocode_and_save
+    return if located?
+
+    latitude, longitude = Geocoder.search(full_address).first&.coordinates
+    return if latitude.nil? || longitude.nil?
+
+    update!(latitude:, longitude:, normalized_key: self.class.normalized_key_for(latitude:, longitude:, street2:, street3:))
+  rescue Geocoder::Error, Timeout::Error, SocketError => e
+    SwayLogging.log_exception("address.geocode_failed", exception: e, address_id: id)
+    Sentry.capture_exception(e, extra: {address_id: id})
   end
 
   def normalize_address
