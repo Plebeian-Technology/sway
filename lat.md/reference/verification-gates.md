@@ -43,7 +43,7 @@ Eleven lanes run directly on the host, needing no database.
 - `tsc` — TypeScript types, excluding `mobile/`; rejects imports under `app/frontend/legacy/` as unresolved modules because that directory is absent, so no dedicated guard is needed
 - `oxlint` — JS/TS lint, config `.oxlintrc.json`
 - `oxfmt` — JS/TS formatting
-- `mobile-jest` — mobile app tests, `TZ=UTC`, worker pool capped
+- `mobile-jest` — mobile app tests, `TZ=UTC`, worker pool capped, with the [[verification-gates#Mobile onboarding coverage gate|onboarding coverage floors]] enforced
 - `mobile-tsc` — mobile TypeScript, its own tsconfig and React Native types
 - `mobile-oxlint` — mobile lint, its own `.oxlintrc.json`
 - `brakeman` — Rails static security analysis
@@ -147,6 +147,18 @@ The full vitest run fails when any frontend onboarding file in [[config/onboardi
 - Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
 - Raising a floor: run `pnpm test --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
 - `app/frontend/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
+
+## Mobile onboarding coverage gate
+
+The full mobile Jest run fails when any mobile onboarding file in [[config/onboarding_coverage_floor.mobile.json]] is under its line or branch floor or has no coverage data; the target for every file is 100 percent line and branch coverage.
+
+- [[mobile/jest.config.js]] builds one per-file threshold from each entry of the floor file and limits coverage to those files; Jest collects coverage only when `--coverage` is passed, so `pnpm --dir mobile test <file>` reports none and a partial run never trips a threshold
+- The `mobile-jest` lane of `dip run verify` and the Jest step of `.github/workflows/mobile-test.yml` pass `--coverage`; a red lane names the file under its floor
+- A listed file that no test loads fails the run with `Coverage data for <file> was not found`
+- Floor-file keys are repository-relative paths, as in the frontend floor file
+- Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
+- Raising a floor: run `TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
+- `mobile/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
 
 ## Known traps
 

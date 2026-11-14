@@ -1,0 +1,30 @@
+{
+    "mobile/src/api/client.ts": {
+        "line": 96.9,
+        "branch": 85.1
+    },
+    "mobile/src/auth/passkeyAuth.ts": {
+        "line": 98.2,
+        "branch": 76.6
+    },
+    "mobile/src/auth/smsAuth.ts": {
+        "line": 100.0,
+        "branch": 100.0
+    },
+    "mobile/src/components/AddressAutocomplete.tsx": {
+        "line": 100.0,
+        "branch": 97.2
+    },
+    "mobile/src/screens/AddressScreen.tsx": {
+        "line": 100.0,
+        "branch": 91.9
+    },
+    "mobile/src/screens/AuthScreen.tsx": {
+        "line": 100.0,
+        "branch": 96.7
+    },
+    "mobile/src/state/BootstrapContext.tsx": {
+        "line": 80.7,
+        "branch": 71.8
+    }
+}

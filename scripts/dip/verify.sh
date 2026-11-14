@@ -236,7 +236,7 @@ LANE_RERUN=(
     "pnpm run tsc"
     "pnpm run lint:agent"
     "pnpm run fmt:check"
-    "TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false${JS_WORKER_FLAG:+ $JS_WORKER_FLAG}"
+    "TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false --coverage${JS_WORKER_FLAG:+ $JS_WORKER_FLAG}"
     "pnpm --dir mobile run typecheck"
     "pnpm lint:mobile"
     "bundle exec brakeman --no-pager --exit-on-warn --exit-on-error"
@@ -325,7 +325,7 @@ run_lane() {
             # everywhere else: a one-shot, non-watch test run gets nothing
             # from Watchman's persistent file-watching daemon, and CI's own
             # runner never touches this path at all so it needs no such flag.
-            TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false $JS_WORKER_FLAG
+            TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false --coverage $JS_WORKER_FLAG
             ;;
         mobile-tsc)
             # The root tsc lane above excludes mobile/ (its own tsconfig,
