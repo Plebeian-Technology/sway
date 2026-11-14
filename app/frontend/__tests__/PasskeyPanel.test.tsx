@@ -11,7 +11,9 @@ const captured = vi.hoisted(() => ({
     startDiscoverableAuthentication: vi.fn<() => Promise<unknown>>(),
     verifyAuthentication: vi.fn<(phone: string, data: unknown) => Promise<void>>(),
     verifyDiscoverableAuthentication: vi.fn<(data: unknown) => Promise<void>>(),
-    sendPhoneVerification: vi.fn<(phone: string) => Promise<boolean>>(),
+    sendPhoneVerification: vi.fn<(phone: string) => Promise<boolean | undefined>>(),
+    // When set, a send behaves like the real hook on a 429: it hands this time to the onThrottled it was given.
+    sendRefusedUntil: null as Date | null,
     notify: vi.fn<(...args: unknown[]) => void>(),
     // The panel reads this straight off the hook, so a test can put the panel
     // into the after-a-failure state without running a WebAuthn ceremony.
@@ -54,7 +56,17 @@ vi.mock("app/frontend/hooks/authentication/useWebAuthnRegistration", () => ({
     }),
 }));
 vi.mock("app/frontend/hooks/authentication/phone/useSendPhoneVerification", () => ({
-    useSendPhoneVerification: () => ({ send: captured.sendPhoneVerification, isLoading: false }),
+    useSendPhoneVerification: (onThrottled?: (until: Date | null) => void) => ({
+        send: async (phone: string) => {
+            const result = await captured.sendPhoneVerification(phone);
+            if (captured.sendRefusedUntil) {
+                onThrottled?.(captured.sendRefusedUntil);
+                return undefined;
+            }
+            return result;
+        },
+        isLoading: false,
+    }),
 }));
 vi.mock("app/frontend/hooks/authentication/phone/useConfirmPhoneVerification", () => ({
     useConfirmPhoneVerification: () => ({
@@ -77,6 +89,7 @@ beforeEach(() => {
     captured.startDiscoverableAuthentication.mockReset();
     captured.startDiscoverableAuthentication.mockResolvedValue(undefined);
     captured.sendPhoneVerification.mockReset();
+    captured.sendRefusedUntil = null;
     captured.notify.mockReset();
     captured.discoverableFailure = null;
     captured.confirm.mockReset();
@@ -355,5 +368,88 @@ describe("PasskeyPanel — the phone step", () => {
 
         expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
         expect((screen.getByLabelText(/phone/i) as HTMLInputElement).disabled).toBe(false);
+    });
+});
+
+describe("PasskeyPanel — asking for a new code when the first never arrives", () => {
+    beforeEach(() => {
+        vi.useRealTimers();
+        Element.prototype.scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
+        captured.startAuthentication.mockResolvedValue(true);
+    });
+
+    const openCodeStep = async () => {
+        await submitPhone();
+        return screen.findByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel);
+    };
+
+    const pressResend = async () => {
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.resendCode }));
+        });
+    };
+
+    const confirmButton = () =>
+        screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.confirmCode }) as HTMLButtonElement;
+
+    it("offers no new-code button on the phone step", () => {
+        render(<PasskeyPanel />);
+
+        expect(screen.queryByRole("button", { name: PARITY_COPY.auth.passkeyPanel.resendCode })).toBeNull();
+    });
+
+    it("sends a new code, clears the code box and says so", async () => {
+        captured.sendPhoneVerification.mockResolvedValue(true);
+        render(<PasskeyPanel />);
+        const codeBox = (await openCodeStep()) as HTMLInputElement;
+        fireEvent.change(codeBox, { target: { value: "123" } });
+
+        await pressResend();
+
+        expect(captured.sendPhoneVerification).toHaveBeenCalledWith("4105551234");
+        expect(codeBox.value).toBe("");
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "success",
+            title: PARITY_COPY.auth.passkeyPanel.codeResent,
+        });
+    });
+
+    it("sends again each time it is pressed", async () => {
+        captured.sendPhoneVerification.mockResolvedValue(true);
+        render(<PasskeyPanel />);
+        await openCodeStep();
+
+        await pressResend();
+        await pressResend();
+
+        expect(captured.sendPhoneVerification).toHaveBeenCalledTimes(2);
+    });
+
+    it("keeps the code step and the typed code open when the send fails", async () => {
+        captured.sendPhoneVerification.mockResolvedValue(false);
+        render(<PasskeyPanel />);
+        const codeBox = (await openCodeStep()) as HTMLInputElement;
+        fireEvent.change(codeBox, { target: { value: "123" } });
+
+        await pressResend();
+
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "error",
+            title: PARITY_COPY.auth.passkeyPanel.requestCodeError,
+        });
+        expect(codeBox.value).toBe("123");
+        expect(confirmButton().disabled).toBe(false);
+    });
+
+    // @lat: [[passkey-panel-test-design#Why a refused new-code request must not latch the throttle]]
+    it("keeps Confirm code enabled when the request is refused with 429", async () => {
+        render(<PasskeyPanel />);
+        await openCodeStep();
+        captured.sendRefusedUntil = new Date(Date.now() + 60_000);
+
+        await pressResend();
+
+        expect(screen.getByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeTruthy();
+        expect(confirmButton().disabled).toBe(false);
     });
 });

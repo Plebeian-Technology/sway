@@ -69,6 +69,8 @@ const PasskeyPanel: React.FC<IProps> = ({
     }, [isConfirmingPhone]);
 
     const { send: sendPhoneVerification, isLoading: isLoadingSend } = useSendPhoneVerification(markThrottled);
+    // @lat: [[passkey-panel-test-design#Why a refused new-code request must not latch the throttle]]
+    const { send: resendPhoneVerification, isLoading: isLoadingResend } = useSendPhoneVerification();
     const {
         confirm: confirmPhoneVerification,
         isLoading: isLoadingConfirm,
@@ -108,8 +110,11 @@ const PasskeyPanel: React.FC<IProps> = ({
     );
 
     const isLoading = useMemo(
-        () => [isLoadingSend, isLoadingConfirm, isLoadingAuthentication, isLoadingRegistration].some(Boolean),
-        [isLoadingAuthentication, isLoadingConfirm, isLoadingRegistration, isLoadingSend],
+        () =>
+            [isLoadingSend, isLoadingResend, isLoadingConfirm, isLoadingAuthentication, isLoadingRegistration].some(
+                Boolean,
+            ),
+        [isLoadingAuthentication, isLoadingConfirm, isLoadingRegistration, isLoadingResend, isLoadingSend],
     );
 
     const handleSubmit = useCallback(
@@ -209,6 +214,16 @@ const PasskeyPanel: React.FC<IProps> = ({
             notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.signInError });
         }
     }, [startDiscoverableAuthentication, verifyDiscoverableAuthentication]);
+
+    const handleResend = useCallback(async () => {
+        const success = await resendPhoneVerification(phone);
+        if (success) {
+            setCode("");
+            notify({ level: "success", title: PARITY_COPY.auth.passkeyPanel.codeResent });
+        } else if (success === false) {
+            notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.requestCodeError });
+        }
+    }, [phone, resendPhoneVerification]);
 
     const handleCancel = useCallback(() => {
         setCode("");
@@ -336,15 +351,26 @@ const PasskeyPanel: React.FC<IProps> = ({
                         </Button>
 
                         {isConfirmingPhone ? (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="w-full"
-                                onClick={handleCancel}
-                                disabled={isLoading}
-                            >
-                                {PARITY_COPY.auth.passkeyPanel.cancelCta}
-                            </Button>
+                            <>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full"
+                                    onClick={handleResend}
+                                    disabled={isLoading}
+                                >
+                                    {PARITY_COPY.auth.passkeyPanel.resendCode}
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full"
+                                    onClick={handleCancel}
+                                    disabled={isLoading}
+                                >
+                                    {PARITY_COPY.auth.passkeyPanel.cancelCta}
+                                </Button>
+                            </>
                         ) : (
                             <Button variant="outline" className="w-full" asChild>
                                 <InertiaLink href={ROUTES.billOfTheMonth}>

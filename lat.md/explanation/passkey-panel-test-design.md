@@ -30,3 +30,9 @@ This panel is the ONLY way to sign in.
 `useWebAuthnAuthentication` already owns the 429 case: it pops the rate-limit message and returns instead of throwing.
 
 A 422 means "no passkey for this phone, fall back to an SMS code", which is a normal path, not a failure. Neither may pick up a second message that contradicts the first.
+
+## Why a refused new-code request must not latch the throttle
+
+The code step's "Send a new code" button uses its own `useSendPhoneVerification` instance, which gets no throttle callback.
+
+The panel's shared throttle latch disables the Confirm code button until the Retry-After time passes. A 429 on a new-code request would then lock out a person whose first code did arrive late, for up to the whole window. The extra instance still shows the rate-limit message, because the hook does that itself, but leaves the latch alone.
