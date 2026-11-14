@@ -16,6 +16,7 @@ import { notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { trackFunnelStep } from "app/frontend/sway_utils/funnelTracker";
+import { isPasskeySupported } from "app/frontend/sway_utils/webauthn";
 
 interface IProps {
     subtitle?: string;
@@ -137,6 +138,12 @@ const PasskeyPanel: React.FC<IProps> = ({
 
                 trackFunnelStep("sms_code_entered");
                 await confirmPhoneVerification(phone, codeToVerify);
+                return;
+            }
+
+            // @lat: [[passkey-panel-test-design#Why the phone step checks passkey support before any request]]
+            if (!isPasskeySupported()) {
+                notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.passkeyUnsupported });
                 return;
             }
 

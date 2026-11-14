@@ -23,6 +23,11 @@ const captured = vi.hoisted(() => ({
     passkeyDismissed: false,
     startRegistration: vi.fn<(phone: string) => Promise<unknown>>(),
     verifyRegistration: vi.fn<(phone: string, credential: unknown) => Promise<void>>(),
+    isPasskeySupported: vi.fn<() => boolean>(),
+}));
+
+vi.mock("app/frontend/sway_utils/webauthn", () => ({
+    isPasskeySupported: () => captured.isPasskeySupported(),
 }));
 
 vi.mock("@inertiajs/react", () => ({
@@ -97,6 +102,8 @@ beforeEach(() => {
     captured.passkeyDismissed = false;
     captured.startRegistration.mockReset();
     captured.verifyRegistration.mockReset();
+    captured.isPasskeySupported.mockReset();
+    captured.isPasskeySupported.mockReturnValue(true);
 });
 
 afterEach(() => {
@@ -307,6 +314,37 @@ describe("PasskeyPanel — the phone step", () => {
         expect(captured.sendPhoneVerification).not.toHaveBeenCalled();
         expect(captured.notify).not.toHaveBeenCalled();
         expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
+    });
+
+    // @lat: [[passkey-panel-test-design#Why the phone step checks passkey support before any request]]
+    it("tells a browser without passkey support so and sends nothing", async () => {
+        captured.isPasskeySupported.mockReturnValue(false);
+        render(<PasskeyPanel />);
+
+        await submitPhone();
+
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "error",
+            title: PARITY_COPY.auth.passkeyPanel.passkeyUnsupported,
+        });
+        expect(captured.startAuthentication).not.toHaveBeenCalled();
+        expect(captured.sendPhoneVerification).not.toHaveBeenCalled();
+    });
+
+    it("does not check passkey support when the phone number is not 10 digits", async () => {
+        captured.isPasskeySupported.mockReturnValue(false);
+        render(<PasskeyPanel />);
+
+        fireEvent.change(screen.getByLabelText(/phone/i), { target: { value: "410" } });
+        await act(async () => {
+            fireEvent.submit(document.querySelector("form") as HTMLFormElement);
+        });
+
+        expect(captured.notify).toHaveBeenCalledWith({
+            level: "warning",
+            title: PARITY_COPY.auth.passkeyPanel.validationPhone,
+        });
+        expect(captured.notify).toHaveBeenCalledTimes(1);
     });
 
     it("says the code could not be sent, and not that the number is wrong, when the send failed", async () => {

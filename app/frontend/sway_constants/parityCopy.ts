@@ -242,6 +242,7 @@ export const PARITY_COPY = {
             confirmCode: "Confirm code",
             resendCode: "Send a new code",
             codeResent: "We sent you a new code.",
+            passkeyUnsupported: "This browser can't use passkeys yet. Update your browser or try another one.",
             passkeyDismissed: "Passkey setup was cancelled. Press Confirm code to try again.",
             workingOn: "Working on it",
             validationPhone: "Your phone number must be 10 digits.",

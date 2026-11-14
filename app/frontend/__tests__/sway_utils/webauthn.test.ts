@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { create, get } from "app/frontend/sway_utils/webauthn";
+import { create, get, isPasskeySupported } from "app/frontend/sway_utils/webauthn";
 
 const bytesToBase64url = (bytes: number[]) =>
     btoa(String.fromCharCode(...bytes))
@@ -233,5 +233,35 @@ describe("get", () => {
         stubBrowser({ publicKeyCredential: undefined, credentials: { get: vi.fn<() => Promise<unknown>>() } });
 
         await expect(get({ publicKey: requestOptions })).rejects.toThrow("does not support passkeys");
+    });
+});
+
+describe("isPasskeySupported", () => {
+    it("is false when the browser has no PublicKeyCredential", () => {
+        stubBrowser({ publicKeyCredential: undefined, credentials: { create: vi.fn<() => void>() } });
+
+        expect(isPasskeySupported()).toBe(false);
+    });
+
+    it("is false when navigator.credentials.create is missing", () => {
+        stubBrowser({ publicKeyCredential: function PublicKeyCredential() {}, credentials: {} });
+
+        expect(isPasskeySupported()).toBe(false);
+    });
+
+    it("is false when the browser has no navigator.credentials", () => {
+        vi.stubGlobal("PublicKeyCredential", function PublicKeyCredential() {});
+        vi.stubGlobal("navigator", {});
+
+        expect(isPasskeySupported()).toBe(false);
+    });
+
+    it("is true without the JSON helpers, because create() converts the options by hand", () => {
+        stubBrowser({
+            publicKeyCredential: function PublicKeyCredential() {},
+            credentials: { create: vi.fn<() => void>() },
+        });
+
+        expect(isPasskeySupported()).toBe(true);
     });
 });

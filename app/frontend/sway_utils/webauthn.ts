@@ -137,6 +137,9 @@ const assertionToJSON = (credential: PublicKeyCredential): PublicKeyCredentialWi
     };
 };
 
+export const isPasskeySupported = (): boolean =>
+    typeof PublicKeyCredential !== "undefined" && typeof navigator.credentials?.create === "function";
+
 const requirePublicKeyCredential = () => {
     if (typeof PublicKeyCredential === "undefined") {
         throw new Error("Your browser does not support passkeys. Please use a different browser.");

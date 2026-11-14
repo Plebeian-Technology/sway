@@ -36,3 +36,9 @@ A 422 means "no passkey for this phone, fall back to an SMS code", which is a no
 The code step's "Send a new code" button uses its own `useSendPhoneVerification` instance, which gets no throttle callback.
 
 The panel's shared throttle latch disables the Confirm code button until the Retry-After time passes. A 429 on a new-code request would then lock out a person whose first code did arrive late, for up to the whole window. The extra instance still shows the rate-limit message, because the hook does that itself, but leaves the latch alone.
+
+## Why the phone step checks passkey support before any request
+
+The phone step checks `isPasskeySupported` before it posts the phone, so a browser that cannot make a passkey never costs an SMS.
+
+The sign-in request sends the SMS inside the same call that reveals whether the phone has a passkey, so the check cannot wait for that answer. A browser without `PublicKeyCredential` or `navigator.credentials.create` would otherwise reach the passkey step after a paid code and fail there. The check ignores the JSON helper methods, because `create` and `get` convert the options by hand when those are missing. The message says passkey, never WebAuthn.
