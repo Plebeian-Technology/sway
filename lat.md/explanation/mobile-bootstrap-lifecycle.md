@@ -37,7 +37,7 @@ Before reading the response, `fetchIt` notes whether it expected to be signed in
 
 A 401 means the token is no longer good on the server: the user was deleted, the key was revoked, or the token was tampered with.
 
-Falling back to the SQLite cache here would quietly redraw personal data for an account that no longer exists, so the provider wipes the cache instead, and a relaunch cannot bring it back. `apiClient` has already cleared the token and session stores and emitted `'unauthenticated'`, so `useSession` flips over and `RootNavigator` moves to the sign-in stack on the next render.
+Falling back to the SQLite cache here would quietly redraw personal data for an account that no longer exists, so the provider wipes the cache instead, and a relaunch cannot bring it back. `apiClient` has already cleared the token and session stores and emitted `'unauthenticated'`, so `useSession` flips over and `RootNavigator` moves to the sign-in stack on the next render. The event carries the reason `session_expired`, which `authEvents` keeps until the next sign-in or sign-out, so the `AuthScreen` that mounts after the swap can tell the user why they are back at sign-in, since the screen that hit the 401 has already unmounted and taken its own message with it.
 
 For any other failure — no network, a server error — the provider keeps working offline by drawing the last payload known to be good. It tries the row saved for the signed-in user first, then the anonymous row.
 

@@ -11,6 +11,7 @@ import {
     GENERIC_ERROR_MESSAGE,
 } from "../../src/api/errors";
 import { BEARER_TOKEN_KEY, SESSION_ENVELOPE_KEY, API_BASE_URL } from "../../src/constants/api";
+import { authEvents } from "../../src/auth/authEvents";
 import { localeOverride } from "../../src/state/localeOverride";
 
 const originalFetch = global.fetch;
@@ -124,6 +125,19 @@ describe("apiClient", () => {
 
         expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(BEARER_TOKEN_KEY);
         expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(SESSION_ENVELOPE_KEY);
+    });
+
+    test("401 announces unauthenticated with the session_expired reason", async () => {
+        (SecureStore.getItemAsync as jest.Mock).mockResolvedValue("T");
+        (global.fetch as jest.Mock).mockResolvedValueOnce(
+            mockFetchResponse({ error: { code: "unauthorized", message: "nope" } }, { status: 401 }),
+        );
+        const emitSpy = jest.spyOn(authEvents, "emit");
+
+        await expect(apiClient.post("/sway_registration", {})).rejects.toBeInstanceOf(UnauthorizedError);
+
+        expect(emitSpy).toHaveBeenCalledWith("unauthenticated", "session_expired");
+        emitSpy.mockRestore();
     });
 
     test("401 does NOT clear tokenStore/sessionStore when request had no token or token was superseded", async () => {

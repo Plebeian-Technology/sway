@@ -148,7 +148,7 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
             } catch {
                 // @lat: [[mobile-api-client-contract#Why a 401 also closes the WebSocket, and why that import is inline]]
             }
-            authEvents.emit("unauthenticated");
+            authEvents.emit("unauthenticated", "session_expired");
         }
         throw new UnauthorizedError(envelope.code, envelope.message, envelope.details, res.status);
     }

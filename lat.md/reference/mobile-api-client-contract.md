@@ -92,7 +92,7 @@ On a 401, `apiClient` also closes the ActionCable WebSocket.
 - `"signed_in"` — sent by `passkeyAuth`/`smsAuth` after a successful login
 - `"signed_out"` — sent by `useSession.signOut` / `signOutAll`
 - `"unauthenticated"` — sent by `apiClient` when the server answers 401
-  (the session was revoked, the token expired, and so on)
+  (the session was revoked, the token expired, and so on), with the reason `session_expired`
 
 - `useSession` listens, flips `isAuthenticated`, and `RootNavigator` re-renders.
 

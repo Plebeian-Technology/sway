@@ -6,7 +6,10 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 
 import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError, SessionSaveError } from "../../src/auth/passkeyAuth";
 import { smsAuth } from "../../src/auth/smsAuth";
+import * as SecureStore from "expo-secure-store";
+import { apiClient } from "../../src/api/client";
 import { ApiRequestError, NetworkError, RateLimitedError, UnauthorizedError } from "../../src/api/errors";
+import { authEvents } from "../../src/auth/authEvents";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -82,6 +85,41 @@ const pressSubmit = (getByTestId: ReturnType<typeof render>["getByTestId"]) => {
 describe("AuthScreen", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        authEvents._reset();
+    });
+
+    describe("after the server ended the session", () => {
+        const SESSION_ENDED_NOTICE = "Your session ended. Sign in again with your passkey.";
+
+        test("shows the notice once a 401 from the registration request returned the user to sign-in", async () => {
+            (SecureStore.getItemAsync as jest.Mock).mockResolvedValue("T");
+            global.fetch = jest.fn().mockResolvedValueOnce({
+                ok: false,
+                status: 401,
+                text: async () => JSON.stringify({ error: { code: "unauthorized", message: "nope" } }),
+            } as unknown as Response);
+            await expect(apiClient.post("/sway_registration", {})).rejects.toBeInstanceOf(UnauthorizedError);
+
+            const { getByTestId, getByText } = wrap(<AuthScreen />);
+
+            expect(getByTestId("auth-session-ended-notice")).toBeTruthy();
+            expect(getByText(SESSION_ENDED_NOTICE)).toBeTruthy();
+        });
+
+        test("shows no notice when nothing ended a session", () => {
+            const { queryByTestId } = wrap(<AuthScreen />);
+
+            expect(queryByTestId("auth-session-ended-notice")).toBeNull();
+        });
+
+        test("shows no notice after the user signed in or out since", () => {
+            authEvents.emit("unauthenticated", "session_expired");
+            authEvents.emit("signed_out");
+
+            const { queryByTestId } = wrap(<AuthScreen />);
+
+            expect(queryByTestId("auth-session-ended-notice")).toBeNull();
+        });
     });
 
     test("renders phone FormField + 'Continue with Phone' CTA in initial state", () => {

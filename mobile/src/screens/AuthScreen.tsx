@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { ApiRequestError, NetworkError, RateLimitedError } from "../api/errors";
+import { authEvents } from "../auth/authEvents";
 import { NoPasskeyError, passkeyAuth, PasskeyUnsupportedError, SessionSaveError } from "../auth/passkeyAuth";
 import { smsAuth } from "../auth/smsAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
@@ -34,6 +35,8 @@ const CODE_STEP_MESSAGES = {
     alreadyRegistered: "This phone already has an account. Sign in with your passkey.",
     passkeyFailed: "Passkey setup failed. Please try again.",
 };
+
+const SESSION_ENDED_NOTICE = "Your session ended. Sign in again with your passkey.";
 
 const CODE_STEP_MESSAGE_BY_SERVER_CODE: Record<string, string> = {
     invalid_code: CODE_STEP_MESSAGES.invalidCode,
@@ -71,6 +74,8 @@ export default function AuthScreen() {
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
+    // @lat: [[mobile-bootstrap-lifecycle#Why a 401 wipes the cache instead of falling back to it]]
+    const [sessionEnded] = useState(() => authEvents.unauthenticatedReason() === "session_expired");
     // @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Held SMS-verified token]]
     const heldSmsVerifiedToken = useRef<string | null>(null);
 
@@ -244,6 +249,15 @@ export default function AuthScreen() {
                     </CardHeader>
 
                     <CardContent className="gap-2.5">
+                        {sessionEnded && (
+                            <Text
+                                testID="auth-session-ended-notice"
+                                accessibilityRole="alert"
+                                className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+                            >
+                                {SESSION_ENDED_NOTICE}
+                            </Text>
+                        )}
                         {!isConfirmingPhone && (
                             <>
                                 <Pressable
