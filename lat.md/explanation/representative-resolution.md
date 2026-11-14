@@ -60,6 +60,12 @@ While seat-keyed rosters like Baltimore receive published seat labels directly f
 
 The selected architecture allows `term_rules.seat_chambers` on `identified_by: person` locales in [[app/models/sway_locale/document_reader.rb|SwayLocale::DocumentReader#validate_seat_chambers]]. This enables [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms]] to resolve and attach distinct [[app/models/seat.rb#Seat]] records using published role metadata during seed preparation. This approach avoids requiring live or fixture-backed official service evidence profiles for all 546 Congress terms and 191 Maryland entries during offline seeding and container boot. Relaxing the validator preserves offline execution, idempotency, and sub-second performance while keeping registration logic purely consumer-side.
 
+### Curated person-keyed rosters
+
+A curated roster keyed by person, such as Annapolis, names each office by the entry's published id, so its current terms gain seats like any other configured office.
+
+[[db/seeds/seed_preparers/legislators/sway.rb#Sway#current_office_identity]] returns the roster entry's `external_id`, which a curated roster already keeps stable per office (`annapolis-mayor`, `annapolis-ward-1`). Declaring `seat_chambers` for such a locale without this reader would stop the seed, because the seeder asks a person-keyed entry for its office identity. Without `seat_chambers` the terms stay unseated, and registration skips and reports them, so the city's officers never reach its users. The legislator rows and their person identity values stay as they were, so a re-seed attaches seats to the existing terms instead of creating new people.
+
 ## Congress seat identity conventions
 
 Congress distinguishes House single-member district seats and Senate class seats using source-published term metadata.

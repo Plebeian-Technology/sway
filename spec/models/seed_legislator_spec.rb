@@ -1336,6 +1336,13 @@ RSpec.describe SeedLegislator do
         expect(prep.proven_terms).to eq([])
       end
 
+      it "names the roster entry's published id as the office of a person-keyed locale" do
+        annapolis = create(:sway_locale, city: "annapolis", state: "maryland", country: "United States")
+        prep = SeedPreparers::Legislators::Sway.new(no_term_blob.merge("externalId" => "annapolis-mayor"), annapolis)
+
+        expect(prep.current_office_identity).to eq("annapolis-mayor")
+      end
+
       it "(H6 stability) returns 2024 under travel_to(2026)" do
         travel_to(Time.zone.local(2026, 6, 1)) do
           prep = SeedPreparers::Legislators::Sway.new(no_term_blob, baltimore)

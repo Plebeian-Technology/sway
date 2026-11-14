@@ -87,6 +87,10 @@ Synchronous registration in that state links the seated officers only, never the
 
 Once the previous term ends and the successor's term holds the seat, resolution returns the successor and records nothing.
 
+### Resolves curated person-keyed officers
+
+A seeded Annapolis address in districts 0 and 1 returns the Mayor and the Ward 1 Alderperson, because their curated terms carry seats, and records no skip.
+
 ## Reconciliation refusal
 
 A recorded resolution skip refuses reconciliation before it mutates stored representative links.

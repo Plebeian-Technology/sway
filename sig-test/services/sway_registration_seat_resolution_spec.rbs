@@ -1,0 +1,7 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def annapolis_address: () -> Address
+  def seed_annapolis: () -> SwayLocale
+  def annapolis_officers: (SwayLocale annapolis) -> Array[Legislator]
+  def annapolis_service: (SwayLocale annapolis) -> SwayRegistrationService
+end

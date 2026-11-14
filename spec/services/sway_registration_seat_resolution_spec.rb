@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require Rails.root.join("db", "seeds", "models", "sway_locale")
 require Rails.root.join("db", "seeds", "models", "legislator")
 
 RSpec.describe SwayRegistrationService, "seat resolution" do
@@ -576,6 +577,73 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
 
       expect(stored_legislator.reload.active).to be(true)
       expect(stored_district.reload.active).to be(true)
+    end
+  end
+
+  context "when an Annapolis address registers" do
+    let(:annapolis_address) { create(:address, city: "Annapolis", region_code: "MD") }
+
+    def seed_annapolis
+      SeedSwayLocale.run
+      annapolis = SwayLocale.resolve_by_computed_name("annapolis-maryland-united_states") || raise("Annapolis not seeded")
+      SeedLegislator.run([annapolis])
+      annapolis
+    end
+
+    def annapolis_officers(annapolis)
+      annapolis.legislators.where(external_id: ["annapolis-mayor", "annapolis-ward-1"]).to_a
+    end
+
+    def annapolis_service(annapolis)
+      service = described_class.new(user, annapolis_address, annapolis, invited_by_id: nil, async: false)
+      allow(service).to receive(:districts).and_return([0, 1])
+      service
+    end
+
+    # @lat: [[representative-resolution-tests#Registration seat resolution#Resolves curated person-keyed officers]]
+    it "returns the Mayor and the Ward 1 Alderperson and skips nothing" do
+      annapolis = seed_annapolis
+      service = annapolis_service(annapolis)
+
+      reps = service.district_legislators
+
+      expect(reps.map(&:external_id)).to contain_exactly("annapolis-mayor", "annapolis-ward-1")
+      expect(service.skipped_resolution_errors).to be_empty
+    end
+
+    it "gives seats to current terms seeded before the offices had seats" do
+      annapolis = seed_annapolis
+      terms = LegislatorTerm.where(legislator: annapolis_officers(annapolis)).current
+      seat_ids = terms.pluck(:seat_id)
+      terms.update_all(seat_id: nil)
+      Seat.where(id: seat_ids).delete_all
+
+      SeedLegislator.run([annapolis])
+
+      expect(terms.reload.pluck(:seat_id)).to all(be_present)
+      expect(annapolis_service(annapolis).district_legislators.map(&:external_id))
+        .to contain_exactly("annapolis-mayor", "annapolis-ward-1")
+    end
+
+    it "changes no seat and adds no legislator or seat when seeded again" do
+      annapolis = seed_annapolis
+      terms = LegislatorTerm.where(legislator: annapolis_officers(annapolis)).current
+      seat_ids = terms.order(:id).pluck(:seat_id)
+
+      counts = [Legislator.count, Seat.count]
+
+      SeedLegislator.run([annapolis])
+
+      expect([Legislator.count, Seat.count]).to eq(counts)
+      expect(terms.order(:id).pluck(:seat_id)).to eq(seat_ids)
+    end
+
+    it "reconciles an Annapolis user without raising" do
+      annapolis = seed_annapolis
+      create(:user_address, user:, address: annapolis_address)
+      allow(SwayGeocode).to receive(:build).and_return(double(districts: [0, 1]))
+
+      expect { ReconcileUserDistrictsService.new(user, annapolis).call }.not_to raise_error
     end
   end
 
