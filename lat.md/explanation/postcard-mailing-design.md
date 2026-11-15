@@ -304,25 +304,25 @@ Status: Decided. Production receives both `POSTGRID_TEST_API_KEY` and `POSTGRID_
 
 When should the public privacy policy be updated to name PostGrid?
 
-Recommendation: Update `about.sway.vote/html/privacy.html` and the in-app `app/frontend/pages/public/Privacy.tsx` simultaneously with the deployment of the postcard feature flag, before opening physical delivery to voters.
+Recommendation: Updating `about.sway.vote/html/privacy.html` and the in-app `app/frontend/pages/public/Privacy.tsx` simultaneously with the deployment of the postcard feature flag aligns disclosures before opening physical delivery to voters.
 
 ### Return address format
 
 What return address should be printed on constituent postcards?
 
-Recommendation: Print the constituent's full name and verified residential street address by default with explicit UI confirmation, offering a city-and-ZIP privacy fallback for voters who prefer not to display their street address.
+Recommendation: The application prints the constituent's full name and verified residential street address by default with explicit UI confirmation, offering a city-and-ZIP privacy fallback for voters who prefer not to display their street address.
 
 ### Postcard rate limits and idempotency
 
 What rate limits should govern constituent postcard mailings?
 
-Recommendation: Enforce one card per voter per representative per bill using a database uniqueness constraint on `[user_legislator_id, bill_id]`, coupled with a 10 cards per hour per user burst limit.
+Recommendation: A database uniqueness constraint on `[user_legislator_id, bill_id]` enforces one card per voter per representative per bill, coupled with a 10 cards per hour per user burst limit.
 
 ### Platform budget safety cap
 
 Should platform-funded postcards have a monthly spend ceiling?
 
-Recommendation: Yes. Implement an automated monthly spending cap of $500 for platform-funded postcards, after which the interface falls back to email outreach until the next billing cycle.
+Recommendation: Yes. An automated monthly spending cap of $500 governs platform-funded postcards, after which the interface falls back to email outreach until the next billing cycle.
 
 ### Postcard funding model
 
@@ -364,16 +364,16 @@ Recommendation: Yes. PostGrid webhooks provide order events (created, printed, p
 
 Should representative postal addresses live directly on the legislators table or in a separate table?
 
-Recommendation: Place nullable address columns directly on the `legislators` table (`street_address`, `street_address2`, `city`, `state_code`, `postal_code`), mirroring `email` and `phone`.
+Recommendation: The schema places nullable address columns directly on the `legislators` table (`street_address`, `street_address2`, `city`, `state_code`, `postal_code`), mirroring `email` and `phone`.
 
 ### Sourcing missing state and federal addresses
 
 How should missing postal addresses for Maryland state legislators and US Congress members be populated?
 
-Recommendation: Ingest official Annapolis office addresses from the Maryland General Assembly directory, and ingest Washington, D.C. office building suites for Congress members using the public `@unitedstates/congress-legislators` dataset.
+Recommendation: Ingestion jobs retrieve official Annapolis office addresses from the Maryland General Assembly directory, and retrieve Washington, D.C. office building suites for Congress members using the public `@unitedstates/congress-legislators` dataset.
 
 ### Handling legislators without verified mailing addresses
 
 How should the application handle representatives whose postal addresses remain unverified?
 
-Recommendation: Disable the postcard option and display a clear explanation indicating that postal verification is in progress, while keeping phone and email actions enabled.
+Recommendation: The application disables the postcard option and displays a clear explanation indicating that postal verification is in progress, while keeping phone and email actions enabled.

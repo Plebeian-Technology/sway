@@ -513,8 +513,8 @@ RSpec.describe User, type: :model do
   end
 
   describe "account deletion foreign-key guard" do
-    let(:admin_actor_foreign_keys) do
-      [
+    it "fails when a foreign key to users is neither handled nor allowlisted" do
+      admin_actor_foreign_keys = [
         ["admin_bill_views", "admin_user_id"],
         ["admin_settings", "updated_by_id"],
         ["bill_news_articles", "approved_by_id"],
@@ -528,27 +528,19 @@ RSpec.describe User, type: :model do
         ["sending_service_domains", "confirmed_by_id"],
         ["testimony_coverage_acknowledgements", "acknowledged_by_id"]
       ].freeze
-    end
 
-    let(:allowed_nullify_keys) do
-      [
+      allowed_nullify_keys = [
         ["bill_summary_reports", "resolved_by_id"]
       ].freeze
-    end
 
-    let(:allowed_nullify_associations) do
-      %i[
+      allowed_nullify_associations = %i[
         resolved_bill_summary_reports
         approved_position_changes
         rejected_position_changes
       ].freeze
-    end
 
-    let(:pending_foreign_keys) do
-      [].freeze
-    end
+      pending_foreign_keys = [].freeze
 
-    it "fails when a foreign key to users is neither handled nor allowlisted" do
       conn = ActiveRecord::Base.connection
       user_fks = conn.tables.flat_map { |t| conn.foreign_keys(t).select { |fk| fk.to_table == "users" } }
 

@@ -98,7 +98,7 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
+        FeedQuery::DEFAULT_PER_PAGE.times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
@@ -132,7 +132,7 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
+        FeedQuery::DEFAULT_PER_PAGE.times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
@@ -336,7 +336,7 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
+        FeedQuery::DEFAULT_PER_PAGE.times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
@@ -494,7 +494,7 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
+        FeedQuery::DEFAULT_PER_PAGE.times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,

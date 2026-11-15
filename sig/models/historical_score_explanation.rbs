@@ -1,5 +1,6 @@
 class HistoricalScoreExplanation < ApplicationRecord
   def self.where: (*untyped) -> untyped
+  def self.exists?: (?untyped id_or_conditions) -> bool
 
   def user: -> User
   def user=: (User) -> User
