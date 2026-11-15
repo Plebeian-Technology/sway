@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def legislator_votes_shape: (ActiveRecord::ConnectionAdapters::AbstractAdapter connection) -> Hash[Symbol, Array[Array[untyped]]]
+  def built_legislator_votes_shape: (String database) -> Hash[Symbol, Array[Array[untyped]]]?
+end
