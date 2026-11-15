@@ -77,6 +77,7 @@ class FeedQuery
   def legislator_vote_occurred_at: (Bill bill, Legislator legislator, LegislatorVote legislator_vote) -> (ActiveSupport::TimeWithZone | Time)
   def senator?: (Legislator legislator) -> bool
   def organization_position_taken_items: () -> Array[Item]
+  def bill_in_current_term?: (Bill bill, Date term_start) -> bool
   def paginate: (Array[Item] sorted_items) -> [Array[Item], String?]
   def filter_after_cursor: (Array[Item] sorted_items) -> Array[Item]
   def encode_cursor: (Item item) -> String

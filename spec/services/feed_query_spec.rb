@@ -166,6 +166,34 @@ RSpec.describe FeedQuery do
 
       expect(bills).not_to include(other_bill)
     end
+
+    it "excludes a Bill of the Month whose legislative session or introduced date precedes the current term" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      term_start = described_class.term_start_on(baltimore)
+      prior_session = create(:legislative_session, sway_locale: baltimore, start_date: term_start - 2.years, end_date: term_start - 1.day)
+      current_session = create(:legislative_session, :active, sway_locale: baltimore, start_date: term_start, end_date: term_start + 4.years)
+
+      prior_session_bill = create(
+        :bill,
+        sway_locale: baltimore,
+        legislative_session: prior_session,
+        introduced_date_time_utc: term_start + 1.day,
+        scheduled_release_date_utc: term_start + 5.days
+      )
+      old_introduced_bill = create(
+        :bill,
+        sway_locale: baltimore,
+        legislative_session: current_session,
+        introduced_date_time_utc: term_start - 5.days,
+        scheduled_release_date_utc: term_start + 6.days
+      )
+
+      bills = described_class.new(user: user).items.filter_map(&:bill)
+
+      expect(bills).not_to include(prior_session_bill, old_introduced_bill)
+    end
   end
 
   describe "legislator_voted items" do
@@ -300,6 +328,45 @@ RSpec.describe FeedQuery do
       expect(items.size).to eq(1)
       expect(items.first.occurred_at).to eq(senate_time)
     end
+
+    it "excludes a vote on a bill from a prior-term legislative session or introduced before the term" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      rep = create(:legislator, sway_locale: baltimore)
+      create(:user_legislator, user: user, legislator: rep)
+
+      term_start = described_class.term_start_on(baltimore)
+      prior_session = create(:legislative_session, sway_locale: baltimore, start_date: term_start - 2.years, end_date: term_start - 1.day)
+      current_session = create(:legislative_session, :active, sway_locale: baltimore, start_date: term_start, end_date: term_start + 4.years)
+
+      vote_time = term_start.in_time_zone("UTC").beginning_of_day + 2.days
+
+      prior_session_bill = create(
+        :bill,
+        sway_locale: baltimore,
+        legislative_session: prior_session,
+        scheduled_release_date_utc: nil,
+        introduced_date_time_utc: term_start + 1.day,
+        house_vote_date_time_utc: vote_time
+      )
+      create(:legislator_vote, bill: prior_session_bill, legislator: rep)
+
+      old_introduced_bill = create(
+        :bill,
+        sway_locale: baltimore,
+        legislative_session: current_session,
+        scheduled_release_date_utc: nil,
+        introduced_date_time_utc: term_start - 5.days,
+        house_vote_date_time_utc: nil,
+        senate_vote_date_time_utc: nil
+      )
+      create(:legislator_vote, bill: old_introduced_bill, legislator: rep, created_at: vote_time)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "legislator_voted" }
+
+      expect(items.map(&:bill)).not_to include(prior_session_bill, old_introduced_bill)
+    end
   end
 
   describe "organization_position_taken items" do
@@ -356,6 +423,44 @@ RSpec.describe FeedQuery do
       items = described_class.new(user: user).items.select { |item| item.kind == "organization_position_taken" }
 
       expect(items).to be_empty
+    end
+
+    it "excludes a position activated in the current term on a bill from a prior legislative session or introduced before the term" do
+      user = create(:user)
+      create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
+      baltimore = user.sway_locales.first
+      org = create(:organization, sway_locale: baltimore)
+      create(:organization_follow, user: user, organization: org)
+
+      term_start = described_class.term_start_on(baltimore)
+      prior_session = create(:legislative_session, sway_locale: baltimore, start_date: term_start - 2.years, end_date: term_start - 1.day)
+      current_session = create(:legislative_session, :active, sway_locale: baltimore, start_date: term_start, end_date: term_start + 4.years)
+
+      activated_time = term_start.in_time_zone("UTC").beginning_of_day + 3.days
+
+      prior_session_bill = create(
+        :bill,
+        sway_locale: baltimore,
+        legislative_session: prior_session,
+        scheduled_release_date_utc: nil,
+        introduced_date_time_utc: term_start + 1.day
+      )
+      prior_position = create(:organization_bill_position, organization: org, bill: prior_session_bill, active: true)
+      prior_position.update_columns(activated_at: activated_time)
+
+      old_introduced_bill = create(
+        :bill,
+        sway_locale: baltimore,
+        legislative_session: current_session,
+        scheduled_release_date_utc: nil,
+        introduced_date_time_utc: term_start - 5.days
+      )
+      old_position = create(:organization_bill_position, organization: org, bill: old_introduced_bill, active: true)
+      old_position.update_columns(activated_at: activated_time)
+
+      items = described_class.new(user: user).items.select { |item| item.kind == "organization_position_taken" }
+
+      expect(items.map(&:bill)).not_to include(prior_session_bill, old_introduced_bill)
     end
   end
 

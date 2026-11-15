@@ -60,8 +60,24 @@ FactoryBot.define do
       "#{Faker::Color.color_name} - #{Time.zone.now.to_fs(:number)}"
     end
     chamber { "council" }
-    introduced_date_time_utc { 1.month.ago }
-    sequence(:scheduled_release_date_utc) { |n| n.days.ago.to_date }
+    introduced_date_time_utc do
+      floor_date = [
+        legislative_session&.start_date,
+        (TermWindow.convening_date(sway_locale, TermWindow.cycle_start_year(sway_locale, Time.zone.today)) if sway_locale&.declared?)
+      ].compact.max || 1.year.ago.to_date
+
+      floor_time = [floor_date, scheduled_release_date_utc].compact.min.in_time_zone("UTC")
+      [1.month.ago, floor_time].max
+    end
+    sequence(:scheduled_release_date_utc) do |n|
+      floor_date = [
+        legislative_session&.start_date,
+        (TermWindow.convening_date(sway_locale, TermWindow.cycle_start_year(sway_locale, Time.zone.today)) if sway_locale&.declared?)
+      ].compact.max || 1.year.ago.to_date
+
+      window = [(Time.zone.today - floor_date).to_i, 100].max
+      (((n - 1) % window) + 1).days.ago.to_date
+    end
     sequence(:link) { |n| "https://example.com/bills/#{n}" }
     category { Faker::CryptoCoin.coin_name }
     active { true }
