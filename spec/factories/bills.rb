@@ -66,8 +66,7 @@ FactoryBot.define do
         (TermWindow.convening_date(sway_locale, TermWindow.cycle_start_year(sway_locale, Time.zone.today)) if sway_locale&.declared?)
       ].compact.max || 1.year.ago.to_date
 
-      floor_time = [floor_date, scheduled_release_date_utc].compact.min.in_time_zone("UTC")
-      [1.month.ago, floor_time].max
+      [1.month.ago, floor_date.in_time_zone("UTC")].max
     end
     sequence(:scheduled_release_date_utc) do |n|
       floor_date = [
@@ -75,8 +74,12 @@ FactoryBot.define do
         (TermWindow.convening_date(sway_locale, TermWindow.cycle_start_year(sway_locale, Time.zone.today)) if sway_locale&.declared?)
       ].compact.max || 1.year.ago.to_date
 
-      window = [(Time.zone.today - floor_date).to_i, 100].max
-      (((n - 1) % window) + 1).days.ago.to_date
+      max_days = (Time.zone.today - floor_date).to_i
+      if max_days >= 1
+        (((n - 1) % max_days) + 1).days.ago.to_date
+      else
+        floor_date + (n - 1).days
+      end
     end
     sequence(:link) { |n| "https://example.com/bills/#{n}" }
     category { Faker::CryptoCoin.coin_name }
