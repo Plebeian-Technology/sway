@@ -250,10 +250,12 @@ describe("NominatimAddressAutocomplete", () => {
             mockHook({ status: "ZERO_RESULTS", suggestions: [] });
             rerender(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
             expect(screen.queryByRole("listbox")).toBeNull();
+            expect(screen.getByTestId("address-search-message")).toBeTruthy();
 
             mockHook({ status: "ERROR", suggestions: [] });
             rerender(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
             expect(screen.queryByRole("listbox")).toBeNull();
+            expect(screen.getByTestId("address-search-message")).toBeTruthy();
         });
 
         it("renders OpenStreetMap attribution notice in suggestions listbox", () => {
@@ -266,6 +268,42 @@ describe("NominatimAddressAutocomplete", () => {
             render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
 
             expect(screen.getByText(/OpenStreetMap/i)).toBeTruthy();
+        });
+
+        it("credits Google Maps, not OpenStreetMap, when a suggestion came from Google Places", () => {
+            const googleSuggestion: AddressSuggestion = {
+                ...createSuggestion("g-1", "100 Holliday St", "Baltimore, MD"),
+                raw_place: { place_id: "g-1", source: "google_places" },
+            };
+            mockHook({
+                value: "100",
+                status: "OK",
+                suggestions: [googleSuggestion],
+            });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            const credit = screen.getByTestId("osm-attribution");
+            expect(credit.textContent).toBe("Google Maps");
+            expect(screen.getByText("Google Maps").getAttribute("translate")).toBe("no");
+            expect(screen.queryByText(/OpenStreetMap|Nominatim/i)).toBeNull();
+        });
+
+        it("keeps the OpenStreetMap credit when a suggestion's place has another source", () => {
+            const nominatimSuggestion: AddressSuggestion = {
+                ...createSuggestion("n-1", "100 Holliday St", "Baltimore, MD"),
+                raw_place: { place_id: "n-1" },
+            };
+            mockHook({
+                value: "100",
+                status: "OK",
+                suggestions: [nominatimSuggestion],
+            });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            expect(screen.getByTestId("osm-attribution").textContent).toContain("OpenStreetMap");
+            expect(screen.queryByText(/Google/i)).toBeNull();
         });
     });
 
@@ -642,6 +680,48 @@ describe("NominatimAddressAutocomplete", () => {
             expect(input.getAttribute("aria-describedby")).toBe(alert.id);
         });
 
+        it.each([
+            [
+                "address_switch_cooldown",
+                "You recently changed your address. To prevent cross-district voting abuse, please wait before switching addresses again.",
+            ],
+            [
+                "geocoding_unavailable",
+                "We couldn't verify your address right now — the district lookup service is temporarily unavailable. Please try again in a few minutes.",
+            ],
+        ])("shows the message and never the %s code from a { code, message } error", (code, message) => {
+            const form = buildForm({ errors: { code, message } });
+
+            render(<NominatimAddressAutocomplete form={form} field={REGISTRATION_FIELD} />);
+
+            const input = screen.getByRole("combobox");
+            const alert = screen.getByRole("alert");
+
+            expect(alert.textContent).toBe(message);
+            expect(screen.queryByText(code)).toBeNull();
+            expect(document.body.textContent).not.toContain(code);
+            expect(input.getAttribute("aria-invalid")).toBe("true");
+            expect(input.getAttribute("aria-describedby")).toBe(alert.id);
+        });
+
+        it("prefers the error under the field name over a { code, message } error", () => {
+            const form = buildForm({
+                errors: { address: "We couldn't verify that address.", code: "some_code", message: "Other." },
+            });
+
+            render(<NominatimAddressAutocomplete form={form} field={REGISTRATION_FIELD} />);
+
+            expect(screen.getByRole("alert").textContent).toBe("We couldn't verify that address.");
+        });
+
+        it("shows an error under another key such as base next to a code", () => {
+            const form = buildForm({ errors: { code: "some_code", base: "Base problem." } });
+
+            render(<NominatimAddressAutocomplete form={form} field={REGISTRATION_FIELD} />);
+
+            expect(screen.getByRole("alert").textContent).toBe("Base problem.");
+        });
+
         it("does not render error or invalid attributes when form.errors is empty", () => {
             const form = buildForm({ errors: {} });
 
@@ -652,6 +732,38 @@ describe("NominatimAddressAutocomplete", () => {
             expect(screen.queryByRole("alert")).toBeNull();
             expect(input.getAttribute("aria-invalid")).toBe("false");
             expect(input.getAttribute("aria-describedby")).toBeNull();
+        });
+    });
+
+    describe("9. Search Outcome Messages", () => {
+        it.each([
+            ["ZERO_RESULTS", "No matching addresses found. You can still submit the address as you typed it."],
+            ["ERROR", "Address search is unavailable right now. You can still submit the address as you typed it."],
+        ])("shows a polite status message for %s that does not mark the input invalid", (status, message) => {
+            mockHook({ value: "100 Nowhere", status, suggestions: [], loading: false });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            const note = screen.getByTestId("address-search-message");
+            expect(note.getAttribute("role")).toBe("status");
+            expect(note.textContent).toBe(message);
+            expect(screen.getByRole("combobox").getAttribute("aria-invalid")).toBe("false");
+        });
+
+        it.each(["OK", "IDLE", ""])("shows no message for status %j", (status) => {
+            mockHook({ status, suggestions: [] });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            expect(screen.queryByTestId("address-search-message")).toBeNull();
+        });
+
+        it.each(["ZERO_RESULTS", "ERROR"])("shows no message for %s while a search is loading", (status) => {
+            mockHook({ status, suggestions: [], loading: true });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={REGISTRATION_FIELD} />);
+
+            expect(screen.queryByTestId("address-search-message")).toBeNull();
         });
     });
 });

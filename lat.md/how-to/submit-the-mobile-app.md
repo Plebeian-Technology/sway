@@ -60,7 +60,7 @@ Push to phones runs on two Apple keys and one Firebase service account. Nothing 
 `mobile/__tests__/accessibility.test.tsx` holds the half a machine can check: roles and labels on interactive elements, and font scaling never disabled anywhere under `mobile/src`. What no static pass sees is a screen reader on real hardware.
 
 1. Install Maestro — a single binary, so Android needs no Mac — and build a development client locally for each platform.
-2. Run the flows under `mobile/.maestro/` in the order `mobile/.maestro/README.md` gives. The passkey flow needs a real device with biometric hardware and Associated Domains, and the flows that need its signed-in session run after it on that same device; `smoke.yaml` runs on a simulator. Skip `deep_link_bill.yaml` and `screenshots.yaml`, which the README marks as not currently working.
+2. Run the flows under `mobile/.maestro/` in the order `mobile/.maestro/README.md` gives. The passkey flows, `voter_login_and_vote.yaml` and `new_user_signup.yaml`, need a real device with biometric hardware and Associated Domains, and the flows that need a signed-in session run after one of them on that same device; `smoke.yaml` runs on a simulator. Skip `deep_link_bill.yaml` and `screenshots.yaml`, which the README marks as not currently working.
 3. Sweep iOS with VoiceOver across Home, bills, bill detail, voting, legislators and profile. Every control announces, no focus is trapped, and the skeleton announces "Loading".
 4. Sweep Android with TalkBack over the same path.
 5. Raise iOS Dynamic Type to XXXL and Android font scale to its maximum, then confirm nothing clips or overflows on Bill of the Month, bill detail, voting, profile and sign-in.

@@ -494,7 +494,7 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        FeedQuery::DEFAULT_PER_PAGE.times do |i|
+        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
@@ -532,6 +532,7 @@ RSpec.describe "FeedController", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body["feed_match_count"]).to eq(expected_match_count)
+        expect(response.parsed_body["items"]).not_to be_empty
 
         get "/feed", headers: headers
 

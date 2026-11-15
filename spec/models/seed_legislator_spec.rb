@@ -721,7 +721,7 @@ RSpec.describe SeedLegislator do
       }
     end
 
-    # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#Unsupported President remains absent on a fresh installation]]
+    # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#A presidential row without the curated marker creates no person]]
     it "does not create a person from the unsupported roster sentinel" do
       expect {
         SeedLegislator.new(potus_json, congress, force: true).seed
@@ -771,8 +771,10 @@ RSpec.describe SeedLegislator do
 
       # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#Unevidenced executive terms are retired when official evidence is unsupported#Unevidenced POTUS term in US0 is retired when official evidence is unsupported]]
       it "retires the un-evidenced term and scores while preserving person and identifiers" do
+        allow(Sentry).to receive(:capture_exception)
         reg_service = SwayRegistrationService.new(user, nil, congress, invited_by_id: nil, async: false)
-        expect { reg_service.send(:locale_wide_candidates) }.to raise_error(Seats::UnresolvedSeatError)
+        expect(reg_service.send(:locale_wide_candidates)).to be_empty
+        expect(reg_service.skipped_resolution_errors).to contain_exactly(an_instance_of(Seats::UnresolvedSeatError))
 
         described_class.run([congress])
 
@@ -863,6 +865,48 @@ RSpec.describe SeedLegislator do
         expect(LegislatorTerm.find_by(id: presidential_term.id)).to eq(presidential_term)
         expect(district_us0.seats.where(seat_identifier: "us-president")).to exist
       end
+    end
+  end
+
+  describe "(k) the curated President row" do
+    let(:congress) { create(:sway_locale, city: "congress", state: "congress", country: "United States") }
+
+    let(:curated_potus_json) do
+      path = Rails.root.join("db", "seeds", "data", "united_states", "congress", "congress", "legislators.json")
+      JSON.parse(File.read(path)).find { |entry| entry["bioguideId"] == "POTUS" }
+    end
+
+    around { |example| travel_to(Date.new(2026, 11, 14)) { example.run } }
+
+    before do
+      allow(described_class).to receive(:read_legislators).with(congress).and_return([curated_potus_json])
+    end
+
+    def current_president_terms
+      District.find_by!(sway_locale: congress, name: "US0").legislator_terms.current.to_a
+    end
+
+    # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#Curated President row seats one current term]]
+    it "leaves exactly one current, seated President term in US0 after two runs" do
+      2.times { described_class.run([congress]) }
+
+      term = current_president_terms.sole
+      expect(term.title).to eq("Pres.")
+      expect(term.began_on).to eq(Date.new(2025, 1, 20))
+      expect(term.seat&.seat_identifier).to eq("us-president")
+      expect(term.seat&.chamber).to eq("Executive")
+      expect(Legislator.where(sway_locale: congress, external_id: "POTUS").count).to eq(1)
+      expect(Seat.where(seat_identifier: "us-president").count).to eq(1)
+    end
+
+    # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#Curated President row reuses the existing person]]
+    it "reuses an existing POTUS person row that holds no terms" do
+      existing = create(:legislator, sway_locale: congress, external_id: "POTUS", first_name: "Donald", last_name: "Trump")
+
+      described_class.run([congress])
+
+      expect(Legislator.where(sway_locale: congress, external_id: "POTUS").pluck(:id)).to eq([existing.id])
+      expect(current_president_terms.map(&:legislator_id)).to eq([existing.id])
     end
   end
 
@@ -1084,6 +1128,20 @@ RSpec.describe SeedLegislator do
       it "(SPEC boundary) executive? is true for POTUS" do
         prep = SeedPreparers::Legislators::CongressDotGov.new(potus_blob, congress)
         expect(prep.executive?).to be(true)
+      end
+
+      it "(SPEC boundary) curated_president? is true only for the marked POTUS row with exact dates" do
+        curated = potus_blob.merge(
+          "termsSource" => SeedPreparers::Legislators::CongressDotGov::CURATED_PRESIDENT_TERMS_SOURCE,
+          "terms" => {"item" => [{"chamber" => "White House", "startYear" => 2025, "endYear" => 2029,
+                                  "beganOn" => "2025-01-20", "endedOn" => "2029-01-20"}]}
+        )
+        undated = curated.merge("terms" => {"item" => [{"chamber" => "White House", "startYear" => 2025, "endYear" => 2029}]})
+
+        expect(SeedPreparers::Legislators::CongressDotGov.new(curated, congress).curated_president?).to be(true)
+        expect(SeedPreparers::Legislators::CongressDotGov.new(potus_blob, congress).curated_president?).to be(false)
+        expect(SeedPreparers::Legislators::CongressDotGov.new(undated, congress).curated_president?).to be(false)
+        expect(SeedPreparers::Legislators::CongressDotGov.new(curated.merge("bioguideId" => "X000001"), congress).curated_president?).to be(false)
       end
 
       it "(SPEC boundary) executive? is false for a non-POTUS member" do
@@ -1332,6 +1390,13 @@ RSpec.describe SeedLegislator do
       it "proven_terms is empty when blob omits term fields — no fabrication" do
         prep = SeedPreparers::Legislators::Sway.new(no_term_blob, baltimore)
         expect(prep.proven_terms).to eq([])
+      end
+
+      it "names the roster entry's published id as the office of a person-keyed locale" do
+        annapolis = create(:sway_locale, city: "annapolis", state: "maryland", country: "United States")
+        prep = SeedPreparers::Legislators::Sway.new(no_term_blob.merge("externalId" => "annapolis-mayor"), annapolis)
+
+        expect(prep.current_office_identity).to eq("annapolis-mayor")
       end
 
       it "(H6 stability) returns 2024 under travel_to(2026)" do

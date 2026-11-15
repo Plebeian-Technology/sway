@@ -5,6 +5,7 @@ module SeedPreparers
 
       def district: () -> District?
       def identity: () -> LegislatorIdentity?
+      def current_office_identity: () -> String?
       def current_member?: () -> bool
       def title: () -> String
       def term_start_year: () -> Integer

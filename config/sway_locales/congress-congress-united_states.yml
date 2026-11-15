@@ -121,6 +121,7 @@ term_rules:
     seat_chambers:
         "Sen.": Senate
         "Rep.": House of Representatives
+        "Pres.": Executive
 
 # @lat: [[news-source-configuration#News source configuration contract]]
 representative_resolution:

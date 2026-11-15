@@ -8,19 +8,19 @@
         "lastName": "Trump",
         "currentMember": true,
         "district": "0",
+        "termsSource": "sway-curated-constitution",
         "terms": {
             "item": [
                 {
                     "chamber": "White House",
-                    "startYear": 2025
-                },
-                {
-                    "chamber": "White House",
-                    "startYear": 2021
+                    "startYear": 2025,
+                    "endYear": 2029,
+                    "beganOn": "2025-01-20",
+                    "endedOn": "2029-01-20"
                 }
             ]
         },
-        "url": "https://whitehouse.gov",
+        "url": "https://www.whitehouse.gov/administration/",
         "depiction": {
             "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Official_Presidential_Portrait_of_President_Donald_J._Trump_%282025%29.jpg/1280px-Official_Presidential_Portrait_of_President_Donald_J._Trump_%282025%29.jpg"
         }

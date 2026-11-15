@@ -192,6 +192,7 @@ SwayLocale declarations in `config/sway_locales/SLUG.yml` supply Nominatim geogr
 - `nominatim_viewbox`: Bounding box string formatted as `"min_lon,max_lat,max_lon,min_lat"` (left,top,right,bottom coordinates).
 - `nominatim_country_codes`: ISO 3166-1 alpha-2 comma-delimited country code string (e.g. `"us"`).
 - `nominatim_bounded`: Boolean flag indicating whether results outside the viewbox are strictly excluded (`true` or `false`).
+- Strict-box fallback: when a search sent a strict viewbox and finds nothing, the hook repeats it once without `viewbox` and `bounded` (keeping `countrycodes`), so a user outside the selected locale's box still finds their address.
 - Runtime delivery: Serialized via `SwayLocale#to_builder` and typed in `ISwayLocale` for consumption by `useNominatimAddressAutocomplete`.
 - Upstream compliance: Client requests include an identifying User-Agent header and throttle query dispatch with >= 1000ms debounce.
 - Rollback path: Google Maps Places autocomplete files ([[app/frontend/components/user/AddressAutocomplete.tsx#AddressAutocomplete|AddressAutocomplete]], [[app/frontend/hooks/useAddressAutocomplete.ts#useAddressAutocomplete|useAddressAutocomplete]], and [[app/frontend/sway_utils/parseGoogleAddressComponents.ts#parseGoogleAddressComponents|parseGoogleAddressComponents]]) remain installed as a rollback path, while registration uses [[app/frontend/components/user/NominatimAddressAutocomplete.tsx#NominatimAddressAutocomplete|NominatimAddressAutocomplete]].

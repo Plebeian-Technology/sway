@@ -11,7 +11,7 @@ export interface UserProfile {
     sms_notifications_enabled?: boolean;
     theme_mode?: "auto" | "light" | "dark" | null;
     address?: {
-        street1?: string | null;
+        street?: string | null;
         street2?: string | null;
         city?: string | null;
         region_code?: string | null;
@@ -23,7 +23,7 @@ export interface UserProfile {
 export interface UseUserProfileResult {
     user: UserProfile | null;
     loading: boolean;
-    refresh: () => Promise<void>;
+    refresh: () => Promise<boolean>;
 }
 
 export function useUserProfile(): UseUserProfileResult {

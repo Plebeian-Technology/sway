@@ -1,0 +1,56 @@
+# new_user_signup — REAL DEVICE ONLY; env vars and prerequisites are in README.md.
+# @lat: [[submit-the-mobile-app#The accessibility precondition]]
+appId: ${APP_ID}
+---
+- clearKeychain
+- launchApp:
+      clearState: true
+- assertVisible:
+      id: "auth-screen"
+- tapOn:
+      id: "auth-phone-field-input"
+- inputText: "${TEST_NEW_PHONE}"
+- tapOn:
+      id: "auth-submit-cta"
+- extendedWaitUntil:
+      visible:
+          id: "auth-code-field-input"
+      timeout: 30000
+- tapOn:
+      id: "auth-code-field-input"
+- inputText: "123456"
+- tapOn:
+      id: "auth-submit-cta"
+- extendedWaitUntil:
+      visible:
+          id: "address-onboarding-heading"
+      timeout: 90000
+- runFlow:
+      when:
+          visible:
+              id: "btn-edit-address-manually"
+      commands:
+          - tapOn:
+                id: "btn-edit-address-manually"
+- runFlow:
+      commands:
+          - tapOn:
+                id: "address-input-street1-input"
+          - inputText: "${TEST_STREET}"
+          - tapOn:
+                id: "address-input-city-input"
+          - inputText: "${TEST_CITY}"
+          - tapOn:
+                id: "address-input-region_code-input"
+          - inputText: "${TEST_REGION}"
+          - tapOn:
+                id: "address-input-postal_code-input"
+          - inputText: "${TEST_POSTAL}"
+- tapOn:
+      id: "address-submit-cta"
+- extendedWaitUntil:
+      visible:
+          id: "feed-screen"
+      timeout: 60000
+- assertNotVisible:
+      id: "address-error"

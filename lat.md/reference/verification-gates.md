@@ -11,7 +11,7 @@ lat:
 The script takes no arguments and refuses them.
 
 - `0` — every lane green
-- `1` — a lane failed
+- `1` — a lane failed, or the [[verification-gates#Onboarding coverage gate|onboarding coverage check]] failed
 - `2` — a lane did not complete
 
 ## How lane durations are measured
@@ -27,7 +27,7 @@ The `seconds` a lane reports in `summary.json` runs from its start to the moment
 The Rails helper configures isolated test data, HTTP access, coverage and browser transport for both focused runs and the full gate.
 
 - [[spec/support/live_llm_gate.rb#LiveLlmGate|LiveLlmGate]] applies WebMock permissions and VCR exclusions together. Only RUN_LIVE_LLM_TESTS=1 permits Anthropic and OpenRouter HTTP; credentials alone grant no network access. Localhost and local error collectors remain reachable. Anthropic live token checks use a fifteen-second timeout; OpenRouter uses its configured adapter timeout.
-- SimpleCov cover limits reporting to models, services, jobs, channels and controllers. track_files adds unloaded files without excluding unrelated loaded files, which changes the denominator between browser and unit runs. Mailers remain outside the coverage glob. Command names include lane and worker to prevent concurrent reports from overwriting each other.
+- SimpleCov starts before the Rails environment loads, so files loaded at boot or by eager loading under `CI` are measured; it records line and branch coverage. Its cover limits reporting to models, services, jobs, channels and controllers, plus the onboarding files [[config/onboarding_coverage_floor.yml]] lists. track_files adds unloaded files without excluding unrelated loaded files, which changes the denominator between browser and unit runs. Mailers remain outside the coverage glob. Command names include lane and worker to prevent concurrent reports from overwriting each other.
 - Application tables are emptied before the suite and after system examples. System examples disable transactional fixtures because Puma-thread writes can escape the example transaction; other examples retain transactional cleanup. Schema and migration metadata are preserved.
 - Examples restore User::ADMIN_PHONES and User::API_USER_PHONES after temporary overrides so an admin fixture cannot grant access in another example.
 - Capybara uses ordinary Puma threading; rails_vite does not require the old single-thread restriction for directory changes. The server suppresses deployment config loading with config_files set to a dash, avoiding unused cluster hooks.
@@ -39,11 +39,11 @@ The Rails helper configures isolated test data, HTTP access, coverage and browse
 Eleven lanes run directly on the host, needing no database.
 
 - `rubocop` — Standard Ruby, via `bin/rubocop`
-- `vitest` — frontend unit and component tests, worker pool capped
+- `vitest` — frontend unit and component tests, worker pool capped, with the [[verification-gates#Frontend onboarding coverage gate|onboarding coverage floors]] enforced
 - `tsc` — TypeScript types, excluding `mobile/`; rejects imports under `app/frontend/legacy/` as unresolved modules because that directory is absent, so no dedicated guard is needed
 - `oxlint` — JS/TS lint, config `.oxlintrc.json`
 - `oxfmt` — JS/TS formatting
-- `mobile-jest` — mobile app tests, `TZ=UTC`, worker pool capped
+- `mobile-jest` — mobile app tests, `TZ=UTC`, worker pool capped, with the [[verification-gates#Mobile onboarding coverage gate|onboarding coverage floors]] enforced
 - `mobile-tsc` — mobile TypeScript, its own tsconfig and React Native types
 - `mobile-oxlint` — mobile lint, its own `.oxlintrc.json`
 - `brakeman` — Rails static security analysis
@@ -123,6 +123,42 @@ Each red lane prints a copy-pasteable rerun beside its log path. Every Docker la
 - `rubocop --force-exclusion --autocorrect` over the staged Ruby files, safe cops only, followed by `git update-index --again`, which re-stages whole files
 - A literal-value check on each staged `.kamal/secrets*` file, then `gitleaks` over the staged index on every commit
 - Vitest does not run in this hook
+
+## Onboarding coverage gate
+
+`sway:coverage:onboarding` fails when any onboarding file listed in [[config/onboarding_coverage_floor.yml]] is under its line or branch floor, or is absent from the coverage report; the target for every file is 100 percent line and branch coverage.
+
+- [[lib/onboarding_coverage_check.rb#OnboardingCoverageCheck]] merges the per-worker results in `coverage/.resultset.json` with SimpleCov's own result merger and scores each listed file with SimpleCov's own source-file statistics, so its numbers match the HTML report
+- `dip run verify` runs the task in its own container once both rspec lanes are green, passing the run's start time so only this run's worker results are merged; it prints every file's numbers under `onboarding coverage:` after the lane table, and a red check makes the run exit `1`. The check is not a lane and is absent from `summary.json`
+- CI runs the task after the rspec step in `.github/workflows/rspec.yml`, where the one fresh worker result is the whole report
+- Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
+- Raising a floor: measure the file after the change that adds coverage, then write the new percentage, rounded down to one decimal place, into the floor file in the same commit; a floor is never lowered to make a run pass
+- A line no test can reach, such as the `return nil unless change` guard in [[app/services/user_address_switch_service.rb]], keeps its file under 100 percent until the line is removed
+- `config/initializers/monkey_patches.rb` is not listed: SimpleCov's `rails` profile skips everything under `config/`, so the file can never appear in the report
+- Worker results from another rspec run in the same checkout while `verify` runs are merged too; they can only raise a file's numbers, never lower them
+
+## Frontend onboarding coverage gate
+
+The full vitest run fails when any frontend onboarding file in [[config/onboarding_coverage_floor.frontend.json]] is under its line or branch floor; the target for every file is 100 percent line and branch coverage.
+
+- [[vitest.config.ts]] builds one per-file threshold from each entry of the floor file and limits coverage to those files; coverage is not enabled by default, so `dip run vitest <file>` reports none and a partial run never trips a threshold
+- The `vitest` lane of `dip run verify` and the test step of `.github/workflows/vitest.yml` pass `--coverage`; a red lane names the file and the metric under its floor
+- The floor file is separate from [[config/onboarding_coverage_floor.yml]] so the Ruby checker never reads it
+- Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
+- Raising a floor: run `pnpm test --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
+- `app/frontend/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
+
+## Mobile onboarding coverage gate
+
+The full mobile Jest run fails when any mobile onboarding file in [[config/onboarding_coverage_floor.mobile.json]] is under its line or branch floor or has no coverage data; the target for every file is 100 percent line and branch coverage.
+
+- [[mobile/jest.config.js]] builds one per-file threshold from each entry of the floor file and limits coverage to those files; Jest collects coverage only when `--coverage` is passed, so `pnpm --dir mobile test <file>` reports none and a partial run never trips a threshold
+- The `mobile-jest` lane of `dip run verify` and the Jest step of `.github/workflows/mobile-test.yml` pass `--coverage`; a red lane names the file under its floor
+- A listed file that no test loads fails the run with `Coverage data for <file> was not found`
+- Floor-file keys are repository-relative paths, as in the frontend floor file
+- Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
+- Raising a floor: run `TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
+- `mobile/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
 
 ## Known traps
 

@@ -1,0 +1,9 @@
+class Object
+  def reset!: () -> void
+
+  def start_registration: () -> Integer
+
+  def finish_registration: (String challenge_id) -> Integer
+
+  def challenge_id: () -> String
+end

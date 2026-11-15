@@ -8,7 +8,7 @@ module RateLimitResponder : ActionController::Base, JsonErrorRenderable
 
   private
 
-  def render_rate_limited: () -> untyped
+  def render_rate_limited: (?retry_after: Integer) -> untyped
   def report_repeated_rate_limit: () -> void
   def current_user: () -> untyped
 end

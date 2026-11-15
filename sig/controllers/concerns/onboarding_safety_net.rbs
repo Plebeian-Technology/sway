@@ -1,0 +1,12 @@
+# @lat: [[signature-placement#Why a concern declares the host whose helpers it reaches]]
+module OnboardingSafetyNet : ActionController::Base, JsonErrorRenderable, MobileFormatNegotiation
+  extend ActiveSupport::Concern
+  extend AbstractController::Callbacks::ClassMethods
+
+  ONBOARDING_UNAVAILABLE_MESSAGE: String
+
+  private
+
+  def rescue_unexpected_onboarding_error: () { () -> void } -> void
+  def render_onboarding_unavailable: () -> void
+end

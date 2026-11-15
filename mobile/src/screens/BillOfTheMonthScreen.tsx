@@ -33,7 +33,7 @@ type UserVoteRecord = { support?: "for" | "against" | "FOR" | "AGAINST" | null }
 interface BodyProps {
     botm: Record<string, unknown>;
     bootstrapLoading: boolean;
-    refreshBootstrap: (swayLocaleId?: number) => void | Promise<void>;
+    refreshBootstrap: (swayLocaleId?: number) => void | Promise<unknown>;
     swayLocales: Locale[];
     currentLocale: Locale | null;
     swayLocaleSlug: string;

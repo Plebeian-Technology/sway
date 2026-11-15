@@ -198,6 +198,21 @@ RSpec.describe "config/recurring.yml" do
     end
   end
 
+  # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#The hourly job assigns what was skipped]]
+  describe "assign_pending_representatives" do
+    %w[development production].each do |env|
+      it "is registered under #{env}: with a Fugit-parseable cron schedule" do
+        require "fugit"
+        entry = config[env]["assign_pending_representatives"]
+        expect(entry).to be_present
+        expect(entry["class"]).to eq("AssignPendingRepresentativesJob")
+        expect(entry["queue"]).to eq("background")
+        expect(entry["schedule"]).to eq("15 * * * *")
+        expect(Fugit.parse(entry["schedule"])).to be_a(Fugit::Cron)
+      end
+    end
+  end
+
   describe "ingest_summary_batches" do
     %w[development production].each do |env|
       it "is registered under #{env}: with a Fugit-parseable cron schedule" do

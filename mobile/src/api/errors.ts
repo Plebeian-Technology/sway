@@ -1,4 +1,6 @@
 // @lat: [[mobile-api-client-contract#Errors]]
+export const GENERIC_ERROR_MESSAGE = "Something went wrong. Please try again.";
+
 export class ApiRequestError extends Error {
     public readonly code: string;
     public readonly details?: Record<string, string[]>;
@@ -21,9 +23,18 @@ export class UnauthorizedError extends ApiRequestError {
 }
 
 export class RateLimitedError extends ApiRequestError {
-    constructor(code: string, message: string, details?: Record<string, string[]>, status?: number) {
+    public readonly retryAfterSeconds?: number;
+
+    constructor(
+        code: string,
+        message: string,
+        details?: Record<string, string[]>,
+        status?: number,
+        retryAfterSeconds?: number,
+    ) {
         super(code, message, details, status);
         this.name = "RateLimitedError";
+        this.retryAfterSeconds = retryAfterSeconds;
     }
 }
 

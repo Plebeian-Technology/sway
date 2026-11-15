@@ -35,9 +35,17 @@ Overlapping people cannot make one office appear to have an arbitrary occupant, 
 
 An official service person with a raw identifier already used by another source remains a distinct typed identity.
 
-## Unsupported President remains absent on a fresh installation
+## A presidential row without the curated marker creates no person
 
-The current locale configuration has no verified service profile, so a legacy presidential roster sentinel creates no person record and the reader request contains no President.
+A presidential roster row that lacks the curated marker and exact dates creates no person record, and the reader request contains no President.
+
+## Curated President row seats one current term
+
+The committed curated President row leaves one current President term in US0 with seat us-president, chamber Executive and start 2025-01-20, and a second run adds nothing.
+
+## Curated President row reuses the existing person
+
+Seeding the curated row over a POTUS person row with no terms gives that row the term and creates no second POTUS legislator.
 
 ## Unevidenced executive terms are retired when official evidence is unsupported
 

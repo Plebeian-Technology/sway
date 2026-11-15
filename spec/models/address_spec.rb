@@ -47,6 +47,115 @@ RSpec.describe Address, type: :model do
         expect(address.longitude).to be_truthy
       end
     end
+
+    context "when the production callback geocodes after commit" do
+      def raw(address, column)
+        ActiveRecord::Base.connection.select_value("SELECT #{column} FROM addresses WHERE id = #{address.id}")
+      end
+
+      typed_fields = {street: "100 N Holliday St", city: "Baltimore", region_code: "MD", postal_code: "21202"}
+
+      before do
+        allow(Rails.env).to receive(:test?).and_return(false)
+        allow(SwayLogging).to receive(:log_exception)
+        allow(Sentry).to receive(:capture_exception)
+      end
+
+      it "saves the coordinates as ciphertext" do
+        address = Address.create!(**typed_fields)
+
+        reloaded = Address.find(address.id)
+        expect(reloaded.latitude.to_f).to eq(39.29105)
+        expect(reloaded.longitude.to_f).to eq(-76.61069)
+        expect(raw(address, "latitude")).not_to eq("39.29105")
+        expect(raw(address, "longitude")).not_to eq("-76.61069")
+      end
+
+      it "leaves the normalized key nil, so a stranger's picked place cannot match the row" do
+        address = Address.create!(**typed_fields, street2: "Apt 4")
+
+        expect(Address.find(address.id).located?).to be(true)
+        expect(Address.find(address.id).normalized_key).to be_nil
+      end
+
+      context "when the typed address has no city, region, postal code or country" do
+        before do
+          geocoded = Geocoder::Result::Test.new(
+            "coordinates" => [39.2904, -76.6122],
+            "city" => "baltimore",
+            "state" => "Maryland",
+            "state_code" => "md",
+            "postal_code" => "21201",
+            "country_code" => "us"
+          )
+          allow(Geocoder).to receive(:search).and_return([geocoded])
+        end
+
+        it "fills each blank field from the geocode, normalized like a typed one" do
+          address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+
+          reloaded = Address.find(address.id)
+          expect(reloaded).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21201", country: "US")
+          expect(address).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21201", country: "US")
+          expect(reloaded.us_state_code).to eq("MD")
+        end
+
+        it "keeps every field the user typed" do
+          address = Address.create!(street: "100 N Holliday St", city: "Towson", region_code: "", postal_code: "21204", country: "")
+
+          expect(Address.find(address.id))
+            .to have_attributes(city: "Towson", region_code: "MD", postal_code: "21204", country: "US")
+        end
+
+        it "reads the state name when the geocode has no state code" do
+          allow(Geocoder).to receive(:search)
+            .and_return([Geocoder::Result::Test.new("coordinates" => [39.29, -76.61], "state" => "Maryland")])
+
+          address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+
+          expect(Address.find(address.id)).to have_attributes(city: "", region_code: "MD", postal_code: "", country: "")
+        end
+      end
+
+      [
+        Geocoder::OverQueryLimitError.new("over limit"),
+        Timeout::Error.new("execution expired"),
+        SocketError.new("getaddrinfo failed"),
+        Errno::ECONNREFUSED.new("connect(2) for maps.googleapis.com"),
+        OpenSSL::SSL::SSLError.new("SSL_connect returned=1")
+      ].each do |error|
+        it "keeps the row unlocated and reports a #{error.class}" do
+          allow(Geocoder).to receive(:search).and_raise(error)
+
+          expect { Address.create!(**typed_fields) }.not_to raise_error
+
+          reloaded = Address.sole
+          expect(reloaded.located?).to be(false)
+          expect(reloaded.normalized_key).to be_nil
+          expect(SwayLogging).to have_received(:log_exception)
+            .with("address.geocode_failed", exception: error, address_id: reloaded.id)
+          expect(Sentry).to have_received(:capture_exception).with(error, extra: {address_id: reloaded.id})
+        end
+      end
+
+      it "leaves the row unchanged when the geocoder finds nothing" do
+        allow(Geocoder).to receive(:search).and_return([])
+        expect { Address.create!(**typed_fields) }.not_to raise_error
+
+        reloaded = Address.sole
+        expect(reloaded.located?).to be(false)
+        expect(reloaded.updated_at).to eq(reloaded.created_at)
+        expect(Sentry).not_to have_received(:capture_exception)
+      end
+
+      it "does not look up an address that already has coordinates" do
+        allow(Geocoder).to receive(:search).and_call_original
+
+        Address.create!(**typed_fields, latitude: 39.3, longitude: -76.6)
+
+        expect(Geocoder).not_to have_received(:search)
+      end
+    end
   end
 
   describe "#sway_locale" do
@@ -77,6 +186,70 @@ RSpec.describe Address, type: :model do
 
         expect(address.sway_locales.present?).to be_truthy
       end
+    end
+  end
+
+  describe ".sway_locale_attribute_sets_for" do
+    it "names the United States in the Congress set whatever country was submitted" do
+      sets = Address.sway_locale_attribute_sets_for(city: "Toronto", region_code: "ON", country: "Canada")
+
+      expect(sets.last).to eq({city: "congress", state: "congress", country: "US"})
+    end
+
+    it "leaves out the city set when the city is blank" do
+      sets = Address.sway_locale_attribute_sets_for(city: "", region_code: "VA", country: "US")
+
+      expect(sets).to eq([
+        {city: "Virginia", state: "VA", country: "US"},
+        {city: "congress", state: "congress", country: "US"}
+      ])
+    end
+
+    it "leaves out the city and state sets when the region is blank" do
+      sets = Address.sway_locale_attribute_sets_for(city: "Toronto", region_code: "", country: "Canada")
+
+      expect(sets).to eq([{city: "congress", state: "congress", country: "US"}])
+    end
+
+    it "gives the city and state sets the United States when the country is blank" do
+      sets = Address.sway_locale_attribute_sets_for(city: "Richmond", region_code: "VA", country: "")
+
+      expect(sets.pluck(:country)).to eq(%w[US US US])
+    end
+  end
+
+  describe "#us_state_code" do
+    def address_with_region(region_code:, country:)
+      Address.new(street: "1 Main St", city: "Somewhere", region_code:, country:, postal_code: "00000")
+    end
+
+    ["US", "United States", ""].each do |country|
+      it "returns VA for region VA and country #{country.inspect}" do
+        expect(address_with_region(region_code: "VA", country:).us_state_code).to eq("VA")
+      end
+    end
+
+    it "returns nil for region ON and country Canada" do
+      expect(address_with_region(region_code: "ON", country: "Canada").us_state_code).to be_nil
+    end
+
+    it "returns nil for a blank region" do
+      expect(address_with_region(region_code: "", country: "US").us_state_code).to be_nil
+    end
+
+    it "returns nil for region US" do
+      expect(address_with_region(region_code: "US", country: "US").us_state_code).to be_nil
+    end
+  end
+
+  describe "#located?" do
+    it "is true when latitude and longitude are both present" do
+      expect(Address.new(latitude: "38.9", longitude: "-77.0").located?).to be(true)
+    end
+
+    it "is false when either coordinate is missing" do
+      expect(Address.new(latitude: "38.9", longitude: nil).located?).to be(false)
+      expect(Address.new(latitude: nil, longitude: "-77.0").located?).to be(false)
     end
   end
 

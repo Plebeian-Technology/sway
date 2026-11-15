@@ -3,7 +3,7 @@
 import { API_BASE_URL } from "../constants/api";
 import { tokenStore } from "../auth/tokenStore";
 import { sessionStore } from "../auth/sessionStore";
-import { ApiRequestError, UnauthorizedError, RateLimitedError, NetworkError } from "./errors";
+import { ApiRequestError, UnauthorizedError, RateLimitedError, NetworkError, GENERIC_ERROR_MESSAGE } from "./errors";
 import { authEvents } from "../auth/authEvents";
 import { localeOverride } from "../state/localeOverride";
 import { logDev } from "../utils/logging";
@@ -65,7 +65,7 @@ function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
             const first = errors[0] ?? {};
             return {
                 code: first.code ?? `http_${fallbackStatus}`,
-                message: first.title ?? first.detail ?? `HTTP ${fallbackStatus}`,
+                message: first.title ?? first.detail ?? GENERIC_ERROR_MESSAGE,
                 // @lat: [[mobile-api-client-contract#Why both server error envelope shapes are converted the same way]]
                 details: first.detail ? { detail: [first.detail] } : undefined,
             };
@@ -75,13 +75,13 @@ function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
             if (err && typeof err === "object") {
                 return {
                     code: err.code ?? `http_${fallbackStatus}`,
-                    message: err.message ?? `HTTP ${fallbackStatus}`,
+                    message: err.message ?? GENERIC_ERROR_MESSAGE,
                     details: err.details,
                 };
             }
         }
     }
-    return { code: `http_${fallbackStatus}`, message: `HTTP ${fallbackStatus}` };
+    return { code: `http_${fallbackStatus}`, message: GENERIC_ERROR_MESSAGE };
 }
 
 async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
@@ -148,16 +148,18 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
             } catch {
                 // @lat: [[mobile-api-client-contract#Why a 401 also closes the WebSocket, and why that import is inline]]
             }
-            authEvents.emit("unauthenticated");
+            authEvents.emit("unauthenticated", "session_expired");
         }
         throw new UnauthorizedError(envelope.code, envelope.message, envelope.details, res.status);
     }
     if (res.status === 429) {
+        const retryAfter = Number.parseInt(res.headers?.get("Retry-After") ?? "", 10);
         throw new RateLimitedError(
             envelope.code,
             envelope.message ?? "try again shortly",
             envelope.details,
             res.status,
+            Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
         );
     }
     throw new ApiRequestError(envelope.code, envelope.message, envelope.details, res.status);

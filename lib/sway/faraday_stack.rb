@@ -68,6 +68,24 @@ module Sway
       exceptions: TRANSPORT_RETRY_EXCEPTIONS
     }.freeze #: retry_options
 
+    # @lat: [[faraday-stack-retry-and-connection-design#Why the Nominatim connection never retries]]
+    NOMINATIM_DEFAULTS = {
+      max: 0,
+      retry_statuses: [],
+      methods: %i[get],
+      exceptions: []
+    }.freeze #: retry_options
+
+    # @lat: [[address-place-classification#Google Places results in the Nominatim shape]]
+    GOOGLE_PLACES_DEFAULTS = {
+      max: 1,
+      interval: 0.5, # seconds
+      backoff_factor: 2,
+      retry_statuses: [500, 502, 503, 504],
+      methods: %i[post],
+      exceptions: [Faraday::RetriableResponse]
+    }.freeze #: retry_options
+
     # @lat: [[faraday-stack-retry-and-connection-design#OpenRouter retries and upstream User-Agent headers]]
     NOMINATIM_USER_AGENT = "Sway/1.0 (civic-tech-app; https://sway.vote)"
 
@@ -163,15 +181,24 @@ module Sway
       )
     end
 
-    def self.nominatim(timeout_seconds: 10)
+    # @lat: [[faraday-stack-retry-and-connection-design#Why the Nominatim connection never retries]]
+    def self.nominatim(timeout_seconds: 3)
       build(
         base_url: Sway::Settings.upstream.nominatim_api_base_url,
         timeout_seconds: timeout_seconds,
-        retry_options: OPEN_DATA_DEFAULTS
+        retry_options: NOMINATIM_DEFAULTS
       ) do |conn|
         conn.headers["User-Agent"] = NOMINATIM_USER_AGENT
         conn.headers["Accept"] = "application/json"
       end
+    end
+
+    def self.google_places(timeout_seconds: 5)
+      build(
+        base_url: Sway::Settings.upstream.google_places_api_base_url,
+        timeout_seconds: timeout_seconds,
+        retry_options: GOOGLE_PLACES_DEFAULTS
+      )
     end
 
     def self.brave_search(timeout_seconds: 15)

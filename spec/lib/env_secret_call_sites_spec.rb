@@ -7,7 +7,7 @@ RSpec.describe "ENV secret whitespace stripping" do
   describe "Sway::TwilioClient.build (TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN)" do
     it "hands Twilio the stripped sid and token" do
       with_env("TWILIO_ACCOUNT_SID" => "AC123\n", "TWILIO_AUTH_TOKEN" => "tok456\n") do
-        expect(Twilio::REST::Client).to receive(:new).with("AC123", "tok456")
+        expect(Twilio::REST::Client).to receive(:new).with("AC123", "tok456", nil, nil, an_instance_of(Twilio::HTTP::Client))
 
         Sway::TwilioClient.build
       end
@@ -374,6 +374,32 @@ RSpec.describe "ENV secret whitespace stripping" do
         expect {
           client.search(query: "24-0012 Housing", allowed_domains: ["thebanner.com"])
         }.to raise_error(KeyError, /BRAVE_SEARCH_API_KEY/)
+      end
+    end
+  end
+
+  describe "GooglePlaces::Client (GOOGLE_MAPS_API_KEY)" do
+    let(:connection) { instance_double(Faraday::Connection) }
+    let(:client) { GooglePlaces::Client.new(connection: connection) }
+
+    it "sends the stripped key in the X-Goog-Api-Key header" do
+      with_env("GOOGLE_MAPS_API_KEY" => "test-google-key\n") do
+        response = instance_double(Faraday::Response, status: 200, body: "{}")
+        expect(connection).to receive(:post).with(
+          "/v1/places:searchText",
+          anything,
+          hash_including("X-Goog-Api-Key" => "test-google-key")
+        ).and_return(response)
+
+        client.search(query: "100 Holliday St")
+      end
+    end
+
+    it "returns nil without a request when GOOGLE_MAPS_API_KEY is whitespace-only" do
+      with_env("GOOGLE_MAPS_API_KEY" => "  \n") do
+        expect(connection).not_to receive(:post)
+
+        expect(client.search(query: "100 Holliday St")).to be_nil
       end
     end
   end

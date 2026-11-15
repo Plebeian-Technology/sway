@@ -18,6 +18,7 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         client = MalformedWebauthnCredentials.client
         challenge = MalformedWebauthnCredentials.challenge
         session_hash[:verified_phone] = MalformedWebauthnCredentials::PHONE
+        session_hash[:verified_phone_at] = Time.current.to_i
         session_hash[:current_registration] = {
           "challenge" => challenge,
           "user_attributes" => {"webauthn_id" => WebAuthn.generate_user_id}
@@ -29,7 +30,7 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         }.not_to(change { [User.count, Passkey.count] })
 
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq(MalformedWebauthnCredentials::WEB_REJECTION_MESSAGE)
+        expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::VERIFICATION_FAILED_MESSAGE)
         expect(session_hash[:current_registration]).to be_nil
       end
     end
@@ -48,7 +49,8 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         post callback_users_webauthn_sessions_path, params: {publicKeyCredential: credential}, as: :json
 
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq(MalformedWebauthnCredentials::WEB_REJECTION_MESSAGE)
+        expect(flash[:alert]).to eq(Users::Webauthn::SessionsController::PASSKEY_VERIFICATION_FAILED_MESSAGE)
+        expect(flash[:alert]).not_to include("unreadable")
         expect(session_hash[:user_id]).to be_nil
         expect(session_hash[:current_authentication]).to be_nil
       end
@@ -68,7 +70,8 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         post discoverable_callback_users_webauthn_sessions_path, params: {publicKeyCredential: credential}, as: :json
 
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq(MalformedWebauthnCredentials::WEB_REJECTION_MESSAGE)
+        expect(flash[:alert]).to eq(Users::Webauthn::SessionsController::PASSKEY_VERIFICATION_FAILED_MESSAGE)
+        expect(flash[:alert]).not_to include("unreadable")
         expect(session_hash[:user_id]).to be_nil
         expect(session_hash[:discoverable_authentication]).to be_nil
       end
@@ -92,7 +95,8 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         }.not_to(change { account.passkeys.count })
 
         expect(response).to have_http_status(:ok)
-        expect(response.parsed_body).to eq({"success" => false, "message" => MalformedWebauthnCredentials::WEB_REJECTION_MESSAGE})
+        expect(response.parsed_body).to eq({"success" => false, "message" => Users::PasskeysController::ADD_PASSKEY_FAILED_MESSAGE})
+        expect(response.parsed_body["message"]).not_to include("unreadable")
         expect(session_hash[:add_passkey_registration]).to be_nil
       end
     end

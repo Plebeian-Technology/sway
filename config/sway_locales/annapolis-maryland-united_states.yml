@@ -116,5 +116,10 @@ term_rules:
     # Source: https://www.annapolis.gov/483/City-Council
     identified_by: person
 
+    # @lat: [[representative-resolution#Configured seat identity for person-keyed rosters#Curated person-keyed rosters]]
+    seat_chambers:
+        Mayor: Executive
+        Alderperson: City Council
+
 # @lat: [[news-source-configuration#News source configuration contract]]
 news_sources: []

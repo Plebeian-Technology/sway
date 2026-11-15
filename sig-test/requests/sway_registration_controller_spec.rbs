@@ -1,3 +1,23 @@
 class Object
   def reg_user: () -> User
+  def complete_params: () -> Hash[Symbol, String | Float]
+  def post_json_body: (untyped body) -> void
+  def expect_neither_400_nor_500: () -> void
+  def stored_address_for: (User user) -> untyped
+  def expect_one_stored_address_for: (User user) -> untyped
+  def expect_blank_address: (untyped address) -> void
+  def pending: (String message) -> void
+  def form_body: () -> Hash[Symbol, untyped]
+  def expect_stored_form_address: () -> void
+end
+
+# Helpers of the confirmed-address-switch failure describe block.
+class Object
+  def address_before_switch: () -> Address
+  def address_switch_params: () -> Hash[Symbol, Hash[Symbol, untyped]]
+end
+
+# Helpers of the concurrent-link describe block.
+class Object
+  def city_hall_address_id: () -> Integer
 end

@@ -1,11 +1,12 @@
 // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen]]
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Linking, Platform, ScrollView, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
 
 import { apiClient } from "../api/client";
+import { ApiRequestError, NetworkError } from "../api/errors";
 import * as legislatorCache from "../cache/legislatorCache";
 import * as billCache from "../cache/billCache";
 import { clearCapturedCategories } from "../hooks/useBills";
@@ -19,6 +20,12 @@ import { PreferenceToggle } from "../components/PreferenceToggle";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import type { ProfileStackParamList } from "../navigation/types";
 
+const CONNECTION_ERROR_MESSAGE = "Could not reach Sway. Check your connection and try again.";
+const UPDATE_ERROR_MESSAGE = "Could not update address.";
+const SAVED_RECOVERY_TITLE = "Your address was saved";
+const SAVED_RECOVERY_MESSAGE = "We could not load your account yet. Check your connection and try again.";
+const SAVED_RECOVERY_RETRY_LABEL = "Try again";
+
 type Nav = NativeStackNavigationProp<ProfileStackParamList, "Address">;
 
 interface AddressForm {
@@ -31,6 +38,10 @@ interface AddressForm {
     latitude: number | null;
     longitude: number | null;
     place_types: string[];
+}
+
+function joinedStreet(form: AddressForm): string {
+    return [form.street1, form.street2].filter(Boolean).join(" ").trim();
 }
 
 function emptyForm(): AddressForm {
@@ -67,13 +78,19 @@ export default function AddressScreen() {
     const [showManual, setShowManual] = useState(!autocompleteAvailable);
     const [isRetrying, setIsRetrying] = useState(false);
     const [confirmingAddressSwitch, setConfirmingAddressSwitch] = useState(false);
+    const [savedButNotLoaded, setSavedButNotLoaded] = useState(false);
+
+    const prefilledRef = useRef(false);
+    const [prefilled, setPrefilled] = useState(false);
 
     useEffect(() => {
         const a = user?.address;
-        if (!a) return;
+        if (!a || prefilledRef.current) return;
+        prefilledRef.current = true;
+        setPrefilled(true);
         setForm((f) => ({
             ...f,
-            street1: a.street1 ?? "",
+            street1: a.street ?? "",
             street2: a.street2 ?? "",
             city: a.city ?? "",
             region_code: a.region_code ?? "",
@@ -84,7 +101,7 @@ export default function AddressScreen() {
 
     const onChange = (key: keyof AddressForm) => (val: string) => {
         setConfirmingAddressSwitch(false);
-        setForm((f) => ({ ...f, [key]: val }));
+        setForm((f) => ({ ...f, [key]: val, latitude: null, longitude: null, place_types: [] }));
     };
 
     // @lat: [[identity-and-access#Registration is asynchronous by necessity]]
@@ -103,16 +120,12 @@ export default function AddressScreen() {
 
     const submitForm = async (toSubmit: AddressForm) => {
         setError(null);
-        if (toSubmit.latitude == null || toSubmit.longitude == null) {
-            setError("Please pick your address from the suggestions so we can locate your district.");
-            return;
-        }
         setSubmitting(true);
         try {
-            const street = [toSubmit.street1, toSubmit.street2].filter(Boolean).join(" ").trim();
             await apiClient.post("/sway_registration", {
                 sway_registration: {
-                    street,
+                    street: toSubmit.street1.trim(),
+                    street2: toSubmit.street2.trim() || null,
                     city: toSubmit.city,
                     region_code: toSubmit.region_code,
                     postal_code: toSubmit.postal_code,
@@ -128,10 +141,25 @@ export default function AddressScreen() {
             // @lat: [[mobile-sqlite-cache-design#Why address changes evict mobile SQLite caches]]
             clearCapturedCategories();
             await Promise.all([legislatorCache.clear().catch(() => {}), billCache.clear().catch(() => {})]);
-            await refresh();
+            const loaded = await refresh();
+            if (loaded === false && isOnboarding) {
+                setSavedButNotLoaded(true);
+                return;
+            }
             if (nav.canGoBack()) nav.goBack();
         } catch (e) {
-            setError(e instanceof Error ? e.message : "Could not update address.");
+            // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why an onboarding failure that may have saved the address reloads the account first]]
+            const confirmationRequired = e instanceof ApiRequestError && e.code === "confirmation_required";
+            const mayHaveSaved = e instanceof NetworkError || confirmationRequired;
+            if (isOnboarding && mayHaveSaved) {
+                const loaded = await refresh().catch(() => false);
+                if (loaded === false && confirmationRequired) {
+                    setSavedButNotLoaded(true);
+                    return;
+                }
+            }
+            if (e instanceof NetworkError) setError(CONNECTION_ERROR_MESSAGE);
+            else setError(e instanceof ApiRequestError ? e.message : UPDATE_ERROR_MESSAGE);
         } finally {
             setSubmitting(false);
             setConfirmingAddressSwitch(false);
@@ -140,14 +168,15 @@ export default function AddressScreen() {
 
     const handleSubmitPress = () => {
         if (!isOnboarding && !confirmingAddressSwitch) {
-            if (form.latitude == null || form.longitude == null) {
-                setError("Please pick your address from the suggestions so we can locate your district.");
-                return;
-            }
             setConfirmingAddressSwitch(true);
             return;
         }
         void submitForm(form);
+    };
+
+    const onAutocompleteQueryChange = () => {
+        setConfirmingAddressSwitch(false);
+        setForm((f) => ({ ...emptyForm(), country: f.country }));
     };
 
     const onAutocompleteSelect = (parsed: ParsedAddress) => {
@@ -162,15 +191,61 @@ export default function AddressScreen() {
             longitude: parsed.longitude,
             place_types: parsed.place_types,
         };
+        setError(null);
         setConfirmingAddressSwitch(false);
         setForm(next);
     };
 
-    const canSubmit = form.latitude != null && form.longitude != null;
+    const hasPickedCoordinates = form.latitude != null && form.longitude != null;
+    const savedAddress = user?.address;
+    const matchesSavedAddress =
+        savedAddress != null &&
+        joinedStreet(form) === [savedAddress.street, savedAddress.street2].filter(Boolean).join(" ").trim() &&
+        form.city === (savedAddress.city ?? "") &&
+        form.region_code === (savedAddress.region_code ?? "") &&
+        form.postal_code === (savedAddress.postal_code ?? "") &&
+        form.country === (savedAddress.country ?? "United States");
+    const canSubmit =
+        (form.street1.trim() !== "" || hasPickedCoordinates) &&
+        (isOnboarding || hasPickedCoordinates || !matchesSavedAddress);
 
     // @lat: [[mobile-auth-and-onboarding-flow#Why isOnboarding only changes wording]]
     const submitLabel = isOnboarding ? PARITY_COPY.address.complete.cta : PARITY_COPY.address.edit.saveCta;
     const cancelLabel = isOnboarding ? PARITY_COPY.address.complete.cancelCta : PARITY_COPY.address.edit.cancelCta;
+
+    // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why a failed refresh after a saved address shows a recovery card]]
+    if (savedButNotLoaded) {
+        return (
+            <ScrollView
+                className="flex-1 bg-dominant-light dark:bg-dominant-dark p-6"
+                contentInsetAdjustmentBehavior="automatic"
+                testID="address-screen"
+            >
+                <Card testID="address-saved-recovery">
+                    <CardHeader>
+                        <CardTitle>{SAVED_RECOVERY_TITLE}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Text className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                            {SAVED_RECOVERY_MESSAGE}
+                        </Text>
+                        <View className="mt-4">
+                            <Pressable
+                                testID="address-saved-recovery-retry-cta"
+                                variant="default"
+                                onPress={() => void refresh()}
+                                accessibilityLabel={SAVED_RECOVERY_RETRY_LABEL}
+                            >
+                                <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
+                                    {SAVED_RECOVERY_RETRY_LABEL}
+                                </Text>
+                            </Pressable>
+                        </View>
+                    </CardContent>
+                </Card>
+            </ScrollView>
+        );
+    }
 
     if (isProcessing) {
         return (
@@ -283,8 +358,10 @@ export default function AddressScreen() {
                     {autocompleteAvailable && !showManual ? (
                         <View className="mb-4">
                             <AddressAutocomplete
+                                key={prefilled ? "prefilled" : "empty"}
                                 initialValue={form.street1 ? `${form.street1}, ${form.city}` : ""}
                                 onSelect={onAutocompleteSelect}
+                                onQueryChange={onAutocompleteQueryChange}
                                 onError={setError}
                             />
                             <Pressable
@@ -336,7 +413,7 @@ export default function AddressScreen() {
                         </View>
                     ) : null}
 
-                    {!showManual && canSubmit ? (
+                    {!showManual && hasPickedCoordinates ? (
                         <View
                             testID="selected-address-preview"
                             className="mb-4 p-3 border border-border-light dark:border-border-dark rounded-lg"

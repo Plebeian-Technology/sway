@@ -12,7 +12,11 @@ class ReconcileUserDistrictsService
     address = @user.address
     return if address.blank?
 
-    resolved_legislators = registration_service(address).district_legislators
+    service = registration_service(address)
+    resolved_legislators = service.district_legislators
+    # @lat: [[representative-resolution#Representative resolution by seat#Resolution branches]]
+    skipped_error = service.skipped_resolution_errors.first
+    raise skipped_error if skipped_error
 
     apply_diff(resolved_legislators)
   end

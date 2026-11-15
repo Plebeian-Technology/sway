@@ -1,5 +1,13 @@
 // @lat: [[parity-copy-snapshot-testing#Why parityCopy.ts stands alone]]
 
+const waitPhrase = (seconds: number): string => {
+    if (seconds < 60) return seconds === 1 ? "1 second" : `${seconds} seconds`;
+    const minutes = Math.ceil(seconds / 60);
+    if (minutes === 1) return "1 minute";
+    if (minutes < 90) return `${minutes} minutes`;
+    return `about ${Math.round(minutes / 60)} hours`;
+};
+
 export const PARITY_COPY = {
     bills: {
         title: "Past bills",
@@ -240,9 +248,35 @@ export const PARITY_COPY = {
             previewSwayUrl: "https://sway.vote/bill_of_the_month",
             continuePhone: "Continue with Phone",
             confirmCode: "Confirm code",
+            resendCode: "Send a new code",
+            resendCodeIn: (clock: string) => `Send a new code in ${clock}`,
+            resendCodeWait: (seconds: number) => `You can send a new code in ${waitPhrase(seconds)}.`,
+            signInWait: (seconds: number) => `Too many sign-in attempts. Try again in ${waitPhrase(seconds)}.`,
+            attemptsWait: (seconds: number) => `Too many attempts. Try again in ${waitPhrase(seconds)}.`,
+            codeResent: "We sent you a new code.",
+            passkeyUnsupported: "This browser can't use passkeys yet. Update your browser or try another one.",
+            inAppBrowserTitle: "Open Sway in your browser",
+            inAppBrowserMessage:
+                "This app's built-in browser can't set up a passkey. Copy the link, then open it in Safari or Chrome to sign up.",
+            inAppBrowserCopyLink: "Copy link",
+            inAppBrowserLinkCopied: "Link copied. Paste it into Safari or Chrome.",
+            passkeyDismissed:
+                "Passkey setup did not finish. Press Confirm code to try again, or use another browser or device if it keeps failing.",
+            passkeyDismissedResume:
+                "Passkey setup did not finish. Press Continue with Phone to try again, or use another browser or device if it keeps failing.",
+            passkeyDismissedMobile: "Passkey setup did not finish. Press Confirm code to try again.",
+            passkeyNoProviderAndroid:
+                "Turn on a screen lock and sign in to a Google account on this phone, then press Confirm code again.",
+            // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
+            passkeyCreateUnsupportedAndroid:
+                "Update this phone's system software and Google Play services, then press Confirm code again. If it still fails, sign up on another device or at sway.vote.",
+            passkeyCreateUnsupportedIos:
+                "Update this iPhone's iOS to the latest version, then press Confirm code again. If it still fails, sign up on another device or at sway.vote.",
+            // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
+            passkeyUnidentifiedMobile:
+                "Passkey setup did not finish. Make sure this phone has a screen lock or passcode and its software is up to date to enable passkey support, then press Confirm code again. If it still fails, sign up on another device or at sway.vote.",
             workingOn: "Working on it",
             validationPhone: "Your phone number must be 10 digits.",
-            validationPhoneInvalid: "Please enter a valid phone number.",
             requestCodeError: "Could not send confirmation code. Please try again.",
             signInError: "Sign in failed. Please try again.",
             verifyError: "Verification failed. Please try again.",
@@ -356,6 +390,11 @@ export const PARITY_COPY = {
     },
 
     address: {
+        requestFailed: "Something went wrong sending your address. Please try again.",
+        search: {
+            noResults: "No matching addresses found. You can still submit the address as you typed it.",
+            failed: "Address search is unavailable right now. You can still submit the address as you typed it.",
+        },
         complete: {
             heading: "Complete your registration",
             lead: "Sway needs a little more information to match you with your representatives.",

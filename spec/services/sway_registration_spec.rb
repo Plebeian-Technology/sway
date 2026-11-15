@@ -269,7 +269,8 @@ RSpec.describe SwayRegistrationService do
         expect(UserLegislator.where(user: user).count).to eq(0)
       end
 
-      it "translates a Census connection failure into SwayGeocode::ServiceUnavailableError" do
+      it "records a Census connection failure as a skipped SwayGeocode::ServiceUnavailableError" do
+        allow(Sentry).to receive(:capture_exception)
         allow_any_instance_of(Census::Congress).to receive(:request).and_raise(
           Faraday::ConnectionFailed,
           "Failed to open TCP connection to tigerweb.geo.census.gov:443"
@@ -304,9 +305,11 @@ RSpec.describe SwayRegistrationService do
             async: false
           )
 
-        expect { service.call }.to raise_error(
-          SwayGeocode::ServiceUnavailableError,
-          /Census TIGERweb geocoding is unavailable/
+        service.call
+
+        expect(service.skipped_resolution_errors).to contain_exactly(
+          an_instance_of(SwayGeocode::ServiceUnavailableError)
+            .and(having_attributes(message: /Census TIGERweb geocoding is unavailable/))
         )
         expect(UserLegislator.where(user: user).count).to eq(0)
       end

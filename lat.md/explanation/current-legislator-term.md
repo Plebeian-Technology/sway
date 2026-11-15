@@ -484,7 +484,7 @@ The fact must match the stored term's typed person identity, locale, district, o
 
 ### Presidential display
 
-The President appears as a serving or historical officeholder only when official evidence identifies the person, office, exact service bounds, and stable office identity.
+The President appears as a serving or historical officeholder only when official evidence or the curated President row identifies the person, office, exact service bounds, and stable office identity.
 
 The selected model uses an ordinary [[app/models/legislator_term.rb#LegislatorTerm|legislator term]] so the President follows the same date-bound current and historical display rules as other officeholders. Its interval includes the evidenced start and excludes the end, matching [[app/models/term_window.rb#TermWindow]]. Outside that interval, [[app/serializers/legislator_resource.rb#LegislatorResource#display_term]] may show it as historical. A person row or an office label alone does not establish service, and the presidential office does not imply congressional floor votes.
 
@@ -492,9 +492,11 @@ The selected model uses an ordinary [[app/models/legislator_term.rb#LegislatorTe
 
 The example is a presidential record whose official source supplies the person's identity, the specific office, an explicit office title, and exact start and end dates. It qualifies for current display only while those dates cover today. An unrelated person row with no running or historical term remains excluded, even if that row is marked active in a roster. Both examples preserve the boundary between office evidence and a guessed identity.
 
-The generic service reader and seed path implement this contract with retained exact evidence. Current Congress configuration declares no verified live service profile, so presidential initialization remains explicitly unsupported. The committed roster sentinel and chamber label alone cannot establish service. Missing evidence leaves the office absent and creates no civic records; [[official-service-evidence#Capability is explicit]] owns the source capability rules.
+The generic service reader and seed path implement this contract with retained exact evidence. Current Congress configuration declares no verified live service profile; [[official-service-evidence#Capability is explicit]] owns the source capability rules. The current President term comes instead from the operator-approved curated roster row, whose identity attribution and constitutional dates stand in for the official source ([[official-service-evidence#The curated President record]]). A roster row without that curated marker and its exact dates cannot establish service, so it leaves the office absent and creates no civic records.
 
-Seeding transactionally retires un-evidenced executive sentinel terms that lack a seat identity, title, and legislative votes when official service evidence is unsupported. This removes unseated terms from the locale-wide district US0 and its score families so representative resolution does not raise errors, while keeping the underlying person, identifier, and user-link records intact until authoritative service evidence is configured. Conversely, when official service evidence is supported, evidenced presidential terms and seats are seeded and preserved.
+`POTUS` is one `Legislator` row for the office, not for one person. Seeding finds it by that id, so the row that production already holds is reused, and a successor President updates the same row.
+
+Seeding transactionally retires un-evidenced executive sentinel terms that lack a seat identity, title, and legislative votes when official service evidence is unsupported. This removes unseated terms from the locale-wide district US0 and its score families so representative resolution does not raise errors, while keeping the underlying person, identifier, and user-link records intact. The curated President term carries a seat and a title, so this never retires it. When official service evidence is supported, evidenced presidential terms and seats are seeded and preserved.
 
 ### Planned admin tool for historical repairs
 

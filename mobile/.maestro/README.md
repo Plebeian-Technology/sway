@@ -63,12 +63,15 @@ fail rather than capturing empty states.
 | `deep_link_bill.yaml`       | Universal-link entry to bill detail via the `sway.vote` host.         | Does not currently work as written: it starts signed out and reaches only the sign-in screen. Needs `TEST_BILL_ID` env. |
 | `open_legislator.yaml`      | Legislators list → detail.                                            | Needs a signed-in session (see below).                       |
 | `voter_login_and_vote.yaml` | Passkey sign-in from a cleared app, then a vote on Bill of the Month. | **REAL DEVICE** (passkey biometric). Needs `TEST_PHONE` env. |
+| `new_user_signup.yaml`      | Brand-new phone number: SMS code, passkey, typed address, then the Feed. | **REAL DEVICE** (passkey biometric). Needs `TEST_NEW_PHONE` and the address env vars; needs the SMS bypass. |
 | `notifications_prefs.yaml`  | Profile → notification preference toggle.                             | Needs a signed-in session (see below).                       |
 
 A signed-out app shows only the sign-in screen, so every flow that opens the
 drawer needs a signed-in session for a fully registered account.
-`voter_login_and_vote.yaml` is the only flow that creates one: it clears app
-state and signs in. Run it first on a real device, then run
+`voter_login_and_vote.yaml` and `new_user_signup.yaml` are the only flows that
+create one: each clears app state, and the first signs in an existing account
+while the second registers a new one. Run one of them first on a real device,
+then run
 `open_legislator.yaml` and `notifications_prefs.yaml` on that same device
 without clearing state.
 
@@ -81,6 +84,20 @@ without clearing state.
   a second run needs a new Bill of the Month or another account.
 - An operator at the device, who confirms the system passkey sheet by hand
   within 60 seconds.
+
+`new_user_signup.yaml` needs:
+
+- `TEST_NEW_PHONE`: a ten-digit US number, without `+1`, that has no account
+  yet. The flow creates the account, so every run needs a new number; a number
+  that already has an account takes the passkey sign-in path instead of
+  sign-up.
+- `TEST_STREET`, `TEST_CITY`, `TEST_REGION` (two letters) and `TEST_POSTAL`:
+  the address to type.
+- The development backend with `SKIP_PHONE_VERIFICATION` on, so any six digits
+  pass the SMS step, and able to reach Nominatim for the address lookup. The
+  setting reads false outside development and test.
+- An operator at the device, who confirms the system passkey sheet by hand
+  within 90 seconds.
 
 `deep_link_bill.yaml` opens `https://sway.vote/bills/<id>` only. The app claims
 `app.sway.vote` as well, and proving that both hostnames serve the association
@@ -99,6 +116,11 @@ maestro test -e APP_ID="$APPLE_BUNDLE_ID" mobile/.maestro/smoke.yaml
 # Real device for passkey
 maestro test -e APP_ID="$APPLE_BUNDLE_ID" -e TEST_PHONE=5555550123 mobile/.maestro/voter_login_and_vote.yaml
 
+# Real device for passkey, new account (a new TEST_NEW_PHONE every run)
+maestro test -e APP_ID="$APPLE_BUNDLE_ID" -e TEST_NEW_PHONE=5555550199 \
+  -e TEST_STREET="100 N Holliday St" -e TEST_CITY=Baltimore -e TEST_REGION=MD -e TEST_POSTAL=21202 \
+  mobile/.maestro/new_user_signup.yaml
+
 # Run after voter_login_and_vote on the same device
 maestro test -e APP_ID="$APPLE_BUNDLE_ID" mobile/.maestro/open_legislator.yaml
 maestro test -e APP_ID="$APPLE_BUNDLE_ID" mobile/.maestro/notifications_prefs.yaml
@@ -108,8 +130,9 @@ maestro test -e APP_ID="$APPLE_BUNDLE_ID" mobile/.maestro/notifications_prefs.ya
 
 A whole-directory run (`maestro test … mobile/.maestro/`) does not currently
 pass. It includes `deep_link_bill.yaml` and `screenshots.yaml`, which do not
-currently work, runs `voter_login_and_vote.yaml` without `TEST_PHONE`, and sets
-no order that puts that flow before the ones that need its session. Run the
+currently work, runs `voter_login_and_vote.yaml` without `TEST_PHONE`, runs
+`new_user_signup.yaml` without its variables, and sets no order that puts
+either before the flows that need a session. Run the
 flows one at a time, as above.
 
 For Android, boot an emulator (`emulator -avd <name>`) or attach a device, then

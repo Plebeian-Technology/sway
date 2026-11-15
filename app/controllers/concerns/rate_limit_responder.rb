@@ -9,8 +9,8 @@ module RateLimitResponder
 
   private
 
-  def render_rate_limited
-    response.set_header("Retry-After", "60")
+  def render_rate_limited(retry_after: 60)
+    response.set_header("Retry-After", retry_after.to_s)
     report_repeated_rate_limit
     if request.headers["X-Inertia"].present?
       redirect_back_or_to(root_path, alert: "Too many attempts. Please try again shortly.")

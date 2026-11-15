@@ -13,7 +13,7 @@ class UserAddressSwitchService
 
   private
 
-  def resolve_legislators_for_new_address: () -> Array[Legislator]
+  def resolve_legislators_for_new_address: () -> [Array[Legislator], Array[Integer]]
 
   def activate_user_legislator!: (Legislator legislator) -> UserLegislator
 

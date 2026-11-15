@@ -83,6 +83,33 @@ describe("useWebAuthnAuthentication", () => {
             expect(mocks.get).not.toHaveBeenCalled();
         });
 
+        it("shows the server's error and returns nothing when the sms flow refuses the number", async () => {
+            mocks.post.mockResolvedValue({ flow: "sms", success: false, error: "Enter a valid US phone number." });
+            const { result } = renderHook(() => useWebAuthnAuthentication(onThrottled));
+
+            let returned;
+            await act(async () => {
+                returned = await result.current.startAuthentication(PHONE);
+            });
+
+            expect(returned).toBeUndefined();
+            expect(mocks.notify).toHaveBeenCalledWith({ level: "error", title: "Enter a valid US phone number." });
+            expect(mocks.get).not.toHaveBeenCalled();
+        });
+
+        it("returns enroll without a WebAuthn get() when the server answers the enroll flow", async () => {
+            mocks.post.mockResolvedValue({ flow: "enroll" });
+            const { result } = renderHook(() => useWebAuthnAuthentication(onThrottled));
+
+            let returned;
+            await act(async () => {
+                returned = await result.current.startAuthentication(PHONE);
+            });
+
+            expect(returned).toBe("enroll");
+            expect(mocks.get).not.toHaveBeenCalled();
+        });
+
         it("drives the WebAuthn get() ceremony when the server returns the passkey flow", async () => {
             const options = { challenge: "abc", allowCredentials: [] };
             const assertion = { id: "cred-1", type: "public-key" };
@@ -99,7 +126,7 @@ describe("useWebAuthnAuthentication", () => {
             expect(returned).toEqual(assertion);
         });
 
-        it("shows a sign-in throttle toast and reports the throttle window on a 429", async () => {
+        it("shows a verification throttle toast and reports the throttle window on a 429", async () => {
             mocks.post.mockRejectedValue({ response: { status: 429, headers: { "retry-after": "120" } } });
             const { result } = renderHook(() => useWebAuthnAuthentication(onThrottled));
 
@@ -111,7 +138,7 @@ describe("useWebAuthnAuthentication", () => {
             expect(returned).toBeUndefined();
             expect(mocks.notify).toHaveBeenCalledWith({
                 level: "error",
-                title: "Too many sign-in attempts. Please wait 2 minutes before trying again.",
+                title: "Too many verification attempts. Please wait 2 minutes before trying again.",
             });
             expect(onThrottled).toHaveBeenCalledWith(expect.any(Date));
         });

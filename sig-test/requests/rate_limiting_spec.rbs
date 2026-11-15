@@ -1,0 +1,4 @@
+# @lat: [[rbs-signatures#Why some specs get their own file]]
+class Object
+  def verify_phone_in_session: (String phone) -> void
+end

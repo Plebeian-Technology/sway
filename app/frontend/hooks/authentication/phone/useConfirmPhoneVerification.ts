@@ -12,7 +12,13 @@ type ConfirmPhoneVerificationResponse = {
 
 // @lat: [[identity-and-access#Sessions, cookies and bearer tokens]]
 export const useConfirmPhoneVerification = (onThrottled?: (until: Date | null) => void) => {
-    const { startRegistration, verifyRegistration, isLoading: isRegistering } = useWebAuthnRegistration(onThrottled);
+    const {
+        startRegistration,
+        verifyRegistration,
+        isLoading: isRegistering,
+        passkeyDismissed,
+        clearPasskeyDismissed,
+    } = useWebAuthnRegistration(onThrottled);
     const form = useHttp<{ phone_verification: { phone: string; code: string } }>({
         phone_verification: { phone: "", code: "" },
     });
@@ -52,5 +58,5 @@ export const useConfirmPhoneVerification = (onThrottled?: (until: Date | null) =
         [form, startRegistration, verifyRegistration, onThrottled],
     );
 
-    return { confirm, isLoading: isLoading || isRegistering };
+    return { confirm, isLoading: isLoading || isRegistering, passkeyDismissed, clearPasskeyDismissed };
 };

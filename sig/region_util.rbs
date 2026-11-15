@@ -3,6 +3,8 @@ module RegionUtil
 
     COUNTRY_CODES_NAMES: Hash[Symbol, String]
 
+    UNITED_STATES_SPELLINGS: Array[String]
+
     def self.from_region_name_to_region_code: (untyped name) -> (nil | untyped)
 
     def self.from_region_code_to_region_name: (untyped code) -> (nil | untyped)

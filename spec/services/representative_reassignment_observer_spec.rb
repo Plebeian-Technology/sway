@@ -114,6 +114,35 @@ RSpec.describe RepresentativeReassignmentObserver do
       end
     end
 
+    context "when the President's district arrives in the same diff as a successor" do
+      it "still records successor_seeded for the replaced senator and nothing for the President" do
+        maryland = create(:district, sway_locale:, name: "MD0")
+        us0 = create(:district, sway_locale:, name: "US0")
+        president_seat = Seat.create!(district: us0, seat_identifier: described_class::PRESIDENT_SEAT_IDENTIFIER, title: "President", chamber: "White House")
+        president = create(:legislator, sway_locale:)
+        create(:legislator_term, legislator: president, district: us0, seat: president_seat, title: "Pres.")
+        old_senator = create(:legislator, district: maryland)
+        new_senator = create(:legislator, district: maryland)
+        old_ul = create(:user_legislator, user:, legislator: old_senator)
+        old_ud = create(:user_district, user:, district: maryland)
+
+        described_class.observe_diff!(
+          user: user,
+          stale_district_ids: [],
+          new_district_ids: [us0.id],
+          stale_legislator_ids: [old_senator.id],
+          new_legislator_ids: [new_senator.id, president.id],
+          stored_uls: [old_ul],
+          resolved_legislators: [new_senator, president],
+          stored_user_districts: [old_ud],
+          resolved_districts: [maryland, us0]
+        )
+
+        expect(user.representative_reassignments.pluck(:reassignment_type)).to eq(["successor_seeded"])
+        expect(user.representative_reassignments.first).to have_attributes(legislator: new_senator, previous_legislator: old_senator)
+      end
+    end
+
     context "when a seat becomes vacant (vacant_seat)" do
       it "creates a vacant_seat record with nil legislator" do
         district = create(:district, sway_locale:)

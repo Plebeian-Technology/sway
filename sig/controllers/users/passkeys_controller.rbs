@@ -3,6 +3,7 @@ module Users
         include Authentication
 
         ADD_PASSKEY_VERIFY_WINDOW: ActiveSupport::Duration
+        ADD_PASSKEY_FAILED_MESSAGE: String
         DEFAULT_PASSKEY_LABELS: Array[String]
 
         def index: -> untyped

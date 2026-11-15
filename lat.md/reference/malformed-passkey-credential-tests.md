@@ -12,15 +12,15 @@ The first-passkey callback answers each corrupted attestation with the verificat
 
 ## Web phone sign-in
 
-The phone-first sign-in callback answers each corrupted assertion with the verification-failed redirect, signs nobody in, and clears the authentication session.
+The phone-first sign-in callback answers each corrupted assertion with the fixed passkey-verification redirect that omits the library text, signs nobody in, and clears the authentication session.
 
 ## Web discoverable sign-in
 
-The discoverable sign-in callback answers each corrupted assertion with the verification-failed redirect, signs nobody in, and clears the discoverable challenge.
+The discoverable sign-in callback answers each corrupted assertion with the fixed passkey-verification redirect that omits the library text, signs nobody in, and clears the discoverable challenge.
 
 ## Web passkey addition
 
-The add-a-passkey callback answers each corrupted attestation with success false and the verification-failed message, saves no passkey, and clears the add-passkey challenge.
+The add-a-passkey callback answers each corrupted attestation with success false and the fixed add-passkey message that omits the library text, saves no passkey, and clears the add-passkey challenge.
 
 ## Mobile enrollment
 

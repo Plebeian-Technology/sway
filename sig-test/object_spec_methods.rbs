@@ -3086,6 +3086,12 @@ class Object
     def gate_blocked_response?: () -> bool
     def gate_outcome_description: () -> String
 
+    # spec/support/shared_examples/phone_verification_send_limit.rb helpers,
+    # defined by each including group: one code request for a fixed phone
+    # from the IP, and the status a sent code answers with.
+    def code_send_request: (ip: String) -> untyped
+    def code_send_status: () -> Symbol
+
     # C2-CR-01 — bill_draft_org_positions_identity_spec.rb helper reading the
     # org names still standing in draft_org_positions after a guarded PATCH.
     # Spelled out rather than `draft_names` because of the one-signature-per-
@@ -3339,6 +3345,11 @@ class Object
     def seat_and_name_key: (Hash[String, untyped] entry) -> String
 
     def baltimore_row_for: (Hash[String, untyped] entry) -> Legislator?
+
+    # seed_legislator_spec.rb: the committed curated President row and the
+    # current terms in its locale-wide district.
+    def curated_potus_json: () -> Hash[String, untyped]
+    def current_president_terms: () -> Array[LegislatorTerm]
 
     # legislator_identifier_spec.rb: the identity under test.
     def identity: () -> LegislatorIdentity
@@ -3594,7 +3605,7 @@ class Object
     def create_score: (Bill bill, created_at: ActiveSupport::TimeWithZone) -> BillInterestingScore
 
     # sway_registration_controller_spec.rb's helper, renamed off `register`.
-    def register_address: (street: String, latitude: Float, longitude: Float) -> void
+    def register_address: (street: String, latitude: Float?, longitude: Float?) -> void
 
     # admin_pages_narrow_spec.rb's own measurement helpers.
     def button_box: (String label) -> untyped
@@ -3766,6 +3777,33 @@ class Object
         -> [Legislator, LegislatorTerm, Seat]
     def create_unseated_md0_term: (SwayLocale maryland, title: String?, last_name: String) -> Legislator
     def maryland_service: (SwayLocale maryland, ?geo_candidates: Array[Legislator]) -> SwayRegistrationService
+    def us_president: () -> Legislator
+    def virginia_senator_a: () -> Legislator
+    def virginia_senator_b: () -> Legislator
+    def virginia_senate: () -> District
+    def virginia_address: () -> Address
+    def congress_fallback_service: (Address for_address) -> SwayRegistrationService
+    def address_with_region: (region_code: String, country: String) -> Address
+    def create_us_president: () -> Legislator
+    def toronto_params: () -> Hash[Symbol, Hash[Symbol, untyped]]
+    def post_switched_address: (?headers: Hash[String, String]) -> untyped
+    def seed_unseated_successor: () -> [Legislator, Legislator]
+    def mayor_entry: () -> Hash[String, untyped]
+    def successor_entry: () -> Hash[String, untyped]
+    def house_member: () -> Legislator
+    def create_titled_seat_term: (district: District, seat_identifier: String, title: String, years: Array[Integer]) -> Legislator
+    def stub_census_body: (String body) -> untyped
+    def active_legislator_ids: () -> Array[Integer]
+    def post_with_every_lookup_answering: () -> untyped
+    def city_hall_address: () -> Hash[Symbol, untyped]
+    def unlocated_city_hall_address: () -> Hash[Symbol, untyped]
+    def columbus_address: () -> Hash[Symbol, untyped]
+    def stub_census: (status: Integer, body: String) -> untyped
+    def census_district_body: (String district) -> String
+    def post_address: (Hash[Symbol, untyped] address) -> untyped
+    def linked_seats: () -> Array[[String, String?, String?]]
+    def active_district_names: () -> Array[[String, String?]]
+    def baltimore_service: () -> SwayRegistrationService
     def create_supported_term: (legislator: Legislator, district: District, ?office_identity: String) -> LegislatorTerm
         | (legislator: Legislator, district: District, ?seat: Seat, ?office_identity: String, **untyped term_attributes)
           -> LegislatorTerm

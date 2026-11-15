@@ -3,6 +3,9 @@
 # Sway::FaradayStack mounts the retry middleware and specs assert its class
 # presence in the handler stack. Stub only the surface Sway touches.
 module Faraday
+  class RetriableResponse < Faraday::Error
+  end
+
   module Retry
     class Middleware
       # Sway::FaradayStack::TRANSPORT_RETRY_EXCEPTIONS extends this

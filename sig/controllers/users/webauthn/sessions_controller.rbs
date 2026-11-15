@@ -7,6 +7,10 @@ module Users
             @phone: untyped
 
             include Authentication
+            include VerifiedPhoneSession
+            include OnboardingSafetyNet
+
+            PASSKEY_VERIFICATION_FAILED_MESSAGE: String
 
             def create: -> untyped
 
@@ -29,6 +33,8 @@ module Users
             def phone: -> untyped
 
             def verify_valid_phone: -> (nil | untyped)
+
+            def count_create_phone_attempt?: -> bool
         end
     end
 end

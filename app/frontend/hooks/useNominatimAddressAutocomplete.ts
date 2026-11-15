@@ -26,6 +26,18 @@ export interface UseNominatimAddressAutocomplete {
 }
 
 export const NOMINATIM_DEBOUNCE_MS = 1000;
+
+const SELECTED_ADDRESS_FIELDS = [
+    "street",
+    "city",
+    "region",
+    "region_code",
+    "postal_code",
+    "country",
+    "latitude",
+    "longitude",
+    "place_types",
+];
 export const NOMINATIM_SEARCH_ENDPOINT = "/addresses/autocomplete";
 export const NOMINATIM_USER_AGENT = "Sway/1.0 (civic-tech-app; https://sway.vote)";
 
@@ -161,7 +173,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
     locale?: sway.ISwayLocale | null,
 ): UseNominatimAddressAutocomplete {
     const { data, setData } = form;
-    const address = data as unknown as Partial<sway.IAddress>;
+    const address = data as unknown as Partial<sway.IAddress> & { typed_address?: string };
 
     const defaultValue = useMemo(
         () =>
@@ -171,7 +183,8 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
         [address],
     );
 
-    const [value, setValue] = useState(defaultValue);
+    const typedAddress = address.typed_address;
+    const value = typedAddress ?? defaultValue;
     const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
     const [status, setStatus] = useState("IDLE");
     const [loading, setInternalLoading] = useState(false);
@@ -218,27 +231,27 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
             updateLoading(true);
 
             try {
-                const url = buildNominatimUrl(query, locale);
+                const search = async (searchLocale?: sway.ISwayLocale | null): Promise<unknown> => {
+                    const response = await fetch(buildNominatimUrl(query, searchLocale), {
+                        signal: abortController.signal,
+                        headers: {
+                            "User-Agent": NOMINATIM_USER_AGENT,
+                            Accept: "application/json",
+                        },
+                    });
+                    return response.ok ? ((await response.json()) as unknown) : null;
+                };
 
-                const response = await fetch(url, {
-                    signal: abortController.signal,
-                    headers: {
-                        "User-Agent": NOMINATIM_USER_AGENT,
-                        Accept: "application/json",
-                    },
-                });
-
+                let json = await search(locale);
                 if (requestId !== requestIdRef.current) return;
 
-                if (!response.ok) {
-                    placesRef.current.clear();
-                    setSuggestions([]);
-                    setStatus("ERROR");
-                    return;
+                // @lat: [[locale-extension#Nominatim geographic configuration]]
+                const strictViewboxLocale =
+                    locale?.nominatim_viewbox?.trim() && locale.nominatim_bounded ? locale : null;
+                if (strictViewboxLocale && Array.isArray(json) && json.length === 0) {
+                    json = await search({ ...strictViewboxLocale, nominatim_viewbox: null });
+                    if (requestId !== requestIdRef.current) return;
                 }
-
-                const json: unknown = await response.json();
-                if (requestId !== requestIdRef.current) return;
 
                 if (!Array.isArray(json)) {
                     placesRef.current.clear();
@@ -261,7 +274,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
                     if (!item || typeof item !== "object") continue;
                     const suggestion = nominatimPlaceToSuggestion(item);
                     placesRef.current.set(suggestion.place_id, item);
-                    mapped.push(suggestion);
+                    mapped.push({ ...suggestion, raw_place: item });
                 }
 
                 setSuggestions(mapped);
@@ -284,10 +297,13 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
         [locale, updateLoading],
     );
 
+    // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
     const handleInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const input = e.target.value;
-            setValue(input);
+            const setField = setData as (key: string, val: unknown) => void;
+            setField("typed_address", input);
+            SELECTED_ADDRESS_FIELDS.forEach((field) => setField(field, undefined));
 
             if (debounceRef.current) {
                 clearTimeout(debounceRef.current);
@@ -312,7 +328,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
                 fetchSuggestions(trimmed).catch(() => {});
             }, NOMINATIM_DEBOUNCE_MS);
         },
-        [fetchSuggestions, updateLoading],
+        [fetchSuggestions, setData, updateLoading],
     );
 
     // @lat: [[address-place-classification#Why the web autocomplete's request for types costs nothing extra]]
@@ -332,17 +348,16 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
             }
 
             const place = placesRef.current.get(suggestion.place_id) ?? suggestion.raw_place;
-            setValue(suggestion.description);
             clearSuggestions();
 
+            const setField = setData as (key: string, val: unknown) => void;
+            const parsed: Record<string, unknown> = place ? parseNominatimAddress(place) : {};
+            if (!parsed.street && typedAddress?.trim()) {
+                parsed.street = typedAddress.trim();
+            }
+            setField("typed_address", suggestion.description);
+            SELECTED_ADDRESS_FIELDS.forEach((field) => setField(field, parsed[field]));
             if (place) {
-                const parsed = parseNominatimAddress(place);
-                const setField = setData as (key: string, val: unknown) => void;
-                Object.entries(parsed).forEach(([key, val]) => {
-                    if (val !== undefined) {
-                        setField(key, val);
-                    }
-                });
                 const placeTypes = [place.type, place.class ?? place.category].filter(
                     (t): t is string => typeof t === "string" && t.length > 0,
                 );
@@ -351,7 +366,7 @@ export function useNominatimAddressAutocomplete<TForm extends object = Record<st
 
             updateLoading(false);
         },
-        [clearSuggestions, setData, updateLoading],
+        [clearSuggestions, setData, typedAddress, updateLoading],
     );
 
     useEffect(() => {

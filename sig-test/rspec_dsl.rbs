@@ -398,6 +398,7 @@ class BasicObject
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def spy: (*untyped args, **untyped kwargs) -> untyped
     def hash_including: (*untyped args, **untyped kwargs) -> untyped
+    def hash_excluding: (*untyped args, **untyped kwargs) -> untyped
     def match_array: (*untyped args, **untyped kwargs) -> untyped
     def be_attached: -> untyped
     def sleep: (*untyped args, **untyped kwargs) -> untyped

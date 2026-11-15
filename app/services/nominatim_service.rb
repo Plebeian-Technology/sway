@@ -7,15 +7,18 @@ class NominatimService
   CACHE_EXPIRY = 24.hours
   DEFAULT_LIMIT = 5
   MAX_LIMIT = 10
+  REQUESTS_PER_SECOND = 1
+  UNCAPPED_ABOVE_REGISTERED_USERS = 100
 
   class << self
-    def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT)
+    def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT, google_fallback: false)
       new.search(
         query: query,
         viewbox: viewbox,
         bounded: bounded,
         countrycodes: countrycodes,
-        limit: limit
+        limit: limit,
+        google_fallback: google_fallback
       )
     end
   end
@@ -24,7 +27,8 @@ class NominatimService
     @conn = connection || Sway::FaradayStack.nominatim
   end
 
-  def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT)
+  # @lat: [[address-place-classification#Google Places results in the Nominatim shape#Only a signed-in user's search reaches Google]]
+  def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT, google_fallback: false)
     q = query.to_s.strip
     return [] if q.blank?
 
@@ -32,9 +36,19 @@ class NominatimService
     params = build_params(query: q, viewbox: viewbox, bounded: bounded, countrycodes: countrycodes, limit: clamped_limit)
     cache_key = build_cache_key(params)
 
-    Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
-      fetch_from_nominatim(params)
+    places = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
+      fetch_from_nominatim(params) unless request_cap_applies? && over_request_cap?
     end
+    return places if places
+    return [] unless google_fallback
+
+    GooglePlaces::Client.new.search(
+      query: q,
+      viewbox: viewbox,
+      bounded: bounded,
+      countrycodes: countrycodes,
+      limit: clamped_limit
+    ) || []
   rescue => e
     SwayLogging.error("nominatim_service.search_failed", error: e.message, query: q)
     []
@@ -68,18 +82,35 @@ class NominatimService
     "nominatim:search:#{Digest::SHA256.hexdigest(params.to_a.sort_by(&:first).to_json)}"
   end
 
+  def request_cap_applies?
+    User.where(is_registration_complete: true).count <= UNCAPPED_ABOVE_REGISTERED_USERS
+  end
+
+  def over_request_cap?
+    count = Rails.cache.increment("nominatim:requests:#{Time.current.to_i}", 1, expires_in: 5.seconds)
+    return false if count.nil? || count <= REQUESTS_PER_SECOND
+
+    SwayLogging.warn("nominatim_service.rate_capped")
+    true
+  end
+
   def fetch_from_nominatim(params)
     response = @conn.get("search", params)
     unless response.status == 200
       SwayLogging.warn("nominatim_service.http_error", status: response.status)
-      return []
+      return nil
     end
 
     parsed = response.body
     parsed = JSON.parse(parsed) if parsed.is_a?(String)
-    Array(parsed)
+    unless parsed.is_a?(Array)
+      SwayLogging.warn("nominatim_service.unexpected_body", body_class: parsed.class.name)
+      return nil
+    end
+
+    parsed
   rescue => e
     SwayLogging.warn("nominatim_service.fetch_error", error: e.message)
-    []
+    nil
   end
 end

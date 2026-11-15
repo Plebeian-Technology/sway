@@ -243,6 +243,175 @@ describe("useNominatimAddressAutocomplete", () => {
         });
     });
 
+    describe("Typed text", () => {
+        it("handleInput writes the typed text to the form under typed_address", () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "100 Holliday" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+
+            expect(form.setData).toHaveBeenCalledWith("typed_address", "100 Holliday");
+        });
+
+        it("shows the form's typed_address as the box text", () => {
+            const form = buildMockForm({ typed_address: "5 Elm St" });
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            expect(result.current.value).toBe("5 Elm St");
+        });
+
+        it("shows a typed_address the form receives after the first render", () => {
+            const form = buildMockForm();
+            const { result, rerender } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            form.data.typed_address = "5 Elm St";
+            rerender();
+
+            expect(result.current.value).toBe("5 Elm St");
+        });
+    });
+
+    describe("Selected address", () => {
+        const SELECTED_FIELDS = [
+            "street",
+            "city",
+            "region",
+            "region_code",
+            "postal_code",
+            "country",
+            "latitude",
+            "longitude",
+            "place_types",
+        ];
+
+        const typeText = (result: { current: ReturnType<typeof useNominatimAddressAutocomplete> }, text: string) => {
+            act(() => {
+                result.current.handleInput({
+                    target: { value: text },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+        };
+
+        const searchAndSelect = async (
+            result: { current: ReturnType<typeof useNominatimAddressAutocomplete> },
+            place: INominatimPlace,
+        ) => {
+            fetchMock.mockResolvedValueOnce(createFetchResponse([place]));
+            typeText(result, "100 Holliday");
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            act(() => {
+                result.current.handleSelect(result.current.suggestions[0])();
+            });
+        };
+
+        it("handleInput after a selection clears every selected field from the form", async () => {
+            const form = buildMockForm();
+            const { result, rerender } = renderHook(() => useNominatimAddressAutocomplete(form));
+            await searchAndSelect(result, createMockPlace());
+            expect(form.data).toMatchObject({ street: "100 Holliday Street", postal_code: "21202" });
+
+            typeText(result, "200 Other Street");
+            rerender();
+
+            SELECTED_FIELDS.forEach((field) => {
+                expect((form.data as Record<string, unknown>)[field]).toBeUndefined();
+            });
+            expect(result.current.value).toBe("200 Other Street");
+            expect((form.data as Record<string, unknown>).typed_address).toBe("200 Other Street");
+        });
+
+        it("handleInput before any selection leaves the form without selected fields", () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            typeText(result, "100 Holl");
+
+            SELECTED_FIELDS.forEach((field) => {
+                expect((form.data as Record<string, unknown>)[field]).toBeUndefined();
+            });
+            expect((form.data as Record<string, unknown>).typed_address).toBe("100 Holl");
+        });
+
+        it("handleInput clears an address that was already on the form when the user edits the text", () => {
+            const form = buildMockForm({
+                street: "100 Holliday St",
+                city: "Baltimore",
+                region_code: "MD",
+                postal_code: "21202",
+            });
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            typeText(result, "5 Elm St");
+
+            expect(form.data.street).toBeUndefined();
+            expect(form.data.postal_code).toBeUndefined();
+        });
+
+        it("a selection without a postcode does not keep the postal_code of an earlier address", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            const placeWithoutPostcode = createMockPlace({
+                place_id: 200,
+                lat: "39.5",
+                lon: "-76.5",
+                address: { road: "Rural Road", city: "Towson", state: "Maryland", "ISO3166-2-lvl4": "US-MD" },
+            });
+            fetchMock.mockResolvedValueOnce(createFetchResponse([placeWithoutPostcode]));
+            typeText(result, "Rural Road");
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            Object.assign(form.data, { street: "100 Holliday Street", city: "Baltimore", postal_code: "21202" });
+
+            act(() => {
+                result.current.handleSelect(result.current.suggestions[0])();
+            });
+
+            const data = form.data as Record<string, unknown>;
+            expect(data.postal_code).toBeUndefined();
+            expect(data.street).toBe("Rural Road");
+            expect(data.city).toBe("Towson");
+            expect(data.latitude).toBe(39.5);
+        });
+
+        it("a selection without a house number keeps the typed text as the street", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            const roadOnlyPlace = createMockPlace({
+                display_name: "Holliday Street, Downtown, Baltimore, Maryland, 21202, United States",
+                address: {
+                    road: "Holliday Street",
+                    city: "Baltimore",
+                    state: "Maryland",
+                    "ISO3166-2-lvl4": "US-MD",
+                    postcode: "21202",
+                },
+            });
+
+            await searchAndSelect(result, roadOnlyPlace);
+
+            const data = form.data as Record<string, unknown>;
+            expect(data.street).toBe("100 Holliday");
+            expect(data.city).toBe("Baltimore");
+            expect(data.postal_code).toBe("21202");
+            expect(data.typed_address).toBe(roadOnlyPlace.display_name);
+        });
+
+        it("handleSelect records the text the box shows as typed_address", async () => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+            await searchAndSelect(result, createMockPlace());
+
+            expect((form.data as Record<string, unknown>).typed_address).toBe(result.current.value);
+        });
+    });
+
     describe("Debounce Timing & Rate Limiting", () => {
         it("does NOT trigger fetch before 1000ms debounce threshold expires (e.g. at 500ms or 999ms)", async () => {
             const form = buildMockForm();
@@ -528,6 +697,110 @@ describe("useNominatimAddressAutocomplete", () => {
         });
     });
 
+    describe("Strict viewbox fallback", () => {
+        const searchFor = async (
+            locale: sway.ISwayLocale,
+            text: string,
+        ): Promise<{ current: UseNominatimAddressAutocomplete }> => {
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form, undefined, locale));
+            act(() => {
+                result.current.handleInput({ target: { value: text } } as React.ChangeEvent<HTMLInputElement>);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            return result;
+        };
+
+        it("repeats an empty strict-box search without viewbox and bounded, keeping countrycodes", async () => {
+            const towson = createMockPlace({ place_id: 777, display_name: "1 Towson Way, Towson, Maryland, 21204" });
+            fetchMock
+                .mockResolvedValueOnce(createFetchResponse([]))
+                .mockResolvedValueOnce(createFetchResponse([towson]));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "1 Towson Way");
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            const first = new URL(getRequestedUrl(0));
+            expect(first.searchParams.get("viewbox")).toBe(BALTIMORE_LOCALE.nominatim_viewbox);
+            expect(first.searchParams.get("bounded")).toBe("1");
+            const second = new URL(getRequestedUrl(1));
+            expect(second.searchParams.get("q")).toBe("1 Towson Way");
+            expect(second.searchParams.has("viewbox")).toBe(false);
+            expect(second.searchParams.has("bounded")).toBe(false);
+            expect(second.searchParams.get("countrycodes")).toBe("us");
+            expect(result.current.status).toBe("OK");
+            expect(result.current.suggestions.map((s) => s.place_id)).toEqual(["777"]);
+        });
+
+        it("makes one request when the strict-box search finds places", async () => {
+            await searchFor(BALTIMORE_LOCALE, "100 Holliday");
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+        });
+
+        it("makes one request for a locale without a box when the search finds nothing", async () => {
+            fetchMock.mockResolvedValueOnce(createFetchResponse([]));
+
+            const result = await searchFor(CONGRESS_LOCALE, "Nowhere Lane");
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result.current.status).toBe("ZERO_RESULTS");
+        });
+
+        it("reports ZERO_RESULTS when the strict-box search and the repeat both find nothing", async () => {
+            fetchMock.mockResolvedValue(createFetchResponse([]));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "Nowhere Lane");
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(result.current.status).toBe("ZERO_RESULTS");
+            expect(result.current.suggestions).toEqual([]);
+            expect(result.current.loading).toBe(false);
+        });
+
+        it("does not repeat a failed strict-box search", async () => {
+            fetchMock.mockResolvedValueOnce(createFetchResponse({}, 500, "Server Error"));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "100 Holliday");
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result.current.status).toBe("ERROR");
+        });
+
+        it("drops the repeat's answer when the user types again before it arrives", async () => {
+            let resolveRepeat!: (res: Response) => void;
+            const pendingRepeat = new Promise<Response>((resolve) => {
+                resolveRepeat = resolve;
+            });
+            const newer = createMockPlace({ place_id: 2, display_name: "2 Newer Street, Baltimore, Maryland" });
+            fetchMock
+                .mockResolvedValueOnce(createFetchResponse([]))
+                .mockReturnValueOnce(pendingRepeat)
+                .mockResolvedValueOnce(createFetchResponse([newer]));
+
+            const result = await searchFor(BALTIMORE_LOCALE, "1 Older Street");
+            const repeatSignal = fetchMock.mock.calls[1]?.[1]?.signal;
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "2 Newer Street" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            expect(repeatSignal?.aborted).toBe(true);
+
+            await act(async () => {
+                resolveRepeat(createFetchResponse([createMockPlace({ place_id: 1, display_name: "1 Older Street" })]));
+            });
+
+            expect(result.current.suggestions.map((s) => s.place_id)).toEqual(["2"]);
+        });
+    });
+
     describe("Response Parsing, Suggestions & Status Updates", () => {
         it("updates suggestions, sets status='OK', and resets loading on successful search", async () => {
             const place1 = createMockPlace({ place_id: 101, display_name: "100 Holliday St, Baltimore, MD" });
@@ -552,6 +825,26 @@ describe("useNominatimAddressAutocomplete", () => {
             expect(result.current.suggestions[1].place_id).toBe("102");
             expect(result.current.status).toBe("OK");
             expect(result.current.loading).toBe(false);
+        });
+
+        it("keeps each place on its suggestion as raw_place, so the credit can read its source", async () => {
+            const place = { ...createMockPlace({ place_id: 103 }), source: "google_places" };
+            fetchMock.mockResolvedValueOnce(createFetchResponse([place]));
+
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "100 Holliday" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+
+            expect(result.current.suggestions[0].raw_place).toEqual(place);
         });
 
         it("sets status='ZERO_RESULTS' and suggestions=[] when Nominatim returns an empty array", async () => {

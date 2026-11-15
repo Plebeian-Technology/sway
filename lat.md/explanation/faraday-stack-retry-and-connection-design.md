@@ -98,3 +98,11 @@ One example still has to prove a real environment variable reaches this call sit
 [[lib/sway/faraday_stack.rb]] restricts `OPENROUTER_DEFAULTS` retries to HTTP `429` and transport exceptions, and attaches explicit `User-Agent` headers on the GitHub and Nominatim connection profiles.
 
 Retrying `5xx` responses against OpenRouter could trigger duplicate paid model executions when an upstream request already started, whereas `api.github.com` and Nominatim reject or throttle requests that omit an identifying `User-Agent`.
+
+## Why the Nominatim connection never retries
+
+[[lib/sway/faraday_stack.rb#FaradayStack#nominatim]] makes one attempt and waits at most 3 seconds for it: `NOMINATIM_DEFAULTS` retries no status, no timeout and no transport failure.
+
+The public Nominatim server allows about one request per second, and [[app/services/nominatim_service.rb#NominatimService#REQUESTS_PER_SECOND|the service's cap]] counts each search once, before it is sent. A retry inside the connection is a second request the cap never sees, so three retries on a server error could send four requests in the second the cap allowed one. A `429` means Sway is already over that limit, and a retry adds load at the moment the server asks Sway to slow down.
+
+Nominatim also serves address autocomplete while a user types, and [[address-place-classification#Nominatim place classification and usage constraints|the search falls back to Google Places]] when Nominatim gives no answer. With a 10-second timeout and three retries on transport failures, a hung Nominatim held each suggestion request for about 40 seconds, so the fallback never answered in time. A single 3-second attempt keeps the worst case short, and a failed attempt goes to the fallback rather than to Nominatim again. The next keystroke is the retry.

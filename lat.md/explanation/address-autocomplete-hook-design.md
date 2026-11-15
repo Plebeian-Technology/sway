@@ -40,3 +40,5 @@ The debounce timer, the Places session token, the id of the in-flight request, a
 ## Why the component prefers the field-keyed form error
 
 Registration is a single-field (address) form, so any submit error pertains to this input; the component prefers the field-keyed error, else the first error in `form.errors`.
+
+The registration component, [[app/frontend/components/user/NominatimAddressAutocomplete.tsx#NominatimAddressAutocomplete|NominatimAddressAutocomplete]], falls back to the `message` of the server's `{ code, message }` error envelope, and skips `code` in the any-key fallback, so a machine word never reaches the user.

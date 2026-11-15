@@ -1,0 +1,11 @@
+# @lat: [[signature-placement#Why a concern declares the host whose helpers it reaches]]
+module VerifiedPhoneSession : ActionController::Base
+  extend ActiveSupport::Concern
+
+  VERIFIED_PHONE_WINDOW: ActiveSupport::Duration
+
+  private
+
+  def remember_verified_phone: (String phone) -> void
+  def verified_phone_current?: (String? phone) -> bool
+end

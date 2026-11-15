@@ -1,12 +1,19 @@
 class SwayRegistrationController < ApplicationController
+    include OnboardingSafetyNet
+
     REGISTRATION_UNAVAILABLE_MESSAGE: ::String
     REGISTRATION_NO_REPRESENTATIVES_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_CONFIRMATION_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_COOLDOWN_MESSAGE: ::String
+    REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE: ::String
+    ADDRESS_TEXT_FIELDS: Array[Symbol]
+    GEOCODE_FILLED_FIELDS: Array[Symbol]
 
     @submitted_normalized_key: String?
 
     @submitted_place_types: Array[String]
+
+    @submitted_coordinates: { latitude: Float?, longitude: Float? }
 
     def index: -> untyped
 
@@ -15,9 +22,19 @@ class SwayRegistrationController < ApplicationController
 
     private
 
+    def holds_representatives?: (User u) -> bool
+
+    def render_onboarding_unavailable: () -> void
+
     def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
 
     def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
+
+    def render_address_switch_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
+
+    def report_skipped_locale: (User u, Address address_instance, SwayLocale sway_locale, StandardError exception) -> void
+
+    def wait_for_congress_representatives: (User u, Address address_instance) -> void
 
     def render_no_representatives: () -> untyped
 
@@ -31,11 +48,23 @@ class SwayRegistrationController < ApplicationController
 
     def address_by_normalized_key: -> Address?
 
+    def linked_address_with_submitted_text: -> Address?
+
+    def same_submitted_text?: (Symbol field, Address linked, Address submitted) -> bool
+
+    def submitted_address_attributes: -> Hash[Symbol, untyped]
+
     def registration_page_props: (?processing: bool) -> Hash[Symbol, untyped]
 
     def submitted_normalized_key: -> String?
 
-    def submitted_coordinate: (Symbol name) -> Float?
+    def submitted_text: (Symbol name) -> String
+
+    def submitted_coordinate: (:latitude | :longitude name) -> Float?
+
+    def submitted_coordinates: () -> { latitude: Float?, longitude: Float? }
+
+    def parsed_coordinate: (untyped value, Integer bound) -> Float?
 
     def sway_registration_params: -> untyped
 

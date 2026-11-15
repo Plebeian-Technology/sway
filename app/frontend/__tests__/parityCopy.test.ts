@@ -227,6 +227,20 @@ describe("PARITY_COPY — auth.passkeyPanel keys", () => {
         expect(PARITY_COPY.auth.passkeyPanel.confirmCode).toBe("Confirm code");
     });
 
+    it("auth.passkeyPanel.resendCode is 'Send a new code'", () => {
+        expect(PARITY_COPY.auth.passkeyPanel.resendCode).toBe("Send a new code");
+    });
+
+    it("auth.passkeyPanel.codeResent is 'We sent you a new code.'", () => {
+        expect(PARITY_COPY.auth.passkeyPanel.codeResent).toBe("We sent you a new code.");
+    });
+
+    it("auth.passkeyPanel.passkeyUnsupported says the browser can't use passkeys and names no protocol", () => {
+        expect(PARITY_COPY.auth.passkeyPanel.passkeyUnsupported).toBe(
+            "This browser can't use passkeys yet. Update your browser or try another one.",
+        );
+    });
+
     // @lat: [[discoverable-passkey-design#What the reader sees during passkey fallback and why it names no cause]]
     it("auth.passkeyPanel.passkeyFallback names no cause and points at the phone form", () => {
         expect(PARITY_COPY.auth.passkeyPanel.passkeyFallback).toBe(

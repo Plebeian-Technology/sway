@@ -7,19 +7,26 @@ module Users
 
     class SessionsController < ApplicationController
       include Authentication
+      include VerifiedPhoneSession
+      include OnboardingSafetyNet
 
+      PASSKEY_VERIFICATION_FAILED_MESSAGE = "We couldn't verify your passkey. Try signing in again."
+
+      # @lat: [[phone-verification-rate-limits#Why the sign-in challenge throttles two ways]]
       rate_limit to: 10, within: 5.minutes,
+        name: "create_ip",
         by: -> { request.remote_ip },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_in) },
-        with: -> { render_rate_limited },
+        with: -> { render_rate_limited(retry_after: 5.minutes.to_i) },
         store: ApplicationController::RATE_LIMIT_STORE
       rate_limit to: 5, within: 5.minutes,
+        name: "create_phone_ip",
         # @lat: [[phone-cache-hashing]]
-        by: -> { PhoneCacheKey.digest(session_params[:phone]) },
+        by: -> { "#{PhoneCacheKey.digest(phone)}:#{request.remote_ip}" },
         only: :create,
-        if: -> { RateLimitConfig.enabled?(:sign_in) },
-        with: -> { render_rate_limited },
+        if: :count_create_phone_attempt?,
+        with: -> { render_rate_limited(retry_after: 5.minutes.to_i) },
         store: ApplicationController::RATE_LIMIT_STORE
 
       skip_before_action :authenticate_sway_user!
@@ -53,10 +60,19 @@ module Users
             passkey_count: user.passkeys.count
           )
           render json: {flow: "passkey", options: get_options}
+        # @lat: [[identity-and-access#Identity and access#The phone number is the account#A number no US phone can have never reaches Twilio]]
+        elsif !phone.possible_us_phone?
+          render json: {flow: "sms", success: false, error: "Enter a valid US phone number."}, status: :ok
         elsif phone.present?
-          return render_rate_limited if sms_verification_rate_limited?(phone)
-
-          if Sway::Settings.dev_login.skip_phone_verification
+          # @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#A phone confirmed in this session resumes enrollment]]
+          if verified_phone_current?(phone)
+            session[:phone] = phone
+            SwayLogging.info(
+              "webauthn.session.phone_verification_resumed",
+              phone_last4: phone_last4
+            )
+            render json: {flow: "enroll"}
+          elsif Sway::Settings.dev_login.skip_phone_verification
             session[:phone] = phone
             SwayLogging.info(
               "webauthn.session.phone_verification_skipped",
@@ -64,14 +80,14 @@ module Users
             )
             render json: {flow: "sms", success: true}
           else
+            wait = phone_verification_send_wait(phone)
+            return render_rate_limited(retry_after: wait) if wait
+
             SwayLogging.info(
               "webauthn.session.phone_verification_requested",
               phone_last4: phone_last4
             )
-            render json: {
-              flow: "sms",
-              success: send_phone_verification(session, phone)
-            }
+            render_phone_verification_send(session, phone, flow: "sms")
           end
         else
           render json: {success: false}, status: :unprocessable_content
@@ -162,7 +178,7 @@ module Users
           level: :warn,
           user_id: user&.id
         )
-        redirect_to root_path, alert: "Verification failed: #{e.message}"
+        redirect_to root_path, alert: PASSKEY_VERIFICATION_FAILED_MESSAGE
       rescue ActionController::ParameterMissing => e
         SwayLogging.log_exception(
           "webauthn.session.discoverable_invalid_payload",
@@ -258,7 +274,7 @@ module Users
           user_id: user&.id,
           phone_last4: authentication_phone.to_s.last(4)
         )
-        redirect_to root_path, alert: "Verification failed: #{e.message}"
+        redirect_to root_path, alert: PASSKEY_VERIFICATION_FAILED_MESSAGE
       rescue ActionController::ParameterMissing => e
         SwayLogging.log_exception(
           "webauthn.session.invalid_payload",
@@ -290,6 +306,11 @@ module Users
 
       def phone
         @phone ||= session_params[:phone]&.normalize_phone
+      end
+
+      # @lat: [[phone-verification-rate-limits#Why the sign-in challenge throttles two ways]]
+      def count_create_phone_attempt?
+        RateLimitConfig.enabled?(:sign_in) && !verified_phone_current?(phone.to_s)
       end
 
       def verify_valid_phone

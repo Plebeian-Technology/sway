@@ -23,6 +23,8 @@ registration, where a locale the system has not seen before should come into
 being. This runs behind an admin page load, where it must not: a page that
 reports how many locales exist cannot be the thing that invents one.
 
+When two registrations create the same new locale at once, [[app/models/sway_locale.rb#SwayLocale|SwayLocale.find_or_create_by_normalized!]] still reads first, and the caller whose insert loses the race reads the winner's row instead of failing.
+
 ## Why only the distinct address components are read
 
 The service asks the database for the distinct city, region code and country
@@ -76,3 +78,7 @@ The count has component triples, not addresses, and building a throwaway
 record to reach a rule that never depended on having one. Splitting the rule out
 keeps a single definition of what the three sets are, shared by registration —
 which has a record — and by the count, which does not.
+
+The Congress set always names the United States, whatever country the address
+carries, so every address counts towards Congress
+([[representative-resolution#Congress fallback]]).

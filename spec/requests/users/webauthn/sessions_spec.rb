@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Users::Webauthn::Sessions", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "WebAuthnDouble"
   include_context "TwilioDouble"
@@ -32,6 +34,24 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
 
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to(root_path)
+      end
+
+      it "answers the phone error as JSON and sends no SMS for a number no US phone can have" do
+        post users_webauthn_sessions_path, params: {phone: "1234567890"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => false, "error" => "Enter a valid US phone number."})
+        expect(twilio_verifications_double).not_to have_received(:create)
+      end
+
+      it "still answers the passkey flow for a stored phone no US phone can have" do
+        user = create(:user, :registered, phone: "1234567890")
+        create(:passkey, user: user, external_id: fake_credential_id)
+
+        post users_webauthn_sessions_path, params: {phone: "1234567890"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["flow"]).to eq("passkey")
       end
 
       it "accepts an 11-digit input that starts with country code 1 by normalizing to 10 digits" do
@@ -136,6 +156,79 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
         expect(session_hash[:phone]).to eq(phone)
+      end
+    end
+
+    context "when this session already confirmed the phone" do
+      it "answers the enroll flow without a second SMS and lets enrollment start" do
+        post users_webauthn_sessions_path, params: {phone: phone}
+        patch phone_verification_path("0"), params: {phone_verification: {code: "123456"}}
+        expect(session_hash[:verified_phone]).to eq(phone)
+        session_hash[:phone] = "4105553999"
+
+        post users_webauthn_sessions_path, params: {phone: phone}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"flow" => "enroll"})
+        expect(twilio_verifications_double).to have_received(:create).once
+        expect(session_hash[:phone]).to eq(phone)
+
+        post users_webauthn_registration_index_path
+
+        expect(response.parsed_body["challenge"]).to eq(fake_challenge)
+      end
+
+      # @lat: [[phone-verification-rate-limits#Why the sign-in challenge throttles two ways]]
+      it "does not count resumed enrollments against the phone and IP sign-in limit" do
+        with_rate_limit_enabled(:sign_in) do
+          post users_webauthn_sessions_path, params: {phone: phone}
+          patch phone_verification_path("0"), params: {phone_verification: {code: "123456"}}
+          expect(session_hash[:verified_phone]).to eq(phone)
+
+          8.times { post users_webauthn_sessions_path, params: {phone: phone} }
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to eq({"flow" => "enroll"})
+        end
+      end
+
+      it "still counts unconfirmed sends against the phone and IP sign-in limit" do
+        with_rate_limit_enabled(:sign_in) do
+          6.times { post users_webauthn_sessions_path, params: {phone: phone}, as: :json }
+
+          expect(response).to have_http_status(:too_many_requests)
+          expect(response.headers["Retry-After"]).to eq("300")
+        end
+      end
+
+      it "sends a new SMS once the confirmation is older than the window" do
+        post users_webauthn_sessions_path, params: {phone: phone}
+        patch phone_verification_path("0"), params: {phone_verification: {code: "123456"}}
+        expect(session_hash[:verified_phone]).to eq(phone)
+
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          post users_webauthn_sessions_path, params: {phone: phone}
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
+        expect(twilio_verifications_double).to have_received(:create).twice
+      end
+
+      it "sends an SMS when the session confirmed a different phone" do
+        session_hash[:verified_phone] = "4105553999"
+
+        post users_webauthn_sessions_path, params: {phone: phone}
+
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
+        expect(twilio_verifications_double).to have_received(:create).once
+      end
+
+      it "sends an SMS when the session confirmed no phone" do
+        post users_webauthn_sessions_path, params: {phone: phone}
+
+        expect(response.parsed_body).to eq({"flow" => "sms", "success" => true})
+        expect(twilio_verifications_double).to have_received(:create).once
       end
     end
 
@@ -344,7 +437,8 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       post callback_users_webauthn_sessions_path, params: callback_params
 
       expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to eq("Verification failed: bad assertion")
+      expect(flash[:alert]).to eq(Users::Webauthn::SessionsController::PASSKEY_VERIFICATION_FAILED_MESSAGE)
+      expect(flash[:alert]).not_to include("bad assertion")
       expect(session_hash[:current_authentication]).to be_nil
     end
 
@@ -417,6 +511,18 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:discoverable_authentication]).to be_nil
     end
 
+    it "sends a user with a passkey and no address to the registration form" do
+      user = create(:user, phone: phone)
+      create(:passkey, user: user, external_id: fake_credential_id)
+
+      post discoverable_callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      expect(session_hash[:user_id]).to eq(user.id)
+      expect(session_hash[:verified_phone]).to eq(phone)
+      expect(session_hash[:discoverable_authentication]).to be_nil
+    end
+
     it "redirects to root when the discoverable challenge is missing" do
       session_hash.delete(:discoverable_authentication)
 
@@ -468,6 +574,21 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       delete users_webauthn_session_path("1")
 
       expect(session_hash[:inertia_clear_history]).to be true
+    end
+  end
+
+  describe "an unexpected error" do
+    before do
+      allow(User).to receive(:find_by).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable to the JSON sign-in start and reports the error" do
+      post users_webauthn_sessions_path, params: {phone: "4105553000"}, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
     end
   end
 end
