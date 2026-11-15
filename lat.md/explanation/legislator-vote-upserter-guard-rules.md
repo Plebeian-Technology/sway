@@ -20,6 +20,8 @@ A vote is covered when a term covers the bill's anchor date and this upsert leav
 | `:skipped` | The id finds no `Legislator` row, or no term covers the bill's anchor date, which includes a bill with no anchor date | no | no |
 | `false` | The legislator id is nil, the write failed, or the guard refused to overwrite a real vote with a guessed one | no | no |
 
+A legislator can hold a vote on a bill only through a term that covers that bill, so a vote with no covering term is not a vote Sway records, and `:skipped` writes nothing.
+
 While a term covers the anchor date, an unchanged re-fetch stays complete because `update!` returns `true` when nothing changed, and an admin's correction stays complete because the vote is stored, even though this run did not write it. The term check runs before the row lookup, so without a covering term a stored row, manual or not, is `:skipped` and reads as not covered, for example after a term or vote date correction. Only sponsor inference can reach the overwrite guard, and that path records no coverage.
 
 On a run that finishes, `matched_count` is the covered count, so the status agrees with the numbers beside it: `complete` when every eligible vote is covered, `partial` when some are, `unresolved` when none are. `GenericLegislatorVoteUpdateService` reports `missing_vote_date` ahead of all three. A row naming no voter still counts as eligible and can never be covered, so it keeps a run from reading complete.
