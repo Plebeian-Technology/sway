@@ -98,13 +98,14 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        FeedQuery::DEFAULT_PER_PAGE.times do |i|
+        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
             legislator: legislator,
             title: "Bill #{i}",
-            house_vote_date_time_utc: (i + 1).hours.ago
+            house_vote_date_time_utc: (i + 1).hours.ago,
+            scheduled_release_date_utc: nil
           )
           create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
         end
@@ -132,13 +133,14 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        FeedQuery::DEFAULT_PER_PAGE.times do |i|
+        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
             legislator: legislator,
             title: "Bill #{i}",
-            house_vote_date_time_utc: (i + 1).hours.ago
+            house_vote_date_time_utc: (i + 1).hours.ago,
+            scheduled_release_date_utc: nil
           )
           create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
         end
@@ -336,13 +338,14 @@ RSpec.describe "FeedController", type: :request do
         district = create(:district, sway_locale: baltimore)
         legislator = create(:legislator, district:, sway_locale: baltimore)
         create(:user_legislator, user: user, legislator: legislator, active: true)
-        FeedQuery::DEFAULT_PER_PAGE.times do |i|
+        (FeedQuery::DEFAULT_PER_PAGE + 1).times do |i|
           bill = create(
             :bill,
             sway_locale: baltimore,
             legislator: legislator,
             title: "Poll Bill #{i}",
-            house_vote_date_time_utc: (i + 1).hours.ago
+            house_vote_date_time_utc: (i + 1).hours.ago,
+            scheduled_release_date_utc: nil
           )
           create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
         end
@@ -500,7 +503,8 @@ RSpec.describe "FeedController", type: :request do
             sway_locale: baltimore,
             legislator: legislator,
             title: "Solar Bill #{i}",
-            house_vote_date_time_utc: (i + 1).hours.ago
+            house_vote_date_time_utc: (i + 1).hours.ago,
+            scheduled_release_date_utc: nil
           )
           create(:legislator_vote, legislator: legislator, bill: bill, inferred: false, support: "FOR")
         end
@@ -509,7 +513,8 @@ RSpec.describe "FeedController", type: :request do
           sway_locale: baltimore,
           legislator: legislator,
           title: "Highway Bill",
-          house_vote_date_time_utc: 1.minute.ago
+          house_vote_date_time_utc: 1.minute.ago,
+          scheduled_release_date_utc: nil
         )
         create(:legislator_vote, legislator: legislator, bill: other_bill, inferred: false, support: "FOR")
 
@@ -524,7 +529,7 @@ RSpec.describe "FeedController", type: :request do
         expect(search_body["feed_search"]).to eq("Solar")
         expect(search_body["items"].map { |item| item.dig("bill", "id") }).not_to include(other_bill.id)
         expected_match_count = FeedQuery.new(user: user, query: "Solar").match_count
-        expect(expected_match_count).to be > FeedQuery::DEFAULT_PER_PAGE
+        expect(expected_match_count).to eq(FeedQuery::DEFAULT_PER_PAGE + 1)
         expect(search_body["items"].size).to eq(FeedQuery::DEFAULT_PER_PAGE)
         expect(search_body["feed_match_count"]).to eq(expected_match_count)
 
@@ -532,7 +537,7 @@ RSpec.describe "FeedController", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body["feed_match_count"]).to eq(expected_match_count)
-        expect(response.parsed_body["items"]).not_to be_empty
+        expect(response.parsed_body["items"].size).to eq(1)
 
         get "/feed", headers: headers
 

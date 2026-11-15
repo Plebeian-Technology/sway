@@ -582,6 +582,9 @@ class Object
     def legislator_term:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def legislative_session:
+        (*untyped args, **untyped kwargs) -> untyped
+        | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
     def legislator_votes_path:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
