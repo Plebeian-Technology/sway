@@ -10,7 +10,6 @@ const bytesToBase64url = (bytes: number[]) =>
 const bufferOf = (bytes: number[]) => new Uint8Array(bytes).buffer;
 const bytesOf = (buffer: ArrayBuffer) => Array.from(new Uint8Array(buffer));
 
-// Bytes whose base64url form uses "-" and "_" and needs no padding trimmed back.
 const CHALLENGE = [251, 255, 190, 1, 2];
 const USER_ID = [7, 8, 9];
 const CREDENTIAL_ID = [250, 251, 252, 253];

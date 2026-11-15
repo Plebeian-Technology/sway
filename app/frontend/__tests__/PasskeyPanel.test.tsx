@@ -12,7 +12,6 @@ const captured = vi.hoisted(() => ({
     verifyAuthentication: vi.fn<(phone: string, data: unknown) => Promise<void>>(),
     verifyDiscoverableAuthentication: vi.fn<(data: unknown) => Promise<void>>(),
     sendPhoneVerification: vi.fn<(phone: string) => Promise<boolean | undefined>>(),
-    // When set, a send behaves like the real hook on a 429: it hands this time to the onThrottled it was given.
     sendRefusedUntil: null as Date | null,
     notify: vi.fn<(...args: unknown[]) => void>(),
     // The panel reads this straight off the hook, so a test can put the panel
@@ -21,6 +20,9 @@ const captured = vi.hoisted(() => ({
     confirm: vi.fn<(phone: string, code: string) => Promise<void>>(),
     clearPasskeyDismissed: vi.fn<() => void>(),
     passkeyDismissed: false,
+    resumeDismissed: false,
+    rerenderRegistration: null as (() => void) | null,
+    clearResumeDismissed: vi.fn<() => void>(),
     startRegistration: vi.fn<(phone: string) => Promise<unknown>>(),
     verifyRegistration: vi.fn<(phone: string, credential: unknown) => Promise<void>>(),
     isPasskeySupported: vi.fn<() => boolean>(),
@@ -58,13 +60,22 @@ vi.mock("app/frontend/hooks/authentication/useWebAuthnAuthentication", () => ({
         };
     },
 }));
-vi.mock("app/frontend/hooks/authentication/useWebAuthnRegistration", () => ({
-    useWebAuthnRegistration: () => ({
-        startRegistration: captured.startRegistration,
-        verifyRegistration: captured.verifyRegistration,
-        isLoading: false,
-    }),
-}));
+vi.mock("app/frontend/hooks/authentication/useWebAuthnRegistration", async () => {
+    const { useState } = await import("react");
+    return {
+        useWebAuthnRegistration: () => {
+            const [, setTick] = useState(0);
+            captured.rerenderRegistration = () => setTick((tick) => tick + 1);
+            return {
+                startRegistration: captured.startRegistration,
+                verifyRegistration: captured.verifyRegistration,
+                isLoading: false,
+                passkeyDismissed: captured.resumeDismissed,
+                clearPasskeyDismissed: captured.clearResumeDismissed,
+            };
+        },
+    };
+});
 vi.mock("app/frontend/hooks/authentication/phone/useSendPhoneVerification", () => ({
     useSendPhoneVerification: (onThrottled?: (until: Date | null) => void) => ({
         send: async (phone: string) => {
@@ -105,6 +116,8 @@ beforeEach(() => {
     captured.confirm.mockReset();
     captured.clearPasskeyDismissed.mockReset();
     captured.passkeyDismissed = false;
+    captured.resumeDismissed = false;
+    captured.clearResumeDismissed.mockReset();
     captured.startRegistration.mockReset();
     captured.verifyRegistration.mockReset();
     captured.isPasskeySupported.mockReset();
@@ -267,6 +280,7 @@ describe("PasskeyPanel — a dismissed browser passkey prompt", () => {
         await openCodeStep();
 
         expect(screen.getByText(PARITY_COPY.auth.passkeyPanel.passkeyDismissed)).toBeTruthy();
+        expect(PARITY_COPY.auth.passkeyPanel.passkeyDismissed).toContain("Press Confirm code");
     });
 
     it("shows no message when the prompt was not dismissed", async () => {
@@ -321,6 +335,26 @@ describe("PasskeyPanel — the phone step", () => {
         expect(captured.sendPhoneVerification).not.toHaveBeenCalled();
         expect(captured.notify).not.toHaveBeenCalled();
         expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
+    });
+
+    it("shows the dismissed-passkey message on the phone step after a resumed enrollment is dismissed", async () => {
+        captured.startAuthentication.mockResolvedValue("enroll");
+        captured.startRegistration.mockImplementation(async () => {
+            captured.resumeDismissed = true;
+            captured.rerenderRegistration?.();
+            return undefined;
+        });
+        render(<PasskeyPanel />);
+        expect(screen.queryByText(PARITY_COPY.auth.passkeyPanel.passkeyDismissedResume)).toBeNull();
+
+        await submitPhone();
+
+        expect(screen.getByText(PARITY_COPY.auth.passkeyPanel.passkeyDismissedResume)).toBeTruthy();
+        expect(PARITY_COPY.auth.passkeyPanel.passkeyDismissedResume).toContain(
+            `Press ${PARITY_COPY.auth.passkeyPanel.continuePhone} to`,
+        );
+        expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
+        expect(captured.verifyRegistration).not.toHaveBeenCalled();
     });
 
     // @lat: [[passkey-panel-test-design#Why the phone step checks passkey support before any request]]
@@ -418,7 +452,7 @@ describe("PasskeyPanel — the phone step", () => {
 
 describe("PasskeyPanel — asking for a new code when the first never arrives", () => {
     beforeEach(() => {
-        vi.useRealTimers();
+        vi.useFakeTimers({ shouldAdvanceTime: true });
         Element.prototype.scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
         captured.startAuthentication.mockResolvedValue(true);
     });
@@ -428,14 +462,25 @@ describe("PasskeyPanel — asking for a new code when the first never arrives", 
         return screen.findByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel);
     };
 
-    const pressResend = async () => {
-        await act(async () => {
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.resendCode }));
+    const waitOutCooldown = () => {
+        act(() => {
+            vi.advanceTimersByTime(60_000);
         });
     };
 
+    const pressResend = async () => {
+        await act(async () => {
+            fireEvent.click(resendButton());
+        });
+    };
+
+    const resendButton = () =>
+        screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.resendCode }) as HTMLButtonElement;
+
     const confirmButton = () =>
         screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.confirmCode }) as HTMLButtonElement;
+
+    const countdown = () => screen.queryByTestId("resend-countdown")?.textContent ?? null;
 
     it("offers no new-code button on the phone step", () => {
         render(<PasskeyPanel />);
@@ -447,6 +492,7 @@ describe("PasskeyPanel — asking for a new code when the first never arrives", 
         captured.sendPhoneVerification.mockResolvedValue(true);
         render(<PasskeyPanel />);
         const codeBox = (await openCodeStep()) as HTMLInputElement;
+        waitOutCooldown();
         fireEvent.change(codeBox, { target: { value: "123" } });
 
         await pressResend();
@@ -459,12 +505,14 @@ describe("PasskeyPanel — asking for a new code when the first never arrives", 
         });
     });
 
-    it("sends again each time it is pressed", async () => {
+    it("sends again each time it is pressed once the cooldown ends", async () => {
         captured.sendPhoneVerification.mockResolvedValue(true);
         render(<PasskeyPanel />);
         await openCodeStep();
+        waitOutCooldown();
 
         await pressResend();
+        waitOutCooldown();
         await pressResend();
 
         expect(captured.sendPhoneVerification).toHaveBeenCalledTimes(2);
@@ -474,6 +522,7 @@ describe("PasskeyPanel — asking for a new code when the first never arrives", 
         captured.sendPhoneVerification.mockResolvedValue(false);
         render(<PasskeyPanel />);
         const codeBox = (await openCodeStep()) as HTMLInputElement;
+        waitOutCooldown();
         fireEvent.change(codeBox, { target: { value: "123" } });
 
         await pressResend();
@@ -484,18 +533,90 @@ describe("PasskeyPanel — asking for a new code when the first never arrives", 
         });
         expect(codeBox.value).toBe("123");
         expect(confirmButton().disabled).toBe(false);
+        expect(resendButton().disabled).toBe(false);
     });
 
     // @lat: [[passkey-panel-test-design#Why a refused new-code request must not latch the throttle]]
     it("keeps Confirm code enabled when the request is refused with 429", async () => {
         render(<PasskeyPanel />);
         await openCodeStep();
+        waitOutCooldown();
         captured.sendRefusedUntil = new Date(Date.now() + 60_000);
 
         await pressResend();
 
         expect(screen.getByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeTruthy();
         expect(confirmButton().disabled).toBe(false);
+    });
+
+    // @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day#The cooldown clock on Send a new code]]
+    it("counts down from one minute after the first code is sent and enables the button when it ends", async () => {
+        render(<PasskeyPanel />);
+        await openCodeStep();
+
+        expect(countdown()).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("1:00"));
+        expect(resendButton().disabled).toBe(true);
+
+        act(() => {
+            vi.advanceTimersByTime(18_000);
+        });
+        expect(countdown()).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("0:42"));
+        expect(resendButton().disabled).toBe(true);
+        expect(confirmButton().disabled).toBe(false);
+
+        act(() => {
+            vi.advanceTimersByTime(42_000);
+        });
+        expect(countdown()).toBeNull();
+        expect(resendButton().disabled).toBe(false);
+    });
+
+    it("restarts the countdown after a new code is sent", async () => {
+        captured.sendPhoneVerification.mockResolvedValue(true);
+        render(<PasskeyPanel />);
+        await openCodeStep();
+        waitOutCooldown();
+
+        await pressResend();
+
+        expect(countdown()).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("1:00"));
+        expect(resendButton().disabled).toBe(true);
+        await pressResend();
+        expect(captured.sendPhoneVerification).toHaveBeenCalledTimes(1);
+    });
+
+    it("counts down the wait the server names when it refuses a new code", async () => {
+        render(<PasskeyPanel />);
+        await openCodeStep();
+        waitOutCooldown();
+        captured.sendRefusedUntil = new Date(Date.now() + 5 * 60_000 + 7_000);
+
+        await pressResend();
+
+        expect(countdown()).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("5:07"));
+        expect(resendButton().disabled).toBe(true);
+    });
+
+    it("hides the ticking clock from screen readers and announces the wait once", async () => {
+        render(<PasskeyPanel />);
+        await openCodeStep();
+        const region = document.getElementById("v2-resend-wait") as HTMLElement;
+        const announced = () =>
+            Array.from(region.querySelectorAll("span"))
+                .filter((span) => span.getAttribute("aria-hidden") !== "true")
+                .map((span) => span.textContent)
+                .join("");
+
+        expect(region.getAttribute("aria-live")).toBe("polite");
+        expect(screen.getByTestId("resend-countdown").getAttribute("aria-hidden")).toBe("true");
+        const first = announced();
+        expect(first).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeWait(60));
+
+        act(() => {
+            vi.advanceTimersByTime(5_000);
+        });
+        expect(announced()).toBe(first);
+        expect(resendButton().getAttribute("aria-describedby")).toBe("v2-resend-wait");
     });
 });
 

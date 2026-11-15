@@ -12,12 +12,14 @@ import { useConfirmPhoneVerification } from "app/frontend/hooks/authentication/p
 import { useSendPhoneVerification } from "app/frontend/hooks/authentication/phone/useSendPhoneVerification";
 import { useWebAuthnAuthentication } from "app/frontend/hooks/authentication/useWebAuthnAuthentication";
 import { useWebAuthnRegistration } from "app/frontend/hooks/authentication/useWebAuthnRegistration";
+import { useSecondsUntil } from "app/frontend/hooks/useSecondsUntil";
 import { ROUTES } from "app/frontend/sway_constants";
 import { notify } from "app/frontend/sway_utils";
 import { PHONE_INPUT_TRANSFORMER, removeNonDigits } from "app/frontend/sway_utils/phone";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { trackFunnelStep } from "app/frontend/sway_utils/funnelTracker";
 import { isInAppBrowser } from "app/frontend/sway_utils/inAppBrowser";
+import { formatCountdown, RESEND_CODE_COOLDOWN_SECONDS } from "app/frontend/sway_utils/resendCooldown";
 import { isPasskeySupported } from "app/frontend/sway_utils/webauthn";
 
 interface IProps {
@@ -35,6 +37,13 @@ const INITIAL_VALUES: SigninValues = {
     code: "",
 };
 
+interface ResendWait {
+    until: Date;
+    seconds: number;
+}
+
+const resendCooldownFromNow = (): Date => new Date(Date.now() + RESEND_CODE_COOLDOWN_SECONDS * 1000);
+
 const PasskeyPanel: React.FC<IProps> = ({
     title = PARITY_COPY.auth.passkeyPanel.title,
     subtitle = PARITY_COPY.auth.passkeyPanel.subtitle,
@@ -46,6 +55,7 @@ const PasskeyPanel: React.FC<IProps> = ({
     const [code, setCode] = useState(INITIAL_VALUES.code);
     const [isConfirmingPhone, setConfirmingPhone] = useState(false);
     const [throttledUntil, setThrottledUntil] = useState<Date | null>(null);
+    const [resendWait, setResendWait] = useState<ResendWait | null>(null);
     const errors = (usePage().props.errors ?? {}) as Record<string, string | undefined>;
     const inAppBrowser = isInAppBrowser();
 
@@ -54,16 +64,16 @@ const PasskeyPanel: React.FC<IProps> = ({
         setThrottledUntil(until !== null && until.getTime() > Date.now() ? until : null);
     }, []);
 
-    const isThrottled = throttledUntil !== null;
+    const isThrottled = useSecondsUntil(throttledUntil) > 0;
 
-    useEffect(() => {
-        if (!throttledUntil) return;
-        const timer = window.setTimeout(
-            () => setThrottledUntil(null),
-            Math.max(0, throttledUntil.getTime() - Date.now()),
-        );
-        return () => window.clearTimeout(timer);
-    }, [throttledUntil]);
+    // @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day#The cooldown clock on Send a new code]]
+    const startResendCooldown = useCallback((until: Date | null) => {
+        const seconds = until === null ? 0 : Math.ceil((until.getTime() - Date.now()) / 1000);
+        setResendWait(until !== null && seconds > 0 ? { until, seconds } : null);
+    }, []);
+
+    const resendSecondsLeft = useSecondsUntil(resendWait?.until ?? null);
+    const isResendCoolingDown = resendWait !== null && resendSecondsLeft > 0;
 
     useEffect(() => {
         if (isConfirmingPhone && codeRef.current) {
@@ -74,7 +84,7 @@ const PasskeyPanel: React.FC<IProps> = ({
 
     const { send: sendPhoneVerification, isLoading: isLoadingSend } = useSendPhoneVerification(markThrottled);
     // @lat: [[passkey-panel-test-design#Why a refused new-code request must not latch the throttle]]
-    const { send: resendPhoneVerification, isLoading: isLoadingResend } = useSendPhoneVerification();
+    const { send: resendPhoneVerification, isLoading: isLoadingResend } = useSendPhoneVerification(startResendCooldown);
     const {
         confirm: confirmPhoneVerification,
         isLoading: isLoadingConfirm,
@@ -93,6 +103,8 @@ const PasskeyPanel: React.FC<IProps> = ({
         startRegistration,
         verifyRegistration,
         isLoading: isLoadingRegistration,
+        passkeyDismissed: resumeDismissed,
+        clearPasskeyDismissed: clearResumeDismissed,
     } = useWebAuthnRegistration(markThrottled);
 
     // @lat: [[discoverable-passkey-design#What the reader sees during passkey fallback and why it names no cause]]
@@ -165,7 +177,9 @@ const PasskeyPanel: React.FC<IProps> = ({
                 }
 
                 if (typeof publicKey === "boolean") {
-                    if (!publicKey) {
+                    if (publicKey) {
+                        startResendCooldown(resendCooldownFromNow());
+                    } else {
                         notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.requestCodeError });
                     }
                     setConfirmingPhone(publicKey);
@@ -189,6 +203,7 @@ const PasskeyPanel: React.FC<IProps> = ({
                         .then((success) => {
                             setConfirmingPhone(!!success);
                             if (success) {
+                                startResendCooldown(resendCooldownFromNow());
                                 trackFunnelStep("sms_prompt_displayed");
                             }
                         })
@@ -208,6 +223,7 @@ const PasskeyPanel: React.FC<IProps> = ({
             sendPhoneVerification,
             startAuthentication,
             startRegistration,
+            startResendCooldown,
             verifyAuthentication,
             verifyRegistration,
         ],
@@ -229,11 +245,12 @@ const PasskeyPanel: React.FC<IProps> = ({
         const success = await resendPhoneVerification(phone);
         if (success) {
             setCode("");
+            startResendCooldown(resendCooldownFromNow());
             notify({ level: "success", title: PARITY_COPY.auth.passkeyPanel.codeResent });
         } else if (success === false) {
             notify({ level: "error", title: PARITY_COPY.auth.passkeyPanel.requestCodeError });
         }
-    }, [phone, resendPhoneVerification]);
+    }, [phone, resendPhoneVerification, startResendCooldown]);
 
     const handleCopyLink = useCallback(async () => {
         if (await copy(window.location.href)) {
@@ -245,7 +262,8 @@ const PasskeyPanel: React.FC<IProps> = ({
         setCode("");
         setConfirmingPhone(false);
         clearPasskeyDismissed();
-    }, [clearPasskeyDismissed]);
+        clearResumeDismissed();
+    }, [clearPasskeyDismissed, clearResumeDismissed]);
 
     return (
         <Card className="bg-card">
@@ -357,6 +375,11 @@ const PasskeyPanel: React.FC<IProps> = ({
                                         {errors.phone}
                                     </p>
                                 )}
+                                {!isConfirmingPhone && resumeDismissed && !isLoading && (
+                                    <output aria-live="polite" className="block text-sm font-semibold text-foreground">
+                                        {PARITY_COPY.auth.passkeyPanel.passkeyDismissedResume}
+                                    </output>
+                                )}
                             </div>
 
                             {isConfirmingPhone && (
@@ -404,15 +427,39 @@ const PasskeyPanel: React.FC<IProps> = ({
 
                                 {isConfirmingPhone ? (
                                     <>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            className="w-full"
-                                            onClick={handleResend}
-                                            disabled={isLoading}
-                                        >
-                                            {PARITY_COPY.auth.passkeyPanel.resendCode}
-                                        </Button>
+                                        <div className="flex flex-col gap-1.5">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="w-full disabled:opacity-75"
+                                                onClick={handleResend}
+                                                disabled={isLoading || isResendCoolingDown}
+                                                aria-label={PARITY_COPY.auth.passkeyPanel.resendCode}
+                                                aria-describedby="v2-resend-wait"
+                                            >
+                                                {PARITY_COPY.auth.passkeyPanel.resendCode}
+                                            </Button>
+                                            <output
+                                                id="v2-resend-wait"
+                                                aria-live="polite"
+                                                className="block text-center text-sm font-semibold tabular-nums text-foreground"
+                                            >
+                                                {isResendCoolingDown && (
+                                                    <>
+                                                        <span aria-hidden="true" data-testid="resend-countdown">
+                                                            {PARITY_COPY.auth.passkeyPanel.resendCodeIn(
+                                                                formatCountdown(resendSecondsLeft),
+                                                            )}
+                                                        </span>
+                                                        <span className="sr-only">
+                                                            {PARITY_COPY.auth.passkeyPanel.resendCodeWait(
+                                                                resendWait.seconds,
+                                                            )}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </output>
+                                        </div>
                                         <Button
                                             type="button"
                                             variant="outline"

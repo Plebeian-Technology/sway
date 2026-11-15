@@ -33,9 +33,9 @@ A 422 means "no passkey for this phone, fall back to an SMS code", which is a no
 
 ## Why a refused new-code request must not latch the throttle
 
-The code step's "Send a new code" button uses its own `useSendPhoneVerification` instance, which gets no throttle callback.
+The code step's "Send a new code" button uses its own `useSendPhoneVerification` instance, whose throttle callback starts the new-code countdown instead of the panel's throttle latch.
 
-The panel's shared throttle latch disables the Confirm code button until the Retry-After time passes. A 429 on a new-code request would then lock out a person whose first code did arrive late, for up to the whole window. The extra instance still shows the rate-limit message, because the hook does that itself, but leaves the latch alone.
+The panel's shared throttle latch disables the Confirm code button until the Retry-After time passes. A 429 on a new-code request would then lock out a person whose first code did arrive late, for up to the whole window. The extra instance still shows the rate-limit message, because the hook does that itself, and its 429 starts only the clock on its own button, described in [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day#The cooldown clock on Send a new code]].
 
 ## Why the phone step checks passkey support before any request
 
