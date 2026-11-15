@@ -31,7 +31,7 @@ The registrations callback spends the token as the last statement of its transac
 
 A failure in any of those writes rolls the database back, and the token is still in `Rails.cache` because nothing has spent it yet. The mobile app keeps the token, so the user retries the passkey step without a second SMS and a second code to type. Spending first would cost the user a new code for a fault on Sway's side.
 
-Single use still holds. SQLite's immediate transactions serialize writers ([[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]), so a second callback for the same token begins only after the first has committed, and its [[app/services/sms_verification_token.rb#SmsVerificationToken#peek]] check finds no token. A `false` return from `#consume!` at the end still rolls back every write and answers 401 `invalid_sms_token`.
+Single use still holds, but not through the [[app/services/sms_verification_token.rb#SmsVerificationToken#peek]] check. The cache delete and the peek run before the transaction's first primary-database query, which is the one that takes SQLite's write lock ([[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]), and the cache lives in a separate database. A concurrent second callback can therefore pass its peek. The `has_sway_passkey?` check and `#consume!` then decide: the second callback answers 409 `phone_already_registered` or, if it reaches `#consume!` after the first has spent the token, 401 `invalid_sms_token`. A `false` return from `#consume!` at the end still rolls back every write and answers 401 `invalid_sms_token`.
 
 ## Why peek exists alongside consume!
 

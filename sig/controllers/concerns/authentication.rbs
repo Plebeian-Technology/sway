@@ -8,7 +8,21 @@ module Authentication
     class VerifyServiceNotConfiguredError < Twilio::REST::TwilioError
     end
 
-    def send_phone_verification: (untyped session, String phone_) -> bool
+    TWILIO_MAX_SEND_ATTEMPTS_CODE: Integer
+    TWILIO_MAX_SEND_ATTEMPTS_WAIT: ActiveSupport::Duration
+
+    # Returns :send_attempts_exhausted when Twilio refuses a sixth send inside one verification.
+    def send_phone_verification: (untyped session, String phone_) -> (bool | :send_attempts_exhausted)
+
+    def render_phone_verification_send: (untyped session, String phone, **untyped extra) -> untyped
+
+    # Returns the seconds to wait before another code goes to the phone from
+    # this IP, or nil after counting this send.
+    def phone_verification_send_wait: (String phone) -> Integer?
+
+    # Gives back the daily slot the last claimed send for the phone took; the
+    # cooldown stays.
+    def release_phone_verification_send: (String phone) -> void
 
     # Email-channel twin (Twilio Verify email channel via SendGrid);
     # does not touch the session — callers own session[:pending_email].
@@ -19,6 +33,9 @@ module Authentication
 
     private
 
+    @phone_verification_send_claim: { phone: String, sent_at: Integer }?
+
     def twilio_client: -> Twilio::REST::Client
+    def render_rate_limited: (?retry_after: Integer) -> untyped
     def service_sid: -> String
 end

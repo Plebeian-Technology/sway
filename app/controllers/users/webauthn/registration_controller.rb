@@ -9,6 +9,7 @@ module Users
       class AlreadyRegistered < StandardError; end
 
       ALREADY_REGISTERED_MESSAGE = "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access."
+      VERIFICATION_FAILED_MESSAGE = "We couldn't finish setting up your passkey. Enter your phone number again to retry."
       SIGN_IN_FAILED_MESSAGE = "Your passkey was saved, but Sway couldn't sign you in. Sign in with your passkey to continue."
 
       # @lat: [[phone-verification-rate-limits#Why passkey enrollment starts are rate-limited per verified phone]]
@@ -180,7 +181,14 @@ module Users
           user_id: user&.id,
           phone_last4: verified_phone.to_s.last(4)
         )
-        redirect_to root_path, alert: "Verification failed: #{e.message}"
+        Sentry.capture_message(
+          "webauthn.registration.verification_failed",
+          level: :error,
+          tags: {exception_class: e.class.name},
+          fingerprint: ["webauthn.registration.verification_failed", e.class.name],
+          extra: {exception_class: e.class.name}
+        )
+        redirect_to root_path, alert: VERIFICATION_FAILED_MESSAGE
       rescue ActiveRecord::RecordInvalid => e
         return redirect_to(root_path, alert: ALREADY_REGISTERED_MESSAGE) if phone_taken?(e)
 

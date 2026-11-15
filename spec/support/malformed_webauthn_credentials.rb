@@ -7,7 +7,6 @@ module MalformedWebauthnCredentials
   ORIGIN = "http://www.example.com"
   RP_ID = "www.example.com"
   PHONE = "4105557100"
-  WEB_REJECTION_MESSAGE = "Verification failed: unreadable passkey response"
 
   REGISTRATION_CORRUPTIONS = {
     "a truncated attestationObject" => lambda { |credential|

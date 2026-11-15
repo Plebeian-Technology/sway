@@ -8,6 +8,7 @@ module Users
             end
 
             ALREADY_REGISTERED_MESSAGE: String
+            VERIFICATION_FAILED_MESSAGE: String
             SIGN_IN_FAILED_MESSAGE: String
 
             def create: -> untyped

@@ -421,6 +421,22 @@ RSpec.describe "PhoneVerification", type: :request do
         end
       end
 
+      it "does not count a re-confirm of a phone already verified in this session" do
+        with_rate_limit_enabled(:phone_verify) do
+          7.times do |i|
+            patch phone_verification_path("1"),
+              params: params,
+              headers: {"REMOTE_ADDR" => "10.0.3.#{i + 1}"},
+              as: :json
+
+            expect(response).to have_http_status(:ok)
+            expect(response.parsed_body).to eq({"success" => true})
+          end
+
+          expect(twilio_verification_checks_double).to have_received(:create).once
+        end
+      end
+
       it "throttles after 10 code checks from the same IP within 1 minute" do
         with_rate_limit_enabled(:phone_verify) do
           allow(twilio_verification_result).to receive(:status).and_return("pending")

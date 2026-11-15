@@ -27,7 +27,7 @@ RSpec.describe "WebAuthn origin verification", type: :request do
 
     def expect_web_enrollment_refused
       expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to start_with("Verification failed")
+      expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::VERIFICATION_FAILED_MESSAGE)
       expect(User.count).to eq(0)
       expect(Passkey.count).to eq(0)
       expect(session_hash[:current_registration]).to be_nil
@@ -61,7 +61,7 @@ RSpec.describe "WebAuthn origin verification", type: :request do
       post callback_users_webauthn_sessions_path, params: {publicKeyCredential: credential}, as: :json
 
       expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to start_with("Verification failed")
+      expect(flash[:alert]).to eq(Users::Webauthn::SessionsController::PASSKEY_VERIFICATION_FAILED_MESSAGE)
       expect(session_hash[:user_id]).to be_nil
       expect(passkey.reload.sign_count).to eq(5)
     end

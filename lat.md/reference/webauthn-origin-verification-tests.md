@@ -16,7 +16,7 @@ The first-passkey callback refuses a credential made for another relying party i
 
 ## Web phone sign-in with a stale sign count
 
-The phone-first sign-in callback refuses an assertion whose sign count is not above the stored one with the verification-failed redirect, signs nobody in, and leaves the stored sign count unchanged.
+The phone-first sign-in callback refuses an assertion whose sign count is not above the stored one with the fixed passkey-verification redirect, signs nobody in, and leaves the stored sign count unchanged.
 
 ## Mobile enrollment from a configured Android app
 

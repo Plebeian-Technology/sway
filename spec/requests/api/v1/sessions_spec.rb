@@ -350,36 +350,57 @@ RSpec.describe "Api::V1::Sessions", type: :request do
 
         expect(response).to have_http_status(:too_many_requests)
         expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        expect(response.headers["Retry-After"]).to eq("300")
       end
     end
 
-    it "throttles /challenge per phone across IPs after 5 attempts" do
+    it "throttles /challenge per phone and IP after 5 attempts" do
       with_rate_limit_enabled(:sign_in) do
-        6.times do |i|
+        6.times do
           post "/api/v1/sessions/challenge",
             params: {session: {phone: phone}},
-            headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"},
+            headers: {"REMOTE_ADDR" => "10.0.0.1"},
             as: :json
         end
 
         expect(response).to have_http_status(:too_many_requests)
         expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        expect(response.headers["Retry-After"]).to eq("300")
+      end
+    end
+
+    it "does not refuse a phone from a new IP after another IP used up its attempts for that phone" do
+      with_rate_limit_enabled(:sign_in) do
+        6.times do
+          post "/api/v1/sessions/challenge",
+            params: {session: {phone: phone}},
+            headers: {"REMOTE_ADDR" => "10.0.0.1"},
+            as: :json
+        end
+
+        post "/api/v1/sessions/challenge",
+          params: {session: {phone: phone}},
+          headers: {"REMOTE_ADDR" => "10.0.0.2"},
+          as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(json_body[:flow]).to be_present
       end
     end
 
     # @lat: [[phone-verification-rate-limits#Why every phone-keyed limiter normalizes the number first]]
     it "buckets different formats of one phone into the same per-phone throttle" do
       with_rate_limit_enabled(:sign_in) do
-        5.times do |i|
+        5.times do
           post "/api/v1/sessions/challenge",
             params: {session: {phone: "+1 (410) 555-1234"}},
-            headers: {"REMOTE_ADDR" => "10.1.0.#{i + 1}"},
+            headers: {"REMOTE_ADDR" => "10.1.0.1"},
             as: :json
         end
 
         post "/api/v1/sessions/challenge",
           params: {session: {phone: "4105551234"}},
-          headers: {"REMOTE_ADDR" => "10.1.0.99"},
+          headers: {"REMOTE_ADDR" => "10.1.0.1"},
           as: :json
 
         expect(response).to have_http_status(:too_many_requests)

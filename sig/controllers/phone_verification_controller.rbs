@@ -11,6 +11,8 @@ class PhoneVerificationController < ApplicationController
 
     private
 
+    def count_update_phone_attempt?: -> bool
+
     def phone_verification_params: -> untyped
 
     def self.phone_verification_params: () -> untyped

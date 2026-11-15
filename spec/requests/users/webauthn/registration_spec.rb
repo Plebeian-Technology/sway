@@ -353,7 +353,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(existing.reload.is_sway_admin?).to be(false)
     end
 
-    it "redirects to root with an alert when WebAuthn verification fails" do
+    it "redirects to root with a retry alert, hiding the library text, when WebAuthn verification fails" do
+      allow(Sentry).to receive(:capture_message)
       allow_any_instance_of(WebAuthn::RelyingParty).to receive(
         :verify_registration
       ).and_raise(WebAuthn::Error, "bad attestation")
@@ -362,8 +363,30 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
         params: callback_params
 
       expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to eq("Verification failed: bad attestation")
+      expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::VERIFICATION_FAILED_MESSAGE)
+      expect(flash[:alert]).to include("Enter your phone number again")
+      expect(flash[:alert]).not_to include("bad attestation")
       expect(session_hash[:current_registration]).to be_nil
+      expect(session_hash[:verified_phone]).to eq(phone)
+    end
+
+    it "reports a failed verification to Sentry by exception class only" do
+      allow(Sentry).to receive(:capture_message)
+      allow_any_instance_of(WebAuthn::RelyingParty).to receive(
+        :verify_registration
+      ).and_raise(WebAuthn::Error, "bad attestation")
+
+      post callback_users_webauthn_registration_index_path,
+        params: callback_params
+
+      expect(Sentry).to have_received(:capture_message).once do |message, **options|
+        expect(message).to eq("webauthn.registration.verification_failed")
+        expect(options[:extra]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:tags]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:fingerprint]).to eq(["webauthn.registration.verification_failed", "WebAuthn::Error"])
+        expect(options.to_s).not_to include("bad attestation")
+        expect(options.to_s).not_to include(phone)
+      end
     end
 
     it "does not persist user or passkey when WebAuthn verification fails" do

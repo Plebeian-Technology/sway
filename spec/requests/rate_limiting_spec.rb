@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe "Rate limiting", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   # @lat: [[phone-verification-rate-limits#Why spec/requests/rate_limiting_spec.rb stubs Twilio with a double]]
   include_context "TwilioDouble"
 
@@ -30,29 +32,48 @@ RSpec.describe "Rate limiting", type: :request do
         end
       end
 
-      it "returns 302/429 after 5 requests with the same phone from different IPs" do
+      # @lat: [[phone-verification-rate-limits#Why the sign-in challenge throttles two ways]]
+      it "returns 302/429 after 5 requests with the same phone from the same IP" do
         with_rate_limit_enabled(:sign_in) do
-          6.times do |i|
+          6.times do
             post "/users/webauthn/sessions",
               params: {phone: "4105551212"},
-              headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"}
+              headers: {"REMOTE_ADDR" => "10.0.0.1"}
           end
           expect(response).to rate_limited_status
           expect(response.headers["Retry-After"]).to eq("300")
         end
       end
 
+      it "does not refuse a phone from a new IP after another IP used up its requests for that phone" do
+        with_rate_limit_enabled(:sign_in) do
+          6.times do
+            post "/users/webauthn/sessions",
+              params: {phone: "4105551212"},
+              headers: {"REMOTE_ADDR" => "10.0.0.1"}
+          end
+
+          post "/users/webauthn/sessions",
+            params: {phone: "4105551212"},
+            headers: {"REMOTE_ADDR" => "10.0.0.2"},
+            as: :json
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include("flow" => "sms", "success" => true)
+        end
+      end
+
       it "buckets a phone by normalized digits, not raw formatting" do
         with_rate_limit_enabled(:sign_in) do
           # @lat: [[phone-verification-rate-limits#Why spec/requests/rate_limiting_spec.rb stubs Twilio with a double]]
-          5.times do |i|
+          5.times do
             post "/users/webauthn/sessions",
               params: {phone: "+1 (410) 555-1212"},
-              headers: {"REMOTE_ADDR" => "10.1.0.#{i + 1}"}
+              headers: {"REMOTE_ADDR" => "10.1.0.1"}
           end
           post "/users/webauthn/sessions",
             params: {phone: "4105551212"},
-            headers: {"REMOTE_ADDR" => "10.1.0.6"}
+            headers: {"REMOTE_ADDR" => "10.1.0.1"}
           expect(response).to rate_limited_status
           expect(response.headers["Retry-After"]).to be_present
         end
@@ -158,66 +179,61 @@ RSpec.describe "Rate limiting", type: :request do
           with_app_config(:dev_login, skip_phone_verification: false) { example.run }
         end
 
-        # @lat: [[phone-verification-rate-limits#Why a one-time code has no per-phone daily cap]]
-        it "sends a second code to the same phone from another IP on /phone_verification" do
+        # @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day]]
+        it "refuses a second code to the same phone from another IP on /phone_verification" do
           with_rate_limit_enabled(:phone_verify) do
-            2.times do |i|
+            freeze_time do
               post "/phone_verification",
                 params: {phone_verification: {phone: "4105551212"}},
-                headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"}
+                headers: {"REMOTE_ADDR" => "10.0.0.1"},
+                as: :json
               expect(response).to have_http_status(:ok)
-            end
 
-            expect(twilio_verifications_double).to have_received(:create).twice
+              post "/phone_verification",
+                params: {phone_verification: {phone: "4105551212"}},
+                headers: {"REMOTE_ADDR" => "10.0.0.2"},
+                as: :json
+
+              expect(response).to have_http_status(:too_many_requests)
+              expect(response.headers["Retry-After"]).to eq("60")
+              expect(twilio_verifications_double).to have_received(:create).once
+            end
           end
         end
 
-        it "sends a second code to the same phone from another IP on /users/webauthn/sessions" do
+        it "refuses a second code to the same phone from another IP on /users/webauthn/sessions" do
           with_rate_limit_enabled(:phone_verify) do
-            2.times do |i|
-              post "/users/webauthn/sessions",
-                params: {phone: "4105551212"},
-                headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"}
+            freeze_time do
+              post "/users/webauthn/sessions", params: {phone: "4105551212"}, headers: {"REMOTE_ADDR" => "10.0.0.1"}, as: :json
               expect(response).to have_http_status(:ok)
-            end
 
-            expect(twilio_verifications_double).to have_received(:create).twice
+              post "/users/webauthn/sessions", params: {phone: "4105551212"}, headers: {"REMOTE_ADDR" => "10.0.0.2"}, as: :json
+
+              expect(response).to have_http_status(:too_many_requests)
+              expect(response.headers["Retry-After"]).to eq("60")
+              expect(twilio_verifications_double).to have_received(:create).once
+            end
           end
         end
 
-        it "sends a second code to the same phone from another IP on /api/v1/phone_verification" do
+        it "refuses a second code to the same phone from another IP on /api/v1/phone_verification" do
           with_rate_limit_enabled(:phone_verify) do
-            2.times do |i|
+            freeze_time do
               post "/api/v1/phone_verification",
                 params: {phone: "4105551212"},
-                headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"},
+                headers: {"REMOTE_ADDR" => "10.0.0.1"},
                 as: :json
               expect(response).to have_http_status(:no_content)
+
+              post "/api/v1/phone_verification",
+                params: {phone: "4105551212"},
+                headers: {"REMOTE_ADDR" => "10.0.0.2"},
+                as: :json
+
+              expect(response).to have_http_status(:too_many_requests)
+              expect(response.headers["Retry-After"]).to eq("60")
+              expect(twilio_verifications_double).to have_received(:create).once
             end
-
-            expect(twilio_verifications_double).to have_received(:create).twice
-          end
-        end
-
-        it "sends a code for the same phone on /users/webauthn/sessions, /phone_verification, and /api/v1/phone_verification" do
-          with_rate_limit_enabled(:phone_verify) do
-            post "/users/webauthn/sessions",
-              params: {phone: "4105559090"},
-              headers: {"REMOTE_ADDR" => "10.0.0.10"}
-            expect(response).to have_http_status(:ok)
-
-            post "/phone_verification",
-              params: {phone_verification: {phone: "4105559090"}},
-              headers: {"REMOTE_ADDR" => "10.0.0.11"}
-            expect(response).to have_http_status(:ok)
-
-            post "/api/v1/phone_verification",
-              params: {phone: "4105559090"},
-              headers: {"REMOTE_ADDR" => "10.0.0.12"},
-              as: :json
-            expect(response).to have_http_status(:no_content)
-
-            expect(twilio_verifications_double).to have_received(:create).exactly(3).times
           end
         end
       end
@@ -256,6 +272,7 @@ RSpec.describe "Rate limiting", type: :request do
       it "answers the 6th code check for one phone with 429 and a ten-minute Retry-After" do
         with_app_config(:dev_login, skip_phone_verification: false) do
           with_rate_limit_enabled(:phone_verify) do
+            allow(twilio_verification_result).to receive(:status).and_return("pending")
             post "/phone_verification", params: {phone_verification: {phone: "4105551212"}}, as: :json
             6.times do |i|
               put "/phone_verification/1",
@@ -278,6 +295,66 @@ RSpec.describe "Rate limiting", type: :request do
               params: {phone_verification: {phone: "4105551212"}}
           end
           expect(response).not_to have_http_status(:too_many_requests)
+        end
+      end
+    end
+  end
+
+  describe "the Twilio Verify send limit per phone" do
+    context "on POST /users/webauthn/sessions" do
+      def code_send_request(ip:)
+        post "/users/webauthn/sessions", params: {phone: "4105557070"}, headers: {"REMOTE_ADDR" => ip}, as: :json
+      end
+
+      let(:code_send_status) { :ok }
+
+      include_examples "a code send limited per phone"
+    end
+
+    context "on POST /phone_verification" do
+      def code_send_request(ip:)
+        post "/phone_verification",
+          params: {phone_verification: {phone: "4105557070"}},
+          headers: {"REMOTE_ADDR" => ip},
+          as: :json
+      end
+
+      let(:code_send_status) { :ok }
+
+      include_examples "a code send limited per phone"
+    end
+
+    context "on POST /api/v1/phone_verification" do
+      def code_send_request(ip:)
+        post "/api/v1/phone_verification", params: {phone: "4105557070"}, headers: {"REMOTE_ADDR" => ip}, as: :json
+      end
+
+      let(:code_send_status) { :no_content }
+
+      include_examples "a code send limited per phone"
+
+      it "answers a refused send with the mobile rate_limited error body" do
+        with_app_config(:dev_login, skip_phone_verification: false) do
+          with_rate_limit_enabled(:phone_verify) do
+            2.times { code_send_request(ip: "10.9.1.1") }
+
+            expect(response).to have_http_status(:too_many_requests)
+            expect(response.parsed_body.dig("error", "code")).to eq("rate_limited")
+          end
+        end
+      end
+    end
+
+    it "counts one budget across the send paths for the same phone" do
+      with_app_config(:dev_login, skip_phone_verification: false) do
+        with_rate_limit_enabled(:phone_verify) do
+          post "/users/webauthn/sessions", params: {phone: "4105558080"}, headers: {"REMOTE_ADDR" => "10.9.2.1"}, as: :json
+          expect(response).to have_http_status(:ok)
+
+          post "/api/v1/phone_verification", params: {phone: "4105558080"}, headers: {"REMOTE_ADDR" => "10.9.2.1"}, as: :json
+
+          expect(response).to have_http_status(:too_many_requests)
+          expect(twilio_verifications_double).to have_received(:create).once
         end
       end
     end
@@ -393,7 +470,7 @@ RSpec.describe "Rate limiting", type: :request do
       allow(SwayLogging).to receive(:warn)
 
       with_rate_limit_enabled(:sign_in) do
-        6.times do |i|
+        14.times do |i|
           post "/users/webauthn/sessions",
             params: {phone: "410555#{i.to_s.rjust(4, "0")}"},
             headers: {"REMOTE_ADDR" => "10.0.0.1"}
@@ -434,11 +511,12 @@ RSpec.describe "Rate limiting", type: :request do
       allow(Sentry).to receive(:capture_message)
 
       with_rate_limit_enabled(:sign_in) do
-        6.times do |i|
+        14.times do |i|
           post "/users/webauthn/sessions",
             params: {phone: "410555#{i.to_s.rjust(4, "0")}"},
             headers: {"REMOTE_ADDR" => "10.0.0.1"}
         end
+        expect(response).to rate_limited_status
         expect(Sentry).not_to have_received(:capture_message)
 
         future_time = Time.current + RateLimitResponder::REPEATED_BLOCK_WINDOW + 1.second
@@ -448,6 +526,7 @@ RSpec.describe "Rate limiting", type: :request do
             params: {phone: "410555#{(i + 100).to_s.rjust(4, "0")}"},
             headers: {"REMOTE_ADDR" => "10.0.0.1"}
         end
+        expect(response).to rate_limited_status
         expect(Sentry).not_to have_received(:capture_message)
       end
     end

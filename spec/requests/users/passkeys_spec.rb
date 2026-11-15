@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe "Users::Passkeys", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "Setup"
 
@@ -283,18 +285,36 @@ RSpec.describe "Users::Passkeys", type: :request do
       )
     end
 
-    it "throttles verify_phone after 3 requests for the same phone when phone_verify rate limiting is enabled" do
+    it "throttles verify_phone after 3 requests for the same phone and IP for the hour, then sends from another IP" do
       setup
 
       with_rate_limit_enabled(:phone_verify) do
-        4.times do |i|
-          post verify_phone_users_passkeys_path,
-            headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"},
-            as: :json
-        end
+        freeze_time do
+          4.times do
+            post verify_phone_users_passkeys_path, headers: {"REMOTE_ADDR" => "10.0.0.1"}, as: :json
+            travel 61.seconds
+          end
 
-        expect(response).to have_http_status(:too_many_requests)
+          expect(response).to have_http_status(:too_many_requests)
+          expect(response.headers["Retry-After"]).to eq(1.hour.to_i.to_s)
+
+          post verify_phone_users_passkeys_path, headers: {"REMOTE_ADDR" => "10.0.0.2"}, as: :json
+
+          expect(response).to have_http_status(:ok)
+        end
       end
+    end
+
+    context "when the send limit per phone applies" do
+      before { setup }
+
+      def code_send_request(ip:)
+        post verify_phone_users_passkeys_path, headers: {"REMOTE_ADDR" => ip}, as: :json
+      end
+
+      let(:code_send_status) { :ok }
+
+      include_examples "a code send limited per phone"
     end
 
     it "throttles confirm_phone after 5 requests for the same phone when phone_verify rate limiting is enabled" do
@@ -309,6 +329,7 @@ RSpec.describe "Users::Passkeys", type: :request do
         end
 
         expect(response).to have_http_status(:too_many_requests)
+        expect(response.headers["Retry-After"]).to eq(1.hour.to_i.to_s)
       end
     end
   end

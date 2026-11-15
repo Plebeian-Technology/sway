@@ -6,7 +6,7 @@ module Api
       include Authentication
       include OnboardingSafetyNet
 
-      # @lat: [[phone-verification-rate-limits#Why a one-time code has no per-phone daily cap]]
+      # @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day]]
       rate_limit to: 30, within: 1.hour,
         name: "request_code_ip",
         by: -> { request.remote_ip },
@@ -61,11 +61,16 @@ module Api
           return head :no_content
         end
 
+        wait = phone_verification_send_wait(phone)
+        return render_rate_limited(retry_after: wait) if wait
+
+        sent = false
         begin
           twilio_client.verify.v2.services(service_sid).verifications.create(
             to: "+1#{phone}",
             channel: "sms"
           )
+          sent = true
           SwayLogging.info(
             "api_v1.phone_verification.create_requested",
             phone_last4: phone.last(4)
@@ -78,6 +83,10 @@ module Api
             phone_last4: phone.last(4),
             twilio_code: e.code
           )
+          if e.code == Authentication::TWILIO_MAX_SEND_ATTEMPTS_CODE
+            return render_rate_limited(retry_after: Authentication::TWILIO_MAX_SEND_ATTEMPTS_WAIT.to_i)
+          end
+
           render_error(code: "verification_unavailable", message: "Could not send verification code", status: :service_unavailable)
         rescue Twilio::REST::TwilioError => e
           # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
@@ -87,6 +96,8 @@ module Api
             error_class: e.class.name
           )
           render_error(code: "verification_unavailable", message: "Could not send verification code", status: :service_unavailable)
+        ensure
+          release_phone_verification_send(phone) unless sent
         end
       end
 

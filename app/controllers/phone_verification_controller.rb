@@ -29,7 +29,7 @@ class PhoneVerificationController < ApplicationController
       PhoneCacheKey.digest(session[:phone])
     },
     only: :update,
-    if: -> { RateLimitConfig.enabled?(:phone_verify) },
+    if: :count_update_phone_attempt?,
     with: -> { render_rate_limited(retry_after: 10.minutes.to_i) },
     store: ApplicationController::RATE_LIMIT_STORE
 
@@ -49,18 +49,14 @@ class PhoneVerificationController < ApplicationController
       )
       render json: {success: true}, status: :ok
     else
+      wait = phone_verification_send_wait(phone)
+      return render_rate_limited(retry_after: wait) if wait
+
       SwayLogging.info(
         "phone_verification.create_requested",
         phone_last4: phone_last4
       )
-      render json: {
-               success:
-                 send_phone_verification(
-                   session,
-                   phone
-                 )
-             },
-        status: :ok
+      render_phone_verification_send(session, phone)
     end
   end
 
@@ -141,6 +137,11 @@ class PhoneVerificationController < ApplicationController
   end
 
   private
+
+  def count_update_phone_attempt?
+    RateLimitConfig.enabled?(:phone_verify) &&
+      !verified_phone_current?(session[:phone].to_s.normalize_phone)
+  end
 
   def phone_verification_params
     params.require(:phone_verification).permit(:phone, :code)
