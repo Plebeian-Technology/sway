@@ -28,7 +28,7 @@ RSpec.describe "ConvertDuplicateLegislatorsToTerms data migration", type: :model
 
     @added_score_legislator_id_tables = []
     @relaxed_term_id_null_tables = []
-    %i[legislator_district_scores legislator_locale_scores legislator_votes].each do |table|
+    %i[legislator_district_scores legislator_locale_scores].each do |table|
       unless conn.column_exists?(table, :legislator_id)
         conn.add_column(table, :legislator_id, :integer)
         @added_score_legislator_id_tables << table

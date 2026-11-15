@@ -27,32 +27,6 @@ require "rails_helper"
 
 RSpec.describe LegislatorVote, type: :model do
   describe "factory term binding" do
-    # @lat: [[legislator-vote-fixture-tests#Supplied historical term]]
-    it "passes the supplied historical term ID through initialization for the same legislator" do
-      district = create(:district, sway_locale: create(:sway_locale, :congress))
-      legislator = create(:legislator, district: district)
-      term = create(:legislator_term, legislator: legislator, district: district,
-        term_start_year: 2023, term_end_year: 2025,
-        began_on: Date.new(2023, 1, 3), began_on_source: LegislatorTerm::DateSource::PUBLISHED,
-        ended_on: Date.new(2025, 1, 3), ended_on_source: LegislatorTerm::DateSource::PUBLISHED)
-      vote_day = Date.new(2024, 6, 18)
-      bill = create(:bill, sway_locale: district.sway_locale,
-        senate_vote_date_time_utc: vote_day.to_time)
-
-      expect(LegislatorVote).to receive(:new)
-        .with(hash_including(legislator: legislator, legislator_term_id: term.id))
-        .and_call_original
-
-      vote = build(:legislator_vote, bill: bill, legislator: legislator, legislator_term: term)
-
-      expect(vote.legislator_term_id).to eq(term.id)
-      expect(term.legislator_id).to eq(vote.legislator_id)
-      expect(TermWindow.begins_on(term)).to be <= vote_day
-      expect(TermWindow.ends_on(term)).to be > vote_day
-      vote.save!
-      expect(vote.reload.legislator_term_id).to eq(term.id)
-    end
-
     # @lat: [[legislator-vote-fixture-tests#Term-owned legislator]]
     it "uses the supplied term's legislator when no legislator is overridden" do
       term = create(:legislator_term)
@@ -60,44 +34,16 @@ RSpec.describe LegislatorVote, type: :model do
       vote = create(:legislator_vote, legislator_term: term)
 
       expect(vote.legislator_id).to eq(term.legislator_id)
-      expect(vote.legislator_term_id).to eq(term.id)
     end
 
-    # @lat: [[legislator-vote-fixture-tests#Raw term identifier override]]
-    it "preserves an explicitly overridden term ID without creating a default term" do
-      term = create(:legislator_term, :prior_term)
-      other_term = create(:legislator_term, legislator: term.legislator, district: term.district)
-      term_count = LegislatorTerm.count
-      vote = create(:legislator_vote, legislator: term.legislator,
-        legislator_term: other_term, legislator_term_id: term.id)
-
-      expect(LegislatorTerm.count).to eq(term_count)
-      expect(vote.legislator_term_id).to eq(term.id)
-      expect(vote.legislator_id).to eq(term.legislator_id)
-    end
-
-    # @lat: [[legislator-vote-fixture-tests#Default paired term]]
-    it "creates a deterministic term for a legislator with no terms" do
+    # @lat: [[legislator-vote-fixture-tests#Default vote]]
+    it "creates a manual, non-inferred FOR vote without creating a term" do
       vote = create(:legislator_vote)
-      term = LegislatorTerm.find(vote.legislator_term_id)
 
-      expect(term.legislator_id).to eq(vote.legislator_id)
-      expect(term.district.sway_locale_id).to eq(vote.legislator.sway_locale_id)
-      expect(term.term_start_year).to eq(2025)
-      expect(term.term_end_year).to eq(2027)
+      expect(LegislatorTerm.where(legislator_id: vote.legislator_id)).to be_empty
       expect(vote.source).to eq("manual")
       expect(vote.inferred).to be false
       expect(vote.support).to eq(LegislatorVote::Support::FOR)
-    end
-
-    # @lat: [[legislator-vote-fixture-tests#Existing term reuse]]
-    it "reuses the existing matching person and start-year term" do
-      term = create(:legislator_term)
-      term_count = LegislatorTerm.count
-      vote = create(:legislator_vote, legislator: term.legislator)
-
-      expect(LegislatorTerm.count).to eq(term_count)
-      expect(vote.legislator_term_id).to eq(term.id)
     end
 
     # @lat: [[legislator-vote-fixture-tests#Traits and explicit vote overrides]]
@@ -224,8 +170,8 @@ RSpec.describe LegislatorVote, type: :model do
     end
   end
 
-  describe "(bill_id, legislator_term_id) uniqueness" do
-    # @lat: [[legislator-vote-fixture-tests#Duplicate bill and term]]
+  describe "(bill_id, legislator_id) uniqueness" do
+    # @lat: [[legislator-vote-fixture-tests#Duplicate bill and legislator]]
     it "rejects a second vote for the same bill + legislator" do
       vote = create(:legislator_vote)
 
@@ -233,7 +179,6 @@ RSpec.describe LegislatorVote, type: :model do
         LegislatorVote.create!(
           bill: vote.bill,
           legislator: vote.legislator,
-          legislator_term_id: vote.legislator_term_id,
           support: LegislatorVote::Support::AGAINST,
           source: "manual"
         )

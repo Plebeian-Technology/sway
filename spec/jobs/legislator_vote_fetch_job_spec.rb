@@ -255,8 +255,8 @@ RSpec.describe LegislatorVoteFetchJob do
 
         expect {
           described_class.run_service_for(@congress_bill.id)
-        }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(@senator.id, @senate_term.id)
-          .and have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(@representative.id, @house_term.id)
+        }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(@senator.id)
+          .and have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(@representative.id)
           .and have_enqueued_job(RecomputeBillInterestingScoreJob).with(@congress_bill.id).twice
 
         votes = LegislatorVote.where(bill: @congress_bill)

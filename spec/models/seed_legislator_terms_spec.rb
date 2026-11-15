@@ -699,7 +699,7 @@ RSpec.describe SeedLegislatorTerms do
     }
 
     expect(tables).to match_array(
-      %w[legislator_district_scores legislator_locale_scores user_legislator_term_scores legislator_votes]
+      %w[legislator_district_scores legislator_locale_scores user_legislator_term_scores]
     ), "a table now points at legislator_terms that SeedLegislatorTerms#retire_unproven_terms! does not delete from"
   end
 

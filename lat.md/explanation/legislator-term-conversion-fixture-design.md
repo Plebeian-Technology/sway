@@ -13,7 +13,7 @@ The spec checks every behavior the migration promises: no duplicate identities l
 
 Two later migrations drop deprecated legislator columns and legacy score tables. The spec before and after hooks temporarily restore missing schema elements and relax constraints so the fixture can recreate the pre-conversion production state.
 
-On a real deploy, those two clean-up migrations run strictly after this data migration, but the test schema already has their results. The `before(:all)` and `after(:all)` blocks undo the constraints they added, letting the fixture recreate the true pre-conversion production shape: `NULL sway_locale_id`, duplicate `(locale, external_id)` rows, score rows with no term, and a legacy vote without `legislator_term_id`. `after(:all)` restores them when the spec finishes.
+On a real deploy, those two clean-up migrations run strictly after this data migration, but the test schema already has their results. The `before(:all)` and `after(:all)` blocks undo the constraints they added, letting the fixture recreate the true pre-conversion production shape: `NULL sway_locale_id`, duplicate `(locale, external_id)` rows and score rows with no term. `after(:all)` restores them when the spec finishes.
 
 ## Why a non-zero score on a losing row is saved with validate: false
 

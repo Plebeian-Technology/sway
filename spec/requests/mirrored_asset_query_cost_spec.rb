@@ -72,7 +72,7 @@ RSpec.describe "Reading response payloads and stored copies", type: :request do
         district:,
         external_id: "payload-voter-#{from + index}"
       )
-      term = create(
+      create(
         :legislator_term,
         legislator:,
         district:,
@@ -83,7 +83,6 @@ RSpec.describe "Reading response payloads and stored copies", type: :request do
       LegislatorVote.insert_all!([{
         bill_id: bill.id,
         legislator_id: legislator.id,
-        legislator_term_id: term.id,
         support: LegislatorVote::Support::FOR,
         source: "manual",
         inferred: false,
