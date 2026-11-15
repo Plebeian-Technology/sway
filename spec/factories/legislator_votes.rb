@@ -31,17 +31,11 @@ FactoryBot.define do
     transient do
       legislator_term { nil }
     end
-    legislator_term_id do
-      (legislator_term || legislator.terms.find_by(term_start_year: 2025) ||
-        association(:legislator_term, legislator: legislator,
-          district: legislator.district || association(:district, sway_locale: legislator.sway_locale, strategy: :create),
-          strategy: :create)).id
-    end
     support { LegislatorVote::Support::FOR }
     source { "manual" }
     inferred { false }
 
-    initialize_with { new({bill:, legislator:, legislator_term_id:, support:, source:, inferred:}) }
+    initialize_with { new({bill:, legislator:, support:, source:, inferred:}) }
 
     trait :for do
       support { LegislatorVote::Support::FOR }
