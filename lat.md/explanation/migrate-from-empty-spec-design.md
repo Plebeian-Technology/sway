@@ -52,3 +52,11 @@ A migration positioned after schema migrations that add or change columns on mod
 It's `Sway::Subprocess` rather than `Open3`, which the neighboring replay spec (the production snapshot harness) uses, because it is the only one of the two that gives up. A migration that hangs would otherwise hang the whole suite with it, with nothing to say why.
 
 `SWAY_ALLOW_HOST_RAILS` is what `config/boot.rb` wants before it will start outside the container; it is ignored inside one, so this works either way.
+
+## Comparing a migrated table with db/schema.rb
+
+The same spec compares the `legislator_votes` table its throwaway run built with the one the test database loaded from `db/schema.rb`: columns, indexes and foreign keys.
+
+`db/schema.rb` is dumped from a development database, and a development database can carry columns from another branch's migrations that no migration on this branch creates. The test database loads `db/schema.rb`, so specs then run against a table production does not have, and code that reads the extra column passes its specs and fails in production. `legislator_votes.legislator_term_id` arrived this way.
+
+The comparison reads the throwaway database before its folder is removed, so the migration chain still runs once. It covers `legislator_votes` only: `db/schema.rb` still declares other tables and columns that no migration creates, and those are outside this check.

@@ -5,7 +5,23 @@ require "tmpdir"
 
 # @lat: [[migrate-from-empty-spec-design#The failure pattern]]
 RSpec.describe "Building the database from nothing" do
-  it "applies every migration in order, and applies all of them" do
+  def legislator_votes_shape(connection)
+    {
+      columns: connection.columns("legislator_votes").map { |c| [c.name, c.type, c.null] }.sort,
+      indexes: connection.indexes("legislator_votes").map { |i| [i.name, i.columns, i.unique, i.where] }.sort,
+      foreign_keys: connection.foreign_keys("legislator_votes").map { |fk| [fk.column, fk.to_table] }.sort
+    }
+  end
+
+  # Returns nil when the migrations never created legislator_votes.
+  def built_legislator_votes_shape(database)
+    connection = ActiveRecord::ConnectionAdapters::SQLite3Adapter.new(adapter: "sqlite3", database: database)
+    legislator_votes_shape(connection) if connection.table_exists?("legislator_votes")
+  ensure
+    connection&.disconnect!
+  end
+
+  it "applies every migration in order, applies all of them, and builds legislator_votes as db/schema.rb declares it" do
     schema_path = Rails.root.join("db", "schema.rb")
     data_schema_path = Rails.root.join("db", "data_schema.rb")
     schema_before = File.read(schema_path)
@@ -20,11 +36,12 @@ RSpec.describe "Building the database from nothing" do
     expect(expected_versions).not_to be_empty,
       "found no migration files at all — this spec is checking nothing"
 
-    stdout, stderr, status = Dir.mktmpdir("sway-migrate-from-empty") do |dir|
+    stdout, stderr, status, built_legislator_votes = Dir.mktmpdir("sway-migrate-from-empty") do |dir|
+      database = File.join(dir, "from_empty.sqlite3")
       # @lat: [[migrate-from-empty-spec-design#Why the migration runs through Sway::Subprocess.capture3, not Open3]]
-      Sway::Subprocess.capture3(
+      output = Sway::Subprocess.capture3(
         "/usr/bin/env",
-        "DATABASE_URL=sqlite3:#{File.join(dir, "from_empty.sqlite3")}",
+        "DATABASE_URL=sqlite3:#{database}",
         "RAILS_ENV=test",
         "SWAY_ALLOW_HOST_RAILS=1",
         Rails.root.join("bin", "rails").to_s,
@@ -34,6 +51,7 @@ RSpec.describe "Building the database from nothing" do
         # be reported as one.
         timeout_seconds: 600
       )
+      [*output, built_legislator_votes_shape(database)]
     end
 
     # A migration prints its number when it starts and again when it finishes, so
@@ -73,5 +91,16 @@ RSpec.describe "Building the database from nothing" do
       "This run rewrote db/schema.rb or db/data_schema.rb from the throwaway database " \
       "(their contents have been put back). config/environments/test.rb must keep " \
       "dump_schema_after_migration off."
+
+    # @lat: [[migrate-from-empty-spec-design#Comparing a migrated table with db/schema.rb]]
+    declared = legislator_votes_shape(ActiveRecord::Base.connection)
+    built = built_legislator_votes || {}
+    expect(built).to eq(declared), <<~MESSAGE
+      The migrations build a legislator_votes table that differs from the one db/schema.rb
+      declares. Specs load db/schema.rb, so they run against a table a migrated database does not have.
+
+      Only in db/schema.rb: #{declared.to_h { |key, rows| [key, rows - built.fetch(key, [])] }.inspect}
+      Only from the migrations: #{built.to_h { |key, rows| [key, rows - declared.fetch(key, [])] }.inspect}
+    MESSAGE
   end
 end
