@@ -254,12 +254,28 @@ RSpec.describe LegislatorVote, type: :model do
       }.not_to have_enqueued_job(OnLegislatorVoteUpdateScoresJob)
     end
 
-    it "enqueues the job with legislator_id and legislator_term_id on destroy" do
+    it "enqueues the job with only the legislator_id on create" do
+      legislator = create(:legislator)
+
+      expect {
+        create(:legislator_vote, legislator: legislator)
+      }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(legislator.id).exactly(1).times
+    end
+
+    it "enqueues the job with only the legislator_id when support changes" do
+      vote = create(:legislator_vote, :for)
+
+      expect {
+        vote.update!(support: LegislatorVote::Support::AGAINST)
+      }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(vote.legislator_id).exactly(1).times
+    end
+
+    it "enqueues the job with only the legislator_id on destroy" do
       vote = create(:legislator_vote)
 
       expect {
         vote.destroy!
-      }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(vote.legislator_id, vote.legislator_term_id).exactly(1).times
+      }.to have_enqueued_job(OnLegislatorVoteUpdateScoresJob).with(vote.legislator_id).exactly(1).times
     end
   end
 

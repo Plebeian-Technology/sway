@@ -20,46 +20,34 @@ module LegislatorVoteUpserter
   end
 
   # @lat: [[legislator-vote-upserter-guard-rules#Why source: and inferred: default the way they do]]
-  def upsert_legislator_vote(legislator_id, vote, source: service_source, inferred: false, legislator_term_id: nil)
+  def upsert_legislator_vote(legislator_id, vote, source: service_source, inferred: false)
     return false if legislator_id.nil?
 
-    if legislator_term_id.nil? && LegislatorVote.column_names.include?("legislator_term_id")
-      leg = Legislator.find_by(id: legislator_id)
-      return :skipped if leg.nil?
+    leg = Legislator.find_by(id: legislator_id)
+    return :skipped if leg.nil?
 
-      anchor_date = @bill&.house_vote_date_time_utc || @bill&.senate_vote_date_time_utc || @bill&.introduced_date_time_utc
-      covering_term = if anchor_date.present?
-        LegislatorTerm.covering(anchor_date, legislator: leg)
-      end
-      return :skipped if covering_term.nil?
-
-      legislator_term_id = covering_term.id
+    anchor_date = @bill&.house_vote_date_time_utc || @bill&.senate_vote_date_time_utc || @bill&.introduced_date_time_utc
+    covering_term = if anchor_date.present?
+      LegislatorTerm.covering(anchor_date, legislator: leg)
     end
+    return :skipped if covering_term.nil?
 
     existing = LegislatorVote.find_by(bill_id: @bill.id, legislator_id:)
     if existing.nil?
-      create_attrs = {
+      LegislatorVote.create!(
         bill_id: @bill.id,
         support: vote.support,
         legislator_id: legislator_id,
         source: source,
         inferred: inferred
-      }
-      create_attrs[:legislator_term_id] = legislator_term_id if legislator_term_id.present?
-      LegislatorVote.create!(create_attrs)
+      )
       true
     elsif existing.source != "manual" || source == "manual"
       # @lat: [[legislator-votes-update-rake-task#Legislator-votes update rake task#Upserter write guard rules]]
       return false if inferred && !existing.inferred
 
       # @lat: [[legislator-votes-update-rake-task#Legislator-votes update rake task#Upserter write guard rules]]
-      update_attrs = {support: vote.support, source: source, inferred: inferred, legislator_term_id: 0}
-      if legislator_term_id.present? && existing.respond_to?(:legislator_term_id) && existing.try(:legislator_term_id).nil?
-        update_attrs[:legislator_term_id] = legislator_term_id
-      else
-        update_attrs.delete(:legislator_term_id)
-      end
-      existing.update!(update_attrs)
+      existing.update!(support: vote.support, source: source, inferred: inferred)
       true
     else
       :kept_manual

@@ -130,7 +130,7 @@ class LegislatorVote < ApplicationRecord
     # @lat: [[bill-score-recompute-callback-split#LegislatorVote's bare after_commit callbacks]]
     return if !destroyed? && !saved_change_to_support?
 
-    OnLegislatorVoteUpdateScoresJob.perform_later(legislator_id, legislator_term_id)
+    OnLegislatorVoteUpdateScoresJob.perform_later(legislator_id)
   end
 
   # @lat: [[bill-score-recompute-callback-split#LegislatorVote's bare after_commit callbacks]]

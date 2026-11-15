@@ -18,7 +18,7 @@ module LegislatorVoteUpserter
 
   def infer_from_sponsors: () -> void
 
-  def upsert_legislator_vote: (Integer? legislator_id, _SupportVote vote, ?source: String, ?inferred: bool, ?legislator_term_id: Integer?) -> (bool | :skipped | :kept_manual)
+  def upsert_legislator_vote: (Integer? legislator_id, _SupportVote vote, ?source: String, ?inferred: bool) -> (bool | :skipped | :kept_manual)
 
   def vote_covered?: (bool | :skipped | :kept_manual outcome) -> bool
 

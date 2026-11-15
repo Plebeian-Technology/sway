@@ -97,8 +97,8 @@ RSpec.describe "LegislatorVotesController", type: :request do
     context "source sticky-admin — updating existing vote with different support" do
       it "flips source to 'manual' and updates support" do
         sway_locale, _user = setup
-        legislator = create(:legislator)
         bill = create(:bill, sway_locale:, summary: "spec bill")
+        legislator = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
         existing = create(:legislator_vote,
           bill: bill, legislator: legislator,
           support: "FOR", source: "legistar")
@@ -119,8 +119,8 @@ RSpec.describe "LegislatorVotesController", type: :request do
     context "source sticky-admin — updating existing vote with same support but non-manual source" do
       it "flips source to 'manual' without changing support" do
         sway_locale, _user = setup
-        legislator = create(:legislator)
         bill = create(:bill, sway_locale:, summary: "spec bill")
+        legislator = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
         existing = create(:legislator_vote,
           bill: bill, legislator: legislator,
           support: "FOR", source: "open_states")
@@ -141,8 +141,8 @@ RSpec.describe "LegislatorVotesController", type: :request do
     context "source sticky-admin — no-op when already manual and same support" do
       it "does not change the row when source is already manual and support matches" do
         sway_locale, _user = setup
-        legislator = create(:legislator)
         bill = create(:bill, sway_locale:, summary: "spec bill")
+        legislator = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
         existing = create(:legislator_vote,
           bill: bill, legislator: legislator,
           support: "FOR", source: "manual")
@@ -169,8 +169,8 @@ RSpec.describe "LegislatorVotesController", type: :request do
     context "WR-04 — delegates upsert to LegislatorVoteUpserter" do
       it "calls upsert_legislator_vote with source: 'manual' for each param" do
         sway_locale, _user = setup
-        legislator = create(:legislator)
         bill = create(:bill, sway_locale:, summary: "spec bill")
+        legislator = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
         params = {
           bill_id: bill.id,
           legislator_votes: [{support: "FOR", legislator_id: legislator.id}]
@@ -229,8 +229,8 @@ RSpec.describe "LegislatorVotesController", type: :request do
 
       it "puts e.message (a String), never the exception object, in the errors prop on a raise" do
         sway_locale, _user = setup
-        legislator = create(:legislator)
         bill = create(:bill, sway_locale:, summary: "spec bill")
+        legislator = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
         allow_any_instance_of(LegislatorVotesController)
           .to receive(:upsert_legislator_vote).and_raise(StandardError, "boom")
 
