@@ -160,10 +160,8 @@ class LegislatorsController < ApplicationController
       .to_a
     return [] if bills.empty?
 
-    term_start_years = legislator.legislator_terms.to_h { |t| [t.id, t.term_start_year] }
     legislator_votes_by_bill_id = LegislatorVote
       .where(legislator_id: legislator.id, bill_id: bills.map(&:id))
-      .sort_by { |v| [term_start_years[v.legislator_term_id] || 0, v.id.to_i] }
       .index_by(&:bill_id)
 
     # @lat: [[legislators-controller-design#Bill of the Month voting record lives on the detail payload#Term and chamber eligibility filter]]

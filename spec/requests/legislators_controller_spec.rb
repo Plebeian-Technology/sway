@@ -453,34 +453,6 @@ RSpec.describe "LegislatorsController", type: :request do
       )
     end
 
-    it "prefers the latest term's vote when a legislator has votes across multiple terms for the same bill" do
-      sway_locale, user = setup
-      legislator = sway_locale.legislators.first
-      active_term = legislator.active_term
-      prior_term = create(:legislator_term, :prior_term, legislator:, district: legislator.district)
-      bill = create(
-        :bill,
-        sway_locale:,
-        legislator:,
-        external_id: "BILL-MULTI-TERM",
-        title: "Multi Term Bill",
-        scheduled_release_date_utc: Time.zone.today
-      )
-      create(:legislator_vote, :for, bill:, legislator:, legislator_term: active_term)
-      create(:legislator_vote, :against, bill:, legislator:, legislator_term: prior_term)
-      create(:user_vote, bill:, user:, support: LegislatorVote::Support::FOR)
-
-      get "/legislators/#{legislator.id}", headers: {"Accept" => "application/json"}
-
-      vote_entry = response.parsed_body.dig("legislator", "bill_of_the_month_votes", 0)
-      expect(vote_entry).to include(
-        "bill_id" => bill.id,
-        "legislator_vote" => "FOR",
-        "user_vote" => "FOR",
-        "alignment" => "agreed"
-      )
-    end
-
     it "returns bill_of_the_month_votes on an Inertia partial reload of only legislator" do
       sway_locale, user = setup
       legislator = sway_locale.legislators.first
