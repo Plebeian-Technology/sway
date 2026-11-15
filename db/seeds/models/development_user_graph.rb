@@ -239,25 +239,21 @@ class SeedDevelopmentUserGraph
         .pluck(:bill_id, :legislator_id)
         .to_h { |bill_id, legislator_id| [[bill_id, legislator_id], true] }
 
-    has_term_id_on_votes = LegislatorVote.column_names.include?("legislator_term_id")
     rows = []
 
     bills.each_with_index do |bill, bill_index|
       all_locale_legislators.each_with_index do |legislator, legislator_index|
         next if existing_pairs[[bill.id, legislator.id]]
 
-        term = resolve_legislator_term(bill, legislator)
-        next if term.nil?
+        # @lat: [[seeded-development-users#Seeded legislator votes need a resolved term]]
+        next if resolve_legislator_term(bill, legislator).nil?
 
-        row = {
+        rows << {
           bill_id: bill.id,
           legislator_id: legislator.id,
           support: support_for_legislator_vote(legislator, bill_index, legislator_index),
           source: "manual"
         }.merge(timestamps)
-        # @lat: [[seeded-development-users#Seeded legislator votes retain their resolved term]]
-        row[:legislator_term_id] = term.id if has_term_id_on_votes
-        rows << row
       end
     end
 

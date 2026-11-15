@@ -507,7 +507,6 @@ class SeedLegislatorTerms
       LegislatorDistrictScore.where(legislator_term_id: term_ids).delete_all
       LegislatorLocaleScore.where(legislator_term_id: term_ids).delete_all
       UserLegislatorTermScore.where(legislator_term_id: term_ids).delete_all
-      LegislatorVote.where(legislator_term_id: term_ids).delete_all if LegislatorVote.column_names.include?("legislator_term_id")
       LegislatorTerm.where(id: term_ids).delete_all
     end
 

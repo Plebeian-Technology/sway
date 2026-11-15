@@ -27,9 +27,9 @@ The 333 area code is not assigned in the North American Numbering Plan, so no ca
 
 The seeded users are also marked `is_phone_verified` and half of them `sms_notifications_enabled`, because the notification surfaces are part of what the seed exists to demonstrate. Those flags are what put the numbers in range of a sender, so the safety has to live in the numbers themselves.
 
-## Seeded legislator votes retain their resolved term
+## Seeded legislator votes need a resolved term
 
-The seed resolves a term for each bill and legislator before inserting a vote, and stores that term identifier on the row. This keeps seeded votes tied to the office window used by term-scoped score recomputation.
+The seed inserts a vote for a bill and legislator only when it resolves a term for that legislator. The row stores no term: term-scoped score recomputation finds the term from the bill's dates.
 
 ## Score refresh follows current legislator terms
 

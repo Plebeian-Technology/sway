@@ -188,14 +188,7 @@ class SeedLegislator
       title: nil
     ).to_a
 
-    has_term_id_on_votes = LegislatorVote.column_names.include?("legislator_term_id")
-    doomed_terms.select! do |term|
-      if has_term_id_on_votes
-        LegislatorVote.where(legislator_term_id: term.id).none?
-      else
-        LegislatorVote.where(legislator_id: term.legislator_id).none?
-      end
-    end
+    doomed_terms.select! { |term| LegislatorVote.where(legislator_id: term.legislator_id).none? }
 
     return if doomed_terms.empty?
 
@@ -208,7 +201,6 @@ class SeedLegislator
       LegislatorDistrictScore.where(legislator_term_id: term_ids).delete_all
       LegislatorLocaleScore.where(legislator_term_id: term_ids).delete_all
       UserLegislatorTermScore.where(legislator_term_id: term_ids).delete_all
-      LegislatorVote.where(legislator_term_id: term_ids).delete_all if has_term_id_on_votes
       LegislatorTerm.where(id: term_ids).delete_all
     end
   end

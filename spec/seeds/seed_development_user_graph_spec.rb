@@ -185,19 +185,6 @@ RSpec.describe SeedDevelopmentUserGraph do
       expect(phones).to all(match(/\A333\d{7}\z/))
     end
 
-    # @lat: [[seeded-development-users#Seeded legislator votes retain their resolved term]]
-    it "persists each seeded legislator vote with its resolved term" do
-      described_class.run([baltimore], user_count: 0, vote_seed: "alpha")
-
-      seeded_votes = LegislatorVote.where(bill_id: bills.map(&:id), source: "manual").to_a
-      terms_by_id = LegislatorTerm.where(id: seeded_votes.map(&:legislator_term_id)).index_by(&:id)
-
-      expect(seeded_votes).not_to be_empty
-      expect(seeded_votes).to all(satisfy do |vote|
-        vote.legislator_term_id.present? && terms_by_id.fetch(vote.legislator_term_id).legislator_id == vote.legislator_id
-      end)
-    end
-
     it "does not overwrite an existing legislator vote when reseeding" do
       existing_vote =
         create(
