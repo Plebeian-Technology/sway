@@ -580,4 +580,70 @@ RSpec.describe User, type: :model do
       expect(user.default_sway_locale).to be_nil
     end
   end
+
+  describe "account deletion foreign-key guard" do
+    it "fails when a foreign key to users is neither handled nor allowlisted" do
+      admin_actor_foreign_keys = [
+        ["admin_bill_views", "admin_user_id"],
+        ["admin_settings", "updated_by_id"],
+        ["bill_news_articles", "approved_by_id"],
+        ["bill_news_articles", "stance_by_id"],
+        ["bill_summary_revisions", "actor_id"],
+        ["historical_repair_audit_events", "admin_user_id"],
+        ["news_article_discovery_requests", "requested_by_id"],
+        ["news_article_source_snapshots", "actor_id"],
+        ["news_article_text_versions", "actor_id"],
+        ["pipeline_activity_log_entries", "actor_user_id"],
+        ["sending_service_domains", "confirmed_by_id"],
+        ["testimony_coverage_acknowledgements", "acknowledged_by_id"]
+      ].freeze
+
+      allowed_nullify_keys = [
+        ["bill_summary_reports", "resolved_by_id"]
+      ].freeze
+
+      allowed_nullify_associations = %i[
+        resolved_bill_summary_reports
+        approved_position_changes
+        rejected_position_changes
+      ].freeze
+
+      pending_foreign_keys = [].freeze
+
+      conn = ActiveRecord::Base.connection
+      user_fks = conn.tables.flat_map { |t| conn.foreign_keys(t).select { |fk| fk.to_table == "users" } }
+
+      destroy_assocs = User.reflect_on_all_associations.select do |assoc|
+        assoc.options[:dependent].in?(%i[destroy delete_all])
+      end.map { |a| [a.table_name, a.foreign_key.to_s] }.to_set
+
+      nullify_assocs = User.reflect_on_all_associations.select do |assoc|
+        assoc.options[:dependent] == :nullify
+      end
+
+      handled_assocs = (destroy_assocs + nullify_assocs.map { |a| [a.table_name, a.foreign_key.to_s] }).to_set
+
+      unhandled_fks = user_fks.reject do |fk|
+        pair = [fk.from_table, fk.column.to_s]
+        next true if admin_actor_foreign_keys.include?(pair)
+        next true if pending_foreign_keys.include?(pair)
+        next true if fk.on_delete == :cascade
+        next true if destroy_assocs.include?(pair)
+
+        if fk.on_delete == :nullify
+          allowed_nullify_keys.include?(pair)
+        else
+          handled_assocs.include?(pair)
+        end
+      end.map { |fk| "#{fk.from_table}.#{fk.column}" }
+
+      disallowed_assocs = nullify_assocs.reject do |assoc|
+        allowed_nullify_associations.include?(assoc.name)
+      end.map(&:name).map(&:to_s)
+
+      offenses = unhandled_fks + disallowed_assocs
+
+      expect(offenses).to be_empty, "Unhandled foreign keys or disallowed nullify associations: #{offenses.join(", ")}"
+    end
+  end
 end

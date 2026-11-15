@@ -15,6 +15,13 @@ const Privacy: React.FC = () => {
                 </p>
 
                 <h2 className="mt-8 text-lg font-black text-foreground">What we collect</h2>
+                <p className="mt-3 text-sm text-muted-foreground">
+                    We collect the information you give us. We also count how far visitors get through sign-up. For that
+                    we give each browser a random visitor token and record the sign-up step it reaches and the link that
+                    referred it. These records hold no phone numbers or street addresses. We store them ourselves and
+                    send them to no analytics service. When you create an account, we link them to it. We do not show
+                    ads.
+                </p>
                 <ul className="mt-3 list-disc space-y-2 pl-6 text-sm text-muted-foreground">
                     <li>
                         <span className="font-semibold text-foreground">Phone number</span> — used to create and secure
@@ -45,19 +52,22 @@ const Privacy: React.FC = () => {
                 <h2 className="mt-8 text-lg font-black text-foreground">How long we keep it</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
                     We keep account and voting data for as long as your account is active, so your voting history stays
-                    available to you. If you delete your account, we remove your personal information within a
-                    reasonable period, except where we are required to retain records by law.
+                    available to you. Can I delete my Sway account? Yes. You can remove all your data at any point. You
+                    can do this by deleting your account in the Sway mobile app.
                 </p>
 
                 <h2 className="mt-8 text-lg font-black text-foreground">Who we share it with</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                    We do not sell your personal information. We share data only in these limited cases:
+                    Does Sway sell my data? No. Will Sway ever sell my data? Never. We may one day offer a way for you
+                    to sell your own data, and only with your explicit permission. If we do, we would likely take a
+                    small percentage of any proceeds. We share data only in these limited cases:
                 </p>
                 <ul className="mt-3 list-disc space-y-2 pl-6 text-sm text-muted-foreground">
                     <li>
-                        Service providers who help us operate Sway (for example, hosting and SMS delivery), bound to use
-                        your data only to provide that service. For example, we must share your phone number with our
-                        SMS provider, Twilio (as of this writing) in order to send you SMS messages.
+                        A few services help run Sway. Twilio sends the text message that verifies your phone number and
+                        the SMS alerts you opt into. Firebase delivers push notifications. Sentry receives error reports
+                        so we can fix bugs, and we configure it to leave out personal data. Google Cloud Storage holds
+                        our backups.
                     </li>
                     <li>When required by law, such as in response to a valid legal request.</li>
                     <li>
@@ -83,7 +93,8 @@ const Privacy: React.FC = () => {
                     >
                         https://app.sway.vote/notifications
                     </a>
-                    . You can request deletion of your account and data by contacting us or through the application.
+                    . You can remove all your data at any point. You can do that by deleting your account in the Sway
+                    mobile app, or by contacting us.
                 </p>
 
                 <p className="mt-8 text-sm text-muted-foreground">

@@ -37,6 +37,8 @@ The controller's `#destroy` and `#update` branches write `status` and the `*_by_
 
 The model validates the invariant in both directions as cheap defense-in-depth: presence is required when the matching status is set (`validates :approved_by_id, presence: true, if: -> { status == "approved" }`, and the parallel rules for rejection), and absence is required when it is NOT (`validates :approved_by_id, absence: true, if: -> { status != "approved" }`, and the parallel rules for rejection). Together the pair of validators guarantees `approved_by_id.present? <=> status == "approved"` for any row that ever passes validation.
 
+Deleting an approver or rejecter account clears `approved_by_id` or `rejected_by_id` via `dependent: :nullify` (`update_all`) on [[app/models/user.rb#User]]. This leaves a finalized change whose status remains `"approved"` or `"rejected"` even though its audit foreign key is now nil, so the row would no longer pass ActiveRecord validation. That state is acceptable because nothing re-saves a finalized change, and [[app/models/organization_bill_position_change.rb#OrganizationBillPositionChange#finalized?]] reads `status` rather than the `*_by_id` columns.
+
 ## Why there is no hand-written approved? override
 
 An earlier `def approved?

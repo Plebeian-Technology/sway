@@ -40,6 +40,7 @@ import Drawer, { type NavItem } from "app/frontend/components/drawer/Drawer";
 import PageBodySlot from "app/frontend/components/layouts/PageBodySlot";
 import { makeSignOutHandler } from "app/frontend/components/layouts/signOutHandler";
 import ReassignmentBanner from "app/frontend/components/legislators/ReassignmentBanner";
+import SupportBubble from "app/frontend/components/support/SupportBubble";
 import { isSafeExternalHref } from "app/frontend/sway_utils/safeHref";
 
 type IProps = PropsWithChildren;
@@ -241,6 +242,7 @@ const AuthLayout: React.FC<IProps> = ({ children }) => {
                     </main>
                 </div>
             </div>
+            <SupportBubble />
         </OfflineContext.Provider>
     );
 };

@@ -30,7 +30,7 @@
 #  organization_id  (organization_id => organizations.id)
 #
 class UserOrganizationMembershipInvite < ApplicationRecord
-  belongs_to :inviter, class_name: "User"
+  belongs_to :inviter, class_name: "User", inverse_of: :sent_organization_invites
   belongs_to :organization
   belongs_to :invitee_user, class_name: "User", optional: true
 

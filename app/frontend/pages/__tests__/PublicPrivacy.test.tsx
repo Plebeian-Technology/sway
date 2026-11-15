@@ -26,6 +26,28 @@ describe("public/Privacy", () => {
         expect(screen.getByText("Votes you cast on legislation")).toBeTruthy();
     });
 
+    it("describes sign-up telemetry using random visitor tokens", () => {
+        render(<Privacy />);
+        expect(screen.getByText(/random visitor token/)).toBeTruthy();
+    });
+
+    it("names the outside services that help run Sway", () => {
+        render(<Privacy />);
+        expect(screen.getByText(/Firebase/)).toBeTruthy();
+        expect(screen.getByText(/Sentry/)).toBeTruthy();
+        expect(screen.getByText(/Google Cloud Storage/)).toBeTruthy();
+    });
+
+    it("states that data is never sold without explicit permission", () => {
+        render(<Privacy />);
+        expect(screen.getByText(/explicit permission/)).toBeTruthy();
+    });
+
+    it("states that voters can remove all data at any point", () => {
+        render(<Privacy />);
+        expect(screen.getAllByText(/You can remove all your data at any point\./).length).toBeGreaterThan(0);
+    });
+
     it("states the mandatory carrier clause: phone numbers and SMS opt-in data are never sold or shared for marketing", () => {
         render(<Privacy />);
         expect(

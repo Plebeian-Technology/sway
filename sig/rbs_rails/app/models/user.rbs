@@ -1167,6 +1167,30 @@ class ::User < ::ApplicationRecord
   def registration_funnel_events=: (::RegistrationFunnelEvent::ActiveRecord_Associations_CollectionProxy | ::Array[::RegistrationFunnelEvent]) -> (::RegistrationFunnelEvent::ActiveRecord_Associations_CollectionProxy | ::Array[::RegistrationFunnelEvent])
   def registration_funnel_event_ids: () -> ::Array[::Integer]
   def registration_funnel_event_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def sent_invites: () -> ::Invite::ActiveRecord_Associations_CollectionProxy
+  def sent_invites=: (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite]) -> (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite])
+  def sent_invite_ids: () -> ::Array[::Integer]
+  def sent_invite_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def received_invites: () -> ::Invite::ActiveRecord_Associations_CollectionProxy
+  def received_invites=: (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite]) -> (::Invite::ActiveRecord_Associations_CollectionProxy | ::Array[::Invite])
+  def received_invite_ids: () -> ::Array[::Integer]
+  def received_invite_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def sent_organization_invites: () -> ::UserOrganizationMembershipInvite::ActiveRecord_Associations_CollectionProxy
+  def sent_organization_invites=: (::UserOrganizationMembershipInvite::ActiveRecord_Associations_CollectionProxy | ::Array[::UserOrganizationMembershipInvite]) -> (::UserOrganizationMembershipInvite::ActiveRecord_Associations_CollectionProxy | ::Array[::UserOrganizationMembershipInvite])
+  def sent_organization_invite_ids: () -> ::Array[::Integer]
+  def sent_organization_invite_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def authored_position_changes: () -> ::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy
+  def authored_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
+  def authored_position_change_ids: () -> ::Array[::Integer]
+  def authored_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def approved_position_changes: () -> ::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy
+  def approved_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
+  def approved_position_change_ids: () -> ::Array[::Integer]
+  def approved_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def rejected_position_changes: () -> ::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy
+  def rejected_position_changes=: (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange]) -> (::OrganizationBillPositionChange::ActiveRecord_Associations_CollectionProxy | ::Array[::OrganizationBillPositionChange])
+  def rejected_position_change_ids: () -> ::Array[::Integer]
+  def rejected_position_change_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
   def user_address: () -> ::UserAddress?
   def user_address=: (::UserAddress?) -> ::UserAddress?

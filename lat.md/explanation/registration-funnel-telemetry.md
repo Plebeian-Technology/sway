@@ -10,7 +10,7 @@ Sway measures voter onboarding conversion through self-hosted telemetry without 
 
 Funnel events are stored in the append-only `registration_funnel_events` table optimized for SQLite WAL mode. Rows omit `updated_at` to prevent write amplification on the single-node host.
 
-The schema records a `visitor_token` UUID identifying unique browser sessions prior to authentication, an optional `user_id` foreign key linked upon enrollment, an integer `step` enum, a referral `attribution_key`, and a bounded JSON `metadata` payload. Composite indexes on `[step, created_at]`, `[bot, created_at, step]`, `visitor_token`, and `[attribution_key, created_at]` support sub-millisecond filtering across date ranges. When users delete their accounts, foreign keys nullify rather than deleting historical metrics.
+The schema records a `visitor_token` UUID identifying unique browser sessions prior to authentication, an optional `user_id` foreign key linked upon enrollment, an integer `step` enum, a referral `attribution_key`, and a bounded JSON `metadata` payload. Composite indexes on `[step, created_at]`, `[bot, created_at, step]`, `visitor_token`, and `[attribution_key, created_at]` support sub-millisecond filtering across date ranges. When users delete their accounts, linked events are deleted with the account, while events with no user_id survive.
 
 ## Client-side telemetry dispatch and step mapping
 

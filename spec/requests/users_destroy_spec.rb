@@ -25,6 +25,143 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(UserDevice.where(user_id: user_id)).to be_empty
     end
 
+    it "destroys invites where the user is the inviter" do
+      invitee = create(:user)
+      invite = Invite.create!(inviter: user, invitee: invitee)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(Invite.exists?(invite.id)).to be(false)
+    end
+
+    it "destroys invites where the user is the invitee" do
+      inviter = create(:user)
+      invite = Invite.create!(inviter: inviter, invitee: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(Invite.exists?(invite.id)).to be(false)
+    end
+
+    it "destroys organization invites sent by the user" do
+      org = create(:organization)
+      invite = create(:user_organization_membership_invite, inviter: user, organization: org)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(UserOrganizationMembershipInvite.exists?(invite.id)).to be(false)
+    end
+
+    it "destroys organization bill position changes authored by the user" do
+      position_change = create(:organization_bill_position_change, updated_by: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(OrganizationBillPositionChange.exists?(position_change.id)).to be(false)
+    end
+
+    it "nullifies approved_by_id on position changes approved by the user" do
+      position_change = create(:organization_bill_position_change, approved_by: user, status: :approved)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(position_change.reload.approved_by_id).to be_nil
+    end
+
+    it "nullifies rejected_by_id on position changes rejected by the user" do
+      position_change = create(:organization_bill_position_change, rejected_by: user, status: :rejected, rejected_at: Time.current)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(position_change.reload.rejected_by_id).to be_nil
+    end
+
+    it "cascades historical score explanations when user is deleted" do
+      skip "historical_score_explanations table not present" unless ActiveRecord::Base.connection.table_exists?(:historical_score_explanations)
+
+      explanation = create(:historical_score_explanation, user: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(HistoricalScoreExplanation.exists?(explanation.id)).to be(false)
+    end
+
+    it "cascades historical repair deliveries when user is deleted" do
+      conn = ActiveRecord::Base.connection
+      skip "historical_repair_deliveries table not present" unless conn.table_exists?(:historical_repair_deliveries)
+
+      locale = create(:sway_locale)
+      dedup = "dedup-#{SecureRandom.hex(8)}"
+      conn.execute(
+        "INSERT INTO historical_repair_candidates (sway_locale_id, candidate_type, target_type, target_id, deduplication_key, current_values, proposed_values, status, version, created_at, updated_at) " \
+        "VALUES (#{locale.id}, 'legislator_vote', 'Legislator', 1, '#{dedup}', '{}', '{}', 'unapplied', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      candidate_id = conn.select_value("SELECT last_insert_rowid()")
+      token = "tok-#{SecureRandom.hex(8)}"
+      conn.execute(
+        "INSERT INTO historical_repair_previews (historical_repair_candidate_id, preview_token, calculation_status, status, created_at, updated_at) " \
+        "VALUES (#{candidate_id}, '#{token}', 'ready_for_review', 'previewed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      preview_id = conn.select_value("SELECT last_insert_rowid()")
+
+      conn.execute(
+        "INSERT INTO historical_repair_deliveries (historical_repair_candidate_id, historical_repair_preview_id, user_id, channel, status, created_at, updated_at) " \
+        "VALUES (#{candidate_id}, #{preview_id}, #{user.id}, 'sms', 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      delivery_id = conn.select_value("SELECT last_insert_rowid()")
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      count = conn.select_value("SELECT COUNT(*) FROM historical_repair_deliveries WHERE id = #{delivery_id}")
+      expect(count).to eq(0)
+    end
+
+    it "destroys registration funnel events linked to the user" do
+      event = RegistrationFunnelEvent.create!(user: user, step: :landing, visitor_token: SecureRandom.uuid)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(RegistrationFunnelEvent.exists?(event.id)).to be(false)
+    end
+
+    it "destroys bill summary reports written by the user" do
+      report = create(:bill_summary_report, user: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(BillSummaryReport.exists?(report.id)).to be(false)
+    end
+
+    it "destroys organization invites received by the user" do
+      invite = create(:user_organization_membership_invite, :accepted, invitee_user: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(UserOrganizationMembershipInvite.exists?(invite.id)).to be(false)
+    end
+
+    it "destroys shortened invite URLs linked to the user's invite link" do
+      user.create_user_invite_url
+      invite_uuid = user.user_invite_link.invite_uuid
+      expect(Shortener::ShortenedUrl.where("url LIKE ?", "%#{invite_uuid}%")).to exist
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(Shortener::ShortenedUrl.where("url LIKE ?", "%#{invite_uuid}%")).not_to exist
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 

@@ -111,11 +111,31 @@ class User < ApplicationRecord
 
   has_many :user_organization_memberships, dependent: :destroy
   has_many :organizations, through: :user_organization_memberships
+  has_many :authored_position_changes,
+    class_name: "OrganizationBillPositionChange",
+    foreign_key: :updated_by_id,
+    inverse_of: :updated_by,
+    dependent: :destroy
+  has_many :approved_position_changes,
+    class_name: "OrganizationBillPositionChange",
+    foreign_key: :approved_by_id,
+    inverse_of: :approved_by,
+    dependent: :nullify
+  has_many :rejected_position_changes,
+    class_name: "OrganizationBillPositionChange",
+    foreign_key: :rejected_by_id,
+    inverse_of: :rejected_by,
+    dependent: :nullify
+  has_many :sent_organization_invites,
+    class_name: "UserOrganizationMembershipInvite",
+    foreign_key: :inviter_id,
+    inverse_of: :inviter,
+    dependent: :destroy
   has_many :received_organization_invites,
     class_name: "UserOrganizationMembershipInvite",
     foreign_key: :invitee_user_id,
     inverse_of: :invitee_user,
-    dependent: :nullify
+    dependent: :destroy
   # @lat: [[domain-entities#Organizations and campaigns]]
   has_many :organization_follows, dependent: :destroy
   has_many :followed_organizations, through: :organization_follows, source: :organization
@@ -143,10 +163,20 @@ class User < ApplicationRecord
   ].freeze
 
   has_one :user_invite_link, inverse_of: :user, dependent: :destroy
+  has_many :sent_invites,
+    class_name: "Invite",
+    foreign_key: :inviter_id,
+    inverse_of: :inviter,
+    dependent: :destroy
+  has_many :received_invites,
+    class_name: "Invite",
+    foreign_key: :invitee_id,
+    inverse_of: :invitee,
+    dependent: :destroy
   has_one :refresh_token, dependent: :destroy
 
   has_many :push_notification_subscriptions, dependent: :destroy
-  has_many :bill_summary_reports, inverse_of: :user, dependent: :nullify
+  has_many :bill_summary_reports, inverse_of: :user, dependent: :destroy
   has_many :resolved_bill_summary_reports,
     class_name: "BillSummaryReport",
     foreign_key: :resolved_by_id,
@@ -165,7 +195,7 @@ class User < ApplicationRecord
 
   has_many :user_devices, dependent: :destroy
   has_many :notification_preferences, dependent: :destroy
-  has_many :registration_funnel_events, dependent: :nullify
+  has_many :registration_funnel_events, dependent: :destroy
   has_many :representative_reassignments, dependent: :destroy
 
   attr_accessor :transient_funnel_metadata

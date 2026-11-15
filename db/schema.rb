@@ -1452,12 +1452,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_120000) do
   add_foreign_key "historical_repair_candidates", "sway_locales"
   add_foreign_key "historical_repair_deliveries", "historical_repair_candidates"
   add_foreign_key "historical_repair_deliveries", "historical_repair_previews"
-  add_foreign_key "historical_repair_deliveries", "users"
+  add_foreign_key "historical_repair_deliveries", "users", on_delete: :cascade
   add_foreign_key "historical_repair_previews", "historical_repair_candidates"
   add_foreign_key "historical_score_explanations", "historical_repair_candidates"
   add_foreign_key "historical_score_explanations", "historical_repair_previews"
   add_foreign_key "historical_score_explanations", "legislators"
-  add_foreign_key "historical_score_explanations", "users"
+  add_foreign_key "historical_score_explanations", "users", on_delete: :cascade
   add_foreign_key "invites", "users", column: "invitee_id"
   add_foreign_key "invites", "users", column: "inviter_id"
   add_foreign_key "law_sections", "sway_locales"
