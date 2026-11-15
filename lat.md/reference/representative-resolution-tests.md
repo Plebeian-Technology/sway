@@ -27,21 +27,25 @@ Two currently serving seats in one geographic district both resolve even when th
 
 Every supported delegate seat returned by the Maryland regional source remains available to registration when several delegates share one district.
 
-### Refuses missing seat identity
+### Skips missing seat identity
 
-A current selected term without a persisted seat identity raises before it can be linked.
+A current geographic candidate without a persisted seat identity is left out, recorded once as `Seats::UnresolvedSeatError` and reported to Sentry at warning level, while the seated senator still resolves.
+
+### Skips a seat outside its district
+
+A current term whose seat belongs to another district is left out, recorded once as `Seats::UnresolvedSeatError` and reported to Sentry.
 
 ### Skips unconfigured locale-wide offices
 
-A current unseated Maryland Attorney General term in `MD0` is left out, and the configured Governor still resolves without an error.
+A current unseated Maryland Attorney General term in `MD0` is left out without a recorded error or Sentry report, and the configured Governor still resolves.
 
 ### Skips unconfigured geographic offices
 
-An unconfigured office holder returned by the regional source is dropped instead of refusing the whole registration.
+An unconfigured office holder returned by the regional source is dropped without a recorded error or Sentry report.
 
-### Refuses untitled unseated terms
+### Skips untitled unseated terms
 
-An unseated locale-wide term with no title still raises, because an absent title cannot show the office is unconfigured.
+An unseated locale-wide term with no title is left out, recorded and reported, because an absent title cannot show the office is unconfigured.
 
 ### Selects the exact Congress locale-wide district
 
@@ -61,19 +65,59 @@ The configured `MD0` office resolves even when OpenStates returns no geographic 
 
 ### Checks omitted current occupants
 
-Every current row for a selected seat is checked even when the geographic endpoint omits an overlapping occupant.
+Every current row for a selected seat is checked even when the geographic endpoint omits an overlapping occupant; both occupants are dropped and one `Seats::OverlapValidator::OverlapError` is recorded and reported.
 
-### Rejects duplicate rows for one person
+### Drops duplicate rows for one person
 
-Duplicate overlapping current terms for one person and one seat are refused instead of being hidden by the singular active-term association.
+Duplicate overlapping current terms for one person and one seat drop that person and record one `Seats::OverlapValidator::OverlapError`, instead of being hidden by the singular active-term association.
 
 ### Leaves expired seats vacant
 
 The exclusive end boundary removes the former occupant without inventing a successor.
 
+### Skips an unseated successor
+
+A Baltimore successor seeded under a renamed office with the same published id has no seat yet; resolution returns the previous holder, leaves the successor out, and records and reports one `Seats::UnresolvedSeatError`.
+
+### Registers around a skipped term
+
+Synchronous registration in that state links the seated officers only, never the unseated successor, and completes the user.
+
+### Resolves a seated successor
+
+Once the previous term ends and the successor's term holds the seat, resolution returns the successor and records nothing.
+
+### Resolves curated person-keyed officers
+
+A seeded Annapolis address in districts 0 and 1 returns the Mayor and the Ward 1 Alderperson, because their curated terms carry seats, and records no skip.
+
+### Resolves the seeded Baltimore roster
+
+Registration against the seeded Baltimore roster, with the shipped council boundaries, returns the Mayor, the Council President and one Council Member for City Hall, and reconciliation keeps the same links.
+
+### Resolves the seeded Congress roster
+
+Registration against the seeded Congress roster for a Maryland address returns two Senators, one Representative and the President, and reconciliation keeps the same links.
+
+### Resolves only the President without a US state
+
+Registration against the seeded Congress roster for an address whose US state cannot be determined returns the President alone, from the locale-wide district.
+
+### Leaves city-wide officers off outside the city boundary
+
+An address whose mailing city is Baltimore but whose point lies outside the shipped Baltimore boundary resolves no Baltimore representative, neither a council member nor the Mayor or Council President.
+
+### Keeps regional locale-wide officers for any city
+
+A Maryland address whose mailing city is not the state's name still resolves the seeded Governor from the Maryland locale-wide district.
+
+### Keeps Congress locale-wide officers outside every city
+
+The same out-of-city address resolves the Congress locale-wide officer when Census places it in no House district.
+
 ## Reconciliation refusal
 
-Resolution errors occur before reconciliation mutates stored representative links.
+A recorded resolution skip refuses reconciliation before it mutates stored representative links.
 
 ### Preserves links on unresolved reconciliation
 
@@ -83,9 +127,21 @@ Reconciliation raises on an unresolved current seat before deactivating stored l
 
 An ambiguous configured locale-wide seat raises before reconciliation deactivates existing links.
 
+### Refuses while a term is skipped
+
+Reconciliation raises the recorded `Seats::UnresolvedSeatError` while a Baltimore successor term is skipped, and leaves a stored council link active.
+
 ### Refuses unseated locale-wide term
 
 Reconciliation raises on a current locale-wide term lacking persisted seat identity before updating links.
+
+## Address switch around a skipped term
+
+An address switch skips an unresolvable term like registration does, and changes no stored link for the skipped legislator.
+
+### Keeps the skipped legislator's links
+
+The legislator and district links of a skipped locale-wide term stay active, while the other stale links are deactivated and the new seated link is activated.
 
 ## Reconciliation keeps co-serving seats
 
@@ -98,3 +154,31 @@ Two active links for separate current seats in one district stay active after re
 ### Reactivates locale-wide link idempotently
 
 Reconciliation reactivates an inactive nationwide-office link and its district link, then leaves both active on a second run.
+
+## President link after a Congress seed
+
+A Congress seed gives every registered user with an address the President, silently, and retries what a lookup outage skipped.
+
+### Links a registered user to the President
+
+A registered user with an address and no President link gets an active President link and an active `US0` district link after a Congress seed.
+
+### Reactivates an inactive President link
+
+A user whose only President link and `US0` link were inactive gets both reactivated by the same seed.
+
+### Leaves one President link per user
+
+Two seeds in a row leave exactly one link per legislator for the user, so the President link is never duplicated.
+
+### Retries a skipped Congress lookup
+
+A Census outage during the reconcile run leaves no President link and records Congress as a pending representative locale, and the next hourly assignment run links the President and clears the record.
+
+### Links the President without a notice
+
+Linking the President to an existing user records no reassignment and enqueues no reassignment delivery.
+
+### Still notifies for another new legislator
+
+A newly linked legislator who does not hold the President seat still records a reassignment and enqueues delivery in the same run that silently links the President.

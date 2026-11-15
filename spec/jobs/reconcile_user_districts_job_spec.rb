@@ -57,6 +57,24 @@ RSpec.describe ReconcileUserDistrictsJob do
         .once
     end
 
+    it "keeps going and marks the locale pending when the failed user no longer passes validation" do
+      user_md1, address_md1 = user_with_address(region_code: "MD", city: "Baltimore")
+      user_md2, _address_md2 = user_with_address(region_code: "MD", city: "Annapolis")
+      user_md1.update_column(:full_name, "Legacy 123")
+      sway_locale = regional_locale_for(address_md1)
+
+      failing_service = instance_double(ReconcileUserDistrictsService)
+      allow(failing_service).to receive(:call).and_raise(SwayGeocode::ServiceUnavailableError, "OpenStates down")
+      succeeding_service = instance_double(ReconcileUserDistrictsService, call: nil)
+      allow(ReconcileUserDistrictsService).to receive(:new).with(user_md1, sway_locale).and_return(failing_service)
+      allow(ReconcileUserDistrictsService).to receive(:new).with(user_md2, sway_locale).and_return(succeeding_service)
+
+      expect { described_class.new.perform(sway_locale.id) }.not_to raise_error
+
+      expect(user_md1.reload.pending_representative_locale_ids).to eq([sway_locale.id])
+      expect(succeeding_service).to have_received(:call)
+    end
+
     it "logs and returns without calling the service when the locale does not exist" do
       allow(ReconcileUserDistrictsService).to receive(:new)
 

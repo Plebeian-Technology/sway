@@ -1,0 +1,17 @@
+# Helpers defined at describe-block scope in spec/services/nominatim_service_spec.rb.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def memory_cache: () -> ActiveSupport::Cache::MemoryStore
+  def holliday_url: () -> String
+  def holliday_query: () -> untyped
+  def success_response: () -> Hash[Symbol, untyped]
+  def place: () -> Hash[String, untyped]
+  def search_holliday: () -> Array[Hash[String, untyped]]
+  def expect_next_search_to_reach_nominatim: () -> untyped
+  def expect_two_upstream_requests: () -> untyped
+  def search_url: () -> String
+  def calvert_query: () -> untyped
+  def google: () -> untyped
+  def search_for: (String query) -> Array[Hash[String, untyped]]
+  def nominatim_requests: (untyped query) -> untyped
+end

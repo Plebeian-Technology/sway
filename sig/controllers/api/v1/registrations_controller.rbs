@@ -2,9 +2,16 @@ module Api
   module V1
     class RegistrationsController < BaseController
       include RelyingParty
+      include OnboardingSafetyNet
 
       def create: -> untyped
       def callback: -> untyped
+
+      private
+
+      def phone_taken?: (ActiveRecord::RecordInvalid | ActiveRecord::RecordNotUnique error) -> bool
+
+      def render_phone_already_registered: () -> untyped
     end
   end
 end

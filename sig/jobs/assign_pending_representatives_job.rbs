@@ -1,0 +1,7 @@
+class AssignPendingRepresentativesJob < ApplicationJob
+  def perform: () -> void
+
+  private
+
+  def address_located?: (User user) -> bool
+end

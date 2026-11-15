@@ -1,0 +1,26 @@
+module PhoneVerificationSendLimit
+  COOLDOWN: ActiveSupport::Duration
+  DAILY_LIMIT: Integer
+  WINDOW: ActiveSupport::Duration
+
+  # Returns the seconds to wait before another code may go to the phone for
+  # the phone, or nil after recording this send.
+  def self.claim: (phone: String, store: untyped, ?now: ActiveSupport::TimeWithZone | Time) -> Integer?
+
+  # Removes one recorded send at sent_at from the daily list; the cooldown stays.
+  def self.release: (phone: String, store: untyped, sent_at: Integer) -> void
+
+  def self.cache_key: (String phone) -> String
+
+  def self.cooldown_key: (String key) -> String
+
+  # Returns the send times inside the window, oldest first.
+  def self.recent_sends: (untyped store, String key, Integer now_seconds) -> Array[Integer]
+
+  # Returns the seconds until the oldest send leaves the window when the daily
+  # limit is reached, or nil.
+  def self.daily_wait: (Array[Integer] sent_at, Integer now_seconds) -> Integer?
+
+  # Returns the seconds left of the cooldown, or nil when none is running.
+  def self.cooldown_wait: (untyped store, String key, Integer now_seconds) -> Integer?
+end

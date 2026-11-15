@@ -10,17 +10,27 @@ module Api
 
       # @lat: [[phone-verification-rate-limits#Why the sign-in challenge throttles two ways]]
       rate_limit to: 10, within: 5.minutes,
+        name: "challenge_ip",
         by: -> { request.remote_ip },
         only: :challenge,
         if: -> { RateLimitConfig.enabled?(:sign_in) },
-        with: -> { render_error(code: "rate_limited", message: "Too many sign-in attempts", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::SessionsController
+          response.set_header("Retry-After", 5.minutes.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many sign-in attempts", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
       rate_limit to: 5, within: 5.minutes,
+        name: "challenge_phone_ip",
         # @lat: [[phone-cache-hashing]]
-        by: -> { PhoneCacheKey.digest(params.dig(:session, :phone)) },
+        by: -> { "#{PhoneCacheKey.digest(params.dig(:session, :phone))}:#{request.remote_ip}" },
         only: :challenge,
         if: -> { RateLimitConfig.enabled?(:sign_in) },
-        with: -> { render_error(code: "rate_limited", message: "Too many attempts for this number", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::SessionsController
+          response.set_header("Retry-After", 5.minutes.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many attempts for this number", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
 
       def public_endpoint?

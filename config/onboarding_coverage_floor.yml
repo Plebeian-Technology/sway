@@ -1,0 +1,121 @@
+# @lat: [[verification-gates#Onboarding coverage gate]]
+app/controllers/addresses_controller.rb:
+    line: 100.0
+    branch: 100.0
+app/controllers/api/v1/base_controller.rb:
+    line: 94.4
+    branch: 75.0
+app/controllers/api/v1/bootstrap_controller.rb:
+    line: 93.9
+    branch: 89.2
+app/controllers/api/v1/phone_verifications_controller.rb:
+    line: 98.0
+    branch: 100.0
+app/controllers/api/v1/registrations_controller.rb:
+    line: 100.0
+    branch: 96.4
+app/controllers/api/v1/sessions_controller.rb:
+    line: 98.5
+    branch: 79.1
+app/controllers/concerns/authentication.rb:
+    line: 74.3
+    branch: 40.0
+app/controllers/concerns/rate_limit_responder.rb:
+    line: 96.2
+    branch: 100.0
+app/controllers/concerns/relying_party.rb:
+    line: 96.8
+    branch: 83.3
+app/controllers/phone_verification_controller.rb:
+    line: 100.0
+    branch: 94.4
+app/controllers/sway_registration_controller.rb:
+    line: 86.0
+    branch: 72.5
+app/controllers/user_legislators_controller.rb:
+    line: 100.0
+    branch: 60.0
+app/controllers/users/webauthn/registration_controller.rb:
+    line: 100.0
+    branch: 88.2
+app/controllers/users/webauthn/sessions_controller.rb:
+    line: 90.6
+    branch: 68.0
+app/controllers/well_known_controller.rb:
+    line: 100.0
+    branch: 100.0
+app/jobs/sway_registration_job.rb:
+    line: 100.0
+    branch: 66.6
+app/lib/phone_cache_key.rb:
+    line: 93.7
+    branch: 83.3
+app/lib/rate_limit_config.rb:
+    line: 100.0
+    branch: 100.0
+app/models/address.rb:
+    line: 100.0
+    branch: 95.0
+app/models/sway_locale.rb:
+    line: 91.1
+    branch: 65.6
+app/models/sway_locale/term_rules.rb:
+    line: 100.0
+    branch: 100.0
+app/models/user.rb:
+    line: 84.1
+    branch: 58.9
+app/models/user_address.rb:
+    line: 100.0
+    branch: 100.0
+app/models/user_district.rb:
+    line: 100.0
+    branch: 100.0
+app/models/user_legislator.rb:
+    line: 100.0
+    branch: 100.0
+app/serializers/registration_error_resource.rb:
+    line: 100.0
+    branch: 100.0
+app/serializers/registration_outcome_resource.rb:
+    line: 100.0
+    branch: 100.0
+app/services/nominatim_service.rb:
+    line: 95.5
+    branch: 87.5
+app/services/normalize_address_service.rb:
+    line: 100.0
+    branch: 88.4
+app/services/pending_vote_reconciliation_service.rb:
+    line: 85.7
+    branch: 70.5
+app/services/reconcile_user_districts_service.rb:
+    line: 98.4
+    branch: 92.8
+app/services/sms_verification_token.rb:
+    line: 100.0
+    branch: 90.0
+app/services/sway/twilio_client.rb:
+    line: 100.0
+    branch: 100.0
+app/services/sway_registration_service.rb:
+    line: 99.3
+    branch: 82.3
+app/services/user_address_switch_service.rb:
+    line: 100.0
+    branch: 72.7
+app/validators/seats/overlap_validator.rb:
+    line: 83.3
+    branch: 58.3
+app/validators/seats/unresolved_seat_error.rb:
+    line: 100.0
+    branch: 100.0
+lib/census.rb:
+    line: 100.0
+    branch: 87.5
+lib/region_util.rb:
+    line: 94.4
+    branch: 78.5
+lib/sway_geocode.rb:
+    line: 100.0
+    branch: 100.0

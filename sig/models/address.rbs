@@ -10,11 +10,15 @@ class Address < ApplicationRecord
     def sway_locales: -> Array[SwayLocale]
     def self.sway_locale_attribute_sets_for: (city: String?, region_code: String?, country: String?) -> Array[Hash[Symbol, String?]]
     def sway_locale_attribute_sets: -> Array[Hash[Symbol, String?]]
+    def us_state_code: -> String?
+    def located?: -> bool
     def to_cartesian: -> untyped
     def to_builder: -> Jbuilder
+    def geocode_and_save: -> void
 
     private
 
     def geocode: -> void
+    def blank_fields_from_geocode: (Geocoder::Result::Base result) -> Hash[Symbol, String?]
     def normalize_address: -> Address
 end

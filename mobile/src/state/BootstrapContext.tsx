@@ -32,7 +32,7 @@ export interface BootstrapContextValue {
     loading: boolean;
     error: Error | null;
     // @lat: [[mobile-locale-override-design#The lifecycle of the override value]]
-    refetch: (swayLocaleId?: number) => Promise<void>;
+    refetch: (swayLocaleId?: number) => Promise<boolean>;
     selectedSwayLocaleId: number | null;
     needsUpdate: boolean;
 }
@@ -49,6 +49,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
     const [selectedSwayLocaleId, setSelectedSwayLocaleId] = useState<number | null>(null);
     const lastFetchedRef = useRef<number | null>(null);
     const hydratedRef = useRef<boolean>(false);
+    const latestFetchIdRef = useRef<number>(0);
 
     const applyLocaleOverride = useCallback(async (id: number | null) => {
         localeOverride.set(id);
@@ -58,7 +59,9 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const fetchIt = useCallback(
-        async (swayLocaleId?: number) => {
+        async (swayLocaleId?: number): Promise<boolean> => {
+            const fetchId = ++latestFetchIdRef.current;
+            const isSuperseded = () => fetchId !== latestFetchIdRef.current;
             setLoading(true);
             setError(null);
             if (swayLocaleId != null) {
@@ -68,6 +71,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                 // @lat: [[mobile-bootstrap-lifecycle#Why the fetch checks whether it expected to be signed in]]
                 const hadBearer = (await tokenStore.get()) != null;
                 const b = await apiClient.get<Bootstrap>(Routes.bootstrap());
+                if (isSuperseded()) return false;
                 if (hadBearer && b.current_user == null) {
                     await tokenStore.clear();
                     await sessionStore.clear();
@@ -77,21 +81,23 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                     setSelectedSwayLocaleId(null);
                     await prefsCache.delete(PREFS_KEYS.selectedSwayLocaleId);
                     setBootstrap(null);
-                    authEvents.emit("unauthenticated");
-                    return;
+                    authEvents.emit("unauthenticated", "session_expired");
+                    return false;
                 }
                 setBootstrap(b);
                 lastFetchedRef.current = Date.now();
                 const userId = b.current_user?.id ? String(b.current_user.id) : "anonymous";
                 await bootstrapCache.set(userId, b);
+                return true;
             } catch (e: unknown) {
+                if (isSuperseded()) return false;
                 const err = e instanceof Error ? e : new Error(String(e));
                 setError(err);
                 // @lat: [[mobile-bootstrap-lifecycle#Why a 401 wipes the cache instead of falling back to it]]
                 if (err instanceof UnauthorizedError) {
                     setBootstrap(null);
                     await bootstrapCache.purge();
-                    return;
+                    return false;
                 }
                 const sess = await sessionStore.get();
                 const cached =
@@ -101,8 +107,9 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                     setBootstrap(cached.payload);
                     lastFetchedRef.current = cached.fetchedAt.getTime();
                 }
+                return false;
             } finally {
-                setLoading(false);
+                if (!isSuperseded()) setLoading(false);
             }
         },
         [applyLocaleOverride],

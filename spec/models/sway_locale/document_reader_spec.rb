@@ -302,7 +302,8 @@ RSpec.describe SwayLocale::DocumentReader do
       expect(t_rules.cycle_years).to eq(2)
       expect(t_rules.seat_chambers).to eq({
         "Sen." => "Senate",
-        "Rep." => "House of Representatives"
+        "Rep." => "House of Representatives",
+        "Pres." => "Executive"
       })
       expect(t_rules.convening).to be_a(SwayLocale::FixedDayConvening)
     end

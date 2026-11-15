@@ -7,6 +7,7 @@ module Users
 
     # @lat: [[discoverable-passkey-design#Why an already-signed-in user still needs a fresh SMS token to add a passkey]]
     ADD_PASSKEY_VERIFY_WINDOW = 10.minutes
+    ADD_PASSKEY_FAILED_MESSAGE = "We couldn't add this passkey. Try again."
     DEFAULT_PASSKEY_LABELS = ["Passkey", "New passkey"].freeze
 
     rate_limit to: 10, within: 1.hour,
@@ -14,22 +15,22 @@ module Users
       by: -> { request.remote_ip },
       only: :verify_phone,
       if: -> { RateLimitConfig.enabled?(:phone_verify) },
-      with: -> { render_rate_limited },
+      with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
       store: ApplicationController::RATE_LIMIT_STORE
     rate_limit to: 3, within: 1.hour,
       name: "verify_phone_phone",
       # @lat: [[phone-cache-hashing]]
-      by: -> { PhoneCacheKey.digest(current_user&.phone) },
+      by: -> { "#{PhoneCacheKey.digest(current_user&.phone)}:#{request.remote_ip}" },
       only: :verify_phone,
       if: -> { RateLimitConfig.enabled?(:phone_verify) },
-      with: -> { render_rate_limited },
+      with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
       store: ApplicationController::RATE_LIMIT_STORE
     rate_limit to: 10, within: 1.hour,
       name: "confirm_phone_ip",
       by: -> { request.remote_ip },
       only: :confirm_phone,
       if: -> { RateLimitConfig.enabled?(:phone_verify) },
-      with: -> { render_rate_limited },
+      with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
       store: ApplicationController::RATE_LIMIT_STORE
     rate_limit to: 5, within: 1.hour,
       name: "confirm_phone_phone",
@@ -37,7 +38,7 @@ module Users
       by: -> { PhoneCacheKey.digest(current_user&.phone) },
       only: :confirm_phone,
       if: -> { RateLimitConfig.enabled?(:phone_verify) },
-      with: -> { render_rate_limited },
+      with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
       store: ApplicationController::RATE_LIMIT_STORE
 
     def index
@@ -64,7 +65,10 @@ module Users
         user_id: current_user.id,
         phone_last4: current_user.phone.to_s.last(4)
       )
-      render json: {success: send_phone_verification(session, current_user.phone)}, status: :ok
+      wait = phone_verification_send_wait(current_user.phone)
+      return render_rate_limited(retry_after: wait) if wait
+
+      render_phone_verification_send(session, current_user.phone)
     end
 
     def confirm_phone
@@ -138,7 +142,14 @@ module Users
         level: :warn,
         user_id: current_user.id
       )
-      render json: {success: false, message: "Verification failed: #{e.message}"}, status: :ok
+      Sentry.capture_message(
+        "passkeys.add.verification_failed",
+        level: :warning,
+        tags: {exception_class: e.class.name},
+        fingerprint: ["passkeys.add.verification_failed", e.class.name],
+        extra: {exception_class: e.class.name}
+      )
+      render json: {success: false, message: ADD_PASSKEY_FAILED_MESSAGE}, status: :ok
     ensure
       session.delete(:add_passkey_registration)
     end
@@ -175,6 +186,14 @@ module Users
         "passkeys.add.confirm_failed",
         user_id: current_user.id,
         twilio_code: e.code
+      )
+      false
+    rescue Twilio::REST::TwilioError => e
+      # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+      SwayLogging.warn(
+        "passkeys.add.confirm_failed",
+        user_id: current_user.id,
+        error_class: e.class.name
       )
       false
     end

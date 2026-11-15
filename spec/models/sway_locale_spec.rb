@@ -183,6 +183,21 @@ RSpec.describe SwayLocale, type: :model do
 
       expect(second.id).to eq(first.id)
     end
+
+    it "returns the existing row to the caller that loses a creation race" do
+      args = {city: "Baltimore", state: "MD", country: "US"}
+      existing = described_class.find_or_create_by_normalized!(**args)
+      allow(described_class).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordNotUnique)
+
+      expect(described_class.find_or_create_by_normalized!(**args).id).to eq(existing.id)
+    end
+
+    it "raises the collision when no row exists after it" do
+      allow(described_class).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordNotUnique)
+
+      expect { described_class.find_or_create_by_normalized!(city: "Baltimore", state: "MD", country: "US") }
+        .to raise_error(ActiveRecord::RecordNotUnique)
+    end
   end
 
   describe "#legislative_sessions" do

@@ -21,9 +21,9 @@ The `SeedLegislatorTerms` call sits outside the guard, so terms are written on e
 
 ## Executives get no term
 
-Presidents and Vice Presidents get a `Legislator` person row from the same method, but never a `LegislatorTerm` — by design, they are never scored.
+An executive roster row gets no `Legislator` and no `LegislatorTerm`, except the curated President row, which is seeded like any other member.
 
-Any un-evidenced sentinel terms created for executives without official service evidence are retired during seeding as detailed in [[current-legislator-term#Which term a legislator is serving now#Planned automatic legislator updates#Presidential display]].
+[[official-service-evidence#The curated President record]] owns the rule that accepts that one row. Any un-evidenced sentinel terms created for other executives without official service evidence are retired during seeding as detailed in [[current-legislator-term#Which term a legislator is serving now#Planned automatic legislator updates#Presidential display]].
 
 ## Terms are inserted, never mutated in place
 

@@ -3,15 +3,27 @@
 module Users
   module Webauthn
     class RegistrationController < ApplicationController
+      include VerifiedPhoneSession
+      include OnboardingSafetyNet
+
       class AlreadyRegistered < StandardError; end
 
       ALREADY_REGISTERED_MESSAGE = "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access."
+      VERIFICATION_FAILED_MESSAGE = "We couldn't finish setting up your passkey. Enter your phone number again to retry."
+      SIGN_IN_FAILED_MESSAGE = "Your passkey was saved, but Sway couldn't sign you in. Sign in with your passkey to continue."
 
-      rate_limit to: 5, within: 1.hour,
-        by: -> { request.remote_ip },
+      # @lat: [[phone-verification-rate-limits#Why passkey enrollment starts are rate-limited per verified phone]]
+      rate_limit to: 20, within: 1.hour,
+        name: "create",
+        # @lat: [[phone-cache-hashing]]
+        by: -> {
+          # @type self: Users::Webauthn::RegistrationController
+          verified_phone = session[:verified_phone]
+          verified_phone.present? ? PhoneCacheKey.digest(verified_phone) : request.remote_ip
+        },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_up) },
-        with: -> { render_rate_limited },
+        with: -> { render_rate_limited(retry_after: 1.hour.to_i) },
         store: ApplicationController::RATE_LIMIT_STORE
 
       skip_before_action :authenticate_sway_user!
@@ -22,7 +34,7 @@ module Users
         user = User.find_or_initialize_by(phone: session[:verified_phone])
         verified_phone_last4 = session[:verified_phone].to_s.last(4)
 
-        user.is_phone_verified = session[:verified_phone] == session[:phone]
+        user.is_phone_verified = verified_phone_current?(session[:phone])
 
         if user.is_phone_verified
           if user.has_sway_passkey?
@@ -89,7 +101,7 @@ module Users
           current_registration&.dig(:user_attributes)
         verified_phone = session[:verified_phone]
 
-        if registration_challenge.blank? || verified_phone.blank?
+        if registration_challenge.blank? || !verified_phone_current?(verified_phone)
           SwayLogging.warn("webauthn.registration.challenge_missing")
           redirect_to root_path, alert: "Registration session expired. Please try again."
           return
@@ -128,7 +140,20 @@ module Users
         end
 
         if passkey_saved && user
-          sign_in(user)
+          begin
+            sign_in(user)
+          rescue => e
+            SwayLogging.log_exception(
+              "webauthn.registration.sign_in_failed",
+              exception: e,
+              user_id: user.id,
+              passkey_id: passkey.id,
+              phone_last4: verified_phone.to_s.last(4)
+            )
+            Sentry.capture_exception(e, extra: {user_id: user.id, passkey_id: passkey.id})
+            redirect_to root_path, alert: SIGN_IN_FAILED_MESSAGE
+            return
+          end
           SwayLogging.info(
             "webauthn.registration.completed",
             user_id: user.id,
@@ -156,8 +181,17 @@ module Users
           user_id: user&.id,
           phone_last4: verified_phone.to_s.last(4)
         )
-        redirect_to root_path, alert: "Verification failed: #{e.message}"
+        Sentry.capture_message(
+          "webauthn.registration.verification_failed",
+          level: :error,
+          tags: {exception_class: e.class.name},
+          fingerprint: ["webauthn.registration.verification_failed", e.class.name],
+          extra: {exception_class: e.class.name}
+        )
+        redirect_to root_path, alert: VERIFICATION_FAILED_MESSAGE
       rescue ActiveRecord::RecordInvalid => e
+        return redirect_to(root_path, alert: ALREADY_REGISTERED_MESSAGE) if phone_taken?(e)
+
         SwayLogging.log_exception(
           "webauthn.registration.record_invalid",
           exception: e,
@@ -167,11 +201,34 @@ module Users
           errors: e.record.errors.full_messages
         )
         redirect_to root_path, alert: "Registration failed: #{e.record.errors.full_messages.join(", ")}"
+      rescue ActiveRecord::RecordNotUnique => e
+        return redirect_to(root_path, alert: ALREADY_REGISTERED_MESSAGE) if phone_taken?(e)
+
+        SwayLogging.log_exception(
+          "webauthn.registration.passkey_save_failed",
+          exception: e,
+          level: :warn,
+          user_id: user&.id,
+          phone_last4: verified_phone.to_s.last(4)
+        )
+        redirect_to root_path, alert: "Couldn't register your Passkey"
       ensure
         session.delete(:current_registration)
       end
 
       private
+
+      # @lat: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]
+      def phone_taken?(error)
+        case error
+        when ActiveRecord::RecordInvalid
+          error.record.is_a?(User) && error.record.errors.of_kind?(:phone, :taken)
+        when ActiveRecord::RecordNotUnique
+          error.message.include?("users.phone")
+        else
+          false
+        end
+      end
 
       def sanitized_user_attributes(attributes, verified_phone)
         empty_attributes = {}

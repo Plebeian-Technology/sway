@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe "Users::Passkeys", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "Setup"
 
@@ -139,6 +141,62 @@ RSpec.describe "Users::Passkeys", type: :request do
       end
     end
 
+    it "confirm_phone returns success:false when Twilio cannot be reached" do
+      setup
+      allow(twilio_verification_checks_double).to receive(:create).and_raise(
+        Twilio::REST::TwilioError.new("execution expired")
+      )
+
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({"success" => false})
+      expect(session_hash[:add_passkey_verified_at]).to be_nil
+    end
+
+    it "verify_phone returns success:false when Twilio cannot be reached" do
+      setup
+      allow(twilio_verifications_double).to receive(:create).and_raise(
+        Twilio::REST::TwilioError.new("execution expired")
+      )
+
+      post verify_phone_users_passkeys_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({"success" => false})
+    end
+
+    context "when the Twilio Verify service id is not set" do
+      around do |example|
+        with_env(
+          "TWILIO_ACCOUNT_SID" => "AC00000000000000000000000000000000",
+          "TWILIO_AUTH_TOKEN" => "test-auth-token",
+          "TWILIO_VERIFY_SERVICE_SID" => nil
+        ) { example.run }
+      end
+
+      before do
+        allow(Twilio::REST::Client).to receive(:new).and_call_original
+        allow(Sentry).to receive(:capture_exception)
+      end
+
+      it "verify_phone and confirm_phone answer success:false and report the missing setting" do
+        setup
+
+        post verify_phone_users_passkeys_path
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"success" => false})
+
+        post confirm_phone_users_passkeys_path, params: {code: "123456"}
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"success" => false})
+        expect(session_hash[:add_passkey_verified_at]).to be_nil
+
+        expect(Sentry).to have_received(:capture_exception)
+          .with(an_instance_of(Authentication::VerifyServiceNotConfiguredError)).twice
+      end
+    end
+
     it "add_options refuses to issue a challenge without a fresh phone confirmation" do
       setup
 
@@ -214,6 +272,34 @@ RSpec.describe "Users::Passkeys", type: :request do
       expect(user.passkeys.order(:created_at).last.label).to eq("New passkey 2")
     end
 
+    it "add_callback answers the fixed message and reports a failed verification to Sentry as a warning by exception class only" do
+      _, user = setup
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+      session_hash[:add_passkey_registration] = {"challenge" => fake_challenge}
+      allow(Sentry).to receive(:capture_message)
+      allow_any_instance_of(WebAuthn::RelyingParty).to receive(
+        :verify_registration
+      ).and_raise(WebAuthn::Error, "bad attestation")
+
+      expect {
+        post add_callback_users_passkeys_path,
+          params: {publicKeyCredential: {id: fake_credential_id}, passkey_label: "iPad"}
+      }.not_to change { user.passkeys.count }
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => Users::PasskeysController::ADD_PASSKEY_FAILED_MESSAGE}
+      )
+      expect(Sentry).to have_received(:capture_message).once do |message, **options|
+        expect(message).to eq("passkeys.add.verification_failed")
+        expect(options[:level]).to eq(:warning)
+        expect(options[:tags]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:fingerprint]).to eq(["passkeys.add.verification_failed", "WebAuthn::Error"])
+        expect(options[:extra]).to eq(exception_class: "WebAuthn::Error")
+        expect(options.to_s).not_to include("bad attestation")
+        expect(options.to_s).not_to include(user.phone)
+      end
+    end
+
     it "add_callback refuses when the phone confirmation has expired" do
       setup
       session_hash[:add_passkey_registration] = {"challenge" => fake_challenge}
@@ -227,18 +313,36 @@ RSpec.describe "Users::Passkeys", type: :request do
       )
     end
 
-    it "throttles verify_phone after 3 requests for the same phone when phone_verify rate limiting is enabled" do
+    it "throttles verify_phone after 3 requests for the same phone and IP for the hour, then sends from another IP" do
       setup
 
       with_rate_limit_enabled(:phone_verify) do
-        4.times do |i|
-          post verify_phone_users_passkeys_path,
-            headers: {"REMOTE_ADDR" => "10.0.0.#{i + 1}"},
-            as: :json
-        end
+        freeze_time do
+          4.times do
+            post verify_phone_users_passkeys_path, headers: {"REMOTE_ADDR" => "10.0.0.1"}, as: :json
+            travel 61.seconds
+          end
 
-        expect(response).to have_http_status(:too_many_requests)
+          expect(response).to have_http_status(:too_many_requests)
+          expect(response.headers["Retry-After"]).to eq(1.hour.to_i.to_s)
+
+          post verify_phone_users_passkeys_path, headers: {"REMOTE_ADDR" => "10.0.0.2"}, as: :json
+
+          expect(response).to have_http_status(:ok)
+        end
       end
+    end
+
+    context "when the send limit per phone applies" do
+      before { setup }
+
+      def code_send_request(ip:)
+        post verify_phone_users_passkeys_path, headers: {"REMOTE_ADDR" => ip}, as: :json
+      end
+
+      let(:code_send_status) { :ok }
+
+      include_examples "a code send limited per phone"
     end
 
     it "throttles confirm_phone after 5 requests for the same phone when phone_verify rate limiting is enabled" do
@@ -253,6 +357,7 @@ RSpec.describe "Users::Passkeys", type: :request do
         end
 
         expect(response).to have_http_status(:too_many_requests)
+        expect(response.headers["Retry-After"]).to eq(1.hour.to_i.to_s)
       end
     end
   end

@@ -21,6 +21,11 @@ class String
 
     digits
   end
+
+  # @lat: [[identity-and-access#Identity and access#The phone number is the account#A number no US phone can have never reaches Twilio]]
+  def possible_us_phone?
+    match?(/\A[2-9]\d{2}[2-9]\d{6}\z/)
+  end
 end
 
 module RGeo

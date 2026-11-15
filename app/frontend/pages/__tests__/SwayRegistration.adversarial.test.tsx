@@ -14,15 +14,20 @@ import { ROUTES } from "app/frontend/sway_constants";
 
 interface IFormActionOptions {
     onFinish?: () => void;
+    onHttpException?: (response: { status: number }) => boolean | void;
+    onNetworkError?: (error: Error) => boolean | void;
+    onError?: (errors: Record<string, string>) => void;
     [key: string]: unknown;
 }
 
 const postMock = vi.fn<(url: string, options?: IFormActionOptions) => void>();
+let postedBody: Record<string, unknown> | undefined;
 const usePollMock = vi.fn<(interval: number, options?: unknown, config?: unknown) => void>();
 
 vi.mock("@inertiajs/react", () => ({
     useForm: function useForm<TForm extends Record<string, unknown>>(initial: TForm) {
         const [data, setDataState] = React.useState<TForm>(initial ?? ({} as TForm));
+        const transformRef = React.useRef<((d: TForm) => TForm) | null>(null);
         const setData = (keyOrObj: string | Partial<TForm>, val?: unknown) => {
             if (typeof keyOrObj === "string") {
                 setDataState((prev) => ({ ...prev, [keyOrObj]: val }));
@@ -33,10 +38,15 @@ vi.mock("@inertiajs/react", () => ({
         return {
             data,
             setData,
-            post: postMock,
+            post: (url: string, options?: IFormActionOptions) => {
+                postMock(url, options);
+                postedBody = transformRef.current ? transformRef.current(data) : data;
+            },
             processing: false,
             errors: {},
-            transform: vi.fn<(fn: (d: TForm) => TForm) => void>(),
+            transform: (fn: (d: TForm) => TForm) => {
+                transformRef.current = fn;
+            },
         };
     },
     usePoll: (interval: number, options?: unknown, config?: unknown) => usePollMock(interval, options, config),
@@ -52,10 +62,10 @@ vi.mock("app/frontend/hooks/users/useLogout", () => ({
     useLogout: () => mockLogout,
 }));
 
-const toastDismissMock = vi.fn<() => void>();
+const toastDismissMock = vi.fn<(id?: string) => void>();
 vi.mock("react-hot-toast", () => ({
     default: {
-        dismiss: () => toastDismissMock(),
+        dismiss: (id?: string) => toastDismissMock(id),
     },
 }));
 
@@ -169,6 +179,14 @@ const SAMPLE_NOMINATIM_PLACE: INominatimPlace = {
     },
 };
 
+const LOADING_TOAST_ID = "loading-toast-id";
+const ERROR_TOAST_ID = "error-toast-id";
+
+const pendingUser: sway.IUser = {
+    id: 42,
+    registration_status: "pending",
+} as sway.IUser;
+
 const failedUser: sway.IUser = {
     id: 42,
     registration_status: "failed",
@@ -187,6 +205,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
     beforeEach(() => {
         vi.useFakeTimers();
         postMock.mockReset();
+        postedBody = undefined;
         usePollMock.mockReset();
         mockLogout.mockReset();
         toastDismissMock.mockReset();
@@ -338,6 +357,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
             postMock.mockImplementation((_url, options) => {
                 capturedOnFinish = options?.onFinish;
             });
+            notifyMock.mockReturnValue(LOADING_TOAST_ID);
 
             render(<SwayRegistration user={failedUser} />);
 
@@ -348,6 +368,8 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
             fireEvent.click(retryButton);
             expect(screen.queryByTestId("registration-error")).toBeNull();
             expect(screen.getByRole("combobox")).toBeInTheDocument();
+
+            fireEvent.change(screen.getByRole("combobox"), { target: { value: "100 Holliday" } });
 
             const submitButton = screen.getByTestId("btn-submit-registration");
             const form = submitButton.closest("form");
@@ -361,6 +383,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
                 }),
             );
             expect(postMock).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+            expect(postedBody?.street).toBe("100 Holliday");
 
             expect(submitButton).toBeDisabled();
 
@@ -368,12 +391,24 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
                 capturedOnFinish?.();
             });
 
-            expect(toastDismissMock).toHaveBeenCalled();
+            expect(toastDismissMock).toHaveBeenCalledWith(LOADING_TOAST_ID);
             expect(screen.getByTestId("registration-error")).toBeInTheDocument();
 
             fireEvent.click(screen.getByTestId("btn-retry-registration"));
             expect(screen.queryByTestId("registration-error")).toBeNull();
             expect(screen.getByRole("combobox")).toBeInTheDocument();
+        });
+
+        it("posts typed text as the street when no suggestion option is clicked", () => {
+            render(<SwayRegistration user={failedUser} />);
+            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+
+            fireEvent.change(screen.getByRole("combobox"), { target: { value: "100 Holliday" } });
+            fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+            expect(postMock).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+            expect(postedBody).toMatchObject({ street: "100 Holliday" });
+            expect(postedBody).not.toHaveProperty("typed_address");
         });
 
         it("handles cancel button click by invoking useLogout", () => {
@@ -409,6 +444,100 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         it("tracks completion telemetry when user is registered", () => {
             render(<SwayRegistration user={completeUser} />);
             expect(trackFunnelStepOnceMock).toHaveBeenCalledWith("registration_completed");
+        });
+    });
+
+    describe("A failed request leaves the form usable", () => {
+        const typedAddress = "100 Holliday";
+        let options: IFormActionOptions;
+
+        const submitTypedAddress = () => {
+            notifyMock.mockImplementation(({ level }) => (level === "error" ? ERROR_TOAST_ID : LOADING_TOAST_ID));
+            postMock.mockImplementation((_url, postOptions) => {
+                options = postOptions ?? {};
+            });
+            render(<SwayRegistration user={pendingUser} />);
+            fireEvent.change(screen.getByRole("combobox"), { target: { value: typedAddress } });
+            fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+        };
+
+        const errorNotifications = () =>
+            notifyMock.mock.calls.filter(
+                ([args]) => args.level === "error" && args.title === PARITY_COPY.address.requestFailed,
+            );
+
+        it("says the request failed and suppresses the Inertia dialog on an HTTP error response", () => {
+            submitTypedAddress();
+
+            let result: boolean | void | undefined = undefined;
+            act(() => {
+                result = options.onHttpException?.({ status: 500 });
+            });
+
+            expect(PARITY_COPY.address.requestFailed).toBe(
+                "Something went wrong sending your address. Please try again.",
+            );
+            expect(errorNotifications()).toHaveLength(1);
+            expect(result).toBe(false);
+        });
+
+        it("says the request failed and suppresses the rejection on a network error", () => {
+            submitTypedAddress();
+
+            let result: boolean | void | undefined = undefined;
+            act(() => {
+                result = options.onNetworkError?.(new Error("Network Error"));
+            });
+
+            expect(errorNotifications()).toHaveLength(1);
+            expect(result).toBe(false);
+        });
+
+        it.each([
+            ["an HTTP error", () => options.onHttpException?.({ status: 400 })],
+            ["a network error", () => options.onNetworkError?.(new Error("Network Error"))],
+        ])("keeps the error toast when Inertia finishes the visit after %s", (_label, fail) => {
+            submitTypedAddress();
+
+            act(() => {
+                fail();
+                options.onFinish?.();
+            });
+
+            expect(toastDismissMock).toHaveBeenCalledWith(LOADING_TOAST_ID);
+            expect(toastDismissMock.mock.calls.every(([id]) => id === LOADING_TOAST_ID)).toBe(true);
+            expect(toastDismissMock).not.toHaveBeenCalledWith(ERROR_TOAST_ID);
+        });
+
+        it.each([
+            ["an HTTP error", () => options.onHttpException?.({ status: 500 })],
+            ["a network error", () => options.onNetworkError?.(new Error("Network Error"))],
+        ])("enables the submit button and keeps the typed address after %s", (_label, fail) => {
+            submitTypedAddress();
+            expect(screen.getByTestId("btn-submit-registration")).toBeDisabled();
+
+            act(() => {
+                fail();
+                options.onFinish?.();
+            });
+
+            expect(screen.getByTestId("btn-submit-registration")).toBeEnabled();
+            expect(screen.getByRole("combobox")).toHaveValue(typedAddress);
+
+            fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+            expect(postMock).toHaveBeenCalledTimes(2);
+            expect(postedBody).toMatchObject({ street: typedAddress });
+        });
+
+        it("does not show the request-failed message for a validation answer", () => {
+            submitTypedAddress();
+
+            act(() => {
+                options.onError?.({ address: "Please check your address" });
+                options.onFinish?.();
+            });
+
+            expect(errorNotifications()).toHaveLength(0);
         });
     });
 

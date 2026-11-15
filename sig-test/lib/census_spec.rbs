@@ -1,0 +1,5 @@
+# Helpers defined at describe-block scope in spec/lib/census_spec.rb.
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def census_query_url: () -> String
+end

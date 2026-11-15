@@ -23,6 +23,7 @@ class ReconcileUserDistrictsJob < ApplicationJob
         sway_locale: sway_locale.name
       )
       Sentry.capture_exception(e, extra: {user_id: user.id, sway_locale: sway_locale.name})
+      user.add_pending_representative_locale(sway_locale)
       next
     end
   end

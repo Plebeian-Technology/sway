@@ -23,7 +23,8 @@ const CHALLENGE_REQUEST_FAILED = "challenge-request-failed";
 // @lat: [[decoy-challenge-non-disclosure#How the web sign-in flow (Users::Webauthn::SessionsController) achieves the same non-disclosure]]
 type StartAuthenticationResponse =
     | { flow: "passkey"; options: PublicKeyCredentialRequestOptionsJSON }
-    | { flow: "sms"; success: boolean };
+    | { flow: "sms"; success: boolean; error?: string }
+    | { flow: "enroll" };
 
 type DiscoverableChallengeResponse = { flow: "passkey"; options: PublicKeyCredentialRequestOptionsJSON };
 
@@ -34,7 +35,7 @@ export const useWebAuthnAuthentication = (onThrottled?: (until: Date | null) => 
     const [discoverableFailure, setDiscoverableFailure] = useState<string | null>(null);
 
     const startAuthentication = useCallback(
-        async (phone: string): Promise<PublicKeyCredentialWithAssertionJSON | boolean | void> => {
+        async (phone: string): Promise<PublicKeyCredentialWithAssertionJSON | boolean | "enroll" | void> => {
             const controller = new AbortController();
 
             setLoading(true);
@@ -45,14 +46,23 @@ export const useWebAuthnAuthentication = (onThrottled?: (until: Date | null) => 
                 if (!result) return;
 
                 if (result.flow === "sms") {
+                    if (!result.success && result.error) {
+                        notify({ level: "error", title: result.error });
+                        return;
+                    }
                     return result.success;
+                }
+
+                if (result.flow === "enroll") {
+                    return "enroll";
                 }
 
                 return get({ publicKey: result.options, signal: controller.signal }).catch((e) => {
                     handleError(e);
                 });
             } catch (e) {
-                if (handleThrottledError(e, "sign_in", onThrottled)) {
+                // @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day]]
+                if (handleThrottledError(e, "phone", onThrottled)) {
                     return;
                 }
                 throw e;

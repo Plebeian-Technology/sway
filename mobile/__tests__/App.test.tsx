@@ -19,7 +19,7 @@ jest.mock("../src/hooks/useUserProfile", () => ({
             phone: "+15555550100",
             // @lat: [[mobile-jest-first-pass-test-notes#App test supplies the completed profile contract]]
             address: {
-                street1: "1 Main St",
+                street: "1 Main St",
                 city: "Baltimore",
                 region_code: "MD",
                 postal_code: "21201",

@@ -70,5 +70,97 @@ RSpec.describe "UserLegislators", type: :request do
       expect(response).to redirect_to(legislators_path)
       expect(flash[:alert]).to be_present
     end
+
+    context "when resolving representatives raises" do
+      def setup_user_with_address
+        sway_locale, user = setup
+        address = create(:address, city: sway_locale.city, region_code: sway_locale.region_code, country: sway_locale.country)
+        create(:user_address, user:, address:)
+        user
+      end
+
+      it "returns JSON 503 with code registration_unavailable" do
+        setup_user_with_address
+        allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise(RuntimeError, "boom")
+
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body["error"]).to eq(
+          "code" => "registration_unavailable",
+          "message" => UserLegislatorsController::REPRESENTATIVES_UNAVAILABLE_MESSAGE
+        )
+      end
+
+      it "redirects HTML to legislators with the alert" do
+        setup_user_with_address
+        allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise(RuntimeError, "boom")
+
+        post user_legislators_path
+
+        expect(response).to redirect_to(legislators_path)
+        expect(flash[:alert]).to eq(UserLegislatorsController::REPRESENTATIVES_UNAVAILABLE_MESSAGE)
+      end
+
+      it "reports the exception to Sentry" do
+        setup_user_with_address
+        error = RuntimeError.new("boom")
+        allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise(error)
+        allow(Sentry).to receive(:capture_exception)
+
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+
+        expect(Sentry).to have_received(:capture_exception).with(error, anything)
+      end
+
+      it "handles a geocoding outage the same way" do
+        setup_user_with_address
+        allow_any_instance_of(SwayRegistrationService).to receive(:call)
+          .and_raise(SwayGeocode::ServiceUnavailableError, "down")
+
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body.dig("error", "code")).to eq("registration_unavailable")
+      end
+
+      it "leaves the user's existing links unchanged" do
+        user = setup_user_with_address
+        links_before = user.user_legislators.pluck(:id, :legislator_id, :active)
+        allow_any_instance_of(SwayRegistrationService).to receive(:call).and_raise(RuntimeError, "boom")
+
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+
+        expect(user.user_legislators.reload.pluck(:id, :legislator_id, :active)).to eq(links_before)
+      end
+
+      it "rolls back a link saved before the lookup raised" do
+        user = setup_user_with_address
+        links_before = user.user_legislators.pluck(:id)
+        allow_any_instance_of(SwayRegistrationService).to receive(:call) do
+          create(:user_legislator, user:)
+          raise "boom"
+        end
+
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(user.user_legislators.reload.pluck(:id)).to eq(links_before)
+      end
+    end
+  end
+
+  describe "an unexpected error" do
+    it "answers 503 onboarding_unavailable to the JSON list and reports the error" do
+      setup
+      allow(Sentry).to receive(:capture_exception)
+      allow(UserLegislatorResource).to receive(:new).and_raise(RuntimeError, "boom")
+
+      get user_legislators_path, headers: {"Accept" => "application/json"}
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
   end
 end

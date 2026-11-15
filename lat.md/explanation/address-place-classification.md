@@ -51,9 +51,57 @@ Nominatim's acceptable use policy limits search requests to a maximum of one req
 
 To satisfy upstream policy and eliminate browser CORS blocks, autocomplete queries route through the Rails backend (`GET /addresses/autocomplete` serviced by `NominatimService`). The service queries Nominatim with Faraday using an identifying User-Agent (`Sway/1.0 (civic-tech-app; https://sway.vote)`), caches responses in `Rails.cache` for 24 hours, and applies client debounce and controller-level rate limiting (60 requests per minute).
 
+The controller forwards only parameters that arrive as plain text. A query that is not text, is blank, or is longer than [[app/controllers/addresses_controller.rb#AddressesController#MAX_QUERY_LENGTH|200 characters]] gets an empty answer without a Nominatim call; an optional parameter sent as an array or nested hash is dropped, so bot probes neither reach the shared public service nor log an application error.
+
+Only a successful answer is cached: a 200 response whose body is a JSON array, including a genuine empty array, which is a real "no match" answer the usage policy expects Sway to reuse. A failed or malformed answer (a non-200 status, a dropped connection, a body that is not JSON, or a JSON body that is not an array) is logged but not cached, so a brief Nominatim outage does not make the same query answer "no results" for a day after Nominatim recovers.
+
+To stay inside the usage policy, the service sends at most [[app/services/nominatim_service.rb#NominatimService#REQUESTS_PER_SECOND|one uncached search per second]] across all of Sway's processes, counted in the shared cache; a search over the cap is not sent and counts as no answer, and a cache that cannot count, such as the test environment's null store, caps nothing. The cap applies only while Sway has at most [[app/services/nominatim_service.rb#NominatimService#UNCAPPED_ABOVE_REGISTERED_USERS|100 users who completed registration]]; above that every uncached search goes to Nominatim, a usage-policy risk the operator accepted on 2026-11-13. When Nominatim gives no answer to a signed-in user's search, the service asks [[app/services/google_places/client.rb#GooglePlaces#Client|Google Places]] the same query and returns its places uncached, or an empty array when Google has no key or no usable answer either; a genuine empty Nominatim answer never reaches Google.
+
 
 ## Nominatim address payload mapping
 
 [[app/frontend/sway_utils/parseNominatimAddress.ts#parseNominatimAddress]] maps OpenStreetMap Nominatim search responses into Sway's address structure.
 
 Nominatim returns address components across structured properties (`house_number`, `road`, `city`, `state`, `country`, `postcode`) while supplying coordinates in top-level `lat` and `lon` fields. The parser converts coordinates to floating-point numbers and resolves standardized state abbreviations so downstream registration geocoding and district lookups remain consistent.
+
+## Google Places results in the Nominatim shape
+
+[[app/services/google_places/client.rb#GooglePlaces#Client]] answers a web address search from Google Places Text Search when Nominatim cannot, and returns each place in Nominatim's own shape.
+
+Returning the Nominatim shape means the browser's existing parser and suggestion
+hook read a Google answer without knowing where it came from. Each place carries
+`source: "google_places"` so a caller can still tell the two apart. The client
+takes the same keywords as `NominatimService.search`. A Nominatim viewbox lists
+the top latitude before the bottom one, and Google rejects a rectangle whose low
+latitude is above its high one, so the client sorts the corners. The viewbox is
+a hard limit only when `bounded` is one of the values Nominatim treats as on;
+the browser sends the string `"0"` for an unbounded locale, and that string is
+true in Ruby.
+
+Unlike a Nominatim answer, a Google answer is never cached. Google's terms
+forbid storing Places content beyond the place id, and the fallback runs only
+while Nominatim is failing or capped, so repeated identical queries are rare.
+
+The suggestion list credits "Google Maps" in place of OpenStreetMap whenever
+any suggestion's place has that source, following Google's Places API (New)
+policy page as read on 2026-11-13: attribution is the Google Maps logo when
+possible, otherwise the unmodified, untranslated text "Google Maps" at 12sp to
+16sp in #5E5E5E or white, placed inside the same container as the content. The
+list uses the text form, because no logo asset ships with the app.
+
+The server reads the same `GOOGLE_MAPS_API_KEY` that the browser's map loader
+uses. That key may be restricted to web referrers or lack Places API (New), in
+which case Google answers every server call with HTTP 403. A 403 is therefore
+reported to Sentry as a warning, with only the status, so a refused key is
+visible rather than silently disabling the fallback. Other failures are only
+logged. The connection retries a server error once, because a text search
+changes nothing on Google's side and a server error answers quickly. It never
+retries a timeout or a dropped connection, because a retry would hold the
+suggestion request past its 5-second wait while the user types, and never
+retries a 429, which would only spend more of the quota that caused it.
+
+### Only a signed-in user's search reaches Google
+
+[[app/controllers/addresses_controller.rb#AddressesController#autocomplete]] lets [[app/services/nominatim_service.rb#NominatimService#search]] fall back to Google only when the request has a signed-in user; an anonymous search Nominatim cannot answer gets an empty array.
+
+The autocomplete endpoint skips authentication, and Google Places Text Search is billed per request with no budget in Sway. Without this gate any anonymous client could send uncached queries past the one-per-second Nominatim cap and spend Google quota without limit. The only caller is the registration page's address search, which is reachable only after sign-in, so the gate costs a real user nothing.

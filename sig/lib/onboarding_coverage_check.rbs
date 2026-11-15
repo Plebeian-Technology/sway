@@ -1,0 +1,31 @@
+class OnboardingCoverageCheck
+  FLOOR_PATH: String
+
+  @resultset_path: String
+  @floors: Hash[String, Hash[String, Float]]
+  @root: String
+  @since: Integer?
+  @merged_coverage: Hash[String, untyped]
+
+  def initialize: (resultset_path: String, floors: Hash[String, Hash[String, Float]], root: String, ?since: Integer?) -> void
+
+  def report: () -> Array[String]
+
+  def failures: () -> Array[String]
+
+  private
+
+  def below_floor: (String path, String criterion, Float percent, Float floor) -> String?
+
+  def line_percent: (SimpleCov::SourceFile source_file) -> Float
+
+  def branch_percent: (SimpleCov::SourceFile source_file) -> Float
+
+  def format_percent: (Float percent) -> String
+
+  def source_file_for: (String path) -> SimpleCov::SourceFile?
+
+  def merged_coverage: () -> Hash[String, untyped]
+
+  def fresh_results: () -> Hash[String, untyped]
+end

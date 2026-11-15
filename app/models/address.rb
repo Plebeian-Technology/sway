@@ -29,12 +29,8 @@ class Address < ApplicationRecord
   before_validation :normalize_address
 
   after_validation :geocode, if: ->(_address) { Rails.env.test? }
-  after_commit :geocode,
-    unless:
-      lambda { |address|
-        Rails.env.test? ||
-          (address&.latitude.present? && address&.longitude.present?)
-      }
+  # @lat: [[address-normalized-key#Why an unlocated address has no key]]
+  after_commit :geocode_and_save, unless: ->(_address) { Rails.env.test? }
 
   # @lat: [[personal-detail-encryption#What is encrypted on an address]]
   encrypts :street
@@ -99,11 +95,26 @@ class Address < ApplicationRecord
 
   # @lat: [[locale-user-counts#Why the attribute sets are reachable without a record]]
   def self.sway_locale_attribute_sets_for(city:, region_code:, country:)
-    [
-      {city:, state: region_code, country:},
-      {city: RegionUtil.from_region_code_to_region_name(region_code), state: region_code, country:},
-      {city: "congress", state: "congress", country:}
-    ]
+    country = country.presence || "US"
+    sets = [] #: Array[Hash[Symbol, String?]]
+    if region_code.present?
+      sets << {city:, state: region_code, country:} if city.present?
+      sets << {city: RegionUtil.from_region_code_to_region_name(region_code), state: region_code, country:}
+    end
+    sets << {city: "congress", state: "congress", country: "US"}
+  end
+
+  # @lat: [[representative-resolution#Congress fallback]]
+  def us_state_code
+    code = RegionUtil.from_region_name_to_region_code(region_code)
+    return nil if code.nil? || code == "US" || !RegionUtil::STATE_CODES_NAMES.key?(code.to_sym)
+    return nil unless country.blank? || RegionUtil.from_country_code_to_name(country) == "United States"
+
+    code
+  end
+
+  def located?
+    latitude.present? && longitude.present?
   end
 
   def sway_locale_attribute_sets
@@ -114,6 +125,20 @@ class Address < ApplicationRecord
     RGeo::Cartesian.factory.point(longitude.to_f, latitude.to_f)
   end
 
+  def geocode_and_save
+    return if located?
+
+    result = Geocoder.search(full_address).first
+    latitude, longitude = result&.coordinates
+    return if result.nil? || latitude.nil? || longitude.nil?
+
+    update!(latitude:, longitude:, **blank_fields_from_geocode(result))
+    @sway_locales = nil
+  rescue => e
+    SwayLogging.log_exception("address.geocode_failed", exception: e, address_id: id)
+    Sentry.capture_exception(e, extra: {address_id: id})
+  end
+
   private
 
   def geocode
@@ -121,6 +146,17 @@ class Address < ApplicationRecord
 
     results = Geocoder.search(full_address)
     self.latitude, self.longitude = results.first&.coordinates || []
+  end
+
+  # @lat: [[address-normalized-key#A typed address gets its place from the geocode]]
+  def blank_fields_from_geocode(result)
+    found = {
+      city: result.city,
+      region_code: result.state_code.presence || result.state,
+      postal_code: result.postal_code,
+      country: result.country_code.to_s.upcase.presence
+    }
+    found.select { |field, value| public_send(field).blank? && value.present? }
   end
 
   def normalize_address

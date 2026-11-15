@@ -1,8 +1,16 @@
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey ceremonies]]
+import * as Sentry from "@sentry/react-native";
 import { Passkey } from "react-native-passkey";
 import { Platform } from "react-native";
 
-import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError } from "../../src/auth/passkeyAuth";
+import {
+    passkeyAuth,
+    PasskeyUnsupportedError,
+    PasskeyProviderMissingError,
+    PasskeyCreateUnsupportedError,
+    NoPasskeyError,
+    SessionSaveError,
+} from "../../src/auth/passkeyAuth";
 import { apiClient } from "../../src/api/client";
 import { tokenStore } from "../../src/auth/tokenStore";
 import { sessionStore } from "../../src/auth/sessionStore";
@@ -58,6 +66,16 @@ const challengeOpts = {
 };
 
 describe("passkeyAuth", () => {
+    let restorePlatform: (() => void) | undefined;
+    const useAndroid = () => {
+        restorePlatform = jest.replaceProperty(Platform, "OS", "android").restore;
+    };
+
+    afterEach(() => {
+        restorePlatform?.();
+        restorePlatform = undefined;
+    });
+
     beforeEach(() => {
         jest.clearAllMocks();
         (Passkey.isSupported as jest.Mock).mockReturnValue(true);
@@ -150,12 +168,30 @@ describe("passkeyAuth", () => {
             await expect(passkeyAuth.signIn("+15551112222")).rejects.toBeInstanceOf(PasskeyUnsupportedError);
         });
 
+        test("leaves a sign-in {error: BadConfiguration} on Android as a plain Error and reports it to Sentry", async () => {
+            useAndroid();
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(passkeyFlow);
+            (Passkey.get as jest.Mock).mockRejectedValueOnce({ error: "BadConfiguration", message: "constraint" });
+
+            const thrown = await passkeyAuth.signIn("+15551112222").catch((e: unknown) => e);
+
+            expect((thrown as Error).constructor).toBe(Error);
+            expect((thrown as Error).message).toBe("constraint");
+            expect(Sentry.captureMessage).toHaveBeenCalledWith("passkey_native_error", {
+                level: "warning",
+                tags: { passkey_error: "BadConfiguration" },
+            });
+        });
+
         test.each(["RequestFailed", "BadConfiguration"])(
-            "leaves %s unmapped, so an rp_id mismatch stays visible",
+            "leaves %s as a plain Error carrying the native message, so an rp_id mismatch stays visible",
             async (error) => {
                 (apiClient.post as jest.Mock).mockResolvedValueOnce(passkeyFlow);
                 (Passkey.get as jest.Mock).mockRejectedValueOnce({ error, message: "nope" });
-                await expect(passkeyAuth.signIn("+15551112222")).rejects.not.toBeInstanceOf(NoPasskeyError);
+                const thrown = await passkeyAuth.signIn("+15551112222").catch((e: unknown) => e);
+                expect(thrown).toBeInstanceOf(Error);
+                expect((thrown as Error).constructor).toBe(Error);
+                expect((thrown as Error).message).toBe("nope");
             },
         );
 
@@ -256,6 +292,107 @@ describe("passkeyAuth", () => {
             expect(emitSpy).toHaveBeenCalledWith("signed_in");
             expect(result.user.id).toBe(7);
         });
+
+        describe("when the device cannot save the new session", () => {
+            const regOpts = { ...challengeOpts, user: { id: "u_7", name: "x", displayName: "x" } };
+
+            beforeEach(() => {
+                (apiClient.post as jest.Mock).mockResolvedValueOnce(regOpts).mockResolvedValueOnce(callbackResp);
+            });
+
+            test.each([
+                [
+                    "sessionStore.set",
+                    () => (sessionStore.set as jest.Mock).mockRejectedValueOnce(new Error("keychain locked")),
+                ],
+                [
+                    "tokenStore.set",
+                    () => (tokenStore.set as jest.Mock).mockRejectedValueOnce(new Error("keychain locked")),
+                ],
+            ])("rejects with SessionSaveError and clears both stores when %s fails", async (_store, failWrite) => {
+                failWrite();
+                const emitSpy = jest.spyOn(authEvents, "emit");
+
+                const attempt = passkeyAuth.register("+15551112222", "smsv_token_abc");
+
+                await expect(attempt).rejects.toBeInstanceOf(SessionSaveError);
+                await expect(attempt).rejects.toThrow(/sign in with (your|the) passkey/i);
+                expect(tokenStore.clear).toHaveBeenCalled();
+                expect(sessionStore.clear).toHaveBeenCalled();
+                expect(emitSpy).not.toHaveBeenCalledWith("signed_in");
+            });
+
+            test("still rejects with SessionSaveError when clearing a store also fails", async () => {
+                (sessionStore.set as jest.Mock).mockRejectedValueOnce(new Error("keychain locked"));
+                (tokenStore.clear as jest.Mock).mockRejectedValueOnce(new Error("keychain locked"));
+
+                await expect(passkeyAuth.register("+15551112222", "smsv_token_abc")).rejects.toBeInstanceOf(
+                    SessionSaveError,
+                );
+                expect(sessionStore.clear).toHaveBeenCalled();
+            });
+        });
+
+        test.each([
+            ["UserCancelled", NoPasskeyError],
+            ["NoCredentials", NoPasskeyError],
+            ["NotSupported", PasskeyCreateUnsupportedError],
+            ["NoCreateOption", PasskeyProviderMissingError],
+        ])("maps a create ceremony that throws {error: %s} to %p", async (error, expected) => {
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(challengeOpts);
+            (Passkey.create as jest.Mock).mockRejectedValueOnce({ error, message: "native message" });
+
+            const thrown = await passkeyAuth.register("+15551112222", "smsv_token_abc").catch((e: unknown) => e);
+            expect((thrown as Error).constructor).toBe(expected);
+            expect(apiClient.post).toHaveBeenCalledTimes(1);
+        });
+
+        test("leaves a create ceremony that throws {error: BadConfiguration} as a plain Error on iOS", async () => {
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(challengeOpts);
+            (Passkey.create as jest.Mock).mockRejectedValueOnce({ error: "BadConfiguration", message: "rp mismatch" });
+
+            const thrown = await passkeyAuth.register("+15551112222", "smsv_token_abc").catch((e: unknown) => e);
+            expect((thrown as Error).constructor).toBe(Error);
+            expect((thrown as Error).message).toBe("rp mismatch");
+        });
+
+        test("maps a create ceremony that throws {error: BadConfiguration} to PasskeyProviderMissingError on Android", async () => {
+            useAndroid();
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(challengeOpts);
+            (Passkey.create as jest.Mock).mockRejectedValueOnce({ error: "BadConfiguration", message: "constraint" });
+
+            const thrown = await passkeyAuth.register("+15551112222", "smsv_token_abc").catch((e: unknown) => e);
+            expect((thrown as Error).constructor).toBe(PasskeyProviderMissingError);
+            expect(Sentry.captureMessage).not.toHaveBeenCalled();
+        });
+
+        test("reports an unmapped native error to Sentry by name only", async () => {
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(challengeOpts);
+            (Passkey.create as jest.Mock).mockRejectedValueOnce({
+                error: "RequestFailed",
+                message: "detail for +15551112222 with smsv_token_abc",
+            });
+
+            await passkeyAuth.register("+15551112222", "smsv_token_abc").catch(() => {});
+
+            expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+            expect(Sentry.captureMessage).toHaveBeenCalledWith("passkey_native_error", {
+                level: "warning",
+                tags: { passkey_error: "RequestFailed" },
+            });
+        });
+
+        test.each(["UserCancelled", "NoCredentials", "NotSupported", "NoCreateOption"])(
+            "does not report a mapped native error (%s) to Sentry",
+            async (error) => {
+                (apiClient.post as jest.Mock).mockResolvedValueOnce(challengeOpts);
+                (Passkey.create as jest.Mock).mockRejectedValueOnce({ error, message: "native message" });
+
+                await passkeyAuth.register("+15551112222", "smsv_token_abc").catch(() => {});
+
+                expect(Sentry.captureMessage).not.toHaveBeenCalled();
+            },
+        );
     });
 
     // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey ceremonies]]

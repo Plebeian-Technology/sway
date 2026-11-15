@@ -5,21 +5,29 @@ lat:
 
 # SwayRegistrationController design notes
 
-Design notes for SwayRegistrationController: the transient-outage message and rollback, why the legislator check comes before the service loop, and why mobile gets JSON instead of following the web redirect.
+Design notes for SwayRegistrationController: why one locale's failed lookup is skipped, why the legislator check comes before the service loop, and why mobile gets JSON instead of following the web redirect.
 
-## Why geocoding failures roll back and ask for a retry
+## Why one locale's failed lookup is skipped and reported
 
-`REGISTRATION_UNAVAILABLE_MESSAGE` is shown when Census TIGERweb / OpenStates can't be reached while resolving a user's districts.
+An upstream outage never blocks a first registration: `#create` gives each locale its own transaction, so one locale's failure costs only that locale.
 
-The outage is transient, so `#create` rolls back any partial legislator assignments, leaves the user `pending`, and asks them to retry.
+An address reaches up to three locales (city, state, Congress), and each resolves through a different upstream: a local boundary file, OpenStates, or Census TIGERweb. Any error from one locale's [[app/services/sway_registration_service.rb#SwayRegistrationService]] call — an unreachable service, a malformed body, a bad roster row — rolls back that locale's own links and leaves the links of the other locales in place. The error is logged as `sway_registration.locale_skipped` and reported to Sentry with the user, address and locale, so nothing is skipped silently.
 
-All-or-nothing applies across the three locales (city, state, congress): if one jurisdiction's geocoding is unreachable, the `UserLegislators` already created for the others are rolled back too, so the user stays `pending` (never half-registered) and can retry the whole thing.
+The user then completes with whatever resolved. The earlier design rolled every locale back and answered `geocoding_unavailable`, which left the user `pending` with a saved address; every retry repeated the failure for as long as the upstream problem lasted, so one bad answer for one locale stopped the whole registration. Each skipped locale is recorded on the user so its representatives can be assigned later ([[registration-dead-ends#A skipped lookup is recorded so it can be retried]]). A failed geocode is the same kind of skip: an address still unlocated after resolution has all its locales recorded ([[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]).
 
-## Why create checks has_user_legislators? before the service loop
+Only `StandardError` is caught, and only around one locale's call, so the rest of the action still fails loudly. A registered user switching address takes a different path, which still answers the outage message.
 
-`#create` checks [[app/models/user.rb#User#registered?]] before the loop that calls [[app/services/sway_registration_service.rb#SwayRegistrationService]] for each locale, returning early on initial registration or same-address resubmission.
+## Why create checks holds_representatives? before the service loop
 
-When an already-registered user with an existing [[app/models/user_address.rb#UserAddress]] submits a different address, `#create` requires confirmation and delegates cross-locale reconciliation and [[app/models/user_address_change.rb#UserAddressChange]] auditing to [[app/services/user_address_switch_service.rb#UserAddressSwitchService]]. `spec/requests/sway_registration_locale_parity_spec.rb`'s locale-parity check depends on this ordering: it creates the `UserLegislator` row up front on a user without a prior `UserAddress`, faking what a successful service run would produce, so that once `Address#sway_locales` has been walked the early exit fires and calls `u.complete!` on the controller's own copy of the user when the state machine reloads it. Creating the record in the other order — after the POST — would leave the controller holding a stale `user` object that never sees the early exit take effect. The fake service is still stubbed even though the early exit runs first, to keep real geocoding and other outside calls out of the loop in case the ordering ever changes.
+`#create` checks [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#holds_representatives?]] before the loop that calls [[app/services/sway_registration_service.rb#SwayRegistrationService]] for each locale, returning early on initial registration or same-address resubmission.
+
+When an already-registered user with an existing [[app/models/user_address.rb#UserAddress]] submits a different address, `#create` requires confirmation and delegates cross-locale reconciliation and [[app/models/user_address_change.rb#UserAddressChange]] auditing to [[app/services/user_address_switch_service.rb#UserAddressSwitchService]]. A first registration has no active link, so the early exit does not fire and every locale goes through the service loop; the locale-parity spec drives that whole loop ([[sway-registration-controller-notes#What AddressScreen.parity.test.tsx deliberately does not cover]]).
+
+## Why create's own user writes skip unrelated validations
+
+A user row saved under older rules can fail a validation added since, such as the full-name format, and that must not stop the user from registering or changing address.
+
+`#create` writes two things to the user itself: the voter-registration confirmation flag and the completed registration status. Neither value is covered by any validation, so both writes skip validation. The flag is written with `update_column`. [[app/models/user.rb#User#complete_registration!]] fires the `complete` event without its save, which still checks that the user has representatives and runs the event's callbacks, then saves the user without validation, so `is_registration_complete` is stored as well. The controller and [[app/services/sway_registration_service.rb#SwayRegistrationService]] both call it. The service runs inside each locale's transaction, so a validating `complete!` there would raise for a user whose stored name no longer validates, roll back every locale and leave the user completed with no representatives. The validations on [[app/models/user.rb#User]] are unchanged for every other write, including the profile forms where a user can correct the invalid field.
 
 ## Why mobile gets JSON instead of following the web redirect
 
@@ -32,3 +40,5 @@ This is decided via `mobile_api_request?` (bearer header OR JSON format), not `r
 Working out the right `sway_locale_id` happens on the server, inside `SwayRegistrationService`; the mobile app never calculates it.
 
 One server test, `spec/requests/sway_registration_locale_parity_spec.rb`, covers web and mobile at once.
+
+It posts the same address for a pending user once from a cookie session and once with a bearer token, and expects the same set of active representative links from both. The Annapolis, Maryland and Congress locales are seeded from their real rosters, and only the OpenStates and Census HTTP answers are stubbed, so the controller loop, the service, the rosters and the response parsing all run together. The addresses are an Annapolis ward, Towson (Maryland outside any city locale) and Richmond, Virginia (outside every supported state), so a regression in any part shows up as a missing or extra link rather than passing unnoticed. The Baltimore three-locale path and the Census failure path live in the controller spec instead.

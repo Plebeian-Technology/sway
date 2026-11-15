@@ -3,10 +3,16 @@
 module Sway
   # @lat: [[twilio-error-phone-redaction#Why Sway::TwilioClient centralizes the Twilio::REST::Client build]]
   class TwilioClient
+    HTTP_TIMEOUT_SECONDS = 10
+
     def self.build
       Twilio::REST::Client.new(
         EnvSecret.read("TWILIO_ACCOUNT_SID"),
-        EnvSecret.read("TWILIO_AUTH_TOKEN")
+        EnvSecret.read("TWILIO_AUTH_TOKEN"),
+        nil,
+        nil,
+        # @lat: [[twilio-error-phone-redaction#Why a Twilio network failure is answered, not raised]]
+        Twilio::HTTP::Client.new(timeout: HTTP_TIMEOUT_SECONDS)
       )
     end
 

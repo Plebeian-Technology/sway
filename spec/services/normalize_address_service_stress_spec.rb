@@ -252,4 +252,41 @@ RSpec.describe "NormalizeAddressService Adversarial Stress Harness" do
       expect(address.longitude).to be_present
     end
   end
+
+  describe "9. Invisible Unicode spaces" do
+    it "removes non-breaking and zero-width spaces from a state code or name" do
+      expect(NormalizeAddressService.normalize_region_code("MD\u00A0")).to eq("MD")
+      expect(NormalizeAddressService.normalize_region_code("\u00A0md\u00A0")).to eq("MD")
+      expect(NormalizeAddressService.normalize_region_code("Maryland\u200B")).to eq("MD")
+      expect(NormalizeAddressService.normalize_region_code("M\u200BD")).to eq("MD")
+    end
+
+    it "removes non-breaking and zero-width spaces from a city" do
+      expect(NormalizeAddressService.normalize_city("Baltimore\u00A0")).to eq("Baltimore")
+      expect(NormalizeAddressService.normalize_city("\u200BBaltimore")).to eq("Baltimore")
+    end
+
+    it "turns an interior non-breaking space into an ordinary space" do
+      expect(NormalizeAddressService.normalize_city("New\u00A0York")).to eq("New York")
+    end
+
+    it "is idempotent on cleaned input" do
+      once = NormalizeAddressService.call(city: "Baltimore\u00A0", region_code: "Maryland\u200B")
+      expect(NormalizeAddressService.call(once)).to eq(once)
+    end
+
+    it "returns an empty string for text made only of zero-width characters" do
+      expect(NormalizeAddressService.normalize_region_code("\u200B\uFEFF")).to eq("")
+      expect(NormalizeAddressService.normalize_city("\u200B\u2060")).to eq("")
+    end
+
+    it "cleans city and state on an Address before validation" do
+      address = Address.new(city: "Baltimore\u00A0", region_code: "MD\u00A0")
+
+      address.valid?
+
+      expect(address.city).to eq("Baltimore")
+      expect(address.region_code).to eq("MD")
+    end
+  end
 end

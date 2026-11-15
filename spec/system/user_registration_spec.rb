@@ -128,9 +128,9 @@ RSpec.describe "User Registration", type: :system, js: true do
   end
 
   # @lat: [[registration-dead-ends#An empty list says which kind of empty it is]]
-  it "shows the no-representatives outcome in the browser after synchronous lookup" do
+  it "completes a user whose address resolves no representative, with the Congress locale waiting" do
     create(:sway_locale, city: "baltimore", state: "MD", country: "United States")
-    allow(SwayGeocode).to receive(:build).and_return(double("SwayGeocode::Local", districts: []))
+    allow(Sentry).to receive(:capture_message)
     user = register_passkey_user(phone: phone)
 
     visit sway_registration_index_path
@@ -157,7 +157,7 @@ RSpec.describe "User Registration", type: :system, js: true do
       fetch(path, {
         method: "POST",
         credentials: "same-origin",
-        redirect: "manual",
+        redirect: "follow",
         headers: {
           "Accept": "text/html",
           "Content-Type": "application/json",
@@ -165,19 +165,25 @@ RSpec.describe "User Registration", type: :system, js: true do
           "X-XSRF-Token": csrfToken
         },
         body: JSON.stringify(payload)
-      }).then((response) => done({status: response.status, location: response.headers.get("Location")}))
+      }).then((response) => done({status: response.status, path: new URL(response.url).pathname}))
         .catch((error) => done({error: String(error)}));
     JS
 
     expect(outcome).not_to have_key("error")
-    expect(outcome).to include("status", "location")
+    expect(outcome).to include("path" => feed_path)
     visit sway_registration_index_path
 
-    expect(page).to have_css("[data-testid='no-representatives-message']", wait: 10)
-    expect(page).to have_text(SwayRegistrationController::REGISTRATION_NO_REPRESENTATIVES_MESSAGE)
-    expect(page).to have_css("[data-testid='btn-submit-registration']")
+    expect(page).to have_current_path(feed_path, ignore_query: true, wait: 15)
+    user.reload
+    expect(user.registration_status).to eq("completed")
+    expect(user.is_registration_complete).to be(true)
+    expect(user.pending_representative_locale_ids).to eq([SwayLocale.default_locale&.id])
     expect(UserLegislator.where(user: user, active: true)).to be_empty
-    expect(user.reload.is_registration_complete).to be(false)
+    expect(Sentry).to have_received(:capture_message).with(
+      "sway_registration.no_representatives_resolved",
+      level: :warning,
+      extra: hash_including(user_id: user.id)
+    )
   end
 
   # @lat: [[identity-and-access#Registration is asynchronous by necessity#System examples exercise the queued path]]

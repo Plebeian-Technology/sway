@@ -17,7 +17,7 @@ Each group is an `Anyway::Config` subclass under `lib/sway/settings/`, read as `
 - `mobile` — App Store id, minimum and latest app versions, Android cert fingerprints, Apple team and bundle ids, the hosts that serve the app association files (`APP_ASSOCIATION_HOSTS`)
 - `ops` — SMS phone number, deploy stamp, backup skip flag, Docker detection, dev tunnel host
 - `rate_limits` — per-endpoint switches for sign-in, sign-up, verification, invites, push and bootstrap
-- `upstream` — base URLs for Legistar, OpenStates, congress.gov, law XML, Open Legislator, Brave Search
+- `upstream` — base URLs for Legistar, OpenStates, congress.gov, law XML, Open Legislator, Brave Search, Google Places (`google_places_api_base_url`)
 - `webauthn` — allowed origins, relying-party id, and the hosts that serve `/.well-known/webauthn` (`WEBAUTHN_RELATED_HOSTS`)
 
 ## Type casters
@@ -38,6 +38,7 @@ Each group is an `Anyway::Config` subclass under `lib/sway/settings/`, read as `
 - `EnvSecret.read(name)` — returns the value, or `nil` when absent
 - `EnvSecret.fetch!(name)` — raises when the credential is absent
 - [[app/lib/env_secret.rb#EnvSecret#brave_search_api_key!]] — raises when `BRAVE_SEARCH_API_KEY` is absent
+- [[app/lib/env_secret.rb#EnvSecret#google_maps_api_key]] — returns `GOOGLE_MAPS_API_KEY`, or `nil` when it is blank or absent
 - [[app/lib/env_secret.rb#EnvSecret#open_states_api_key!]] — raises when `OPEN_STATES_API_KEY` is absent
 - [[app/lib/env_secret.rb#EnvSecret#congress_gov_api_key!]] — raises when `CONGRESS_GOV_API_KEY` is absent
 

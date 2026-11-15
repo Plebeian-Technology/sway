@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe SmsVerificationToken do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:phone) { "4105550123" }
 
   include_context "with in-memory Rails.cache"
@@ -54,10 +56,21 @@ RSpec.describe SmsVerificationToken do
       expect(described_class.consume!(token, phone: phone)).to be(false)
     end
 
-    it "returns false on expired tokens" do
+    it "returns false once ten minutes have passed since the token was issued" do
       token = described_class.issue!(phone)
-      Rails.cache.delete("#{described_class::KEY_PREFIX}:#{token}")
+
+      travel 11.minutes
+
+      expect(described_class.peek(token)).to be_nil
       expect(described_class.consume!(token, phone: phone)).to be(false)
+    end
+
+    it "returns true when the token is used just before ten minutes have passed" do
+      token = described_class.issue!(phone)
+
+      travel 9.minutes
+
+      expect(described_class.consume!(token, phone: phone)).to be(true)
     end
 
     it "returns false on nil token" do

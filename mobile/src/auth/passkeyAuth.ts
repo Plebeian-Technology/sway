@@ -1,5 +1,6 @@
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
 import { Platform } from "react-native";
+import * as Sentry from "@sentry/react-native";
 import { Passkey, PasskeyCreateRequest, PasskeyGetRequest } from "react-native-passkey";
 
 import { apiClient } from "../api/client";
@@ -16,10 +17,33 @@ export class PasskeyUnsupportedError extends Error {
     }
 }
 
+export class PasskeyProviderMissingError extends Error {
+    constructor(message = "passkey_provider_missing") {
+        super(message);
+        this.name = "PasskeyProviderMissingError";
+    }
+}
+
+export class PasskeyCreateUnsupportedError extends Error {
+    constructor(message = "passkey_create_unsupported") {
+        super(message);
+        this.name = "PasskeyCreateUnsupportedError";
+    }
+}
+
 export class NoPasskeyError extends Error {
     constructor(message = "no_credential") {
         super(message);
         this.name = "NoPasskeyError";
+    }
+}
+
+export class SessionSaveError extends Error {
+    constructor(
+        message = "Your account is ready, but this device could not save your sign-in. Sign in with your passkey.",
+    ) {
+        super(message);
+        this.name = "SessionSaveError";
     }
 }
 
@@ -37,20 +61,26 @@ type RegistrationOptions = PasskeyCreateRequest & { challenge_id: string };
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run]]
 type ChallengeResponse = { flow: "sms" } | { flow: "passkey"; challenge_id: string; options: PasskeyGetRequest };
 
+// @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation#A session the device cannot save]]
 async function persistSession(resp: AuthCallbackResponse): Promise<void> {
-    await tokenStore.set(resp.bearer_token);
-    const envelope: SessionEnvelope = {
-        bearer_token: resp.bearer_token,
-        device_id: resp.device_id,
-        user_id: resp.user.id,
-        expires_at: resp.expires_at,
-    };
-    await sessionStore.set(envelope);
-    authEvents.emit("signed_in");
+    try {
+        await tokenStore.set(resp.bearer_token);
+        const envelope: SessionEnvelope = {
+            bearer_token: resp.bearer_token,
+            device_id: resp.device_id,
+            user_id: resp.user.id,
+            expires_at: resp.expires_at,
+        };
+        await sessionStore.set(envelope);
+        authEvents.emit("signed_in");
+    } catch {
+        await Promise.allSettled([tokenStore.clear(), sessionStore.clear()]);
+        throw new SessionSaveError();
+    }
 }
 
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
-function mapPasskeyError(e: unknown): Error {
+function mapPasskeyError(e: unknown, registering = false): Error {
     const errObj = e as { error?: unknown; message?: unknown };
     const name = String(errObj?.error ?? "");
     const detail = String(errObj?.message ?? "");
@@ -59,8 +89,13 @@ function mapPasskeyError(e: unknown): Error {
         // oxlint-disable-next-line no-console
         console.warn("[passkeyAuth] native error", { name, detail, raw: e });
     }
-    if (name === "NotSupported") return new PasskeyUnsupportedError();
+    if (name === "NotSupported")
+        return registering ? new PasskeyCreateUnsupportedError() : new PasskeyUnsupportedError();
+    if (name === "NoCreateOption") return new PasskeyProviderMissingError();
+    if (name === "BadConfiguration" && Platform.OS === "android" && registering)
+        return new PasskeyProviderMissingError();
     if (name === "UserCancelled" || name === "NoCredentials") return new NoPasskeyError();
+    Sentry.captureMessage("passkey_native_error", { level: "warning", tags: { passkey_error: name || "unknown" } });
     return e instanceof Error ? e : new Error(detail || name || "passkey_failed");
 }
 
@@ -148,7 +183,7 @@ export const passkeyAuth = {
         try {
             credential = await Passkey.create(options);
         } catch (e) {
-            throw mapPasskeyError(e);
+            throw mapPasskeyError(e, true);
         }
 
         return completeCeremony(Routes.registrationsCallback(), "registration", options.challenge_id, credential);

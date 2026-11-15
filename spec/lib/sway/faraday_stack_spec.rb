@@ -43,6 +43,13 @@ RSpec.describe Sway::FaradayStack do
     end
   end
 
+  describe "NOMINATIM_DEFAULTS" do
+    it "is frozen and retries nothing" do
+      expect(described_class::NOMINATIM_DEFAULTS).to be_frozen
+      expect(described_class::NOMINATIM_DEFAULTS).to include(max: 0, retry_statuses: [], exceptions: [])
+    end
+  end
+
   # @lat: [[outbound-fetch-safety#A dropped connection is retried where repeating is safe]]
   describe "TRANSPORT_RETRY_EXCEPTIONS" do
     it "extends faraday-retry's defaults with connection-reset classes and is frozen" do
@@ -122,6 +129,113 @@ RSpec.describe Sway::FaradayStack do
       conn = described_class.legistar
       expect { conn.get("/test-non-attachment-failure") }.to raise_error(Faraday::ConnectionFailed)
       expect(req_stub).to have_been_made.times(4)
+    end
+  end
+
+  describe "retry attempt counts on the Nominatim connection" do
+    it "makes exactly one request for an HTTP 429 answer" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_return(status: 429, body: "Too Many Requests")
+
+      described_class.nominatim.get("search", q: "x")
+
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one request for an HTTP 503 answer" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_return(status: 503, body: "Service Unavailable")
+
+      response = described_class.nominatim.get("search", q: "x")
+
+      expect(response.status).to eq(503)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one attempt for a timeout" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_timeout
+
+      expect { described_class.nominatim.get("search", q: "x") }.to raise_error(Faraday::Error)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one attempt for a refused connection" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_raise(Errno::ECONNREFUSED)
+
+      expect { described_class.nominatim.get("search", q: "x") }.to raise_error(Faraday::ConnectionFailed)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "waits at most 3 seconds for an answer" do
+      expect(described_class.nominatim.options.timeout).to eq(3)
+    end
+  end
+
+  describe "GOOGLE_PLACES_DEFAULTS" do
+    it "is frozen, retries a server error once for POST, and never retries 429, a timeout or a dropped connection" do
+      expect(described_class::GOOGLE_PLACES_DEFAULTS).to be_frozen
+      expect(described_class::GOOGLE_PLACES_DEFAULTS).to include(
+        max: 1,
+        retry_statuses: [500, 502, 503, 504],
+        methods: %i[post],
+        exceptions: [Faraday::RetriableResponse]
+      )
+    end
+  end
+
+  describe "retry attempt counts on the Google Places connection" do
+    it "makes exactly one request for an HTTP 429 answer" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText")
+        .to_return(status: 429, body: "Too Many Requests")
+
+      described_class.google_places.post("/v1/places:searchText", "{}")
+
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly 2 attempts for an HTTP 503 answer" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText")
+        .to_return(status: 503, body: "Service Unavailable")
+
+      described_class.google_places.post("/v1/places:searchText", "{}")
+
+      expect(req_stub).to have_been_made.times(2)
+    end
+
+    it "makes exactly one attempt for a timeout" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText").to_timeout
+
+      expect { described_class.google_places.post("/v1/places:searchText", "{}") }.to raise_error(Faraday::Error)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one attempt for a refused connection" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText").to_raise(Errno::ECONNREFUSED)
+
+      expect { described_class.google_places.post("/v1/places:searchText", "{}") }.to raise_error(Faraday::ConnectionFailed)
+      expect(req_stub).to have_been_made.once
+    end
+  end
+
+  describe ".google_places" do
+    it "reads the base URL from the upstream settings and times out after 5 seconds" do
+      with_app_config(:upstream, google_places_api_base_url: "https://places.example") do
+        conn = described_class.google_places
+
+        expect(conn.url_prefix.to_s.start_with?("https://places.example")).to be(true)
+        expect(conn.builder.handlers).to include(Faraday::Retry::Middleware)
+        expect(conn.options.timeout).to eq(5)
+      end
+    end
+
+    it "defaults to the public Google Places API base URL" do
+      expect(described_class.google_places.url_prefix.to_s.start_with?("https://places.googleapis.com")).to be(true)
     end
   end
 

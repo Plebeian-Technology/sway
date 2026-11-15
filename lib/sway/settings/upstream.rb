@@ -41,6 +41,10 @@ module Sway
       coerce_types brave_search_api_base_url: :string
       required :brave_search_api_base_url
 
+      attr_config google_places_api_base_url: "https://places.googleapis.com"
+      coerce_types google_places_api_base_url: :string
+      required :google_places_api_base_url
+
       # @lat: [[settings-groups#Why the freeze runs after a group's own repair]]
       on_load { self.class.freeze_mutable_attributes!(self) }
     end

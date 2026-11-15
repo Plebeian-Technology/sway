@@ -1399,6 +1399,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_140002) do
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
     t.boolean "is_voter_registration_address_confirmed", default: false, null: false
+    t.json "pending_representative_locale_ids", default: [], null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true

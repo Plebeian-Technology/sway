@@ -1,0 +1,12 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  def coverage_root: () -> String
+
+  def sample_path: () -> String
+
+  def fresh_timestamp: () -> Integer
+
+  def worker_entry: (lines: Array[Integer?], then_hits: Integer, else_hits: Integer, ?timestamp: Integer) -> Hash[String, untyped]
+
+  def run_check: (Hash[String, untyped] resultset, Hash[String, Hash[String, Float]] floors, ?since: Integer?) -> OnboardingCoverageCheck
+end

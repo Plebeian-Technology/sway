@@ -1,6 +1,6 @@
 // @lat: [[registration-dead-ends#Browser page state selectors]]
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, usePoll, useForm, type InertiaFormProps } from "@inertiajs/react";
 import { ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
@@ -29,6 +29,7 @@ const REGISTRATION_FIELD: sway.IFormField<sway.IUser> = {
 };
 
 interface IRegistrationFormData extends sway.IAddress {
+    typed_address?: string;
     is_voter_registration_address_confirmed: boolean;
     confirm_deactivate_legislators?: boolean;
 }
@@ -44,7 +45,7 @@ interface IProps {
 const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_outcome, sway_locale, locale }) => {
     const activeLocale = locale ?? sway_locale ?? null;
     const logout = useLogout();
-    const requiresAddressSwitchConfirmation = Boolean(user?.is_registration_complete || user?.address);
+    const requiresAddressSwitchConfirmation = Boolean(user?.is_registration_complete);
     const form = useForm<IRegistrationFormData>({
         is_voter_registration_address_confirmed: false,
         ...(requiresAddressSwitchConfirmation ? { confirm_deactivate_legislators: false } : {}),
@@ -52,6 +53,7 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isCorrectingAddress, setCorrectingAddress] = useState<boolean>(false);
     const [showSwitchConfirm, setShowSwitchConfirm] = useState<boolean>(false);
+    const loadingToastId = useRef<string | undefined>(undefined);
     const noRepresentativesNotice =
         registration_outcome?.reason === "no_representatives" ? (
             <div data-testid="no-representatives-message" role="alert">
@@ -62,7 +64,7 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
 
     const handleStart = useCallback(() => {
         setLoading(true);
-        notify({
+        loadingToastId.current = notify({
             level: "info",
             title: "Finding your representatives.",
             message: "Matching your address to your local and congressional legislators may take a minute...",
@@ -72,9 +74,15 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
 
     // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
     const handleFinish = useCallback(() => {
-        toast.dismiss();
+        toast.dismiss(loadingToastId.current);
         setLoading(false);
         setCorrectingAddress(false);
+    }, []);
+
+    // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
+    const handleRequestFailed = useCallback(() => {
+        notify({ level: "error", title: PARITY_COPY.address.requestFailed });
+        return false;
     }, []);
 
     useEffect(() => {
@@ -95,15 +103,28 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
         }
     }, [user?.is_registration_complete, user?.registration_status]);
 
-    const submitRegistration = useCallback(() => {
-        trackFunnelStep("address_submitted", {
-            voter_confirmed: form.data.is_voter_registration_address_confirmed,
-            city: form.data.city,
-            region_code: form.data.region_code,
-        });
-        handleStart();
-        form.post("/sway_registration", { onFinish: handleFinish });
-    }, [form, handleStart, handleFinish]);
+    // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
+    const submitRegistration = useCallback(
+        (extraData: Partial<IRegistrationFormData> = {}) => {
+            trackFunnelStep("address_submitted", {
+                voter_confirmed: form.data.is_voter_registration_address_confirmed,
+                city: form.data.city,
+                region_code: form.data.region_code,
+            });
+            handleStart();
+            form.transform(({ typed_address, ...data }) => ({
+                ...data,
+                ...(data.street?.trim() || !typed_address?.trim() ? {} : { street: typed_address.trim() }),
+                ...extraData,
+            }));
+            form.post("/sway_registration", {
+                onHttpException: handleRequestFailed,
+                onNetworkError: handleRequestFailed,
+                onFinish: handleFinish,
+            });
+        },
+        [form, handleStart, handleRequestFailed, handleFinish],
+    );
 
     const handleSubmit = useCallback(
         (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -119,12 +140,8 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
 
     const handleConfirmAddressSwitch = useCallback(() => {
         form.setData("confirm_deactivate_legislators", true);
-        form.transform((data) => ({
-            ...data,
-            confirm_deactivate_legislators: true,
-        }));
         setShowSwitchConfirm(false);
-        submitRegistration();
+        submitRegistration({ confirm_deactivate_legislators: true });
     }, [form, submitRegistration]);
 
     const handleOpenUrl = useCallback((url: string) => {

@@ -37,4 +37,14 @@ RSpec.describe "String monkey patches" do
       expect("1234567890".normalize_phone).to eq("1234567890")
     end
   end
+
+  describe "#possible_us_phone?" do
+    it "is true for ten digits whose area code and exchange start with 2 to 9" do
+      expect("4105551212".possible_us_phone?).to be(true)
+    end
+
+    it "is false when the area code or the exchange starts with 0 or 1, or the length is not ten digits" do
+      expect(%w[1234567890 0105551212 4101551212 41055512].map(&:possible_us_phone?)).to all(be(false))
+    end
+  end
 end

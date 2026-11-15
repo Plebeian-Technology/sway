@@ -49,17 +49,28 @@ module Twilio
             end
         end
 
-        class RestError < StandardError
+        class TwilioError < StandardError
+        end
+
+        class RestError < TwilioError
             def code: -> (String | Integer | nil)
             def status_code: -> (Integer | nil)
             def full_message: -> String
         end
 
         class Client
-            def initialize: (String? account_sid, String? auth_token) -> void
+            def initialize: (String? account_sid, String? auth_token, ?String? account_sid_override, ?String? region, ?Twilio::HTTP::Client? http_client) -> void
+            def http_client: -> Twilio::HTTP::Client
             def verify: -> Twilio::REST::Verify::VerifyService
             def messages: -> Twilio::REST::Api::V2010::AccountContext::MessageList
             def messaging: -> Twilio::REST::Messaging::MessagingService
+        end
+    end
+
+    module HTTP
+        class Client
+            def initialize: (?timeout: Integer?) -> void
+            def timeout: -> Integer?
         end
     end
 
@@ -134,6 +145,12 @@ end
 module Geocoder
     def self.search: (*untyped args, **untyped kwargs) -> Array[untyped]
     def self.configure: (*top args, **top kwargs) -> top
+
+    class Error < StandardError
+    end
+
+    class OverQueryLimitError < Error
+    end
 end
 
 # @lat: [[rbs-signatures#Why the state_machines DSL is declared on Class]]
@@ -405,6 +422,16 @@ module SimpleCov
 
     # 64-07: one command name per parallel_tests worker, read before .start.
     def self.command_name: (?String? name) -> String
+
+    # lib/onboarding_coverage_check.rb merges per-worker results with these.
+    module ResultMerger
+        def self.merge_valid_results: (Hash[String, untyped] results, ?ignore_timeout: bool) -> [Array[Array[String]], Hash[String, untyped]?]
+    end
+
+    class SourceFile
+        def initialize: (String filename, Hash[String, untyped] coverage_data, ?loaded: bool) -> void
+        def covered_percent: (?Symbol criterion) -> Float?
+    end
 end
 
 module Geocoder

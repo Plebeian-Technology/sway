@@ -89,7 +89,10 @@ class PersonalDetailScanner
     "lat.md/explanation/phone-cache-hashing.md" => PLACEHOLDER_PHONE,
     "lat.md/explanation/postcard-mailing-design.md" =>
       "Baltimore City Hall's public address (100 Holliday Street) and Sway's own outreach email -- #{PUBLIC_GOV_CONTACT}",
-    "lat.md/explanation/support-bubble.md" => SWAY_OWN_CONTACT
+    "lat.md/explanation/support-bubble.md" => SWAY_OWN_CONTACT,
+    "mobile/.maestro/README.md" =>
+      "Baltimore City Hall's public street address (100 N Holliday St) as the sign-up flow's " \
+      "sample address, beside 555-01xx placeholder phones -- #{PUBLIC_GOV_CONTACT}"
   }.freeze
 
   STREET_TYPE_SUFFIXES = %w[

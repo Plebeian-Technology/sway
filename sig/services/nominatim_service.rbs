@@ -2,6 +2,8 @@ class NominatimService
   CACHE_EXPIRY: ActiveSupport::Duration
   DEFAULT_LIMIT: Integer
   MAX_LIMIT: Integer
+  REQUESTS_PER_SECOND: Integer
+  UNCAPPED_ABOVE_REGISTERED_USERS: Integer
 
   @conn: Faraday::Connection
 
@@ -10,7 +12,8 @@ class NominatimService
     ?viewbox: String?,
     ?bounded: (bool | String | Integer)?,
     ?countrycodes: String?,
-    ?limit: (Integer | String)?
+    ?limit: (Integer | String)?,
+    ?google_fallback: bool
   ) -> Array[Hash[String, untyped]]
 
   def initialize: (?connection: Faraday::Connection?) -> void
@@ -20,7 +23,8 @@ class NominatimService
     ?viewbox: String?,
     ?bounded: (bool | String | Integer)?,
     ?countrycodes: String?,
-    ?limit: (Integer | String)?
+    ?limit: (Integer | String)?,
+    ?google_fallback: bool
   ) -> Array[Hash[String, untyped]]
 
   private
@@ -35,5 +39,9 @@ class NominatimService
 
   def build_cache_key: (Hash[Symbol, untyped] params) -> String
 
-  def fetch_from_nominatim: (Hash[Symbol, untyped] params) -> Array[Hash[String, untyped]]
+  def request_cap_applies?: () -> bool
+
+  def over_request_cap?: () -> bool
+
+  def fetch_from_nominatim: (Hash[Symbol, untyped] params) -> Array[Hash[String, untyped]]?
 end

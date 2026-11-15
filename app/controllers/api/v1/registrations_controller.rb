@@ -5,13 +5,23 @@ module Api
     # @lat: [[passkey-only-sms-bootstrap#Api::V1::RegistrationsController: the two-step enrollment shape and token handling]]
     class RegistrationsController < BaseController
       include RelyingParty
+      include OnboardingSafetyNet
 
-      # @lat: [[phone-verification-rate-limits#Why Api::V1::RegistrationsController.create is rate-limited per IP]]
-      rate_limit to: 5, within: 1.hour,
-        by: -> { request.remote_ip },
+      # @lat: [[phone-verification-rate-limits#Why passkey enrollment starts are rate-limited per verified phone]]
+      rate_limit to: 20, within: 1.hour,
+        name: "create",
+        # @lat: [[phone-cache-hashing]]
+        by: -> {
+          # @type self: Api::V1::RegistrationsController
+          SmsVerificationToken.peek(params.dig(:registration, :sms_verified_token))&.dig(:phone) || request.remote_ip
+        },
         only: :create,
         if: -> { RateLimitConfig.enabled?(:sign_up) },
-        with: -> { render_error(code: "rate_limited", message: "Too many registration attempts", status: :too_many_requests) },
+        with: -> {
+          # @type self: Api::V1::RegistrationsController
+          response.set_header("Retry-After", 1.hour.to_i.to_s)
+          render_error(code: "rate_limited", message: "Too many registration attempts", status: :too_many_requests)
+        },
         store: ApplicationController::RATE_LIMIT_STORE
 
       def public_endpoint?
@@ -129,16 +139,16 @@ module Api
             aaguid: webauthn_credential.try(:aaguid)
           )
           passkey.validate!
-
-          unless SmsVerificationToken.consume!(cached[:sms_verified_token], phone: cached[:phone])
-            invalid_sms_token = true
-            raise ActiveRecord::Rollback
-          end
-
           passkey.save!
           NotificationPreference.seed_defaults_for(user)
 
           result = build_bearer_token_payload(user, platform: p[:platform])
+
+          # @lat: [[sms-verification-token-design#Why the token is spent last]]
+          unless SmsVerificationToken.consume!(cached[:sms_verified_token], phone: cached[:phone])
+            invalid_sms_token = true
+            raise ActiveRecord::Rollback
+          end
         end
 
         if invalid_sms_token
@@ -159,17 +169,45 @@ module Api
 
         render json: result
       rescue ActiveRecord::RecordInvalid => e
+        return render_phone_already_registered if phone_taken?(e)
+
         render_error(
           code: "invalid_passkey",
           message: e.record.errors.full_messages.to_sentence,
           status: :unprocessable_content
         )
+      rescue ActiveRecord::RecordNotUnique => e
+        raise unless phone_taken?(e)
+
+        render_phone_already_registered
       rescue WebAuthn::Error
         Rails.cache.delete(cache_key) if cache_key
         render_error(
           code: "invalid_credentials",
           message: "Passkey registration failed",
           status: :unauthorized
+        )
+      end
+
+      private
+
+      # @lat: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]
+      def phone_taken?(error)
+        case error
+        when ActiveRecord::RecordInvalid
+          error.record.is_a?(User) && error.record.errors.of_kind?(:phone, :taken)
+        when ActiveRecord::RecordNotUnique
+          error.message.include?("users.phone")
+        else
+          false
+        end
+      end
+
+      def render_phone_already_registered
+        render_error(
+          code: "phone_already_registered",
+          message: "This phone already has a Sway account. Sign in with your passkey, or contact Sway support if you've lost access.",
+          status: :conflict
         )
       end
     end

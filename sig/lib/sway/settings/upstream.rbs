@@ -18,6 +18,8 @@ module Sway::Settings
     def open_legislator_base_url=: (String) -> void
     def brave_search_api_base_url: () -> String
     def brave_search_api_base_url=: (String) -> void
+    def google_places_api_base_url: () -> String
+    def google_places_api_base_url=: (String) -> void
   end
 
   class Upstream < Sway::Settings::Base

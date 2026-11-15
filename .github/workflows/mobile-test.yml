@@ -45,7 +45,7 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
 
       - name: Jest (jest-expo)
-        run: pnpm test:ci
+        run: pnpm test:ci --coverage
 
       - name: TypeScript check
         run: pnpm typecheck

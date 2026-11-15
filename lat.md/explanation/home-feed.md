@@ -18,6 +18,8 @@ Confirmed votes by the user's active legislators produce `legislator_voted` item
 
 Active positions by organizations the user follows produce `organization_position_taken` items on bills in declared locales, dated by `activated_at` rather than `created_at` so draft positions approved later appear when published. Inactive positions, unfollowed organizations, and positions activated before the locale's term start are excluded.
 
+All bill-backed feed items (`bill_of_the_month_released`, `legislator_voted`, and `organization_position_taken`) also require the bill itself to belong to the locale's current term: neither its `legislative_session` `start_date` nor its `introduced_date_time_utc` may precede the locale's term start.
+
 Undeclared locales produce no term-start items because only declared jurisdictions have configured term rules in [[app/models/term_window.rb#TermWindow]]. Each term-start timestamp uses midnight UTC on the convening date returned by [[app/services/feed_query.rb#FeedQuery#term_start_on|FeedQuery.term_start_on]].
 
 Items sort by `occurred_at` descending and break ties by `key` descending. The cursor encodes the last returned item's UTC timestamp at nanosecond precision alongside its `key`, so the next page resumes strictly after that boundary without skips or duplicates; malformed or tampered cursors fall back to the first page.

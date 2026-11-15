@@ -7,7 +7,7 @@ lat:
 
 `SmsVerificationToken` is a single-use proof that someone owns a phone number.
 
-`POST /api/v1/phone_verification/verify` hands out the token after a correct SMS code. It is then spent by [[app/controllers/api/v1/registrations_controller.rb#RegistrationsController#callback]] or [[app/controllers/api/v1/passkeys_controller.rb#PasskeysController#callback]] when enrolling a passkey. The token is tied to one phone number and lives in `Rails.cache`, not the database. A replayed token is caught before any write, by a [[app/services/sms_verification_token.rb#SmsVerificationToken#peek]] check that precedes the already-registered check, so a second callback answers 401 `invalid_sms_token` rather than reporting the account the first one created. [[app/services/sms_verification_token.rb#SmsVerificationToken#consume!]] spends the token later, once the passkey is known valid, and a `false` return there rolls the transaction back the same way — which is what leaves the token usable after a failed passkey ceremony and spent after a successful one.
+`POST /api/v1/phone_verification/verify` hands out the token after a correct SMS code. It is then spent by [[app/controllers/api/v1/registrations_controller.rb#RegistrationsController#callback]] or [[app/controllers/api/v1/passkeys_controller.rb#PasskeysController#callback]] when enrolling a passkey. The token is tied to one phone number and lives in `Rails.cache`, not the database. A replayed token is caught before any write, by a [[app/services/sms_verification_token.rb#SmsVerificationToken#peek]] check that precedes the already-registered check, so a second callback answers 401 `invalid_sms_token` rather than reporting the account the first one created. [[app/services/sms_verification_token.rb#SmsVerificationToken#consume!]] spends the token later, and a `false` return there rolls the transaction back the same way. The registrations callback spends it only once account creation has otherwise succeeded ([[sms-verification-token-design#Why the token is spent last]]); the passkeys callback spends it once the new passkey is known valid, before saving it.
 
 ## The replay defense
 
@@ -23,7 +23,15 @@ The defence is deleting the cache entry the first time the token is spent, and o
 
 `Rails.cache` is not part of database transactions, so a rolled-back transaction cannot bring a spent token back.
 
-That is on purpose: once a token has been seen and accepted, it is gone. If whatever the caller did next fails, the user simply asks for a new SMS code.
+That is on purpose: once a token has been seen and accepted, it is gone. A write that fails after the spend leaves the user needing a new SMS code, so where the spend sits in a transaction decides what a failure costs.
+
+## Why the token is spent last
+
+The registrations callback spends the token as the last statement of its transaction, after the user, passkey, notification preferences, device and API key are written.
+
+A failure in any of those writes rolls the database back, and the token is still in `Rails.cache` because nothing has spent it yet. The mobile app keeps the token, so the user retries the passkey step without a second SMS and a second code to type. Spending first would cost the user a new code for a fault on Sway's side.
+
+Single use still holds, but not through the [[app/services/sms_verification_token.rb#SmsVerificationToken#peek]] check. The cache delete and the peek run before the transaction's first primary-database query, which is the one that takes SQLite's write lock ([[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]]), and the cache lives in a separate database. A concurrent second callback can therefore pass its peek. The `has_sway_passkey?` check and `#consume!` then decide: the second callback answers 409 `phone_already_registered` or, if it reaches `#consume!` after the first has spent the token, 401 `invalid_sms_token`. A `false` return from `#consume!` at the end still rolls back every write and answers 401 `invalid_sms_token`.
 
 ## Why peek exists alongside consume!
 

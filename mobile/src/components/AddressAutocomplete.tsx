@@ -23,6 +23,7 @@ export interface ParsedAddress {
 interface Props {
     initialValue?: string;
     onSelect: (parsed: ParsedAddress) => void;
+    onQueryChange?: (text: string) => void;
     onError: (message: string) => void;
 }
 
@@ -44,7 +45,8 @@ function parsePlace(place: Place): ParsedAddress {
         city: pickComponent(c, "locality") || pickComponent(c, "sublocality") || pickComponent(c, "postal_town"),
         region_code: pickComponent(c, "administrative_area_level_1", "shortName"),
         postal_code: pickComponent(c, "postal_code"),
-        country: pickComponent(c, "country") || "United States",
+        // @lat: [[mobile-address-autocomplete-design#The country is the ISO code]]
+        country: pickComponent(c, "country", "shortName") || "United States",
         latitude: place.coordinate?.latitude ?? null,
         longitude: place.coordinate?.longitude ?? null,
         formatted: place.formattedAddress ?? "",
@@ -52,14 +54,14 @@ function parsePlace(place: Place): ParsedAddress {
     };
 }
 
-export default function AddressAutocomplete({ initialValue = "", onSelect, onError }: Props) {
+export default function AddressAutocomplete({ initialValue = "", onSelect, onQueryChange, onError }: Props) {
     const [query, setQuery] = useState(initialValue);
     const [predictions, setPredictions] = useState<PlacePrediction[]>([]);
     const [loading, setLoading] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const requestSeqRef = useRef(0);
     // @lat: [[mobile-address-autocomplete-design#selectedDescription reopen guard]]
-    const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
+    const [selectedDescription, setSelectedDescription] = useState<string | null>(initialValue || null);
 
     const fetchPredictions = useCallback(
         async (input: string) => {
@@ -76,9 +78,12 @@ export default function AddressAutocomplete({ initialValue = "", onSelect, onErr
                 });
                 if (seq !== requestSeqRef.current) return;
                 setPredictions(results);
-            } catch (e) {
+            } catch {
                 if (seq !== requestSeqRef.current) return;
-                onError(e instanceof Error ? e.message : "Address lookup failed.");
+                // @lat: [[mobile-address-autocomplete-design#Every picked place is passed on, and library text never shows]]
+                onError(
+                    "Address search is unavailable right now. Tap Edit address fields manually to type your address.",
+                );
                 setPredictions([]);
             } finally {
                 if (seq === requestSeqRef.current) setLoading(false);
@@ -101,6 +106,7 @@ export default function AddressAutocomplete({ initialValue = "", onSelect, onErr
 
     const onPick = useCallback(
         async (placeID: string, description: string) => {
+            const seq = ++requestSeqRef.current;
             setSelectedDescription(description);
             setQuery(description);
             setPredictions([]);
@@ -112,21 +118,35 @@ export default function AddressAutocomplete({ initialValue = "", onSelect, onErr
                     PLACE_FIELDS.COORDINATE,
                     PLACE_FIELDS.TYPES,
                 ]);
+                if (seq !== requestSeqRef.current) return;
                 onSelect(parsePlace(place));
-            } catch (e) {
-                onError(e instanceof Error ? e.message : "Could not load address details.");
+            } catch {
+                if (seq !== requestSeqRef.current) return;
+                onError("Could not load address details. Tap Edit address fields manually to type your address.");
             } finally {
-                setLoading(false);
+                if (seq === requestSeqRef.current) setLoading(false);
             }
         },
         [onError, onSelect],
+    );
+
+    // @lat: [[mobile-address-autocomplete-design#Editing the search text clears the form]]
+    const onEdit = useCallback(
+        (text: string) => {
+            requestSeqRef.current += 1;
+            setLoading(false);
+            setSelectedDescription(null);
+            setQuery(text);
+            onQueryChange?.(text);
+        },
+        [onQueryChange],
     );
 
     return (
         <View testID="address-autocomplete">
             <TextInput
                 value={query}
-                onChangeText={setQuery}
+                onChangeText={onEdit}
                 accessibilityLabel="Address"
                 placeholder="Start typing your address"
                 autoCapitalize="words"

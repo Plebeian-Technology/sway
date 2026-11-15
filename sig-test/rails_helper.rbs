@@ -1,0 +1,5 @@
+# @lat: [[rbs-signatures#Why a spec's helpers are invisible to Steep]]
+class Object
+  # SimpleCov's block DSL in spec/rails_helper.rb, read with self as Object.
+  def enable_coverage: (*Symbol criteria) -> void
+end

@@ -4,7 +4,7 @@
 class SwayRegistrationService
   include SwayGeocode
 
-  attr_reader :address, :sway_locale
+  attr_reader :address, :sway_locale, :skipped_resolution_errors, :skipped_legislator_ids
 
   def initialize(user, address, sway_locale, invited_by_id:, async: true)
     @user = user
@@ -17,6 +17,10 @@ class SwayRegistrationService
 
     @feature = nil
     @districts = nil
+
+    @skipped_resolution_errors = []
+    @skipped_term_ids = []
+    @skipped_legislator_ids = []
   end
 
   def call
@@ -43,7 +47,7 @@ class SwayRegistrationService
     end
 
     @user.transient_funnel_metadata = {latency_ms: duration_ms}
-    @user.complete! if @user.registered?
+    @user.complete_registration! if @user.registered?
 
     create_invite
 
@@ -76,6 +80,13 @@ class SwayRegistrationService
     else
       candidates = if sway_locale.regional?
         find_legislators_from_open_states_geo_endpoint
+      elsif sway_locale.congress?
+        state_code = address.us_state_code
+        district_numbers = state_code ? congress_district_numbers : []
+        @legislators.filter do |legislator|
+          term = legislator.active_term
+          term && term.district.region_code == state_code && district_numbers.include?(term.district.number)
+        end
       else
         @legislators.filter do |legislator|
           term = legislator.active_term
@@ -102,8 +113,9 @@ class SwayRegistrationService
 
   def locale_wide_candidates
     unless sway_locale.congress?
+      # @lat: [[representative-resolution#Locale-wide district]]
       matches_locale = address.region_code == sway_locale.state_code &&
-        (sway_locale.regional? || address.city.to_s.casecmp?(sway_locale.city.to_s))
+        (sway_locale.regional? || districts.any?)
       return [] unless matches_locale
     end
 
@@ -115,59 +127,86 @@ class SwayRegistrationService
 
     terms = district.legislator_terms.current.includes(:legislator, :seat).to_a
       .reject { |term| unseated_unconfigured_office?(term) }
-    unresolved = terms.find { |term| term.seat_id.blank? || term.seat.nil? }
-    if unresolved
-      raise Seats::UnresolvedSeatError,
-        "Locale-wide term #{unresolved.id} in #{sway_locale.name} has no persisted seat identity"
+    seated_terms, unseated_terms = terms.partition { |term| term.seat_id.present? && term.seat.present? }
+    unseated_terms.each do |term|
+      skip_unresolved_terms(
+        [term],
+        Seats::UnresolvedSeatError.new(
+          "Locale-wide term #{term.id} in #{sway_locale.name} has no persisted seat identity"
+        )
+      )
     end
 
-    terms.map(&:legislator)
+    seated_terms.map(&:legislator)
   end
 
   def resolve_seat_candidates(candidates)
     candidate_terms = candidates.filter_map(&:active_term).uniq(&:id)
       .reject { |term| unseated_unconfigured_office?(term) }
-    unresolved = candidate_terms.find { |term| term.seat_id.blank? || term.seat.nil? }
-    if unresolved
-      raise Seats::UnresolvedSeatError,
-        "Current term #{unresolved.id} in #{sway_locale.name} has no persisted seat identity"
+    seated_terms, unseated_terms = candidate_terms.partition { |term| term.seat_id.present? && term.seat.present? }
+    unseated_terms.each do |term|
+      skip_unresolved_terms(
+        [term],
+        Seats::UnresolvedSeatError.new(
+          "Current term #{term.id} in #{sway_locale.name} has no persisted seat identity"
+        )
+      )
     end
 
-    candidate_terms.each do |term|
-      seat = term.seat
-      unless seat && term.district.sway_locale_id == sway_locale.id &&
-          seat.district_id == term.district_id &&
-          term.legislator.sway_locale_id == sway_locale.id
-        raise Seats::UnresolvedSeatError,
-          "Current term #{term.id} has a seat outside its locale or district"
-      end
-    end
-
-    seat_ids = candidate_terms.map(&:seat_id).uniq
+    seat_ids = terms_within_locale(seated_terms).map(&:seat_id).uniq
     return [] if seat_ids.empty?
 
     current_terms = LegislatorTerm.current
       .where(seat_id: seat_ids)
       .includes(:legislator, :seat, district: :sway_locale)
       .to_a
-    current_terms.group_by(&:seat_id).each do |seat_id, occupants|
-      if occupants.length > 1
-        seat = occupants.first.seat
-        raise Seats::OverlapValidator::OverlapError,
+    single_occupants = current_terms.group_by(&:seat_id).filter_map do |seat_id, occupants|
+      next occupants.first if occupants.length == 1
+
+      seat = occupants.first.seat
+      skip_unresolved_terms(
+        occupants,
+        Seats::OverlapValidator::OverlapError.new(
           "Seat #{seat&.seat_identifier || seat_id} has multiple current occupants"
-      end
+        )
+      )
+      nil
     end
 
-    current_terms.each do |term|
-      unless term.seat&.district_id == term.district_id &&
-          term.district.sway_locale_id == sway_locale.id &&
-          term.legislator.sway_locale_id == sway_locale.id
-        raise Seats::UnresolvedSeatError,
-          "Current term #{term.id} has a seat outside its locale or district"
-      end
-    end
+    terms_within_locale(single_occupants).map(&:legislator).uniq(&:id)
+  end
 
-    current_terms.map(&:legislator).uniq(&:id)
+  def terms_within_locale(terms)
+    inside, outside = terms.partition do |term|
+      term.seat&.district_id == term.district_id &&
+        term.district.sway_locale_id == sway_locale.id &&
+        term.legislator.sway_locale_id == sway_locale.id
+    end
+    outside.each do |term|
+      skip_unresolved_terms(
+        [term],
+        Seats::UnresolvedSeatError.new("Current term #{term.id} has a seat outside its locale or district")
+      )
+    end
+    inside
+  end
+
+  # @lat: [[representative-resolution#Representative resolution by seat#Resolution branches]]
+  def skip_unresolved_terms(terms, error)
+    term_ids = terms.map(&:id)
+    return if (term_ids - @skipped_term_ids).empty?
+
+    @skipped_term_ids.concat(term_ids)
+    @skipped_legislator_ids.concat(terms.map(&:legislator_id))
+    @skipped_resolution_errors << error
+    SwayLogging.warn(
+      "sway_registration.unresolved_term_skipped",
+      term_ids:,
+      district: terms.first.district.name,
+      sway_locale: sway_locale.name,
+      error_class: error.class.name
+    )
+    Sentry.capture_exception(error, level: :warning)
   end
 
   # @lat: [[representative-resolution#Representative resolution by seat#Unconfigured offices]]
@@ -180,7 +219,33 @@ class SwayRegistrationService
   end
 
   def districts
+    return [] unless address.located?
+
     @districts ||= SwayGeocode.build(sway_locale, address).districts
+  end
+
+  # @lat: [[representative-resolution#Congress fallback]]
+  def congress_district_numbers
+    return [0] unless address.located?
+
+    districts.presence || [0]
+  rescue SwayGeocode::ServiceUnavailableError => e
+    @skipped_resolution_errors << e
+    @skipped_legislator_ids.concat(state_house_legislator_ids)
+    SwayLogging.warn(
+      "sway_registration.house_district_skipped",
+      sway_locale: sway_locale.name,
+      error_class: e.class.name
+    )
+    Sentry.capture_exception(e, level: :warning)
+    [0]
+  end
+
+  def state_house_legislator_ids
+    @legislators.filter_map do |legislator|
+      district = legislator.active_term&.district
+      legislator.id if district && district.region_code == address.us_state_code && district.number != 0
+    end
   end
 
   def find_legislators_from_open_states_geo_endpoint
@@ -197,8 +262,15 @@ class SwayRegistrationService
       SwayLogging.error(
         "\n####################################################################################\n"
       )
+      Sentry.capture_message(
+        "OPEN_STATES_API_KEY is blank; state legislators were not assigned at registration",
+        level: :error,
+        extra: {user_id: @user.id, sway_locale: @sway_locale.name}
+      )
       return []
     end
+
+    return [] unless address.located?
 
     # @lat: [[identity-and-access#Registration is asynchronous by necessity#Regional lookup uses one configured request path]]
     response =
@@ -215,7 +287,12 @@ class SwayRegistrationService
     end
 
     # @lat: [[identity-and-access#Registration is asynchronous by necessity#Regional lookup uses one configured request path]]
-    result = Array(JSON.parse(response.body)["results"]) #: Array[untyped]
+    body = JSON.parse(response.body)
+    unless body.is_a?(Hash) && Array(body["results"]).all?(Hash)
+      raise SwayGeocode::ServiceUnavailableError,
+        "OpenStates geocoding response had an unexpected shape"
+    end
+    result = Array(body["results"]) #: Array[untyped]
 
     filtered =
       result

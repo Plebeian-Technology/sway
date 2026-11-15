@@ -29,6 +29,11 @@ module SeedPreparers
         end
       end
 
+      # @lat: [[representative-resolution#Configured seat identity for person-keyed rosters#Curated person-keyed rosters]]
+      def current_office_identity
+        external_id
+      end
+
       # Defaults to true. This reader used to be dead code, and it is now called
       # for every entry on every boot, so a roster written without the key would
       # raise KeyError, fail the seed, and leave the container unable to start.

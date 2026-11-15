@@ -43,7 +43,7 @@ const mockApiPost = jest.fn(async (..._args: unknown[]): Promise<unknown> => ({ 
 const mockGoBack = jest.fn();
 const mockCanGoBack = jest.fn(() => false);
 const mockNavigate = jest.fn();
-const mockRefresh = jest.fn(async () => {});
+const mockRefresh = jest.fn(async (): Promise<boolean | void> => {});
 
 jest.mock("../../src/hooks/useUserProfile", () => ({
     useUserProfile: () => mockUseUserProfile(),
@@ -120,6 +120,7 @@ jest.mock("@react-navigation/native", () => ({
 
 import React from "react";
 import { render, fireEvent, screen, waitFor, act } from "@testing-library/react-native";
+import { ApiRequestError } from "../../src/api/errors";
 import AddressScreen from "../../src/screens/AddressScreen";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
@@ -136,7 +137,7 @@ const mockEditUser = {
     id: 2,
     is_registration_complete: true,
     address: {
-        street1: "123 Main St",
+        street: "123 Main St",
         city: "Baltimore",
         region_code: "MD",
         postal_code: "21201",
@@ -262,12 +263,12 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
             mockUseUserProfile.mockReturnValue({
                 user: {
                     ...mockOnboardingUser,
-                    address: { street1: "100 N Holliday St", city: "Baltimore", region_code: "MD" },
+                    address: { street: "100 N Holliday St", city: "Baltimore", region_code: "MD" },
                 },
                 loading: false,
                 refresh: mockRefresh,
             });
-            mockApiPost.mockRejectedValueOnce(new Error(message));
+            mockApiPost.mockRejectedValueOnce(new ApiRequestError("no_representatives", message, undefined, 422));
 
             wrap(<AddressScreen />);
             expect(screen.getByTestId("address-onboarding-heading")).toBeTruthy();
@@ -284,6 +285,159 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
             await waitFor(() => expect(screen.getByText(message)).toBeTruthy());
             expect(mockRefresh).not.toHaveBeenCalled();
             expect(mockGoBack).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("Test 2b — the bootstrap refresh after a saved address fails", () => {
+        async function submitPickedHollidayAddress() {
+            await typeAndWaitForPredictions("100 N Holliday");
+            await waitFor(() => {
+                expect(screen.queryByTestId("address-suggestion-PLACE_HOLLIDAY_1")).toBeTruthy();
+            });
+            await pickPrediction("address-suggestion-PLACE_HOLLIDAY_1");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+                await Promise.resolve();
+                await Promise.resolve();
+            });
+        }
+
+        // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why a failed refresh after a saved address shows a recovery card]]
+        it("shows a recovery card instead of the address form when refresh resolves false", async () => {
+            mockUseUserProfile.mockReturnValue({ user: mockOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(false);
+            mockRefresh.mockResolvedValue(false);
+
+            wrap(<AddressScreen />);
+            await submitPickedHollidayAddress();
+
+            await waitFor(() => expect(screen.getByTestId("address-saved-recovery")).toBeTruthy());
+            expect(screen.getByText("Your address was saved")).toBeTruthy();
+            expect(
+                screen.getByText("We could not load your account yet. Check your connection and try again."),
+            ).toBeTruthy();
+            expect(screen.getByTestId("address-saved-recovery-retry-cta")).toBeTruthy();
+            expect(screen.queryByTestId("address-submit-cta")).toBeNull();
+        });
+
+        it("retry reloads the account and posts nothing", async () => {
+            mockUseUserProfile.mockReturnValue({ user: mockOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(false);
+            mockRefresh.mockResolvedValue(false);
+
+            wrap(<AddressScreen />);
+            await submitPickedHollidayAddress();
+            await waitFor(() => expect(screen.getByTestId("address-saved-recovery")).toBeTruthy());
+            expect(mockApiPost).toHaveBeenCalledTimes(1);
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-saved-recovery-retry-cta"));
+                await Promise.resolve();
+            });
+
+            expect(mockRefresh).toHaveBeenCalledTimes(2);
+            expect(mockApiPost).toHaveBeenCalledTimes(1);
+        });
+
+        it.each([
+            ["true", true],
+            ["no value", undefined],
+        ])("shows no recovery card when refresh resolves with %s", async (_label, resolved) => {
+            mockUseUserProfile.mockReturnValue({ user: mockOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(true);
+            mockRefresh.mockResolvedValue(resolved);
+
+            wrap(<AddressScreen />);
+            await submitPickedHollidayAddress();
+
+            await waitFor(() => expect(mockGoBack).toHaveBeenCalledTimes(1));
+            expect(screen.queryByTestId("address-saved-recovery")).toBeNull();
+        });
+    });
+
+    describe("Test 2c — editing the search text of a saved address", () => {
+        const savedOnboardingUser = {
+            id: 1,
+            is_registration_complete: false,
+            address: {
+                street: "1 Old St",
+                city: "Annapolis",
+                region_code: "MD",
+                postal_code: "21401",
+                country: "United States",
+            },
+        };
+
+        const submitDisabled = () => screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled;
+
+        const renderSaved = () => {
+            mockUseUserProfile.mockReturnValue({ user: savedOnboardingUser, loading: false, refresh: mockRefresh });
+            mockCanGoBack.mockReturnValue(false);
+            wrap(<AddressScreen />);
+        };
+
+        // @lat: [[mobile-address-autocomplete-design#Editing the search text clears the form]]
+        it("clears the form and disables Submit when the text is edited, and a pick enables it again", async () => {
+            renderSaved();
+            const input = screen.getByTestId("address-autocomplete-input");
+            expect(input.props.value).toBe("1 Old St, Annapolis");
+            expect(submitDisabled()).toBeFalsy();
+
+            await typeAndWaitForPredictions("100 N Holliday");
+
+            expect(submitDisabled()).toBe(true);
+            fireEvent.press(screen.getByTestId("address-submit-cta"));
+            expect(mockApiPost).not.toHaveBeenCalled();
+
+            await pickPrediction("address-suggestion-PLACE_HOLLIDAY_1");
+
+            expect(submitDisabled()).toBeFalsy();
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+                await Promise.resolve();
+            });
+            expect(mockApiPost).toHaveBeenCalledWith(
+                "/sway_registration",
+                expect.objectContaining({
+                    sway_registration: expect.objectContaining({
+                        street: "100 N Holliday St",
+                        city: "Baltimore",
+                        latitude: 39.29105,
+                        longitude: -76.61069,
+                    }),
+                }),
+            );
+        });
+
+        it("empties the manual fields after an edit and lets typed fields enable Submit", async () => {
+            renderSaved();
+
+            await typeAndWaitForPredictions("1 Old St, Annapolis x");
+            fireEvent.press(screen.getByTestId("btn-edit-address-manually"));
+
+            expect(screen.getByTestId("address-input-street1-input").props.value).toBe("");
+            expect(screen.getByTestId("address-input-city-input").props.value).toBe("");
+            expect(screen.getByTestId("address-input-country-input").props.value).toBe("United States");
+            expect(submitDisabled()).toBe(true);
+
+            fireEvent.changeText(screen.getByTestId("address-input-street1-input"), "100 N Holliday St");
+
+            expect(submitDisabled()).toBeFalsy();
+        });
+
+        it("leaves the saved address postable when the text is not edited", async () => {
+            renderSaved();
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+                await Promise.resolve();
+            });
+
+            expect(mockApiPost).toHaveBeenCalledWith(
+                "/sway_registration",
+                expect.objectContaining({ sway_registration: expect.objectContaining({ street: "1 Old St" }) }),
+            );
         });
     });
 
@@ -537,13 +691,29 @@ describe("AddressScreen parity tests (Codex Concern 2 PARITY-13)", () => {
             });
 
             await waitFor(() => {
-                expect(screen.getByText("Address invalid")).toBeTruthy();
+                expect(screen.getByText("Could not update address.")).toBeTruthy();
             });
 
             expect(mockClearCapturedCategories).not.toHaveBeenCalled();
             expect(mockLegislatorCacheClear).not.toHaveBeenCalled();
             expect(mockBillCacheClear).not.toHaveBeenCalled();
             expect(mockRefresh).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("Test 7 — the saved address fills the search box", () => {
+        it("shows the saved street in the search box once the profile has loaded", async () => {
+            mockUseUserProfile.mockReturnValue({
+                user: mockEditUser,
+                loading: false,
+                refresh: mockRefresh,
+            });
+
+            wrap(<AddressScreen />);
+
+            await waitFor(() => {
+                expect(screen.getByTestId("address-autocomplete-input").props.value).toBe("123 Main St, Baltimore");
+            });
         });
     });
 });

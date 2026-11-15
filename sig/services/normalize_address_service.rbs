@@ -7,6 +7,7 @@ class NormalizeAddressService
   def self.normalize_attributes: (Hash[untyped, untyped] attrs) -> Hash[Symbol, untyped]
   def self.normalize_region_code: (untyped region_code) -> String?
   def self.normalize_city: (untyped city) -> String?
+  def self.with_plain_spaces: (String text) -> String
 
   def initialize: (untyped address) -> void
   def call: -> untyped

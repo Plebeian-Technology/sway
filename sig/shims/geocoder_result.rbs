@@ -4,6 +4,9 @@ module Geocoder
             def street: -> String?
             def city: -> String?
             def postal_code: -> String?
+            def state: -> String?
+            def state_code: -> String?
+            def country_code: -> String?
             def coordinates: -> [Float, Float]
             def nil?: -> bool
         end

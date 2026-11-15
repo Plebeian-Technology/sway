@@ -42,6 +42,7 @@ import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { AppState } from "react-native";
 import { BootstrapProvider, useBootstrap } from "../../src/state/BootstrapContext";
 import { authEvents } from "../../src/auth/authEvents";
+import { tokenStore } from "../../src/auth/tokenStore";
 import { getConsumer } from "../../src/channels/consumer";
 import * as ActionCable from "@rails/actioncable";
 
@@ -92,6 +93,35 @@ describe("BootstrapProvider / useBootstrap", () => {
         expect(mockCacheGet).toHaveBeenCalledWith("anonymous");
         expect(result.current.bootstrap).toEqual(sampleBootstrap);
         expect(result.current.error).not.toBeNull();
+    });
+
+    test("refetch resolves true when it applied a fresh payload", async () => {
+        mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+        const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+        await waitFor(() => expect(result.current.bootstrap).not.toBeNull());
+
+        mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+        let applied: boolean | undefined;
+        await act(async () => {
+            applied = await result.current.refetch();
+        });
+
+        expect(applied).toBe(true);
+    });
+
+    test("refetch resolves false when the fetch fails and the cached payload is used", async () => {
+        mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+        const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+        await waitFor(() => expect(result.current.bootstrap).not.toBeNull());
+
+        mockApiGet.mockRejectedValueOnce(new Error("offline"));
+        mockCacheGet.mockResolvedValue({ payload: sampleBootstrap, fetchedAt: new Date(500_000) });
+        let applied: boolean | undefined;
+        await act(async () => {
+            applied = await result.current.refetch();
+        });
+
+        expect(applied).toBe(false);
     });
 
     test("successful fetch writes to bootstrapCache.set (NOT tokenStore)", async () => {
@@ -168,6 +198,19 @@ describe("BootstrapProvider / useBootstrap", () => {
         expect(order.indexOf("bootstrapCache.purge")).toBeLessThan(order.indexOf("fetchIt"));
     });
 
+    test("a held bearer token answered with current_user null ends the session with the session_expired reason", async () => {
+        jest.spyOn(tokenStore, "get").mockResolvedValueOnce("tok_held");
+        mockApiGet.mockResolvedValue({ ...sampleBootstrap, current_user: null });
+        renderHook(() => useBootstrap(), { wrapper: wrap });
+
+        await waitFor(() => expect(authEvents.unauthenticatedReason()).toBe("session_expired"));
+
+        await act(async () => {
+            authEvents.emit("signed_out");
+        });
+        expect(authEvents.unauthenticatedReason()).toBeNull();
+    });
+
     test("clears previous user's bootstrap immediately on 'signed_out' even if refetch fails offline", async () => {
         mockApiGet.mockResolvedValueOnce(sampleBootstrap);
         const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
@@ -182,6 +225,65 @@ describe("BootstrapProvider / useBootstrap", () => {
 
         await waitFor(() => expect(result.current.loading).toBe(false));
         expect(result.current.bootstrap).toBeNull();
+    });
+
+    describe("overlapping fetches", () => {
+        const anonymousBootstrap = { ...sampleBootstrap, current_user: null };
+
+        const deferred = <T>() => {
+            let resolve!: (value: T) => void;
+            const promise = new Promise<T>((r) => {
+                resolve = r;
+            });
+            return { promise, resolve };
+        };
+
+        test("an older anonymous response that resolves after sign-in does not overwrite the signed-in user", async () => {
+            const anonymousFetch = deferred<typeof anonymousBootstrap>();
+            mockApiGet.mockReturnValueOnce(anonymousFetch.promise);
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(1));
+
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+            await act(async () => {
+                authEvents.emit("signed_in");
+            });
+            await waitFor(() => expect(result.current.bootstrap).toEqual(sampleBootstrap));
+
+            await act(async () => {
+                anonymousFetch.resolve(anonymousBootstrap);
+            });
+
+            expect(result.current.bootstrap).toEqual(sampleBootstrap);
+            expect(mockCacheSet).not.toHaveBeenCalledWith("anonymous", anonymousBootstrap);
+        });
+
+        test("a superseded fetch is dropped and leaves loading to the newer fetch", async () => {
+            const olderFetch = deferred<typeof sampleBootstrap>();
+            const newerFetch = deferred<typeof sampleBootstrap>();
+            mockApiGet.mockReturnValueOnce(olderFetch.promise);
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(1));
+
+            mockApiGet.mockReturnValueOnce(newerFetch.promise);
+            await act(async () => {
+                void result.current.refetch();
+            });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+
+            await act(async () => {
+                olderFetch.resolve(sampleBootstrap);
+            });
+
+            expect(result.current.bootstrap).toBeNull();
+            expect(result.current.loading).toBe(true);
+
+            await act(async () => {
+                newerFetch.resolve(sampleBootstrap);
+            });
+            await waitFor(() => expect(result.current.loading).toBe(false));
+            expect(result.current.bootstrap).toEqual(sampleBootstrap);
+        });
     });
 
     test("getConsumer destroys previous consumer when token changes", async () => {

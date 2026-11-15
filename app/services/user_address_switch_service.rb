@@ -15,7 +15,7 @@ class UserAddressSwitchService
   end
 
   def call
-    resolved_legislators = resolve_legislators_for_new_address
+    resolved_legislators, skipped_legislator_ids = resolve_legislators_for_new_address
     return nil if resolved_legislators.empty?
 
     resolved_legislator_ids = resolved_legislators.map(&:id).uniq
@@ -38,9 +38,14 @@ class UserAddressSwitchService
         active_uls.filter_map { |ul| ul.legislator.district&.id }
       ).uniq
 
-      stale_legislator_ids = active_legislator_ids - resolved_legislator_ids
+      skipped_district_ids = active_uls
+        .select { |ul| skipped_legislator_ids.include?(ul.legislator_id) }
+        .filter_map { |ul| ul.legislator.district&.id }
+
+      # @lat: [[representative-resolution#Resolution branches]]
+      stale_legislator_ids = active_legislator_ids - resolved_legislator_ids - skipped_legislator_ids
       new_legislator_ids = resolved_legislator_ids - active_legislator_ids
-      stale_district_ids = active_district_ids - resolved_district_ids
+      stale_district_ids = active_district_ids - resolved_district_ids - skipped_district_ids
       new_district_ids = resolved_district_ids - active_district_ids
 
       previous_sway_locale_ids = (
@@ -119,15 +124,17 @@ class UserAddressSwitchService
   private
 
   def resolve_legislators_for_new_address
-    @new_address.sway_locales.flat_map do |sway_locale|
+    services = @new_address.sway_locales.map do |sway_locale|
       SwayRegistrationService.new(
         @user,
         @new_address,
         sway_locale,
         invited_by_id: nil,
         async: false
-      ).district_legislators
-    end.uniq(&:id)
+      )
+    end
+    legislators = services.flat_map(&:district_legislators).uniq(&:id)
+    [legislators, services.flat_map(&:skipped_legislator_ids).uniq]
   end
 
   def activate_user_legislator!(legislator)

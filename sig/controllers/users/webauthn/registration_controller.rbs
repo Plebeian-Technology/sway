@@ -1,16 +1,23 @@
 module Users
     module Webauthn
         class RegistrationController < ApplicationController
+            include VerifiedPhoneSession
+            include OnboardingSafetyNet
+
             class AlreadyRegistered < StandardError
             end
 
             ALREADY_REGISTERED_MESSAGE: String
+            VERIFICATION_FAILED_MESSAGE: String
+            SIGN_IN_FAILED_MESSAGE: String
 
             def create: -> untyped
 
             def callback: -> untyped
 
             private
+
+            def phone_taken?: (ActiveRecord::RecordInvalid | ActiveRecord::RecordNotUnique error) -> bool
 
             def sanitized_user_attributes: (untyped attributes, untyped verified_phone) -> untyped
 

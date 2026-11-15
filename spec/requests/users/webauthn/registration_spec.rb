@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Users::Webauthn::Registration", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   include_context "SessionDouble"
   include_context "WebAuthnDouble"
 
@@ -11,6 +13,45 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       before do
         session_hash[:phone] = phone
         session_hash[:verified_phone] = phone
+        session_hash[:verified_phone_at] = Time.current.to_i
+      end
+
+      it "still issues options just inside the verification window" do
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW - 1.minute) do
+          post users_webauthn_registration_index_path
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["challenge"]).to eq(fake_challenge)
+      end
+
+      it "returns the confirmation message once the verification is older than the window" do
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          post users_webauthn_registration_index_path
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
+        expect(session_hash[:current_registration]).to be_nil
+      end
+
+      it "returns the confirmation message when the verified phone carries no verification time" do
+        session_hash.delete(:verified_phone_at)
+
+        post users_webauthn_registration_index_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
       end
 
       it "returns 422 when user attributes are invalid" do
@@ -106,6 +147,34 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
           }
         )
       end
+
+      it "returns the confirmation message when no phone was verified in the session" do
+        session_hash.delete(:phone)
+
+        post users_webauthn_registration_index_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
+      end
+
+      it "returns the confirmation message when the verified phone is not the submitted phone" do
+        session_hash[:verified_phone] = "4105559999"
+
+        post users_webauthn_registration_index_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          {
+            "success" => false,
+            "message" => "Please confirm your phone number first."
+          }
+        )
+      end
     end
   end
 
@@ -121,6 +190,7 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
 
     before do
       session_hash[:verified_phone] = phone
+      session_hash[:verified_phone_at] = Time.current.to_i
       session_hash[:current_registration] = {
         "challenge" => fake_challenge,
         "user_attributes" => {
@@ -128,6 +198,29 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
           "is_registration_complete" => false
         }
       }
+    end
+
+    it "redirects with the expired message and saves nothing once the verification is older than the window" do
+      expect do
+        travel(VerifiedPhoneSession::VERIFIED_PHONE_WINDOW + 1.minute) do
+          post callback_users_webauthn_registration_index_path, params: callback_params
+        end
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects with the expired message when the verified phone carries no verification time" do
+      session_hash.delete(:verified_phone_at)
+
+      expect do
+        post callback_users_webauthn_registration_index_path, params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
     end
 
     ["existing passkey", "first passkey added after options", "new account enrolled after options"].each do |scenario|
@@ -260,7 +353,8 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(existing.reload.is_sway_admin?).to be(false)
     end
 
-    it "redirects to root with an alert when WebAuthn verification fails" do
+    it "redirects to root with a retry alert, hiding the library text, when WebAuthn verification fails" do
+      allow(Sentry).to receive(:capture_message)
       allow_any_instance_of(WebAuthn::RelyingParty).to receive(
         :verify_registration
       ).and_raise(WebAuthn::Error, "bad attestation")
@@ -269,8 +363,30 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
         params: callback_params
 
       expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to eq("Verification failed: bad attestation")
+      expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::VERIFICATION_FAILED_MESSAGE)
+      expect(flash[:alert]).to include("Enter your phone number again")
+      expect(flash[:alert]).not_to include("bad attestation")
       expect(session_hash[:current_registration]).to be_nil
+      expect(session_hash[:verified_phone]).to eq(phone)
+    end
+
+    it "reports a failed verification to Sentry by exception class only" do
+      allow(Sentry).to receive(:capture_message)
+      allow_any_instance_of(WebAuthn::RelyingParty).to receive(
+        :verify_registration
+      ).and_raise(WebAuthn::Error, "bad attestation")
+
+      post callback_users_webauthn_registration_index_path,
+        params: callback_params
+
+      expect(Sentry).to have_received(:capture_message).once do |message, **options|
+        expect(message).to eq("webauthn.registration.verification_failed")
+        expect(options[:extra]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:tags]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:fingerprint]).to eq(["webauthn.registration.verification_failed", "WebAuthn::Error"])
+        expect(options.to_s).not_to include("bad attestation")
+        expect(options.to_s).not_to include(phone)
+      end
     end
 
     it "does not persist user or passkey when WebAuthn verification fails" do
@@ -298,13 +414,86 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(session_hash[:current_registration]).to be_nil
     end
 
-    it "returns an error response when current_registration is missing" do
+    it "redirects to root with the expired-session alert when current_registration is missing" do
       session_hash.delete(:current_registration)
 
       post callback_users_webauthn_registration_index_path,
         params: callback_params
 
-      expect(response).not_to have_http_status(:ok)
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects to root with the expired-session alert when the verified phone is blank" do
+      session_hash.delete(:verified_phone)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Registration session expired. Please try again.")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects to root with the retry alert when another passkey has the same credential id" do
+      create(:passkey, external_id: fake_credential_id)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(session_hash[:user_id]).to be_nil
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Couldn't register your Passkey")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "redirects to root with the retry alert when another passkey has the same public key" do
+      create(:passkey, public_key: fake_public_key)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.not_to(change { [User.count, Passkey.count] })
+
+      expect(session_hash[:user_id]).to be_nil
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Couldn't register your Passkey")
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "keeps the saved account and redirects with the sign-in alert when signing in fails" do
+      sign_in_error = RuntimeError.new("sign in failed")
+      allow_any_instance_of(Users::Webauthn::RegistrationController).to receive(:sign_in).and_raise(sign_in_error)
+      allow(Sentry).to receive(:capture_exception)
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.to change(User, :count).by(1).and change(Passkey, :count).by(1)
+
+      expect(Passkey.last!.user).to eq(User.find_by!(phone: phone))
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::SIGN_IN_FAILED_MESSAGE)
+      expect(flash[:alert]).to include("Sign in with your passkey")
+      expect(Sentry).to have_received(:capture_exception).with(sign_in_error, anything)
+      expect(session_hash[:current_registration]).to be_nil
+    end
+
+    it "enrolls the verified phone when the stored registration carries no user attributes" do
+      session_hash[:current_registration] = {"challenge" => fake_challenge}
+
+      expect do
+        post callback_users_webauthn_registration_index_path,
+          params: callback_params
+      end.to change(User, :count).by(1).and change(Passkey, :count).by(1)
+
+      expect(Passkey.last!.user).to eq(User.find_by!(phone: phone))
+      expect(response).to redirect_to(sway_registration_index_path)
       expect(session_hash[:current_registration]).to be_nil
     end
 
@@ -354,6 +543,134 @@ RSpec.describe "Users::Webauthn::Registration", type: :request do
       expect(flash[:alert]).to eq("Registration failed: cannot save")
       expect(session_hash[:current_registration]).to be_nil
       expect(Passkey.count).to eq(0)
+    end
+  end
+
+  describe "only a phone that already has an account is refused" do
+    let(:phone) { "4105553000" }
+    let(:callback_params) do
+      {
+        id: fake_credential_id,
+        rawId: Base64.strict_encode64(fake_credential_id),
+        passkey_label: "MacBook"
+      }
+    end
+
+    before do
+      session_hash[:phone] = phone
+      session_hash[:verified_phone] = phone
+      session_hash[:verified_phone_at] = Time.current.to_i
+    end
+
+    it "gives a brand-new phone exactly one account and one passkey" do
+      post users_webauthn_registration_index_path
+      expect(response).to have_http_status(:ok)
+
+      post callback_users_webauthn_registration_index_path, params: callback_params
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      user = User.find_by!(phone: phone)
+      expect(User.where(phone: phone).count).to eq(1)
+      expect(user.passkeys.count).to eq(1)
+    end
+
+    it "lets a user row without a passkey enroll its first passkey without a second row" do
+      user = create(:user, phone: phone, is_phone_verified: true)
+
+      post users_webauthn_registration_index_path
+      expect(response).to have_http_status(:ok)
+
+      expect do
+        post callback_users_webauthn_registration_index_path, params: callback_params
+      end.not_to change(User, :count)
+
+      expect(response).to redirect_to(sway_registration_index_path)
+      expect(user.passkeys.count).to eq(1)
+    end
+
+    it "refuses a phone that already has a passkey at the start" do
+      create(:passkey, user: create(:user, phone: phone))
+
+      post users_webauthn_registration_index_path
+
+      expect(response).to have_http_status(:conflict)
+      expect(response.parsed_body["errors"]).to eq([Users::Webauthn::RegistrationController::ALREADY_REGISTERED_MESSAGE])
+    end
+
+    context "when a concurrent enrollment saved the phone after this callback looked it up" do
+      before do
+        post users_webauthn_registration_index_path
+        expect(response).to have_http_status(:ok)
+        create(:passkey, user: create(:user, phone: phone))
+      end
+
+      it "answers already registered when the save fails the phone uniqueness validation" do
+        allow(User).to receive(:find_or_initialize_by).and_return(User.new(phone: phone))
+
+        expect do
+          post callback_users_webauthn_registration_index_path, params: callback_params
+        end.not_to(change { [User.count, Passkey.count] })
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::ALREADY_REGISTERED_MESSAGE)
+        expect(session_hash[:user_id]).to be_nil
+        expect(session_hash[:current_registration]).to be_nil
+      end
+
+      it "answers already registered when the save hits the unique phone index" do
+        unsaved_duplicate = User.new(phone: phone)
+        allow(unsaved_duplicate).to receive(:save!).and_wrap_original { |original| original.call(validate: false) }
+        allow(User).to receive(:find_or_initialize_by).and_return(unsaved_duplicate)
+
+        expect do
+          post callback_users_webauthn_registration_index_path, params: callback_params
+        end.not_to(change { [User.count, Passkey.count] })
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(Users::Webauthn::RegistrationController::ALREADY_REGISTERED_MESSAGE)
+        expect(session_hash[:user_id]).to be_nil
+        expect(session_hash[:current_registration]).to be_nil
+      end
+    end
+  end
+
+  describe "phone_taken?" do
+    it "treats an error that is neither a failed validation nor a unique-index hit as no phone conflict" do
+      error = StandardError.new("UNIQUE constraint failed: users.phone")
+
+      expect(Users::Webauthn::RegistrationController.new.send(:phone_taken?, error)).to be(false)
+    end
+  end
+
+  describe "an unexpected error" do
+    let(:phone) { "4105552100" }
+
+    before do
+      session_hash[:phone] = phone
+      session_hash[:verified_phone] = phone
+      session_hash[:verified_phone_at] = Time.current.to_i
+      allow(User).to receive(:find_or_initialize_by).and_raise(RuntimeError, "boom")
+      allow(Sentry).to receive(:capture_exception)
+    end
+
+    it "answers 503 onboarding_unavailable to the JSON enrollment start and reports the error" do
+      post users_webauthn_registration_index_path, as: :json
+
+      expect(response).to have_http_status(:service_unavailable)
+      expect(response.parsed_body.dig("error", "code")).to eq("onboarding_unavailable")
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+    end
+
+    it "redirects the web callback with a retry message, reports the error and clears the challenge" do
+      session_hash[:current_registration] = {"challenge" => fake_challenge, "user_attributes" => {"phone" => phone}}
+
+      post callback_users_webauthn_registration_index_path,
+        params: {id: fake_credential_id, rawId: Base64.strict_encode64(fake_credential_id)}
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(OnboardingSafetyNet::ONBOARDING_UNAVAILABLE_MESSAGE)
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+      expect(session_hash[:current_registration]).to be_nil
     end
   end
 end

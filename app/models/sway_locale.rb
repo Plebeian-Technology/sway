@@ -70,8 +70,12 @@ class SwayLocale < ApplicationRecord
       name.strip.downcase.split(" ").join("_")
     end
 
+    # @lat: [[locale-user-counts#How many people have registered in each locale#Why the count matches against existing locale rows]]
     def find_or_create_by_normalized!(**kwargs)
-      SwayLocale.find_or_create_by!(**normalize_attributes(kwargs))
+      attributes = normalize_attributes(kwargs)
+      SwayLocale.find_or_create_by!(**attributes)
+    rescue ActiveRecord::RecordNotUnique
+      SwayLocale.find_by(**attributes) || raise
     end
 
     # @lat: [[locale-name-is-derived#Which attributes the memo is keyed on]]

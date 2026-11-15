@@ -37,9 +37,11 @@ The nested `EmailValidator` in [[app/models/user.rb]] checks the downloaded bloc
 
 SMS-only enrollment is available while an account has no saved passkey. Once a passkey exists, access requires passkey sign-in; adding another uses the authenticated flow in [[identity-and-access#Identity and access#The admin gate is a lint rule#Adding a passkey re-verifies by SMS first]].
 
-[[app/controllers/users/webauthn/registration_controller.rb#RegistrationController#create|The web enrollment start]] refuses existing-passkey accounts before issuing options. [[app/controllers/users/webauthn/registration_controller.rb#RegistrationController#callback|The callback]] looks up the account again and checks eligibility in the same transaction that saves the user and passkey. SQLite's immediate transaction mode in [[config/database.yml]] serializes these writes, including two first-enrollment attempts for the same phone. [[app/frontend/hooks/authentication/useWebAuthnRegistration.ts#useWebAuthnRegistration|The browser registration hook]] displays the sign-in or support guidance on refusal without opening the device enrollment prompt. A refused callback changes no account data and creates no signed-in session; every callback exit clears its challenge.
+[[app/controllers/users/webauthn/registration_controller.rb#RegistrationController#create|The web enrollment start]] refuses existing-passkey accounts before issuing options. [[app/controllers/users/webauthn/registration_controller.rb#RegistrationController#callback|The callback]] looks up the account again and checks eligibility in the same transaction that saves the user and passkey. SQLite's immediate transaction mode in [[config/database.yml]] serializes these writes, including two first-enrollment attempts for the same phone. When a concurrent enrollment still saves the same phone first, the second save fails the phone's uniqueness validation or unique index, and both this callback and [[app/controllers/api/v1/registrations_controller.rb#RegistrationsController#callback|the mobile callback]] answer with the already-registered refusal instead of a save failure or a 500. [[app/frontend/hooks/authentication/useWebAuthnRegistration.ts#useWebAuthnRegistration|The browser registration hook]] displays the sign-in or support guidance on refusal without opening the device enrollment prompt. The enrollment start also requires a phone verified in this session that equals the submitted session phone; without one it answers 200 with `success: false` and the confirm-your-phone-first message, and the hook shows that message and stops before the passkey ceremony. A refused callback changes no account data and creates no signed-in session; every callback exit clears its challenge.
 
-New users and existing phone-verified users with no passkeys can complete first enrollment. An unfinished address registration does not permit replacing an already saved passkey. The user resumes setup after signing in with that key. A failed passkey save rolls back the user write so enrollment cannot leave a partially updated account.
+New users and existing phone-verified users with no passkeys can complete first enrollment. An unfinished address registration does not permit replacing an already saved passkey. The user resumes setup after signing in with that key. A failed passkey save rolls back the user write so enrollment cannot leave a partially updated account. A credential id or public key already held by another passkey counts as a failed save and gets the retry message. A sign-in failure after the commit keeps the account and passkey and redirects with a message to sign in with that passkey, because a retry would meet the existing-passkey refusal. A WebAuthn verification error in the callback redirects with one fixed sentence that tells the user to enter the phone number again, which the resume branch below accepts without a new SMS. The library's message never reaches the user, because a wrong origin or relying party is a Sway configuration fault, and Sentry gets only the exception class.
+
+A phone verified in a web session counts for enrollment for [[app/controllers/concerns/verified_phone_session.rb#VerifiedPhoneSession#VERIFIED_PHONE_WINDOW|thirty minutes]]. A verification time is stored beside `verified_phone`, and [[app/controllers/concerns/verified_phone_session.rb#VerifiedPhoneSession#verified_phone_current?|one predicate]] is the only check, used by the enrollment start, the enrollment callback, the repeated Confirm code answer and the resume branch. A browser session can outlive its user, so without a bound a phone verified on a shared or borrowed browser would stay good for enrolling a first passkey for that number; the mobile token and the add-a-passkey window are already ten minutes. Thirty minutes covers a retried passkey step. A verified phone with no stored time counts as expired, which covers the sign-in writes that do not stamp one. Expiry costs the user one new code. The worst case is a named wait, because every send limit refusal states how long to wait; once the number's ten daily sends are used that wait can be most of a day, as [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day]] records.
 
 ### Enrollment credential metadata
 
@@ -68,13 +70,27 @@ can establish the cause without copying raw messages into application reports.
 Code 60200 alone is insufficient evidence for changing phone validation or
 silencing all verification failures.
 
+### A number no US phone can have never reaches Twilio
+
+The SMS endpoints refuse a number that North American numbering cannot assign before any Twilio call, because Twilio would only reject it after spending the user's attempt.
+
+[[config/initializers/monkey_patches.rb#String#possible_us_phone?]] accepts exactly ten digits whose area code and exchange each start with 2 to 9, after the usual normalization strips a leading country code 1. The web code request, the mobile code request and the mobile code check answer 422 with "Enter a valid US phone number." for anything else. This rests on the numbering rule, not on Twilio error 60200 (see [[identity-and-access#Identity and access#The phone number is the account#A rejected verification needs a parameter diagnosis]]).
+
+[[app/controllers/users/webauthn/sessions_controller.rb#SessionsController#create|The web sign-in start]] applies the rule only after its passkey branch, where it would otherwise send an SMS. A stored account whose phone fails the rule still gets the passkey flow, so the rule never locks out an existing user. The refusal is a 200 JSON answer, `flow` sms with `success` false and the "Enter a valid US phone number." `error`, because the caller is a fetch that cannot follow a redirect to a page and a 422 would send the panel to the SMS fallback; the stored phone and the account model's own phone validation are unchanged.
+
 ### A verification-not-found reply has one safe browser outcome
 
 A Twilio verification-not-found reply returns one fixed message and stops the passkey flow.
 
 For Twilio error 20404, [[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] returns HTTP 200 JSON with `success: false` and `error: "Code not found."`. [[app/frontend/hooks/authentication/phone/useConfirmPhoneVerification.ts#useConfirmPhoneVerification]] shows that error as the notification title, falls back to `Incorrect Code` when the field is absent, and does not start passkey enrollment on failure. A rejected code leaves `verified_phone` unset and creates no user. Rate limiting remains a separate response path.
 
-The controller logs only the phone's last four digits and provider code. It does not log the provider message or recipient digits; other provider failures become a sanitized application error after the rescue block, with no raw provider exception as its cause. [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]] documents the redaction boundary.
+The controller logs only the phone's last four digits and provider code. It does not log the provider message or recipient digits; other provider failures are answered with HTTP 200, `success: false` and a fixed message, and reported to Sentry as a sanitized error built after the rescue block, with no raw provider exception as its cause ([[twilio-error-phone-redaction#Why a failed Twilio code check is reported and answered]]). [[twilio-error-phone-redaction#Why Twilio error handling redacts recipient identifiers]] documents the redaction boundary.
+
+### A phone verified in this session confirms again without Twilio
+
+A second Confirm code for the session phone that this session already verified answers success without asking Twilio again.
+
+Twilio deletes a verification once it approves it, so a second check for the same phone answers 20404 and the user would see "Code not found." after dismissing the passkey prompt. [[app/controllers/phone_verification_controller.rb#PhoneVerificationController#update]] therefore answers `success: true` when `verified_phone` already equals the normalized session phone, after the blank and length checks and before any Twilio call. That branch writes nothing to the session: `verified_phone` is still set only by a Twilio approval or by the skip switch, and a different session phone still goes to Twilio. The answer grants nothing new, because the web enrollment start already accepts that verified phone until its window ends; once it ends, the confirm goes to Twilio again. Retried confirms still count against the update rate limits.
 
 ## Two voter-registration flags mean different things
 
@@ -131,9 +147,11 @@ Locale collections in [[app/controllers/application_controller.rb]] depend on th
 `User` carries a `state_machines-activerecord` machine over
 `registration_status`: `pending` → `processing` → `completed` or `failed`.
 
-[[app/models/user.rb#User#registered?]] is the one registration predicate used by authorization and response serialization. The compatibility completion boolean derives from active representative rows; workflow status describes progress only. A stale true cache grants no access, while an active row can repair failed status or a false cache through the completion event.
+[[app/models/user.rb#User#registered?]] is the one registration predicate used by authorization and response serialization. The compatibility completion boolean derives from active representative rows and the list of locales still waiting for representatives; workflow status describes progress only. A stale true cache grants no access, while an active row or a waiting locale can repair failed status or a false cache through the completion event.
 
-The predicate requires at least one active `UserLegislator`; inactive historical rows do not count. The completion event rejects a user without such a row, and a rejected event rewrites the compatibility cache from the predicate, so switching off a user's last active row does not leave a true cache behind. After initialization, state-machine events are the only writers of the workflow status and compatibility cache.
+The predicate requires at least one active `UserLegislator` or at least one locale id on the pending representative list ([[registration-dead-ends#A skipped lookup is recorded so it can be retried]]); inactive historical rows do not count. A pending locale counts because an upstream outage never blocks registration: the user has finished every step of their own, and only Sway's lookup is outstanding, which a job assigns later. The completion event rejects a user with neither, and a rejected event rewrites the compatibility cache from the predicate, so switching off a user's last active row does not leave a true cache behind. After initialization, state-machine events are the only writers of the workflow status and compatibility cache.
+
+A waiting user has no representative links to protect, so the two checks in [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] that run before the lookup, the address-switch confirmation and the early completion, test active links rather than the predicate. A waiting user who submits an address, the same or a different one, takes the first-registration path: the saved address is replaced and every locale of the submitted address is looked up again. Locale ids recorded for an earlier address stay on the list for the retry job.
 
 The asynchrony is not an optimisation. Turning an address into legislators
 requires geocoding it and, for regional locales, querying an external
@@ -208,8 +226,13 @@ The resolver reads its key once and reuses that value for both the blank
 check and request, so the value checked is the value sent.
 [[app/services/sway_registration_service.rb#SwayRegistrationService#find_legislators_from_open_states_geo_endpoint]]
 uses the configured connection profile, wraps non-success responses as an
-unavailable service, and treats a missing results array as no matches. It
-matches returned person ids to each seeded legislator's external id.
+unavailable service, and treats a missing results array as no matches. A body
+that is not an object, or a results array holding anything but objects, is
+refused as an unavailable service too. It
+matches returned person ids to each seeded legislator's external id. A blank
+key returns no matches and sends one error-level Sentry message naming the key,
+so registration still completes with the locale-wide officers while the gap
+reaches the operator.
 
 ### Invite bookkeeping cannot abort registration
 
@@ -280,11 +303,13 @@ fails with a validation error rather than a database exception. The migration
 that adds the index deletes older duplicates first, keeping the newest row per
 user; those rows are not recoverable from a rollback.
 
+Two submits from one user, such as a double-click, can both find no link before either stores one. The request whose insert loses, to the validation or to the index, re-reads the stored row and points it at its own submitted address, as a sequential repeat does, so both requests answer success and the user keeps one row.
+
 The provisioner is also why a system spec that calls `register_passkey_user`
 already has a join row before its own setup runs. Those specs re-point that row
 through `set_user_address` rather than adding a second one.
 
-[[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] checks [[app/models/user.rb#User#registered?]] when a user already has a [[app/models/user_address.rb#UserAddress]] row. Re-submitting the same normalized address completes immediately, whereas switching to a different address requires `confirm_deactivate_legislators`, passes [[app/services/user_address_switch_service.rb#UserAddressSwitchService#cooldown_active_for?]], and reconciles districts, legislators, scores, and a [[app/models/user_address_change.rb#UserAddressChange]] audit row through [[app/services/user_address_switch_service.rb#UserAddressSwitchService#call]] only after representative lookup succeeds. Mobile navigation follows the derived completion boolean, not address presence.
+[[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] checks [[app/models/user.rb#User#registered?]] when a user already has a [[app/models/user_address.rb#UserAddress]] row. Re-submitting the same normalized address, or the same text without coordinates ([[address-normalized-key#Finding an address during registration#A repeated unlocated submission reuses the user's own row]]), completes immediately, whereas switching to a different address requires `confirm_deactivate_legislators`, passes [[app/services/user_address_switch_service.rb#UserAddressSwitchService#cooldown_active_for?]], and reconciles districts, legislators, scores, and a [[app/models/user_address_change.rb#UserAddressChange]] audit row through [[app/services/user_address_switch_service.rb#UserAddressSwitchService#call]] only after representative lookup succeeds. Mobile navigation follows the derived completion boolean, not address presence.
 
 ## Sessions, cookies and bearer tokens
 
@@ -295,9 +320,9 @@ account's creation time.
 The reset guards against session fixation; the identity stamp guards against a
 recycled user id resolving to a different account.
 
-Web credential callbacks wait for [[client-caches-and-identity#Identity changes wait for network-only pages|identity-cache preparation]] before submitting. Credential payloads are JSON produced by credential.toJSON(); their casts bridge Inertia RequestPayload typing without changing the wire data.
+Web credential callbacks wait for [[client-caches-and-identity#Identity changes wait for network-only pages|identity-cache preparation]] before submitting. Credential payloads are JSON produced by credential.toJSON(), or built by hand in [[app/frontend/sway_utils/webauthn.ts#create|webauthn.ts]] with the same keys when the browser lacks the WebAuthn JSON helpers; their casts bridge Inertia RequestPayload typing without changing the wire data.
 
-Phone confirmation uses PUT through Inertia's shared HTTP client because verification changes session state and requires CSRF protection. Successful confirmation awaits passkey creation and verification before returning, and includes registration loading in the panel busy state. Phone-first and discoverable callers also await verification so failures reach their existing error feedback. Discoverable cancellation leaves the phone form available; unexpected failures show retry guidance.
+Phone confirmation uses PUT through Inertia's shared HTTP client because verification changes session state and requires CSRF protection. Successful confirmation awaits passkey creation and verification before returning, and includes registration loading in the panel busy state. Phone-first and discoverable callers also await verification so failures reach their existing error feedback. Discoverable cancellation leaves the phone form available; unexpected failures show retry guidance. Dismissing the browser's passkey-creation prompt (NotAllowedError or AbortError) is not a failure: it sends no toast or Sentry report and the code step shows a message that Confirm code tries again.
 
 An existing stamp that differs from the account's created_at clears the stale
 session identity; a valid refresh token can still recover authentication. A
@@ -410,6 +435,12 @@ and five per number every five minutes, on both endpoints. Discoverable
 sign-in remains genuinely blind: it names no phone number, so it has nothing
 to disclose.
 
+### A phone confirmed in this session resumes enrollment
+
+The web endpoint answers `enroll` instead of sending an SMS when the submitted phone has no passkey and equals the phone this browser session already confirmed.
+
+A reload or a later return to the tab shows the phone form again, and without this branch the same number would cost a second SMS and a second code for a phone the session has already proved it owns. [[app/controllers/users/webauthn/sessions_controller.rb#SessionsController#create]] records the submitted phone as the session phone and answers `enroll`, and [[app/frontend/components/auth/PasskeyPanel.tsx#PasskeyPanel]] starts passkey enrollment straight away. Recording the phone grants nothing new: [[identity-and-access#Identity and access#The phone number is the account#First-passkey enrollment]] already accepts that verified phone inside its window, and a different number or an expired confirmation still takes the SMS branch. A phone with a passkey still gets the passkey flow first.
+
 ### Discoverable callback resolves the credential owner
 
 The credential, not a phone lookup, identifies the account in a discoverable
@@ -452,7 +483,15 @@ The native library throws plain objects with error and message fields, not Error
 
 Phone-first sign-in treats this outcome as the SMS path. The flow: sms response skips the native ceremony entirely, and the older no_passkey_enrolled API response remains compatible. Cancelling registration returns to the code form without displaying the internal message, so enrolment can be retried.
 
-NotSupported maps to PasskeyUnsupportedError. Other failures retain native details internally instead of being reclassified as missing passkeys. Development-only logging retains native details for diagnosis; the error tests use the library's actual object shape rather than an invented Error subclass.
+Only NotSupported from a sign-in ceremony, or from the support check before any ceremony, maps to PasskeyUnsupportedError, so the DeviceUnsupported screen is reserved for a device that cannot do passkeys at all. Registration has no support check, so it can never throw PasskeyUnsupportedError and never reaches that screen. NotSupported thrown by the create ceremony of a registration, after the code check passed, maps to PasskeyCreateUnsupportedError: on Android it comes from Credential Manager being unsupported or disabled, outdated Google Play services or an old OS, and the code step shows `passkeyCreateUnsupportedAndroid` (update system software and Google Play services) or `passkeyCreateUnsupportedIos` (update iOS), each ending with press Confirm code again and then another device or sway.vote, with the held SMS-verified token kept. The screen-lock sentence would not fix those causes, so this error is kept apart from PasskeyProviderMissingError. NoCreateOption is the native answer when the phone has no credential provider, for example Android without a screen lock or a Google account. It maps to PasskeyProviderMissingError, because the user can fix it, and so does BadConfiguration on Android during registration, which comes only from the WebAuthn ConstraintError. A sign-in BadConfiguration stays a plain Error and is reported to Sentry, so the user sees the generic sign-in error. Sway asks for required user verification, so that error means the phone cannot verify the user, for example because it has no screen lock. A broken asset-links file arrives as RequestFailed, not BadConfiguration. The code step shows `passkeyNoProviderAndroid` (screen lock and Google account), which is Android only because iOS never answers NoCreateOption, ending with press Confirm code again, and the held SMS-verified token stays so the retry needs no new SMS. On iOS BadConfiguration stays unmapped. It stays a plain Error carrying the native message. Other failures retain native details internally instead of being reclassified as missing passkeys. The library reports some real causes only as UnknownError or "Native error", for example iOS "device not configured" and Android NotConfigured (Google Play services), so the app cannot tell them apart. An unmapped failure thrown by the create ceremony of a registration therefore shows `passkeyUnidentifiedMobile` on the code step, which names the screen lock or passcode and up-to-date software as the likely fix and ends with press Confirm code again, and keeps the held token. The same kind of failure from the code check keeps the generic `verifyError`, since no passkey was involved. An unmapped, non-cancel failure is also reported to Sentry as the message `passkey_native_error` with the native error name as its only tag, never the detail text, the phone or a token. Development logging retains native details for diagnosis; the error tests use the library's actual object shape rather than an invented Error subclass.
+
+#### A session the device cannot save
+
+When the keychain refuses the bearer token or the session envelope after a successful callback, both stores are cleared and SessionSaveError is raised, so no half session remains.
+
+By the time [[mobile/src/auth/passkeyAuth.ts#persistSession]] runs, the registration callback has already created the account, saved the passkey and consumed the SMS-verified token. Retrying the code step can only fail with an expired token, and a new code cannot help because the account exists. The only working path is passkey sign-in, which needs no SMS, so the error's message names it. Errors from clearing the stores are ignored, because the user's next step does not depend on them.
+
+The code step answers SessionSaveError by returning to the phone form, which drops the held SMS-verified token and shows the passkey sign-in button, and displays the error's message. Sign-in shares the same callback path and keeps its existing sign-in error copy.
 
 ### Mobile passkey ceremonies
 

@@ -7,6 +7,17 @@
 // inherit the env.
 process.env.TZ = "UTC";
 
+const { readFileSync } = require("node:fs");
+const { relative, resolve } = require("node:path");
+
+// @lat: [[verification-gates#Mobile onboarding coverage gate]]
+const onboardingFloors = JSON.parse(
+    readFileSync(resolve(__dirname, "../config/onboarding_coverage_floor.mobile.json"), "utf8"),
+);
+const onboardingFiles = Object.keys(onboardingFloors).map((file) =>
+    relative(__dirname, resolve(__dirname, "..", file)),
+);
+
 // jest-expo preset already wires babel-jest + react-native env. Override the
 // transformIgnorePatterns so pnpm-mangled paths under .pnpm/ still get
 // transformed for the RN/Expo/NativeWind/etc. ecosystem (default RN regex assumes
@@ -42,4 +53,12 @@ module.exports = {
     ],
     testMatch: ["**/__tests__/**/*.test.(ts|tsx)", "**/__tests__/**/*.spec.(ts|tsx)"],
     testPathIgnorePatterns: ["/node_modules/"],
+    collectCoverageFrom: onboardingFiles,
+    coverageReporters: ["text"],
+    coverageThreshold: Object.fromEntries(
+        Object.entries(onboardingFloors).map(([file, floor]) => [
+            resolve(__dirname, "..", file),
+            { lines: floor.line, branches: floor.branch },
+        ]),
+    ),
 };

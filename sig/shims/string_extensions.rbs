@@ -2,5 +2,6 @@ class String
     def as_cookie: -> String
     def remove_non_digits: -> String
     def normalize_phone: -> String
+    def possible_us_phone?: -> bool
     def remove_non_alpha: -> String
 end
