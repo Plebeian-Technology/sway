@@ -68,14 +68,12 @@ module Sway
       exceptions: TRANSPORT_RETRY_EXCEPTIONS
     }.freeze #: retry_options
 
-    # @lat: [[faraday-stack-retry-and-connection-design#Why the Nominatim profile does not retry 429]]
+    # @lat: [[faraday-stack-retry-and-connection-design#Why the Nominatim connection never retries]]
     NOMINATIM_DEFAULTS = {
-      max: 3,
-      interval: 0.5, # seconds
-      backoff_factor: 2,
-      retry_statuses: [500, 502, 503, 504],
+      max: 0,
+      retry_statuses: [],
       methods: %i[get],
-      exceptions: TRANSPORT_RETRY_EXCEPTIONS
+      exceptions: []
     }.freeze #: retry_options
 
     # @lat: [[address-place-classification#Google Places results in the Nominatim shape]]
@@ -85,7 +83,7 @@ module Sway
       backoff_factor: 2,
       retry_statuses: [500, 502, 503, 504],
       methods: %i[post],
-      exceptions: TRANSPORT_RETRY_EXCEPTIONS
+      exceptions: [Faraday::RetriableResponse]
     }.freeze #: retry_options
 
     # @lat: [[faraday-stack-retry-and-connection-design#OpenRouter retries and upstream User-Agent headers]]
@@ -183,7 +181,8 @@ module Sway
       )
     end
 
-    def self.nominatim(timeout_seconds: 10)
+    # @lat: [[faraday-stack-retry-and-connection-design#Why the Nominatim connection never retries]]
+    def self.nominatim(timeout_seconds: 3)
       build(
         base_url: Sway::Settings.upstream.nominatim_api_base_url,
         timeout_seconds: timeout_seconds,

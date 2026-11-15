@@ -3086,6 +3086,12 @@ class Object
     def gate_blocked_response?: () -> bool
     def gate_outcome_description: () -> String
 
+    # spec/support/shared_examples/phone_verification_send_limit.rb helpers,
+    # defined by each including group: one code request for a fixed phone
+    # from the IP, and the status a sent code answers with.
+    def code_send_request: (ip: String) -> untyped
+    def code_send_status: () -> Symbol
+
     # C2-CR-01 — bill_draft_org_positions_identity_spec.rb helper reading the
     # org names still standing in draft_org_positions after a guarded PATCH.
     # Spelled out rather than `draft_names` because of the one-signature-per-
@@ -3599,7 +3605,7 @@ class Object
     def create_score: (Bill bill, created_at: ActiveSupport::TimeWithZone) -> BillInterestingScore
 
     # sway_registration_controller_spec.rb's helper, renamed off `register`.
-    def register_address: (street: String, latitude: Float, longitude: Float) -> void
+    def register_address: (street: String, latitude: Float?, longitude: Float?) -> void
 
     # admin_pages_narrow_spec.rb's own measurement helpers.
     def button_box: (String label) -> untyped
@@ -3790,6 +3796,7 @@ class Object
     def active_legislator_ids: () -> Array[Integer]
     def post_with_every_lookup_answering: () -> untyped
     def city_hall_address: () -> Hash[Symbol, untyped]
+    def unlocated_city_hall_address: () -> Hash[Symbol, untyped]
     def columbus_address: () -> Hash[Symbol, untyped]
     def stub_census: (status: Integer, body: String) -> untyped
     def census_district_body: (String district) -> String

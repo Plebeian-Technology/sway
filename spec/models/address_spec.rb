@@ -71,17 +71,58 @@ RSpec.describe Address, type: :model do
         expect(raw(address, "longitude")).not_to eq("-76.61069")
       end
 
-      it "saves the normalized key of the coordinates it found" do
-        address = Address.create!(**typed_fields)
+      it "leaves the normalized key nil, so a stranger's picked place cannot match the row" do
+        address = Address.create!(**typed_fields, street2: "Apt 4")
 
-        expect(Address.find(address.id).normalized_key)
-          .to eq(Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069))
+        expect(Address.find(address.id).located?).to be(true)
+        expect(Address.find(address.id).normalized_key).to be_nil
+      end
+
+      context "when the typed address has no city, region, postal code or country" do
+        before do
+          geocoded = Geocoder::Result::Test.new(
+            "coordinates" => [39.2904, -76.6122],
+            "city" => "baltimore",
+            "state" => "Maryland",
+            "state_code" => "md",
+            "postal_code" => "21201",
+            "country_code" => "us"
+          )
+          allow(Geocoder).to receive(:search).and_return([geocoded])
+        end
+
+        it "fills each blank field from the geocode, normalized like a typed one" do
+          address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+
+          reloaded = Address.find(address.id)
+          expect(reloaded).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21201", country: "US")
+          expect(address).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21201", country: "US")
+          expect(reloaded.us_state_code).to eq("MD")
+        end
+
+        it "keeps every field the user typed" do
+          address = Address.create!(street: "100 N Holliday St", city: "Towson", region_code: "", postal_code: "21204", country: "")
+
+          expect(Address.find(address.id))
+            .to have_attributes(city: "Towson", region_code: "MD", postal_code: "21204", country: "US")
+        end
+
+        it "reads the state name when the geocode has no state code" do
+          allow(Geocoder).to receive(:search)
+            .and_return([Geocoder::Result::Test.new("coordinates" => [39.29, -76.61], "state" => "Maryland")])
+
+          address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+
+          expect(Address.find(address.id)).to have_attributes(city: "", region_code: "MD", postal_code: "", country: "")
+        end
       end
 
       [
         Geocoder::OverQueryLimitError.new("over limit"),
         Timeout::Error.new("execution expired"),
-        SocketError.new("getaddrinfo failed")
+        SocketError.new("getaddrinfo failed"),
+        Errno::ECONNREFUSED.new("connect(2) for maps.googleapis.com"),
+        OpenSSL::SSL::SSLError.new("SSL_connect returned=1")
       ].each do |error|
         it "keeps the row unlocated and reports a #{error.class}" do
           allow(Geocoder).to receive(:search).and_raise(error)

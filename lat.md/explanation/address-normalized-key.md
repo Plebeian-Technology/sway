@@ -1,6 +1,6 @@
 # The normalized address key
 
-Every address row carries a key built from its rounded coordinates and its unit, so two spellings of one building collapse to one row instead of two.
+An address row whose coordinates came with the submission carries a key built from those rounded coordinates and its unit, so two spellings of one building collapse to one row instead of two.
 
 Registration used to find an existing address by matching every typed field
 exactly, so `100 N Holliday St` and `100 N Holliday Street` became separate rows for
@@ -38,12 +38,12 @@ become `4`, which is what makes the same unit written three ways agree.
 
 ## Finding an address during registration
 
-Registration looks an address up by its normalized key. A submission without two valid coordinates has no key, so it always gets a new row of its own.
+Registration looks an address up by its normalized key. A submission without two valid coordinates has no key, so it gets a new row unless it repeats the user's own linked address.
 
-There is no fallback that matches every typed field. Two unlocated submissions
-cannot be shown to be one place, and sharing a row would hand each user the
-other's later geocode and district. A fresh row per attempt is the cost of
-never merging strangers.
+There is no fallback that matches every typed field across users. Two
+unlocated submissions from different users cannot be shown to be one place,
+and sharing a row would hand each user the other's later geocode and district.
+A fresh row per user is the cost of never merging strangers.
 
 The address is accepted as a fact, so nothing in it refuses the user. A missing
 or null text field is stored as an empty string, and a body with no address at
@@ -64,6 +64,30 @@ The key is deliberately not part of the create call's matching tuple. It is
 computed from the coordinates rather than supplied by the client, so making it a
 match condition would be circular.
 
+### A repeated unlocated submission reuses the user's own row
+
+[[app/controllers/sway_registration_controller.rb#SwayRegistrationController#linked_address_with_submitted_text]] returns the user's linked address when a keyless submission has the same text, compared after normalization.
+
+A double submit, or a mobile retry after a client timeout when the first
+request had already finished, sends the same keyless address again. A new row
+for it has a different id from the linked one, and the controller reads a
+user with representatives and a link to another address as an address switch,
+answering `confirmation_required` to someone who just registered. Comparing
+against the user's own link only merges the user with themselves. The seven
+text fields are compared as they would be stored, with a missing unit equal to
+an empty one. A city, region, postal code or country left blank in the
+submission matches whatever the linked row holds, because
+[[address-normalized-key#A typed address gets its place from the geocode|the server geocode]]
+fills those blanks on the first submission, and the repeat sends them blank
+again. A different text still makes a new row and still asks to confirm the
+switch.
+
+A linked row that carries a key is a picked place, and text never matches it.
+Its city and region came from the pick, not from a geocode of blanks, so a
+blank field in a new submission says nothing about them. A user who moved and
+types the same street with no city therefore gets a new row and the switch
+confirmation, rather than silently keeping the old place.
+
 ## Why an unlocated address has no key
 
 `normalized_key_for` returns nil when either coordinate is missing. Geocoding
@@ -77,20 +101,45 @@ rather than a placeholder that would collide with every other unlocated row.
 The after-commit lookup runs outside the write transaction because the SQLite
 write lock is held for the whole of an immediate transaction, and a slow HTTP
 call must not hold it. When the lookup finds a point it saves the coordinates
-and the key from those coordinates in one update, because the row is now
-comparable and a nil key would hide it from the next registration of the same
-building. The registration controller creates the address outside any
-transaction, so the callback finishes before `create!` returns and resolution
-sees the located row.
+but leaves the key nil. The geocode is of typed text, so the row's unit is
+whatever the user typed; a key from it would end in an empty unit part whenever
+no unit was typed, and a stranger whose picked place rounds to the same point
+with no unit would be matched to this row and its typed apartment text. The
+row therefore stays out of the key lookup for good, and a repeat submission by
+the same user reaches it through
+[[address-normalized-key#Finding an address during registration#A repeated unlocated submission reuses the user's own row]].
+The registration controller creates the address outside any transaction, so
+the callback finishes before `create!` returns and resolution sees the located
+row.
 
-A geocoder failure (an over-limit or denied reply, a timeout, a socket error)
-is logged and reported to Sentry instead of raised, because the row is already
-committed and an error raised from an after-commit callback would turn a saved
-address into a failed request. A failure or an empty result leaves the row
+Any error from the lookup or its save is logged and reported to Sentry instead
+of raised, because the row is already committed and an error raised from an
+after-commit callback would turn a saved address into a failed request. The
+geocoder is configured to raise every failure, so the list of errors is open:
+an over-limit or denied reply, a timeout, a socket error, a refused connection
+and a TLS failure all reach the callback, and a callback that caught only some
+of them answered every registration retry with a 503 during an outage. A failure or an empty result leaves the row
 unlocated. Resolution then makes no district lookup and no OpenStates request
 for it, rather than testing the point 0,0, and the address resolves by its
 state: the locale-wide officers and, through
-[[representative-resolution#Congress fallback]], the state's Senators.
+[[representative-resolution#Congress fallback]], the state's Senators. A row
+typed with only a street has no state either, so registration records its
+locales for a later geocode
+([[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]).
+
+## A typed address gets its place from the geocode
+
+The server geocode fills each of the city, region, postal code and country that the submission left blank, in the same update as the coordinates; a field the user typed is never replaced.
+
+A typed address can arrive with only a street: the web form when no suggestion
+was picked, or the mobile form's manual street. Locale resolution reads the
+city and region, so a row with neither resolves to the Congress locale alone,
+with no state, and the user is linked to the President only while registration
+reports success. The geocode already knows the place, so its state code (or
+state name when there is no code), city, postal code and country code fill the
+blanks. The update runs the row's own
+[[address-normalization]], so a filled region and city are stored exactly as a
+typed one would be, and resolution in the same request sees the filled row.
 
 ## Why the backfill reports collisions instead of merging
 

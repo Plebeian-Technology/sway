@@ -12,7 +12,8 @@ class NominatimService
     ?viewbox: String?,
     ?bounded: (bool | String | Integer)?,
     ?countrycodes: String?,
-    ?limit: (Integer | String)?
+    ?limit: (Integer | String)?,
+    ?google_fallback: bool
   ) -> Array[Hash[String, untyped]]
 
   def initialize: (?connection: Faraday::Connection?) -> void
@@ -22,7 +23,8 @@ class NominatimService
     ?viewbox: String?,
     ?bounded: (bool | String | Integer)?,
     ?countrycodes: String?,
-    ?limit: (Integer | String)?
+    ?limit: (Integer | String)?,
+    ?google_fallback: bool
   ) -> Array[Hash[String, untyped]]
 
   private

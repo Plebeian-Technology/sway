@@ -378,6 +378,24 @@ RSpec.describe "/registration", type: :request do
         expect(active_legislator_ids).to eq([mayor.id])
       end
 
+      it "registers a corrected address directly when the only active link is the President" do
+        president = create_titled_seat_term(
+          district: create(:district, sway_locale: congress, name: "US0"),
+          seat_identifier: RepresentativeReassignmentObserver::PRESIDENT_SEAT_IDENTIFIER,
+          title: "President",
+          years: [2025, 2029]
+        )
+        UserLegislator.create!(user:, legislator: president, active: true)
+
+        post "/sway_registration", params: address_params, headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.dig("error", "code")).to be_nil
+        expect(user.reload.address.street).to eq("100 N Holliday St")
+        expect(active_legislator_ids).to include(president.id, mayor.id)
+        expect(UserAddressChange.count).to eq(0)
+      end
+
       it "still asks a user with an active legislator link to confirm the switch" do
         linked_user = create(:user, :registered)
         linked_address = create(:address, street: "2 Old Saved Rd")
@@ -757,6 +775,19 @@ RSpec.describe "/registration", type: :request do
       expect(UserAddressChange.count).to eq(0)
     end
 
+    it "returns 422 confirmation_required for a different address without coordinates" do
+      register_address(street: "100 N Holliday St", latitude: nil, longitude: nil)
+      expect(response).to have_http_status(:ok)
+      first_address = user.reload.address
+
+      register_address(street: "100 Light St", latitude: nil, longitude: nil)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "code")).to eq("confirmation_required")
+      expect(user.reload.address).to eq(first_address)
+      expect(user.user_legislators.where(active: true).count).to eq(1)
+    end
+
     it "returns 422 address_switch_cooldown when the user switched addresses within the cooldown period" do
       register_address(street: "100 N Holliday St", latitude: 39.29105, longitude: -76.61069)
       first_address = user.reload.address
@@ -1011,6 +1042,25 @@ RSpec.describe "/registration", type: :request do
       expect(user.address.street2).to eq("Apt 1A")
       expect(other_user.address.street2).to eq("Apt 2B")
     end
+
+    it "does not reuse a picked place when the user later types the same street with no city" do
+      sign_in(user)
+      post "/sway_registration",
+        params: {sway_registration: base_params.merge(street: "100 N Holliday St")},
+        headers: {"Accept" => "application/json"}
+      expect(response).to have_http_status(:ok)
+      picked = user.reload.address
+
+      expect {
+        post "/sway_registration",
+          params: {sway_registration: {street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: ""}},
+          headers: {"Accept" => "application/json"}
+      }.to change(Address, :count).by(1)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "code")).to eq("confirmation_required")
+      expect(user.reload.address).to eq(picked)
+    end
   end
 
   # @lat: [[low-friction-voting#Reconciliation on registration and sign-in]]
@@ -1215,6 +1265,10 @@ RSpec.describe "/registration", type: :request do
 
   # @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
   describe "POST /sway_registration for a brand-new user through the real address-to-district path" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    around { |example| travel_to(Date.new(2026, 11, 14)) { example.run } }
+
     let!(:baltimore) { create(:sway_locale, :baltimore) }
     let!(:maryland) { create(:sway_locale, :maryland) }
     let!(:congress) { create(:sway_locale, :congress) }
@@ -1298,14 +1352,39 @@ RSpec.describe "/registration", type: :request do
         [maryland.name, "MD0", "Governor"],
         [congress.name, "MD0", "Sen."],
         [congress.name, "MD0", "Sen."],
-        [congress.name, "MD7", "Rep."]
+        [congress.name, "MD7", "Rep."],
+        [congress.name, "US0", "Pres."]
       )
       expect(active_district_names).to contain_exactly(
         [baltimore.name, "MD0"],
         [baltimore.name, "MD11"],
         [maryland.name, "MD0"],
         [congress.name, "MD0"],
-        [congress.name, "MD7"]
+        [congress.name, "MD7"],
+        [congress.name, "US0"]
+      )
+      expect(Sentry).not_to have_received(:capture_exception)
+    end
+
+    it "links the representatives of every locale for a user whose stored name no longer validates" do
+      user.update_column(:full_name, "Zoe 9")
+      stub_census(status: 200, body: census_district_body("07"))
+
+      post_address(city_hall_address)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(user.reload.registration_status).to eq("completed")
+      expect(user.is_registration_complete).to be(true)
+      expect(linked_seats).to contain_exactly(
+        [baltimore.name, "MD0", "Mayor"],
+        [baltimore.name, "MD0", "Council President"],
+        [baltimore.name, "MD11", "Council Member"],
+        [maryland.name, "MD0", "Governor"],
+        [congress.name, "MD0", "Sen."],
+        [congress.name, "MD0", "Sen."],
+        [congress.name, "MD7", "Rep."],
+        [congress.name, "US0", "Pres."]
       )
       expect(Sentry).not_to have_received(:capture_exception)
     end
@@ -1330,7 +1409,8 @@ RSpec.describe "/registration", type: :request do
           [baltimore.name, "MD11", "Council Member"],
           [maryland.name, "MD0", "Governor"],
           [congress.name, "MD0", "Sen."],
-          [congress.name, "MD0", "Sen."]
+          [congress.name, "MD0", "Sen."],
+          [congress.name, "US0", "Pres."]
         )
         expect(user.reload.pending_representative_locale_ids).to eq([congress.id])
         expect(Sentry).to have_received(:capture_exception)
@@ -1352,6 +1432,120 @@ RSpec.describe "/registration", type: :request do
       expect(linked_seats).to include([baltimore.name, "MD0", "Mayor"], [congress.name, "MD7", "Rep."])
     end
 
+    context "when an address without coordinates is submitted twice in a row" do
+      def unlocated_city_hall_address
+        city_hall_address.except(:latitude, :longitude)
+      end
+
+      before { stub_census(status: 200, body: census_district_body("07")) }
+
+      it "answers success both times and keeps one link and one address row (JSON)" do
+        post_address(unlocated_city_hall_address)
+        expect(response).to have_http_status(:ok)
+
+        expect { post_address(unlocated_city_hall_address) }.not_to change(Address, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"ok" => true, "registration_status" => "completed"})
+        expect(UserAddress.where(user:).count).to eq(1)
+        expect(Address.count).to eq(1)
+        expect(UserAddressChange.count).to eq(0)
+      end
+
+      it "redirects a browser to the feed both times and keeps one link and one address row (web)" do
+        2.times do
+          with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+            post "/sway_registration", params: {sway_registration: unlocated_city_hall_address}
+          end
+
+          expect(response).to redirect_to(feed_path)
+        end
+
+        expect(UserAddress.where(user:).count).to eq(1)
+        expect(Address.count).to eq(1)
+      end
+    end
+
+    context "when a typed address has only a street and the server geocodes it after commit" do
+      street_only_address = {street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: ""}
+
+      before do
+        stub_census(status: 200, body: census_district_body("07"))
+        allow(Geocoder).to receive(:search).and_return(
+          [
+            Geocoder::Result::Test.new(
+              "coordinates" => [39.29105, -76.61069],
+              "city" => "Baltimore",
+              "state" => "Maryland",
+              "state_code" => "MD",
+              "postal_code" => "21202",
+              "country_code" => "US"
+            )
+          ]
+        )
+        allow(Rails.env).to receive(:test?).and_return(false)
+      end
+
+      it "resolves the state's locales from the geocode, not the President alone" do
+        post_address(street_only_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["registration_status"]).to eq("completed")
+        expect(user.reload.address).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21202", country: "US")
+        expect(user.address.normalized_key).to be_nil
+        expect(linked_seats).to include(
+          [maryland.name, "MD0", "Governor"],
+          [congress.name, "MD0", "Sen."],
+          [congress.name, "MD7", "Rep."]
+        )
+        expect(linked_seats.count { |seat| seat == [congress.name, "MD0", "Sen."] }).to eq(2)
+      end
+
+      it "reuses the same row when the user sends the same street again" do
+        post_address(street_only_address)
+        expect(response).to have_http_status(:ok)
+
+        expect { post_address(street_only_address) }.not_to change(Address, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({"ok" => true, "registration_status" => "completed"})
+        expect(UserAddressChange.count).to eq(0)
+      end
+
+      it "does not link a stranger's picked place with the same coordinates to the geocoded row" do
+        post_address(street_only_address.merge(street2: "Apt 4"))
+        typed_row = user.reload.address
+        stranger = create(:user, is_registration_complete: false, registration_status: "pending")
+        sign_in(stranger)
+
+        post_address(city_hall_address.merge(latitude: 39.29105, longitude: -76.61069))
+
+        expect(response).to have_http_status(:ok)
+        expect(stranger.reload.address).not_to eq(typed_row)
+        expect(stranger.address.street2).to be_blank
+      end
+    end
+
+    context "when a typed address has only a street and the geocoder raises" do
+      before do
+        stub_census(status: 200, body: census_district_body("07"))
+        allow(Geocoder).to receive(:search).and_raise(SocketError, "getaddrinfo failed")
+        allow(Rails.env).to receive(:test?).and_return(false)
+      end
+
+      it "registers the user with the President and Congress pending, so the hourly job geocodes it later" do
+        president = congress.legislators.find_by!(external_id: "POTUS")
+
+        post_address({street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: ""})
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["registration_status"]).to eq("completed")
+        expect(user.reload.address.located?).to be(false)
+        expect(UserLegislator.where(user:, active: true).pluck(:legislator_id)).to eq([president.id])
+        expect(user.pending_representative_locale_ids).to eq([congress.id])
+      end
+    end
+
     it "links an address in a place Sway does not support to its Congress representatives only" do
       stub_census(status: 200, body: census_district_body("03"))
 
@@ -1363,7 +1557,8 @@ RSpec.describe "/registration", type: :request do
       expect(linked_seats).to contain_exactly(
         [congress.name, "OH0", "Sen."],
         [congress.name, "OH0", "Sen."],
-        [congress.name, "OH3", "Rep."]
+        [congress.name, "OH3", "Rep."],
+        [congress.name, "US0", "Pres."]
       )
     end
   end

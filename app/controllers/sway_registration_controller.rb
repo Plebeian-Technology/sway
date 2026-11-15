@@ -18,13 +18,15 @@ class SwayRegistrationController < ApplicationController
     "You recently changed your address. To prevent cross-district voting abuse, please wait before switching addresses again."
   REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE =
     "We couldn't change your address right now. Please try again in a few minutes."
+  ADDRESS_TEXT_FIELDS = %i[street street2 street3 city region_code postal_code country].freeze
+  GEOCODE_FILLED_FIELDS = %i[city region_code postal_code country].freeze
 
   def index
     u = current_user
     if u.nil?
       redirect_to root_path
     elsif u.registered?
-      u.complete! unless u.completed? && u.is_registration_complete
+      u.complete_registration!
       redirect_to feed_path
     elsif u.processing?
       render inertia: Pages::REGISTRATION, props: registration_page_props(processing: true)
@@ -47,7 +49,7 @@ class SwayRegistrationController < ApplicationController
     # @lat: [[identity-and-access#A user holds one address]]
     address_instance = address
     existing_link = u.user_address
-    if u.user_legislators.where(active: true).exists? && existing_link.present? && existing_link.address_id != address_instance.id
+    if holds_representatives?(u) && existing_link.present? && existing_link.address_id != address_instance.id
       return handle_address_switch(u, existing_link.address, address_instance)
     end
 
@@ -62,8 +64,8 @@ class SwayRegistrationController < ApplicationController
       end
     end
 
-    if u.user_legislators.where(active: true).exists?
-      complete_registration(u)
+    if holds_representatives?(u)
+      u.complete_registration!
       return redirect_after_registration_completion(u)
     end
 
@@ -86,21 +88,24 @@ class SwayRegistrationController < ApplicationController
 
     # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried]]
     skipped_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) }
+    # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
+    address_instance.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) } unless address_instance.located?
 
     u.reload
     wait_for_congress_representatives(u, address_instance) unless u.registered?
-    complete_registration(u)
+    u.complete_registration!
     redirect_after_registration_completion(u)
   end
 
   private
 
-  # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
-  def complete_registration(u)
-    return if u.completed? && u.is_registration_complete
+  # @lat: [[registration-dead-ends#Correcting an address after a failed lookup#A President link alone is not a registration]]
+  def holds_representatives?(u)
+    links = u.user_legislators.where(active: true).includes(legislator: {active_term: :seat})
+    return false if links.empty?
+    return true if u.pending_representative_locale_ids.empty?
 
-    u.complete!(false)
-    u.save!(validate: false)
+    links.any? { |link| link.legislator.active_term&.seat&.seat_identifier != RepresentativeReassignmentObserver::PRESIDENT_SEAT_IDENTIFIER }
   end
 
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
@@ -108,7 +113,7 @@ class SwayRegistrationController < ApplicationController
     u = current_user
     return super unless u&.user_legislators&.where(active: true)&.exists?
 
-    complete_registration(u)
+    u.complete_registration!
     respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: feed_path)
   end
 
@@ -152,7 +157,7 @@ class SwayRegistrationController < ApplicationController
 
     if change
       u.reload
-      u.complete! unless u.completed? && u.is_registration_complete
+      u.complete_registration!
       redirect_after_registration_completion(u)
     else
       render_no_representatives
@@ -283,17 +288,7 @@ class SwayRegistrationController < ApplicationController
 
   # @lat: [[address-normalized-key#Finding an address during registration]]
   def address
-    found = address_by_normalized_key || Address.create!(
-      street: submitted_text(:street),
-      street2: sway_registration_params[:street2],
-      street3: sway_registration_params[:street3],
-      city: submitted_text(:city),
-      region_code: submitted_text(:region_code),
-      postal_code: submitted_text(:postal_code),
-      country: submitted_text(:country),
-      latitude: submitted_coordinate(:latitude),
-      longitude: submitted_coordinate(:longitude)
-    )
+    found = address_by_normalized_key || linked_address_with_submitted_text || Address.create!(**submitted_address_attributes)
 
     changes = {}
     if submitted_normalized_key.present? && found.normalized_key != submitted_normalized_key
@@ -309,6 +304,39 @@ class SwayRegistrationController < ApplicationController
     return nil if submitted_normalized_key.blank?
 
     Address.find_by(normalized_key: submitted_normalized_key)
+  end
+
+  # @lat: [[address-normalized-key#Finding an address during registration#A repeated unlocated submission reuses the user's own row]]
+  def linked_address_with_submitted_text
+    return nil if submitted_normalized_key.present?
+
+    linked = current_user&.user_address&.address
+    return nil if linked.nil?
+    return nil if linked.normalized_key.present?
+
+    submitted = NormalizeAddressService.call(Address.new(**submitted_address_attributes))
+    linked if ADDRESS_TEXT_FIELDS.all? { |field| same_submitted_text?(field, linked, submitted) }
+  end
+
+  def same_submitted_text?(field, linked, submitted)
+    submitted_value = submitted.public_send(field).to_s
+    return true if submitted_value.empty? && GEOCODE_FILLED_FIELDS.include?(field)
+
+    linked.public_send(field).to_s == submitted_value
+  end
+
+  def submitted_address_attributes
+    {
+      street: submitted_text(:street),
+      street2: sway_registration_params[:street2],
+      street3: sway_registration_params[:street3],
+      city: submitted_text(:city),
+      region_code: submitted_text(:region_code),
+      postal_code: submitted_text(:postal_code),
+      country: submitted_text(:country),
+      latitude: submitted_coordinate(:latitude),
+      longitude: submitted_coordinate(:longitude)
+    }
   end
 
   def submitted_normalized_key

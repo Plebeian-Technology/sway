@@ -24,8 +24,8 @@ module Sway
 
     type retry_options = {
       max: Integer,
-      interval: Float,
-      backoff_factor: Integer,
+      ?interval: Float,
+      ?backoff_factor: Integer,
       retry_statuses: Array[Integer],
       methods: Array[Symbol],
       # Optional — the GET profiles add connection-reset classes

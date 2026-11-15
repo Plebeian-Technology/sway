@@ -4,6 +4,8 @@ require "rails_helper"
 
 # @lat: [[address-place-classification#Nominatim place classification and usage constraints]]
 RSpec.describe "Addresses", type: :request do
+  include_context "SessionDouble"
+
   describe "GET /addresses/autocomplete" do
     sample_place = {
       "place_id" => 100149,
@@ -28,7 +30,8 @@ RSpec.describe "Addresses", type: :request do
         viewbox: nil,
         bounded: nil,
         countrycodes: nil,
-        limit: 5
+        limit: 5,
+        google_fallback: false
       ).and_return([sample_place])
 
       get "/addresses/autocomplete", params: {q: "100 Holliday"}
@@ -43,7 +46,8 @@ RSpec.describe "Addresses", type: :request do
         viewbox: "-76.7114,39.3720,-76.5297,39.1972",
         bounded: "1",
         countrycodes: "us",
-        limit: "3"
+        limit: "3",
+        google_fallback: false
       ).and_return([sample_place])
 
       get "/addresses/autocomplete", params: {
@@ -56,6 +60,34 @@ RSpec.describe "Addresses", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq([sample_place])
+    end
+
+    it "lets a signed-in user's search fall back to Google Places" do
+      sign_in(create(:user))
+      expect(NominatimService).to receive(:search)
+        .with(hash_including(query: "100 Holliday", google_fallback: true))
+        .and_return([sample_place])
+
+      get "/addresses/autocomplete", params: {q: "100 Holliday"}
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq([sample_place])
+    end
+
+    it "does not ask Google Places for an anonymous search that Nominatim cannot answer" do
+      allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)
+      stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_return(status: 429, body: "Too Many Requests")
+      google = stub_request(:post, "https://places.googleapis.com/v1/places:searchText")
+
+      with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
+        get "/addresses/autocomplete", params: {q: "100 Holliday"}
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq([])
+      expect(google).not_to have_been_requested
     end
 
     it "returns an empty array when query is blank without querying NominatimService" do

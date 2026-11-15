@@ -99,8 +99,10 @@ One example still has to prove a real environment variable reaches this call sit
 
 Retrying `5xx` responses against OpenRouter could trigger duplicate paid model executions when an upstream request already started, whereas `api.github.com` and Nominatim reject or throttle requests that omit an identifying `User-Agent`.
 
-## Why the Nominatim profile does not retry 429
+## Why the Nominatim connection never retries
 
-[[lib/sway/faraday_stack.rb#FaradayStack#nominatim]] uses `NOMINATIM_DEFAULTS`, which retries server errors and transport failures but not HTTP `429`.
+[[lib/sway/faraday_stack.rb#FaradayStack#nominatim]] makes one attempt and waits at most 3 seconds for it: `NOMINATIM_DEFAULTS` retries no status, no timeout and no transport failure.
 
-A `429` from the public Nominatim server means Sway is over its usage limit of about one request per second. Retrying adds load at the moment the server asks Sway to slow down, and the user waits about 3.5 seconds longer for an empty answer. Server errors (`500`, `502`, `503`, `504`) and dropped connections are transient upstream faults, so they keep the same three retries as `OPEN_DATA_DEFAULTS`, which every other open-data upstream still uses, `429` included.
+The public Nominatim server allows about one request per second, and [[app/services/nominatim_service.rb#NominatimService#REQUESTS_PER_SECOND|the service's cap]] counts each search once, before it is sent. A retry inside the connection is a second request the cap never sees, so three retries on a server error could send four requests in the second the cap allowed one. A `429` means Sway is already over that limit, and a retry adds load at the moment the server asks Sway to slow down.
+
+Nominatim also serves address autocomplete while a user types, and [[address-place-classification#Nominatim place classification and usage constraints|the search falls back to Google Places]] when Nominatim gives no answer. With a 10-second timeout and three retries on transport failures, a hung Nominatim held each suggestion request for about 40 seconds, so the fallback never answered in time. A single 3-second attempt keeps the worst case short, and a failed attempt goes to the fallback rather than to Nominatim again. The next keystroke is the retry.

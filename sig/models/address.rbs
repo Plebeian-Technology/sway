@@ -14,10 +14,11 @@ class Address < ApplicationRecord
     def located?: -> bool
     def to_cartesian: -> untyped
     def to_builder: -> Jbuilder
+    def geocode_and_save: -> void
 
     private
 
     def geocode: -> void
-    def geocode_and_save: -> void
+    def blank_fields_from_geocode: (Geocoder::Result::Base result) -> Hash[Symbol, String?]
     def normalize_address: -> Address
 end

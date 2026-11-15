@@ -103,6 +103,47 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "pending representative locales written from a stale copy" do
+    it "keeps another process's add when this copy removes a locale" do
+      user = create(:user)
+      congress = create(:sway_locale, :congress)
+      maryland = create(:sway_locale, :maryland)
+      user.add_pending_representative_locale(congress)
+      stale = User.find(user.id)
+
+      User.find(user.id).add_pending_representative_locale(maryland)
+      stale.remove_pending_representative_locale(congress)
+
+      expect(user.reload.pending_representative_locale_ids).to eq([maryland.id])
+    end
+
+    it "keeps another process's remove when this copy adds a locale" do
+      user = create(:user)
+      congress = create(:sway_locale, :congress)
+      maryland = create(:sway_locale, :maryland)
+      user.add_pending_representative_locale(congress)
+      stale = User.find(user.id)
+
+      User.find(user.id).remove_pending_representative_locale(congress)
+      stale.add_pending_representative_locale(maryland)
+
+      expect(user.reload.pending_representative_locale_ids).to eq([maryland.id])
+    end
+  end
+
+  describe "#complete_registration! for a user whose stored name no longer validates" do
+    it "completes the user without validating" do
+      user = create(:user, is_registration_complete: false)
+      create(:user_legislator, user: user)
+      user.update_column(:full_name, "Zoe 9")
+
+      user.complete_registration!
+
+      expect(user.reload.registration_status).to eq("completed")
+      expect(user.is_registration_complete).to be(true)
+    end
+  end
+
   describe "registration completion" do
     it "does not complete or set the compatibility cache without an active pairing" do
       user = create(:user, is_registration_complete: false)

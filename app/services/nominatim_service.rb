@@ -11,13 +11,14 @@ class NominatimService
   UNCAPPED_ABOVE_REGISTERED_USERS = 100
 
   class << self
-    def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT)
+    def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT, google_fallback: false)
       new.search(
         query: query,
         viewbox: viewbox,
         bounded: bounded,
         countrycodes: countrycodes,
-        limit: limit
+        limit: limit,
+        google_fallback: google_fallback
       )
     end
   end
@@ -26,7 +27,8 @@ class NominatimService
     @conn = connection || Sway::FaradayStack.nominatim
   end
 
-  def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT)
+  # @lat: [[address-place-classification#Google Places results in the Nominatim shape#Only a signed-in user's search reaches Google]]
+  def search(query:, viewbox: nil, bounded: nil, countrycodes: nil, limit: DEFAULT_LIMIT, google_fallback: false)
     q = query.to_s.strip
     return [] if q.blank?
 
@@ -37,7 +39,10 @@ class NominatimService
     places = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY, skip_nil: true) do
       fetch_from_nominatim(params) unless request_cap_applies? && over_request_cap?
     end
-    places || GooglePlaces::Client.new.search(
+    return places if places
+    return [] unless google_fallback
+
+    GooglePlaces::Client.new.search(
       query: q,
       viewbox: viewbox,
       bounded: bounded,

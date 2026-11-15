@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require Rails.root.join("db", "seeds", "models", "legislator")
 
 RSpec.describe AssignPendingRepresentativesJob do
   # @lat: [[error-reporting-in-tests#Why Sentry's methods are watched rather than the constant replaced]]
@@ -87,6 +88,76 @@ RSpec.describe AssignPendingRepresentativesJob do
       an_instance_of(SwayGeocode::ServiceUnavailableError).and(having_attributes(message: "Legistar down")),
       extra: {sway_locale: baltimore.name, failed_users: 1}
     ).once
+  end
+
+  context "when the user's typed address was never located" do
+    let!(:maryland) { create(:sway_locale, :maryland) }
+
+    def unlocated_pending_user
+      allow(Geocoder).to receive(:search).and_return([])
+      address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+      user = pending_user(congress)
+      UserAddress.create!(user:, address:)
+      user
+    end
+
+    def senator_seats(user)
+      UserLegislator.where(user:, active: true).map(&:legislator).map(&:active_term)
+        .select { |term| term.seat.title == "Sen." }
+        .map { |term| [term.district.sway_locale.name, term.district.name] }
+    end
+
+    before do
+      SeedLegislator.run([maryland, congress])
+      stub_request(:get, %r{tigerweb\.geo\.census\.gov/arcgis/rest/services/TIGERweb/})
+        .to_return(status: 200, body: {features: [{attributes: {"CD#{Census::CURRENT_CONGRESS_NUMBER}" => "07"}}]}.to_json)
+      stub_request(:get, %r{v3\.openstates\.org/people\.geo}).to_return(status: 200, body: {results: []}.to_json)
+    end
+
+    it "geocodes the address, then assigns the Maryland Senators" do
+      user = unlocated_pending_user
+      expect(user.address&.located?).to be(false)
+      allow(Geocoder).to receive(:search).and_return(
+        [Geocoder::Result::Test.new("coordinates" => [39.29105, -76.61069], "state" => "Maryland", "state_code" => "MD", "country_code" => "US")]
+      )
+
+      with_env("OPEN_STATES_API_KEY" => "test-open-states-key") { described_class.new.perform }
+
+      expect(user.reload.address).to have_attributes(region_code: "MD", located?: true)
+      expect(senator_seats(user)).to eq([[congress.name, "MD0"], [congress.name, "MD0"]])
+      expect(user.pending_representative_locale_ids).to eq([])
+    end
+
+    it "keeps the locale but still runs the lookups while the geocode still fails" do
+      user = unlocated_pending_user
+      allow(Geocoder).to receive(:search).and_raise(SocketError, "getaddrinfo failed")
+      allow(ReconcileUserDistrictsService).to receive(:new).and_call_original
+
+      described_class.new.perform
+
+      expect(ReconcileUserDistrictsService).to have_received(:new).with(user, congress)
+      expect(user.reload.address&.located?).to be(false)
+      expect(user.pending_representative_locale_ids).to eq([congress.id])
+    end
+
+    it "links the Senators of a typed Maryland address after a seat error at registration while the geocode keeps failing" do
+      allow(Geocoder).to receive(:search).and_return([])
+      address = Address.create!(street: "100 N Holliday St", city: "Baltimore", region_code: "MD", postal_code: "21202", country: "US")
+      user = pending_user(congress)
+      UserAddress.create!(user:, address:)
+      us0 = congress.districts.find_by!(name: "US0")
+      unseated = create(:legislator_term, legislator: create(:legislator, sway_locale: congress), district: us0)
+      expect { ReconcileUserDistrictsService.new(user, congress).call }.to raise_error(Seats::UnresolvedSeatError)
+      expect(senator_seats(user)).to eq([])
+      unseated.destroy!
+      allow(Geocoder).to receive(:search).and_raise(SocketError, "getaddrinfo failed")
+
+      described_class.new.perform
+
+      expect(user.reload.address&.located?).to be(false)
+      expect(senator_seats(user)).to eq([[congress.name, "MD0"], [congress.name, "MD0"]])
+      expect(user.pending_representative_locale_ids).to eq([congress.id])
+    end
   end
 
   it "does not look up a user with no pending locale" do

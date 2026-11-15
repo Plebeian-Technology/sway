@@ -125,6 +125,20 @@ class Address < ApplicationRecord
     RGeo::Cartesian.factory.point(longitude.to_f, latitude.to_f)
   end
 
+  def geocode_and_save
+    return if located?
+
+    result = Geocoder.search(full_address).first
+    latitude, longitude = result&.coordinates
+    return if result.nil? || latitude.nil? || longitude.nil?
+
+    update!(latitude:, longitude:, **blank_fields_from_geocode(result))
+    @sway_locales = nil
+  rescue => e
+    SwayLogging.log_exception("address.geocode_failed", exception: e, address_id: id)
+    Sentry.capture_exception(e, extra: {address_id: id})
+  end
+
   private
 
   def geocode
@@ -134,16 +148,15 @@ class Address < ApplicationRecord
     self.latitude, self.longitude = results.first&.coordinates || []
   end
 
-  def geocode_and_save
-    return if located?
-
-    latitude, longitude = Geocoder.search(full_address).first&.coordinates
-    return if latitude.nil? || longitude.nil?
-
-    update!(latitude:, longitude:, normalized_key: self.class.normalized_key_for(latitude:, longitude:, street2:, street3:))
-  rescue Geocoder::Error, Timeout::Error, SocketError => e
-    SwayLogging.log_exception("address.geocode_failed", exception: e, address_id: id)
-    Sentry.capture_exception(e, extra: {address_id: id})
+  # @lat: [[address-normalized-key#A typed address gets its place from the geocode]]
+  def blank_fields_from_geocode(result)
+    found = {
+      city: result.city,
+      region_code: result.state_code.presence || result.state,
+      postal_code: result.postal_code,
+      country: result.country_code.to_s.upcase.presence
+    }
+    found.select { |field, value| public_send(field).blank? && value.present? }
   end
 
   def normalize_address

@@ -18,6 +18,12 @@ It is cleared again when the server answers, in the form's `onFinish`. Without t
 
 A request that fails without a server answer the page renders leaves the form usable. A non-Inertia error page or a dropped connection shows one error toast in `PARITY_COPY` and suppresses Inertia's raw-response dialog, and the address stays in the form with the submit button enabled so the reader can press it again. Finishing the visit dismisses only the loading toast, whose id the page keeps from the moment it starts, because Inertia runs the finish callback after the failure callbacks and a bare dismiss would remove the error toast, or the "page expired" flash that a refused CSRF write redirects with, the moment it appeared.
 
+### A President link alone is not a registration
+
+A user whose only active links are to the President and who still has a locale waiting is treated as unregistered, so a corrected address registers directly.
+
+An address with no coordinates and no state resolves to Congress alone and links only the President ([[representative-resolution#Congress fallback]]). If that user corrected the address, [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] would take the address-switch path and answer a 422 confirmation plus a 30-day cooldown for a switch away from a link that was never a real pairing. The check in `holds_representatives?` skips both the switch and the early completion in that case and runs the lookups for the new address.
+
 ## A failed address switch changes nothing
 
 A registered user's confirmed address switch that fails while resolving the new address answers `registration_unavailable` with HTTP 503 and leaves the old address and links in place.
@@ -92,7 +98,7 @@ A registration that skips part of a locale records that locale's id on the user,
 
 [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] records two kinds of skip: a locale whose lookup raised, and a locale whose [[app/services/sway_registration_service.rb#SwayRegistrationService]] run skipped a term whose seat could not be resolved. A locale id is enough for both, because a retry of a locale re-runs every part of it, so the record does not need to say which part failed. [[app/models/user.rb#User#add_pending_representative_locale]] adds an id only once, so a locale skipped again leaves one copy, and [[app/models/user.rb#User#remove_pending_representative_locale]] takes it off.
 
-A JSON column on the user is the simplest storage that fits: the list holds at most the three locales one address reaches, belongs to one user, and is never queried by locale. A registration with no skip leaves it empty. Only the hourly job below reads the list, and no prop or JSON body exposes it.
+A JSON column on the user is the simplest storage that fits: the list holds at most the three locales one address reaches, belongs to one user, and is never queried by locale. A registration with no skip leaves it empty. Three places read the list: the hourly job below, [[app/models/user.rb#User#registered?]], which counts a pending locale as a registration, and [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#holds_representatives?]], which decides whether a President link alone is enough. No prop or JSON body exposes it. Every add and remove re-reads the row under a lock before it writes, so the reconcile job and the hourly job, which can run at the same time, never overwrite each other's change.
 
 [[app/jobs/reconcile_user_districts_job.rb#ReconcileUserDistrictsJob]] records the same list for an existing user. It runs after every locale seed, and when one user's reconcile raises (a Census outage, a skipped term) it adds that locale to the user's list before moving on, so the hourly job below retries it. This is how users registered before the President term existed receive the President: the seed's reconcile run links them, silently ([[representative-reassignment-notifications#Notification delivery and preference governance#The President is linked without a notice]]), and an outage during that run defers the link to the hourly job instead of dropping it. A user with no address has nothing to look up and is skipped.
 
@@ -107,6 +113,14 @@ The id comes off the list only when the call returns and the user then has at le
 A lookup can stay down for hours while many users wait on the same locale, so one report per user per run would bury one outage under copies of itself. The job therefore counts failed users per locale during the run and, after the loop, sends one Sentry report per failing locale, carrying the first error, the locale name and that count. A locale that keeps failing produces at most one report each hour.
 
 The schedule entry has its own presence check in `spec/config/recurring_spec.rb`, because the job spec proves only that the job works when something runs it ([[recurring-yml-registration-checks#Why spec/config/recurring_spec.rb checks registration, not just shape#Why specific tasks get their own "is registered" guard, not just the generic checks]]).
+
+### An unlocated address waits for its geocode
+
+An address the geocoder could not locate is recorded with every locale it reaches, Congress always among them, and the hourly job geocodes it again before any lookup.
+
+A failed geocode leaves a typed address without coordinates, and a street-only one also without a state, so it resolves to Congress alone and links only the President. That link alone would make the user count as registered with nothing left to retry. [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] therefore records the address's locales whenever the address is still unlocated after resolution.
+
+[[app/jobs/assign_pending_representatives_job.rb#AssignPendingRepresentativesJob#address_located?]] runs [[app/models/address.rb#Address#geocode_and_save]] for such a user first. While the geocode still fails, the job still runs the lookups, because Congress resolves the Senators and the President by state without coordinates, so a lookup left pending by a seat error or an outage is retried. It keeps every id, because a lookup that returns with the President linked would take the id off. Once it succeeds, the filled row's locales are added, since a geocoded state reaches locales the blank row did not, and the lookups run against the filled row. A located address goes straight to the lookups as before.
 
 ## Reaching sign-in from an expired session
 

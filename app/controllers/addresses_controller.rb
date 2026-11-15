@@ -25,7 +25,8 @@ class AddressesController < ApplicationController
       viewbox: string_param(:viewbox),
       bounded: string_param(:bounded),
       countrycodes: string_param(:countrycodes),
-      limit: string_param(:limit) || 5
+      limit: string_param(:limit) || 5,
+      google_fallback: current_user.present?
     )
 
     render json: results

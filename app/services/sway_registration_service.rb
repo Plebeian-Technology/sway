@@ -47,7 +47,7 @@ class SwayRegistrationService
     end
 
     @user.transient_funnel_metadata = {latency_ms: duration_ms}
-    @user.complete! if @user.registered?
+    @user.complete_registration! if @user.registered?
 
     create_invite
 

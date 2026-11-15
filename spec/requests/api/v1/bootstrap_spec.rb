@@ -106,9 +106,10 @@ RSpec.describe "Api::V1::Bootstrap", type: :request do
       expect(response).to have_http_status(:ok)
 
       current_user = json_body[:current_user]
-      expect(current_user.keys).to include(
-        :id, :full_name, :email, :phone, :is_registration_complete, :registration_status,
-        :is_registered_to_vote, :sms_notifications_enabled, :theme_mode, :address
+      expect(current_user.keys).to match_array(
+        %i[id full_name email phone is_registration_complete registration_status
+          is_registered_to_vote sms_notifications_enabled theme_mode address
+          invite_url is_email_verified]
       )
       expect(current_user[:is_registration_complete]).to be(false)
       expect(current_user[:registration_status]).to eq("pending")

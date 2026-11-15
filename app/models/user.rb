@@ -357,17 +357,29 @@ class User < ApplicationRecord
     pending_representative_locale_ids.any? || user_legislators.where(active: true).exists?
   end
 
+  # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
+  def complete_registration!
+    return if completed? && is_registration_complete
+
+    complete!(false)
+    save!(validate: false)
+  end
+
   # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried]]
   def add_pending_representative_locale(sway_locale)
-    return if pending_representative_locale_ids.include?(sway_locale.id)
+    with_lock do
+      next if pending_representative_locale_ids.include?(sway_locale.id)
 
-    update!(pending_representative_locale_ids: pending_representative_locale_ids + [sway_locale.id])
+      update_column(:pending_representative_locale_ids, pending_representative_locale_ids + [sway_locale.id])
+    end
   end
 
   def remove_pending_representative_locale(sway_locale)
-    return unless pending_representative_locale_ids.include?(sway_locale.id)
+    with_lock do
+      next unless pending_representative_locale_ids.include?(sway_locale.id)
 
-    update!(pending_representative_locale_ids: pending_representative_locale_ids - [sway_locale.id])
+      update_column(:pending_representative_locale_ids, pending_representative_locale_ids - [sway_locale.id])
+    end
   end
 
   def create_user_invite_url

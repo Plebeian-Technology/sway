@@ -32,6 +32,8 @@ class RepresentativeReassignmentObserver
 
     stale_legs = stored_uls.select { |ul| stale_legislator_ids.include?(ul.legislator_id) }.map(&:legislator).compact
     new_legs = resolved_legislators.select { |l| new_legislator_ids.include?(l.id) }.reject { |l| president?(l) }
+    president_district_ids = resolved_legislators.select { |l| president?(l) }.filter_map { |l| district_for(l)&.id }
+    new_district_ids -= president_district_ids
     stale_dists = stored_user_districts.select { |ud| stale_district_ids.include?(ud.district_id) }.map(&:district).compact.uniq(&:id)
     new_dists = resolved_districts.select { |d| new_district_ids.include?(d.id) }.uniq(&:id)
 

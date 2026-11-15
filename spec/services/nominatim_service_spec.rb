@@ -195,9 +195,22 @@ RSpec.describe NominatimService do
       google = stub_request(:post, google_url).to_return(google_success)
 
       results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
-        described_class.search(query: "100 Holliday St")
+        described_class.search(query: "100 Holliday St", google_fallback: true)
       end
 
+      expect(google).to have_been_requested.once
+      expect(results.map { |result| result.values_at("place_id", "source") }).to eq([["ChIJholliday", "google_places"]])
+    end
+
+    it "sends one Nominatim request for a server error, so the per-second cap counts every request" do
+      nominatim = stub_request(:get, search_url).with(query: holliday_query).to_return(status: 503, body: "")
+      google = stub_request(:post, google_url).to_return(google_success)
+
+      results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
+        described_class.search(query: "100 Holliday St", google_fallback: true)
+      end
+
+      expect(nominatim).to have_been_requested.once
       expect(google).to have_been_requested.once
       expect(results.map { |result| result.values_at("place_id", "source") }).to eq([["ChIJholliday", "google_places"]])
     end
@@ -209,7 +222,7 @@ RSpec.describe NominatimService do
       google = stub_request(:post, google_url).to_return(google_success)
 
       first, second = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
-        [described_class.search(query: "100 Holliday St"), travel(1.second) { described_class.search(query: "100 Holliday St") }]
+        [described_class.search(query: "100 Holliday St", google_fallback: true), travel(1.second) { described_class.search(query: "100 Holliday St", google_fallback: true) }]
       end
 
       expect(first.pluck("source")).to eq(["google_places"])
@@ -223,7 +236,7 @@ RSpec.describe NominatimService do
       google = stub_request(:post, google_url).to_return(google_success)
 
       results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
-        described_class.search(query: "100 Holliday St")
+        described_class.search(query: "100 Holliday St", google_fallback: true)
       end
 
       expect(results).to eq([])
@@ -235,6 +248,18 @@ RSpec.describe NominatimService do
       google = stub_request(:post, google_url).to_return(google_success)
 
       results = with_env("GOOGLE_MAPS_API_KEY" => nil) do
+        described_class.search(query: "100 Holliday St", google_fallback: true)
+      end
+
+      expect(results).to eq([])
+      expect(google).not_to have_been_requested
+    end
+
+    it "returns an empty array without asking Google when the caller does not allow the fallback" do
+      stub_request(:get, search_url).with(query: holliday_query).to_return(status: 429, body: "Too Many Requests")
+      google = stub_request(:post, google_url).to_return(google_success)
+
+      results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
         described_class.search(query: "100 Holliday St")
       end
 
@@ -247,7 +272,7 @@ RSpec.describe NominatimService do
       google = stub_request(:post, google_url).to_return(status: 400, body: {"error" => {"status" => "INVALID_ARGUMENT"}}.to_json)
 
       results = with_env("GOOGLE_MAPS_API_KEY" => "test-google-maps-key") do
-        described_class.search(query: "100 Holliday St")
+        described_class.search(query: "100 Holliday St", google_fallback: true)
       end
 
       expect(results).to eq([])
@@ -288,7 +313,7 @@ RSpec.describe NominatimService, ".search over the request cap" do
   end
 
   def search_for(query)
-    described_class.search(query: query)
+    described_class.search(query: query, google_fallback: true)
   end
 
   def nominatim_requests(query)
@@ -337,6 +362,15 @@ RSpec.describe NominatimService, ".search over the request cap" do
 
     expect(search_for("200 Calvert St")).to eq([nominatim_place])
     expect(nominatim_requests(calvert_query)).to have_been_made.once
+  end
+
+  it "answers a capped search with an empty array without asking Google when the caller does not allow the fallback" do
+    search_for("100 Holliday St")
+    results = described_class.search(query: "200 Calvert St")
+
+    expect(results).to eq([])
+    expect(nominatim_requests(calvert_query)).not_to have_been_made
+    expect(google).not_to have_been_requested
   end
 
   it "answers a capped search with an empty array when there is no Google key" do

@@ -55,7 +55,7 @@ The controller forwards only parameters that arrive as plain text. A query that 
 
 Only a successful answer is cached: a 200 response whose body is a JSON array, including a genuine empty array, which is a real "no match" answer the usage policy expects Sway to reuse. A failed or malformed answer (a non-200 status, a dropped connection, a body that is not JSON, or a JSON body that is not an array) is logged but not cached, so a brief Nominatim outage does not make the same query answer "no results" for a day after Nominatim recovers.
 
-To stay inside the usage policy, the service sends at most [[app/services/nominatim_service.rb#NominatimService#REQUESTS_PER_SECOND|one uncached search per second]] across all of Sway's processes, counted in the shared cache; a search over the cap is not sent and counts as no answer, and a cache that cannot count, such as the test environment's null store, caps nothing. The cap applies only while Sway has at most [[app/services/nominatim_service.rb#NominatimService#UNCAPPED_ABOVE_REGISTERED_USERS|100 users who completed registration]]; above that every uncached search goes to Nominatim, a usage-policy risk the operator accepted on 2026-11-13. When Nominatim gives no answer, the service asks [[app/services/google_places/client.rb#GooglePlaces#Client|Google Places]] the same query and returns its places uncached, or an empty array when Google has no key or no usable answer either; a genuine empty Nominatim answer never reaches Google.
+To stay inside the usage policy, the service sends at most [[app/services/nominatim_service.rb#NominatimService#REQUESTS_PER_SECOND|one uncached search per second]] across all of Sway's processes, counted in the shared cache; a search over the cap is not sent and counts as no answer, and a cache that cannot count, such as the test environment's null store, caps nothing. The cap applies only while Sway has at most [[app/services/nominatim_service.rb#NominatimService#UNCAPPED_ABOVE_REGISTERED_USERS|100 users who completed registration]]; above that every uncached search goes to Nominatim, a usage-policy risk the operator accepted on 2026-11-13. When Nominatim gives no answer to a signed-in user's search, the service asks [[app/services/google_places/client.rb#GooglePlaces#Client|Google Places]] the same query and returns its places uncached, or an empty array when Google has no key or no usable answer either; a genuine empty Nominatim answer never reaches Google.
 
 
 ## Nominatim address payload mapping
@@ -94,6 +94,14 @@ uses. That key may be restricted to web referrers or lack Places API (New), in
 which case Google answers every server call with HTTP 403. A 403 is therefore
 reported to Sentry as a warning, with only the status, so a refused key is
 visible rather than silently disabling the fallback. Other failures are only
-logged. The connection retries a server error or a dropped connection once,
-because a text search changes nothing on Google's side, and never retries a
-429, which would only spend more of the quota that caused it.
+logged. The connection retries a server error once, because a text search
+changes nothing on Google's side and a server error answers quickly. It never
+retries a timeout or a dropped connection, because a retry would hold the
+suggestion request past its 5-second wait while the user types, and never
+retries a 429, which would only spend more of the quota that caused it.
+
+### Only a signed-in user's search reaches Google
+
+[[app/controllers/addresses_controller.rb#AddressesController#autocomplete]] lets [[app/services/nominatim_service.rb#NominatimService#search]] fall back to Google only when the request has a signed-in user; an anonymous search Nominatim cannot answer gets an empty array.
+
+The autocomplete endpoint skips authentication, and Google Places Text Search is billed per request with no budget in Sway. Without this gate any anonymous client could send uncached queries past the one-per-second Nominatim cap and spend Google quota without limit. The only caller is the registration page's address search, which is reachable only after sign-in, so the gate costs a real user nothing.

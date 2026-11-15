@@ -6,6 +6,8 @@ class SwayRegistrationController < ApplicationController
     REGISTRATION_ADDRESS_SWITCH_CONFIRMATION_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_COOLDOWN_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE: ::String
+    ADDRESS_TEXT_FIELDS: Array[Symbol]
+    GEOCODE_FILLED_FIELDS: Array[Symbol]
 
     @submitted_normalized_key: String?
 
@@ -20,7 +22,7 @@ class SwayRegistrationController < ApplicationController
 
     private
 
-    def complete_registration: (User u) -> void
+    def holds_representatives?: (User u) -> bool
 
     def render_onboarding_unavailable: () -> void
 
@@ -45,6 +47,12 @@ class SwayRegistrationController < ApplicationController
     def submitted_place_types: -> Array[String]
 
     def address_by_normalized_key: -> Address?
+
+    def linked_address_with_submitted_text: -> Address?
+
+    def same_submitted_text?: (Symbol field, Address linked, Address submitted) -> bool
+
+    def submitted_address_attributes: -> Hash[Symbol, untyped]
 
     def registration_page_props: (?processing: bool) -> Hash[Symbol, untyped]
 

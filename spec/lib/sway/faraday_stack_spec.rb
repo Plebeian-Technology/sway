@@ -44,12 +44,9 @@ RSpec.describe Sway::FaradayStack do
   end
 
   describe "NOMINATIM_DEFAULTS" do
-    it "is frozen and retries server errors but not 429" do
+    it "is frozen and retries nothing" do
       expect(described_class::NOMINATIM_DEFAULTS).to be_frozen
-      expect(described_class::NOMINATIM_DEFAULTS).to include(
-        retry_statuses: [500, 502, 503, 504],
-        exceptions: described_class::TRANSPORT_RETRY_EXCEPTIONS
-      )
+      expect(described_class::NOMINATIM_DEFAULTS).to include(max: 0, retry_statuses: [], exceptions: [])
     end
   end
 
@@ -65,7 +62,7 @@ RSpec.describe Sway::FaradayStack do
 
     it "wires the transport exceptions into every idempotent GET profile" do
       [described_class::LEGISTAR_DEFAULTS, described_class::OPEN_DATA_DEFAULTS,
-        described_class::GITHUB_DEFAULTS, described_class::NOMINATIM_DEFAULTS].each do |profile|
+        described_class::GITHUB_DEFAULTS].each do |profile|
         expect(profile[:exceptions]).to include(Faraday::ConnectionFailed, Faraday::SSLError)
       end
     end
@@ -146,25 +143,48 @@ RSpec.describe Sway::FaradayStack do
       expect(req_stub).to have_been_made.once
     end
 
-    it "makes exactly 4 attempts for an HTTP 503 answer" do
+    it "makes exactly one request for an HTTP 503 answer" do
       req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
         .with(query: hash_including({}))
         .to_return(status: 503, body: "Service Unavailable")
 
-      described_class.nominatim.get("search", q: "x")
+      response = described_class.nominatim.get("search", q: "x")
 
-      expect(req_stub).to have_been_made.times(4)
+      expect(response.status).to eq(503)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one attempt for a timeout" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_timeout
+
+      expect { described_class.nominatim.get("search", q: "x") }.to raise_error(Faraday::Error)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one attempt for a refused connection" do
+      req_stub = stub_request(:get, "https://nominatim.openstreetmap.org/search")
+        .with(query: hash_including({}))
+        .to_raise(Errno::ECONNREFUSED)
+
+      expect { described_class.nominatim.get("search", q: "x") }.to raise_error(Faraday::ConnectionFailed)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "waits at most 3 seconds for an answer" do
+      expect(described_class.nominatim.options.timeout).to eq(3)
     end
   end
 
   describe "GOOGLE_PLACES_DEFAULTS" do
-    it "is frozen, retries server errors and dropped connections once for POST, and never retries 429" do
+    it "is frozen, retries a server error once for POST, and never retries 429, a timeout or a dropped connection" do
       expect(described_class::GOOGLE_PLACES_DEFAULTS).to be_frozen
       expect(described_class::GOOGLE_PLACES_DEFAULTS).to include(
         max: 1,
         retry_statuses: [500, 502, 503, 504],
         methods: %i[post],
-        exceptions: described_class::TRANSPORT_RETRY_EXCEPTIONS
+        exceptions: [Faraday::RetriableResponse]
       )
     end
   end
@@ -186,6 +206,20 @@ RSpec.describe Sway::FaradayStack do
       described_class.google_places.post("/v1/places:searchText", "{}")
 
       expect(req_stub).to have_been_made.times(2)
+    end
+
+    it "makes exactly one attempt for a timeout" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText").to_timeout
+
+      expect { described_class.google_places.post("/v1/places:searchText", "{}") }.to raise_error(Faraday::Error)
+      expect(req_stub).to have_been_made.once
+    end
+
+    it "makes exactly one attempt for a refused connection" do
+      req_stub = stub_request(:post, "https://places.googleapis.com/v1/places:searchText").to_raise(Errno::ECONNREFUSED)
+
+      expect { described_class.google_places.post("/v1/places:searchText", "{}") }.to raise_error(Faraday::ConnectionFailed)
+      expect(req_stub).to have_been_made.once
     end
   end
 
