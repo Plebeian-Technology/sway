@@ -150,6 +150,31 @@ RSpec.describe ScoreRecomputeService do
       expect([lds_119.count_agreed, lds_119.count_disagreed, lds_119.count_no_legislator_vote, lds_119.count_legislator_abstained]).to eql([0, 0, 1, 0])
     end
 
+    it "counts agreement for a bill introduced inside the term, with no term stored on the legislator vote" do
+      sway_locale = create(:sway_locale, city: "congress", state: "congress", country: "united_states")
+      district = create(:district, sway_locale:)
+      legislator = create(:legislator, district:)
+      term = create(:legislator_term, legislator:, district:, term_start_year: 2025, term_end_year: 2027)
+      user = create(:user)
+      create(:user_legislator, user:, legislator:)
+      bill =
+        create(
+          :bill,
+          sway_locale:,
+          legislator:,
+          introduced_date_time_utc: Time.zone.local(2025, 3, 1),
+          scheduled_release_date_utc: Date.new(2025, 3, 1)
+        )
+      create(:legislator_vote, :for, bill:, legislator:)
+      create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
+
+      ScoreRecomputeService.recompute_legislator_district!(term)
+
+      row = LegislatorDistrictScore.find_by!(legislator_term: term)
+      expect([row.count_agreed, row.count_disagreed, row.count_no_legislator_vote, row.count_legislator_abstained])
+        .to eql([1, 0, 0, 0])
+    end
+
     it "recompute for the current term leaves an ended term's LegislatorDistrictScore row byte-identical (freeze, R3)" do
       sway_locale = create(:sway_locale, city: "congress", state: "congress", country: "united_states")
       district = create(:district, sway_locale:)

@@ -144,14 +144,10 @@ class ScoreRecomputeService
           .pluck(
             "user_votes.support",
             "legislator_votes.support",
-            "user_votes.bill_id",
-            "legislator_votes.legislator_term_id"
+            "user_votes.bill_id"
           )
 
       bill_ids = rows.pluck(2).uniq
-      lv_term_ids_by_bill_id = rows.each_with_object(Hash.new { |h, k| h[k] = [] }) do |(_, _, b_id, lv_term_id), acc|
-        acc[b_id] << lv_term_id if lv_term_id.present?
-      end
       bills = Bill.where(id: bill_ids).includes(:legislative_session)
       term_begins_on = TermWindow.begins_on(legislator_term)
       term_ends_on = TermWindow.ends_on(legislator_term)
@@ -170,8 +166,7 @@ class ScoreRecomputeService
         end
 
         anchor_time = bill.house_vote_date_time_utc || bill.senate_vote_date_time_utc || intro_time
-        next unless lv_term_ids_by_bill_id[bill.id].include?(legislator_term.id) ||
-          covering_term_for(intro_time, terms) == legislator_term ||
+        next unless covering_term_for(intro_time, terms) == legislator_term ||
           covering_term_for(anchor_time, terms) == legislator_term
 
         valid_bill_ids << bill.id
@@ -183,7 +178,7 @@ class ScoreRecomputeService
         count_no_legislator_vote: 0,
         count_legislator_abstained: 0
       }
-      rows.each do |user_support, legislator_support, bill_id, _lv_term_id|
+      rows.each do |user_support, legislator_support, bill_id|
         next unless valid_bill_ids.include?(bill_id)
 
         counts[CLASS_TO_COUNT_COLUMN.fetch(classify(user_support, legislator_support))] += 1
