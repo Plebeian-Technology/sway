@@ -442,6 +442,31 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:current_authentication]).to be_nil
     end
 
+    it "reports a failed verification to Sentry as a warning by exception class only" do
+      create(:user, phone: phone)
+      create(
+        :passkey,
+        user: User.find_by(phone: phone),
+        external_id: fake_credential_id
+      )
+      allow(Sentry).to receive(:capture_message)
+      allow_any_instance_of(WebAuthn::RelyingParty).to receive(
+        :verify_authentication
+      ).and_raise(WebAuthn::Error, "bad assertion")
+
+      post callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(Sentry).to have_received(:capture_message).once do |message, **options|
+        expect(message).to eq("webauthn.session.verification_failed")
+        expect(options[:level]).to eq(:warning)
+        expect(options[:tags]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:fingerprint]).to eq(["webauthn.session.verification_failed", "WebAuthn::Error"])
+        expect(options[:extra]).to eq(exception_class: "WebAuthn::Error")
+        expect(options.to_s).not_to include("bad assertion")
+        expect(options.to_s).not_to include(phone)
+      end
+    end
+
     it "redirects to root with alert when publicKeyCredential payload is missing" do
       create(:user, phone: phone)
 
@@ -521,6 +546,30 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:user_id]).to eq(user.id)
       expect(session_hash[:verified_phone]).to eq(phone)
       expect(session_hash[:discoverable_authentication]).to be_nil
+    end
+
+    it "redirects with the fixed alert and reports a failed verification to Sentry as a warning by exception class only" do
+      user = create(:user, phone: phone)
+      create(:passkey, user: user, external_id: fake_credential_id)
+      allow(Sentry).to receive(:capture_message)
+      allow_any_instance_of(WebAuthn::RelyingParty).to receive(
+        :verify_authentication
+      ).and_raise(WebAuthn::Error, "bad assertion")
+
+      post discoverable_callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(Users::Webauthn::SessionsController::PASSKEY_VERIFICATION_FAILED_MESSAGE)
+      expect(session_hash[:user_id]).to be_nil
+      expect(Sentry).to have_received(:capture_message).once do |message, **options|
+        expect(message).to eq("webauthn.session.discoverable_verification_failed")
+        expect(options[:level]).to eq(:warning)
+        expect(options[:tags]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:fingerprint]).to eq(["webauthn.session.discoverable_verification_failed", "WebAuthn::Error"])
+        expect(options[:extra]).to eq(exception_class: "WebAuthn::Error")
+        expect(options.to_s).not_to include("bad assertion")
+        expect(options.to_s).not_to include(phone)
+      end
     end
 
     it "redirects to root when the discoverable challenge is missing" do

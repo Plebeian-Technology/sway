@@ -142,6 +142,13 @@ module Users
         level: :warn,
         user_id: current_user.id
       )
+      Sentry.capture_message(
+        "passkeys.add.verification_failed",
+        level: :warning,
+        tags: {exception_class: e.class.name},
+        fingerprint: ["passkeys.add.verification_failed", e.class.name],
+        extra: {exception_class: e.class.name}
+      )
       render json: {success: false, message: ADD_PASSKEY_FAILED_MESSAGE}, status: :ok
     ensure
       session.delete(:add_passkey_registration)

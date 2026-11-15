@@ -272,6 +272,34 @@ RSpec.describe "Users::Passkeys", type: :request do
       expect(user.passkeys.order(:created_at).last.label).to eq("New passkey 2")
     end
 
+    it "add_callback answers the fixed message and reports a failed verification to Sentry as a warning by exception class only" do
+      _, user = setup
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+      session_hash[:add_passkey_registration] = {"challenge" => fake_challenge}
+      allow(Sentry).to receive(:capture_message)
+      allow_any_instance_of(WebAuthn::RelyingParty).to receive(
+        :verify_registration
+      ).and_raise(WebAuthn::Error, "bad attestation")
+
+      expect {
+        post add_callback_users_passkeys_path,
+          params: {publicKeyCredential: {id: fake_credential_id}, passkey_label: "iPad"}
+      }.not_to change { user.passkeys.count }
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => Users::PasskeysController::ADD_PASSKEY_FAILED_MESSAGE}
+      )
+      expect(Sentry).to have_received(:capture_message).once do |message, **options|
+        expect(message).to eq("passkeys.add.verification_failed")
+        expect(options[:level]).to eq(:warning)
+        expect(options[:tags]).to eq(exception_class: "WebAuthn::Error")
+        expect(options[:fingerprint]).to eq(["passkeys.add.verification_failed", "WebAuthn::Error"])
+        expect(options[:extra]).to eq(exception_class: "WebAuthn::Error")
+        expect(options.to_s).not_to include("bad attestation")
+        expect(options.to_s).not_to include(user.phone)
+      end
+    end
+
     it "add_callback refuses when the phone confirmation has expired" do
       setup
       session_hash[:add_passkey_registration] = {"challenge" => fake_challenge}

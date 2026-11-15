@@ -178,6 +178,13 @@ module Users
           level: :warn,
           user_id: user&.id
         )
+        Sentry.capture_message(
+          "webauthn.session.discoverable_verification_failed",
+          level: :warning,
+          tags: {exception_class: e.class.name},
+          fingerprint: ["webauthn.session.discoverable_verification_failed", e.class.name],
+          extra: {exception_class: e.class.name}
+        )
         redirect_to root_path, alert: PASSKEY_VERIFICATION_FAILED_MESSAGE
       rescue ActionController::ParameterMissing => e
         SwayLogging.log_exception(
@@ -273,6 +280,13 @@ module Users
           level: :warn,
           user_id: user&.id,
           phone_last4: authentication_phone.to_s.last(4)
+        )
+        Sentry.capture_message(
+          "webauthn.session.verification_failed",
+          level: :warning,
+          tags: {exception_class: e.class.name},
+          fingerprint: ["webauthn.session.verification_failed", e.class.name],
+          extra: {exception_class: e.class.name}
         )
         redirect_to root_path, alert: PASSKEY_VERIFICATION_FAILED_MESSAGE
       rescue ActionController::ParameterMissing => e
