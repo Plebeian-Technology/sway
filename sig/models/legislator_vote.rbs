@@ -23,9 +23,6 @@ class ::LegislatorVote < ::ApplicationRecord
   def transform_support_to_for_against_abstain: -> String?
   def update_scores: -> void
 
-  def legislator_term_id: () -> Integer?
-  def legislator_term_id=: (Integer?) -> Integer?
-
   def self.create!: (?untyped attributes) ?{ () -> untyped } -> LegislatorVote
 
   private

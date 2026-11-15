@@ -323,46 +323,6 @@ class ::LegislatorVote < ::ApplicationRecord
     def updated_at_before_type_cast: () -> ::Time
 
     def updated_at_for_database: () -> ::Time
-
-    def legislator_term_id: () -> ::Integer
-
-    def legislator_term_id=: (::Integer) -> ::Integer
-
-    def legislator_term_id?: () -> bool
-
-    def legislator_term_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def legislator_term_id_change: () -> [ ::Integer?, ::Integer? ]
-
-    def legislator_term_id_will_change!: () -> void
-
-    def legislator_term_id_was: () -> ::Integer?
-
-    def legislator_term_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def legislator_term_id_previous_change: () -> ::Array[::Integer?]?
-
-    def legislator_term_id_previously_was: () -> ::Integer?
-
-    def legislator_term_id_before_last_save: () -> ::Integer?
-
-    def legislator_term_id_change_to_be_saved: () -> ::Array[::Integer?]?
-
-    def legislator_term_id_in_database: () -> ::Integer?
-
-    def saved_change_to_legislator_term_id: () -> ::Array[::Integer?]?
-
-    def saved_change_to_legislator_term_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def will_save_change_to_legislator_term_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
-
-    def restore_legislator_term_id!: () -> void
-
-    def clear_legislator_term_id_change: () -> void
-
-    def legislator_term_id_before_type_cast: () -> ::Integer
-
-    def legislator_term_id_for_database: () -> ::Integer
   end
   include ::LegislatorVote::GeneratedAttributeMethods
   module ::LegislatorVote::GeneratedAliasAttributeMethods
