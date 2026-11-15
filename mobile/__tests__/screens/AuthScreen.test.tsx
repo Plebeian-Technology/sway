@@ -1,10 +1,17 @@
 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile authentication screen]]
 
 import React from "react";
-import { Linking } from "react-native";
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
+import { Linking, Platform, StyleSheet } from "react-native";
+import { act, render, fireEvent, waitFor } from "@testing-library/react-native";
 
-import { passkeyAuth, PasskeyUnsupportedError, NoPasskeyError, SessionSaveError } from "../../src/auth/passkeyAuth";
+import {
+    passkeyAuth,
+    PasskeyUnsupportedError,
+    PasskeyProviderMissingError,
+    PasskeyCreateUnsupportedError,
+    NoPasskeyError,
+    SessionSaveError,
+} from "../../src/auth/passkeyAuth";
 import { smsAuth } from "../../src/auth/smsAuth";
 import * as SecureStore from "expo-secure-store";
 import { apiClient } from "../../src/api/client";
@@ -28,6 +35,18 @@ jest.mock("../../src/auth/passkeyAuth", () => {
             this.name = "PasskeyUnsupportedError";
         }
     }
+    class PasskeyProviderMissingError extends Error {
+        constructor() {
+            super("passkey_provider_missing");
+            this.name = "PasskeyProviderMissingError";
+        }
+    }
+    class PasskeyCreateUnsupportedError extends Error {
+        constructor() {
+            super("passkey_create_unsupported");
+            this.name = "PasskeyCreateUnsupportedError";
+        }
+    }
     class NoPasskeyError extends Error {
         constructor() {
             super("no_credential");
@@ -43,6 +62,8 @@ jest.mock("../../src/auth/passkeyAuth", () => {
     return {
         passkeyAuth: { signIn: jest.fn(), signInDiscoverable: jest.fn(), register: jest.fn() },
         PasskeyUnsupportedError,
+        PasskeyProviderMissingError,
+        PasskeyCreateUnsupportedError,
         NoPasskeyError,
         SessionSaveError,
     };
@@ -66,6 +87,7 @@ const CODE_STEP_MESSAGES = {
     expiredToken: "Your code expired. Request a new code to continue.",
     alreadyRegistered: "This phone already has an account. Sign in with your passkey.",
     passkeyFailed: "Passkey setup failed. Please try again.",
+    unavailable: "Something went wrong on our side. Please try again.",
 };
 
 // Import AuthScreen only after the fakes above are in place.
@@ -382,17 +404,6 @@ describe("AuthScreen", () => {
             (passkeyAuth.register as jest.Mock).mockResolvedValue(undefined);
         });
 
-        test("an unsupported device after a valid code goes to the device help screen without the raw text", async () => {
-            (passkeyAuth.register as jest.Mock).mockRejectedValue(new PasskeyUnsupportedError());
-            const { getByTestId, queryByText } = wrap(<AuthScreen />);
-            await reachCodeBox(getByTestId);
-
-            await pressConfirmCode(getByTestId);
-
-            expect(mockNavigate).toHaveBeenCalledWith("DeviceUnsupported");
-            expect(queryByText("passkey_unsupported")).toBeNull();
-        });
-
         test.each([
             [
                 "a wrong code",
@@ -449,8 +460,14 @@ describe("AuthScreen", () => {
                 CODE_STEP_MESSAGES.passkeyFailed,
             ],
             [
-                "an unknown native error",
+                "an unidentified native error on the passkey step",
                 "register",
+                () => new Error("native library detail"),
+                PARITY_COPY.auth.passkeyPanel.passkeyUnidentifiedMobile,
+            ],
+            [
+                "an unidentified error on the code check",
+                "verify",
                 () => new Error("native library detail"),
                 PARITY_COPY.auth.passkeyPanel.verifyError,
             ],
@@ -458,7 +475,37 @@ describe("AuthScreen", () => {
                 "a cancelled passkey sheet",
                 "register",
                 () => new NoPasskeyError(),
-                PARITY_COPY.auth.passkeyPanel.passkeyDismissed,
+                PARITY_COPY.auth.passkeyPanel.passkeyDismissedMobile,
+            ],
+            [
+                "a phone with no passkey provider",
+                "register",
+                () => new PasskeyProviderMissingError(),
+                PARITY_COPY.auth.passkeyPanel.passkeyNoProviderAndroid,
+            ],
+            [
+                "the onboarding safety net answering 503 on the code check",
+                "verify",
+                () => serverError(ApiRequestError, "onboarding_unavailable", 503),
+                CODE_STEP_MESSAGES.unavailable,
+            ],
+            [
+                "the onboarding safety net answering 503 on the passkey step",
+                "register",
+                () => serverError(ApiRequestError, "onboarding_unavailable", 503),
+                CODE_STEP_MESSAGES.unavailable,
+            ],
+            [
+                "too many attempts with a named wait on the code check",
+                "verify",
+                () => new RateLimitedError("rate_limited", rawText, undefined, 429, 600),
+                PARITY_COPY.auth.passkeyPanel.attemptsWait(600),
+            ],
+            [
+                "too many attempts with a named wait on the passkey step",
+                "register",
+                () => new RateLimitedError("rate_limited", rawText, undefined, 429, 3600),
+                PARITY_COPY.auth.passkeyPanel.attemptsWait(3600),
             ],
         ] as const)("%s shows a readable message and keeps the code box", async (_label, step, makeError, message) => {
             const mock = step === "verify" ? smsAuth.verifyCode : passkeyAuth.register;
@@ -473,6 +520,66 @@ describe("AuthScreen", () => {
             expect(queryByText("Network request failed")).toBeNull();
             expect(queryByText("native library detail")).toBeNull();
             expect(getByTestId("auth-code-field")).toBeTruthy();
+        });
+
+        test.each([
+            ["android", PARITY_COPY.auth.passkeyPanel.passkeyCreateUnsupportedAndroid],
+            ["ios", PARITY_COPY.auth.passkeyPanel.passkeyCreateUnsupportedIos],
+        ] as const)(
+            "a %s phone that cannot create a passkey is told to update the system and keeps the held token",
+            async (os, message) => {
+                const restore = jest.replaceProperty(Platform, "OS", os).restore;
+                try {
+                    (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(new PasskeyCreateUnsupportedError());
+                    const { getByTestId, getByText, queryByText } = wrap(<AuthScreen />);
+                    await reachCodeBox(getByTestId);
+
+                    await pressConfirmCode(getByTestId);
+
+                    expect(getByText(message)).toBeTruthy();
+                    expect(queryByText(PARITY_COPY.auth.passkeyPanel.passkeyNoProviderAndroid)).toBeNull();
+                    expect(getByTestId("auth-code-field")).toBeTruthy();
+                    expect(mockNavigate).not.toHaveBeenCalled();
+
+                    await pressConfirmCode(getByTestId);
+                    expect(smsAuth.verifyCode).toHaveBeenCalledTimes(1);
+                    expect(passkeyAuth.register).toHaveBeenCalledTimes(2);
+                } finally {
+                    restore();
+                }
+            },
+        );
+
+        test("an unidentified passkey failure names the screen lock and software fix, keeps the held token and the code box", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(
+                Object.assign(new Error("Native error"), { error: "UnknownError" }),
+            );
+            const { getByTestId, getByText, queryByText } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+
+            expect(getByText(PARITY_COPY.auth.passkeyPanel.passkeyUnidentifiedMobile)).toBeTruthy();
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.verifyError)).toBeNull();
+            expect(getByTestId("auth-code-field")).toBeTruthy();
+            expect(mockNavigate).not.toHaveBeenCalled();
+
+            await pressConfirmCode(getByTestId);
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(1);
+            expect(passkeyAuth.register).toHaveBeenCalledTimes(2);
+        });
+
+        test("a phone with no passkey provider keeps the held token and never reaches the device help screen", async () => {
+            (passkeyAuth.register as jest.Mock).mockRejectedValueOnce(new PasskeyProviderMissingError());
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeBox(getByTestId);
+
+            await pressConfirmCode(getByTestId);
+            await pressConfirmCode(getByTestId);
+
+            expect(mockNavigate).not.toHaveBeenCalled();
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(1);
+            expect(passkeyAuth.register).toHaveBeenCalledTimes(2);
         });
 
         test("a rejected passkey keeps the held token, so the retry skips the code check", async () => {
@@ -545,14 +652,32 @@ describe("AuthScreen", () => {
             await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
         };
 
+        const waitOutCooldown = () => {
+            act(() => {
+                jest.advanceTimersByTime(60_000);
+            });
+        };
+
+        const countdownText = (queryByTestId: ReturnType<typeof render>["queryByTestId"]) =>
+            queryByTestId("auth-resend-countdown", { includeHiddenElements: true })?.props.children ?? null;
+
+        const resendDisabled = (getByTestId: ReturnType<typeof render>["getByTestId"]) =>
+            Boolean(getByTestId("auth-resend-cta").props.accessibilityState?.disabled);
+
         beforeEach(() => {
+            jest.useFakeTimers();
             (passkeyAuth.signIn as jest.Mock).mockRejectedValue(new NoPasskeyError());
             (smsAuth.requestCode as jest.Mock).mockResolvedValue(undefined);
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
         });
 
         test("pressing Send a new code requests another code for the same phone, clears the code and confirms", async () => {
             const { getByTestId, getByText, queryByText, getByPlaceholderText } = wrap(<AuthScreen />);
             await reachCodeStep(getByTestId);
+            waitOutCooldown();
             fireEvent.changeText(getByTestId("auth-code-field"), "123456");
             expect(getByPlaceholderText(PARITY_COPY.auth.passkeyPanel.codePlaceholder).props.value).toBe("123456");
             expect(queryByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeNull();
@@ -565,13 +690,41 @@ describe("AuthScreen", () => {
             expect(getByPlaceholderText(PARITY_COPY.auth.passkeyPanel.codePlaceholder).props.value).toBe("");
         });
 
-        test("pressing it twice requests two more codes", async () => {
+        test("a new code drops the held token, so Confirm checks the new code instead of sending the old token", async () => {
+            (smsAuth.verifyCode as jest.Mock)
+                .mockResolvedValueOnce({ sms_verified_token: "tok-1", expires_at: "2099" })
+                .mockResolvedValueOnce({ sms_verified_token: "tok-2", expires_at: "2099" });
+            (passkeyAuth.register as jest.Mock)
+                .mockRejectedValueOnce(new NoPasskeyError())
+                .mockResolvedValueOnce(undefined);
             const { getByTestId, getByText } = wrap(<AuthScreen />);
             await reachCodeStep(getByTestId);
+            waitOutCooldown();
+            fireEvent.changeText(getByTestId("auth-code-field"), "123456");
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(passkeyAuth.register).toHaveBeenCalledTimes(1));
+            await waitFor(() => expect(resendDisabled(getByTestId)).toBe(false));
+
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeTruthy());
+            fireEvent.changeText(getByTestId("auth-code-field"), "654321");
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(passkeyAuth.register).toHaveBeenCalledTimes(2));
+            expect(smsAuth.verifyCode).toHaveBeenCalledTimes(2);
+            expect(smsAuth.verifyCode).toHaveBeenLastCalledWith("4105550199", "654321");
+            expect(passkeyAuth.register).toHaveBeenLastCalledWith("4105550199", "tok-2");
+        });
+
+        test("pressing it twice, a cooldown apart, requests two more codes", async () => {
+            const { getByTestId, getByText } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+            waitOutCooldown();
 
             fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
             await waitFor(() => expect(smsAuth.requestCode).toHaveBeenCalledTimes(2));
             await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeTruthy());
+            waitOutCooldown();
             fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
 
             await waitFor(() => expect(smsAuth.requestCode).toHaveBeenCalledTimes(3));
@@ -580,6 +733,7 @@ describe("AuthScreen", () => {
         test("a refused resend shows the request-code error and keeps the code step open", async () => {
             const { getByTestId, getByText, queryByText } = wrap(<AuthScreen />);
             await reachCodeStep(getByTestId);
+            waitOutCooldown();
             (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(new Error("rate limited"));
 
             fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
@@ -594,6 +748,198 @@ describe("AuthScreen", () => {
             const { queryByText } = wrap(<AuthScreen />);
 
             expect(queryByText(PARITY_COPY.auth.passkeyPanel.resendCode)).toBeNull();
+        });
+
+        // @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day#The cooldown clock on Send a new code]]
+        test("counts down from one minute after the first code is sent and enables the button when it ends", async () => {
+            const { getByTestId, queryByTestId } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+
+            expect(countdownText(queryByTestId)).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("1:00"));
+            expect(resendDisabled(getByTestId)).toBe(true);
+            fireEvent.press(getByTestId("auth-resend-cta"));
+            expect(smsAuth.requestCode).toHaveBeenCalledTimes(1);
+
+            act(() => {
+                jest.advanceTimersByTime(18_000);
+            });
+            expect(countdownText(queryByTestId)).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("0:42"));
+            expect(resendDisabled(getByTestId)).toBe(true);
+            expect(getByTestId("auth-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
+
+            act(() => {
+                jest.advanceTimersByTime(42_000);
+            });
+            expect(countdownText(queryByTestId)).toBeNull();
+            expect(resendDisabled(getByTestId)).toBe(false);
+        });
+
+        test("restarts the countdown after a new code is sent", async () => {
+            const { getByTestId, getByText, queryByTestId } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+            waitOutCooldown();
+
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.codeResent)).toBeTruthy());
+            expect(countdownText(queryByTestId)).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("1:00"));
+            expect(resendDisabled(getByTestId)).toBe(true);
+        });
+
+        test("counts down the wait the server names when it refuses a new code", async () => {
+            const { getByTestId, getByText, queryByTestId, queryByText } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+            waitOutCooldown();
+            (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(
+                new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 307),
+            );
+
+            fireEvent.press(getByText(PARITY_COPY.auth.passkeyPanel.resendCode));
+
+            await waitFor(() =>
+                expect(countdownText(queryByTestId)).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("5:07")),
+            );
+            expect(resendDisabled(getByTestId)).toBe(true);
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.requestCodeError)).toBeNull();
+            expect(getByTestId("auth-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
+        });
+
+        test("says how long to wait when the first code is refused for longer than a minute", async () => {
+            (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(
+                new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 307),
+            );
+            const { getByTestId, getByText, queryByTestId } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.resendCodeWait(307))).toBeTruthy());
+            expect(queryByTestId("auth-code-field")).toBeNull();
+        });
+
+        test("opens the code step with the server's wait when this screen already sent a code to the same phone", async () => {
+            (smsAuth.requestCode as jest.Mock)
+                .mockResolvedValueOnce(undefined)
+                .mockRejectedValueOnce(new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 42));
+            const { getByTestId, queryByTestId, queryByText } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+            fireEvent.press(getByTestId("auth-secondary-cta"));
+            await waitFor(() => expect(queryByTestId("auth-code-field")).toBeNull());
+
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+            expect(countdownText(queryByTestId)).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("0:42"));
+            expect(resendDisabled(getByTestId)).toBe(true);
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.requestCodeError)).toBeNull();
+        });
+
+        test("opens the code step with the daily wait when this screen already sent a code to the same phone", async () => {
+            (smsAuth.requestCode as jest.Mock)
+                .mockResolvedValueOnce(undefined)
+                .mockRejectedValueOnce(
+                    new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 71_400),
+                );
+            const { getByTestId, queryByTestId, queryByText } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+            fireEvent.press(getByTestId("auth-secondary-cta"));
+            await waitFor(() => expect(queryByTestId("auth-code-field")).toBeNull());
+
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+            expect(countdownText(queryByTestId)).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeIn("19:50:00"));
+            expect(resendDisabled(getByTestId)).toBe(true);
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.requestCodeError)).toBeNull();
+        });
+
+        test("stays on the phone step and names the wait when no code was sent from this screen", async () => {
+            (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(
+                new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 42),
+            );
+            const { getByTestId, getByText, queryByTestId } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.resendCodeWait(42))).toBeTruthy());
+            expect(queryByTestId("auth-code-field")).toBeNull();
+        });
+
+        test("stays on the phone step when the earlier code went to a different phone", async () => {
+            (smsAuth.requestCode as jest.Mock)
+                .mockResolvedValueOnce(undefined)
+                .mockRejectedValueOnce(new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 42));
+            const { getByTestId, getByText, queryByTestId } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+            await waitFor(() => expect(getByTestId("auth-code-field")).toBeTruthy());
+            fireEvent.press(getByTestId("auth-secondary-cta"));
+            await waitFor(() => expect(queryByTestId("auth-code-field")).toBeNull());
+
+            typePhone(getByTestId, "4105550123");
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.resendCodeWait(42))).toBeTruthy());
+            expect(queryByTestId("auth-code-field")).toBeNull();
+        });
+
+        test("shows the server's sentence when the first code is refused for an invalid phone", async () => {
+            (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(
+                new ApiRequestError("invalid_phone", "Enter a valid US phone number.", undefined, 422),
+            );
+            const { getByTestId, getByText, queryByTestId, queryByText } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByText("Enter a valid US phone number.")).toBeTruthy());
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.requestCodeError)).toBeNull();
+            expect(queryByTestId("auth-code-field")).toBeNull();
+        });
+
+        test("says how long to wait when phone sign-in itself is rate limited", async () => {
+            (passkeyAuth.signIn as jest.Mock).mockRejectedValue(
+                new RateLimitedError("rate_limited", "Too many attempts.", undefined, 429, 90),
+            );
+            const { getByTestId, getByText, queryByText } = wrap(<AuthScreen />);
+            typePhone(getByTestId);
+            pressSubmit(getByTestId);
+
+            await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.signInWait(90))).toBeTruthy());
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.resendCodeWait(90))).toBeNull();
+            expect(queryByText(PARITY_COPY.auth.passkeyPanel.signInError)).toBeNull();
+            expect(smsAuth.requestCode).not.toHaveBeenCalled();
+        });
+
+        test("hides the ticking clock from screen readers and announces the wait once", async () => {
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+            const region = () => getByTestId("auth-resend-wait");
+
+            expect(region().props.accessibilityLiveRegion).toBe("polite");
+            expect(region().props.accessibilityLabel).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeWait(60));
+            expect(
+                getByTestId("auth-resend-countdown", { includeHiddenElements: true }).props.importantForAccessibility,
+            ).toBe("no");
+            expect(getByTestId("auth-resend-cta").props.accessibilityLabel).toBe(
+                PARITY_COPY.auth.passkeyPanel.resendCode,
+            );
+
+            act(() => {
+                jest.advanceTimersByTime(5_000);
+            });
+            expect(region().props.accessibilityLabel).toBe(PARITY_COPY.auth.passkeyPanel.resendCodeWait(60));
+        });
+
+        test("keeps a 44pt touch target and readable label while waiting", async () => {
+            const { getByTestId } = wrap(<AuthScreen />);
+            await reachCodeStep(getByTestId);
+
+            const flat = StyleSheet.flatten(getByTestId("auth-resend-cta").props.style);
+            expect(flat.minHeight).toBeGreaterThanOrEqual(44);
+            expect(flat.opacity).toBe(0.75);
         });
     });
 

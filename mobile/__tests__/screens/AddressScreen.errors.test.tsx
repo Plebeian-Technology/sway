@@ -1,8 +1,7 @@
 // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen]]
-// Drives AddressScreen through the real apiClient: only fetch is mocked.
 
 const mockUseUserProfile = jest.fn();
-const mockRefresh = jest.fn(async () => {});
+const mockRefresh = jest.fn(async (): Promise<boolean | void> => {});
 
 jest.mock("../../src/hooks/useSession", () => ({
     useSession: () => ({ isAuthenticated: true, loading: false, signOut: jest.fn(), signOutAll: jest.fn() }),
@@ -17,7 +16,6 @@ jest.mock("expo-haptics", () => ({
     ImpactFeedbackStyle: { Light: "Light" },
 }));
 
-// No Google Places key, so the typed fields are shown and the SDK is never loaded.
 jest.mock("expo-constants", () => ({
     expoConfig: { extra: {} },
 }));
@@ -39,6 +37,8 @@ import { ThemeProvider } from "../../src/theme/ThemeProvider";
 
 const CONNECTION_SENTENCE = "Could not reach Sway. Check your connection and try again.";
 const FRIENDLY_FALLBACK_SENTENCE = "Something went wrong. Please try again.";
+const CONFIRMATION_SENTENCE =
+    "Switching your address deactivates your current representative links. Please confirm to continue.";
 const COOLDOWN_SENTENCE =
     "You recently changed your address. To prevent cross-district voting abuse, please wait before switching addresses again.";
 
@@ -76,7 +76,6 @@ const expectFormUsable = () => {
     expect(screen.getByTestId("address-input-street1-input").props.value).toBe("100 N Holliday St");
     expect(screen.getByTestId("address-input-city-input").props.value).toBe("Baltimore");
     expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBeFalsy();
-    expect(mockRefresh).not.toHaveBeenCalled();
     expect(mockNavigation.goBack).not.toHaveBeenCalled();
 };
 
@@ -123,6 +122,136 @@ describe("AddressScreen submit failures through the real API client", () => {
 
             expect(screen.getByTestId("address-error").props.children).toBe(CONNECTION_SENTENCE);
             expectFormUsable();
+        });
+
+        it("reloads the account before it shows a timeout, in case the server finished the registration", async () => {
+            jest.useFakeTimers();
+            fetchMock().mockImplementation(
+                (_url: string, init: RequestInit) =>
+                    new Promise((_resolve, reject) => {
+                        init.signal?.addEventListener("abort", () => reject(new Error("Aborted")));
+                    }),
+            );
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+            await act(async () => {
+                await jest.advanceTimersByTimeAsync(15_000);
+            });
+
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
+            expect(screen.getByTestId("address-error").props.children).toBe(CONNECTION_SENTENCE);
+        });
+
+        it("reloads the account when an edited resubmit is refused with confirmation_required", async () => {
+            fetchMock().mockResolvedValue(
+                mockFetchResponse(
+                    { error: { code: "confirmation_required", message: CONFIRMATION_SENTENCE } },
+                    { status: 422 },
+                ),
+            );
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
+            expect(screen.getByTestId("address-error").props.children).toBe(CONFIRMATION_SENTENCE);
+            expectFormUsable();
+        });
+
+        it("shows the recovery card when the reload after confirmation_required fails, since onboarding has no confirm control", async () => {
+            fetchMock().mockResolvedValue(
+                mockFetchResponse(
+                    { error: { code: "confirmation_required", message: CONFIRMATION_SENTENCE } },
+                    { status: 422 },
+                ),
+            );
+            mockRefresh.mockResolvedValueOnce(false);
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
+            expect(screen.getByTestId("address-saved-recovery")).toBeTruthy();
+            expect(screen.queryByText(CONFIRMATION_SENTENCE)).toBeNull();
+            expect(screen.queryByTestId("address-submit-cta")).toBeNull();
+        });
+
+        it("keeps the form and the connection sentence when the reload after a timeout fails", async () => {
+            jest.useFakeTimers();
+            fetchMock().mockImplementation(
+                (_url: string, init: RequestInit) =>
+                    new Promise((_resolve, reject) => {
+                        init.signal?.addEventListener("abort", () => reject(new Error("Aborted")));
+                    }),
+            );
+            mockRefresh.mockResolvedValueOnce(false);
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+            await act(async () => {
+                await jest.advanceTimersByTimeAsync(15_000);
+            });
+
+            expect(screen.queryByTestId("address-saved-recovery")).toBeNull();
+            expect(screen.getByTestId("address-error").props.children).toBe(CONNECTION_SENTENCE);
+            expectFormUsable();
+        });
+
+        it("shows the recovery card when the reload after confirmation_required throws", async () => {
+            fetchMock().mockResolvedValue(
+                mockFetchResponse(
+                    { error: { code: "confirmation_required", message: CONFIRMATION_SENTENCE } },
+                    { status: 422 },
+                ),
+            );
+            mockRefresh.mockRejectedValueOnce(new Error("storage failure"));
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+
+            expect(mockRefresh).toHaveBeenCalledTimes(1);
+            expect(screen.getByTestId("address-saved-recovery")).toBeTruthy();
+            expect(screen.queryByTestId("address-submit-cta")).toBeNull();
+        });
+
+        it("keeps the form and the connection sentence when the reload after a timeout throws", async () => {
+            jest.useFakeTimers();
+            fetchMock().mockImplementation(
+                (_url: string, init: RequestInit) =>
+                    new Promise((_resolve, reject) => {
+                        init.signal?.addEventListener("abort", () => reject(new Error("Aborted")));
+                    }),
+            );
+            mockRefresh.mockRejectedValueOnce(new Error("storage failure"));
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+            await act(async () => {
+                await jest.advanceTimersByTimeAsync(15_000);
+            });
+
+            expect(screen.queryByTestId("address-saved-recovery")).toBeNull();
+            expect(screen.getByTestId("address-error").props.children).toBe(CONNECTION_SENTENCE);
+            expectFormUsable();
+        });
+
+        it("does not reload the account for a refusal that cannot mean the address was saved", async () => {
+            fetchMock().mockResolvedValue(
+                mockFetchResponse("<html><body>Bad Request</body></html>", { status: 400, contentType: "text/html" }),
+            );
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+
+            expect(mockRefresh).not.toHaveBeenCalled();
         });
 
         it("shows the friendly fallback sentence for an HTML 500 page", async () => {
@@ -205,6 +334,19 @@ describe("AddressScreen submit failures through the real API client", () => {
 
             expect(screen.getByTestId("address-error").props.children).toBe(COOLDOWN_SENTENCE);
             expectFormUsable();
+            expect(mockRefresh).not.toHaveBeenCalled();
+        });
+
+        it("does not reload the account after a timeout, because the user is already registered", async () => {
+            fetchMock().mockRejectedValue(new TypeError("Network request failed"));
+            wrap(<AddressScreen />);
+            typeAddress();
+
+            await press("address-submit-cta");
+            await press("address-confirm-deactivate-cta");
+
+            expect(screen.getByTestId("address-error").props.children).toBe(CONNECTION_SENTENCE);
+            expect(mockRefresh).not.toHaveBeenCalled();
         });
     });
 });

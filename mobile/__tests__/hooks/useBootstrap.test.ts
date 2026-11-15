@@ -42,6 +42,7 @@ import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { AppState } from "react-native";
 import { BootstrapProvider, useBootstrap } from "../../src/state/BootstrapContext";
 import { authEvents } from "../../src/auth/authEvents";
+import { tokenStore } from "../../src/auth/tokenStore";
 import { getConsumer } from "../../src/channels/consumer";
 import * as ActionCable from "@rails/actioncable";
 
@@ -195,6 +196,19 @@ describe("BootstrapProvider / useBootstrap", () => {
         expect(order.indexOf("setLocaleId")).toBeLessThan(order.indexOf("fetchIt"));
         expect(order.indexOf("purgeAll")).toBeLessThan(order.indexOf("fetchIt"));
         expect(order.indexOf("bootstrapCache.purge")).toBeLessThan(order.indexOf("fetchIt"));
+    });
+
+    test("a held bearer token answered with current_user null ends the session with the session_expired reason", async () => {
+        jest.spyOn(tokenStore, "get").mockResolvedValueOnce("tok_held");
+        mockApiGet.mockResolvedValue({ ...sampleBootstrap, current_user: null });
+        renderHook(() => useBootstrap(), { wrapper: wrap });
+
+        await waitFor(() => expect(authEvents.unauthenticatedReason()).toBe("session_expired"));
+
+        await act(async () => {
+            authEvents.emit("signed_out");
+        });
+        expect(authEvents.unauthenticatedReason()).toBeNull();
     });
 
     test("clears previous user's bootstrap immediately on 'signed_out' even if refetch fails offline", async () => {

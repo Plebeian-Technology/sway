@@ -1,12 +1,12 @@
 // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen]]
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Linking, Platform, ScrollView, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
 
 import { apiClient } from "../api/client";
-import { NetworkError } from "../api/errors";
+import { ApiRequestError, NetworkError } from "../api/errors";
 import * as legislatorCache from "../cache/legislatorCache";
 import * as billCache from "../cache/billCache";
 import { clearCapturedCategories } from "../hooks/useBills";
@@ -21,6 +21,7 @@ import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import type { ProfileStackParamList } from "../navigation/types";
 
 const CONNECTION_ERROR_MESSAGE = "Could not reach Sway. Check your connection and try again.";
+const UPDATE_ERROR_MESSAGE = "Could not update address.";
 const SAVED_RECOVERY_TITLE = "Your address was saved";
 const SAVED_RECOVERY_MESSAGE = "We could not load your account yet. Check your connection and try again.";
 const SAVED_RECOVERY_RETRY_LABEL = "Try again";
@@ -79,9 +80,14 @@ export default function AddressScreen() {
     const [confirmingAddressSwitch, setConfirmingAddressSwitch] = useState(false);
     const [savedButNotLoaded, setSavedButNotLoaded] = useState(false);
 
+    const prefilledRef = useRef(false);
+    const [prefilled, setPrefilled] = useState(false);
+
     useEffect(() => {
         const a = user?.address;
-        if (!a) return;
+        if (!a || prefilledRef.current) return;
+        prefilledRef.current = true;
+        setPrefilled(true);
         setForm((f) => ({
             ...f,
             street1: a.street ?? "",
@@ -116,10 +122,10 @@ export default function AddressScreen() {
         setError(null);
         setSubmitting(true);
         try {
-            const street = joinedStreet(toSubmit);
             await apiClient.post("/sway_registration", {
                 sway_registration: {
-                    street,
+                    street: toSubmit.street1.trim(),
+                    street2: toSubmit.street2.trim() || null,
                     city: toSubmit.city,
                     region_code: toSubmit.region_code,
                     postal_code: toSubmit.postal_code,
@@ -142,8 +148,18 @@ export default function AddressScreen() {
             }
             if (nav.canGoBack()) nav.goBack();
         } catch (e) {
+            // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why an onboarding failure that may have saved the address reloads the account first]]
+            const confirmationRequired = e instanceof ApiRequestError && e.code === "confirmation_required";
+            const mayHaveSaved = e instanceof NetworkError || confirmationRequired;
+            if (isOnboarding && mayHaveSaved) {
+                const loaded = await refresh().catch(() => false);
+                if (loaded === false && confirmationRequired) {
+                    setSavedButNotLoaded(true);
+                    return;
+                }
+            }
             if (e instanceof NetworkError) setError(CONNECTION_ERROR_MESSAGE);
-            else setError(e instanceof Error ? e.message : "Could not update address.");
+            else setError(e instanceof ApiRequestError ? e.message : UPDATE_ERROR_MESSAGE);
         } finally {
             setSubmitting(false);
             setConfirmingAddressSwitch(false);
@@ -158,6 +174,11 @@ export default function AddressScreen() {
         void submitForm(form);
     };
 
+    const onAutocompleteQueryChange = () => {
+        setConfirmingAddressSwitch(false);
+        setForm((f) => ({ ...emptyForm(), country: f.country }));
+    };
+
     const onAutocompleteSelect = (parsed: ParsedAddress) => {
         const next: AddressForm = {
             street1: parsed.street1,
@@ -170,6 +191,7 @@ export default function AddressScreen() {
             longitude: parsed.longitude,
             place_types: parsed.place_types,
         };
+        setError(null);
         setConfirmingAddressSwitch(false);
         setForm(next);
     };
@@ -336,8 +358,10 @@ export default function AddressScreen() {
                     {autocompleteAvailable && !showManual ? (
                         <View className="mb-4">
                             <AddressAutocomplete
+                                key={prefilled ? "prefilled" : "empty"}
                                 initialValue={form.street1 ? `${form.street1}, ${form.city}` : ""}
                                 onSelect={onAutocompleteSelect}
+                                onQueryChange={onAutocompleteQueryChange}
                                 onError={setError}
                             />
                             <Pressable

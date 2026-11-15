@@ -153,11 +153,13 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
         throw new UnauthorizedError(envelope.code, envelope.message, envelope.details, res.status);
     }
     if (res.status === 429) {
+        const retryAfter = Number.parseInt(res.headers?.get("Retry-After") ?? "", 10);
         throw new RateLimitedError(
             envelope.code,
             envelope.message ?? "try again shortly",
             envelope.details,
             res.status,
+            Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
         );
     }
     throw new ApiRequestError(envelope.code, envelope.message, envelope.details, res.status);

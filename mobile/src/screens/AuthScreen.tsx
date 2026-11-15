@@ -14,13 +14,22 @@ import {
     View,
 } from "react-native";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
+import { formatCountdown, RESEND_CODE_COOLDOWN_SECONDS } from "../../../app/frontend/sway_utils/resendCooldown";
 import { ApiRequestError, NetworkError, RateLimitedError } from "../api/errors";
 import { authEvents } from "../auth/authEvents";
-import { NoPasskeyError, passkeyAuth, PasskeyUnsupportedError, SessionSaveError } from "../auth/passkeyAuth";
+import {
+    NoPasskeyError,
+    passkeyAuth,
+    PasskeyCreateUnsupportedError,
+    PasskeyProviderMissingError,
+    PasskeyUnsupportedError,
+    SessionSaveError,
+} from "../auth/passkeyAuth";
 import { smsAuth } from "../auth/smsAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { FormField } from "../components/ui/FormField";
 import { Pressable } from "../components/ui/Pressable";
+import { useSecondsUntil } from "../hooks/useSecondsUntil";
 import type { AuthStackParamList } from "../navigation/types";
 import { shadowBold } from "../theme/effects";
 import { useTheme } from "../theme/ThemeProvider";
@@ -34,6 +43,7 @@ const CODE_STEP_MESSAGES = {
     expiredToken: "Your code expired. Request a new code to continue.",
     alreadyRegistered: "This phone already has an account. Sign in with your passkey.",
     passkeyFailed: "Passkey setup failed. Please try again.",
+    unavailable: "Something went wrong on our side. Please try again.",
 };
 
 const SESSION_ENDED_NOTICE = "Your session ended. Sign in again with your passkey.";
@@ -44,20 +54,40 @@ const CODE_STEP_MESSAGE_BY_SERVER_CODE: Record<string, string> = {
     phone_already_registered: CODE_STEP_MESSAGES.alreadyRegistered,
     invalid_passkey: CODE_STEP_MESSAGES.passkeyFailed,
     invalid_credentials: CODE_STEP_MESSAGES.passkeyFailed,
+    onboarding_unavailable: CODE_STEP_MESSAGES.unavailable,
 };
 
 // @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Code step failure messages]]
-const codeStepErrorMessage = (e: unknown): string => {
-    if (e instanceof NoPasskeyError) return PARITY_COPY.auth.passkeyPanel.passkeyDismissed;
+const codeStepErrorMessage = (e: unknown, inPasskeyStep = false): string => {
+    if (e instanceof NoPasskeyError) return PARITY_COPY.auth.passkeyPanel.passkeyDismissedMobile;
+    if (e instanceof PasskeyProviderMissingError) return PARITY_COPY.auth.passkeyPanel.passkeyNoProviderAndroid;
+    if (e instanceof PasskeyCreateUnsupportedError) {
+        return Platform.OS === "ios"
+            ? PARITY_COPY.auth.passkeyPanel.passkeyCreateUnsupportedIos
+            : PARITY_COPY.auth.passkeyPanel.passkeyCreateUnsupportedAndroid;
+    }
     if (e instanceof NetworkError) return CODE_STEP_MESSAGES.network;
-    if (e instanceof RateLimitedError) return CODE_STEP_MESSAGES.rateLimited;
+    if (e instanceof RateLimitedError) {
+        return e.retryAfterSeconds
+            ? PARITY_COPY.auth.passkeyPanel.attemptsWait(e.retryAfterSeconds)
+            : CODE_STEP_MESSAGES.rateLimited;
+    }
     if (e instanceof ApiRequestError) {
         return CODE_STEP_MESSAGE_BY_SERVER_CODE[e.code] ?? PARITY_COPY.auth.passkeyPanel.verifyError;
     }
-    return PARITY_COPY.auth.passkeyPanel.verifyError;
+    return inPasskeyStep
+        ? PARITY_COPY.auth.passkeyPanel.passkeyUnidentifiedMobile
+        : PARITY_COPY.auth.passkeyPanel.verifyError;
 };
 
 const CODE_STEP_RESTART_CODES = ["invalid_sms_token", "phone_already_registered"];
+
+interface ResendWait {
+    untilMs: number;
+    seconds: number;
+}
+
+const resendWaitFor = (seconds: number): ResendWait => ({ untilMs: Date.now() + seconds * 1000, seconds });
 
 // @lat: [[mobile-auth-and-onboarding-flow#AuthStack#types.ts's AuthStackParamList]]
 type Nav = NativeStackNavigationProp<AuthStackParamList, "Auth">;
@@ -78,6 +108,12 @@ export default function AuthScreen() {
     const [sessionEnded] = useState(() => authEvents.unauthenticatedReason() === "session_expired");
     // @lat: [[mobile-auth-and-onboarding-flow#AuthScreen#Held SMS-verified token]]
     const heldSmsVerifiedToken = useRef<string | null>(null);
+    // @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day#The cooldown clock on Send a new code]]
+    const codeSentToPhone = useRef<string | null>(null);
+    // @lat: [[phone-verification-rate-limits#Why one phone gets one code a minute and ten a day#The cooldown clock on Send a new code]]
+    const [resendWait, setResendWait] = useState<ResendWait | null>(null);
+    const resendSecondsLeft = useSecondsUntil(resendWait?.untilMs ?? null);
+    const isResendCoolingDown = resendWait !== null && resendSecondsLeft > 0;
 
     const submitLabel = isConfirmingPhone
         ? PARITY_COPY.auth.passkeyPanel.confirmCode
@@ -94,26 +130,23 @@ export default function AuthScreen() {
         if (isConfirmingPhone) {
             if (!code.trim()) return;
             setLoading(true);
+            let inPasskeyStep = false;
             try {
                 if (!heldSmsVerifiedToken.current) {
                     const { sms_verified_token } = await smsAuth.verifyCode(phone, code);
                     heldSmsVerifiedToken.current = sms_verified_token;
                 }
+                inPasskeyStep = true;
                 await passkeyAuth.register(phone, heldSmsVerifiedToken.current);
                 heldSmsVerifiedToken.current = null;
             } catch (e) {
-                // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation]]
-                if (e instanceof PasskeyUnsupportedError) {
-                    nav.navigate("DeviceUnsupported");
-                    return;
-                }
                 // @lat: [[identity-and-access#The sign-in challenge says which ceremony to run#Mobile passkey error translation#A session the device cannot save]]
                 if (e instanceof SessionSaveError) {
                     handleCancel();
                     setError(e.message);
                     return;
                 }
-                const message = codeStepErrorMessage(e);
+                const message = codeStepErrorMessage(e, inPasskeyStep);
                 if (e instanceof ApiRequestError && CODE_STEP_RESTART_CODES.includes(e.code)) handleCancel();
                 setError(message);
             } finally {
@@ -133,10 +166,29 @@ export default function AuthScreen() {
             if (e instanceof NoPasskeyError) {
                 try {
                     await smsAuth.requestCode(phone);
+                    codeSentToPhone.current = phone;
+                    setResendWait(resendWaitFor(RESEND_CODE_COOLDOWN_SECONDS));
                     setConfirmingPhone(true);
-                } catch (_smsErr) {
-                    setError(PARITY_COPY.auth.passkeyPanel.requestCodeError);
+                } catch (smsErr) {
+                    if (
+                        smsErr instanceof RateLimitedError &&
+                        smsErr.retryAfterSeconds &&
+                        codeSentToPhone.current === phone
+                    ) {
+                        setResendWait(resendWaitFor(smsErr.retryAfterSeconds));
+                        setConfirmingPhone(true);
+                    } else if (smsErr instanceof RateLimitedError && smsErr.retryAfterSeconds) {
+                        setError(PARITY_COPY.auth.passkeyPanel.resendCodeWait(smsErr.retryAfterSeconds));
+                    } else if (smsErr instanceof ApiRequestError && smsErr.code === "invalid_phone") {
+                        setError(smsErr.message || PARITY_COPY.auth.passkeyPanel.validationPhone);
+                    } else {
+                        setError(PARITY_COPY.auth.passkeyPanel.requestCodeError);
+                    }
                 }
+                return;
+            }
+            if (e instanceof RateLimitedError && e.retryAfterSeconds) {
+                setError(PARITY_COPY.auth.passkeyPanel.signInWait(e.retryAfterSeconds));
                 return;
             }
             setError(PARITY_COPY.auth.passkeyPanel.signInError);
@@ -151,10 +203,17 @@ export default function AuthScreen() {
         setLoading(true);
         try {
             await smsAuth.requestCode(phone);
+            codeSentToPhone.current = phone;
+            heldSmsVerifiedToken.current = null;
             setCode("");
+            setResendWait(resendWaitFor(RESEND_CODE_COOLDOWN_SECONDS));
             setNotice(PARITY_COPY.auth.passkeyPanel.codeResent);
-        } catch (_smsErr) {
-            setError(PARITY_COPY.auth.passkeyPanel.requestCodeError);
+        } catch (smsErr) {
+            if (smsErr instanceof RateLimitedError && smsErr.retryAfterSeconds) {
+                setResendWait(resendWaitFor(smsErr.retryAfterSeconds));
+            } else {
+                setError(PARITY_COPY.auth.passkeyPanel.requestCodeError);
+            }
         } finally {
             setLoading(false);
         }
@@ -352,13 +411,43 @@ export default function AuthScreen() {
                                     testID="auth-resend-cta"
                                     variant="outline"
                                     onPress={handleResendCode}
-                                    disabled={isLoading}
+                                    disabled={isLoading || isResendCoolingDown}
                                     accessibilityLabel={PARITY_COPY.auth.passkeyPanel.resendCode}
+                                    accessibilityHint={
+                                        isResendCoolingDown
+                                            ? PARITY_COPY.auth.passkeyPanel.resendCodeWait(resendWait.seconds)
+                                            : undefined
+                                    }
+                                    style={isResendCoolingDown ? { opacity: 0.75 } : undefined}
                                 >
                                     <Text className="text-foreground-light dark:text-foreground-dark text-sm font-open-sans-semibold">
                                         {PARITY_COPY.auth.passkeyPanel.resendCode}
                                     </Text>
                                 </Pressable>
+                                <View
+                                    testID="auth-resend-wait"
+                                    accessible={isResendCoolingDown}
+                                    accessibilityLiveRegion="polite"
+                                    accessibilityLabel={
+                                        isResendCoolingDown
+                                            ? PARITY_COPY.auth.passkeyPanel.resendCodeWait(resendWait.seconds)
+                                            : undefined
+                                    }
+                                >
+                                    {isResendCoolingDown && (
+                                        <Text
+                                            testID="auth-resend-countdown"
+                                            accessibilityElementsHidden={true}
+                                            importantForAccessibility="no"
+                                            className="text-center text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+                                            style={{ fontVariant: ["tabular-nums"] }}
+                                        >
+                                            {PARITY_COPY.auth.passkeyPanel.resendCodeIn(
+                                                formatCountdown(resendSecondsLeft),
+                                            )}
+                                        </Text>
+                                    )}
+                                </View>
                             </>
                         )}
 

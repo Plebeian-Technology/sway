@@ -68,6 +68,25 @@ describe("AddressAutocomplete", () => {
         jest.useRealTimers();
     });
 
+    // @lat: [[mobile-address-autocomplete-design#selectedDescription reopen guard]]
+    it("makes no search on mount for a saved address and searches once the user edits it", async () => {
+        render(
+            <AddressAutocomplete initialValue="100 N Holliday St, Baltimore" onSelect={onSelect} onError={onError} />,
+        );
+
+        await act(async () => {
+            jest.advanceTimersByTime(1000);
+        });
+        expect(mockFetchPredictions).not.toHaveBeenCalled();
+        expect(screen.queryByTestId("address-suggestion-PLACE_1")).toBeNull();
+        expect(onError).not.toHaveBeenCalled();
+
+        await typeQuery("100 N Holliday St, Baltimore 2");
+
+        expect(mockFetchPredictions).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId("address-suggestion-PLACE_1")).toBeTruthy();
+    });
+
     it("tells the user to type the address when the search is refused", async () => {
         mockFetchPredictions.mockRejectedValue(new Error("PERMISSION_DENIED api key not authorized"));
         renderComponent();
@@ -219,6 +238,129 @@ describe("AddressAutocomplete", () => {
         await act(async () => rejectFirst(new Error("late failure")));
 
         expect(onError).not.toHaveBeenCalled();
+    });
+
+    it("does not overwrite a newer search when the details of a picked place arrive late", async () => {
+        let resolvePlace: (value: unknown) => void = () => {};
+        mockFetchPlaceByID.mockImplementationOnce(() => new Promise((resolve) => (resolvePlace = resolve)));
+        mockFetchPredictions.mockResolvedValueOnce([prediction]).mockResolvedValueOnce([]);
+        renderComponent();
+
+        await typeQuery("100 N Holliday");
+        fireEvent.press(await screen.findByTestId("address-suggestion-PLACE_1"));
+        await typeQuery("200 S Charles St");
+        await act(async () =>
+            resolvePlace({ addressComponents: [...street, locality, state, postalCode, country], coordinate }),
+        );
+
+        expect(onSelect).not.toHaveBeenCalled();
+        expect(onError).not.toHaveBeenCalled();
+    });
+
+    it("reports no details failure for a picked place once a newer search has started", async () => {
+        let rejectPlace: (reason: Error) => void = () => {};
+        mockFetchPlaceByID.mockImplementationOnce(() => new Promise((_resolve, reject) => (rejectPlace = reject)));
+        mockFetchPredictions.mockResolvedValueOnce([prediction]).mockResolvedValueOnce([]);
+        renderComponent();
+
+        await typeQuery("100 N Holliday");
+        fireEvent.press(await screen.findByTestId("address-suggestion-PLACE_1"));
+        await typeQuery("200 S Charles St");
+        await act(async () => rejectPlace(new Error("late failure")));
+
+        expect(onError).not.toHaveBeenCalled();
+    });
+
+    it("ignores a response that arrives after a suggestion was picked", async () => {
+        let resolveLate: (value: unknown[]) => void = () => {};
+        mockFetchPlaceByID.mockResolvedValue({
+            addressComponents: [...street, locality, state, postalCode, country],
+            coordinate,
+        });
+        mockFetchPredictions
+            .mockResolvedValueOnce([prediction])
+            .mockImplementationOnce(() => new Promise((resolve) => (resolveLate = resolve)));
+        renderComponent();
+
+        await typeQuery("100 N Holliday");
+        const suggestion = await screen.findByTestId("address-suggestion-PLACE_1");
+        await typeQuery("100 N Holliday St");
+        fireEvent.press(suggestion);
+        await act(async () => {});
+        await act(async () => resolveLate([prediction]));
+
+        expect(onSelect).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId("address-suggestion-PLACE_1")).toBeNull();
+    });
+
+    it("ignores a failure that arrives after a suggestion was picked", async () => {
+        let rejectLate: (reason: Error) => void = () => {};
+        mockFetchPlaceByID.mockResolvedValue({
+            addressComponents: [...street, locality, state, postalCode, country],
+            coordinate,
+        });
+        mockFetchPredictions
+            .mockResolvedValueOnce([prediction])
+            .mockImplementationOnce(() => new Promise((_resolve, reject) => (rejectLate = reject)));
+        renderComponent();
+
+        await typeQuery("100 N Holliday");
+        const suggestion = await screen.findByTestId("address-suggestion-PLACE_1");
+        await typeQuery("100 N Holliday St");
+        fireEvent.press(suggestion);
+        await act(async () => {});
+        await act(async () => rejectLate(new Error("late failure")));
+
+        expect(onSelect).toHaveBeenCalledTimes(1);
+        expect(onError).not.toHaveBeenCalled();
+    });
+
+    // @lat: [[mobile-address-autocomplete-design#Editing the search text clears the form]]
+    it("reports each edit of the text through onQueryChange and not the text of a pick", async () => {
+        const onQueryChange = jest.fn();
+        mockFetchPlaceByID.mockResolvedValue({
+            addressComponents: [...street, locality, state, postalCode, country],
+            coordinate,
+        });
+        render(<AddressAutocomplete onSelect={onSelect} onError={onError} onQueryChange={onQueryChange} />);
+
+        await typeQuery("100 N Holliday");
+        expect(onQueryChange).toHaveBeenCalledTimes(1);
+        expect(onQueryChange).toHaveBeenLastCalledWith("100 N Holliday");
+
+        fireEvent.press(await screen.findByTestId("address-suggestion-PLACE_1"));
+        await act(async () => {});
+
+        expect(onSelect).toHaveBeenCalledTimes(1);
+        expect(onQueryChange).toHaveBeenCalledTimes(1);
+    });
+
+    it("searches again when the user types the saved text back after editing it", async () => {
+        const saved = "100 N Holliday St, Baltimore";
+        render(<AddressAutocomplete initialValue={saved} onSelect={onSelect} onError={onError} />);
+
+        await typeQuery(`${saved}2`);
+        mockFetchPredictions.mockClear();
+        await typeQuery(saved);
+
+        expect(mockFetchPredictions).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId("address-suggestion-PLACE_1")).toBeTruthy();
+    });
+
+    it("drops the details of a picked place when the user edits the text before they arrive", async () => {
+        let resolvePlace: (value: unknown) => void = () => {};
+        mockFetchPlaceByID.mockImplementationOnce(() => new Promise((resolve) => (resolvePlace = resolve)));
+        renderComponent();
+
+        await typeQuery("100 N Holliday");
+        fireEvent.press(await screen.findByTestId("address-suggestion-PLACE_1"));
+        fireEvent.changeText(screen.getByTestId("address-autocomplete-input"), "1");
+        await act(async () =>
+            resolvePlace({ addressComponents: [...street, locality, state, postalCode, country], coordinate }),
+        );
+
+        expect(onSelect).not.toHaveBeenCalled();
+        expect(screen.queryByLabelText("Searching addresses")).toBeNull();
     });
 
     it("makes no SDK call for fewer than three characters", async () => {

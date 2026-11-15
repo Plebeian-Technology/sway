@@ -23,9 +23,18 @@ export class UnauthorizedError extends ApiRequestError {
 }
 
 export class RateLimitedError extends ApiRequestError {
-    constructor(code: string, message: string, details?: Record<string, string[]>, status?: number) {
+    public readonly retryAfterSeconds?: number;
+
+    constructor(
+        code: string,
+        message: string,
+        details?: Record<string, string[]>,
+        status?: number,
+        retryAfterSeconds?: number,
+    ) {
         super(code, message, details, status);
         this.name = "RateLimitedError";
+        this.retryAfterSeconds = retryAfterSeconds;
     }
 }
 

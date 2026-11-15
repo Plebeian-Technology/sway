@@ -31,6 +31,16 @@ When the user picks a suggestion we put its text into the box ourselves.
 
 Without remembering that here, the effect below would run again and re-open the dropdown with the very same suggestions. As soon as the user edits the text so it differs from selectedDescription, suggestions start again.
 
+A box mounted with a saved address starts with that address as selectedDescription. Opening Edit address therefore makes no billed search and shows no list until the user edits the text.
+
+Picking also invalidates any suggestion request still in flight. Otherwise a slow response for the text typed just before the pick would arrive afterwards and reopen the list, or show an error, over a valid choice. The same counter guards the details lookup of the pick itself: a search started before that lookup resolves invalidates it, so a late place cannot overwrite what the user has since typed.
+
+## Editing the search text clears the form
+
+Any edit of the search text, through the box's `onQueryChange` callback, empties the address form on `AddressScreen`, so Submit never posts an address the box no longer shows.
+
+A saved address is prefilled into the box and the form, and a picked place fills both. Without the clear, editing the text without picking a suggestion would leave the old address in the form while the box showed the new text. After the clear Submit stays disabled until the user picks a suggestion or fills the manual fields; the country is kept. The edit also drops selectedDescription, so typing the old text back brings suggestions again, and it invalidates a place lookup still in flight, so a late pick cannot refill the form behind the edited text. The manual path never renders the box and is unaffected.
+
 ## Predictions list: no FlatList
 
 There are at most 5 suggestions, so a plain map is enough. It also keeps a scrolling list out of the ScrollView above, which React Native warns about: "VirtualizedLists should never be nested inside plain ScrollViews".

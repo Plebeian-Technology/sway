@@ -158,6 +158,20 @@ describe("apiClient", () => {
         await expect(apiClient.get("/x")).rejects.toBeInstanceOf(RateLimitedError);
     });
 
+    test("429 carries the Retry-After seconds, and none when the header is absent", async () => {
+        (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+        (global.fetch as jest.Mock).mockResolvedValueOnce({
+            ...mockFetchResponse({ error: { code: "rate_limited", message: "slow down" } }, { status: 429 }),
+            headers: { get: (name: string) => (name === "Retry-After" ? "42" : null) },
+        });
+        await expect(apiClient.get("/x")).rejects.toMatchObject({ retryAfterSeconds: 42 });
+
+        (global.fetch as jest.Mock).mockResolvedValueOnce(
+            mockFetchResponse({ error: { code: "rate_limited", message: "slow down" } }, { status: 429 }),
+        );
+        await expect(apiClient.get("/x")).rejects.toMatchObject({ retryAfterSeconds: undefined });
+    });
+
     test("Network failure throws NetworkError", async () => {
         (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
         (global.fetch as jest.Mock).mockRejectedValueOnce(new Error("getaddrinfo ENOTFOUND"));

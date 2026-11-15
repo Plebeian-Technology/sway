@@ -81,7 +81,7 @@ export function BootstrapProvider({ children }: { children: React.ReactNode }) {
                     setSelectedSwayLocaleId(null);
                     await prefsCache.delete(PREFS_KEYS.selectedSwayLocaleId);
                     setBootstrap(null);
-                    authEvents.emit("unauthenticated");
+                    authEvents.emit("unauthenticated", "session_expired");
                     return false;
                 }
                 setBootstrap(b);

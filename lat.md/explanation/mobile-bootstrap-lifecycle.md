@@ -31,7 +31,7 @@ The provider deliberately skips the keychain-backed key stores used elsewhere in
 
 Before reading the response, `fetchIt` notes whether it expected to be signed in.
 
-`/bootstrap` is a public endpoint, so if the request sent a token and the answer still has `current_user: null`, that token is dead on the server: the user was deleted, or the key was revoked. The provider has to clear things out itself, because `apiClient` will not — the response was a perfectly successful 2xx.
+`/bootstrap` is a public endpoint, so if the request sent a token and the answer still has `current_user: null`, that token is dead on the server: the user was deleted, or the key was revoked. The provider has to clear things out itself, because `apiClient` will not — the response was a perfectly successful 2xx. It emits `unauthenticated` with the reason `session_expired`, the same reason the 401 path uses, so the sign-in screen shows its session-ended notice.
 
 ## Why a 401 wipes the cache instead of falling back to it
 

@@ -29,7 +29,7 @@ Each request reads the bearer token from `tokenStore` and sends `Authorization: 
 The server may send either error shape; `apiClient` accepts both — the JSON:API-style `{ errors: [...] }` array, and the older `{ error: { code, message, details? } }` object.
 
 - `401` → clears both `tokenStore` and `sessionStore`, then throws `UnauthorizedError`
-- `429` → throws `RateLimitedError`
+- `429` → throws `RateLimitedError`, carrying the `Retry-After` header's positive whole seconds as `retryAfterSeconds`, or nothing when the header is absent or unreadable
 - any other non-2xx → throws `ApiRequestError`
 - `fetch` itself failing (DNS, TCP) → throws `NetworkError`
 - the request outliving its timeout (15 seconds unless `timeoutMs` is passed) → throws `NetworkError`
