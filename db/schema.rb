@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -746,12 +746,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
     t.string "source", null: false
     t.string "support", null: false
     t.datetime "updated_at", null: false
-    t.integer "legislator_term_id", null: false
-    t.index ["bill_id", "legislator_id"], name: "index_legislator_votes_on_bill_and_person_null_term_unique", unique: true, where: "legislator_term_id IS NULL"
-    t.index ["bill_id", "legislator_term_id"], name: "index_legislator_votes_on_bill_and_term_unique", unique: true, where: "legislator_term_id IS NOT NULL"
+    t.index ["bill_id", "legislator_id"], name: "index_legislator_votes_on_bill_id_and_legislator_id", unique: true
     t.index ["bill_id"], name: "index_legislator_votes_on_bill_id"
     t.index ["legislator_id"], name: "index_legislator_votes_on_legislator_id"
-    t.index ["legislator_term_id"], name: "index_legislator_votes_on_legislator_term_id"
   end
 
   create_table "legislators", force: :cascade do |t|
@@ -1481,7 +1478,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
   add_foreign_key "legislator_update_outcomes", "seats"
   add_foreign_key "legislator_update_outcomes", "sway_locales"
   add_foreign_key "legislator_votes", "bills"
-  add_foreign_key "legislator_votes", "legislator_terms"
   add_foreign_key "legislator_votes", "legislators"
   add_foreign_key "legislators", "sway_locales"
   add_foreign_key "llm_bill_summarization_instructions", "sway_locales"
