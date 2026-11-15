@@ -143,12 +143,13 @@ class FeedQuery
       .where(sway_locale_id: declared_locales.map(&:id))
       .where.not(scheduled_release_date_utc: nil)
       .where(scheduled_release_date_utc: ..today_utc)
-      .includes(:sway_locale)
+      .includes(:sway_locale, :legislative_session)
       .to_a
 
     matching_bills = candidates.select do |bill|
+      term_start = term_starts_by_locale_id.fetch(bill.sway_locale_id)
       release_date = bill.scheduled_release_date_utc
-      release_date && release_date >= term_starts_by_locale_id.fetch(bill.sway_locale_id)
+      release_date && release_date >= term_start && bill_in_current_term?(bill, term_start)
     end
     return [] if matching_bills.empty?
 
@@ -178,7 +179,7 @@ class FeedQuery
     bills_by_id = Bill
       .unscope(where: :archived_at)
       .where(id: votes.map(&:bill_id).uniq, sway_locale_id: declared_locales.map(&:id))
-      .includes(:sway_locale)
+      .includes(:sway_locale, :legislative_session)
       .index_by(&:id)
     return [] if bills_by_id.empty?
 
@@ -188,9 +189,11 @@ class FeedQuery
       legislator = legislators_by_id[legislator_vote.legislator_id]
       next unless bill && legislator
 
+      term_start_date = term_starts_by_locale_id.fetch(bill.sway_locale_id)
       occurred_at = legislator_vote_occurred_at(bill, legislator, legislator_vote)
-      term_start = term_starts_by_locale_id.fetch(bill.sway_locale_id).in_time_zone("UTC").beginning_of_day
+      term_start = term_start_date.in_time_zone("UTC").beginning_of_day
       next if occurred_at < term_start
+      next unless bill_in_current_term?(bill, term_start_date)
 
       Item.new(
         kind: "legislator_voted",
@@ -236,7 +239,7 @@ class FeedQuery
     bills_by_id = Bill
       .unscope(where: :archived_at)
       .where(id: positions.map(&:bill_id).uniq, sway_locale_id: declared_locales.map(&:id))
-      .includes(:sway_locale)
+      .includes(:sway_locale, :legislative_session)
       .index_by(&:id)
     return [] if bills_by_id.empty?
 
@@ -246,8 +249,10 @@ class FeedQuery
       activated_at = position.activated_at
       next unless bill && activated_at
 
-      term_start = term_starts_by_locale_id.fetch(bill.sway_locale_id).in_time_zone("UTC").beginning_of_day
+      term_start_date = term_starts_by_locale_id.fetch(bill.sway_locale_id)
+      term_start = term_start_date.in_time_zone("UTC").beginning_of_day
       next if activated_at < term_start
+      next unless bill_in_current_term?(bill, term_start_date)
 
       Item.new(
         kind: "organization_position_taken",
@@ -259,6 +264,17 @@ class FeedQuery
         user_vote: user_votes_by_bill_id[bill.id]
       )
     end
+  end
+
+  def bill_in_current_term?(bill, term_start)
+    if (session = bill.legislative_session)
+      return false if session.start_date < term_start
+    end
+
+    introduced_at = bill.introduced_date_time_utc
+    return false if introduced_at && introduced_at.to_time.utc.to_date < term_start
+
+    true
   end
 
   def filter_by_query(items)
