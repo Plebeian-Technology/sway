@@ -28,6 +28,14 @@ RSpec.describe PhoneCacheKey do
         expect(described_class.hmac_secret_key).to eq("test")
       end
     end
+
+    it "reads PHONE_CACHE_HMAC_SECRET_KEY outside RAILS_ENV=test" do
+      allow(Rails.env).to receive(:test?).and_return(false)
+
+      with_env("PHONE_CACHE_HMAC_SECRET_KEY" => "prod-hmac-secret") do
+        expect(described_class.hmac_secret_key).to eq("prod-hmac-secret")
+      end
+    end
   end
 
   describe "missing PHONE_CACHE_HMAC_SECRET_KEY" do

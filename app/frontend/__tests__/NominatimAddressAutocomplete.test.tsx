@@ -766,4 +766,15 @@ describe("NominatimAddressAutocomplete", () => {
             expect(screen.queryByTestId("address-search-message")).toBeNull();
         });
     });
+
+    describe("10. Fallback listbox aria-label", () => {
+        it('falls back to "Address suggestions" when field.label is blank', () => {
+            const suggestions = [createSuggestion("node-1", "123 Main St", "Baltimore, MD")];
+            mockHook({ status: "OK", suggestions });
+
+            render(<NominatimAddressAutocomplete form={buildForm()} field={{ ...REGISTRATION_FIELD, label: "" }} />);
+
+            expect(screen.getByRole("listbox", { name: "Address suggestions" })).toBeTruthy();
+        });
+    });
 });

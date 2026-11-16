@@ -178,5 +178,82 @@ RSpec.describe PendingVoteReconciliationService, type: :service do
         expect(UserVote.find_by(user: user, bill: bill).support).to eq("FOR")
       end
     end
+
+    context "with edge payloads and concurrent vote creation races" do
+      it "returns invalid_data when raw cookie payload is invalid JSON" do
+        cookie_jar.encrypted[:sway_pending_vote] = "{not-valid-json"
+
+        result = described_class.call(user: user, cookies: cookie_jar)
+
+        expect(result).to eq(success: false, reason: :invalid_data)
+      end
+
+      it "parses a JSON string nested under :value" do
+        cookie_jar.encrypted[:sway_pending_vote] = {"value" => {"bill_id" => bill.id, "support" => "FOR"}.to_json}
+
+        result = described_class.call(user: user, cookies: cookie_jar)
+
+        expect(result[:success]).to be(true)
+        expect(result[:status]).to eq(:vote_cast)
+        expect(result[:bill]).to eq(bill)
+      end
+
+      it "returns invalid_data when support is missing" do
+        cookie_jar.encrypted[:sway_pending_vote] = {"bill_id" => bill.id}
+
+        expect(described_class.call(user: user, cookies: cookie_jar)).to eq(success: false, reason: :invalid_data)
+      end
+
+      it "returns invalid_data when user is nil" do
+        cookie_jar.encrypted[:sway_pending_vote] = {"bill_id" => bill.id, "support" => "FOR"}
+
+        expect(described_class.call(user: nil, cookies: cookie_jar)).to eq(success: false, reason: :invalid_data)
+      end
+
+      it "returns already_voted_same when UserVote.create! raises RecordNotUnique and existing vote matches" do
+        cookie_jar.encrypted[:sway_pending_vote] = {"bill_id" => bill.id, "support" => "FOR"}
+        allow(UserVote).to receive(:create!) do
+          ActiveRecord::Base.connection.execute(
+            "INSERT INTO user_votes (user_id, bill_id, support, created_at, updated_at) " \
+            "VALUES (#{user.id}, #{bill.id}, 'FOR', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+          )
+          raise ActiveRecord::RecordNotUnique, "duplicate vote"
+        end
+
+        result = described_class.call(user: user, cookies: cookie_jar)
+
+        expect(result).to eq(success: true, status: :already_voted_same, bill: bill)
+      end
+
+      it "returns already_voted_different when UserVote.create! raises RecordNotUnique and existing vote conflicts" do
+        cookie_jar.encrypted[:sway_pending_vote] = {"bill_id" => bill.id, "support" => "AGAINST"}
+        allow(UserVote).to receive(:create!) do
+          ActiveRecord::Base.connection.execute(
+            "INSERT INTO user_votes (user_id, bill_id, support, created_at, updated_at) " \
+            "VALUES (#{user.id}, #{bill.id}, 'FOR', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+          )
+          raise ActiveRecord::RecordNotUnique, "duplicate vote"
+        end
+
+        result = described_class.call(user: user, cookies: cookie_jar)
+
+        expect(result[:success]).to be(false)
+        expect(result[:status]).to eq(:already_voted_different)
+        expect(result[:bill]).to eq(bill)
+        expect(result[:message]).to eq(UserVotesController::VOTE_ALREADY_RECORDED_MESSAGE)
+      end
+
+      it "returns already_voted_different when UserVote.create! raises RecordNotUnique and no vote row remains" do
+        cookie_jar.encrypted[:sway_pending_vote] = {"bill_id" => bill.id, "support" => "FOR"}
+        allow(UserVote).to receive(:create!).and_raise(ActiveRecord::RecordNotUnique, "duplicate vote")
+
+        result = described_class.call(user: user, cookies: cookie_jar)
+
+        expect(result[:success]).to be(false)
+        expect(result[:status]).to eq(:already_voted_different)
+        expect(result[:bill]).to eq(bill)
+        expect(result[:message]).to eq(UserVotesController::VOTE_ALREADY_RECORDED_MESSAGE)
+      end
+    end
   end
 end

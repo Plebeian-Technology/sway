@@ -1,11 +1,12 @@
 {
     "mobile/src/api/client.ts": {
-        "line": 96.9,
-        "branch": 85.1
+        "line": 98.5,
+        "branch": 97.5,
+        "reason": "line 147: dynamic import('../channels/consumer') cannot resolve under CJS Jest without --experimental-vm-modules; line 87 opts = {} default and line 159 envelope.message ?? fallback are unreachable via internal callers."
     },
     "mobile/src/auth/passkeyAuth.ts": {
-        "line": 98.2,
-        "branch": 76.6
+        "line": 100.0,
+        "branch": 100.0
     },
     "mobile/src/auth/smsAuth.ts": {
         "line": 100.0,
@@ -13,18 +14,21 @@
     },
     "mobile/src/components/AddressAutocomplete.tsx": {
         "line": 100.0,
-        "branch": 97.2
+        "branch": 97.7,
+        "reason": "line 103: debounceRef.current cleanup guard false branch is unreachable because the cleanup is only registered after debounceRef.current is set."
     },
     "mobile/src/screens/AddressScreen.tsx": {
         "line": 100.0,
-        "branch": 91.9
+        "branch": 100.0
     },
     "mobile/src/screens/AuthScreen.tsx": {
         "line": 100.0,
-        "branch": 96.7
+        "branch": 98.1,
+        "reason": "line 61: codeStepErrorMessage inPasskeyStep = false default is unreachable because sole caller passes it; line 382 isConfirmingPhone ternary false branch is unreachable inside {isConfirmingPhone && ...}."
     },
     "mobile/src/state/BootstrapContext.tsx": {
-        "line": 80.7,
-        "branch": 71.8
+        "line": 100.0,
+        "branch": 96.8,
+        "reason": "line 57: applyLocaleOverride(null) branch is unreachable because sole caller checks != null first; line 120 hydratedRef.current early return is unreachable on single-mount effect."
     }
 }

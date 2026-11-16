@@ -1951,4 +1951,150 @@ describe("useNominatimAddressAutocomplete", () => {
             expect(result.current.loading).toBe(false);
         });
     });
+
+    describe("Coverage edge cases for helpers, URL builder, and stale errors", () => {
+        it("resolves alternate road types, place.name fallback, parts-based secondary text, and empty comma-only display_name", () => {
+            for (const field of ["pedestrian", "square", "footway", "cycleway", "path"] as const) {
+                const s = nominatimPlaceToSuggestion({
+                    place_id: 1,
+                    display_name: `Main Walkway, Baltimore`,
+                    address: { [field]: "Main Walkway" },
+                });
+                expect(s.structured_formatting.main_text).toBe("Main Walkway");
+            }
+
+            const noRoad = nominatimPlaceToSuggestion({
+                place_id: 2,
+                name: "City Hall",
+                display_name: "Downtown, City Hall, Baltimore",
+                address: { house_number: "100" },
+            });
+            expect(noRoad.structured_formatting.main_text).toBe("City Hall");
+            expect(noRoad.structured_formatting.secondary_text).toBe("Downtown, Baltimore");
+
+            const splitParts = nominatimPlaceToSuggestion({
+                place_id: 3,
+                display_name: "100, Holliday St, Baltimore, MD",
+                address: { house_number: "100", road: "Holliday St" },
+            });
+            expect(splitParts.structured_formatting.secondary_text).toBe("Baltimore, MD");
+
+            const splitWithoutRoad = nominatimPlaceToSuggestion({
+                place_id: 5,
+                display_name: "100, , Baltimore",
+                address: { house_number: "100", pedestrian: "Main Plaza" },
+            });
+            expect(splitWithoutRoad.structured_formatting.main_text).toBe("100 Main Plaza");
+            expect(splitWithoutRoad.structured_formatting.secondary_text).toBe("Baltimore");
+
+            const commaOnly = nominatimPlaceToSuggestion({
+                place_id: 4,
+                display_name: ",",
+                address: {},
+            });
+            expect(commaOnly.structured_formatting.main_text).toBe("");
+        });
+
+        it("handles whitespace viewbox/countrycodes, unset bounded, and missing window in buildNominatimUrl", () => {
+            const url = buildNominatimUrl("100 Main St", {
+                id: 1,
+                name: "x",
+                city: "x",
+                region_code: "MD",
+                region_name: "Maryland",
+                country: "US",
+                icon_url: "",
+                time_zone: "UTC",
+                current_session_start_date: "",
+                default_bill_chamber: null,
+                bill_chambers: null,
+                nominatim_viewbox: "   ",
+                nominatim_bounded: null as unknown as boolean,
+                nominatim_country_codes: "   ",
+            });
+            expect(url).not.toContain("viewbox=");
+            expect(url).not.toContain("countrycodes=");
+
+            const withViewboxNoBounded = buildNominatimUrl("100 Main St", {
+                id: 1,
+                name: "x",
+                city: "x",
+                region_code: "MD",
+                region_name: "Maryland",
+                country: "US",
+                icon_url: "",
+                time_zone: "UTC",
+                current_session_start_date: "",
+                default_bill_chamber: null,
+                bill_chambers: null,
+                nominatim_viewbox: "-77,39,-76,38",
+                nominatim_bounded: undefined,
+                nominatim_country_codes: null,
+            });
+            expect(withViewboxNoBounded).toContain("viewbox=-77%2C39%2C-76%2C38");
+            expect(withViewboxNoBounded).not.toContain("bounded=");
+
+            vi.stubGlobal("window", undefined);
+            try {
+                expect(buildNominatimUrl("100 Main St")).toContain("https://sway.vote/");
+            } finally {
+                vi.unstubAllGlobals();
+            }
+        });
+
+        it("handles city-only/street-only prefill, stale non-abort rejections, and sync setLoading failure", async () => {
+            const cityOnlyPrefill = renderHook(() =>
+                useNominatimAddressAutocomplete(
+                    buildMockForm({ city: "Baltimore", region_code: "MD", postal_code: "21202" }),
+                ),
+            );
+            expect(cityOnlyPrefill.result.current.value).toBe("Baltimore, MD, 21202");
+
+            const streetOnlyPrefill = renderHook(() =>
+                useNominatimAddressAutocomplete(
+                    buildMockForm({ street: "100 Main St", region_code: "MD", postal_code: "21202" }),
+                ),
+            );
+            expect(streetOnlyPrefill.result.current.value).toBe("100 Main St , MD, 21202");
+
+            let rejectFetch!: (err: unknown) => void;
+            fetchMock.mockReturnValueOnce(
+                new Promise<Response>((_res, rej) => {
+                    rejectFetch = rej;
+                }),
+            );
+            const form = buildMockForm();
+            const { result } = renderHook(() => useNominatimAddressAutocomplete(form));
+
+            act(() => {
+                result.current.handleInput({
+                    target: { value: "100 Holliday" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            act(() => {
+                result.current.clearSuggestions();
+            });
+            await act(async () => {
+                rejectFetch(new Error("late failure"));
+            });
+            expect(result.current.status).toBe("");
+
+            const throwingSetLoading = vi.fn<(loading: boolean) => void>().mockImplementationOnce(() => {
+                throw new Error("boom in setLoading");
+            });
+            const throwingHook = renderHook(() => useNominatimAddressAutocomplete(buildMockForm(), throwingSetLoading));
+            act(() => {
+                throwingHook.result.current.handleInput({
+                    target: { value: "200 Main" },
+                } as React.ChangeEvent<HTMLInputElement>);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
+            });
+            expect(throwingSetLoading).toHaveBeenCalledWith(true);
+        });
+    });
 });

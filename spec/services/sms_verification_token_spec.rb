@@ -80,6 +80,16 @@ RSpec.describe SmsVerificationToken do
     it "returns false on blank token" do
       expect(described_class.consume!("", phone: phone)).to be(false)
     end
+
+    it "returns false when cached phone digest is blank or malformed length" do
+      token_blank = "token-blank"
+      Rails.cache.write("#{described_class::KEY_PREFIX}:#{token_blank}", {phone: ""})
+      expect(described_class.consume!(token_blank, phone: phone)).to be(false)
+
+      token_short = "token-short"
+      Rails.cache.write("#{described_class::KEY_PREFIX}:#{token_short}", {phone: "short"})
+      expect(described_class.consume!(token_short, phone: phone)).to be(false)
+    end
   end
 
   describe ".peek" do

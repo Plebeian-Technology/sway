@@ -129,8 +129,7 @@ class UserAddressSwitchService
         @user,
         @new_address,
         sway_locale,
-        invited_by_id: nil,
-        async: false
+        invited_by_id: nil
       )
     end
     legislators = services.flat_map(&:district_legislators).uniq(&:id)

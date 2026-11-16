@@ -8,6 +8,7 @@ module Api
 
       private
 
+      def skip_session_cookie_write: () -> void
       def valid_visitor_token: (untyped raw_token) -> String?
       def funnel_event_params: () -> untyped
       def sanitized_metadata: () -> Hash[untyped, untyped]

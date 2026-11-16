@@ -429,4 +429,44 @@ RSpec.describe NominatimService, ".search over the request cap" do
       end
     end
   end
+
+  it "rescues unexpected Google fallback errors and returns an empty array" do
+    stub_request(:get, search_url).with(query: hash_including({})).to_return(status: 503, body: "")
+    client_double = instance_double(GooglePlaces::Client)
+    allow(GooglePlaces::Client).to receive(:new).and_return(client_double)
+    allow(client_double).to receive(:search).and_raise(StandardError, "places failure")
+    allow(SwayLogging).to receive(:error)
+
+    expect(search_for("100 Holliday St")).to eq([])
+    expect(SwayLogging).to have_received(:error).with("nominatim_service.search_failed", error: "places failure", query: "100 Holliday St")
+  end
+
+  it "returns an empty array when Google fallback returns nil" do
+    stub_request(:get, search_url).with(query: hash_including({})).to_return(status: 503, body: "")
+    client_double = instance_double(GooglePlaces::Client, search: nil)
+    allow(GooglePlaces::Client).to receive(:new).and_return(client_double)
+
+    expect(search_for("100 Holliday St")).to eq([])
+  end
+
+  it "sends bounded=0 when bounded is falsy string and accepts pre-parsed array responses" do
+    seen_params = {}
+    conn = Faraday.new do |builder|
+      builder.adapter :test do |stub|
+        stub.get("search") do |env|
+          seen_params = env.params
+          [200, {}, [nominatim_place]]
+        end
+      end
+    end
+
+    results = described_class.new(connection: conn).search(
+      query: "100 Holliday St",
+      viewbox: "-77,39,-76,38",
+      bounded: "0"
+    )
+
+    expect(results).to eq([nominatim_place])
+    expect(seen_params["bounded"]).to eq("0")
+  end
 end

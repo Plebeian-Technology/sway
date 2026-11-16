@@ -160,6 +160,12 @@ After a successful post, `AddressScreen` reloads the startup payload, and `refet
 
 A failed reload falls back to the cached payload from before registration, which still says registration is incomplete, so `RootNavigator` keeps the onboarding stack. Showing the bare form again would invite the user to retype the address. A retyped address is an address switch, and the server answers `confirmation_required` because onboarding never sends the confirmation. The retry button posts nothing, so it cannot trigger that refusal. When the reload succeeds, `RootNavigator` swaps in the app on its own. Outside onboarding a `false` result changes nothing: the screen still goes back, because the user is already registered and the stale payload still shows their previous address. Callers that ignore the result of `refetch` are unaffected.
 
+### Asking for a city or ZIP when the address cannot be located
+
+When `POST /sway_registration` answers with `address_located: false`, [[mobile/src/screens/AddressScreen.tsx#AddressScreen]] stays on the screen, opens the manual fields with the submitted values preserved, and shows a card with the server's message and a continue button.
+
+During onboarding, refreshing immediately would load `is_registration_complete: true` from the Congress fallback and cause `RootNavigator` to unmount the onboarding stack before the user could see the prompt or add a city or ZIP, so cache eviction, `refresh()`, and navigation wait until a corrected submission succeeds or the user presses `PARITY_COPY.address.notLocated.continueCta`. Outside onboarding, `is_registration_complete` is already `true` and the server switch has already committed, so caches clear and `refresh()` runs immediately before showing the card so tapping Cancel never leaves stale profile or SQLite cache state.
+
 ## Why isOnboarding only changes wording
 
 Onboarding mode means no address has been saved yet.

@@ -40,9 +40,14 @@ jest.mock("../../src/api/client", () => ({
 import React from "react";
 import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { AppState } from "react-native";
+import Constants from "expo-constants";
 import { BootstrapProvider, useBootstrap } from "../../src/state/BootstrapContext";
 import { authEvents } from "../../src/auth/authEvents";
 import { tokenStore } from "../../src/auth/tokenStore";
+import { sessionStore } from "../../src/auth/sessionStore";
+import { UnauthorizedError } from "../../src/api/errors";
+import { prefsCache, PREFS_KEYS } from "../../src/cache/prefsCache";
+import { localeOverride } from "../../src/state/localeOverride";
 import { getConsumer } from "../../src/channels/consumer";
 import * as ActionCable from "@rails/actioncable";
 
@@ -297,5 +302,140 @@ describe("BootstrapProvider / useBootstrap", () => {
         await getConsumer("tok_2");
         expect(c1.disconnect).toHaveBeenCalledTimes(1);
         expect(createSpy).toHaveBeenCalledTimes(2);
+    });
+
+    describe("locale hydration, overrides, errors, and version comparisons", () => {
+        afterEach(() => {
+            localeOverride.clear();
+        });
+
+        test("hydrates stored positive locale override and ignores non-positive values", async () => {
+            const prefsGetSpy = jest.spyOn(prefsCache, "get").mockResolvedValueOnce("5");
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+
+            const first = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(first.result.current.selectedSwayLocaleId).toBe(5));
+            expect(localeOverride.get()).toBe(5);
+            first.unmount();
+
+            localeOverride.clear();
+            prefsGetSpy.mockResolvedValueOnce("0");
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+
+            const second = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(second.result.current.bootstrap).toEqual(sampleBootstrap));
+            expect(second.result.current.selectedSwayLocaleId).toBeNull();
+            prefsGetSpy.mockRestore();
+        });
+
+        test("cancels initial hydration if unmounted before prefsCache.get resolves", async () => {
+            let resolvePrefs!: (value: string | null) => void;
+            const prefsGetSpy = jest.spyOn(prefsCache, "get").mockReturnValueOnce(
+                new Promise<string | null>((res) => {
+                    resolvePrefs = res;
+                }),
+            );
+
+            const view = renderHook(() => useBootstrap(), { wrapper: wrap });
+            view.unmount();
+            await act(async () => {
+                resolvePrefs("7");
+            });
+            expect(mockApiGet).not.toHaveBeenCalled();
+            prefsGetSpy.mockRestore();
+        });
+
+        test("refetch(swayLocaleId) persists locale override and updates state", async () => {
+            const prefsSetSpy = jest.spyOn(prefsCache, "set").mockResolvedValue(undefined);
+            mockApiGet.mockResolvedValue(sampleBootstrap);
+
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(result.current.bootstrap).toEqual(sampleBootstrap));
+
+            await act(async () => {
+                await result.current.refetch(42);
+            });
+            expect(result.current.selectedSwayLocaleId).toBe(42);
+            expect(localeOverride.get()).toBe(42);
+            expect(prefsSetSpy).toHaveBeenCalledWith(PREFS_KEYS.selectedSwayLocaleId, "42");
+            prefsSetSpy.mockRestore();
+        });
+
+        test("UnauthorizedError clears bootstrap and purges cache without falling back to cached payload", async () => {
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(result.current.bootstrap).toEqual(sampleBootstrap));
+
+            mockApiGet.mockRejectedValueOnce(new UnauthorizedError("unauthorized", "session invalid"));
+            await act(async () => {
+                await result.current.refetch();
+            });
+            expect(result.current.bootstrap).toBeNull();
+            expect(mockCachePurge).toHaveBeenCalled();
+        });
+
+        test("non-Error fetch failure wraps into Error and falls back to signed-in user cache when session exists", async () => {
+            const sessionSpy = jest.spyOn(sessionStore, "get").mockResolvedValueOnce({
+                bearer_token: "tok",
+                device_id: 1,
+                user_id: 7,
+                expires_at: "2099-01-01T00:00:00Z",
+            });
+            mockApiGet.mockRejectedValueOnce("raw offline string");
+            mockCacheGet.mockResolvedValueOnce({ payload: sampleBootstrap, fetchedAt: new Date(500_000) });
+
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(result.current.bootstrap).toEqual(sampleBootstrap));
+            expect(mockCacheGet).toHaveBeenCalledWith("7");
+            expect(result.current.error?.message).toBe("raw offline string");
+            sessionSpy.mockRestore();
+        });
+
+        test("ignores a superseded rejection after a newer fetch starts", async () => {
+            let rejectOlder!: (err: Error) => void;
+            mockApiGet.mockReturnValueOnce(
+                new Promise((_res, rej) => {
+                    rejectOlder = rej;
+                }),
+            );
+            const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(1));
+
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+            await act(async () => {
+                void result.current.refetch();
+            });
+            await waitFor(() => expect(result.current.bootstrap).toEqual(sampleBootstrap));
+
+            await act(async () => {
+                rejectOlder(new Error("stale failure"));
+            });
+            expect(result.current.error).toBeNull();
+        });
+
+        test("ignores non-active AppState transitions", async () => {
+            mockApiGet.mockResolvedValueOnce(sampleBootstrap);
+            renderHook(() => useBootstrap(), { wrapper: wrap });
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(1));
+
+            await act(async () => {
+                mockCapturedListener?.("background");
+            });
+            expect(mockApiGet).toHaveBeenCalledTimes(1);
+        });
+
+        test("needsUpdate is false when two-part versions match", async () => {
+            const cfg = Constants.expoConfig as { version: string };
+            const prevVersion = cfg.version;
+            cfg.version = "1.0";
+            mockApiGet.mockResolvedValueOnce({ ...sampleBootstrap, latest_version: "1.0" });
+            try {
+                const { result } = renderHook(() => useBootstrap(), { wrapper: wrap });
+                await waitFor(() => expect(result.current.bootstrap).not.toBeNull());
+                expect(result.current.needsUpdate).toBe(false);
+            } finally {
+                cfg.version = prevVersion;
+            }
+        });
     });
 });

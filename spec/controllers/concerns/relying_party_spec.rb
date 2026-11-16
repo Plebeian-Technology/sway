@@ -57,6 +57,16 @@ RSpec.describe RelyingParty, type: :controller do
 
       expect(rp_response_body["id"]).to eq(request.host)
     end
+
+    it "uses the request host when WEBAUTHN_RP_ID is localhost and the request host differs" do
+      request.host = "preview.sway.test"
+
+      with_app_config(:webauthn, rp_id: "localhost") do
+        get :index
+      end
+
+      expect(rp_response_body["id"]).to eq("preview.sway.test")
+    end
   end
 
   describe "the allowed origins (WEBAUTHN_ALLOWED_ORIGINS)" do
@@ -90,6 +100,16 @@ RSpec.describe RelyingParty, type: :controller do
 
     it "appends one android apk-key-hash origin per configured certificate fingerprint" do
       stub_app_config(:mobile, android_cert_sha256_fingerprints: ["AA:BB"])
+
+      with_app_config(:webauthn, allowed_origins: ["https://custom.example"]) do
+        get :index
+      end
+
+      expect(rp_response_body["allowed_origins"]).to eq(["https://custom.example", "android:apk-key-hash:qrs"])
+    end
+
+    it "skips blank entries in configured android certificate fingerprints" do
+      stub_app_config(:mobile, android_cert_sha256_fingerprints: ["", "::", "AA:BB"])
 
       with_app_config(:webauthn, allowed_origins: ["https://custom.example"]) do
         get :index

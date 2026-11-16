@@ -546,6 +546,18 @@ describe("parseNominatimAddress", () => {
             expect(result.city).toBe("Queen Anne's County");
         });
 
+        it("ignores malformed ISO3166-2-lvl4 codes and resolves state names after punctuation stripping", () => {
+            const result = parseNominatimAddress(
+                mockPlace({
+                    ...BALTIMORE_ADDRESS,
+                    "ISO3166-2-lvl4": "not-an-iso-code",
+                    state_code: undefined,
+                    state: "Mary.land.",
+                }),
+            );
+            expect(result.region_code).toBe("MD");
+        });
+
         it("defends against prototype pollution on Object.prototype", () => {
             try {
                 (Object.prototype as Record<string, unknown>).city = "PollutedCity";

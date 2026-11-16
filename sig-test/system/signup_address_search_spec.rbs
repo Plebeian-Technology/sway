@@ -1,0 +1,4 @@
+class Object
+  def sample_place: () -> Hash[String, untyped]
+  def towson_place: () -> Hash[String, untyped]
+end

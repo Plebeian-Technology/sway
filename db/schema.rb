@@ -53,6 +53,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_180000) do
     t.datetime "updated_at", null: false
     t.string "normalized_key"
     t.json "place_types", default: [], null: false
+    t.datetime "geocode_next_attempt_at"
+    t.datetime "geocode_abandoned_at"
     t.index ["normalized_key"], name: "index_addresses_on_normalized_key"
   end
 

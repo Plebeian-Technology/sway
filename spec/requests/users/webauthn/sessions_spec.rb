@@ -15,6 +15,13 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
     end
 
     context "when phone is invalid" do
+      it "redirects when phone param is omitted" do
+        post users_webauthn_sessions_path, params: {}
+
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to(root_path)
+      end
+
       it "redirects when phone is blank" do
         post users_webauthn_sessions_path, params: {phone: ""}
 
@@ -422,6 +429,28 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(session_hash[:current_authentication]).to be_nil
     end
 
+    it "redirects to root with alert when current_authentication challenge is missing from symbol/string keys" do
+      session_hash[:current_authentication] = {phone: phone}
+
+      post callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(
+        "Authentication session expired. Please try again."
+      )
+    end
+
+    it "redirects to root with alert when current_authentication phone is missing" do
+      session_hash[:current_authentication] = {challenge: fake_challenge}
+
+      post callback_users_webauthn_sessions_path, params: callback_params
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(
+        "Authentication session expired. Please try again."
+      )
+    end
+
     it "redirects to root with alert on WebAuthn error and cleans session" do
       create(:user, phone: phone)
       create(
@@ -592,6 +621,29 @@ RSpec.describe "Users::Webauthn::Sessions", type: :request do
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to eq("Passkey not recognized. Please try again.")
       expect(session_hash[:user_id]).to be_nil
+      expect(session_hash[:discoverable_authentication]).to be_nil
+    end
+
+    it "reconciles pending vote and redirects to bill when a pending vote cookie exists" do
+      user = create(:user, phone: phone)
+      complete_registration_with_active_link(user)
+      create(:passkey, user: user, external_id: fake_credential_id)
+      bill = create(:bill)
+      post provisional_votes_path, params: {bill_id: bill.id, support: "FOR"}
+
+      expect {
+        post discoverable_callback_users_webauthn_sessions_path, params: callback_params
+      }.to change(UserVote, :count).by(1)
+
+      expect(response).to redirect_to(bill_path(bill))
+      expect(response.cookies["sway_pending_vote"]).to be_nil
+    end
+
+    it "redirects to root with an error alert when publicKeyCredential is missing" do
+      post discoverable_callback_users_webauthn_sessions_path, params: {}
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq("Invalid authentication payload: missing publicKeyCredential")
       expect(session_hash[:discoverable_authentication]).to be_nil
     end
   end

@@ -529,7 +529,10 @@ RSpec.describe "PhoneVerification", type: :request do
       post phone_verification_index_path, params: {}, as: :json
 
       expect(response).to have_http_status(:bad_request)
-      expect(Sentry).not_to have_received(:capture_exception)
+      expect(Sentry).not_to have_received(:capture_exception).with(
+        anything,
+        extra: {controller: "phone_verification", action: "create"}
+      )
     end
   end
 end

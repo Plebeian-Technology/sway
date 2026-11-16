@@ -7,10 +7,10 @@ RSpec.describe "failed-registration recovery", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
-  it "self-heals a failed user with legislators on the next request instead of 500ing" do
-    # setup signs the user in and links a UserLegislator. Force the failed state.
+  it "self-heals an incomplete user with legislators on the next request instead of 500ing" do
+    # setup signs the user in and links a UserLegislator.
     _sway_locale, user = setup
-    user.update_columns(registration_status: "failed", is_registration_complete: false)
+    user.update_columns(registration_status: "pending", is_registration_complete: false)
 
     get notifications_path
 

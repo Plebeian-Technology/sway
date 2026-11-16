@@ -79,7 +79,7 @@ an empty one. A city, region, postal code or country left blank in the
 submission matches whatever the linked row holds, because
 [[address-normalized-key#A typed address gets its place from the geocode|the server geocode]]
 fills those blanks on the first submission, and the repeat sends them blank
-again. A different text still makes a new row and still asks to confirm the
+again. When the reused row is still unlocated, [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#address]] invokes [[app/models/address.rb#Address#geocode_and_save]] again before resolution, and if it now locates, [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] runs full locale resolution and clears resolved pending locales. A different text still makes a new row and still asks to confirm the
 switch.
 
 A linked row that carries a key is a picked place, and text never matches it.
@@ -129,17 +129,11 @@ locales for a later geocode
 
 ## A typed address gets its place from the geocode
 
-The server geocode fills each of the city, region, postal code and country that the submission left blank, in the same update as the coordinates; a field the user typed is never replaced.
+When [[app/models/address.rb#Address#trusted_geocode?]] accepts the server geocode result, [[app/models/address.rb#Address#blank_fields_from_geocode]] fills each blank city, region, postal code and country in the same update as the coordinates; a field the user typed is never replaced.
 
-A typed address can arrive with only a street: the web form when no suggestion
-was picked, or the mobile form's manual street. Locale resolution reads the
-city and region, so a row with neither resolves to the Congress locale alone,
-with no state, and the user is linked to the President only while registration
-reports success. The geocode already knows the place, so its state code (or
-state name when there is no code), city, postal code and country code fill the
-blanks. The update runs the row's own
-[[address-normalization]], so a filled region and city are stored exactly as a
-typed one would be, and resolution in the same request sees the filled row.
+A Google result is trusted only when all three hold: its `partial_match` is not true; its `types` include `street_address`, `premise` or `subpremise` (a road, town or ZIP area does not place a building); and [[app/models/address.rb#Address#full_address]], compared case-insensitively on whole words, names the result's five-digit postal code or names both its city and its state (`state_code` or `state` name). When a user types only a street with no city or ZIP, nothing anchors the query and Google can answer a partial match or a building in another state. An untrusted result changes nothing on the row, logs `address.geocode_untrusted` as a warning with the address id and the reason, and sends no Sentry report from the model because the hourly job retries the row.
+
+When the result is trusted, its state code (or state name when there is no code), city, postal code and country code fill the blanks. The update runs the row's own [[address-normalization]], so a filled region and city are stored as a typed one would be, and resolution in the same request sees the filled row.
 
 ## Why the backfill reports collisions instead of merging
 

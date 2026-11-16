@@ -420,6 +420,44 @@ RSpec.describe "Api::V1::Bootstrap", type: :request do
         body = json_body
         expect(body[:bill_of_the_month]).to be_nil
       end
+
+      it "returns nil user_vote inside bill_of_the_month when the authenticated user has not voted" do
+        user = create(:user)
+        headers = authenticate_as(user)
+
+        get "/api/v1/bootstrap", params: {sway_locale_id: sway_locale.id}, headers: headers, as: :json
+        expect(response).to have_http_status(:ok)
+
+        body = json_body
+        expect(body[:bill_of_the_month][:user_vote]).to be_nil
+      end
+    end
+
+    context "when cached bill_of_the_month is stale and no locale exists" do
+      include_context "with in-memory Rails.cache"
+
+      it "clears the stale cached bill and returns nil" do
+        Rails.cache.write("api_v1_bootstrap:botm:", {"id" => 999_999})
+
+        get "/api/v1/bootstrap", as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(json_body[:bill_of_the_month]).to be_nil
+        expect(Rails.cache.read("api_v1_bootstrap:botm:")).to be_nil
+      end
+    end
+
+    context "when bootstrap rate limiting is enabled" do
+      it "throttles excessive requests from the same IP with 429 rate_limited" do
+        with_rate_limit_enabled(:bootstrap) do
+          61.times do
+            get "/api/v1/bootstrap", headers: {"REMOTE_ADDR" => "10.99.0.1"}, as: :json
+          end
+
+          expect(response).to have_http_status(:too_many_requests)
+          expect(json_body.dig(:error, :code)).to eq("rate_limited")
+        end
+      end
     end
   end
 

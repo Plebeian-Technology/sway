@@ -6,6 +6,7 @@ class SwayRegistrationController < ApplicationController
     REGISTRATION_ADDRESS_SWITCH_CONFIRMATION_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_COOLDOWN_MESSAGE: ::String
     REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE: ::String
+    ADDRESS_NOT_LOCATED_MESSAGE: ::String
     ADDRESS_TEXT_FIELDS: Array[Symbol]
     GEOCODE_FILLED_FIELDS: Array[Symbol]
 
@@ -22,7 +23,11 @@ class SwayRegistrationController < ApplicationController
 
     private
 
-    def holds_representatives?: (User u) -> bool
+    def holds_representatives?: (User u, ?Address? previous_address) -> bool
+
+    def clear_previous_unlocated_address: (User u, Address? previous_address, Address new_address) -> Array[Legislator]
+
+    def recompute_deactivated_legislator_scores: (User u, Array[Legislator] previous_legislators) -> void
 
     def render_onboarding_unavailable: () -> void
 
@@ -54,7 +59,7 @@ class SwayRegistrationController < ApplicationController
 
     def submitted_address_attributes: -> Hash[Symbol, untyped]
 
-    def registration_page_props: (?processing: bool) -> Hash[Symbol, untyped]
+    def registration_page_props: () -> Hash[Symbol, untyped]
 
     def submitted_normalized_key: -> String?
 
@@ -73,4 +78,6 @@ class SwayRegistrationController < ApplicationController
     # envelope.
     def respond_json_or_redirect: (status: Symbol, json: Hash[Symbol, untyped], redirect: String) -> untyped
     def redirect_after_registration_completion: (User user) -> untyped
+    def render_address_not_located: (User u, Address address_instance) -> untyped
+    def address_not_located_outcome?: () -> bool
 end

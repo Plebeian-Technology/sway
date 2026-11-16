@@ -145,19 +145,20 @@ Locale collections in [[app/controllers/application_controller.rb]] depend on th
 ## Registration is asynchronous by necessity
 
 `User` carries a `state_machines-activerecord` machine over
-`registration_status`: `pending` → `processing` → `completed` or `failed`.
+`registration_status` with two states: `pending` and `completed`.
 
-[[app/models/user.rb#User#registered?]] is the one registration predicate used by authorization and response serialization. The compatibility completion boolean derives from active representative rows and the list of locales still waiting for representatives; workflow status describes progress only. A stale true cache grants no access, while an active row or a waiting locale can repair failed status or a false cache through the completion event.
+[[app/models/user.rb#User#registered?]] is the one registration predicate used by authorization and response serialization. The compatibility completion boolean derives from active representative rows and the list of locales still waiting for representatives; workflow status describes progress only. A stale true cache grants no access, while an active row or a waiting locale can repair a `pending` status or a false cache through the completion event.
 
 The predicate requires at least one active `UserLegislator` or at least one locale id on the pending representative list ([[registration-dead-ends#A skipped lookup is recorded so it can be retried]]); inactive historical rows do not count. A pending locale counts because an upstream outage never blocks registration: the user has finished every step of their own, and only Sway's lookup is outstanding, which a job assigns later. The completion event rejects a user with neither, and a rejected event rewrites the compatibility cache from the predicate, so switching off a user's last active row does not leave a true cache behind. After initialization, state-machine events are the only writers of the workflow status and compatibility cache.
 
 A waiting user has no representative links to protect, so the two checks in [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] that run before the lookup, the address-switch confirmation and the early completion, test active links rather than the predicate. A waiting user who submits an address, the same or a different one, takes the first-registration path: the saved address is replaced and every locale of the submitted address is looked up again. Locale ids recorded for an earlier address stay on the list for the retry job.
 
-The asynchrony is not an optimisation. Turning an address into legislators
-requires geocoding it and, for regional locales, querying an external
-geo endpoint — work that can fail, rate-limit or simply take too long for a
-request cycle. `SwayRegistrationService` runs inline for locales it can resolve
-locally and hands off to `SwayRegistrationJob` when it cannot.
+Turning an address into legislators requires geocoding it and, for regional
+locales, querying an external geo endpoint — work that can fail or
+rate-limit. `SwayRegistrationService` executes inline during the request for
+both local and regional locales and records any skipped or failed locale on
+the user's pending representative list so background reconciliation can retry
+it later without blocking sign-up.
 
 Registration writes two things per matched legislator, not one: a
 `UserLegislator` and a `UserDistrict`. The district link is what later lets a
@@ -166,8 +167,8 @@ legislator, and `ReconcileUserDistrictsService` exists to repair the pairing
 when it drifts.
 
 [[app/controllers/application_controller.rb#ApplicationController#authenticate_sway_user!]]
-checks the predicate on each request. Active links self-heal failed status or a
-false completion cache through the completion event; no active links deny
+checks the predicate on each request. Active links self-heal a `pending` status
+or a false completion cache through the completion event; no active links deny
 access even when persisted status or cache says completed. The sign-in
 locale-cookie gate in `ApplicationController` and the redirect gates in
 [[app/controllers/home_controller.rb#HomeController#index]],
@@ -180,9 +181,9 @@ reports success from active rows, not `completed?` alone.
 
 [[app/services/skip_phone_verification_provisioner.rb#SkipPhoneVerificationProvisioner]]
 does not write completion fields for a new account; existing registered users
-keep their address, profile, and assignments. [[app/jobs/sway_registration_job.rb#SwayRegistrationJob]]
-and [[app/services/sway_registration_service.rb#SwayRegistrationService]]
-complete only after active rows exist. The seeded-user graph in
+keep their address, profile, and assignments.
+[[app/services/sway_registration_service.rb#SwayRegistrationService]]
+completes only after active rows exist. The seeded-user graph in
 [[db/seeds/models/development_user_graph.rb#SeedDevelopmentUserGraph]] assigns
 active links before completing users. The WebAuthn enrollment snapshot excludes
 `is_registration_complete` and `registration_status`, so an old challenge
@@ -204,7 +205,7 @@ prefilled address does not complete registration.
 
 [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]]
 returns HTTP 200 with the existing `{ok: true, registration_status:
-"completed"}` success shape only when an active assignment exists. If
+"completed"}` success shape only when an active assignment exists. When the saved address is still unlocated after the lookups, the JSON body adds `address_located: false` and `message: ADDRESS_NOT_LOCATED_MESSAGE` while the browser redirects back to `/sway_registration` with the `address_not_located` flash outcome ([[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]). If
 synchronous resolution returns none, it returns HTTP 422 with the standard
 `{error: {code: "no_representatives", message: ...}}` envelope and a safe
 message; the browser path redirects with the same reason rather than claiming
@@ -262,17 +263,6 @@ keeps a JSON client out of the browser's Inertia redirect flow. The mobile
 branch does not depend on `Accept: application/json` alone, so a bearer request
 without that header still receives JSON. The same split applies to
 no-representatives and transient geocoding failures.
-
-### System examples exercise the queued path
-
-The system spec exercises registration's queued branch in a browser.
-
-The controller resolves local matches inline. The example reaches the queued
-path through
-[[app/services/sway_registration_service.rb#SwayRegistrationService#call]]
-with `async: true`, then checks the processing page and runs the queued job.
-Its regional fixture uses a state locale and a serving legislator so the test
-can verify the external match and the resulting active link.
 
 ### OpenStates system stubs exercise the request boundary
 
@@ -722,7 +712,7 @@ The development shortcut in [[app/services/skip_phone_verification_provisioner.r
 
 The development seed registers its primary admin in Baltimore City only through the configured local roster.
 
-[[db/seeds.rb]] calls [[app/services/sway_registration_service.rb#SwayRegistrationService#call]] with `invited_by_id: nil` and `async: false`, using the committed Baltimore sample address and local geometry. With the configured roster and geometry, disconnected `db:seed` completes this registration and assigns the admin an active Mayor. Baltimore declares seat-keyed roster identity and curated office metadata in [[config/sway_locales/baltimore-maryland-united_states.yml]]. [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms#configured_seat_context]] and [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms#attach_configured_current_seat!]] persist the district-scoped current seat from that prepared roster. The mapping supplies office metadata, not published service dates; [[current-legislator-term#Which term a legislator is serving now#Roster identity during seeding#Configured office metadata for current seat-keyed rosters]] owns that distinction.
+[[db/seeds.rb]] calls [[app/services/sway_registration_service.rb#SwayRegistrationService#call]] with `invited_by_id: nil`, using the committed Baltimore sample address and local geometry. With the configured roster and geometry, disconnected `db:seed` completes this registration and assigns the admin an active Mayor. Baltimore declares seat-keyed roster identity and curated office metadata in [[config/sway_locales/baltimore-maryland-united_states.yml]]. [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms#configured_seat_context]] and [[db/seeds/models/seed_legislator_terms.rb#SeedLegislatorTerms#attach_configured_current_seat!]] persist the district-scoped current seat from that prepared roster. The mapping supplies office metadata, not published service dates; [[current-legislator-term#Which term a legislator is serving now#Roster identity during seeding#Configured office metadata for current seat-keyed rosters]] owns that distinction.
 
 The seeded admin must have active Baltimore assignments including an active Mayor. Missing assignments, a missing Mayor, or unresolved or conflicting local office data raise visibly. This required local seed call adds no timeout and rescues no exception classes, so resolver and persistence failures escape.
 

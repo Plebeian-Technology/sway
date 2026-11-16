@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
     isRegistering: false,
     passkeyDismissed: false,
     clearPasskeyDismissed: vi.fn<() => void>(),
-    transform: vi.fn<() => void>(),
+    transform: vi.fn<(callback: (data: unknown) => unknown) => void>(),
     put: vi.fn<(path: string) => Promise<unknown>>(),
     notify: vi.fn<(message: unknown) => void>(),
     handleError: vi.fn<() => void>(),
@@ -62,6 +62,8 @@ describe("useConfirmPhoneVerification", () => {
         });
 
         expect(mocks.transform).toHaveBeenCalled();
+        const transformFn = mocks.transform.mock.calls[0][0] as unknown as () => unknown;
+        expect(transformFn()).toEqual({ phone_verification: { phone: PHONE, code: CODE } });
         expect(mocks.put).toHaveBeenCalledWith("/phone_verification/0");
         expect(mocks.startRegistration).toHaveBeenCalledWith(PHONE);
         expect(mocks.verifyRegistration).toHaveBeenCalledWith(PHONE, publicKey);
@@ -145,5 +147,17 @@ describe("useConfirmPhoneVerification", () => {
             title: "Too many verification attempts. Please wait 30 seconds before trying again.",
         });
         expect(onThrottled).toHaveBeenCalledWith(expect.any(Date));
+    });
+
+    it("routes non-429 confirmation failures to handleError", async () => {
+        const failure = new Error("network down");
+        mocks.put.mockRejectedValue(failure);
+        const { result } = renderHook(() => useConfirmPhoneVerification(onThrottled));
+
+        await act(async () => {
+            await result.current.confirm(PHONE, CODE);
+        });
+
+        expect(mocks.handleError).toHaveBeenCalledWith(failure);
     });
 });

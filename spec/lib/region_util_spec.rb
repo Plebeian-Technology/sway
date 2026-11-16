@@ -19,9 +19,19 @@ RSpec.describe RegionUtil do
     it "maps a two-letter code to its full state name" do
       expect(described_class.from_region_code_to_region_name("MD")).to eq("Maryland")
     end
+
+    it "returns nil for a blank code" do
+      expect(described_class.from_region_code_to_region_name(nil)).to be_nil
+      expect(described_class.from_region_code_to_region_name("")).to be_nil
+    end
   end
 
   describe ".from_country_code_to_name" do
+    it "returns nil for a blank code" do
+      expect(described_class.from_country_code_to_name(nil)).to be_nil
+      expect(described_class.from_country_code_to_name("")).to be_nil
+    end
+
     it "maps US to United States" do
       expect(described_class.from_country_code_to_name("US")).to eq("United States")
     end
@@ -30,6 +40,10 @@ RSpec.describe RegionUtil do
       ["USA", "usa", "U.S.", "U.S.A.", "United States", "United States of America", "  USA  "].each do |spelling|
         expect(described_class.from_country_code_to_name(spelling)).to eq("United States"), spelling
       end
+    end
+
+    it "returns the code when a two-letter country code is not in the lookup table" do
+      expect(described_class.from_country_code_to_name("CA")).to eq("CA")
     end
 
     it "title-cases a country name that is not the United States" do

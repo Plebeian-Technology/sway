@@ -24,7 +24,7 @@ class ReconcileUserDistrictsService
   private
 
   def registration_service(address)
-    SwayRegistrationService.new(@user, address, @sway_locale, invited_by_id: nil, async: false)
+    SwayRegistrationService.new(@user, address, @sway_locale, invited_by_id: nil)
   end
 
   def apply_diff(resolved_legislators)

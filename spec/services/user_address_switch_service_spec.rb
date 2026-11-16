@@ -77,7 +77,7 @@ RSpec.describe UserAddressSwitchService do
       allow(new_address).to receive(:sway_locales).and_return([new_locale])
       reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, new_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       expect {
@@ -132,7 +132,7 @@ RSpec.describe UserAddressSwitchService do
       allow(new_address).to receive(:sway_locales).and_return([new_locale])
       reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, new_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       expect {
@@ -161,7 +161,7 @@ RSpec.describe UserAddressSwitchService do
       allow(new_address).to receive(:sway_locales).and_return([new_locale])
       reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, new_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       change = described_class.new(user, previous_address: previous_address, new_address: new_address).call
@@ -189,7 +189,7 @@ RSpec.describe UserAddressSwitchService do
       allow(new_address).to receive(:sway_locales).and_return([new_locale])
       reg_double = instance_double(SwayRegistrationService, district_legislators: [new_legislator], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, new_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, new_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       change = described_class.new(user, previous_address: previous_address, new_address: new_address).call
@@ -220,7 +220,7 @@ RSpec.describe UserAddressSwitchService do
       allow(new_address).to receive(:sway_locales).and_return([sway_locale])
       reg_double = instance_double(SwayRegistrationService, district_legislators: [legislator_b], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, sway_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, sway_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       expect {
@@ -340,7 +340,7 @@ RSpec.describe UserAddressSwitchService do
       allow(new_address).to receive(:sway_locales).and_return([sway_locale])
       reg_double = instance_double(SwayRegistrationService, district_legislators: [], skipped_legislator_ids: [])
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, sway_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, sway_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       result = described_class.new(user, previous_address: old_address, new_address: new_address).call
@@ -368,7 +368,7 @@ RSpec.describe UserAddressSwitchService do
       reg_double = instance_double(SwayRegistrationService, skipped_legislator_ids: [])
       allow(reg_double).to receive(:district_legislators).and_raise(SwayGeocode::ServiceUnavailableError, "timeout")
       allow(SwayRegistrationService).to receive(:new)
-        .with(user, new_address, sway_locale, invited_by_id: nil, async: false)
+        .with(user, new_address, sway_locale, invited_by_id: nil)
         .and_return(reg_double)
 
       expect {
@@ -379,6 +379,39 @@ RSpec.describe UserAddressSwitchService do
       expect(active_ul.reload.active).to be(true)
       expect(active_ud.reload.active).to be(true)
       expect(UserAddressChange.count).to eq(0)
+    end
+
+    it "handles previously linked and newly skipped legislators whose active_term is nil" do
+      user = create(:user)
+      sway_locale = create(:sway_locale)
+      old_address = create(:address, street: "100 E Pratt St")
+      new_address = create(:address, street: "200 E Pratt St")
+      create(:user_address, user: user, address: old_address)
+
+      old_district = create(:district, sway_locale: sway_locale, name: "MD1")
+      retired_leg = create(:legislator, sway_locale: sway_locale)
+      create(:user_legislator, user: user, legislator: retired_leg, active: true)
+
+      skipped_termless = create(:legislator, sway_locale: sway_locale)
+      create(:user_legislator, user: user, legislator: skipped_termless, active: true)
+
+      new_leg = create(:legislator, district: old_district, sway_locale: sway_locale)
+      allow(new_leg).to receive(:active_term).and_return(nil)
+
+      allow(new_address).to receive(:sway_locales).and_return([sway_locale])
+      reg_double = instance_double(
+        SwayRegistrationService,
+        district_legislators: [new_leg],
+        skipped_legislator_ids: [skipped_termless.id]
+      )
+      allow(SwayRegistrationService).to receive(:new)
+        .with(user, new_address, sway_locale, invited_by_id: nil)
+        .and_return(reg_double)
+
+      change = described_class.new(user, previous_address: old_address, new_address: new_address).call
+
+      expect(change.deactivated_legislator_ids).to contain_exactly(retired_leg.id)
+      expect(user.reload.address).to eq(new_address)
     end
   end
 end

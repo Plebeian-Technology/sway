@@ -1,0 +1,9 @@
+class Object
+  def boot_home_with_virtual_authenticator: () -> void
+  def with_phone_verify_rate_limit_for_browser: () { () -> untyped } -> untyped
+  def start_sms_session_and_verify_phone: (String phone) -> void
+  def request_registration_options: () -> Hash[String, untyped]
+  def synthetic_registration_options: (String phone) -> Hash[String, untyped]
+  def setup_baltimore_and_congress_districts: (SwayLocale baltimore_locale, SwayLocale congress_locale) -> void
+  def stub_baltimore_address_lookups: () -> void
+end

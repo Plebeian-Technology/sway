@@ -235,6 +235,31 @@ module WebauthnSystemHelpers
 
     result.fetch("credential")
   end
+
+  def reject_next_passkey_creation
+    page.execute_script(<<~JS)
+      (() => {
+        const credentials = navigator.credentials;
+        const hadOwn = Object.prototype.hasOwnProperty.call(credentials, "create");
+        const original = credentials.create;
+        Object.defineProperty(credentials, "create", {
+          configurable: true,
+          writable: true,
+          value: () => {
+            if (hadOwn) {
+              credentials.create = original;
+            } else {
+              delete credentials.create;
+            }
+            return Promise.reject(
+              new DOMException("The operation either timed out or was not allowed.", "NotAllowedError")
+            );
+          }
+        });
+      })();
+    JS
+    nil
+  end
 end
 
 RSpec.configure { |config| config.include WebauthnSystemHelpers, type: :system }

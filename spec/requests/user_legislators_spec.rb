@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "UserLegislators", type: :request do
+  include ActiveJob::TestHelper
+
   include_context "SessionDouble"
   include_context "Setup"
 
@@ -54,6 +56,51 @@ RSpec.describe "UserLegislators", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("application/json")
+    end
+
+    it "resolves a regional locale synchronously via OpenStates without enqueueing a job" do
+      _local_locale, user = setup
+      regional_locale = create(:sway_locale, :maryland)
+      district = create(:district, name: "MD30A", sway_locale: regional_locale)
+      legislator = create(:legislator, external_id: "ocd-person/md-30a-delegate", sway_locale: regional_locale, district:)
+      seat = Seat.find_or_create_by_identity!(
+        district:,
+        office_identity: "test-maryland-delegate-30a",
+        title: "Delegate",
+        chamber: "House of Delegates"
+      )
+      create(:legislator_term, legislator:, district:, seat:, title: "Delegate", term_start_year: 2023, term_end_year: 2027)
+
+      address = create(
+        :address,
+        street: "100 State Cir",
+        city: "Annapolis",
+        region_code: "MD",
+        postal_code: "21401",
+        country: "United States",
+        latitude: 38.9784,
+        longitude: -76.4922
+      )
+      create(:user_address, user:, address:)
+      cookies_hash[:sway_locale_id] = regional_locale.id
+
+      stub_request(:get, %r{v3\.openstates\.org/people\.geo})
+        .to_return(
+          status: 200,
+          body: {results: [{id: legislator.external_id, jurisdiction: {name: "Maryland"}}]}.to_json,
+          headers: {"Content-Type" => "application/json"}
+        )
+
+      clear_enqueued_jobs
+
+      with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+        post user_legislators_path, headers: {"Accept" => "application/json"}
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(enqueued_jobs).to be_empty
+      expect(user.user_legislators.where(active: true, legislator:)).to exist
+      expect(response.parsed_body.pluck("legislator_id")).to include(legislator.id)
     end
 
     it "rejects POST when current_sway_locale is not in the user's sway_locales" do

@@ -587,6 +587,23 @@ RSpec.describe "Rate limiting", type: :request do
         expect(response.headers["Retry-After"]).to eq("300")
       end
     end
+
+    it "still fails open when both Sentry and exception logging raise inside rate-limit telemetry" do
+      memory_cache = ActiveSupport::Cache::MemoryStore.new
+      allow(Rails).to receive(:cache).and_return(memory_cache)
+      allow(Sentry).to receive(:capture_message).and_raise(StandardError, "Sentry transport failure")
+      allow(SwayLogging).to receive(:log_exception).and_raise(StandardError, "Logger failure")
+
+      with_rate_limit_enabled(:sign_in) do
+        15.times do |i|
+          post "/users/webauthn/sessions",
+            params: {phone: "410555#{i.to_s.rjust(4, "0")}"},
+            headers: {"REMOTE_ADDR" => "10.0.0.1"}
+        end
+        expect(response).to rate_limited_status
+        expect(response.headers["Retry-After"]).to eq("300")
+      end
+    end
   end
 
   # @lat: [[identity-and-access#Identity and access#The rate limit store swaps in after boot]]

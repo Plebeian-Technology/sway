@@ -5,20 +5,22 @@
 # Table name: addresses
 # Database name: primary
 #
-#  id             :integer          not null, primary key
-#  city           :string           not null
-#  country        :string           default("US"), not null
-#  latitude       :string
-#  longitude      :string
-#  normalized_key :string
-#  place_types    :json             not null
-#  postal_code    :string           not null
-#  region_code    :string           not null
-#  street         :string           not null
-#  street2        :string
-#  street3        :string
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
+#  id                      :integer          not null, primary key
+#  city                    :string           not null
+#  country                 :string           default("US"), not null
+#  geocode_abandoned_at    :datetime
+#  geocode_next_attempt_at :datetime
+#  latitude                :string
+#  longitude               :string
+#  normalized_key          :string
+#  place_types             :json             not null
+#  postal_code             :string           not null
+#  region_code             :string           not null
+#  street                  :string           not null
+#  street2                 :string
+#  street3                 :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #
@@ -26,6 +28,8 @@
 #
 
 RSpec.describe Address, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe "#geocode" do
     let(:address) do
       Address.new(
@@ -58,7 +62,23 @@ RSpec.describe Address, type: :model do
       before do
         allow(Rails.env).to receive(:test?).and_return(false)
         allow(SwayLogging).to receive(:log_exception)
+        allow(SwayLogging).to receive(:warn)
         allow(Sentry).to receive(:capture_exception)
+        allow(Sentry).to receive(:capture_message)
+        allow(Geocoder).to receive(:search).and_return(
+          [
+            Geocoder::Result::Test.new(
+              "coordinates" => [39.29105, -76.61069],
+              "city" => "Baltimore",
+              "state" => "Maryland",
+              "state_code" => "MD",
+              "postal_code" => "21202",
+              "country_code" => "US",
+              "types" => ["street_address"],
+              "partial_match" => false
+            )
+          ]
+        )
       end
 
       it "saves the coordinates as ciphertext" do
@@ -85,35 +105,165 @@ RSpec.describe Address, type: :model do
             "city" => "baltimore",
             "state" => "Maryland",
             "state_code" => "md",
-            "postal_code" => "21201",
-            "country_code" => "us"
+            "postal_code" => "21202",
+            "country_code" => "us",
+            "types" => ["street_address"],
+            "partial_match" => false
           )
           allow(Geocoder).to receive(:search).and_return([geocoded])
         end
 
         it "fills each blank field from the geocode, normalized like a typed one" do
-          address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+          address = Address.create!(
+            street: "100 N Holliday St, Baltimore, MD 21202",
+            city: "",
+            region_code: "",
+            postal_code: "",
+            country: ""
+          )
 
           reloaded = Address.find(address.id)
-          expect(reloaded).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21201", country: "US")
-          expect(address).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21201", country: "US")
+          expect(reloaded).to have_attributes(
+            located?: true,
+            city: "Baltimore",
+            region_code: "MD",
+            postal_code: "21202",
+            country: "US"
+          )
+          expect(address).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21202", country: "US")
           expect(reloaded.us_state_code).to eq("MD")
         end
 
         it "keeps every field the user typed" do
-          address = Address.create!(street: "100 N Holliday St", city: "Towson", region_code: "", postal_code: "21204", country: "")
+          address = Address.create!(
+            street: "100 N Holliday St, Baltimore, MD 21202",
+            city: "Towson",
+            region_code: "",
+            postal_code: "21204",
+            country: ""
+          )
 
           expect(Address.find(address.id))
             .to have_attributes(city: "Towson", region_code: "MD", postal_code: "21204", country: "US")
         end
 
         it "reads the state name when the geocode has no state code" do
-          allow(Geocoder).to receive(:search)
-            .and_return([Geocoder::Result::Test.new("coordinates" => [39.29, -76.61], "state" => "Maryland")])
+          allow(Geocoder).to receive(:search).and_return(
+            [
+              Geocoder::Result::Test.new(
+                "coordinates" => [39.29, -76.61],
+                "state" => "Maryland",
+                "state_code" => nil,
+                "postal_code" => "21202",
+                "types" => ["street_address"],
+                "partial_match" => false
+              )
+            ]
+          )
 
-          address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+          address = Address.create!(
+            street: "100 N Holliday St, Baltimore, MD 21202",
+            city: "",
+            region_code: "",
+            postal_code: "",
+            country: ""
+          )
 
-          expect(Address.find(address.id)).to have_attributes(city: "", region_code: "MD", postal_code: "", country: "")
+          expect(Address.find(address.id)).to have_attributes(city: "", region_code: "MD", postal_code: "21202", country: "")
+        end
+
+        it "locates an address anchored by city and state when the postal code is blank" do
+          address = Address.create!(
+            street: "100 N Holliday St",
+            city: "Baltimore",
+            region_code: "MD",
+            postal_code: "",
+            country: ""
+          )
+
+          reloaded = Address.find(address.id)
+          expect(reloaded.located?).to be(true)
+          expect(reloaded.postal_code).to eq("21202")
+        end
+
+        it "leaves a street-only address unlocated when the result is in another city and state" do
+          allow(Geocoder).to receive(:search).and_return(
+            [
+              Geocoder::Result::Test.new(
+                "coordinates" => [39.7817, -89.6501],
+                "city" => "Springfield",
+                "state" => "Illinois",
+                "state_code" => "IL",
+                "postal_code" => "62701",
+                "country_code" => "US",
+                "types" => ["street_address"],
+                "partial_match" => false
+              )
+            ]
+          )
+
+          address = Address.create!(street: "123 Main St", city: "", region_code: "", postal_code: "", country: "")
+
+          reloaded = Address.find(address.id)
+          expect(reloaded).to have_attributes(located?: false, city: "", region_code: "", postal_code: "", country: "")
+          expect(SwayLogging).to have_received(:warn)
+            .with("address.geocode_untrusted", hash_including(address_id: address.id, reason: kind_of(String)))
+          expect(Sentry).not_to have_received(:capture_exception)
+          expect(Sentry).not_to have_received(:capture_message)
+        end
+
+        it "leaves the address unlocated when the result is a partial match" do
+          allow(Geocoder).to receive(:search).and_return(
+            [
+              Geocoder::Result::Test.new(
+                "coordinates" => [39.2904, -76.6122],
+                "city" => "Baltimore",
+                "state" => "Maryland",
+                "state_code" => "MD",
+                "postal_code" => "21202",
+                "country_code" => "US",
+                "types" => ["street_address"],
+                "partial_match" => true
+              )
+            ]
+          )
+
+          address = Address.create!(street: "123 Main St", city: "", region_code: "", postal_code: "", country: "")
+
+          reloaded = Address.find(address.id)
+          expect(reloaded).to have_attributes(located?: false, city: "", region_code: "", postal_code: "", country: "")
+          expect(Sentry).not_to have_received(:capture_exception)
+          expect(Sentry).not_to have_received(:capture_message)
+        end
+
+        it "leaves the address unlocated when the result is only a route" do
+          allow(Geocoder).to receive(:search).and_return(
+            [
+              Geocoder::Result::Test.new(
+                "coordinates" => [39.2904, -76.6122],
+                "city" => "Baltimore",
+                "state" => "Maryland",
+                "state_code" => "MD",
+                "postal_code" => "21202",
+                "country_code" => "US",
+                "types" => ["route"],
+                "partial_match" => false
+              )
+            ]
+          )
+
+          address = Address.create!(
+            street: "100 N Holliday St, Baltimore, MD 21202",
+            city: "",
+            region_code: "",
+            postal_code: "",
+            country: ""
+          )
+
+          reloaded = Address.find(address.id)
+          expect(reloaded).to have_attributes(located?: false, city: "", region_code: "", postal_code: "", country: "")
+          expect(Sentry).not_to have_received(:capture_exception)
+          expect(Sentry).not_to have_received(:capture_message)
         end
       end
 
@@ -154,6 +304,64 @@ RSpec.describe Address, type: :model do
         Address.create!(**typed_fields, latitude: 39.3, longitude: -76.6)
 
         expect(Geocoder).not_to have_received(:search)
+      end
+
+      context "with the geocode retry schedule" do
+        created_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+
+        it "records a failed attempt without firing the geocode callback or changing updated_at" do
+          address = travel_to(created_time) do
+            allow(Geocoder).to receive(:search).and_return([])
+            Address.create!(**typed_fields)
+          end
+          original_updated_at = address.updated_at
+          calls = 0
+          allow(Geocoder).to receive(:search) do
+            calls += 1
+            []
+          end
+
+          travel_to(created_time + 2.hours) { address.record_failed_geocode_attempt! }
+
+          expect(calls).to eq(0)
+          expect(address.reload.updated_at).to eq(original_updated_at)
+          expect(address.geocode_next_attempt_at).to be_present
+        end
+
+        it "reports geocode_due? as true for nil or a past time and false for a future time or when abandoned" do
+          address = travel_to(created_time) do
+            allow(Geocoder).to receive(:search).and_return([])
+            Address.create!(**typed_fields)
+          end
+
+          travel_to(created_time + 1.hour) do
+            expect(address.geocode_due?).to be(true)
+
+            address.update_columns(geocode_next_attempt_at: 1.minute.ago)
+            expect(address.geocode_due?).to be(true)
+
+            address.update_columns(geocode_next_attempt_at: 1.minute.from_now)
+            expect(address.geocode_due?).to be(false)
+
+            address.update_columns(geocode_next_attempt_at: nil)
+            address.record_geocode_abandoned!
+            expect(address.geocode_due?).to be(false)
+          end
+        end
+
+        it "flips geocode_window_over? at exactly created_at plus 30 days" do
+          address = travel_to(created_time) do
+            allow(Geocoder).to receive(:search).and_return([])
+            Address.create!(**typed_fields)
+          end
+
+          travel_to(created_time + 30.days - 1.second) do
+            expect(address.geocode_window_over?).to be(false)
+          end
+          travel_to(created_time + 30.days) do
+            expect(address.geocode_window_over?).to be(true)
+          end
+        end
       end
     end
   end
@@ -404,6 +612,32 @@ RSpec.describe Address, type: :model do
 
       expect(reloaded.computed_normalized_key)
         .to eq(Address.normalized_key_for(latitude: 39.29105, longitude: -76.61069))
+    end
+  end
+
+  describe "#us_state_code" do
+    it "returns nil for non-US addresses even when region_code matches a US abbreviation" do
+      address = build(:address, region_code: "MD", country: "CA")
+      expect(address.us_state_code).to be_nil
+    end
+
+    it "returns nil when region_code is not a valid US state code" do
+      address = build(:address, region_code: "US", country: "US")
+      expect(address.us_state_code).to be_nil
+    end
+  end
+
+  describe "#record_failed_geocode_attempt!" do
+    it "backs off to roughly one day once past GEOCODE_HOURLY_WINDOW" do
+      created = Time.zone.local(2026, 3, 1, 12, 0, 0)
+      address = create(:address, created_at: created)
+      later = created + Address::GEOCODE_HOURLY_WINDOW + 1.hour
+
+      address.record_failed_geocode_attempt!(later)
+
+      expected_floor = later + (1.day * (1 - Address::GEOCODE_JITTER_FRACTION))
+      expected_ceiling = [later + (1.day * (1 + Address::GEOCODE_JITTER_FRACTION)), created + Address::GEOCODE_RETRY_WINDOW].min
+      expect(address.reload.geocode_next_attempt_at).to be_between(expected_floor, expected_ceiling)
     end
   end
 end

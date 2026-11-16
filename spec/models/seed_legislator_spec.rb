@@ -772,7 +772,7 @@ RSpec.describe SeedLegislator do
       # @lat: [[lat.md/reference/official-service-evidence-tests#Official service evidence tests#Unevidenced executive terms are retired when official evidence is unsupported#Unevidenced POTUS term in US0 is retired when official evidence is unsupported]]
       it "retires the un-evidenced term and scores while preserving person and identifiers" do
         allow(Sentry).to receive(:capture_exception)
-        reg_service = SwayRegistrationService.new(user, nil, congress, invited_by_id: nil, async: false)
+        reg_service = SwayRegistrationService.new(user, nil, congress, invited_by_id: nil)
         expect(reg_service.send(:locale_wide_candidates)).to be_empty
         expect(reg_service.skipped_resolution_errors).to contain_exactly(an_instance_of(Seats::UnresolvedSeatError))
 

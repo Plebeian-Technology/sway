@@ -370,4 +370,12 @@ describe("AddressAutocomplete", () => {
 
         expect(mockFetchPredictions).not.toHaveBeenCalled();
     });
+
+    it("unmounts cleanly when no debounce timer was ever scheduled", () => {
+        const view = render(
+            <AddressAutocomplete initialValue="100 N Holliday St, Baltimore" onSelect={onSelect} onError={onError} />,
+        );
+        view.unmount();
+        expect(mockFetchPredictions).not.toHaveBeenCalled();
+    });
 });

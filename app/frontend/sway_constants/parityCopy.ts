@@ -401,6 +401,9 @@ export const PARITY_COPY = {
             cta: "Find My Representatives",
             cancelCta: "Log Out",
         },
+        notLocated: {
+            continueCta: "Continue to Sway",
+        },
         edit: {
             saveCta: "Save address",
             cancelCta: "Cancel",
@@ -412,15 +415,6 @@ export const PARITY_COPY = {
             body: "Switching your address will deactivate your current representative links, match you with the representatives for your new address, and record this switch so accounts cannot vote across multiple districts or locales.",
             confirmCta: "Confirm address change",
             cancelCta: "Keep current address",
-        },
-        processing: {
-            title: "Finding your representatives",
-            message: "Finding your representatives. This may take a moment...",
-        },
-        failed: {
-            title: "Registration failed",
-            message: "Registration failed. Please try again or contact support.",
-            retryCta: "Try a different address",
         },
         sessionExpired: {
             title: "Session expired",

@@ -49,7 +49,7 @@ RSpec.describe ReconcileUserDistrictsService do
 
         # Prime stored state exactly as registration would.
         SwayRegistrationService
-          .new(user, user.address, sway_locale, invited_by_id: nil, async: false)
+          .new(user, user.address, sway_locale, invited_by_id: nil)
           .create_user_legislators
 
         expect {
@@ -66,7 +66,7 @@ RSpec.describe ReconcileUserDistrictsService do
         legislator = create(:legislator, district:)
         create_supported_term(legislator:, district:)
         SwayRegistrationService
-          .new(user, user.address, sway_locale, invited_by_id: nil, async: false)
+          .new(user, user.address, sway_locale, invited_by_id: nil)
           .create_user_legislators
 
         expect {
@@ -282,6 +282,29 @@ RSpec.describe ReconcileUserDistrictsService do
         expect { ReconcileUserDistrictsService.new(user, sway_locale).call }
           .not_to raise_error
         expect(UserLegislator.where(user:).count).to eq(0)
+      end
+    end
+
+    context "when RepresentativeReassignmentObserver raises" do
+      it "logs the observer failure without aborting reconciliation" do
+        user, sway_locale = build_user_with_congress_locale
+        district = create(:district, sway_locale:, name: "MD7")
+        legislator = create(:legislator, district:)
+        create_supported_term(legislator:, district:)
+
+        allow(RepresentativeReassignmentObserver).to receive(:observe_diff!).and_raise(StandardError, "observer oops")
+        allow(SwayLogging).to receive(:log_exception)
+
+        expect {
+          ReconcileUserDistrictsService.new(user, sway_locale).call
+        }.to change { UserLegislator.where(user:, active: true).count }.by(1)
+
+        expect(SwayLogging).to have_received(:log_exception).with(
+          "reconcile_user_districts.observe_diff_failed",
+          exception: an_instance_of(StandardError),
+          user_id: user.id,
+          sway_locale_id: sway_locale.id
+        )
       end
     end
   end

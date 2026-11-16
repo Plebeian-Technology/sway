@@ -58,6 +58,8 @@ describe("useWebAuthnRegistration", () => {
             });
 
             expect(mocks.transform).toHaveBeenCalled();
+            const transformFn = mocks.transform.mock.calls[0][0] as () => unknown;
+            expect(transformFn()).toEqual({ phone: PHONE, passkey_label: "Sway" });
             expect(mocks.post).toHaveBeenCalledWith("/users/webauthn/registration");
             expect(mocks.create).toHaveBeenCalledWith({ publicKey: options, signal: expect.any(AbortSignal) });
             expect(returned).toEqual(attestation);
@@ -193,6 +195,32 @@ describe("useWebAuthnRegistration", () => {
             expect(mocks.handleError).toHaveBeenCalledWith(boom);
             expect(onThrottled).not.toHaveBeenCalled();
         });
+
+        it("resets loading without calling create when creation options are nullish", async () => {
+            mocks.post.mockResolvedValue(null);
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+
+            await act(async () => {
+                await result.current.startRegistration(PHONE);
+            });
+
+            expect(mocks.create).not.toHaveBeenCalled();
+            expect(result.current.isLoading).toBe(false);
+        });
+
+        it("records UnknownError and routes to handleError when create rejects without an error name", async () => {
+            const unnamedError = { message: "generic rejection" };
+            mocks.post.mockResolvedValue({ challenge: "abc" });
+            mocks.create.mockRejectedValue(unnamedError);
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+
+            await act(async () => {
+                await result.current.startRegistration(PHONE);
+            });
+
+            expect(mocks.handleError).toHaveBeenCalledWith(unnamedError);
+            expect(result.current.passkeyDismissed).toBe(false);
+        });
     });
 
     it("does not submit credentials when browser cache migration fails", async () => {
@@ -240,6 +268,30 @@ describe("useWebAuthnRegistration", () => {
 
             expect(mocks.routerPost).not.toHaveBeenCalled();
             expect(mocks.prepareIdentityChange).not.toHaveBeenCalled();
+        });
+
+        it("invokes router onSuccess, onError, and onFinish callbacks cleanly", async () => {
+            const credential = { id: "cred-1", rawId: "raw", type: "public-key" };
+            const { result } = renderHook(() => useWebAuthnRegistration(onThrottled));
+
+            await act(async () => {
+                await result.current.verifyRegistration(PHONE, credential as never);
+            });
+
+            expect(result.current.isLoading).toBe(true);
+            const options = mocks.routerPost.mock.calls[0][2] as {
+                onSuccess: () => void;
+                onError: (errors: Record<string, unknown>) => void;
+                onFinish: () => void;
+            };
+
+            act(() => {
+                options.onSuccess();
+                options.onError({ passkey: "invalid" });
+                options.onFinish();
+            });
+
+            expect(result.current.isLoading).toBe(false);
         });
     });
 });

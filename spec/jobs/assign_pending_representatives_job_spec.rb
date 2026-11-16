@@ -4,6 +4,8 @@ require "rails_helper"
 require Rails.root.join("db", "seeds", "models", "legislator")
 
 RSpec.describe AssignPendingRepresentativesJob do
+  include ActiveSupport::Testing::TimeHelpers
+
   # @lat: [[error-reporting-in-tests#Why Sentry's methods are watched rather than the constant replaced]]
   before do
     allow(Sentry).to receive(:capture_exception)
@@ -95,7 +97,13 @@ RSpec.describe AssignPendingRepresentativesJob do
 
     def unlocated_pending_user
       allow(Geocoder).to receive(:search).and_return([])
-      address = Address.create!(street: "100 N Holliday St", city: "", region_code: "", postal_code: "", country: "")
+      address = Address.create!(
+        street: "100 N Holliday St, Baltimore, MD 21202",
+        city: "",
+        region_code: "",
+        postal_code: "",
+        country: ""
+      )
       user = pending_user(congress)
       UserAddress.create!(user:, address:)
       user
@@ -118,7 +126,18 @@ RSpec.describe AssignPendingRepresentativesJob do
       user = unlocated_pending_user
       expect(user.address&.located?).to be(false)
       allow(Geocoder).to receive(:search).and_return(
-        [Geocoder::Result::Test.new("coordinates" => [39.29105, -76.61069], "state" => "Maryland", "state_code" => "MD", "country_code" => "US")]
+        [
+          Geocoder::Result::Test.new(
+            "coordinates" => [39.29105, -76.61069],
+            "city" => "Baltimore",
+            "state" => "Maryland",
+            "state_code" => "MD",
+            "postal_code" => "21202",
+            "country_code" => "US",
+            "types" => ["street_address"],
+            "partial_match" => false
+          )
+        ]
       )
 
       with_env("OPEN_STATES_API_KEY" => "test-open-states-key") { described_class.new.perform }
@@ -126,6 +145,32 @@ RSpec.describe AssignPendingRepresentativesJob do
       expect(user.reload.address).to have_attributes(region_code: "MD", located?: true)
       expect(senator_seats(user)).to eq([[congress.name, "MD0"], [congress.name, "MD0"]])
       expect(user.pending_representative_locale_ids).to eq([])
+    end
+
+    it "keeps a street-only address unlocated and pending when the geocode result is untrusted" do
+      user = unlocated_pending_user
+      user.address&.update!(street: "123 Main St")
+      allow(Geocoder).to receive(:search).and_return(
+        [
+          Geocoder::Result::Test.new(
+            "coordinates" => [39.29105, -76.61069],
+            "city" => "Baltimore",
+            "state" => "Maryland",
+            "state_code" => "MD",
+            "postal_code" => "21202",
+            "country_code" => "US",
+            "types" => ["street_address"],
+            "partial_match" => false
+          )
+        ]
+      )
+
+      with_env("OPEN_STATES_API_KEY" => "test-open-states-key") { described_class.new.perform }
+
+      expect(user.reload.address&.located?).to be(false)
+      expect(user.pending_representative_locale_ids).to eq([congress.id])
+      titles = UserLegislator.where(user:, active: true).map { |ul| ul.legislator.active_term.seat.title }
+      expect(titles).not_to include("Rep.")
     end
 
     it "keeps the locale but still runs the lookups while the geocode still fails" do
@@ -157,6 +202,154 @@ RSpec.describe AssignPendingRepresentativesJob do
       expect(user.reload.address&.located?).to be(false)
       expect(senator_seats(user)).to eq([[congress.name, "MD0"], [congress.name, "MD0"]])
       expect(user.pending_representative_locale_ids).to eq([congress.id])
+    end
+
+    it "throttles a failed geocode to the next hourly window while keeping the pending-locale lookups running, then retries when due" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      calls = 0
+      allow(Geocoder).to receive(:search) do
+        calls += 1
+        []
+      end
+      allow(Random).to receive(:rand).with(-0.25..0.25).and_return(0.25)
+
+      travel_to(base_time) { described_class.new.perform }
+
+      expect(calls).to eq(1)
+      expect(user.address&.reload&.geocode_next_attempt_at).to eq(base_time + 75.minutes)
+
+      allow(ReconcileUserDistrictsService).to receive(:new).and_call_original
+      travel_to(base_time + 1.minute) { described_class.new.perform }
+
+      expect(calls).to eq(1)
+      expect(ReconcileUserDistrictsService).to have_received(:new).with(user, congress)
+      expect(user.reload.pending_representative_locale_ids).to eq([congress.id])
+
+      travel_to(base_time + 75.minutes + 1.second) { described_class.new.perform }
+
+      expect(calls).to eq(2)
+    end
+
+    it "backs off to daily retries after the address is one day old" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      allow(Geocoder).to receive(:search).and_return([])
+      allow(Random).to receive(:rand).with(-0.25..0.25).and_return(0.25)
+
+      run_time = base_time + 2.days
+      travel_to(run_time) { described_class.new.perform }
+
+      expect(user.address&.reload&.geocode_next_attempt_at).to eq(run_time + (1.day * 1.25))
+    end
+
+    it "keeps jitter within 25 percent for both hourly and daily intervals" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      allow(Geocoder).to receive(:search).and_return([])
+
+      hourly_run = base_time + 1.hour
+      travel_to(hourly_run) { described_class.new.perform }
+      expect(user.address&.reload&.geocode_next_attempt_at).to be_between(hourly_run + 45.minutes, hourly_run + 75.minutes)
+
+      daily_run = base_time + 2.days
+      travel_to(daily_run) { described_class.new.perform }
+      expect(user.address&.reload&.geocode_next_attempt_at).to be_between(daily_run + 18.hours, daily_run + 30.hours)
+    end
+
+    it "caps geocode_next_attempt_at at created_at plus 30 days near the end of the window" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      allow(Geocoder).to receive(:search).and_return([])
+
+      travel_to(base_time + 29.days + 23.hours) { described_class.new.perform }
+
+      expect(user.address&.reload&.geocode_next_attempt_at).to eq(base_time + 30.days)
+    end
+
+    it "abandons geocoding at 30 days with one Sentry report and never geocodes or reports the row again" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      calls = 0
+      allow(Geocoder).to receive(:search) do
+        calls += 1
+        []
+      end
+      allow(Sentry).to receive(:capture_message)
+      allow(SwayLogging).to receive(:warn)
+      allow(ReconcileUserDistrictsService).to receive(:new).and_call_original
+
+      travel_to(base_time + 30.days) { described_class.new.perform }
+
+      address = user.address&.reload
+      expect(calls).to eq(0)
+      expect(address&.geocode_abandoned_at).to eq(base_time + 30.days)
+      expect(Sentry).to have_received(:capture_message).once.with(
+        "address.geocode_abandoned",
+        level: :warning,
+        extra: {address_id: address&.id, user_id: user.id, created_at: address&.created_at}
+      )
+
+      travel_to(base_time + 31.days) { described_class.new.perform }
+      travel_to(base_time + 40.days) { described_class.new.perform }
+
+      expect(calls).to eq(0)
+      expect(Sentry).to have_received(:capture_message).once
+      expect(ReconcileUserDistrictsService).to have_received(:new).with(user, congress).exactly(3).times
+      expect(user.reload.pending_representative_locale_ids).to eq([congress.id])
+    end
+
+    it "abandons an unlocated row older than 30 days on the first run when both schedule columns are nil" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      calls = 0
+      allow(Geocoder).to receive(:search) do
+        calls += 1
+        []
+      end
+      allow(Sentry).to receive(:capture_message)
+
+      travel_to(base_time + 45.days) { described_class.new.perform }
+
+      expect(calls).to eq(0)
+      expect(user.address&.reload&.geocode_abandoned_at).to eq(base_time + 45.days)
+      expect(Sentry).to have_received(:capture_message).once.with(
+        "address.geocode_abandoned",
+        level: :warning,
+        extra: {address_id: user.address&.id, user_id: user.id, created_at: user.address&.created_at}
+      )
+    end
+
+    it "resolves a user immediately when their UserAddress is pointed at a located row mid back-off" do
+      base_time = Time.zone.local(2026, 11, 14, 12, 0, 0)
+      user = travel_to(base_time) { unlocated_pending_user }
+      located = Address.create!(
+        street: "100 N Holliday St",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21202",
+        country: "US",
+        latitude: 39.29105,
+        longitude: -76.61069
+      )
+      calls = 0
+      allow(Geocoder).to receive(:search) do
+        calls += 1
+        []
+      end
+
+      travel_to(base_time) { described_class.new.perform }
+      expect(calls).to eq(1)
+
+      user.user_address&.update!(address: located)
+
+      travel_to(base_time + 1.minute) do
+        with_env("OPEN_STATES_API_KEY" => "test-open-states-key") { described_class.new.perform }
+      end
+
+      expect(calls).to eq(1)
+      expect(user.reload.pending_representative_locale_ids).to eq([])
+      expect(senator_seats(user)).to eq([[congress.name, "MD0"], [congress.name, "MD0"]])
     end
   end
 
