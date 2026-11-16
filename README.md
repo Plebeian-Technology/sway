@@ -112,7 +112,7 @@ The dev environment runs entirely under Docker via [`dip`](https://github.com/bi
 - Docker ([OrbStack](https://orbstack.dev) or Docker Desktop on macOS)
 - [`dip`](https://github.com/bibendi/dip)
 - [`mkcert`](https://github.com/FiloSottile/mkcert) — provisioning generates the local TLS certs that Caddy serves
-- `config/master.key` — the Rails master key, never committed. Keep it in any secret store you trust. `config/credentials.yml.enc` is not in the repository either, and development reads no Rails credentials, so a fresh key is all you need:
+- `config/master.key` — the Rails master key, never committed. Keep it in any secret store you trust. `config/credentials.yml.enc` is encrypted with it, and development reads no Rails credentials, so a fresh key is all you need:
 
 ```zsh
 openssl rand -hex 16 > config/master.key

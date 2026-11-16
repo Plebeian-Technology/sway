@@ -9,6 +9,11 @@ set -eu
 sway_load_config
 sway_require SWAY_REGISTRY SWAY_GCS_BUCKET_ASSETS
 
+if [[ ! -f "config/credentials.yml.enc" ]]; then
+    echo "deploy.sh: missing config/credentials.yml.enc (required by production boot)" >&2
+    exit 1
+fi
+
 TARGET=""
 SKIP_FILE_UPLOADS=0
 NO_BUILD=0

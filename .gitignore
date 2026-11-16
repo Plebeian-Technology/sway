@@ -81,7 +81,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
-/config/credentials.yml.enc
 /config/cloudflared.key
 # Signs the local error collector's dashboard cookies.
 # scripts/dip/dev.sh makes one on first run.
