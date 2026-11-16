@@ -925,9 +925,8 @@ class BillsController < ApplicationController
     # @lat: [[bills-controller-design#BillsController design#The web bills index grows a stable page window#Search treats wildcard characters as text]]
     search_term = bills_search_param
     if search_term.present?
-      escaped_search =
-        ActiveRecord::Base.sanitize_sql_like(search_term.to_s)
-      scope = scope.where("title LIKE ?", "%#{escaped_search}%")
+      escaped_search = ActiveRecord::Base.sanitize_sql_like(search_term.to_s)
+      scope = scope.where("title LIKE ? ESCAPE '\\'", "%#{escaped_search}%")
     end
 
     scope

@@ -325,6 +325,45 @@ RSpec.describe "BillsController", type: :request do
       end
     end
 
+    describe "title search" do
+      def search_titles(sway_locale, titles, search)
+        titles.each_with_index do |title, index|
+          bill, _params = build_bill_params.call(sway_locale)
+          bill.title = title
+          bill.scheduled_release_date_utc = Date.current + (index + 1).days
+          bill.save!
+        end
+
+        get "/bills", params: {bills_search: search}
+        inertia_load_deferred_props
+        inertia.props[:bills].pluck("title")
+      end
+
+      it "matches a percent sign as text" do
+        sway_locale, _user = setup
+
+        expect(search_titles(sway_locale, ["50% Rent Cap", "500 Units"], "50%")).to eq(["50% Rent Cap"])
+      end
+
+      it "matches an underscore as text" do
+        sway_locale, _user = setup
+
+        expect(search_titles(sway_locale, ["The a_b Act", "The aXb Act"], "a_b")).to eq(["The a_b Act"])
+      end
+
+      it "matches a backslash as text" do
+        sway_locale, _user = setup
+
+        expect(search_titles(sway_locale, ["Path a\\b Act", "Path ab Act"], "a\\b")).to eq(["Path a\\b Act"])
+      end
+
+      it "does not treat a backslash in the search as an escape for an underscore" do
+        sway_locale, _user = setup
+
+        expect(search_titles(sway_locale, ["Path a\\xb Act", "Path a_b Act"], "a_b")).to eq(["Path a_b Act"])
+      end
+    end
+
     # @lat: [[query-parameter-namespaces#Backward compatibility and dual-reading]]
     describe "query parameter namespacing and dual-reading" do
       before { stub_const("BillsController::BILLS_INDEX_PAGE_SIZE", 2) }

@@ -29,9 +29,9 @@ On `/past_bills_of_the_month` ([[app/controllers/bills_controller.rb#BillsContro
 
 ### Search treats wildcard characters as text
 
-The title search escapes `%` and `_` before using a `LIKE` predicate, so user-entered punctuation remains literal search text rather than widening the query to unrelated bills.
+The title search escapes `%`, `_` and `\` and names `\` as the `LIKE` escape character, so user-entered punctuation matches literally rather than widening the query to unrelated bills.
 
-The escaped search remains parameterized. [[app/controllers/bills_controller.rb#BillsController#bills_index_scope]] is the one scope used by both the count and list.
+SQLite's `LIKE` has no default escape character, so without the `ESCAPE` clause the added backslashes would match as ordinary characters. The escaped search remains parameterized. [[app/controllers/bills_controller.rb#BillsController#bills_index_scope]] is the one scope used by both the count and list.
 
 ### Past Bills of the Month vs All Bills and historical sessions
 
