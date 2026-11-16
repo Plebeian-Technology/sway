@@ -2141,6 +2141,7 @@ class Object
     def travel_to:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped
+    def travel_back: () -> untyped
     def valid_json:
         (*untyped args, **untyped kwargs) -> untyped
         | (*untyped args, **untyped kwargs) { (*untyped args) -> untyped } -> untyped

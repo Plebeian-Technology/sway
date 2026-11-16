@@ -419,5 +419,96 @@ RSpec.describe SwayLocale, type: :model do
       fresh_locale = SwayLocale.find(baltimore.id)
       expect(fresh_locale.at_large_district).to eq(md0)
     end
+
+    it "finds the matching district in memory when districts are already loaded" do
+      baltimore = create(:sway_locale, :baltimore)
+      md0 = create(:district, sway_locale: baltimore, name: "MD0")
+      _md1 = create(:district, sway_locale: baltimore, name: "MD1")
+      baltimore.districts.load
+
+      expect(baltimore.at_large_district).to eq(md0)
+    end
+
+    it "falls back to the zero-numbered district in memory when locale_wide_district_name does not match" do
+      sway_locale = create(:sway_locale, city: "at_large_loaded", state: "MD", country: "united_states")
+      district0 = create(:district, sway_locale:, name: "MD0")
+      _district1 = create(:district, sway_locale:, name: "MD1")
+      sway_locale.districts.load
+
+      expect(sway_locale.at_large_district).to eq(district0)
+    end
+  end
+
+  describe ".find_by_name_parts" do
+    it "returns nil when name is blank" do
+      expect(SwayLocale.find_by_name_parts("")).to be_nil # rubocop:disable Rails/DynamicFindBy
+      expect(SwayLocale.find_by_name_parts(nil)).to be_nil # rubocop:disable Rails/DynamicFindBy
+    end
+
+    it "finds a locale by hyphen-separated parts" do
+      baltimore = create(:sway_locale, :baltimore)
+      expect(SwayLocale.find_by_name_parts(baltimore.name)).to eq(baltimore) # rubocop:disable Rails/DynamicFindBy
+    end
+  end
+
+  describe ".normalize_attributes" do
+    it "leaves missing attributes omitted and ignores unmapped region or country values" do
+      expect(SwayLocale.normalize_attributes(state: "", country: "")).to eq(state: "", country: "")
+      expect(SwayLocale.normalize_attributes(city: "New York")).to eq(city: "new_york")
+    end
+  end
+
+  describe "#reload, classification helpers, associations, and session lookup" do
+    it "clears memoized state on reload" do
+      baltimore = create(:sway_locale, :baltimore)
+      at_large = create(:district, sway_locale: baltimore, name: "MD0")
+      expect(baltimore.at_large_district).to eq(at_large)
+      expect(baltimore.at_large_district).to eq(at_large)
+      baltimore.name
+      baltimore.document
+      baltimore.declared_jurisdiction_rules
+      baltimore.load_geojson
+
+      expect(baltimore.reload).to eq(baltimore)
+    end
+
+    it "computes #local?, #tier, #legislators(false), #bills, #generic_portal_urls, and blank #region_name" do
+      baltimore = create(:sway_locale, :baltimore)
+      maryland = create(:sway_locale, :maryland)
+      congress = create(:sway_locale, :congress)
+      undeclared = create(:sway_locale, city: "nowhereville", state: "MD", country: "US")
+      leg = create(:legislator, sway_locale: baltimore, active: false)
+      older_bill = create(:bill, sway_locale: baltimore, created_at: 2.days.ago)
+      newer_bill = create(:bill, sway_locale: baltimore, created_at: 1.hour.ago)
+
+      expect(baltimore.local?).to be(true)
+      expect(maryland.local?).to be(false)
+      expect(congress.local?).to be(false)
+      expect(congress.tier).to eq("congress")
+      expect(maryland.tier).to eq("state")
+      expect(baltimore.tier).to eq("city")
+      expect(baltimore.legislators(false)).to include(leg)
+      expect(baltimore.bills).to eq([newer_bill, older_bill])
+      expect(undeclared.generic_portal_urls).to eq([])
+
+      undeclared.write_attribute(:region_name, "")
+      expect(undeclared.region_name).to eq("")
+    end
+
+    it "handles blank, valid, non-date, and invalid date inputs in #legislative_session_for_date" do
+      baltimore = create(:sway_locale, :baltimore)
+      session = create(
+        :legislative_session,
+        sway_locale: baltimore,
+        start_date: Date.new(2025, 1, 1),
+        end_date: Date.new(2025, 12, 31)
+      )
+
+      expect(baltimore.legislative_session_for_date(nil)).to be_nil
+      expect(baltimore.legislative_session_for_date("2025-06-15")).to eq(session)
+      expect(baltimore.legislative_session_for_date(Date.new(2025, 6, 15))).to eq(session)
+      expect(baltimore.legislative_session_for_date(123)).to be_nil
+      expect(baltimore.legislative_session_for_date("not-a-date")).to be_nil
+    end
   end
 end

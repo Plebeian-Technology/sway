@@ -118,6 +118,10 @@ RSpec.describe NormalizeAddressService do
       expect(result[:city]).to be_nil
       expect(result[:region_code]).to be_nil
     end
+
+    it "normalizes region_code when :city is omitted" do
+      expect(described_class.call(region_code: "maryland")).to eq({region_code: "MD"})
+    end
   end
 
   describe ".normalize_region_code" do
@@ -150,10 +154,11 @@ RSpec.describe NormalizeAddressService do
       expect(described_class.normalize_region_code("x")).to eq("X")
     end
 
-    it "returns nil, empty, or blank strings unchanged" do
+    it "returns nil, empty, blank, or zero-width-only strings unchanged" do
       expect(described_class.normalize_region_code(nil)).to be_nil
       expect(described_class.normalize_region_code("")).to eq("")
       expect(described_class.normalize_region_code("   ")).to eq("   ")
+      expect(described_class.normalize_region_code("\u200B")).to eq("")
     end
   end
 

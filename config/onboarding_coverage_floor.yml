@@ -3,68 +3,73 @@ app/controllers/addresses_controller.rb:
     line: 100.0
     branch: 100.0
 app/controllers/api/v1/base_controller.rb:
-    line: 94.4
-    branch: 75.0
+    line: 100.0
+    # branch 91.6 ceiling: issue_api_key always sets expires_at (90.days.from_now), making key.expires_at&.iso8601 (line 84) nil branch unreachable
+    branch: 91.6
 app/controllers/api/v1/bootstrap_controller.rb:
-    line: 93.9
-    branch: 89.2
+    line: 100.0
+    branch: 100.0
 app/controllers/api/v1/phone_verifications_controller.rb:
-    line: 98.0
+    line: 100.0
     branch: 100.0
 app/controllers/api/v1/registrations_controller.rb:
     line: 100.0
-    branch: 96.4
+    # branch 97.2 ceiling: WebAuthn::Error rescue (line 184) runs only after cache_key is assigned (line 89), making else branch unreachable
+    branch: 97.2
 app/controllers/api/v1/sessions_controller.rb:
+    # line 98.5 / branch 91.6 ceiling: verify_authentication raises UnknownPasskeyError on miss (unreachable line 135) and cache_key is always set (line 152)
     line: 98.5
-    branch: 79.1
+    branch: 91.6
 app/controllers/concerns/authentication.rb:
-    line: 74.3
-    branch: 40.0
+    line: 100.0
+    branch: 100.0
 app/controllers/concerns/rate_limit_responder.rb:
-    line: 96.2
+    line: 100.0
     branch: 100.0
 app/controllers/concerns/relying_party.rb:
-    line: 96.8
-    branch: 83.3
+    line: 100.0
+    branch: 100.0
 app/controllers/phone_verification_controller.rb:
     line: 100.0
-    branch: 94.4
+    branch: 100.0
 app/controllers/sway_registration_controller.rb:
-    line: 86.0
-    branch: 72.5
+    line: 100.0
+    # branch 95.5 ceiling: defensive safe-navigation/relation guards (line 159 x3, line 396) and always-present congress locale check (line 279)
+    branch: 95.5
 app/controllers/user_legislators_controller.rb:
     line: 100.0
+    # branch 60.0 ceiling: authenticate_sway_user! and create guard guarantee non-nil current_user and current_sway_locale (lines 11, 17, 61, 63)
     branch: 60.0
 app/controllers/users/webauthn/registration_controller.rb:
     line: 100.0
-    branch: 88.2
+    # branch 91.1 ceiling: user is nil until transaction succeeds (rescue line 181 always nil; lines 168, 199, 211 always non-nil)
+    branch: 91.1
 app/controllers/users/webauthn/sessions_controller.rb:
-    line: 90.6
-    branch: 68.0
+    # line 96.2 / branch 83.9 ceiling: verify_valid_phone guards create (lines 39, 93, 331), verify_authentication raises before nil stored_passkey (143..144, 246..247), and user nilness is fixed at rescues (179, 194, 281, 297)
+    line: 96.2
+    branch: 83.9
 app/controllers/well_known_controller.rb:
     line: 100.0
     branch: 100.0
-app/jobs/sway_registration_job.rb:
-    line: 100.0
-    branch: 66.6
 app/lib/phone_cache_key.rb:
-    line: 93.7
-    branch: 83.3
+    line: 100.0
+    branch: 100.0
 app/lib/rate_limit_config.rb:
     line: 100.0
     branch: 100.0
 app/models/address.rb:
     line: 100.0
-    branch: 95.0
+    branch: 100.0
 app/models/sway_locale.rb:
-    line: 91.1
-    branch: 65.6
+    line: 100.0
+    branch: 100.0
 app/models/sway_locale/term_rules.rb:
     line: 100.0
     branch: 100.0
 app/models/user.rb:
-    line: 84.1
-    branch: 58.9
+    line: 100.0
+    # branch 97.5 ceiling: phone presence precedes before_save (line 256) and params always respond to :to_h (line 419)
+    branch: 97.5
 app/models/user_address.rb:
     line: 100.0
     branch: 100.0
@@ -81,41 +86,46 @@ app/serializers/registration_outcome_resource.rb:
     line: 100.0
     branch: 100.0
 app/services/nominatim_service.rb:
-    line: 95.5
-    branch: 87.5
+    line: 100.0
+    branch: 100.0
 app/services/normalize_address_service.rb:
     line: 100.0
-    branch: 88.4
+    # branch 96.1 ceiling: code after line 41 blank check and RegionUtil lookup is always present (line 49)
+    branch: 96.1
 app/services/pending_vote_reconciliation_service.rb:
-    line: 85.7
-    branch: 70.5
+    line: 100.0
+    branch: 100.0
 app/services/reconcile_user_districts_service.rb:
-    line: 98.4
+    line: 100.0
+    # branch 92.8 ceiling: new_uls are resolved from current LegislatorTerms, so active_term is always present (line 98)
     branch: 92.8
 app/services/sms_verification_token.rb:
     line: 100.0
-    branch: 90.0
+    branch: 100.0
 app/services/sway/twilio_client.rb:
     line: 100.0
     branch: 100.0
 app/services/sway_registration_service.rb:
-    line: 99.3
-    branch: 82.3
+    line: 100.0
+    # branch 90.6 ceiling: active_term/district/seat/user/inviter invariants make guards at lines 37, 51, 157, 168, 233, 315 unreachable
+    branch: 90.6
 app/services/user_address_switch_service.rb:
     line: 100.0
-    branch: 72.7
+    # branch 95.4 ceiling: change is assigned by UserAddressChange.create! before line 102, making return nil unless change unreachable
+    branch: 95.4
 app/validators/seats/overlap_validator.rb:
-    line: 83.3
-    branch: 58.3
+    line: 100.0
+    branch: 100.0
 app/validators/seats/unresolved_seat_error.rb:
     line: 100.0
     branch: 100.0
 lib/census.rb:
     line: 100.0
+    # branch 87.5 ceiling: parse always returns Hash and fetch returns Array, making line 17 safe-nav nil branches unreachable
     branch: 87.5
 lib/region_util.rb:
-    line: 94.4
-    branch: 78.5
+    line: 100.0
+    branch: 100.0
 lib/sway_geocode.rb:
     line: 100.0
     branch: 100.0

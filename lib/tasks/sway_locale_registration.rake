@@ -22,7 +22,7 @@ namespace :sway do
 
           address.sway_locales.each do |sway_locale|
             reached_names << sway_locale.name
-            service = SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil, async: false)
+            service = SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil)
             representatives = ActiveRecord::Base.transaction(requires_new: true) { service.call }
             errors = service.skipped_resolution_errors
             errors.each do |error|

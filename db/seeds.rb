@@ -75,7 +75,7 @@ if Rails.env.development?
     # @lat: [[identity-and-access#A user holds one address]]
     UserAddress.find_or_initialize_by(user:).update!(address:)
 
-    SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil, async: false).call
+    SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil).call
     active_pairings = user.user_legislators.where(active: true).joins(legislator: :district)
       .where(districts: {sway_locale_id: sway_locale.id})
       .includes(:legislator)

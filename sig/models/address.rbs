@@ -1,6 +1,9 @@
 class Address < ApplicationRecord
     COORDINATE_KEY_PRECISION: Integer
     UNIT_PREFIX: ::Regexp
+    GEOCODE_HOURLY_WINDOW: ActiveSupport::Duration
+    GEOCODE_RETRY_WINDOW: ActiveSupport::Duration
+    GEOCODE_JITTER_FRACTION: Float
 
     def self.normalized_key_for: (latitude: (Float | Integer | String)?, longitude: (Float | Integer | String)?, ?street2: String?, ?street3: String?) -> String?
     def self.normalized_unit_part: (String? value) -> String
@@ -12,6 +15,14 @@ class Address < ApplicationRecord
     def sway_locale_attribute_sets: -> Array[Hash[Symbol, String?]]
     def us_state_code: -> String?
     def located?: -> bool
+    def geocode_next_attempt_at: () -> ActiveSupport::TimeWithZone?
+    def geocode_next_attempt_at=: (ActiveSupport::TimeWithZone? | Time?) -> (ActiveSupport::TimeWithZone? | Time?)
+    def geocode_abandoned_at: () -> ActiveSupport::TimeWithZone?
+    def geocode_abandoned_at=: (ActiveSupport::TimeWithZone? | Time?) -> (ActiveSupport::TimeWithZone? | Time?)
+    def geocode_due?: (?Time | ActiveSupport::TimeWithZone now) -> bool
+    def geocode_window_over?: (?Time | ActiveSupport::TimeWithZone now) -> bool
+    def record_failed_geocode_attempt!: (?Time | ActiveSupport::TimeWithZone now) -> bool
+    def record_geocode_abandoned!: (?Time | ActiveSupport::TimeWithZone now) -> bool
     def to_cartesian: -> untyped
     def to_builder: -> Jbuilder
     def geocode_and_save: -> void
@@ -19,6 +30,7 @@ class Address < ApplicationRecord
     private
 
     def geocode: -> void
+    def trusted_geocode?: (Geocoder::Result::Base result) -> bool
     def blank_fields_from_geocode: (Geocoder::Result::Base result) -> Hash[Symbol, String?]
     def normalize_address: -> Address
 end

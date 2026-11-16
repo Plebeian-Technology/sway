@@ -6,14 +6,13 @@ class SwayRegistrationService
 
   attr_reader :address, :sway_locale, :skipped_resolution_errors, :skipped_legislator_ids
 
-  def initialize(user, address, sway_locale, invited_by_id:, async: true)
+  def initialize(user, address, sway_locale, invited_by_id:)
     @user = user
     @address = address
     @sway_locale = sway_locale
     @legislators = sway_locale.legislators.with_active_term
 
     @invited_by_id = invited_by_id
-    @async = async
 
     @feature = nil
     @districts = nil
@@ -24,18 +23,6 @@ class SwayRegistrationService
   end
 
   def call
-    if @async && @sway_locale.regional?
-      @user.start_processing! if @user.pending?
-      SwayRegistrationJob.perform_later(
-        @user.id,
-        @address.id,
-        @sway_locale.id,
-        invited_by_id: @invited_by_id,
-        enqueued_at_epoch: Time.current.to_f
-      )
-      return []
-    end
-
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     uls = create_user_legislators
     duration_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time) * 1000).round

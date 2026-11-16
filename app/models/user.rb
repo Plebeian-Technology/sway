@@ -209,35 +209,16 @@ class User < ApplicationRecord
   end
 
   state_machine :registration_status, initial: :pending do
-    event :start_processing do
-      transition pending: :processing
-    end
-
     event :complete do
       transition pending: :completed, if: :registered?
-      transition processing: :completed, if: :registered?
       transition completed: :completed, if: :registered?
-      # @lat: [[identity-and-access#Registration is asynchronous by necessity]]
-      transition failed: :completed, if: :registered?
-    end
-
-    event :mark_failed do
-      transition processing: :failed
-    end
-
-    after_transition on: :start_processing do |user, _transition|
-      user.record_funnel_event(:geocoding_queued)
     end
 
     after_transition on: :complete do |user, transition|
       user.update(is_registration_complete: user.registered?)
-      unless transition.from == :completed
+      unless transition.from == "completed"
         user.record_funnel_event(:geocoding_completed, user.transient_funnel_metadata || {})
       end
-    end
-
-    after_transition on: :mark_failed do |user, _transition|
-      user.record_funnel_event(:geocoding_failed, user.transient_funnel_metadata || {})
     end
 
     # @lat: [[identity-and-access#Registration is asynchronous by necessity]]

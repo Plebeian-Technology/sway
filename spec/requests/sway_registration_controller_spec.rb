@@ -41,17 +41,6 @@ RSpec.describe "/registration", type: :request do
         expect(inertia).to have_no_prop(:processing)
       end
     end
-
-    context "when user registration is processing" do
-      it "renders the Registration component with processing prop" do
-        _sway_locale, user = setup_pre_registration
-        user.start_processing!
-
-        get sway_registration_index_path
-        expect(inertia).to render_component Pages::REGISTRATION
-        expect(inertia).to have_props(processing: true)
-      end
-    end
   end
 
   # @lat: [[identity-and-access#Sessions, cookies and bearer tokens]]
@@ -1479,26 +1468,26 @@ RSpec.describe "/registration", type: :request do
               "state" => "Maryland",
               "state_code" => "MD",
               "postal_code" => "21202",
-              "country_code" => "US"
+              "country_code" => "US",
+              "types" => ["street_address"],
+              "partial_match" => false
             )
           ]
         )
         allow(Rails.env).to receive(:test?).and_return(false)
       end
 
-      it "resolves the state's locales from the geocode, not the President alone" do
+      it "leaves the row unlocated, links only the President, and records Congress as pending" do
+        president = congress.legislators.find_by!(external_id: "POTUS")
+
         post_address(street_only_address)
 
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body["registration_status"]).to eq("completed")
-        expect(user.reload.address).to have_attributes(city: "Baltimore", region_code: "MD", postal_code: "21202", country: "US")
+        expect(user.reload.address).to have_attributes(located?: false, city: "", region_code: "", postal_code: "", country: "")
         expect(user.address.normalized_key).to be_nil
-        expect(linked_seats).to include(
-          [maryland.name, "MD0", "Governor"],
-          [congress.name, "MD0", "Sen."],
-          [congress.name, "MD7", "Rep."]
-        )
-        expect(linked_seats.count { |seat| seat == [congress.name, "MD0", "Sen."] }).to eq(2)
+        expect(UserLegislator.where(user:, active: true).pluck(:legislator_id)).to eq([president.id])
+        expect(user.pending_representative_locale_ids).to eq(user.address.sway_locales.map(&:id))
       end
 
       it "reuses the same row when the user sends the same street again" do
@@ -1508,12 +1497,17 @@ RSpec.describe "/registration", type: :request do
         expect { post_address(street_only_address) }.not_to change(Address, :count)
 
         expect(response).to have_http_status(:ok)
-        expect(response.parsed_body).to eq({"ok" => true, "registration_status" => "completed"})
+        expect(response.parsed_body).to eq(
+          "ok" => true,
+          "registration_status" => "completed",
+          "address_located" => false,
+          "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
+        )
         expect(UserAddressChange.count).to eq(0)
       end
 
       it "does not link a stranger's picked place with the same coordinates to the geocoded row" do
-        post_address(street_only_address.merge(street2: "Apt 4"))
+        post_address(street_only_address.merge(street: "100 N Holliday St, Baltimore, MD 21202", street2: "Apt 4"))
         typed_row = user.reload.address
         stranger = create(:user, is_registration_complete: false, registration_status: "pending")
         sign_in(stranger)
@@ -1546,6 +1540,52 @@ RSpec.describe "/registration", type: :request do
       end
     end
 
+    context "when geocoding recovers after an unlocated manual submission" do
+      before do
+        stub_census(status: 200, body: census_district_body("07"))
+        allow(Rails.env).to receive(:test?).and_return(false)
+      end
+
+      it "re-geocodes the reused address row, resolves every locale, and clears pending locales on retry" do
+        manual_city_hall_address = {
+          street: "100 N Holliday St",
+          city: "Baltimore",
+          region_code: "MD",
+          postal_code: "21202",
+          country: "US"
+        }
+        city_hall_geocode_result = Geocoder::Result::Test.new(
+          "coordinates" => [39.29105, -76.61069],
+          "city" => "Baltimore",
+          "state" => "Maryland",
+          "state_code" => "MD",
+          "postal_code" => "21202",
+          "country_code" => "US",
+          "types" => ["street_address"],
+          "partial_match" => false
+        )
+
+        allow(Geocoder).to receive(:search).and_return([])
+        post_address(manual_city_hall_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("ok" => true, "address_located" => false)
+        expect(user.reload.address.located?).to be(false)
+        expect(user.pending_representative_locale_ids).to match_array([baltimore.id, maryland.id, congress.id])
+
+        allow(Geocoder).to receive(:search).and_return([city_hall_geocode_result])
+
+        expect { post_address(manual_city_hall_address) }.not_to change(Address, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(user.reload.address.located?).to be(true)
+        expect(user.pending_representative_locale_ids).to eq([])
+        expect(UserAddressChange.count).to eq(0)
+        expect(linked_seats).to include([congress.name, "MD7", "Rep."], [baltimore.name, "MD0", "Mayor"])
+      end
+    end
+
     it "links an address in a place Sway does not support to its Congress representatives only" do
       stub_census(status: 200, body: census_district_body("03"))
 
@@ -1560,6 +1600,362 @@ RSpec.describe "/registration", type: :request do
         [congress.name, "OH3", "Rep."],
         [congress.name, "US0", "Pres."]
       )
+    end
+
+    context "when the registration answer signals whether the address was located" do
+      street_only_address = {street: "123 Main St", city: "", region_code: "", postal_code: "", country: ""}
+
+      before do
+        stub_census(status: 200, body: census_district_body("07"))
+        allow(Geocoder).to receive(:search).and_return([])
+        allow(Sentry).to receive(:capture_message)
+      end
+
+      it "answers address_located false with the prompt message and reports it once (JSON)" do
+        post_address(street_only_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          "ok" => true,
+          "registration_status" => "completed",
+          "address_located" => false,
+          "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
+        )
+        expect(user.reload.completed?).to be(true)
+        expect(Sentry).to have_received(:capture_message).once.with(
+          "sway_registration.address_not_located",
+          level: :warning,
+          extra: {user_id: user.id, address_id: user.address.id}
+        )
+      end
+
+      it "answers the located body with no address_located key and no Sentry message when coordinates are present (JSON)" do
+        post_address(city_hall_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(Sentry).not_to have_received(:capture_message)
+      end
+
+      it "redirects a browser to /sway_registration and renders the address_not_located outcome" do
+        with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+          post "/sway_registration", params: {sway_registration: street_only_address}
+        end
+
+        expect(response).to redirect_to(sway_registration_index_path)
+
+        follow_redirect!
+
+        expect(inertia).to render_component Pages::REGISTRATION
+        expect(inertia).to have_props(
+          registration_outcome: {
+            "reason" => "address_not_located",
+            "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
+          }
+        )
+      end
+    end
+
+    context "when a user corrects an unlocated address that already linked the state's Senators" do
+      unlocated_md_address = {street: "100 N Holliday St", city: "", region_code: "MD", postal_code: "", country: ""}
+      richmond_address = {
+        street: "1000 Bank St",
+        city: "Richmond",
+        region_code: "VA",
+        postal_code: "23219",
+        country: "US",
+        latitude: 37.5385,
+        longitude: -77.4336
+      }
+
+      before do
+        stub_census(status: 200, body: census_district_body("07"))
+        allow(Geocoder).to receive(:search).and_return([])
+        post_address(unlocated_md_address)
+        expect(user.reload.address.located?).to be(false)
+        expect(user.completed?).to be(true)
+        expect(linked_seats).to include([congress.name, "MD0", "Sen."])
+        expect(user.pending_representative_locale_ids).to include(congress.id)
+      end
+
+      it "replaces the address and resolves every locale without confirmation or recording a switch (JSON)" do
+        post_address(city_hall_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(user.reload.address.located?).to be(true)
+        expect(UserAddressChange.count).to eq(0)
+        expect(linked_seats).to include([congress.name, "MD7", "Rep."], [baltimore.name, "MD0", "Mayor"])
+      end
+
+      it "records no switch and starts no cooldown even when confirm_deactivate_legislators is true (JSON)" do
+        post_address(city_hall_address.merge(confirm_deactivate_legislators: true))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(user.reload.address.located?).to be(true)
+        expect(UserAddressChange.count).to eq(0)
+        expect(UserAddressSwitchService.cooldown_active_for?(user)).to be(false)
+        expect(linked_seats).to include([congress.name, "MD7", "Rep."], [baltimore.name, "MD0", "Mayor"])
+      end
+
+      it "redirects a browser to the feed and links every locale of the corrected address (web)" do
+        with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+          post "/sway_registration", params: {sway_registration: city_hall_address}
+        end
+
+        expect(response).to redirect_to(feed_path)
+        expect(user.reload.address.located?).to be(true)
+        expect(linked_seats).to include([congress.name, "MD7", "Rep."], [baltimore.name, "MD0", "Mayor"])
+      end
+
+      it "still asks for confirmation when a located user submits a different address without the flag" do
+        post_address(city_hall_address)
+        expect(user.reload.address.located?).to be(true)
+
+        post_address(columbus_address)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("confirmation_required")
+      end
+
+      it "answers the not-located body again when the user resubmits the same unlocated text with state known" do
+        post_address(unlocated_md_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          "ok" => true,
+          "registration_status" => "completed",
+          "address_located" => false,
+          "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
+        )
+      end
+
+      it "re-geocodes a reused unlocated MD ZIP row that already linked state Senators and resolves all locales on retry" do
+        unlocated_md_zip_address = {
+          street: "100 N Holliday St",
+          city: "",
+          region_code: "MD",
+          postal_code: "21202",
+          country: ""
+        }
+        md_zip_user = create(:user, is_registration_complete: false, registration_status: "pending")
+        sign_in(md_zip_user)
+        allow(Rails.env).to receive(:test?).and_return(false)
+        allow(Geocoder).to receive(:search).and_return([])
+        post_address(unlocated_md_zip_address)
+
+        expect(md_zip_user.reload.address.located?).to be(false)
+        expect(md_zip_user.pending_representative_locale_ids).to include(congress.id)
+        expect(
+          UserLegislator.where(user: md_zip_user, active: true).map { |ul| ul.legislator.active_term.district.name }
+        ).to include("MD0")
+
+        allow(Geocoder).to receive(:search).and_return([
+          Geocoder::Result::Test.new(
+            "coordinates" => [39.29105, -76.61069],
+            "city" => "Baltimore",
+            "state" => "Maryland",
+            "state_code" => "MD",
+            "postal_code" => "21202",
+            "country_code" => "US",
+            "types" => ["street_address"],
+            "partial_match" => false
+          )
+        ])
+
+        expect { post_address(unlocated_md_zip_address) }.not_to change(Address, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(md_zip_user.reload.address.located?).to be(true)
+        expect(md_zip_user.pending_representative_locale_ids).to eq([])
+        expect(UserAddressChange.count).to eq(0)
+        seats_for_user = UserLegislator.where(user: md_zip_user, active: true).map do |user_legislator|
+          term = user_legislator.legislator.active_term
+          [term.district.sway_locale.name, term.district.name, term.seat.title]
+        end
+        expect(seats_for_user).to include([congress.name, "MD7", "Rep."], [baltimore.name, "MD0", "Mayor"])
+      end
+
+      it "deactivates the old state's Senator links and districts and drops stale pending locales when corrected to another state" do
+        stub_census(status: 200, body: census_district_body("04"))
+
+        post_address(richmond_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(linked_seats).to contain_exactly(
+          [congress.name, "VA0", "Sen."],
+          [congress.name, "VA0", "Sen."],
+          [congress.name, "VA4", "Rep."],
+          [congress.name, "US0", "Pres."]
+        )
+        expect(active_district_names).to contain_exactly(
+          [congress.name, "VA0"],
+          [congress.name, "VA4"],
+          [congress.name, "US0"]
+        )
+        expect(user.reload.pending_representative_locale_ids).to eq([])
+      end
+
+      it "recomputes the deactivated Senator's district score so a vote cast before the correction is no longer counted" do
+        senator_link = UserLegislator.where(user:, active: true).includes(legislator: [:district, :active_term]).detect do |ul|
+          ul.legislator.sway_locale == congress && ul.legislator.district.name == "MD0"
+        end
+        senator = senator_link.legislator
+        senator_term = senator.active_term
+        bill = create(:bill, sway_locale: congress, legislator: senator)
+        create(:legislator_vote, bill:, legislator: senator, legislator_term: senator_term, support: LegislatorVote::Support::FOR)
+        create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
+        ScoreRecomputeService.recompute_bill!(bill)
+        ScoreRecomputeService.recompute_legislator!(senator_term)
+        expect(LegislatorDistrictScore.find_by!(legislator_term: senator_term).count_agreed).to eq(1)
+
+        stub_census(status: 200, body: census_district_body("04"))
+        post_address(richmond_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(LegislatorDistrictScore.find_by!(legislator_term: senator_term).count_agreed).to eq(0)
+      end
+
+      it "skips score recompute when a deactivated legislator has no active term" do
+        senator_link = UserLegislator.where(user:, active: true).includes(legislator: [:district, :active_term]).detect do |ul|
+          ul.legislator.sway_locale == congress && ul.legislator.district.name == "MD0"
+        end
+        senator = senator_link.legislator
+        senator.active_term.destroy!
+        allow(ScoreRecomputeService).to receive(:recompute_legislator!)
+
+        stub_census(status: 200, body: census_district_body("04"))
+        post_address(richmond_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator!).with(nil)
+      end
+    end
+
+    context "when a located user switches to an unlocated address" do
+      street_only_switch = {
+        street: "123 Main St",
+        city: "",
+        region_code: "",
+        postal_code: "",
+        country: "",
+        confirm_deactivate_legislators: true
+      }
+
+      before do
+        stub_census(status: 200, body: census_district_body("07"))
+        post_address(city_hall_address)
+        expect(user.reload.registered?).to be(true)
+        expect(UserAddressChange.count).to eq(0)
+        expect(linked_seats).to include([maryland.name, "MD0", "Governor"])
+        allow(Geocoder).to receive(:search).and_return([])
+        allow(Sentry).to receive(:capture_message)
+      end
+
+      it "records every locale of the new address as pending and answers address_located false (JSON)" do
+        post_address(street_only_switch)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          "ok" => true,
+          "registration_status" => "completed",
+          "address_located" => false,
+          "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
+        )
+        expect(UserAddressChange.count).to eq(1)
+        new_address = user.reload.address
+        expect(new_address.located?).to be(false)
+        expect(user.pending_representative_locale_ids).to eq(new_address.sway_locales.map(&:id))
+        expect(Sentry).to have_received(:capture_message).once.with(
+          "sway_registration.address_not_located",
+          level: :warning,
+          extra: {user_id: user.id, address_id: new_address.id}
+        )
+      end
+
+      it "redirects a browser to /sway_registration and renders the address_not_located outcome (web)" do
+        with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
+          post "/sway_registration", params: {sway_registration: street_only_switch}
+        end
+
+        expect(response).to redirect_to(sway_registration_index_path)
+
+        follow_redirect!
+
+        expect(inertia).to render_component Pages::REGISTRATION
+        expect(inertia).to have_props(
+          registration_outcome: {
+            "reason" => "address_not_located",
+            "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
+          }
+        )
+      end
+
+      it "answers the located body with no pending locale when switching to a located address" do
+        stub_census(status: 200, body: census_district_body("03"))
+
+        post_address(columbus_address.merge(confirm_deactivate_legislators: true))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(user.reload.pending_representative_locale_ids).to eq([])
+        expect(Sentry).not_to have_received(:capture_message)
+      end
+
+      it "lets the user correct the unlocated switch address without confirmation or a second switch record" do
+        post_address(street_only_switch)
+        expect(UserAddressChange.count).to eq(1)
+
+        post_address(city_hall_address)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(UserAddressChange.count).to eq(1)
+        expect(user.reload.address.located?).to be(true)
+      end
+
+      it "re-geocodes the reused unlocated switch row without a second switch record when Geocoder recovers" do
+        manual_switch = {
+          street: "100 N Holliday St",
+          city: "Baltimore",
+          region_code: "MD",
+          postal_code: "21202",
+          country: "US",
+          confirm_deactivate_legislators: true
+        }
+        allow(Rails.env).to receive(:test?).and_return(false)
+        allow(Geocoder).to receive(:search).and_return([])
+        post_address(manual_switch)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("ok" => true, "address_located" => false)
+        expect(UserAddressChange.count).to eq(1)
+        expect(user.reload.address.located?).to be(false)
+
+        allow(Geocoder).to receive(:search).and_return([
+          Geocoder::Result::Test.new(
+            "coordinates" => [39.29105, -76.61069],
+            "city" => "Baltimore",
+            "state" => "Maryland",
+            "state_code" => "MD",
+            "postal_code" => "21202",
+            "country_code" => "US",
+            "types" => ["street_address"],
+            "partial_match" => false
+          )
+        ])
+
+        expect { post_address(manual_switch) }.not_to change(Address, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq("ok" => true, "registration_status" => "completed")
+        expect(UserAddressChange.count).to eq(1)
+        expect(user.reload.address.located?).to be(true)
+        expect(user.pending_representative_locale_ids).to eq([])
+        expect(linked_seats).to include([congress.name, "MD7", "Rep."], [baltimore.name, "MD0", "Mayor"])
+      end
     end
   end
 
@@ -1617,6 +2013,15 @@ RSpec.describe "/registration", type: :request do
 
       expect_stored_form_address
     end
+
+    it "filters blank entries out of place_types" do
+      post "/sway_registration",
+        params: form_body.merge(place_types: ["", "house", "place"]),
+        headers: inertia_headers,
+        as: :json
+
+      expect_stored_form_address
+    end
   end
 
   describe "GET /sway_registration page props for a pending user" do
@@ -1661,6 +2066,16 @@ RSpec.describe "/registration", type: :request do
             "full_address" => address.full_address
           }
       }
+    end
+
+    it "still redirects a registered user to the feed when there is no address_not_located flash" do
+      _sway_locale, user = setup_pre_registration
+      create(:user_legislator, user: user)
+      user.complete!
+
+      get sway_registration_index_path
+
+      expect(response).to redirect_to(feed_path)
     end
   end
 

@@ -19,6 +19,7 @@
 #  notify_on_summary_change_default        :boolean          default(TRUE), not null
 #  notify_on_support_change_default        :boolean          default(TRUE), not null
 #  org_position_cadence_default            :integer          default("every_change"), not null
+#  pending_representative_locale_ids       :json             not null
 #  phone                                   :string
 #  registration_status                     :string           default("pending")
 #  sign_in_count                           :integer          default(0), not null

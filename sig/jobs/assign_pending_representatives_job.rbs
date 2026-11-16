@@ -4,4 +4,5 @@ class AssignPendingRepresentativesJob < ApplicationJob
   private
 
   def address_located?: (User user) -> bool
+  def abandon_geocode!: (User user, Address address) -> bool
 end

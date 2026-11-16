@@ -76,9 +76,9 @@ export default function AddressScreen() {
     const [isVoterRegistrationAddressConfirmed, setIsVoterRegistrationAddressConfirmed] = useState(false);
     const autocompleteAvailable = hasGooglePlacesKey();
     const [showManual, setShowManual] = useState(!autocompleteAvailable);
-    const [isRetrying, setIsRetrying] = useState(false);
     const [confirmingAddressSwitch, setConfirmingAddressSwitch] = useState(false);
     const [savedButNotLoaded, setSavedButNotLoaded] = useState(false);
+    const [notLocatedMessage, setNotLocatedMessage] = useState<string | null>(null);
 
     const prefilledRef = useRef(false);
     const [prefilled, setPrefilled] = useState(false);
@@ -106,23 +106,30 @@ export default function AddressScreen() {
 
     // @lat: [[identity-and-access#Registration is asynchronous by necessity]]
     const isOnboarding = user?.is_registration_complete !== true;
-    const registrationStatus = (user as { registration_status?: string } | null)?.registration_status;
-    const isProcessing = registrationStatus === "processing";
-    const isFailed = registrationStatus === "failed";
 
-    useEffect(() => {
-        if (!isProcessing) return;
-        const id = setInterval(() => {
-            void refresh();
-        }, 3000);
-        return () => clearInterval(id);
-    }, [isProcessing, refresh]);
+    const clearCachesAndRefresh = async () => {
+        // @lat: [[mobile-sqlite-cache-design#Why address changes evict mobile SQLite caches]]
+        clearCapturedCategories();
+        await Promise.all([legislatorCache.clear().catch(() => {}), billCache.clear().catch(() => {})]);
+        return refresh();
+    };
+
+    const finishAddressSave = async () => {
+        setNotLocatedMessage(null);
+        const loaded = await clearCachesAndRefresh();
+        if (loaded === false && isOnboarding) {
+            setSavedButNotLoaded(true);
+            return;
+        }
+        if (nav.canGoBack()) nav.goBack();
+    };
 
     const submitForm = async (toSubmit: AddressForm) => {
         setError(null);
+        setNotLocatedMessage(null);
         setSubmitting(true);
         try {
-            await apiClient.post("/sway_registration", {
+            const response = (await apiClient.post("/sway_registration", {
                 sway_registration: {
                     street: toSubmit.street1.trim(),
                     street2: toSubmit.street2.trim() || null,
@@ -136,17 +143,14 @@ export default function AddressScreen() {
                     is_voter_registration_address_confirmed: isVoterRegistrationAddressConfirmed,
                     ...(!isOnboarding ? { confirm_deactivate_legislators: true } : {}),
                 },
-            });
-            setIsRetrying(false);
-            // @lat: [[mobile-sqlite-cache-design#Why address changes evict mobile SQLite caches]]
-            clearCapturedCategories();
-            await Promise.all([legislatorCache.clear().catch(() => {}), billCache.clear().catch(() => {})]);
-            const loaded = await refresh();
-            if (loaded === false && isOnboarding) {
-                setSavedButNotLoaded(true);
+            })) as { address_located?: boolean; message?: string } | null;
+            if (response?.address_located === false) {
+                if (!isOnboarding) await clearCachesAndRefresh();
+                setNotLocatedMessage(response.message ?? "");
+                setShowManual(true);
                 return;
             }
-            if (nav.canGoBack()) nav.goBack();
+            await finishAddressSave();
         } catch (e) {
             // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why an onboarding failure that may have saved the address reloads the account first]]
             const confirmationRequired = e instanceof ApiRequestError && e.code === "confirmation_required";
@@ -247,83 +251,6 @@ export default function AddressScreen() {
         );
     }
 
-    if (isProcessing) {
-        return (
-            <ScrollView
-                className="flex-1 bg-dominant-light dark:bg-dominant-dark p-6"
-                contentInsetAdjustmentBehavior="automatic"
-                testID="address-screen"
-            >
-                <Card testID="address-processing">
-                    <CardHeader>
-                        <CardTitle>{PARITY_COPY.address.processing.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Text className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
-                            {PARITY_COPY.address.processing.message}
-                        </Text>
-                        <ActivityIndicator className="mt-4" />
-                        <View className="mt-4">
-                            <Pressable
-                                testID="address-processing-signout-cta"
-                                variant="outline"
-                                onPress={() => void signOut()}
-                                accessibilityLabel="Cancel and sign out"
-                            >
-                                <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                                    Cancel and sign out
-                                </Text>
-                            </Pressable>
-                        </View>
-                    </CardContent>
-                </Card>
-            </ScrollView>
-        );
-    }
-
-    if (isFailed && !isRetrying) {
-        return (
-            <ScrollView
-                className="flex-1 bg-dominant-light dark:bg-dominant-dark p-6"
-                contentInsetAdjustmentBehavior="automatic"
-                testID="address-screen"
-            >
-                <Card testID="address-failed">
-                    <CardHeader>
-                        <CardTitle>{PARITY_COPY.address.failed.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Text className="text-base font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
-                            {PARITY_COPY.address.failed.message}
-                        </Text>
-                        <View className="mt-4 gap-3">
-                            <Pressable
-                                testID="address-failed-retry-cta"
-                                variant="default"
-                                onPress={() => setIsRetrying(true)}
-                                accessibilityLabel={PARITY_COPY.address.failed.retryCta}
-                            >
-                                <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
-                                    {PARITY_COPY.address.failed.retryCta}
-                                </Text>
-                            </Pressable>
-                            <Pressable
-                                testID="address-failed-signout-cta"
-                                variant="outline"
-                                onPress={() => void signOut()}
-                                accessibilityLabel="Cancel and sign out"
-                            >
-                                <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                                    Cancel and sign out
-                                </Text>
-                            </Pressable>
-                        </View>
-                    </CardContent>
-                </Card>
-            </ScrollView>
-        );
-    }
-
     return (
         <ScrollView
             className="flex-1 bg-dominant-light dark:bg-dominant-dark p-6"
@@ -352,6 +279,27 @@ export default function AddressScreen() {
                     </Text>
                 </View>
             )}
+
+            {/* @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Asking for a city or ZIP when the address cannot be located]] */}
+            {notLocatedMessage ? (
+                <Card testID="address-not-located" className="mb-4">
+                    <CardContent className="gap-3">
+                        <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                            {notLocatedMessage}
+                        </Text>
+                        <Pressable
+                            testID="address-not-located-continue-cta"
+                            variant="outline"
+                            onPress={() => void finishAddressSave()}
+                            accessibilityLabel={PARITY_COPY.address.notLocated.continueCta}
+                        >
+                            <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                                {PARITY_COPY.address.notLocated.continueCta}
+                            </Text>
+                        </Pressable>
+                    </CardContent>
+                </Card>
+            ) : null}
 
             <Card className="mb-4">
                 <CardContent>

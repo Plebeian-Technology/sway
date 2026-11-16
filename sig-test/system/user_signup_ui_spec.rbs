@@ -1,0 +1,5 @@
+# @lat: [[signup-browser-journeys#Web sign-up browser journeys]]
+class Object
+  def generate_phone_number: () -> String
+  def drive_signup_journey: (phone: String, address_query: String, option_text: String) -> void
+end

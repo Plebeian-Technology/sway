@@ -9,8 +9,6 @@ class SwayRegistrationService
 
     @invited_by_id: untyped
 
-    @async: untyped
-
     @feature: untyped
 
     @districts: untyped
@@ -31,7 +29,7 @@ class SwayRegistrationService
 
     attr_reader skipped_legislator_ids: ::Array[Integer]
 
-    def initialize: (untyped user, untyped address, untyped sway_locale, invited_by_id: untyped, ?async: bool) -> void
+    def initialize: (untyped user, untyped address, untyped sway_locale, invited_by_id: untyped) -> void
 
     def call: -> (::Array[untyped] | untyped)
 

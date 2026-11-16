@@ -4,6 +4,9 @@
 module Api
   module V1
     class FunnelEventsController < BaseController
+      prepend_before_action :skip_session_cookie_write
+      skip_after_action :forbid_storing_a_one_time_secret
+
       rate_limit to: 60, within: 1.minute,
         name: "funnel_events",
         by: -> { request.remote_ip },
@@ -51,6 +54,10 @@ module Api
       end
 
       private
+
+      def skip_session_cookie_write
+        request.session_options[:skip] = true
+      end
 
       VISITOR_TOKEN_FORMAT = /\A[A-Za-z0-9_-]{8,64}\z/
 

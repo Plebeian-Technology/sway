@@ -18,6 +18,9 @@ class SwayRegistrationController < ApplicationController
     "You recently changed your address. To prevent cross-district voting abuse, please wait before switching addresses again."
   REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE =
     "We couldn't change your address right now. Please try again in a few minutes."
+  # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
+  ADDRESS_NOT_LOCATED_MESSAGE =
+    "We could not find this address on the map. Add your city and state, or your ZIP code, so we can match you to your district."
   ADDRESS_TEXT_FIELDS = %i[street street2 street3 city region_code postal_code country].freeze
   GEOCODE_FILLED_FIELDS = %i[city region_code postal_code country].freeze
 
@@ -25,11 +28,11 @@ class SwayRegistrationController < ApplicationController
     u = current_user
     if u.nil?
       redirect_to root_path
+    elsif address_not_located_outcome?
+      render inertia: Pages::REGISTRATION, props: registration_page_props
     elsif u.registered?
       u.complete_registration!
       redirect_to feed_path
-    elsif u.processing?
-      render inertia: Pages::REGISTRATION, props: registration_page_props(processing: true)
     else
       render inertia: Pages::REGISTRATION, props: registration_page_props
     end
@@ -47,9 +50,11 @@ class SwayRegistrationController < ApplicationController
     u.update_column(:is_voter_registration_address_confirmed, registered_voter_address_confirmed)
 
     # @lat: [[identity-and-access#A user holds one address]]
-    address_instance = address
     existing_link = u.user_address
-    if holds_representatives?(u) && existing_link.present? && existing_link.address_id != address_instance.id
+    previous_address = existing_link&.address
+    previously_unlocated = previous_address.present? && !previous_address.located?
+    address_instance = address
+    if holds_representatives?(u, previous_address) && existing_link.present? && existing_link.address_id != address_instance.id
       return handle_address_switch(u, existing_link.address, address_instance)
     end
 
@@ -64,23 +69,28 @@ class SwayRegistrationController < ApplicationController
       end
     end
 
-    if holds_representatives?(u)
+    if !previously_unlocated && holds_representatives?(u, previous_address)
       u.complete_registration!
       return redirect_after_registration_completion(u)
     end
 
+    previous_legislators = clear_previous_unlocated_address(u, previous_address, address_instance)
     skipped_locales = [] #: Array[SwayLocale]
+    resolved_locales = [] #: Array[SwayLocale]
     # @lat: [[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]
     address_instance.sway_locales.each do |sway_locale|
       service = SwayRegistrationService.new(
         u,
         address_instance,
         sway_locale,
-        invited_by_id: invited_by_id,
-        async: false
+        invited_by_id: invited_by_id
       )
       ActiveRecord::Base.transaction { service.call }
-      skipped_locales << sway_locale if service.skipped_resolution_errors.any?
+      if service.skipped_resolution_errors.any?
+        skipped_locales << sway_locale
+      else
+        resolved_locales << sway_locale
+      end
     rescue => e
       report_skipped_locale(u, address_instance, sway_locale, e)
       skipped_locales << sway_locale
@@ -88,24 +98,59 @@ class SwayRegistrationController < ApplicationController
 
     # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried]]
     skipped_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) }
-    # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
-    address_instance.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) } unless address_instance.located?
+    if address_instance.located?
+      resolved_locales.each { |sway_locale| u.remove_pending_representative_locale(sway_locale) }
+    else
+      # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
+      address_instance.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) }
+    end
+    recompute_deactivated_legislator_scores(u, previous_legislators)
 
     u.reload
     wait_for_congress_representatives(u, address_instance) unless u.registered?
     u.complete_registration!
+    return render_address_not_located(u, address_instance) unless address_instance.located?
+
     redirect_after_registration_completion(u)
   end
 
   private
 
   # @lat: [[registration-dead-ends#Correcting an address after a failed lookup#A President link alone is not a registration]]
-  def holds_representatives?(u)
+  def holds_representatives?(u, previous_address = u.address)
+    return false if previous_address && !previous_address.located?
+
     links = u.user_legislators.where(active: true).includes(legislator: {active_term: :seat})
     return false if links.empty?
     return true if u.pending_representative_locale_ids.empty?
 
     links.any? { |link| link.legislator.active_term&.seat&.seat_identifier != RepresentativeReassignmentObserver::PRESIDENT_SEAT_IDENTIFIER }
+  end
+
+  def clear_previous_unlocated_address(u, previous_address, new_address)
+    return [] unless previous_address && !previous_address.located? && previous_address.id != new_address.id
+
+    active_uls = u.user_legislators.where(active: true).includes(legislator: :active_term).to_a
+    active_uls.each { |ul| ul.update!(active: false) }
+    u.user_districts.where(active: true).find_each { |ud| ud.update!(active: false) }
+    previous_address.sway_locales.each { |sway_locale| u.remove_pending_representative_locale(sway_locale) }
+    active_uls.filter_map(&:legislator)
+  end
+
+  def recompute_deactivated_legislator_scores(u, previous_legislators)
+    return if previous_legislators.empty?
+
+    active_ids = u.user_legislators.where(active: true).pluck(:legislator_id)
+    stale_legislators = previous_legislators.reject { |legislator| active_ids.include?(legislator.id) }.uniq(&:id)
+    return if stale_legislators.empty?
+
+    stale_legislators.each do |legislator|
+      term = legislator.active_term
+      ScoreRecomputeService.recompute_legislator!(term) if term
+    end
+    Bill.where(id: u.user_votes.select(:bill_id)).find_each do |bill|
+      ScoreRecomputeService.recompute_bill!(bill)
+    end
   end
 
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
@@ -117,6 +162,7 @@ class SwayRegistrationController < ApplicationController
     respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: feed_path)
   end
 
+  # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
   def handle_address_switch(u, previous_address, new_address)
     unless confirm_deactivate_legislators?
       error = RegistrationErrorResource.new(
@@ -156,8 +202,11 @@ class SwayRegistrationController < ApplicationController
       end
 
     if change
+      new_address.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) } unless new_address.located?
       u.reload
       u.complete_registration!
+      return render_address_not_located(u, new_address) unless new_address.located?
+
       redirect_after_registration_completion(u)
     else
       render_no_representatives
@@ -258,9 +307,38 @@ class SwayRegistrationController < ApplicationController
     end
   end
 
-  def registration_page_props(processing: false)
+  # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
+  def render_address_not_located(u, address_instance)
+    PendingVoteReconciliationService.call(user: u, cookies: cookies)
+    SwayLogging.warn("sway_registration.address_not_located", user_id: u.id, address_id: address_instance.id)
+    Sentry.capture_message(
+      "sway_registration.address_not_located",
+      level: :warning,
+      extra: {user_id: u.id, address_id: address_instance.id}
+    )
+    flash[:registration_outcome] = {
+      reason: "address_not_located",
+      message: ADDRESS_NOT_LOCATED_MESSAGE
+    }
+    respond_json_or_redirect(
+      status: :ok,
+      json: {
+        ok: true,
+        registration_status: "completed",
+        address_located: false,
+        message: ADDRESS_NOT_LOCATED_MESSAGE
+      },
+      redirect: sway_registration_index_path
+    )
+  end
+
+  def address_not_located_outcome?
+    flash[:registration_outcome].present? &&
+      flash[:registration_outcome].symbolize_keys[:reason] == "address_not_located"
+  end
+
+  def registration_page_props
     props = {}
-    props[:processing] = true if processing
     if flash[:registration_outcome].present?
       props[:registration_outcome] = RegistrationOutcomeResource.new(
         flash[:registration_outcome].symbolize_keys
@@ -288,7 +366,12 @@ class SwayRegistrationController < ApplicationController
 
   # @lat: [[address-normalized-key#Finding an address during registration]]
   def address
-    found = address_by_normalized_key || linked_address_with_submitted_text || Address.create!(**submitted_address_attributes)
+    found = address_by_normalized_key || linked_address_with_submitted_text
+    if found
+      found.geocode_and_save unless found.located?
+    else
+      found = Address.create!(**submitted_address_attributes)
+    end
 
     changes = {}
     if submitted_normalized_key.present? && found.normalized_key != submitted_normalized_key

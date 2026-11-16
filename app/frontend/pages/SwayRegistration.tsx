@@ -1,7 +1,7 @@
 // @lat: [[registration-dead-ends#Browser page state selectors]]
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, usePoll, useForm, type InertiaFormProps } from "@inertiajs/react";
+import { Link, useForm, type InertiaFormProps } from "@inertiajs/react";
 import { ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { sway } from "sway";
@@ -36,22 +36,21 @@ interface IRegistrationFormData extends sway.IAddress {
 
 interface IProps {
     user: sway.IUser;
-    processing?: boolean;
     registration_outcome?: { reason: string; message: string } | null;
     sway_locale?: sway.ISwayLocale | null;
     locale?: sway.ISwayLocale | null;
 }
 
-const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_outcome, sway_locale, locale }) => {
+const SwayRegistration: React.FC<IProps> = ({ user, registration_outcome, sway_locale, locale }) => {
     const activeLocale = locale ?? sway_locale ?? null;
     const logout = useLogout();
-    const requiresAddressSwitchConfirmation = Boolean(user?.is_registration_complete);
+    const hasAddressNotLocatedOutcome = registration_outcome?.reason === "address_not_located";
+    const requiresAddressSwitchConfirmation = Boolean(user?.is_registration_complete) && !hasAddressNotLocatedOutcome;
     const form = useForm<IRegistrationFormData>({
         is_voter_registration_address_confirmed: false,
         ...(requiresAddressSwitchConfirmation ? { confirm_deactivate_legislators: false } : {}),
     } as IRegistrationFormData);
     const [isLoading, setLoading] = useState<boolean>(false);
-    const [isCorrectingAddress, setCorrectingAddress] = useState<boolean>(false);
     const [showSwitchConfirm, setShowSwitchConfirm] = useState<boolean>(false);
     const loadingToastId = useRef<string | undefined>(undefined);
     const noRepresentativesNotice =
@@ -60,7 +59,22 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
                 <p className="text-sm text-muted-foreground">{registration_outcome.message}</p>
             </div>
         ) : null;
-    const hasNoRepresentativesOutcome = registration_outcome?.reason === "no_representatives";
+    // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked#Asking for a city or ZIP when the address cannot be located]]
+    const addressNotLocatedNotice = hasAddressNotLocatedOutcome ? (
+        <div
+            data-testid="address-not-located-message"
+            // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role lat:ignore
+            role="status"
+            className="space-y-2"
+        >
+            <p className="text-sm text-muted-foreground">{registration_outcome.message}</p>
+            <Button asChild variant="outline">
+                <Link href={ROUTES.feed} data-testid="link-continue-to-feed">
+                    {PARITY_COPY.address.notLocated.continueCta}
+                </Link>
+            </Button>
+        </div>
+    ) : null;
 
     const handleStart = useCallback(() => {
         setLoading(true);
@@ -76,7 +90,6 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
     const handleFinish = useCallback(() => {
         toast.dismiss(loadingToastId.current);
         setLoading(false);
-        setCorrectingAddress(false);
     }, []);
 
     // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
@@ -90,18 +103,10 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
     }, []);
 
     useEffect(() => {
-        if (processing) {
-            trackFunnelStepOnce("geocode_polling_started");
-        }
-    }, [processing]);
-
-    useEffect(() => {
         if (user?.is_registration_complete) {
             trackFunnelStepOnce("registration_completed");
-        } else if (user?.registration_status === "failed") {
-            trackFunnelStepOnce("registration_failed");
         }
-    }, [user?.is_registration_complete, user?.registration_status]);
+    }, [user?.is_registration_complete]);
 
     // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
     const submitRegistration = useCallback(
@@ -148,57 +153,6 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
         window.open(url, "_blank", "noopener,noreferrer");
     }, []);
 
-    usePoll(3000, { only: ["user", "processing"] }, { autoStart: !!processing && !hasNoRepresentativesOutcome });
-
-    if (processing && !hasNoRepresentativesOutcome) {
-        return (
-            <div className="mx-auto w-full max-w-2xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{PARITY_COPY.address.processing.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <output
-                            data-testid="registration-processing"
-                            aria-label="Registration in progress"
-                            aria-live="polite"
-                        >
-                            <p data-testid="registration-processing-message" className="text-sm text-muted-foreground">
-                                {PARITY_COPY.address.processing.message}
-                            </p>
-                        </output>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    if (user?.registration_status === "failed" && !isCorrectingAddress) {
-        return (
-            <div className="mx-auto w-full max-w-2xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{PARITY_COPY.address.failed.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {noRepresentativesNotice}
-                        <div data-testid="registration-error" role="alert">
-                            <p className="text-sm text-muted-foreground">{PARITY_COPY.address.failed.message}</p>
-                        </div>
-                        {/* @lat: [[registration-dead-ends#Correcting an address after a failed lookup]] */}
-                        <Button
-                            type="button"
-                            onClick={() => setCorrectingAddress(true)}
-                            data-testid="btn-retry-registration"
-                        >
-                            {PARITY_COPY.address.failed.retryCta}
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
     if (!user?.id) {
         return (
             <div className="mx-auto w-full max-w-2xl">
@@ -221,6 +175,7 @@ const SwayRegistration: React.FC<IProps> = ({ user, processing, registration_out
     return (
         <div className="mx-auto w-full max-w-2xl space-y-6">
             {noRepresentativesNotice}
+            {addressNotLocatedNotice}
             <div className="space-y-1">
                 <h1 className="text-2xl font-semibold tracking-tight">{PARITY_COPY.address.complete.heading}</h1>
                 <p className="text-sm text-muted-foreground">{PARITY_COPY.address.complete.lead}</p>

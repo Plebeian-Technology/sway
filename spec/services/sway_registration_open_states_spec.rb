@@ -16,7 +16,7 @@ RSpec.describe SwayRegistrationService, "#find_legislators_from_open_states_geo_
   let(:address) { create(:address, latitude: 39.29, longitude: -76.61) }
   let(:user) { create(:user) }
   let(:service) do
-    described_class.new(user, address, sway_locale, invited_by_id: nil, async: false)
+    described_class.new(user, address, sway_locale, invited_by_id: nil)
   end
 
   before { ENV["OPEN_STATES_API_KEY"] = "test-key" }
@@ -142,7 +142,7 @@ RSpec.describe SwayRegistrationService, "#find_legislators_from_open_states_geo_
     seat = Seat.create!(district: state_wide, seat_identifier: "maryland-governor", title: "Governor", chamber: "Executive")
     governor = create(:legislator, sway_locale:, last_name: "Governor")
     create(:legislator_term, legislator: governor, district: state_wide, seat:)
-    unlocated_service = described_class.new(user, unlocated, sway_locale, invited_by_id: nil, async: false)
+    unlocated_service = described_class.new(user, unlocated, sway_locale, invited_by_id: nil)
 
     expect(unlocated_service.send(:find_legislators_from_open_states_geo_endpoint)).to eq([])
     expect(unlocated_service.district_legislators).to contain_exactly(governor)

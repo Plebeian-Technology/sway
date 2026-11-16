@@ -232,8 +232,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
 
     describe("Active Locale Propagation across all Locales", () => {
         it("propagates Baltimore locale viewbox and bounded params into Nominatim fetch query", async () => {
-            render(<SwayRegistration user={failedUser} sway_locale={BALTIMORE_LOCALE} />);
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+            render(<SwayRegistration user={pendingUser} sway_locale={BALTIMORE_LOCALE} />);
 
             const combobox = screen.getByRole("combobox");
             fireEvent.change(combobox, { target: { value: "100 Holliday" } });
@@ -253,8 +252,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("propagates Annapolis locale viewbox into Nominatim fetch query", async () => {
-            render(<SwayRegistration user={failedUser} sway_locale={ANNAPOLIS_LOCALE} />);
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+            render(<SwayRegistration user={pendingUser} sway_locale={ANNAPOLIS_LOCALE} />);
 
             const combobox = screen.getByRole("combobox");
             fireEvent.change(combobox, { target: { value: "Main St" } });
@@ -273,8 +271,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("propagates Maryland state-wide locale viewbox into Nominatim fetch query", async () => {
-            render(<SwayRegistration user={failedUser} sway_locale={MARYLAND_LOCALE} />);
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+            render(<SwayRegistration user={pendingUser} sway_locale={MARYLAND_LOCALE} />);
 
             const combobox = screen.getByRole("combobox");
             fireEvent.change(combobox, { target: { value: "State Circle" } });
@@ -293,8 +290,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("propagates Congress unbounded locale omitting viewbox and bounded from fetch query", async () => {
-            render(<SwayRegistration user={failedUser} sway_locale={CONGRESS_LOCALE} />);
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+            render(<SwayRegistration user={pendingUser} sway_locale={CONGRESS_LOCALE} />);
 
             const combobox = screen.getByRole("combobox");
             fireEvent.change(combobox, { target: { value: "Independence Ave" } });
@@ -313,8 +309,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("prioritizes locale prop over sway_locale prop when both are provided", async () => {
-            render(<SwayRegistration user={failedUser} sway_locale={BALTIMORE_LOCALE} locale={ANNAPOLIS_LOCALE} />);
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+            render(<SwayRegistration user={pendingUser} sway_locale={BALTIMORE_LOCALE} locale={ANNAPOLIS_LOCALE} />);
 
             const combobox = screen.getByRole("combobox");
             fireEvent.change(combobox, { target: { value: "Market St" } });
@@ -331,8 +326,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("gracefully falls back when neither locale nor sway_locale is provided", async () => {
-            render(<SwayRegistration user={failedUser} />);
-            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+            render(<SwayRegistration user={pendingUser} />);
 
             const combobox = screen.getByRole("combobox");
             fireEvent.change(combobox, { target: { value: "Elm St" } });
@@ -352,7 +346,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
     });
 
     describe("Workflow State Transitions & Failure Recovery Cycles", () => {
-        it("navigates failed -> retry -> submit -> onFinish failure -> retry recovery loop without crashing", () => {
+        it("renders the address form directly for legacy failed status and survives submit -> onFinish without error cards", () => {
             let capturedOnFinish: (() => void) | undefined;
             postMock.mockImplementation((_url, options) => {
                 capturedOnFinish = options?.onFinish;
@@ -361,12 +355,8 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
 
             render(<SwayRegistration user={failedUser} />);
 
-            expect(screen.getByTestId("registration-error")).toBeInTheDocument();
-            const retryButton = screen.getByTestId("btn-retry-registration");
-            expect(retryButton).toBeInTheDocument();
-
-            fireEvent.click(retryButton);
             expect(screen.queryByTestId("registration-error")).toBeNull();
+            expect(screen.queryByTestId("btn-retry-registration")).toBeNull();
             expect(screen.getByRole("combobox")).toBeInTheDocument();
 
             fireEvent.change(screen.getByRole("combobox"), { target: { value: "100 Holliday" } });
@@ -392,16 +382,12 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
             });
 
             expect(toastDismissMock).toHaveBeenCalledWith(LOADING_TOAST_ID);
-            expect(screen.getByTestId("registration-error")).toBeInTheDocument();
-
-            fireEvent.click(screen.getByTestId("btn-retry-registration"));
             expect(screen.queryByTestId("registration-error")).toBeNull();
             expect(screen.getByRole("combobox")).toBeInTheDocument();
         });
 
         it("posts typed text as the street when no suggestion option is clicked", () => {
-            render(<SwayRegistration user={failedUser} />);
-            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+            render(<SwayRegistration user={pendingUser} />);
 
             fireEvent.change(screen.getByRole("combobox"), { target: { value: "100 Holliday" } });
             fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
@@ -412,8 +398,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("handles cancel button click by invoking useLogout", () => {
-            render(<SwayRegistration user={failedUser} />);
-            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+            render(<SwayRegistration user={pendingUser} />);
 
             const cancelButton = screen.getByTestId("btn-cancel-registration");
             fireEvent.click(cancelButton);
@@ -422,8 +407,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
         });
 
         it("allows toggling voter registration confirmation checkbox", () => {
-            render(<SwayRegistration user={failedUser} />);
-            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+            render(<SwayRegistration user={pendingUser} />);
 
             const checkbox = screen.getByTestId("registered-voter-address-confirmation");
             expect(checkbox).not.toBeChecked();
@@ -435,10 +419,10 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
             expect(checkbox).not.toBeChecked();
         });
 
-        it("dispatches funnel telemetry tracking on mount and status transitions", () => {
+        it("dispatches mount funnel telemetry without legacy failure events", () => {
             render(<SwayRegistration user={failedUser} />);
             expect(trackFunnelStepOnceMock).toHaveBeenCalledWith("address_form_viewed");
-            expect(trackFunnelStepOnceMock).toHaveBeenCalledWith("registration_failed");
+            expect(trackFunnelStepOnceMock).not.toHaveBeenCalledWith("registration_failed");
         });
 
         it("tracks completion telemetry when user is registered", () => {
@@ -571,24 +555,23 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
     });
 
     describe("Processing State & Polling Hook Invariants", () => {
-        it("renders processing card and activates usePoll when processing is true", () => {
-            render(<SwayRegistration user={failedUser} processing={true} />);
+        it("renders the address form directly and does not call usePoll when processing prop is passed", () => {
+            render(<SwayRegistration user={failedUser} {...({ processing: true } as Record<string, unknown>)} />);
 
-            expect(screen.getByTestId("registration-processing")).toBeInTheDocument();
-            expect(screen.getByText(PARITY_COPY.address.processing.title)).toBeInTheDocument();
-            expect(screen.getByText(PARITY_COPY.address.processing.message)).toBeInTheDocument();
-            expect(screen.queryByRole("combobox")).toBeNull();
+            expect(screen.queryByTestId("registration-processing")).toBeNull();
             expect(screen.queryByTestId("registration-error")).toBeNull();
+            expect(screen.getByRole("combobox")).toBeInTheDocument();
+            expect(screen.getByTestId("btn-submit-registration")).toBeInTheDocument();
 
-            expect(usePollMock).toHaveBeenCalledWith(3000, { only: ["user", "processing"] }, { autoStart: true });
-            expect(trackFunnelStepOnceMock).toHaveBeenCalledWith("geocode_polling_started");
+            expect(usePollMock).not.toHaveBeenCalled();
+            expect(trackFunnelStepOnceMock).not.toHaveBeenCalledWith("geocode_polling_started");
+            expect(trackFunnelStepOnceMock).not.toHaveBeenCalledWith("registration_failed");
         });
     });
 
     describe("External Advisory Links", () => {
         it("opens external voter registration and github links in new tab with secure flags", () => {
-            render(<SwayRegistration user={failedUser} />);
-            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+            render(<SwayRegistration user={pendingUser} />);
 
             const registerBtn = screen.getByRole("button", {
                 name: new RegExp(PARITY_COPY.address.helper.registerToVote, "i"),
@@ -624,8 +607,7 @@ describe("SwayRegistration Adversarial Challenge — Workflow & Failure Recovery
 
     describe("Full Unmocked End-to-End Nominatim Autocomplete Integration", () => {
         it("completes full address search, suggestion selection, and form submission lifecycle", async () => {
-            render(<SwayRegistration user={failedUser} sway_locale={BALTIMORE_LOCALE} />);
-            fireEvent.click(screen.getByTestId("btn-retry-registration"));
+            render(<SwayRegistration user={pendingUser} sway_locale={BALTIMORE_LOCALE} />);
 
             const combobox = screen.getByRole("combobox");
             expect(combobox).toBeInTheDocument();

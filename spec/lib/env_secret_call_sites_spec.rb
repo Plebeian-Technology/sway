@@ -264,7 +264,7 @@ RSpec.describe "ENV secret whitespace stripping" do
     let(:user) { create(:user) }
     let(:address) { create(:address, latitude: 39.29, longitude: -76.61) }
     let(:service) do
-      SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil, async: false)
+      SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil)
     end
 
     it "sends the stripped key as the OpenStates apikey query param" do

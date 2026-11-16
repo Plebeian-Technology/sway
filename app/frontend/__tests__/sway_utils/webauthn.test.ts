@@ -233,6 +233,48 @@ describe("get", () => {
 
         await expect(get({ publicKey: requestOptions })).rejects.toThrow("does not support passkeys");
     });
+
+    it("includes authenticatorAttachment in assertion JSON when provided", async () => {
+        const credential = {
+            id: "credential-id",
+            rawId: bufferOf(CREDENTIAL_ID),
+            type: "public-key",
+            authenticatorAttachment: "platform",
+            getClientExtensionResults: () => ({}),
+            response: {
+                authenticatorData: bufferOf([1]),
+                clientDataJSON: bufferOf([2]),
+                signature: bufferOf([3]),
+                userHandle: null,
+            },
+        };
+        stubBrowser({
+            publicKeyCredential: function PublicKeyCredential() {},
+            credentials: { get: vi.fn<() => Promise<unknown>>().mockResolvedValue(credential) },
+        });
+
+        const result = await get({ publicKey: requestOptions });
+
+        expect(result.authenticatorAttachment).toBe("platform");
+    });
+
+    it("throws when navigator.credentials.create returns null", async () => {
+        stubBrowser({
+            publicKeyCredential: function PublicKeyCredential() {},
+            credentials: { create: vi.fn<() => Promise<unknown>>().mockResolvedValue(null) },
+        });
+
+        await expect(create({ publicKey: creationOptions })).rejects.toThrow("Credential creation failed");
+    });
+
+    it("throws when navigator.credentials.get returns null", async () => {
+        stubBrowser({
+            publicKeyCredential: function PublicKeyCredential() {},
+            credentials: { get: vi.fn<() => Promise<unknown>>().mockResolvedValue(null) },
+        });
+
+        await expect(get({ publicKey: requestOptions })).rejects.toThrow("Credential retrieval failed");
+    });
 });
 
 describe("isPasskeySupported", () => {

@@ -1,2 +1,15 @@
 module WebauthnSystemHelpers : ::Object
+  def reject_next_passkey_creation: () -> void
+end
+
+module RSpec
+  module Core
+    class ExampleGroup
+      include WebauthnSystemHelpers
+    end
+  end
+end
+
+class Object
+  def reject_next_passkey_creation: () -> void
 end

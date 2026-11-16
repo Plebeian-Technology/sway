@@ -271,6 +271,66 @@ RSpec.describe "Api::V1::Sessions", type: :request do
         expect(json_body.dig(:user, :id)).to eq(user.id)
       end
 
+      it "verifies using id alone when verified credential does not respond to raw_id" do
+        cred_without_raw_id = double("WebAuthn::CredentialNoRawId", id: passkey.external_id, sign_count: 5)
+        allow_any_instance_of(WebAuthn::RelyingParty).to receive(:verify_authentication) do |_instance, _params, _challenge, **_opts, &block|
+          stored = block.call(cred_without_raw_id)
+          [cred_without_raw_id, stored]
+        end
+
+        post "/api/v1/sessions/callback",
+          params: {session: {challenge_id: "abc123", credential: {id: passkey.external_id, type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(passkey.reload.sign_count).to eq(5)
+      end
+
+      it "verifies using id alone when verified credential has nil raw_id" do
+        cred_nil_raw_id = double("WebAuthn::CredentialNilRawId", id: passkey.external_id, raw_id: nil, sign_count: 6)
+        allow_any_instance_of(WebAuthn::RelyingParty).to receive(:verify_authentication) do |_instance, _params, _challenge, **_opts, &block|
+          stored = block.call(cred_nil_raw_id)
+          [cred_nil_raw_id, stored]
+        end
+
+        post "/api/v1/sessions/callback",
+          params: {session: {challenge_id: "abc123", credential: {id: passkey.external_id, type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(passkey.reload.sign_count).to eq(6)
+      end
+
+      it "returns 401 invalid_credentials for a discoverable challenge when credential id is blank" do
+        Rails.cache.write(
+          "webauthn:challenge:disc-blank-id",
+          {challenge: "fake-challenge", phone: nil},
+          expires_in: 5.minutes
+        )
+
+        post "/api/v1/sessions/callback",
+          params: {session: {challenge_id: "disc-blank-id", credential: {id: "", type: "public-key"}, platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(json_body.dig(:error, :code)).to eq("invalid_credentials")
+      end
+
+      it "returns 401 invalid_credentials for a discoverable challenge when credential is omitted" do
+        Rails.cache.write(
+          "webauthn:challenge:disc-missing-cred",
+          {challenge: "fake-challenge", phone: nil},
+          expires_in: 5.minutes
+        )
+
+        post "/api/v1/sessions/callback",
+          params: {session: {challenge_id: "disc-missing-cred", platform: "ios"}},
+          as: :json
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(json_body.dig(:error, :code)).to eq("invalid_credentials")
+      end
+
       it "returns 401 invalid_credentials for a discoverable callback whose credential maps to no passkey" do
         Rails.cache.write(
           "webauthn:challenge:disc-unknown",

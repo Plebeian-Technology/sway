@@ -1,23 +1,25 @@
 {
     "app/frontend/components/auth/PasskeyPanel.tsx": {
-        "line": 96.9,
-        "branch": 84.0
+        "line": 100.0,
+        "branch": 99.0,
+        "reason": "line 146: FormData.get('code') ?? '' fallback is unreachable while isConfirmingPhone renders an <input name='code'>."
     },
     "app/frontend/components/user/NominatimAddressAutocomplete.tsx": {
         "line": 100.0,
-        "branch": 98.0
+        "branch": 100.0
     },
     "app/frontend/hooks/authentication/phone/useConfirmPhoneVerification.ts": {
-        "line": 95.2,
-        "branch": 90.0
+        "line": 100.0,
+        "branch": 100.0
     },
     "app/frontend/hooks/authentication/useWebAuthnRegistration.ts": {
-        "line": 92.7,
-        "branch": 90.4
+        "line": 100.0,
+        "branch": 100.0
     },
     "app/frontend/hooks/useNominatimAddressAutocomplete.ts": {
-        "line": 97.8,
-        "branch": 82.2
+        "line": 100.0,
+        "branch": 98.1,
+        "reason": "lines 155, 182: !address guard is unreachable before line 186 reads address.typed_address; region_code/postal_code ?? '' fallbacks are unreachable after isEmptyAddress rejects falsy values."
     },
     "app/frontend/pages/SwayRegistration.tsx": {
         "line": 100.0,
@@ -25,14 +27,16 @@
     },
     "app/frontend/sway_utils/parseNominatimAddress.ts": {
         "line": 100.0,
-        "branch": 96.7
+        "branch": 98.9,
+        "reason": "line 150: private sanitizeObject non-object else branch is unreachable because lines 237 and 248 guard both call sites."
     },
     "app/frontend/sway_utils/rate_limit.ts": {
-        "line": 94.7,
-        "branch": 96.0
+        "line": 100.0,
+        "branch": 100.0
     },
     "app/frontend/sway_utils/webauthn.ts": {
         "line": 100.0,
-        "branch": 86.6
+        "branch": 96.6,
+        "reason": "line 76: descriptors ?? [] fallback in private decodeCredentialDescriptors is unreachable because callers guard excludeCredentials/allowCredentials."
     }
 }

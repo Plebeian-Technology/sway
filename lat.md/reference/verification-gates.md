@@ -133,7 +133,7 @@ Each red lane prints a copy-pasteable rerun beside its log path. Every Docker la
 - CI runs the task after the rspec step in `.github/workflows/rspec.yml`, where the one fresh worker result is the whole report
 - Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
 - Raising a floor: measure the file after the change that adds coverage, then write the new percentage, rounded down to one decimal place, into the floor file in the same commit; a floor is never lowered to make a run pass
-- A line no test can reach, such as the `return nil unless change` guard in [[app/services/user_address_switch_service.rb]], keeps its file under 100 percent until the line is removed
+- A line no test can reach, such as the `return nil unless change` guard in [[app/services/user_address_switch_service.rb]], keeps its file under 100 percent until the line is removed; sub-100 entries in [[config/onboarding_coverage_floor.yml]] document the unreachable line or branch in an adjacent YAML `#` comment
 - `config/initializers/monkey_patches.rb` is not listed: SimpleCov's `rails` profile skips everything under `config/`, so the file can never appear in the report
 - Worker results from another rspec run in the same checkout while `verify` runs are merged too; they can only raise a file's numbers, never lower them
 
@@ -147,6 +147,7 @@ The full vitest run fails when any frontend onboarding file in [[config/onboardi
 - Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
 - Raising a floor: run `pnpm test --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
 - `app/frontend/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
+- Provably unreachable branches holding an entry under 100.0 carry a `"reason"` field naming the unreachable line or guard
 
 ## Mobile onboarding coverage gate
 
@@ -159,6 +160,7 @@ The full mobile Jest run fails when any mobile onboarding file in [[config/onboa
 - Each floor is the percentage measured on the commit that set it, rounded down to one decimal place
 - Raising a floor: run `TZ=UTC pnpm --dir mobile exec jest --ci --forceExit --watchman=false --coverage`, read the file's line and branch columns, and write them, rounded down to one decimal place, into the floor file in the same commit as the tests; a floor is never lowered to make a run pass
 - `mobile/__tests__/coverageFloors.test.ts` checks that the floor file lists exactly the onboarding files, that each exists, and that every percentage is between 0 and 100
+- Provably unreachable lines or branches holding an entry under 100.0 carry a `"reason"` field naming the unreachable line or guard
 
 ## Known traps
 

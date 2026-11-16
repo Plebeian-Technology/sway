@@ -79,6 +79,12 @@ describe("parseRetryAfter", () => {
         expect(result.waitLabel).toBeNull();
         expect(result.throttledUntil).toEqual(new Date(NOW.getTime() + 60_000));
     });
+
+    it("falls back to a 60s throttle when headers are missing or null", () => {
+        const result = parseRetryAfter({ status: 429, headers: null });
+        expect(result.waitLabel).toBeNull();
+        expect(result.throttledUntil).toEqual(new Date(NOW.getTime() + 60_000));
+    });
 });
 
 describe("throttleCopy", () => {

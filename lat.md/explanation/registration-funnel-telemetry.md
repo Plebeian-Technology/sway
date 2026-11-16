@@ -22,7 +22,7 @@ The client tracker maps the primary onboarding progression: `landing` on public 
 
 The public ingestion endpoint at `POST /api/v1/funnel_events` validates step enumerations and clamps metadata payloads. Rails 8 rate limiting restricts incoming telemetry to sixty requests per minute per IP.
 
-Operating behind `Api::V1::BaseController` with `public_endpoint?` enabled, the controller associates incoming events with the authenticated bearer user or, for browser onboarding telemetry when no token is supplied, with the ambient session user. If an API token is supplied, it is authoritative and invalid credentials record anonymous events without cookie fallback. Metadata dictionaries are pruned to primitive scalar values and capped in size to prevent storage exhaustion. Malformed step names receive an unprocessable entity status code rather than crashing ingestion workers.
+Operating behind `Api::V1::BaseController` with `public_endpoint?` enabled, the controller associates incoming events with the authenticated bearer user or, for browser onboarding telemetry when no token is supplied, with the ambient session user. Telemetry requests set `request.session_options[:skip] = true` and skip `forbid_storing_a_one_time_secret` flash access so concurrent `sendBeacon` responses never emit `Set-Cookie` for the Rails session cookie and overwrite in-flight WebAuthn challenges or `sign_in` sessions. If an API token is supplied, it is authoritative and invalid credentials record anonymous events without cookie fallback. Metadata dictionaries are pruned to primitive scalar values and capped in size to prevent storage exhaustion. Malformed step names receive an unprocessable entity status code rather than crashing ingestion workers.
 
 ## Attribution preservation
 

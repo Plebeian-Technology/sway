@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Authentication, type: :controller do
+  include RateLimitHelpers
+
   include_context "TwilioDouble"
 
   controller(ApplicationController) do
@@ -49,6 +51,15 @@ RSpec.describe Authentication, type: :controller do
           to: "+14105551212",
           channel: "sms"
         )
+      end
+
+      it "returns true without storing session[:phone] when Twilio returns nil" do
+        allow(twilio_verifications_double).to receive(:create).and_return(nil)
+
+        result = controller.send(:send_phone_verification, session_store, phone)
+
+        expect(result).to be(true)
+        expect(session_store).not_to have_key(:phone)
       end
 
       it "returns false and logs only safe fields (no recipient phone) when Twilio raises" do
@@ -126,6 +137,92 @@ RSpec.describe Authentication, type: :controller do
       expect(
         controller.send(:send_phone_verification, session_store, nil)
       ).to be(false)
+    end
+  end
+
+  describe "#phone_verification_send_wait" do
+    it "fails open and logs when PhoneVerificationSendLimit.claim raises" do
+      with_rate_limit_enabled(:phone_verify) do
+        allow(PhoneVerificationSendLimit).to receive(:claim).and_raise(StandardError, "cache down")
+        allow(SwayLogging).to receive(:log_exception)
+
+        expect(controller.send(:phone_verification_send_wait, "4105551212")).to be_nil
+        expect(SwayLogging).to have_received(:log_exception)
+          .with("authentication.phone_send_limit_failed", exception: an_instance_of(StandardError), level: :warn)
+      end
+    end
+  end
+
+  describe "#release_phone_verification_send" do
+    it "logs and swallows errors when PhoneVerificationSendLimit.release raises" do
+      with_rate_limit_enabled(:phone_verify) do
+        expect(controller.send(:phone_verification_send_wait, "4105551212")).to be_nil
+      end
+      allow(PhoneVerificationSendLimit).to receive(:release).and_raise(StandardError, "release failed")
+      allow(SwayLogging).to receive(:log_exception)
+
+      expect { controller.send(:release_phone_verification_send, "4105551212") }.not_to raise_error
+      expect(SwayLogging).to have_received(:log_exception)
+        .with("authentication.phone_send_release_failed", exception: an_instance_of(StandardError), level: :warn)
+    end
+  end
+
+  describe "#send_email_verification" do
+    it "returns false when email is blank" do
+      expect(controller.send(:send_email_verification, "")).to be(false)
+    end
+
+    it "returns true and skips Twilio when skip_phone_verification is enabled" do
+      with_app_config(:dev_login, skip_phone_verification: true) do
+        expect(controller.send(:send_email_verification, "user@example.com")).to be(true)
+      end
+      expect(twilio_verifications_double).not_to have_received(:create)
+    end
+
+    context "when skip_phone_verification is off" do
+      around do |example|
+        with_app_config(:dev_login, skip_phone_verification: false) { example.run }
+      end
+
+      it "sends through Twilio and returns true when verification is present" do
+        expect(controller.send(:send_email_verification, "user@example.com")).to be(true)
+        expect(twilio_verifications_double).to have_received(:create).with(to: "user@example.com", channel: "email")
+      end
+
+      it "returns false without raising when Twilio returns nil" do
+        allow(twilio_verifications_double).to receive(:create).and_return(nil)
+
+        expect(controller.send(:send_email_verification, "user@example.com")).to be(false)
+      end
+
+      it "returns false on RestError outside production without calling Sentry" do
+        twilio_error = Twilio::REST::RestError.allocate
+        allow(twilio_error).to receive_messages(code: 60_200, status_code: 400)
+        allow(twilio_verifications_double).to receive(:create).and_raise(twilio_error)
+        allow(Sentry).to receive(:capture_exception)
+
+        expect(controller.send(:send_email_verification, "user@example.com")).to be(false)
+        expect(Sentry).not_to have_received(:capture_exception)
+      end
+
+      it "reports TwilioVerificationError to Sentry in production on RestError" do
+        twilio_error = Twilio::REST::RestError.allocate
+        allow(twilio_error).to receive_messages(code: 60_200, status_code: 400)
+        allow(twilio_verifications_double).to receive(:create).and_raise(twilio_error)
+        allow(Rails.env).to receive(:production?).and_return(true)
+        allow(Sentry).to receive(:capture_exception)
+
+        expect(controller.send(:send_email_verification, "user@example.com")).to be(false)
+        expect(Sentry).to have_received(:capture_exception).with(an_instance_of(Authentication::TwilioVerificationError))
+      end
+    end
+  end
+
+  describe "#verification_approved?" do
+    it "returns false when Twilio returns nil" do
+      allow(twilio_verification_checks_double).to receive(:create).and_return(nil)
+
+      expect(controller.send(:verification_approved?, to: "+14105551212", code: "123456")).to be(false)
     end
   end
 end

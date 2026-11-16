@@ -33,18 +33,36 @@ class AssignPendingRepresentativesJob < ApplicationJob
   private
 
   # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
+  # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode#A failing geocode is retried less often, then dropped]]
   def address_located?(user)
     address = user.address
     return true if address.nil? || address.located?
+    return false if address.geocode_abandoned_at.present?
+    return abandon_geocode!(user, address) if address.geocode_window_over?
+    return false unless address.geocode_due?
 
     address.geocode_and_save
-    return false unless address.located?
+    unless address.located?
+      address.record_failed_geocode_attempt!
+      return false
+    end
 
     address.sway_locales.each { |sway_locale| user.add_pending_representative_locale(sway_locale) }
     true
   rescue => e
     SwayLogging.log_exception("assign_pending_representatives_job.locate_failed", exception: e, user_id: user.id)
     Sentry.capture_exception(e, extra: {user_id: user.id})
+    false
+  end
+
+  def abandon_geocode!(user, address)
+    address.record_geocode_abandoned!
+    SwayLogging.warn("address.geocode_abandoned", address_id: address.id, user_id: user.id, created_at: address.created_at)
+    Sentry.capture_message(
+      "address.geocode_abandoned",
+      level: :warning,
+      extra: {address_id: address.id, user_id: user.id, created_at: address.created_at}
+    )
     false
   end
 end

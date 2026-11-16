@@ -3,20 +3,22 @@
 # Table name: addresses
 # Database name: primary
 #
-#  id             :integer          not null, primary key
-#  city           :string           not null
-#  country        :string           default("US"), not null
-#  latitude       :string
-#  longitude      :string
-#  normalized_key :string
-#  place_types    :json             not null
-#  postal_code    :string           not null
-#  region_code    :string           not null
-#  street         :string           not null
-#  street2        :string
-#  street3        :string
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
+#  id                      :integer          not null, primary key
+#  city                    :string           not null
+#  country                 :string           default("US"), not null
+#  geocode_abandoned_at    :datetime
+#  geocode_next_attempt_at :datetime
+#  latitude                :string
+#  longitude               :string
+#  normalized_key          :string
+#  place_types             :json             not null
+#  postal_code             :string           not null
+#  region_code             :string           not null
+#  street                  :string           not null
+#  street2                 :string
+#  street3                 :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #

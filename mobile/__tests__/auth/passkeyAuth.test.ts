@@ -444,4 +444,54 @@ describe("passkeyAuth", () => {
             expect(passkeyAuth.isSupported()).toBe(true);
         });
     });
+
+    describe("error mapping and challenge edge cases", () => {
+        test("signIn rethrows challenge errors other than no_passkey_enrolled", async () => {
+            const err = new ApiRequestError("rate_limited", "Too many requests");
+            (apiClient.post as jest.Mock).mockRejectedValueOnce(err);
+
+            await expect(passkeyAuth.signIn("+15551112222")).rejects.toBe(err);
+        });
+
+        test("maps Error instances, error-only objects, null/empty throws, and suppresses __DEV__ warnings when false", async () => {
+            const nativeErr = new Error("native boom");
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(passkeyFlow);
+            (Passkey.get as jest.Mock).mockRejectedValueOnce(nativeErr);
+            await expect(passkeyAuth.signIn("+15551112222")).rejects.toBe(nativeErr);
+            expect(Sentry.captureMessage).toHaveBeenLastCalledWith("passkey_native_error", {
+                level: "warning",
+                tags: { passkey_error: "unknown" },
+            });
+
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(passkeyFlow);
+            (Passkey.get as jest.Mock).mockRejectedValueOnce({ error: "RequestFailed" });
+            await expect(passkeyAuth.signIn("+15551112222")).rejects.toMatchObject({ message: "RequestFailed" });
+
+            (apiClient.post as jest.Mock).mockResolvedValueOnce(passkeyFlow);
+            (Passkey.get as jest.Mock).mockRejectedValueOnce(null);
+            await expect(passkeyAuth.signIn("+15551112222")).rejects.toMatchObject({ message: "passkey_failed" });
+
+            const g = globalThis as { __DEV__?: boolean };
+            const prevDev = g.__DEV__;
+            const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+            g.__DEV__ = false;
+            try {
+                await jest.isolateModulesAsync(async () => {
+                    const mod = require("../../src/auth/passkeyAuth") as typeof import("../../src/auth/passkeyAuth");
+                    const isolatedClient = require("../../src/api/client") as { apiClient: { post: jest.Mock } };
+                    const isolatedPasskey = require("react-native-passkey") as {
+                        Passkey: { isSupported: jest.Mock; get: jest.Mock };
+                    };
+                    isolatedPasskey.Passkey.isSupported.mockReturnValue(true);
+                    isolatedClient.apiClient.post.mockResolvedValueOnce(passkeyFlow);
+                    isolatedPasskey.Passkey.get.mockRejectedValueOnce({ error: "UserCancelled" });
+                    await expect(mod.passkeyAuth.signIn("+15551112222")).rejects.toBeInstanceOf(mod.NoPasskeyError);
+                });
+                expect(warnSpy).not.toHaveBeenCalled();
+            } finally {
+                g.__DEV__ = prevDev;
+                warnSpy.mockRestore();
+            }
+        });
+    });
 });

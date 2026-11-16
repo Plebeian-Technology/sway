@@ -1019,4 +1019,15 @@ describe("AuthScreen", () => {
 
         openURLSpy.mockRestore();
     });
+
+    test("falls back to validationPhone copy when invalid_phone ApiRequestError has empty message", async () => {
+        (passkeyAuth.signIn as jest.Mock).mockRejectedValueOnce(new NoPasskeyError());
+        (smsAuth.requestCode as jest.Mock).mockRejectedValueOnce(new ApiRequestError("invalid_phone", ""));
+
+        const { getByTestId, getByText } = wrap(<AuthScreen />);
+        typePhone(getByTestId);
+        pressSubmit(getByTestId);
+
+        await waitFor(() => expect(getByText(PARITY_COPY.auth.passkeyPanel.validationPhone)).toBeTruthy());
+    });
 });

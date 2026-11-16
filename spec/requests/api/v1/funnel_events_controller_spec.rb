@@ -208,3 +208,22 @@ RSpec.describe "Api::V1::FunnelEvents", type: :request do
     end
   end
 end
+
+RSpec.describe "Api::V1::FunnelEvents session cookie isolation", type: :request do
+  it "never writes the Rails session cookie on 201 or 422 telemetry responses even with flash present" do
+    session_cookie_key = Rails.application.config.session_options.fetch(:key)
+
+    post "/users/webauthn/registration/callback", params: {id: "stale"}
+    expect(response).to have_http_status(:redirect)
+    expect(Array(response.headers["Set-Cookie"]).join("\n")).to include("#{session_cookie_key}=")
+
+    post "/api/v1/funnel_events", params: {step: "sms_verified"}, as: :json
+    expect(response).to have_http_status(:created)
+    expect(Array(response.headers["Set-Cookie"]).join("\n")).not_to include("#{session_cookie_key}=")
+    expect(response.cookies["sway_visitor_token"]).to be_present
+
+    post "/api/v1/funnel_events", params: {step: "invalid_step"}, as: :json
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(Array(response.headers["Set-Cookie"]).join("\n")).not_to include("#{session_cookie_key}=")
+  end
+end

@@ -8,6 +8,8 @@ module Geocoder
             def state_code: -> String?
             def country_code: -> String?
             def coordinates: -> [Float, Float]
+            def partial_match: -> bool?
+            def types: -> Array[String]?
             def nil?: -> bool
         end
 

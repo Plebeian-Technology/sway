@@ -147,7 +147,7 @@ beforeEach(() => {
 });
 
 describe("SwayRegistration — a failed lookup is not a dead end", () => {
-    it("shows the no-representatives outcome alongside the failed status card", () => {
+    it("shows the no-representatives outcome directly on the address form even for a failed status", () => {
         const safeMessage = "No representatives were found for this address. Check that it is in a supported area.";
         render(
             <SwayRegistration
@@ -157,16 +157,19 @@ describe("SwayRegistration — a failed lookup is not a dead end", () => {
         );
 
         expect(screen.getByTestId("no-representatives-message").textContent).toContain(safeMessage);
-        expect(screen.getByTestId("registration-error").textContent).toContain(PARITY_COPY.address.failed.message);
+        expect(screen.getByTestId("address-field")).toBeInTheDocument();
+        expect(screen.getByTestId("btn-submit-registration")).toBeInTheDocument();
+        expect(screen.queryByTestId("registration-error")).toBeNull();
+        expect(screen.queryByTestId("btn-retry-registration")).toBeNull();
     });
 
-    it("shows a terminal no-representatives outcome instead of a stale processing card", () => {
+    it("renders the address form instead of a processing card even when a processing prop is passed", () => {
         const safeMessage =
             "We couldn't find representatives for this address. Check that it is in a Sway-supported area and try again.";
         render(
             <SwayRegistration
                 user={{ id: 5, registration_status: "processing" } as unknown as sway.IUser}
-                processing
+                {...({ processing: true } as Record<string, unknown>)}
                 registration_outcome={{ reason: "no_representatives", message: safeMessage }}
             />,
         );
@@ -176,40 +179,31 @@ describe("SwayRegistration — a failed lookup is not a dead end", () => {
         expect(screen.getByTestId("btn-submit-registration")).toBeInTheDocument();
     });
 
-    it("offers a control back to the address form beside the failure message", () => {
+    it("shows the address form immediately for a user with failed registration_status", () => {
         render(<SwayRegistration user={failedUser} />);
 
-        expect(screen.getByTestId("registration-error").textContent).toContain(PARITY_COPY.address.failed.message);
-        expect(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta })).toBeInTheDocument();
+        expect(screen.getByTestId("address-field")).toBeInTheDocument();
+        expect(screen.getByTestId("btn-submit-registration")).toBeInTheDocument();
+        expect(screen.queryByTestId("registration-error")).toBeNull();
+        expect(screen.queryByTestId("btn-retry-registration")).toBeNull();
     });
 
-    it("shows the address form on the same page once that control is pressed", () => {
+    it("keeps the address form usable when submission finishes without completing", () => {
+        post.mockImplementation((_url, options) => {
+            (options as { onFinish?: () => void } | undefined)?.onFinish?.();
+        });
         render(<SwayRegistration user={failedUser} />);
 
-        fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
 
         expect(screen.getByTestId("address-field")).toBeInTheDocument();
         expect(screen.getByTestId("btn-submit-registration")).toBeInTheDocument();
         expect(screen.queryByTestId("registration-error")).toBeNull();
     });
 
-    it("shows the failed card again when the corrected address fails too", () => {
-        post.mockImplementation((_url, options) => {
-            (options as { onFinish?: () => void } | undefined)?.onFinish?.();
-        });
-        render(<SwayRegistration user={failedUser} />);
-
-        fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
-        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
-
-        expect(screen.getByTestId("registration-error")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta })).toBeInTheDocument();
-    });
-
     it("submits the corrected address to the same endpoint the first one used", () => {
         render(<SwayRegistration user={failedUser} />);
 
-        fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
         fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
 
         expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
@@ -218,8 +212,6 @@ describe("SwayRegistration — a failed lookup is not a dead end", () => {
     it("passes active locale down to NominatimAddressAutocomplete", () => {
         const mockLocale = { id: 1, name: "baltimore", nominatim_country_codes: "us" } as sway.ISwayLocale;
         render(<SwayRegistration user={failedUser} sway_locale={mockLocale} />);
-
-        fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.address.failed.retryCta }));
 
         const input = screen.getByTestId("address-field");
         expect(input).toBeInTheDocument();
@@ -399,5 +391,65 @@ describe("SwayRegistration — the typed address is submitted as a fact", () => 
         fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
 
         expect(postedBody).toMatchObject({ street: "100 Holliday", confirm_deactivate_legislators: true });
+    });
+
+    it("shows the unlocated-address message, a link to the feed, and the address form when registration_outcome is address_not_located", () => {
+        const registeredUser = {
+            id: 15,
+            registration_status: "completed",
+            is_registration_complete: true,
+        } as unknown as sway.IUser;
+        const message =
+            "We could not find this address on the map. Add your city and state, or your ZIP code, so we can match you to your district.";
+        render(
+            <SwayRegistration
+                user={registeredUser}
+                registration_outcome={{ reason: "address_not_located", message }}
+            />,
+        );
+
+        const notice = screen.getByTestId("address-not-located-message");
+        expect(notice.getAttribute("role")).toBe("status");
+        expect(notice.textContent).toContain(message);
+
+        const continueLink = screen.getByTestId("link-continue-to-feed");
+        expect(continueLink.getAttribute("href")).toBe(ROUTES.feed);
+        expect(continueLink.textContent).toBe(PARITY_COPY.address.notLocated.continueCta);
+        expect(screen.getByTestId("address-field")).toBeInTheDocument();
+    });
+
+    it("submits directly without the address-switch confirmation when registration_outcome is address_not_located", () => {
+        const registeredUser = {
+            id: 16,
+            registration_status: "completed",
+            is_registration_complete: true,
+        } as unknown as sway.IUser;
+        render(
+            <SwayRegistration
+                user={registeredUser}
+                registration_outcome={{ reason: "address_not_located", message: "Add your city or ZIP." }}
+            />,
+        );
+
+        typeAddress("100 N Holliday St, Baltimore, MD 21202");
+        submitForm();
+
+        expect(screen.queryByTestId("confirm-address-switch-dialog")).toBeNull();
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(postedBody?.confirm_deactivate_legislators).not.toBe(true);
+    });
+
+    it("still opens the address-switch confirmation when is_registration_complete is true and there is no registration_outcome", () => {
+        const registeredUser = {
+            id: 17,
+            registration_status: "completed",
+            is_registration_complete: true,
+        } as unknown as sway.IUser;
+        render(<SwayRegistration user={registeredUser} />);
+
+        submitForm();
+
+        expect(screen.getByTestId("confirm-address-switch-dialog")).toBeInTheDocument();
+        expect(post).not.toHaveBeenCalled();
     });
 });

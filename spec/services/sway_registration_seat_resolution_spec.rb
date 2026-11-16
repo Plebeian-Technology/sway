@@ -57,7 +57,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     create(:user_address, user:, address:)
     allow(SwayGeocode).to receive(:build).and_return(double(districts: [0, 3]))
 
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0, 3])
 
     expect(service.district_legislators).to contain_exactly(house_rep, senator_a, senator_b)
@@ -87,7 +87,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       .to receive(:find_legislators_from_open_states_geo_endpoint)
       .and_return(md46_delegation)
 
-    service = described_class.new(user, address, maryland, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, maryland, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0, 46])
 
     reps = service.district_legislators
@@ -116,7 +116,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     allow_any_instance_of(described_class)
       .to receive(:find_legislators_from_open_states_geo_endpoint)
       .and_return(geo_candidates)
-    described_class.new(user, address, maryland, invited_by_id: nil, async: false)
+    described_class.new(user, address, maryland, invited_by_id: nil)
   end
 
   # @lat: [[representative-resolution-tests#Registration seat resolution#Skips unconfigured locale-wide offices]]
@@ -172,7 +172,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       last_name: "B",
       years: [2023, 2029]
     )
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to contain_exactly(senator_a, senator_b)
@@ -192,7 +192,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       office_identity: "md-house-43b",
       last_name: "DelegateB"
     )
-    service = described_class.new(user, address, state_locale, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, state_locale, invited_by_id: nil)
     allow(service).to receive(:find_legislators_from_open_states_geo_endpoint)
       .and_return([delegate_a, delegate_b])
 
@@ -204,7 +204,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     senator, = create_seat_term(district:, office_identity: "md-senate-class-1", last_name: "Seated")
     legislator = create(:legislator, sway_locale: congress)
     create(:legislator_term, legislator:, district:)
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to contain_exactly(senator)
@@ -236,7 +236,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
         updated_at: now
       }
     ])
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to be_empty
@@ -267,7 +267,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       office_identity: "md-congress-district-7",
       last_name: "Senator"
     )
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([7])
 
     expect(service.district_legislators).to contain_exactly(president, district_senator)
@@ -288,7 +288,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       office_identity: "md-congress-district-zero",
       last_name: "DistrictZero"
     )
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to contain_exactly(president, district_zero_rep)
@@ -303,7 +303,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       office_identity: "maryland-governor",
       last_name: "Governor"
     )
-    service = described_class.new(user, address, state_locale, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, state_locale, invited_by_id: nil)
     allow(service).to receive(:find_legislators_from_open_states_geo_endpoint).and_return([])
 
     expect(service.district_legislators).to contain_exactly(governor)
@@ -329,7 +329,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       office_identity: "maryland-geographic-zero",
       last_name: "MarylandZero"
     )
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to contain_exactly(president, maryland_zero_official)
@@ -358,7 +358,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
         updated_at: now
       }
     ])
-    service = described_class.new(user, address, state_locale, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, state_locale, invited_by_id: nil)
     allow(service).to receive(:find_legislators_from_open_states_geo_endpoint).and_return([selected])
 
     expect(service.district_legislators).to be_empty
@@ -388,7 +388,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
         updated_at: now
       }
     ])
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to be_empty
@@ -419,7 +419,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       ended_on: vacancy,
       ended_on_source: LegislatorTerm::DateSource::PUBLISHED
     )
-    service = described_class.new(user, address, congress, invited_by_id: nil, async: false)
+    service = described_class.new(user, address, congress, invited_by_id: nil)
     allow(service).to receive(:districts).and_return([0])
 
     expect(service.district_legislators).to be_empty
@@ -487,7 +487,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     allow(unlocated).to receive(:to_cartesian).and_call_original
     allow(SwayGeocode).to receive(:build).and_call_original
 
-    reps = described_class.new(user, unlocated, baltimore, invited_by_id: nil, async: false).district_legislators
+    reps = described_class.new(user, unlocated, baltimore, invited_by_id: nil).district_legislators
 
     expect(reps).not_to include(council_member)
     expect(SwayGeocode).not_to have_received(:build)
@@ -512,7 +512,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
 
     def baltimore_service
       allow(SwayGeocode).to receive(:build).and_return(double(districts: [0]))
-      described_class.new(user, address, baltimore, invited_by_id: nil, async: false)
+      described_class.new(user, address, baltimore, invited_by_id: nil)
     end
 
     # @lat: [[representative-resolution-tests#Registration seat resolution#Skips an unseated successor]]
@@ -595,7 +595,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     end
 
     def annapolis_service(annapolis)
-      service = described_class.new(user, annapolis_address, annapolis, invited_by_id: nil, async: false)
+      service = described_class.new(user, annapolis_address, annapolis, invited_by_id: nil)
       allow(service).to receive(:districts).and_return([0, 1])
       service
     end
@@ -677,7 +677,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     end
 
     def congress_fallback_service(for_address)
-      described_class.new(user, for_address, congress, invited_by_id: nil, async: false)
+      described_class.new(user, for_address, congress, invited_by_id: nil)
     end
 
     it "returns the President, both Senators and the House member Census places the address in" do
@@ -759,7 +759,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     it "returns the Mayor, the Council President and one Council Member" do
       SeedLegislator.run([baltimore])
       create(:user_address, user:, address: city_hall)
-      service = described_class.new(user, city_hall, baltimore, invited_by_id: nil, async: false)
+      service = described_class.new(user, city_hall, baltimore, invited_by_id: nil)
 
       reps = service.district_legislators
 
@@ -789,7 +789,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       SeedLegislator.run([baltimore])
       create(:user_address, user:, address: towson)
 
-      service = described_class.new(user, towson, baltimore, invited_by_id: nil, async: false)
+      service = described_class.new(user, towson, baltimore, invited_by_id: nil)
 
       expect(service.district_legislators).to be_empty
       expect(service.skipped_resolution_errors).to be_empty
@@ -803,7 +803,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
         .to receive(:find_legislators_from_open_states_geo_endpoint)
         .and_return([])
 
-      service = described_class.new(user, towson, maryland_locale, invited_by_id: nil, async: false)
+      service = described_class.new(user, towson, maryland_locale, invited_by_id: nil)
 
       expect(service.district_legislators.map(&:last_name)).to include("Moore")
     end
@@ -818,7 +818,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
         last_name: "President"
       )
 
-      service = described_class.new(user, towson, congress, invited_by_id: nil, async: false)
+      service = described_class.new(user, towson, congress, invited_by_id: nil)
 
       expect(service.district_legislators).to contain_exactly(president)
     end
@@ -836,7 +836,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
       SeedLegislator.run([seeded_congress])
       create(:user_address, user:, address:)
       allow(SwayGeocode).to receive(:build).and_return(double(districts: [0, 3]))
-      service = described_class.new(user, address, seeded_congress, invited_by_id: nil, async: false)
+      service = described_class.new(user, address, seeded_congress, invited_by_id: nil)
 
       reps = service.district_legislators
 
@@ -850,7 +850,7 @@ RSpec.describe SwayRegistrationService, "seat resolution" do
     it "returns only the President for an address with no US state" do
       SeedLegislator.run([seeded_congress])
       stateless = create(:address, region_code: "US")
-      service = described_class.new(user, stateless, seeded_congress, invited_by_id: nil, async: false)
+      service = described_class.new(user, stateless, seeded_congress, invited_by_id: nil)
 
       reps = service.district_legislators
 

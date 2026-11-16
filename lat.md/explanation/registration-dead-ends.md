@@ -8,13 +8,11 @@ Registration can end on a card with nothing on it to press. Each such card carri
 
 ## Correcting an address after a failed lookup
 
-[[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] keeps a local flag that, once set, lets the reader past the failed card and back to the address form on the same page.
+[[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] renders the address form directly for any signed-in visitor without trapping them on a failure card.
 
 An address lookup can fail because of a typo, an address outside the supported jurisdictions, or a temporary upstream outage. For a first registration a failed lookup in one locale is skipped and reported, and registration completes with the locales that resolved ([[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]); only a registered user's address switch still answers the outage message, which the browser sees as a flash and JSON clients receive as the same safe error in their response format. A first registration never ends with no representatives ([[registration-dead-ends#An empty list says which kind of empty it is]]); only a registered user's address switch that resolves nobody returns `no_representatives` with a safe message.
 
-The flag lives in the component rather than on the server because nothing about the account changes when the reader decides to try again. `SwayRegistrationController#create` accepts a fresh address whatever the current registration status is, so the corrected address takes the same path the first one did. The page asks for the address-switch confirmation only when `is_registration_complete` is true, as the server does, because an unfinished first submission already saved an address but created no representative links to deactivate.
-
-It is cleared again when the server answers, in the form's `onFinish`. Without that the flag was one-way: a corrected address that failed for the same reasons as the first one re-rendered the page with the failed status and the reader still saw a bare form, with nothing saying the second attempt had failed either. Clearing it on every answer means the state the server reports is what decides which card shows, and the flag only ever covers the round trip.
+Nothing on the account blocks submitting a replacement address: `SwayRegistrationController#create` accepts a fresh address whatever the current registration status is, and the page asks for the address-switch confirmation only when `is_registration_complete` is true and the current outcome is not `address_not_located`.
 
 A request that fails without a server answer the page renders leaves the form usable. A non-Inertia error page or a dropped connection shows one error toast in `PARITY_COPY` and suppresses Inertia's raw-response dialog, and the address stays in the form with the submit button enabled so the reader can press it again. Finishing the visit dismisses only the loading toast, whose id the page keeps from the moment it starts, because Inertia runs the finish callback after the failure callbacks and a bare dismiss would remove the error toast, or the "page expired" flash that a refused CSRF write redirects with, the moment it appeared.
 
@@ -22,7 +20,9 @@ A request that fails without a server answer the page renders leaves the form us
 
 A user whose only active links are to the President and who still has a locale waiting is treated as unregistered, so a corrected address registers directly.
 
-An address with no coordinates and no state resolves to Congress alone and links only the President ([[representative-resolution#Congress fallback]]). If that user corrected the address, [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] would take the address-switch path and answer a 422 confirmation plus a 30-day cooldown for a switch away from a link that was never a real pairing. The check in `holds_representatives?` skips both the switch and the early completion in that case and runs the lookups for the new address.
+An address with no coordinates and no state resolves to Congress alone and links only the President ([[representative-resolution#Congress fallback]]). If that user corrected the address, [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] would take the address-switch path and answer a 422 confirmation plus a 30-day cooldown for a switch away from a link that was never a real pairing. The check in [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#holds_representatives?]] skips both the switch and the early completion in that case and runs the lookups for the new address.
+
+A typed address that carries a state but stays unlocated links the state's two Senators too, so [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#holds_representatives?]] also returns false whenever the address linked before the submission is unlocated. When the corrected submission points to a different row, `create` deactivates the previous unlocated row's `user_legislators` and `user_districts`, removes its pending locale ids, and recomputes scores through [[app/services/score_recompute_service.rb#ScoreRecomputeService]] for any deactivated legislator the new address did not reactivate and any bill the user voted on, because [[app/services/sway_registration_service.rb#SwayRegistrationService#create_user_legislators]] only activates links.
 
 ## A failed address switch changes nothing
 
@@ -65,12 +65,7 @@ reach this path. The
 switch that resolves nobody, which keeps the previous address and links.
 
 The active-link success rule and browser, JSON, and mobile response shapes are
-owned by [[identity-and-access#Registration is asynchronous by necessity]]. A
-finished empty job ends in failure and records the safe no-representatives
-funnel reason; transient failures keep their retry behavior below.
-
-[[app/jobs/sway_registration_job.rb#SwayRegistrationJob#perform]] does not
-leave a finished lookup in `processing` when it created no active link.
+owned by [[identity-and-access#Registration is asynchronous by necessity]].
 
 ### The browser example waits for the address form beacon
 
@@ -81,16 +76,6 @@ Mounting [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] sends an `
 The wait was added when the example read the no-representatives message from the flash, which lives in the session cookie. A beacon sent before the POST answered carried the older cookie and its response replaced the one holding the flash; a beacon sent after the POST consumed the flash. The example now checks the completed user and the feed redirect instead, which carry nothing in the flash, and keeps the wait so the POST still follows the page's own mount request as a person's submit would.
 
 Unloaded, the beacon finishes about 30 ms before the example's POST, and load removes that margin. [[spec/system/user_registration_spec.rb]] holds the POST until the page's Resource Timing buffer lists the beacon. An entry appears only once the response has arrived, so the browser has already applied its cookie.
-
-## Transient failures retry before registration becomes terminal
-
-Transient upstream errors remain retryable until attempts are exhausted.
-
-[[app/jobs/sway_registration_job.rb#SwayRegistrationJob#perform]] re-raises
-errors in the job's transient set so Active Job can retry them; only the exhausted-retry callback marks a
-still-processing user failed. Permanent errors mark the user failed
-immediately. The failure helper uses `find_by` so a deleted user cannot hide
-the original job error with a second `RecordNotFound`.
 
 ## A skipped lookup is recorded so it can be retried
 
@@ -118,9 +103,21 @@ The schedule entry has its own presence check in `spec/config/recurring_spec.rb`
 
 An address the geocoder could not locate is recorded with every locale it reaches, Congress always among them, and the hourly job geocodes it again before any lookup.
 
-A failed geocode leaves a typed address without coordinates, and a street-only one also without a state, so it resolves to Congress alone and links only the President. That link alone would make the user count as registered with nothing left to retry. [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] therefore records the address's locales whenever the address is still unlocated after resolution.
+A failed geocode leaves a typed address without coordinates, and a street-only one also without a state, so it resolves to Congress alone and links only the President. A result that [[address-normalized-key#A typed address gets its place from the geocode]] refuses as untrusted counts as a failed geocode and leaves the row unlocated the same way. That link alone would make the user count as registered with nothing left to retry. [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] therefore records the address's locales whenever the address is still unlocated after resolution.
 
 [[app/jobs/assign_pending_representatives_job.rb#AssignPendingRepresentativesJob#address_located?]] runs [[app/models/address.rb#Address#geocode_and_save]] for such a user first. While the geocode still fails, the job still runs the lookups, because Congress resolves the Senators and the President by state without coordinates, so a lookup left pending by a seat error or an outage is retried. It keeps every id, because a lookup that returns with the President linked would take the id off. Once it succeeds, the filled row's locales are added, since a geocoded state reaches locales the blank row did not, and the lookups run against the filled row. A located address goes straight to the lookups as before.
+
+When the address is still unlocated at the end of `create`, [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#render_address_not_located]] reconciles any pending vote, logs and reports `sway_registration.address_not_located` to Sentry once at warning level, and answers with [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#ADDRESS_NOT_LOCATED_MESSAGE]]. JSON clients receive HTTP 200 with `address_located: false` and `message`, while the web path stores `registration_outcome` in the flash with reason `address_not_located` and redirects to [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#index]], which renders the registration page instead of redirecting the completed user to the feed.
+
+A confirmed address switch through [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#handle_address_switch]] whose new address is unlocated records every locale of the new address as pending and returns the same [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#render_address_not_located]] answer. Without that, a switch to a street-only address would leave only the President linked with no pending locale for the hourly job to retry and no prompt asking for a city or ZIP.
+
+#### A failing geocode is retried less often, then dropped
+
+[[app/jobs/assign_pending_representatives_job.rb#AssignPendingRepresentativesJob#address_located?]] throttles `Address#geocode_and_save` for an unlocated row so retries run hourly during the first day, daily until day 30 with `±25%` random jitter, and stop after 30 days.
+
+Each failed attempt calls [[app/models/address.rb#Address#record_failed_geocode_attempt!]], which sets `geocode_next_attempt_at` to `now` plus 1 hour (while `now < created_at + 1.day`) or 1 day (after that), multiplied by `1 + Random.rand(-0.25..0.25)` and clamped to `created_at + 30.days`. Once `created_at + 30.days` is reached, [[app/models/address.rb#Address#record_geocode_abandoned!]] stamps `geocode_abandoned_at` and the job logs and sends one warning-level `address.geocode_abandoned` Sentry message carrying only `address_id`, `user_id`, and `created_at`, never geocoding or reporting that row again.
+
+Only the geocode call is throttled: the pending-locale lookups in `perform` still run every hour so state-level representatives can be reconciled without coordinates, and a user who submits a corrected address gets a new located `Address` row immediately without reading the old row's schedule. Both schedule methods write with `update_columns` rather than `update!` so recording a timestamp does not fire `Address`'s `after_commit :geocode_and_save` callback or change `updated_at`.
 
 ## Reaching sign-in from an expired session
 
@@ -136,6 +133,12 @@ The operator decided that a user's address is accepted as a fact, so a missing h
 
 The structured fields always describe the text in the box. Editing the text clears every field a pick filled, and a pick replaces all of them, writing an empty value for any the place lacks and recording its description as the typed text. A stale street, postcode or coordinate from an earlier pick therefore never posts under a newer address.
 
+### Asking for a city or ZIP when the address cannot be located
+
+When the server redirects back with `registration_outcome.reason === "address_not_located"`, [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] renders a status notice above the form and a link to the feed.
+
+The user is already completed on the Congress fallback, so `is_registration_complete` is true. Because a corrected submission for an unlocated address takes the first-registration path on the server, the page skips the address-switch confirmation for this outcome and lets the user either submit an address with a city or ZIP directly or continue to the feed through `PARITY_COPY.address.notLocated.continueCta`.
+
 ## An address search that finds nothing or fails still says the typed address can be submitted
 
 Under the address box, a polite status message follows each finished search that gave no list, so the user is never left with a silent empty box.
@@ -148,4 +151,4 @@ The server answers an empty list when Nominatim itself fails, so an upstream out
 
 The browser and component specs use stable selectors to identify registration outcomes.
 
-[[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] exposes distinct selectors for processing, failure, retry, sign-in, address submission, and the no-representatives result. This lets tests assert which outcome is rendered without depending on component internals.
+[[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] exposes distinct selectors for sign-in, address submission, the `address_not_located` notice, and the no-representatives result. This lets tests assert which outcome is rendered without depending on component internals.

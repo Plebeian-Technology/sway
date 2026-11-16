@@ -1,0 +1,20 @@
+class Object
+  def create_potus_term: (SwayLocale congress_locale) -> Legislator
+  def create_reg_failure_term: (district: District, office_identity: String, title: String, chamber: String, ?last_name: String?, ?external_id: String?) -> Legislator
+  def setup_reg_baltimore_rep: (SwayLocale baltimore_locale) -> Legislator
+  def setup_reg_maryland_rep: (SwayLocale maryland_locale) -> Legislator
+  def setup_reg_maryland_senators: (SwayLocale congress_locale) -> [Legislator, Legislator]
+  def setup_reg_congress_rep: (SwayLocale congress_locale, district_name: String) -> Legislator
+  def setup_census_outage_fixture: (SwayLocale baltimore, SwayLocale maryland, SwayLocale congress) -> [Legislator, Legislator, [Legislator, Legislator], Legislator]
+  def drive_census_outage_journey: (User user, status: Integer, ?body: String?, ?headers: Hash[String, String]) -> void
+  def assert_census_delegation: (SwayLocale baltimore, SwayLocale maryland, SwayLocale congress, Legislator baltimore_rep, Legislator md_rep, [Legislator, Legislator] senators, Legislator house_rep) -> void
+  def wait_for_address_form_beacon: () -> void
+  def baltimore_place_fixture: () -> Hash[String, untyped]
+  def richmond_place_fixture: () -> Hash[String, untyped]
+  def toronto_place_fixture: () -> Hash[String, untyped]
+  def stub_reg_fail_nominatim: (Array[Hash[String, untyped]] results) -> void
+  def stub_reg_fail_census_outage: (status: Integer, ?body: String?, ?headers: Hash[String, String]) -> void
+  def stub_reg_fail_census_cd: (String district_number, ?state: String) -> void
+  def stub_reg_fail_open_states_empty: () -> void
+  def stub_reg_fail_open_states_rep: (Legislator rep) -> void
+end

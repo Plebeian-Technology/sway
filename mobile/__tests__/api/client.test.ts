@@ -357,5 +357,92 @@ describe("apiClient", () => {
             expect(e).not.toBeInstanceOf(NetworkError);
             expect(e.code).toBe("aborted");
         });
+
+        test("an already-aborted caller signal aborts immediately", async () => {
+            const caller = new AbortController();
+            caller.abort();
+            (global.fetch as jest.Mock).mockImplementationOnce((_url: string, init: RequestInit) =>
+                init.signal?.aborted ? Promise.reject(new Error("aborted")) : new Promise(() => {}),
+            );
+            const e = await apiClient.get("/x", { signal: caller.signal }).catch((err: unknown) => err);
+            expect(e).toBeInstanceOf(ApiRequestError);
+            expect((e as ApiRequestError).code).toBe("aborted");
+        });
+    });
+
+    test("setLocaleId delegates to localeOverride", () => {
+        apiClient.setLocaleId(42);
+        expect(localeOverride.get()).toBe(42);
+        apiClient.setLocaleId(null);
+        expect(localeOverride.get()).toBeNull();
+    });
+
+    test("uses full URL as-is when path starts with http", async () => {
+        (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+        (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse({ ok: true }));
+
+        await apiClient.get("https://custom.example.com/ping");
+
+        const [url] = (global.fetch as jest.Mock).mock.calls[0];
+        expect(url).toBe("https://custom.example.com/ping");
+    });
+
+    test("non-Error fetch rejections become NetworkError with fallback message", async () => {
+        (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+        (global.fetch as jest.Mock).mockRejectedValueOnce("socket dropped");
+
+        await expect(apiClient.get("/x")).rejects.toMatchObject({
+            name: "NetworkError",
+            code: "network_error",
+            message: "Network error",
+        });
+    });
+
+    test("envelopeFrom covers nullish errors element, detail field, non-error object, non-object error value, and omitted error code", async () => {
+        (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+        const rejectWith = async (body: unknown, status = 500): Promise<ApiRequestError> => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse(body, { status }));
+            try {
+                await apiClient.get("/x");
+            } catch (e: unknown) {
+                return e as ApiRequestError;
+            }
+            throw new Error("expected apiClient.get to reject");
+        };
+
+        const nullEntry = await rejectWith({ errors: [null] }, 500);
+        expect(nullEntry.code).toBe("http_500");
+        expect(nullEntry.message).toBe(GENERIC_ERROR_MESSAGE);
+
+        const withDetail = await rejectWith({ errors: [{ code: "bad_zip", detail: "ZIP is invalid" }] }, 422);
+        expect(withDetail.code).toBe("bad_zip");
+        expect(withDetail.message).toBe("ZIP is invalid");
+        expect(withDetail.details).toEqual({ detail: ["ZIP is invalid"] });
+
+        const withoutErrorKey = await rejectWith({ ok: false }, 500);
+        expect(withoutErrorKey.code).toBe("http_500");
+        expect(withoutErrorKey.message).toBe(GENERIC_ERROR_MESSAGE);
+
+        const scalarError = await rejectWith({ error: "unexpected string" }, 500);
+        expect(scalarError.code).toBe("http_500");
+        expect(scalarError.message).toBe(GENERIC_ERROR_MESSAGE);
+
+        const noCode = await rejectWith({ error: { message: "Oops" } }, 422);
+        expect(noCode.code).toBe("http_422");
+        expect(noCode.message).toBe("Oops");
+    });
+
+    test("skips startup dev logging when __DEV__ is false", () => {
+        const g = globalThis as { __DEV__?: boolean };
+        const prevDev = g.__DEV__;
+        g.__DEV__ = false;
+        try {
+            jest.isolateModules(() => {
+                const mod = require("../../src/api/client");
+                expect(mod.apiClient).toBeDefined();
+            });
+        } finally {
+            g.__DEV__ = prevDev;
+        }
     });
 });

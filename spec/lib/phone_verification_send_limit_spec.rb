@@ -85,8 +85,8 @@ RSpec.describe PhoneVerificationSendLimit do
     boundary = Time.zone.parse("2026-11-14 12:01:00.500")
     travel_to(boundary, with_usec: true) do
       expect(described_class.claim(phone:, store:, now: boundary)).to eq(1)
+      expect(store.read(described_class.cache_key(phone))).to eq([sent_at.to_i])
     end
-    expect(store.read(described_class.cache_key(phone))).to eq([sent_at.to_i])
     expect(SwayLogging).not_to have_received(:warn)
   end
 end

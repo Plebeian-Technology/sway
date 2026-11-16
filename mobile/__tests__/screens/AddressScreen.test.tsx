@@ -278,7 +278,7 @@ describe("AddressScreen", () => {
     });
 
     describe("processing state", () => {
-        it("Test 5 — renders processing Card, polls refresh every 3s, and lets user cancel and sign out", () => {
+        it("renders the address form without polling when registration_status is processing", () => {
             jest.useFakeTimers();
             const refresh = jest.fn();
             mockUseUserProfile.mockReturnValue({
@@ -293,21 +293,17 @@ describe("AddressScreen", () => {
 
             wrap(<AddressScreen />);
 
-            expect(screen.getByTestId("address-processing")).toBeTruthy();
-            expect(screen.getByText(PARITY_COPY.address.processing.title)).toBeTruthy();
-            expect(screen.getByText(PARITY_COPY.address.processing.message)).toBeTruthy();
+            expect(screen.queryByTestId("address-processing")).toBeNull();
+            expect(screen.getByTestId("address-submit-cta")).toBeTruthy();
 
-            jest.advanceTimersByTime(3000);
-            expect(refresh).toHaveBeenCalledTimes(1);
-
-            fireEvent.press(screen.getByTestId("address-processing-signout-cta"));
-            expect(mockSignOut).toHaveBeenCalledTimes(1);
+            jest.advanceTimersByTime(9000);
+            expect(refresh).not.toHaveBeenCalled();
             jest.useRealTimers();
         });
     });
 
     describe("failed state", () => {
-        it("Test 6 — renders failed Card with retry and sign out actions", () => {
+        it("renders the address form directly instead of an error card when registration_status is failed", () => {
             mockUseUserProfile.mockReturnValue({
                 user: {
                     ...baseUser,
@@ -320,19 +316,11 @@ describe("AddressScreen", () => {
 
             wrap(<AddressScreen />);
 
-            expect(screen.getByTestId("address-failed")).toBeTruthy();
-            expect(screen.getByText(PARITY_COPY.address.failed.title)).toBeTruthy();
-            expect(screen.getByText(PARITY_COPY.address.failed.message)).toBeTruthy();
-
-            fireEvent.press(screen.getByTestId("address-failed-signout-cta"));
-            expect(mockSignOut).toHaveBeenCalledTimes(1);
-
-            fireEvent.press(screen.getByTestId("address-failed-retry-cta"));
             expect(screen.queryByTestId("address-failed")).toBeNull();
             expect(screen.getByTestId("address-submit-cta")).toBeTruthy();
         });
 
-        it("keeps user on the form and shows address-error when a retry submission fails", async () => {
+        it("keeps user on the form and shows address-error when a submission fails", async () => {
             mockUseUserProfile.mockReturnValue({
                 user: {
                     ...baseUser,
@@ -346,7 +334,6 @@ describe("AddressScreen", () => {
 
             wrap(<AddressScreen />);
 
-            fireEvent.press(screen.getByTestId("address-failed-retry-cta"));
             expect(screen.queryByTestId("address-failed")).toBeNull();
 
             act(() => {
@@ -659,6 +646,226 @@ describe("AddressScreen", () => {
                 }),
             );
         });
+
+        it("shows the not-located card and manual fields without refreshing or navigating when address_located is false", async () => {
+            const refresh = jest.fn();
+            mockUseUserProfile.mockReturnValue({
+                user: { ...baseUser, address: undefined },
+                loading: false,
+                refresh,
+            });
+            (apiClient.post as jest.Mock).mockResolvedValueOnce({
+                ok: true,
+                registration_status: "completed",
+                address_located: false,
+                message: "M",
+            });
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(screen.getByTestId("address-not-located")).toBeTruthy();
+            expect(screen.getByText("M")).toBeTruthy();
+            expect(screen.getByTestId("address-input-street1-input").props.value).toBe("100 N Holliday St");
+            expect(screen.getByTestId("address-input-city-input")).toBeTruthy();
+            expect(screen.getByTestId("address-input-postal_code-input")).toBeTruthy();
+            expect(refresh).not.toHaveBeenCalled();
+            expect(mockNavigation.goBack).not.toHaveBeenCalled();
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-not-located-continue-cta"));
+            });
+
+            expect(refresh).toHaveBeenCalledTimes(1);
+            expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+        });
+
+        it("clears caches and refreshes immediately on address_located: false in edit mode while keeping the not-located card visible", async () => {
+            const useBills = require("../../src/hooks/useBills") as typeof import("../../src/hooks/useBills");
+            const legislatorCache =
+                require("../../src/cache/legislatorCache") as typeof import("../../src/cache/legislatorCache");
+            const billCache = require("../../src/cache/billCache") as typeof import("../../src/cache/billCache");
+            const callOrder: string[] = [];
+            const catSpy = jest
+                .spyOn(useBills, "clearCapturedCategories")
+                .mockImplementation(() => callOrder.push("clearCapturedCategories"));
+            const legSpy = jest
+                .spyOn(legislatorCache, "clear")
+                .mockImplementation(async () => void callOrder.push("legislatorCache.clear"));
+            const billSpy = jest
+                .spyOn(billCache, "clear")
+                .mockImplementation(async () => void callOrder.push("billCache.clear"));
+            const refresh = jest.fn(async () => {
+                callOrder.push("refresh");
+                return true;
+            });
+
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: {
+                        street: "123 Main St",
+                        city: "Baltimore",
+                        region_code: "MD",
+                        postal_code: "21201",
+                        country: "United States",
+                    },
+                },
+                loading: false,
+                refresh,
+            });
+            (apiClient.post as jest.Mock).mockResolvedValueOnce({
+                ok: true,
+                registration_status: "completed",
+                address_located: false,
+                message: "M",
+            });
+
+            try {
+                wrap(<AddressScreen />);
+
+                type("street1", "100 N Holliday St");
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+                expect(screen.getByTestId("address-switch-confirm")).toBeTruthy();
+
+                await act(async () => {
+                    fireEvent.press(screen.getByTestId("address-confirm-deactivate-cta"));
+                });
+
+                expect(catSpy).toHaveBeenCalledTimes(1);
+                expect(legSpy).toHaveBeenCalledTimes(1);
+                expect(billSpy).toHaveBeenCalledTimes(1);
+                expect(refresh).toHaveBeenCalledTimes(1);
+                expect(callOrder.indexOf("clearCapturedCategories")).toBeLessThan(callOrder.indexOf("refresh"));
+                expect(callOrder.indexOf("legislatorCache.clear")).toBeLessThan(callOrder.indexOf("refresh"));
+                expect(callOrder.indexOf("billCache.clear")).toBeLessThan(callOrder.indexOf("refresh"));
+                expect(screen.getByTestId("address-not-located")).toBeTruthy();
+                expect(screen.getByText("M")).toBeTruthy();
+                expect(screen.getByTestId("address-input-street1-input").props.value).toBe("100 N Holliday St");
+                expect(mockNavigation.goBack).not.toHaveBeenCalled();
+
+                fireEvent.press(screen.getByTestId("address-cancel-cta"));
+                expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+            } finally {
+                catSpy.mockRestore();
+                legSpy.mockRestore();
+                billSpy.mockRestore();
+            }
+        });
+
+        it("navigates back cleanly when tapping continue on the not-located card in edit mode", async () => {
+            const refresh = jest.fn(async () => true);
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: {
+                        street: "123 Main St",
+                        city: "Baltimore",
+                        region_code: "MD",
+                        postal_code: "21201",
+                        country: "United States",
+                    },
+                },
+                loading: false,
+                refresh,
+            });
+            (apiClient.post as jest.Mock).mockResolvedValueOnce({
+                ok: true,
+                registration_status: "completed",
+                address_located: false,
+                message: "M",
+            });
+
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            fireEvent.press(screen.getByTestId("address-submit-cta"));
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-confirm-deactivate-cta"));
+            });
+
+            expect(screen.getByTestId("address-not-located")).toBeTruthy();
+            expect(mockNavigation.goBack).not.toHaveBeenCalled();
+
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-not-located-continue-cta"));
+            });
+
+            expect(screen.queryByTestId("address-not-located")).toBeNull();
+            expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+        });
+
+        it("posts the edited ZIP code on resubmit, hides the not-located card, refreshes, and goes back", async () => {
+            const refresh = jest.fn();
+            mockUseUserProfile.mockReturnValue({
+                user: { ...baseUser, address: undefined },
+                loading: false,
+                refresh,
+            });
+            (apiClient.post as jest.Mock)
+                .mockResolvedValueOnce({
+                    ok: true,
+                    registration_status: "completed",
+                    address_located: false,
+                    message: "M",
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    registration_status: "completed",
+                });
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(screen.getByTestId("address-not-located")).toBeTruthy();
+
+            type("postal_code", "21202");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect((apiClient.post as jest.Mock).mock.calls[1][1].sway_registration).toEqual(
+                expect.objectContaining({
+                    street: "100 N Holliday St",
+                    postal_code: "21202",
+                }),
+            );
+            expect(screen.queryByTestId("address-not-located")).toBeNull();
+            expect(refresh).toHaveBeenCalledTimes(1);
+            expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+        });
+
+        it("refreshes and goes back on the first post when the answer does not have address_located false", async () => {
+            const refresh = jest.fn();
+            mockUseUserProfile.mockReturnValue({
+                user: { ...baseUser, address: undefined },
+                loading: false,
+                refresh,
+            });
+            (apiClient.post as jest.Mock).mockResolvedValueOnce({
+                ok: true,
+                registration_status: "completed",
+            });
+            wrap(<AddressScreen />);
+
+            type("street1", "100 N Holliday St");
+            type("postal_code", "21202");
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-submit-cta"));
+            });
+
+            expect(screen.queryByTestId("address-not-located")).toBeNull();
+            expect(refresh).toHaveBeenCalledTimes(1);
+            expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe("prefill from the saved address", () => {
@@ -776,6 +983,101 @@ describe("AddressScreen", () => {
             fireEvent.press(screen.getByTestId("btn-search-address-autocomplete"));
             expect(screen.queryByTestId("address-input-street1")).toBeNull();
             expect(screen.getByTestId("btn-edit-address-manually")).toBeTruthy();
+        });
+    });
+
+    describe("edge cases for platform, nullish address prefill, unlocated fallback, and cache failures", () => {
+        it("checks googlePlacesApiKeyAndroid on android", () => {
+            const { Platform } = require("react-native") as typeof import("react-native");
+            const restorePlatform = jest.replaceProperty(Platform, "OS", "android").restore;
+            mockPlacesKeys.googlePlacesApiKeyAndroid = undefined;
+            mockUseUserProfile.mockReturnValue({
+                user: { ...baseUser, address: undefined },
+                loading: false,
+                refresh: jest.fn(),
+            });
+            try {
+                wrap(<AddressScreen />);
+                expect(screen.getByTestId("address-input-street1")).toBeTruthy();
+                expect(screen.queryByTestId("btn-search-address-autocomplete")).toBeNull();
+            } finally {
+                restorePlatform();
+            }
+        });
+
+        it("prefills empty strings for missing address fields and matches saved address with null city/state", () => {
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: {
+                        street: undefined,
+                        city: undefined,
+                        region_code: undefined,
+                        postal_code: "21202",
+                        country: "United States",
+                    },
+                },
+                loading: false,
+                refresh: jest.fn(),
+            });
+            wrap(<AddressScreen />);
+            fireEvent.press(screen.getByTestId("btn-edit-address-manually"));
+
+            expect(screen.getByTestId("address-input-street1-input").props.value).toBe("");
+            expect(screen.getByTestId("address-input-city-input").props.value).toBe("");
+            expect(screen.getByTestId("address-input-region_code-input").props.value).toBe("");
+            expect(screen.getByTestId("address-submit-cta").props.accessibilityState?.disabled).toBe(true);
+        });
+
+        it("handles address_located: false without message, defaults blank country from autocomplete, and tolerates cache clear errors", async () => {
+            const legislatorCache =
+                require("../../src/cache/legislatorCache") as typeof import("../../src/cache/legislatorCache");
+            const billCache = require("../../src/cache/billCache") as typeof import("../../src/cache/billCache");
+            const legSpy = jest.spyOn(legislatorCache, "clear").mockRejectedValueOnce(new Error("db locked"));
+            const billSpy = jest.spyOn(billCache, "clear").mockRejectedValueOnce(new Error("db locked"));
+            const refreshMock = jest.fn(async () => true);
+
+            mockUseUserProfile.mockReturnValue({
+                user: { ...baseUser },
+                loading: false,
+                refresh: refreshMock,
+            });
+            (apiClient.post as jest.Mock)
+                .mockResolvedValueOnce({ address_located: false })
+                .mockResolvedValueOnce({ ok: true });
+
+            try {
+                wrap(<AddressScreen />);
+                act(() => {
+                    mockOnSelectAddress?.({
+                        street1: "100 N Holliday St",
+                        street2: "",
+                        city: "Baltimore",
+                        region_code: "MD",
+                        postal_code: "21202",
+                        country: "",
+                        latitude: 39.29,
+                        longitude: -76.61,
+                        place_types: ["street_address"],
+                    });
+                });
+
+                await act(async () => {
+                    fireEvent.press(screen.getByTestId("address-submit-cta"));
+                });
+                expect(screen.getByTestId("address-input-country-input").props.value).toBe("United States");
+
+                await act(async () => {
+                    fireEvent.press(screen.getByTestId("address-submit-cta"));
+                });
+                expect(legSpy).toHaveBeenCalled();
+                expect(billSpy).toHaveBeenCalled();
+                expect(refreshMock).toHaveBeenCalled();
+            } finally {
+                legSpy.mockRestore();
+                billSpy.mockRestore();
+            }
         });
     });
 });

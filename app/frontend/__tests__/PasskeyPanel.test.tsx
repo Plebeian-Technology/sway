@@ -12,7 +12,7 @@ const captured = vi.hoisted(() => ({
     verifyAuthentication: vi.fn<(phone: string, data: unknown) => Promise<void>>(),
     verifyDiscoverableAuthentication: vi.fn<(data: unknown) => Promise<void>>(),
     sendPhoneVerification: vi.fn<(phone: string) => Promise<boolean | undefined>>(),
-    sendRefusedUntil: null as Date | null,
+    sendRefusedUntil: undefined as Date | null | undefined,
     notify: vi.fn<(...args: unknown[]) => void>(),
     // The panel reads this straight off the hook, so a test can put the panel
     // into the after-a-failure state without running a WebAuthn ceremony.
@@ -27,6 +27,8 @@ const captured = vi.hoisted(() => ({
     verifyRegistration: vi.fn<(phone: string, credential: unknown) => Promise<void>>(),
     isPasskeySupported: vi.fn<() => boolean>(),
     copy: vi.fn<(text: string) => boolean>(),
+    errors: {} as Record<string, string | undefined> | undefined,
+    isLoadingAuth: false,
 }));
 
 vi.mock("copy-to-clipboard", () => ({
@@ -38,7 +40,7 @@ vi.mock("app/frontend/sway_utils/webauthn", () => ({
 }));
 
 vi.mock("@inertiajs/react", () => ({
-    usePage: () => ({ props: { errors: {} } }),
+    usePage: () => ({ props: { errors: captured.errors } }),
     Link: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
 }));
 
@@ -56,7 +58,7 @@ vi.mock("app/frontend/hooks/authentication/useWebAuthnAuthentication", () => ({
             startDiscoverableAuthentication: captured.startDiscoverableAuthentication,
             verifyDiscoverableAuthentication: captured.verifyDiscoverableAuthentication,
             discoverableFailure: captured.discoverableFailure,
-            isLoading: false,
+            isLoading: captured.isLoadingAuth,
         };
     },
 }));
@@ -80,7 +82,7 @@ vi.mock("app/frontend/hooks/authentication/phone/useSendPhoneVerification", () =
     useSendPhoneVerification: (onThrottled?: (until: Date | null) => void) => ({
         send: async (phone: string) => {
             const result = await captured.sendPhoneVerification(phone);
-            if (captured.sendRefusedUntil) {
+            if (captured.sendRefusedUntil !== undefined) {
                 onThrottled?.(captured.sendRefusedUntil);
                 return undefined;
             }
@@ -110,7 +112,7 @@ beforeEach(() => {
     captured.startDiscoverableAuthentication.mockReset();
     captured.startDiscoverableAuthentication.mockResolvedValue(undefined);
     captured.sendPhoneVerification.mockReset();
-    captured.sendRefusedUntil = null;
+    captured.sendRefusedUntil = undefined;
     captured.notify.mockReset();
     captured.discoverableFailure = null;
     captured.confirm.mockReset();
@@ -124,6 +126,8 @@ beforeEach(() => {
     captured.isPasskeySupported.mockReturnValue(true);
     captured.copy.mockReset();
     captured.copy.mockReturnValue(true);
+    captured.errors = {};
+    captured.isLoadingAuth = false;
 });
 
 afterEach(() => {
@@ -684,5 +688,106 @@ describe("PasskeyPanel — in-app browsers", () => {
         expect(screen.getByLabelText(/phone/i)).toBeTruthy();
         expect(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.signInWithPasskey })).toBeTruthy();
         expect(screen.queryByText(PARITY_COPY.auth.passkeyPanel.inAppBrowserTitle)).toBeNull();
+    });
+});
+
+describe("PasskeyPanel — additional error, authentication, and loading states", () => {
+    beforeEach(() => {
+        vi.useRealTimers();
+        Element.prototype.scrollIntoView = vi.fn<(options?: ScrollIntoViewOptions) => void>();
+    });
+
+    it("handles undefined page errors, field-level phone/code alerts, and loading spinner", async () => {
+        captured.errors = undefined;
+        const { unmount } = render(<PasskeyPanel />);
+        expect(screen.queryByRole("alert")).toBeNull();
+        unmount();
+
+        captured.errors = { phone: "Phone invalid", code: "Code invalid" };
+        captured.startAuthentication.mockResolvedValue(true);
+        captured.isLoadingAuth = true;
+        render(<PasskeyPanel />);
+        expect(document.getElementById("v2-phone-error")?.textContent).toBe("Phone invalid");
+        expect(screen.getByText(PARITY_COPY.auth.passkeyPanel.workingOn)).toBeTruthy();
+
+        captured.isLoadingAuth = false;
+        await submitPhone();
+        expect(document.getElementById("v2-code-error")?.textContent).toBe("Code invalid");
+    });
+
+    it("clears throttle when markThrottled receives null or a past timestamp", () => {
+        const { container } = render(<PasskeyPanel />);
+        const submit = () => container.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+        act(() => {
+            captured.setThrottled?.(new Date(Date.now() + 60_000));
+        });
+        expect(submit().disabled).toBe(true);
+
+        act(() => {
+            captured.setThrottled?.(null);
+        });
+        expect(submit().disabled).toBe(false);
+
+        act(() => {
+            captured.setThrottled?.(new Date(Date.now() - 1_000));
+        });
+        expect(submit().disabled).toBe(false);
+    });
+
+    it("clears resend cooldown when sendPhoneVerification refuses with null or past timestamp", async () => {
+        vi.useFakeTimers({ shouldAdvanceTime: true });
+        captured.startAuthentication.mockResolvedValue(true);
+        render(<PasskeyPanel />);
+        await submitPhone();
+        await screen.findByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel);
+
+        act(() => {
+            vi.advanceTimersByTime(60_000);
+        });
+        captured.sendRefusedUntil = new Date(Date.now() - 1_000);
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.resendCode }));
+        });
+        expect(screen.queryByTestId("resend-countdown")).toBeNull();
+
+        captured.sendRefusedUntil = null;
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.resendCode }));
+        });
+        expect(screen.queryByTestId("resend-countdown")).toBeNull();
+    });
+
+    it("stops cleanly when startAuthentication returns nullish and calls verifyAuthentication when it returns a credential", async () => {
+        captured.startAuthentication.mockResolvedValueOnce(undefined);
+        render(<PasskeyPanel />);
+        await submitPhone();
+        expect(captured.verifyAuthentication).not.toHaveBeenCalled();
+
+        const credential = { id: "cred-login", type: "public-key" };
+        captured.startAuthentication.mockResolvedValueOnce(credential);
+        await submitPhone();
+        expect(captured.verifyAuthentication).toHaveBeenCalledWith("4105551234", credential);
+    });
+
+    it("stays on phone step when 422 fallback sendPhoneVerification resolves false and handles null vs non-null discoverable assertion", async () => {
+        captured.startAuthentication.mockRejectedValue(xhrRejection(422));
+        captured.sendPhoneVerification.mockResolvedValue(false);
+        render(<PasskeyPanel />);
+        await submitPhone();
+        expect(screen.queryByLabelText(PARITY_COPY.auth.passkeyPanel.codeLabel)).toBeNull();
+
+        captured.startDiscoverableAuthentication.mockResolvedValueOnce(null);
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.signInWithPasskey }));
+        });
+        expect(captured.verifyDiscoverableAuthentication).not.toHaveBeenCalled();
+
+        const assertion = { id: "disc-1", type: "public-key" };
+        captured.startDiscoverableAuthentication.mockResolvedValueOnce(assertion);
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: PARITY_COPY.auth.passkeyPanel.signInWithPasskey }));
+        });
+        expect(captured.verifyDiscoverableAuthentication).toHaveBeenCalledWith(assertion);
     });
 });

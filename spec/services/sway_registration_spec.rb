@@ -169,8 +169,7 @@ RSpec.describe SwayRegistrationService do
             invitee,
             address,
             congress_locale,
-            invited_by_id: inviter.id,
-            async: false
+            invited_by_id: inviter.id
           ).call
         end
 
@@ -213,8 +212,7 @@ RSpec.describe SwayRegistrationService do
             user,
             address,
             congress_locale,
-            invited_by_id: nil,
-            async: false
+            invited_by_id: nil
           ).create_user_legislators
 
         expect(result).to be_present
@@ -224,10 +222,7 @@ RSpec.describe SwayRegistrationService do
     end
 
     context "when geocoding fails" do
-      # NOTE: an earlier draft expected the service to move the user to
-      # :failed on a geocoding error. It does not catch errors —
-      # SwayRegistrationJob rescues and calls mark_failed!.
-      it "propagates the error and creates no UserLegislator when async is false" do
+      it "propagates the error and creates no UserLegislator" do
         allow_any_instance_of(Census::Congress).to receive(:request).and_raise(
           StandardError,
           "geocode failed"
@@ -261,8 +256,7 @@ RSpec.describe SwayRegistrationService do
             user,
             address,
             sway_locale,
-            invited_by_id: nil,
-            async: false
+            invited_by_id: nil
           )
 
         expect { service.call }.to raise_error(StandardError, /geocode failed/)
@@ -301,8 +295,7 @@ RSpec.describe SwayRegistrationService do
             user,
             address,
             sway_locale,
-            invited_by_id: nil,
-            async: false
+            invited_by_id: nil
           )
 
         service.call
@@ -313,61 +306,71 @@ RSpec.describe SwayRegistrationService do
         )
         expect(UserLegislator.where(user: user).count).to eq(0)
       end
-    end
 
-    context "regional registration" do
-      it "enqueues SwayRegistrationJob and sets user to processing status when async is true" do
-        user = create(:user)
-        address = create(:address)
-        sway_locale = create(:sway_locale)
-        allow(sway_locale).to receive(:regional?).and_return(true)
-
-        expect(SwayRegistrationJob).to receive(:perform_later).with(
-          user.id,
-          address.id,
-          sway_locale.id,
-          invited_by_id: nil,
-          enqueued_at_epoch: a_kind_of(Float)
+      it "ignores locale legislators with no active_term when collecting state_house_legislator_ids" do
+        allow(Sentry).to receive(:capture_exception)
+        allow_any_instance_of(Census::Congress).to receive(:request).and_raise(
+          Faraday::ConnectionFailed,
+          "Failed to open TCP connection"
         )
 
-        SwayRegistrationService.new(
-          user,
-          address,
-          sway_locale,
-          invited_by_id: nil,
-          async: true
-        ).call
+        user = create(:user, is_registration_complete: false)
+        address = create(:address, street: "1 East Baltimore St", city: "Baltimore", region_code: "MD", postal_code: "21202")
+        create(:user_address, user:, address:)
+        sway_locale = address.sway_locales.find(&:congress?)
+        next if sway_locale.nil?
 
-        expect(user.registration_status).to eq("processing")
+        district = District.find_by(sway_locale:, name: "MD7") || create(:district, sway_locale:, name: "MD7")
+        _termless = create(:legislator, district:, sway_locale:)
+        service = SwayRegistrationService.new(user, address, sway_locale, invited_by_id: nil)
+
+        expect { service.call }.not_to raise_error
+        expect(service.skipped_legislator_ids).to eq([])
+      end
+    end
+
+    describe "invite creation and office checks" do
+      it "skips invite creation when invited_by_id matches no user and rescues self-invite validation errors" do
+        user = create(:user, is_registration_complete: false)
+        sway_locale = create(:sway_locale, :baltimore)
+        district = District.find_by(sway_locale:, name: "MD0") || create(:district, sway_locale:, name: "MD0")
+        seat = Seat.find_or_create_by_identity!(
+          district:,
+          office_identity: "test-invite-office",
+          title: "Mayor",
+          chamber: "Executive"
+        )
+        legislator = create(:legislator, district:, sway_locale:)
+        create(:legislator_term, legislator:, district:, seat:)
+        address = create(:address, street: "100 Main", city: "Baltimore", region_code: "MD", postal_code: "21202")
+        create(:user_address, user:, address:)
+
+        allow(SwayGeocode).to receive(:build).and_return(instance_double(SwayGeocode::Local, districts: [0]))
+
+        expect {
+          SwayRegistrationService.new(user, address, sway_locale, invited_by_id: -1).call
+        }.not_to change(Invite, :count)
+
+        allow(SwayLogging).to receive(:log_exception)
+        expect {
+          SwayRegistrationService.new(user, address, sway_locale, invited_by_id: user.id).call
+        }.not_to change(Invite, :count)
+        expect(SwayLogging).to have_received(:log_exception).with("sway_registration.create_invite_failed", any_args)
       end
 
-      it "does not enqueue job and processes synchronously when async is false" do
-        user = create(:user)
+      it "treats blank-title unseated terms and undeclared-locale terms as not unconfigured offices" do
+        user = create(:user, is_registration_complete: false)
+        undeclared = create(:sway_locale, city: "undeclared_office_city", state: "MD", country: "US")
+        district = create(:district, sway_locale: undeclared, name: "MD0")
+        legislator = create(:legislator, district:, sway_locale: undeclared)
+        term_with_title = create(:legislator_term, legislator:, district:, title: "Commissioner")
+        term_without_title = create(:legislator_term, legislator: create(:legislator, district:, sway_locale: undeclared), district:, title: nil)
         address = create(:address)
-        sway_locale = create(:sway_locale)
-        allow(sway_locale).to receive(:regional?).and_return(true)
 
-        # Replace the real processing so nothing calls an external API.
-        allow_any_instance_of(SwayRegistrationService).to receive(
-          :create_user_legislators
-        ) do
-          [create(:user_legislator, user: user)]
-        end
-        allow_any_instance_of(SwayRegistrationService).to receive(
-          :create_invite
-        ).and_return(nil)
+        service = SwayRegistrationService.new(user, address, undeclared, invited_by_id: nil)
 
-        expect(SwayRegistrationJob).not_to receive(:perform_later)
-
-        SwayRegistrationService.new(
-          user,
-          address,
-          sway_locale,
-          invited_by_id: nil,
-          async: false
-        ).call
-
-        expect(user.registration_status).to eq("completed")
+        expect(service.send(:unseated_unconfigured_office?, term_without_title)).to be(false)
+        expect(service.send(:unseated_unconfigured_office?, term_with_title)).to be(false)
       end
     end
   end

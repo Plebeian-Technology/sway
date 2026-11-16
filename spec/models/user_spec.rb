@@ -19,6 +19,7 @@
 #  notify_on_summary_change_default        :boolean          default(TRUE), not null
 #  notify_on_support_change_default        :boolean          default(TRUE), not null
 #  org_position_cadence_default            :integer          default("every_change"), not null
+#  pending_representative_locale_ids       :json             not null
 #  phone                                   :string
 #  registration_status                     :string           default("pending")
 #  sign_in_count                           :integer          default(0), not null
@@ -155,11 +156,10 @@ RSpec.describe User, type: :model do
   end
 
   # @lat: [[identity-and-access#Registration is asynchronous by necessity]]
-  describe "#complete! from a failed registration" do
-    it "transitions failed -> completed and marks registration complete" do
+  describe "registration_status state machine" do
+    it "transitions pending -> completed and marks registration complete" do
       user = create(:user)
       create(:user_legislator, user: user)
-      user.update_column(:registration_status, "failed")
 
       user.complete!
 
@@ -176,6 +176,22 @@ RSpec.describe User, type: :model do
 
       expect(user.reload.registration_status).to eq("completed")
       expect(user.is_registration_complete).to be(true)
+    end
+
+    it "does not define retired start_processing! or mark_failed! events" do
+      user = create(:user)
+
+      expect(user).not_to respond_to(:start_processing!, :mark_failed!, :processing?, :failed?)
+    end
+
+    it "rejects retired processing and failed states as invalid" do
+      user = build(:user)
+
+      %w[processing failed].each do |retired_state|
+        user.registration_status = retired_state
+        expect(user).not_to be_valid
+        expect(user.errors[:registration_status]).to be_present
+      end
     end
   end
 
@@ -578,6 +594,156 @@ RSpec.describe User, type: :model do
       allow(user).to receive(:sway_locales).and_return([])
 
       expect(user.default_sway_locale).to be_nil
+    end
+  end
+
+  describe User::EmailValidator do
+    include_context "with in-memory Rails.cache"
+
+    it "rejects malformed email addresses" do
+      user = build(:user, email: "not-an-email")
+      expect(user).not_to be_valid
+      expect(user.errors[:email]).to include("is not an email")
+    end
+
+    context "in production environment" do
+      before { allow(Rails.env).to receive(:production?).and_return(true) }
+
+      it "loads the disposable email blocklist file when present and rejects blocked domains" do
+        allow(File).to receive(:exist?).with(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).and_return(true)
+        allow(File).to receive(:read).with(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).and_return("disposable.test\n")
+
+        blocked = build(:user, email: "person@disposable.test")
+        allowed = build(:user, email: "person@example.com")
+
+        expect(blocked).not_to be_valid
+        expect(blocked.errors[:email]).to include("is not valid")
+        expect(allowed).to be_valid
+      end
+
+      it "falls back to extra_blocked when the blocklist file is missing" do
+        allow(File).to receive(:exist?).with(Constants::DISPOSABLE_EMAIL_BLOCKLIST_FILE_PATH).and_return(false)
+        allow(SwayLogging).to receive(:warn)
+
+        blocked = build(:user, email: "alias@simplelogin.com")
+        expect(blocked).not_to be_valid
+        expect(SwayLogging).to have_received(:warn).with(/blocklist file missing/)
+      end
+
+      it "handles empty cache blocklist and blank emails cleanly in #in_blocklist?" do
+        validator = described_class.new(attributes: [:email])
+        Rails.cache.write("email_blocklist", ["blocked.example"])
+        expect(validator.in_blocklist?("")).to be(true)
+
+        Rails.cache.write("email_blocklist", [])
+        expect(validator.in_blocklist?("a@blocked.example")).to be(false)
+      end
+    end
+  end
+
+  describe "registration callbacks and helper methods" do
+    it "preserves explicitly provided boolean flags on create" do
+      user = User.create!(
+        phone: "4105559876",
+        is_email_verified: true,
+        is_phone_verified: true,
+        is_registration_complete: true,
+        is_registered_to_vote: true,
+        sms_notifications_enabled: true,
+        sign_in_count: 3
+      )
+
+      expect(user).to have_attributes(
+        is_email_verified: true,
+        is_phone_verified: true,
+        is_registration_complete: true,
+        is_registered_to_vote: true,
+        sms_notifications_enabled: true,
+        sign_in_count: 3
+      )
+    end
+
+    it "skips transition via early return when already completed with is_registration_complete true" do
+      user = create(:user, :registered, registration_status: "completed", is_registration_complete: true)
+      expect { user.complete_registration! }.not_to change(RegistrationFunnelEvent, :count)
+      expect(user.registration_status).to eq("completed")
+    end
+
+    it "flips is_registration_complete to true and skips duplicate funnel event on completed -> completed transition" do
+      user = create(:user, :registered, registration_status: "completed", is_registration_complete: false)
+      expect { user.complete_registration! }.not_to change(RegistrationFunnelEvent, :count)
+      expect(user.reload.registration_status).to eq("completed")
+      expect(user.is_registration_complete).to be(true)
+    end
+
+    it "returns an empty array from #user_legislators_by_locale(nil)" do
+      user = create(:user)
+      expect(user.user_legislators_by_locale(nil)).to eq([])
+    end
+
+    it "evaluates #email_sendable?, #is_admin?, and #create_user_invite_url idempotently" do
+      admin = create(:user, :sway_admin, email: "ok@example.com", is_email_verified: true)
+      unverified = create(:user, email: "no@example.com", is_email_verified: false)
+
+      expect(admin.email_sendable?).to be(true)
+      expect(unverified.email_sendable?).to be(false)
+      expect(admin.is_admin?).to be(true)
+      expect(unverified.is_admin?).to be(false)
+      expect(admin.create_user_invite_url).to be_nil
+      expect(User.new.invite_url).to be_nil
+    end
+
+    it "handles missing locale in #remove_pending_representative_locale" do
+      locale = create(:sway_locale)
+      user = create(:user, pending_representative_locale_ids: [])
+      user.remove_pending_representative_locale(locale)
+      expect(user.reload.pending_representative_locale_ids).to eq([])
+    end
+
+    it "uses Sway::Settings.ops.beszel_url when present and returns nil when SWAY_HOST is blank" do
+      admin = create(:user, :sway_admin, email: "operator@ops.example.org")
+
+      with_app_config(:ops, beszel_admin_email_domains: ["ops.example.org"], beszel_url: "https://beszel.example.org") do
+        expect(admin.beszel_url).to eq("https://beszel.example.org")
+      end
+
+      allow(SwayDeployConfig).to receive(:[]).and_call_original
+      allow(SwayDeployConfig).to receive(:[]).with("SWAY_HOST").and_return(nil)
+      with_app_config(:ops, beszel_admin_email_domains: ["ops.example.org"], beszel_url: nil) do
+        expect(admin.beszel_url).to be_nil
+      end
+    end
+
+    it "validates allowed columns in #cascade_org_pref_off! and handles unchanged or invalid #apply_org_notification_defaults!" do
+      user = create(:user)
+      org = create(:organization)
+      follow = create(:organization_follow, user: user, organization: org, notify_on_new_position: true)
+
+      expect { user.cascade_org_pref_off!(:not_a_column) }.to raise_error(ArgumentError, /is not a cascadable follow column/)
+      expect { user.cascade_org_pref_off!(123) }.to raise_error(ArgumentError, /is not a cascadable follow column/) # steep:ignore
+      expect(user.apply_org_notification_defaults!(full_name: "12345")).to be(false)
+      user.reload
+
+      expect(user.apply_org_notification_defaults!(notify_on_new_position_default: true)).to be(true)
+      expect(follow.reload.notify_on_new_position).to be(true)
+
+      expect(user.apply_org_notification_defaults!(notify_on_new_position_default: false)).to be(true)
+      expect(follow.reload.notify_on_new_position).to be(false)
+    end
+
+    it "defaults nil sms_notifications_enabled to false before create" do
+      created = create(:user, sms_notifications_enabled: nil)
+
+      expect(created.sms_notifications_enabled).to be(false)
+    end
+
+    it "logs and returns nil if #record_funnel_event raises" do
+      user = create(:user)
+      allow(RegistrationFunnelEvent).to receive(:normalize_step).and_raise(StandardError, "db error")
+      allow(Rails.logger).to receive(:error)
+
+      expect(user.record_funnel_event(:landing)).to be_nil
+      expect(Rails.logger).to have_received(:error).with(/Failed to record registration funnel event/)
     end
   end
 
