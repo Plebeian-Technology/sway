@@ -7,7 +7,6 @@ module Users
     before_action :authenticate_sway_user!
 
     def edit
-      puts "AddressEdit reached. User: #{current_user&.id}"
       render inertia: "users/AddressEdit", props: {
         address: current_user.user_address&.address&.to_builder&.serializable_hash
       }

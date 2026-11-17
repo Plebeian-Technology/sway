@@ -5,7 +5,7 @@ lat:
 
 # Passkey management page overview
 
-`app/frontend/pages/PasskeyManagement.tsx` is the page where a signed-in user sees the passkeys they have registered — the label, the date it was created, and when it was last used. Users may remove a passkey on the web as implemented in [[SWAY-nr4t6.4|SWAY-nr4t6.4: "Let a user remove one of their own passkeys" (P2/OPEN)]] and [[SWAY-nr4t6.8|SWAY-nr4t6.8: "Add a remove button to the web passkeys page" (P2/OPEN)]].
+`app/frontend/pages/PasskeyManagement.tsx` is the page where a signed-in user sees the passkeys they have registered — the label, the date it was created, and when it was last used. Users may remove a passkey on the web.
 
 A passkey is the fingerprint, face, or device PIN this app uses in place of a password.
 
