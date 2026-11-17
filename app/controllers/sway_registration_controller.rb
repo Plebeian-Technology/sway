@@ -30,7 +30,7 @@ class SwayRegistrationController < ApplicationController
       redirect_to root_path
     elsif address_not_located_outcome?
       render inertia: Pages::REGISTRATION, props: registration_page_props
-    elsif u.registered?
+    elsif u.registered? && params[:action] != "change_address"
       u.complete_registration!
       redirect_to feed_path
     else

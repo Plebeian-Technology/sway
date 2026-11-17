@@ -417,6 +417,7 @@ Rails.application.routes.draw do
   namespace :users do
     # @lat: [[identity-and-access#Identity and access#The phone number is the account#Email is contact data, not an authentication path]]
     resource :email_verification, only: %i[create update destroy]
+    resource :profile, only: %i[show]
 
     namespace :webauthn do
       resources :sessions, only: %i[create destroy] do
@@ -432,6 +433,7 @@ Rails.application.routes.draw do
     end
 
     resources :organization_memberships, only: %i[index]
+    resource :profile, only: %i[show]
 
     # @lat: [[identity-and-access#Identity and access#User JSON exposes only selected fields]]
     resource :preferences, only: %i[update]
