@@ -137,6 +137,10 @@ Each red lane prints a copy-pasteable rerun beside its log path. Every Docker la
 - `config/initializers/monkey_patches.rb` is not listed: SimpleCov's `rails` profile skips everything under `config/`, so the file can never appear in the report
 - Worker results from another rspec run in the same checkout while `verify` runs are merged too; they can only raise a file's numbers, never lower them
 
+### Loading the check without SimpleCov
+
+[[lib/onboarding_coverage_check.rb#OnboardingCoverageCheck]] requires no gem when its file loads; `sway:coverage:onboarding` and its spec require SimpleCov first. Production eager-loads `lib/` and installs no `test` group gems, so a load-time require stops every production boot.
+
 ## Frontend onboarding coverage gate
 
 The full vitest run fails when any frontend onboarding file in [[config/onboarding_coverage_floor.frontend.json]] is under its line or branch floor; the target for every file is 100 percent line and branch coverage.

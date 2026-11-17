@@ -6,6 +6,7 @@ namespace :sway do
     desc "sway:coverage:onboarding[since]: fail when an onboarding file is under its line or branch coverage floor"
     task :onboarding, [:since] do |_t, args|
       require "yaml"
+      require "simplecov"
       require_relative "../onboarding_coverage_check"
 
       root = File.expand_path("../..", __dir__)

@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 require "json"
-require "simplecov"
 
-# @lat: [[verification-gates#Onboarding coverage gate]]
+# @lat: [[verification-gates#Onboarding coverage gate#Loading the check without SimpleCov]]
 class OnboardingCoverageCheck
   FLOOR_PATH = "config/onboarding_coverage_floor.yml"
 
