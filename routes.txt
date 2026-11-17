@@ -1,0 +1,253 @@
+[dotenv] Loaded [33m.env.development[0m
+[dotenv] Loaded [33m.env[0m
+I, [2026-11-17T18:13:47.540608 #1]  INFO -- : SKIP Sentry.init. No RUSTRAK_DSN set.
+I, [2026-11-17T18:13:48.395436 #1]  INFO -- : app_boot rails_env="development" app_base_url="https://localhost:3333" active_storage_service=:local queue_adapter=:solid_queue primary_database="storage/development.sqlite3" queue_database="storage/development_queue.sqlite3" cable_database="storage/development_cable.sqlite3" cache_database="storage/development_cache.sqlite3"
+                                              Prefix Verb   URI Pattern                                                                                       Controller#Action
+                                                     GET    /.well-known/webauthn(.:format)                                                                   well_known#index
+                                                     GET    /.well-known/apple-app-site-association(.:format)                                                 well_known#aasa {format: :json}
+                                                     GET    /.well-known/assetlinks.json(.:format)                                                            well_known#assetlinks {format: :json}
+                                                     GET    /sitemap.xml(.:format)                                                                            sitemap#index
+                                          csp_report POST   /csp-report(.:format)                                                                             csp_reports#create
+                                     mobile_download GET    /download(.:format)                                                                               marketing#mobile_download
+                                      sms_disclosure GET    /sms(.:format)                                                                                    marketing#sms
+                                      privacy_policy GET    /privacy(.:format)                                                                                marketing#privacy
+                                    terms_of_service GET    /terms(.:format)                                                                                  marketing#terms
+                                             version GET    /version(.:format)                                                                                meta#version
+                                            licenses GET    /licenses(.:format)                                                                               meta#licenses
+                                                root GET    /                                                                                                 home#index
+                                                     GET    /s/:id(.:format)                                                                                  shortener/shortened_urls#show
+                                              invite GET    /invite/:user_id/:invite_uuid(.:format)                                                           invites#show
+                                             invites GET    /invites/:user_id/:invite_uuid(.:format)                                                          invites#show
+                                  rails_health_check GET    /up(.:format)                                                                                     rails/health#show
+                                    new_bill_creator GET    /admin/bill_creator/new(.:format)                                                                 bills#new
+                                creator_bill_creator GET    /admin/bill_creator/:id/creator(.:format)                                                         bills#edit {bill_creator_tab: "creator"}
+                               schedule_bill_creator GET    /admin/bill_creator/:id/schedule(.:format)                                                        bills#edit {bill_creator_tab: "schedule"}
+                               pipeline_bill_creator GET    /admin/bill_creator/:id/pipeline(.:format)                                                        bills#edit {bill_creator_tab: "pipeline"}
+                                summary_bill_creator GET    /admin/bill_creator/:id/summary(.:format)                                                         bills#edit {bill_creator_tab: "summary"}
+                              positions_bill_creator GET    /admin/bill_creator/:id/positions(.:format)                                                       bills#edit {bill_creator_tab: "positions"}
+                                   edit_bill_creator GET    /admin/bill_creator/:id/edit(.:format)                                                            redirect(302)
+                                                     GET    /admin/bill_creator/:id(.:format)                                                                 redirect(302)
+                                            new_bill GET    /bills/new(.:format)                                                                              redirect(302)
+                                           edit_bill GET    /bills/:id/edit(.:format)                                                                         redirect(302)
+                               generate_summary_bill POST   /bills/:id/generate_summary(.:format)                                                             bills#generate_summary
+                             regenerate_summary_bill POST   /bills/:id/regenerate_summary(.:format)                                                           bills#regenerate_summary
+                         supplemental_testimony_bill PATCH  /bills/:id/supplemental_testimony(.:format)                                                       bills#supplemental_testimony
+                        testimony_letter_stance_bill PATCH  /bills/:id/testimony_letter_stance(.:format)                                                      bills#testimony_letter_stance
+                           approve_org_position_bill POST   /bills/:id/approve_org_position(.:format)                                                         bills#approve_org_position
+                                  paste_summary_bill POST   /bills/:id/paste_summary(.:format)                                                                bills#paste_summary
+                       restore_summary_revision_bill POST   /bills/:id/restore_summary_revision(.:format)                                                     bills#restore_summary_revision
+                                  run_pipeline_bills POST   /bills/run_pipeline(.:format)                                                                     bills#run_pipeline
+                     sweep_stale_pipeline_runs_bills POST   /bills/sweep_stale_pipeline_runs(.:format)                                                        bills#sweep_stale_pipeline_runs
+                                     bill_categories POST   /bills/:bill_id/categories(.:format)                                                              bills/categories#create
+                                       bill_category DELETE /bills/:bill_id/categories/:id(.:format)                                                          bills/categories#destroy
+                       bill_public_testimony_letters GET    /bills/:bill_id/public_testimony_letters(.:format)                                                bills/public_testimony_letters#index
+                                bill_summary_reports POST   /bills/:bill_id/summary_reports(.:format)                                                         bill_summary_reports#create
+             bill_testimony_coverage_acknowledgement POST   /bills/:bill_id/testimony_coverage_acknowledgement(.:format)                                      testimony_coverage_acknowledgements#create
+                         reject_draft_bill_campaigns POST   /bills/:bill_id/campaigns/reject_draft(.:format)                                                  campaigns#reject_draft
+                        restore_draft_bill_campaigns POST   /bills/:bill_id/campaigns/restore_draft(.:format)                                                 campaigns#restore_draft
+                mark_individual_draft_bill_campaigns POST   /bills/:bill_id/campaigns/mark_individual_draft(.:format)                                         campaigns#mark_individual_draft
+                     link_organization_bill_campaign POST   /bills/:bill_id/campaigns/:id/link_organization(.:format)                                         campaigns#link_organization
+                                      bill_campaigns POST   /bills/:bill_id/campaigns(.:format)                                                               campaigns#create
+                                               bills GET    /bills(.:format)                                                                                  bills#index
+                                                     POST   /bills(.:format)                                                                                  bills#create
+                                                bill GET    /bills/:id(.:format)                                                                              bills#show
+                                                     PATCH  /bills/:id(.:format)                                                                              bills#update
+                                                     PUT    /bills/:id(.:format)                                                                              bills#update
+                                                     DELETE /bills/:id(.:format)                                                                              bills#destroy
+                            cancel_pipeline_run_bill DELETE /bills/legislation_pipeline_runs/:id(.:format)                                                    bills#cancel_pipeline_run_bill
+                                 resume_pipeline_run POST   /bills/legislation_pipeline_runs/:id/resume(.:format)                                             bills#resume_pipeline_run
+                                restart_pipeline_run POST   /bills/legislation_pipeline_runs/:id/restart(.:format)                                            bills#restart_pipeline_run
+                                  twilio_sms_webhook POST   /webhooks/twilio/sms(.:format)                                                                    webhooks/twilio_messages#create
+                             bill_of_the_month_index GET    /bill_of_the_month(.:format)                                                                      bill_of_the_month#index
+                                                     GET    /bill_of_the_week(.:format)                                                                       redirect(301, path: /bill_of_the_month)
+                             past_bills_of_the_month GET    /past_bills_of_the_month(.:format)                                                                bills#past_of_the_month
+                          bill_of_the_month_schedule PATCH  /bill_of_the_month_schedule/:id(.:format)                                                         bill_of_the_month_schedule#update
+                                                     PUT    /bill_of_the_month_schedule/:id(.:format)                                                         bill_of_the_month_schedule#update
+                                          bill_score GET    /bill_scores/:id(.:format)                                                                        bill_scores#show
+                                 bill_score_district GET    /bill_score_districts/:id(.:format)                                                               bill_score_districts#show
+                                           districts GET    /districts(.:format)                                                                              districts#index
+                                                feed GET    /feed(.:format)                                                                                   feed#index
+                                     influence_index GET    /influence(.:format)                                                                              influence#index
+                                         legislators GET    /legislators(.:format)                                                                            legislators#index
+                                          legislator GET    /legislators/:id(.:format)                                                                        legislators#show
+                                    legislator_votes POST   /legislator_votes(.:format)                                                                       legislator_votes#create
+                              user_legislator_emails POST   /user_legislator_emails(.:format)                                                                 user_legislator_emails#create
+                         organization_bill_positions GET    /organization_bill_positions(.:format)                                                            organization_bill_positions#index
+                                                     POST   /organization_bill_positions(.:format)                                                            organization_bill_positions#create
+                          organization_bill_position GET    /organization_bill_positions/:id(.:format)                                                        organization_bill_positions#show
+                                                     DELETE /organization_bill_positions/:id(.:format)                                                        organization_bill_positions#destroy
+                                        sway_locales GET    /sway_locales(.:format)                                                                           sway_locales#index
+                                         sway_locale GET    /sway_locales/:id(.:format)                                                                       sway_locales#show
+                             force_fail_pipeline_run POST   /pipeline_runs/:id/force_fail(.:format)                                                           pipeline_runs#force_fail
+                       destroy_orphans_pipeline_runs DELETE /pipeline_runs/orphans(.:format)                                                                  pipeline_runs#destroy_orphans
+                                       pipeline_runs GET    /pipeline_runs(.:format)                                                                          pipeline_runs#index
+                             bill_draft_org_position PATCH  /bill_draft_org_positions/:id(.:format)                                                           bill_draft_org_positions#update
+                                                     PUT    /bill_draft_org_positions/:id(.:format)                                                           bill_draft_org_positions#update
+                              sending_service_domain PATCH  /sending_service_domains/:id(.:format)                                                            sending_service_domains#update
+                                                     PUT    /sending_service_domains/:id(.:format)                                                            sending_service_domains#update
+                                          admin_root GET    /admin(.:format)                                                                                  admin/index#show
+                                       admin_locales GET    /admin/locales(.:format)                                                                          admin/locales#show
+                                        admin_locale PATCH  /admin/locales/:id(.:format)                                                                      admin/locales#update
+                              admin_shared_addresses GET    /admin/shared_addresses(.:format)                                                                 admin/shared_addresses#show
+                          admin_user_address_changes GET    /admin/user_address_changes(.:format)                                                             admin/user_address_changes#show
+                                admin_system_prompts GET    /admin/system_prompts(.:format)                                                                   admin/system_prompts#show
+                   refresh_models_admin_llm_settings POST   /admin/llm_settings/refresh_models(.:format)                                                      admin/llm_settings#refresh_models
+                        add_model_admin_llm_settings POST   /admin/llm_settings/add_model(.:format)                                                           admin/llm_settings#add_model
+                     remove_model_admin_llm_settings DELETE /admin/llm_settings/remove_model(.:format)                                                        admin/llm_settings#remove_model
+                                  admin_llm_settings GET    /admin/llm_settings(.:format)                                                                     admin/llm_settings#show
+                                                     PATCH  /admin/llm_settings(.:format)                                                                     admin/llm_settings#update
+                                                     PUT    /admin/llm_settings(.:format)                                                                     admin/llm_settings#update
+                                    admin_categories GET    /admin/categories(.:format)                                                                       admin/categories#index
+                                                     POST   /admin/categories(.:format)                                                                       admin/categories#create
+                                      admin_category PATCH  /admin/categories/:id(.:format)                                                                   admin/categories#update
+                                                     PUT    /admin/categories/:id(.:format)                                                                   admin/categories#update
+                                                     DELETE /admin/categories/:id(.:format)                                                                   admin/categories#destroy
+                          admin_bill_summary_reports GET    /admin/bill_summary_reports(.:format)                                                             admin/bill_summary_reports#index
+                           admin_bill_summary_report GET    /admin/bill_summary_reports/:id(.:format)                                                         admin/bill_summary_reports#show
+                                                     PATCH  /admin/bill_summary_reports/:id(.:format)                                                         admin/bill_summary_reports#update
+                                                     PUT    /admin/bill_summary_reports/:id(.:format)                                                         admin/bill_summary_reports#update
+                           admin_registration_funnel GET    /admin/registration_funnel(.:format)                                                              admin/registration_funnel#index
+                               admin_partner_reports GET    /admin/partner_reports(.:format)                                                                  admin/partner_reports#index
+                                admin_partner_report GET    /admin/partner_reports/:id(.:format)                                                              admin/partner_reports#show
+                            admin_bill_news_articles GET    /admin/bills/:bill_id/news_articles(.:format)                                                     admin/bill_news_articles#index
+                                                     POST   /admin/bills/:bill_id/news_articles(.:format)                                                     admin/bill_news_articles#create
+                             admin_bill_news_article PATCH  /admin/bills/:bill_id/news_articles/:id(.:format)                                                 admin/bill_news_articles#update
+                                                     PUT    /admin/bills/:bill_id/news_articles/:id(.:format)                                                 admin/bill_news_articles#update
+       confirm_accept_organization_membership_invite GET    /organizations/:organization_id/membership_invites/:id/confirm_accept(.:format)                   organizations/membership_invites#confirm_accept
+               accept_organization_membership_invite POST   /organizations/:organization_id/membership_invites/:id/accept(.:format)                           organizations/membership_invites#accept
+                     organization_membership_invites POST   /organizations/:organization_id/membership_invites(.:format)                                      organizations/membership_invites#create
+                      organization_membership_invite DELETE /organizations/:organization_id/membership_invites/:id(.:format)                                  organizations/membership_invites#destroy
+                      leave_organization_memberships DELETE /organizations/:organization_id/memberships/leave(.:format)                                       organizations/memberships#leave
+                             organization_membership GET    /organizations/:organization_id/memberships/:id(.:format)                                         organizations/memberships#show
+                                                     PATCH  /organizations/:organization_id/memberships/:id(.:format)                                         organizations/memberships#update
+                                                     PUT    /organizations/:organization_id/memberships/:id(.:format)                                         organizations/memberships#update
+                                                     DELETE /organizations/:organization_id/memberships/:id(.:format)                                         organizations/memberships#destroy
+                              organization_positions POST   /organizations/:organization_id/positions(.:format)                                               organizations/positions#create
+                           new_organization_position GET    /organizations/:organization_id/positions/new(.:format)                                           organizations/positions#new
+                               organization_position PATCH  /organizations/:organization_id/positions/:id(.:format)                                           organizations/positions#update
+                                                     PUT    /organizations/:organization_id/positions/:id(.:format)                                           organizations/positions#update
+                                                     DELETE /organizations/:organization_id/positions/:id(.:format)                                           organizations/positions#destroy
+                        organization_position_change PATCH  /organizations/:organization_id/position_changes/:id(.:format)                                    organizations/position_changes#update
+                                                     PUT    /organizations/:organization_id/position_changes/:id(.:format)                                    organizations/position_changes#update
+                                                     DELETE /organizations/:organization_id/position_changes/:id(.:format)                                    organizations/position_changes#destroy
+                                       organizations GET    /organizations(.:format)                                                                          organizations#index
+                                                     POST   /organizations(.:format)                                                                          organizations#create
+                                        organization GET    /organizations/:id(.:format)                                                                      organizations#show
+                                                     PATCH  /organizations/:id(.:format)                                                                      organizations#update
+                                                     PUT    /organizations/:id(.:format)                                                                      organizations#update
+                           challenge_api_v1_sessions POST   /api/v1/sessions/challenge(.:format)                                                              api/v1/sessions#challenge
+              discoverable_challenge_api_v1_sessions POST   /api/v1/sessions/discoverable_challenge(.:format)                                                 api/v1/sessions#discoverable_challenge
+                            callback_api_v1_sessions POST   /api/v1/sessions/callback(.:format)                                                               api/v1/sessions#callback
+                          revoke_all_api_v1_sessions POST   /api/v1/sessions/revoke_all(.:format)                                                             api/v1/sessions#revoke_all
+                            callback_api_v1_passkeys POST   /api/v1/passkeys/callback(.:format)                                                               api/v1/passkeys#callback
+                                     api_v1_passkeys POST   /api/v1/passkeys(.:format)                                                                        api/v1/passkeys#create
+                       callback_api_v1_registrations POST   /api/v1/registrations/callback(.:format)                                                          api/v1/registrations#callback
+                                api_v1_registrations POST   /api/v1/registrations(.:format)                                                                   api/v1/registrations#create
+                           api_v1_phone_verification POST   /api/v1/phone_verification(.:format)                                                              api/v1/phone_verifications#request_code
+                    api_v1_phone_verification_verify POST   /api/v1/phone_verification/verify(.:format)                                                       api/v1/phone_verifications#verify
+                                api_v1_funnel_events POST   /api/v1/funnel_events(.:format)                                                                   api/v1/funnel_events#create
+                           push_token_api_v1_devices PATCH  /api/v1/devices/push_token(.:format)                                                              api/v1/devices#update_push_token
+                                       api_v1_device DELETE /api/v1/devices/:id(.:format)                                                                     api/v1/devices#destroy
+                                    api_v1_bootstrap GET    /api/v1/bootstrap(.:format)                                                                       api/v1/bootstrap#show
+        org_defaults_api_v1_notification_preferences GET    /api/v1/notification_preferences/org_defaults(.:format)                                           api/v1/notification_preferences#organization_defaults
+                                                     PATCH  /api/v1/notification_preferences/org_defaults(.:format)                                           api/v1/notification_preferences#update_organization_defaults
+                     api_v1_notification_preferences GET    /api/v1/notification_preferences(.:format)                                                        api/v1/notification_preferences#index
+                      api_v1_notification_preference PATCH  /api/v1/notification_preferences/:key(.:format)                                                   api/v1/notification_preferences#update {key: /[a-z_]+/}
+                                                     PUT    /api/v1/notification_preferences/:key(.:format)                                                   api/v1/notification_preferences#update {key: /[a-z_]+/}
+                      api_v1_notifications_test_push POST   /api/v1/notifications/test_push(.:format)                                                         api/v1/notifications#test_push
+                                                     GET    /api/bills(.:format)                                                                              bills#index
+                                                     GET    /api/bills/:id(.:format)                                                                          bills#show
+                                                     GET    /api/bill_of_the_month(.:format)                                                                  bill_of_the_month#index
+                                                     GET    /api/bill_of_the_week(.:format)                                                                   redirect(301, path: /api/bill_of_the_month)
+                                                     GET    /api/bill_scores/:id(.:format)                                                                    bill_scores#show
+                                                     GET    /api/bill_score_districts/:id(.:format)                                                           bill_score_districts#show
+                                                     GET    /api/districts(.:format)                                                                          districts#index
+                                                     GET    /api/influence(.:format)                                                                          influence#index
+                                                     GET    /api/legislators(.:format)                                                                        legislators#index
+                                                     GET    /api/legislators/:id(.:format)                                                                    legislators#show
+                                                     GET    /api/legislator_votes(.:format)                                                                   legislator_votes#index
+                                     legislator_vote GET    /api/legislator_votes/:id(.:format)                                                               legislator_votes#show
+                                                     GET    /api/organizations(.:format)                                                                      organizations#index
+                                                     GET    /api/organizations/:id(.:format)                                                                  organizations#show
+                                                     GET    /api/organization_bill_positions(.:format)                                                        organization_bill_positions#index
+                                                     GET    /api/organization_bill_positions/:id(.:format)                                                    organization_bill_positions#show
+                                                     GET    /api/sway_locales(.:format)                                                                       sway_locales#index
+                                                     GET    /api/sway_locales/:id(.:format)                                                                   sway_locales#show
+                                                     POST   /api/admin/bills(.:format)                                                                        bills#create
+                                                     PATCH  /api/admin/bills/:id(.:format)                                                                    bills#update
+                                                     PUT    /api/admin/bills/:id(.:format)                                                                    bills#update
+                                                     PATCH  /api/admin/bill_of_the_month_schedule/:id(.:format)                                               bill_of_the_month_schedule#update
+                                                     PUT    /api/admin/bill_of_the_month_schedule/:id(.:format)                                               bill_of_the_month_schedule#update
+                                                     POST   /api/admin/legislator_votes(.:format)                                                             legislator_votes#create
+                                                     POST   /api/admin/organizations(.:format)                                                                organizations#create
+                                                     POST   /api/admin/organization_bill_positions(.:format)                                                  organization_bill_positions#create
+                     preferences_organization_follow PATCH  /organization_follows/:id/preferences(.:format)                                                   organization_follows#preferences
+                                organization_follows POST   /organization_follows(.:format)                                                                   organization_follows#create
+                                 organization_follow DELETE /organization_follows/:id(.:format)                                                               organization_follows#destroy
+                                public_organizations GET    /public/organizations(.:format)                                                                   public/organizations#index
+                                 public_organization GET    /public/organizations/:id(.:format)                                                               public/organizations#show
+                                          embed_bill GET    /embed/bills/:id(.:format)                                                                        embed/bills#show
+                                    user_legislators GET    /user_legislators(.:format)                                                                       user_legislators#index
+                                                     POST   /user_legislators(.:format)                                                                       user_legislators#create
+                                          user_votes GET    /user_votes(.:format)                                                                             user_votes#index
+                                                     POST   /user_votes(.:format)                                                                             user_votes#create
+                                           user_vote GET    /user_votes/:id(.:format)                                                                         user_votes#show
+                                   provisional_votes POST   /provisional_votes(.:format)                                                                      provisional_votes#create
+                                    provisional_vote DELETE /provisional_votes/:id(.:format)                                                                  provisional_votes#destroy
+                                    user_bill_shares POST   /user_bill_shares(.:format)                                                                       user_bill_shares#create
+                                          bill_share GET    /bill_shares/:share_uuid(.:format)                                                                user_bill_shares#show
+                              settings_notifications PATCH  /notifications/settings(.:format)                                                                 notifications#update_settings
+                          org_defaults_notifications PATCH  /notifications/org_defaults(.:format)                                                             notifications#update_organization_defaults
+                                       notifications GET    /notifications(.:format)                                                                          notifications#index
+                    notifications_push_notifications POST   /notifications/push_notifications(.:format)                                                       notifications/push_notifications#create
+       notifications_push_notification_subscriptions POST   /notifications/push_notification_subscriptions(.:format)                                          notifications/push_notification_subscriptions#create
+notifications_destroy_push_notification_subscription DELETE /notifications/push_notification_subscriptions(.:format)                                          notifications/push_notification_subscriptions#destroy
+                                                     PATCH  /reassignment_notifications/:id/dismiss(.:format)                                                 representative_reassignments#dismiss
+                            phone_verification_index POST   /phone_verification(.:format)                                                                     phone_verification#create
+                                  phone_verification PATCH  /phone_verification/:id(.:format)                                                                 phone_verification#update
+                                                     PUT    /phone_verification/:id(.:format)                                                                 phone_verification#update
+                                            api_keys GET    /api_keys(.:format)                                                                               api_keys#index
+                                                     POST   /api_keys(.:format)                                                                               api_keys#create
+                                             api_key PATCH  /api_keys/:id(.:format)                                                                           api_keys#update
+                                                     PUT    /api_keys/:id(.:format)                                                                           api_keys#update
+                                                     DELETE /api_keys/:id(.:format)                                                                           api_keys#destroy
+                             sway_registration_index GET    /sway_registration(.:format)                                                                      sway_registration#index
+                                                     POST   /sway_registration(.:format)                                                                      sway_registration#create
+                              addresses_autocomplete GET    /addresses/autocomplete(.:format)                                                                 addresses#autocomplete
+                             revoke_all_devices_user POST   /users/:id/revoke_all_devices(.:format)                                                           users#revoke_all_devices {id: /\d+/}
+                                                user DELETE /users/:id(.:format)                                                                              users#destroy {id: /\d+/}
+                            users_email_verification PATCH  /users/email_verification(.:format)                                                               users/email_verifications#update
+                                                     PUT    /users/email_verification(.:format)                                                               users/email_verifications#update
+                                                     DELETE /users/email_verification(.:format)                                                               users/email_verifications#destroy
+                                                     POST   /users/email_verification(.:format)                                                               users/email_verifications#create
+                                       users_profile GET    /users/profile(.:format)                                                                          users/profiles#show
+                                  edit_users_address GET    /users/address/edit(.:format)                                                                     users/addresses#edit
+                                       users_address PATCH  /users/address(.:format)                                                                          users/addresses#update
+                                                     PUT    /users/address(.:format)                                                                          users/addresses#update
+                    callback_users_webauthn_sessions POST   /users/webauthn/sessions/callback(.:format)                                                       users/webauthn/sessions#callback
+      discoverable_challenge_users_webauthn_sessions POST   /users/webauthn/sessions/discoverable_challenge(.:format)                                         users/webauthn/sessions#discoverable_challenge
+       discoverable_callback_users_webauthn_sessions POST   /users/webauthn/sessions/discoverable_callback(.:format)                                          users/webauthn/sessions#discoverable_callback
+                             users_webauthn_sessions POST   /users/webauthn/sessions(.:format)                                                                users/webauthn/sessions#create
+                              users_webauthn_session DELETE /users/webauthn/sessions/:id(.:format)                                                            users/webauthn/sessions#destroy
+          callback_users_webauthn_registration_index POST   /users/webauthn/registration/callback(.:format)                                                   users/webauthn/registration#callback
+                   users_webauthn_registration_index POST   /users/webauthn/registration(.:format)                                                            users/webauthn/registration#create
+                      users_organization_memberships GET    /users/organization_memberships(.:format)                                                         users/organization_memberships#index
+                                                     GET    /users/profile(.:format)                                                                          users/profiles#show
+                                   users_preferences PATCH  /users/preferences(.:format)                                                                      users/preferences#update
+                                                     PUT    /users/preferences(.:format)                                                                      users/preferences#update
+                         verify_phone_users_passkeys POST   /users/passkeys/verify_phone(.:format)                                                            users/passkeys#verify_phone
+                        confirm_phone_users_passkeys POST   /users/passkeys/confirm_phone(.:format)                                                           users/passkeys#confirm_phone
+                          add_options_users_passkeys POST   /users/passkeys/add_options(.:format)                                                             users/passkeys#add_options
+                         add_callback_users_passkeys POST   /users/passkeys/add_callback(.:format)                                                            users/passkeys#add_callback
+                                      users_passkeys GET    /users/passkeys(.:format)                                                                         users/passkeys#index
+                                       users_passkey DELETE /users/passkeys/:id(.:format)                                                                     users/passkeys#destroy
+                                                            /*path(.:format)                                                                                  Inline handler (Proc/Lambda)
+                                  rails_service_blob GET    /rails/active_storage/blobs/redirect/:signed_id/*filename(.:format)                               active_storage/blobs/redirect#show
+                            rails_service_blob_proxy GET    /rails/active_storage/blobs/proxy/:signed_id/*filename(.:format)                                  active_storage/blobs/proxy#show
+                                                     GET    /rails/active_storage/blobs/:signed_id/*filename(.:format)                                        active_storage/blobs/redirect#show
+                           rails_blob_representation GET    /rails/active_storage/representations/redirect/:signed_blob_id/:variation_key/*filename(.:format) active_storage/representations/redirect#show
+                     rails_blob_representation_proxy GET    /rails/active_storage/representations/proxy/:signed_blob_id/:variation_key/*filename(.:format)    active_storage/representations/proxy#show
+                                                     GET    /rails/active_storage/representations/:signed_blob_id/:variation_key/*filename(.:format)          active_storage/representations/redirect#show
+                                  rails_disk_service GET    /rails/active_storage/disk/:encoded_key/*filename(.:format)                                       active_storage/disk#show
+                           update_rails_disk_service PUT    /rails/active_storage/disk/:encoded_token(.:format)                                               active_storage/disk#update
+                                rails_direct_uploads POST   /rails/active_storage/direct_uploads(.:format)                                                    active_storage/direct_uploads#create

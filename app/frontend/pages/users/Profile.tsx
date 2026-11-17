@@ -38,7 +38,7 @@ const Profile: React.FC<IProps> = ({ user, address, is_api_user }) => {
                         <div className="flex items-center justify-between">
                             <span>{address?.full_address || "No address set"}</span>
                             <a
-                                href="/sway_registration/edit"
+                                href="/users/address/edit"
                                 className="text-sm text-blue-600 hover:underline"
                             >
                                 Change Address
