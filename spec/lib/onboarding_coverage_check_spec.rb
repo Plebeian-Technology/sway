@@ -4,6 +4,8 @@ require "spec_helper"
 require "json"
 require "tmpdir"
 require "fileutils"
+require "simplecov"
+require_relative "../../lib/sway/subprocess"
 require_relative "../../lib/onboarding_coverage_check"
 
 # @lat: [[verification-gates#Onboarding coverage gate]]
@@ -98,5 +100,17 @@ RSpec.describe OnboardingCoverageCheck do
       "#{sample_path}: line coverage 75.0% is below its floor of 100.0%",
       "#{sample_path}: branch coverage 50.0% is below its floor of 100.0%"
     ])
+  end
+
+  # @lat: [[verification-gates#Onboarding coverage gate#Loading the check without SimpleCov]]
+  it "loads in a Ruby without gems, as production eager-loads it without SimpleCov" do
+    path = File.expand_path("../../lib/onboarding_coverage_check.rb", __dir__)
+
+    _stdout, stderr, status = Sway::Subprocess.capture3(
+      "/usr/bin/env", "-i", RbConfig.ruby, "--disable-gems", "-e", "require #{path.inspect}",
+      timeout_seconds: 30
+    )
+
+    expect(status.success?).to be(true), stderr
   end
 end
