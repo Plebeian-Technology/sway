@@ -23,6 +23,7 @@ const billPosition = (
     support,
     summary,
     organization: { id, sway_locale_id: 1, name: orgName },
+    origin: "Org-posted",
 });
 
 describe("selectBillPositions", () => {
