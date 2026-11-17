@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_165618) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -671,6 +671,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_180000) do
     t.datetime "created_at", null: false
     t.integer "legislator_term_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "distinct_voter_count", default: 0, null: false
     t.index ["legislator_term_id"], name: "index_legislator_district_scores_on_legislator_term_id", unique: true
   end
 
@@ -693,6 +694,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_180000) do
     t.datetime "created_at", null: false
     t.integer "legislator_term_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "distinct_voter_count", default: 0, null: false
     t.index ["legislator_term_id"], name: "index_legislator_locale_scores_on_legislator_term_id", unique: true
   end
 
@@ -956,10 +958,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_180000) do
     t.datetime "updated_at", null: false
     t.text "ai_summary"
     t.datetime "activated_at"
+    t.string "origin_type"
+    t.integer "origin_id"
+    t.string "origin"
+    t.string "origin_url"
     t.index ["active"], name: "index_organization_bill_positions_on_active"
     t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
     t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
     t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
+    t.index ["origin_type", "origin_id"], name: "index_organization_bill_positions_on_origin"
   end
 
   create_table "organization_follows", force: :cascade do |t|
@@ -1009,6 +1016,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_180000) do
     t.index ["public_key"], name: "index_passkeys_on_public_key", unique: true
     t.index ["user_id", "label"], name: "index_passkeys_on_user_id_and_label", unique: true
     t.index ["user_id"], name: "index_passkeys_on_user_id"
+  end
+
+  create_table "pdf_extraction_measurements", force: :cascade do |t|
+    t.string "extractor", null: false
+    t.string "pdf_path", null: false
+    t.string "outcome", null: false
+    t.string "mode"
+    t.integer "wall_ms", null: false
+    t.integer "service_wait_ms"
+    t.integer "service_duration_ms"
+    t.integer "native_ms"
+    t.integer "render_ms"
+    t.integer "ocr_ms"
+    t.integer "page_count"
+    t.integer "ocr_page_count"
+    t.integer "cpu_ms"
+    t.integer "peak_rss_kb"
+    t.integer "text_chars"
+    t.boolean "truncated", default: false, null: false
+    t.string "error", limit: 300
+    t.datetime "created_at", null: false
+    t.index ["created_at"], name: "index_pdf_extraction_measurements_on_created_at"
+    t.index ["extractor", "created_at"], name: "index_pdf_extraction_measurements_on_extractor_and_created_at"
   end
 
   create_table "pending_organization_digest_entries", force: :cascade do |t|

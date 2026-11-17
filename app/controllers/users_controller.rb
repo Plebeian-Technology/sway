@@ -19,6 +19,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def revoke_all_devices
+    user = current_user
+    unless user && params[:id].to_i == user.id
+      return render_forbidden_or_redirect
+    end
+
+    user.revoke_all_devices!
+    redirect_to profile_path, notice: "All other devices have been signed out."
+  end
+
   private
 
   def render_forbidden_or_redirect

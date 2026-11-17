@@ -19,7 +19,7 @@ When a passkey is registered, Sway records the authenticator's AAGUID, the id th
 
 `Users::PasskeysController#index` answers with an Inertia page (cookie/session auth) OR JSON (bearer auth), per the `MobileFormatNegotiation` concern, so mobile gets the same view-only metadata as web.
 
-The listing itself has NO remove button — lost-passkey recovery goes through support, because Sway's auth model ties one phone to one passkey. The add-a-passkey actions are a separate, SMS-gated flow (see [[docs/explanation/discoverable-passkey-design.md|discoverable-passkey-design.md]]).
+The listing includes a remove button, protected by the same phone-confirmed window as adding a passkey; lost-passkey recovery goes through support, because Sway's auth model ties one phone to one passkey. The add-a-passkey actions are a separate, SMS-gated flow (see [[docs/explanation/discoverable-passkey-design.md|discoverable-passkey-design.md]]).
 
 ## Threats considered
 
@@ -56,4 +56,4 @@ The spec relies on one account per phone number: adding a credential needs a fre
 
 Adding one goes: confirm the account phone number, enter the SMS code, name the device, then create a passkey the phone can offer on its own next time. The screen used to be view-only, with recovery pointing at support; being fully locked out still means contacting support. Asking for an SMS code again puts a second check on top of the session the user is already in.
 
-The rows sit inside a Card, and the "nothing here" case uses the shared EmptyState. The server still accepts DELETE for admin and support tooling, but nothing in this screen calls it.
+The rows sit inside a Card, and the "nothing here" case uses the shared EmptyState. The server only accepts DELETE via the phone-confirmed window; admin/support tooling for passkey management is deprecated.

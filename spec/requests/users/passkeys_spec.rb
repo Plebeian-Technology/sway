@@ -361,4 +361,59 @@ RSpec.describe "Users::Passkeys", type: :request do
       end
     end
   end
+
+  describe "DELETE /users/passkeys/:id" do
+    include_context "WebAuthnDouble"
+    include_context "TwilioDouble"
+
+    it "removes a passkey when phone confirmed" do
+      _, user = setup
+      passkey = create(:passkey, user: user)
+      create(:passkey, user: user) # At least two
+
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+      
+      delete users_passkey_path(passkey)
+      
+      expect(response).to have_http_status(:ok)
+      expect(user.passkeys.find_by(id: passkey.id)).to be_nil
+      expect(session_hash[:add_passkey_verified_at]).to be_nil # Window cleared
+    end
+
+    it "refuses to remove the last passkey" do
+      _, user = setup
+      passkey = create(:passkey, user: user)
+      # Only one passkey
+
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+      
+      delete users_passkey_path(passkey)
+      
+      expect(response).to have_http_status(:forbidden)
+      expect(user.passkeys.find_by(id: passkey.id)).not_to be_nil
+    end
+
+    it "refuses to remove passkey without phone confirmation" do
+      _, user = setup
+      passkey = create(:passkey, user: user)
+      create(:passkey, user: user)
+
+      delete users_passkey_path(passkey)
+      
+      expect(response).to have_http_status(:forbidden)
+      expect(user.passkeys.find_by(id: passkey.id)).not_to be_nil
+    end
+
+    it "refuses to remove another user's passkey" do
+      _, user = setup
+      other_user = create(:user)
+      passkey = create(:passkey, user: other_user)
+      
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+      
+      delete users_passkey_path(passkey)
+      expect(response).to have_http_status(:not_found)
+    end
+  end
 end
+

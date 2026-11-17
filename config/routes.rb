@@ -412,12 +412,16 @@ Rails.application.routes.draw do
   get "addresses/autocomplete", to: "addresses#autocomplete"
 
   # @lat: [[legacy-cookie-json-routes#Retired top-level read routes and numeric user destroy constraint]]
-  resources :users, only: %i[destroy], constraints: {id: /\d+/}
+  resources :users, only: %i[destroy], constraints: {id: /\d+/} do
+    post :revoke_all_devices, on: :member
+  end
 
   namespace :users do
     # @lat: [[identity-and-access#Identity and access#The phone number is the account#Email is contact data, not an authentication path]]
     resource :email_verification, only: %i[create update destroy]
     resource :profile, only: %i[show]
+    resource :address, only: %i[edit update]
+
 
     namespace :webauthn do
       resources :sessions, only: %i[create destroy] do
@@ -439,7 +443,7 @@ Rails.application.routes.draw do
     resource :preferences, only: %i[update]
 
     # @lat: [[identity-and-access#Identity and access#The admin gate is a lint rule#Adding a passkey re-verifies by SMS first]]
-    resources :passkeys, only: %i[index] do
+    resources :passkeys, only: %i[index destroy] do
       collection do
         post :verify_phone
         post :confirm_phone

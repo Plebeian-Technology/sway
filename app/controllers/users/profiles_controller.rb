@@ -6,8 +6,9 @@ module Users
 
     def show
       render inertia: "users/Profile", props: {
-        user: current_user.slice(:email, :full_name, :created_at),
-        address: current_user.user_address&.address&.to_builder&.serializable_hash
+        user: current_user.slice(:id, :email, :full_name, :created_at),
+        address: current_user.user_address&.address&.to_builder&.serializable_hash,
+        is_api_user: current_user.is_sway_api_user?
       }
     end
   end

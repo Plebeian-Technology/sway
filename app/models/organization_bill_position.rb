@@ -9,12 +9,16 @@
 #  activated_at    :datetime
 #  active          :boolean          default(FALSE), not null
 #  ai_summary      :text
+#  origin          :string
+#  origin_type     :string
+#  origin_url      :string
 #  summary         :text             not null
 #  support         :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  bill_id         :integer          not null
 #  organization_id :integer          not null
+#  origin_id       :integer
 #
 # Indexes
 #
@@ -22,6 +26,7 @@
 #  index_organization_bill_positions_on_active           (active)
 #  index_organization_bill_positions_on_bill_id          (bill_id)
 #  index_organization_bill_positions_on_organization_id  (organization_id)
+#  index_organization_bill_positions_on_origin           (origin_type,origin_id)
 #
 # Foreign Keys
 #
@@ -118,7 +123,7 @@ class OrganizationBillPosition < ApplicationRecord
   end
 
   # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
-  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at].freeze
+  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at origin origin_url].freeze
 
   def to_public_json
     initial = {} #: Hash[Symbol, untyped]

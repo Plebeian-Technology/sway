@@ -1,0 +1,711 @@
+diff --git a/app/frontend/components/bill/BillContent.tsx b/app/frontend/components/bill/BillContent.tsx
+index 3590b4fc5..9e376cbfe 100644
+--- a/app/frontend/components/bill/BillContent.tsx
++++ b/app/frontend/components/bill/BillContent.tsx
+@@ -118,6 +118,13 @@ const BillContent: React.FC<IProps> = ({
+                                     className="rounded-xl px-4 py-4"
+                                 >
+                                     <p className="text-sm font-black text-foreground">{org.name}</p>
++                                    <p className="text-xs text-muted-foreground">
++                                        {position.organization_has_active_member
++                                            ? `Posted by ${org.name}`
++                                            : position.origin_name
++                                            ? `Compiled by Sway (Source: ${position.origin_name})`
++                                            : "Compiled by Sway"}
++                                    </p>
+                                     <OrgPositionSummary
+                                         summary={position.summary}
+                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
+@@ -145,6 +152,13 @@ const BillContent: React.FC<IProps> = ({
+                                     className="rounded-xl px-4 py-4"
+                                 >
+                                     <p className="text-sm font-black text-foreground">{org.name}</p>
++                                    <p className="text-xs text-muted-foreground">
++                                        {position.organization_has_active_member
++                                            ? `Posted by ${org.name}`
++                                            : position.origin_name
++                                            ? `Compiled by Sway (Source: ${position.origin_name})`
++                                            : "Compiled by Sway"}
++                                    </p>
+                                     <OrgPositionSummary
+                                         summary={position.summary}
+                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
+diff --git a/app/frontend/components/bill/layouts/BannerBillLayout.tsx b/app/frontend/components/bill/layouts/BannerBillLayout.tsx
+index 9457d8cea..024e2e1b9 100644
+--- a/app/frontend/components/bill/layouts/BannerBillLayout.tsx
++++ b/app/frontend/components/bill/layouts/BannerBillLayout.tsx
+@@ -195,7 +195,7 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
+                                 </article>
+                             ))
+                         ) : (
+-                            <p className="bn-empty">No organizations have filed a position on this bill.</p>
++                            <p className="bn-empty">No organizations have taken a position on this bill.</p>
+                         )}
+                     </div>
+                     <NewsArticleTestimony testimonies={bill.news_testimonies} variant="banner" />
+diff --git a/app/frontend/components/legislators/charts/VoterAgreementChart.tsx b/app/frontend/components/legislators/charts/VoterAgreementChart.tsx
+index 7ab992b0a..7567dbafb 100644
+--- a/app/frontend/components/legislators/charts/VoterAgreementChart.tsx
++++ b/app/frontend/components/legislators/charts/VoterAgreementChart.tsx
+@@ -1,4 +1,5 @@
+ import { sway } from "sway";
++import VotePlaceholder from "../../ui/VotePlaceholder";
+ 
+ interface IProps {
+     scores?: sway.scoring.IAgreeable | null;
+@@ -11,6 +12,10 @@ type Row = { key: string; label: string; value: number; tone: "for" | "against"
+ 
+ // @lat: [[voter-agreement-chart-legacy-parity#VoterAgreementChart]]
+ const VoterAgreementChart: React.FC<IProps> = ({ scores, title }) => {
++    if (scores && !scores.reached_ten_voter_minimum) {
++        return <VotePlaceholder />;
++    }
++
+     const rows: Row[] = [
+         { key: "agreed", label: "Agreed", value: Number(scores?.count_agreed || 0), tone: "for" },
+         { key: "disagreed", label: "Disagreed", value: Number(scores?.count_disagreed || 0), tone: "against" },
+diff --git a/app/frontend/components/legislators/charts/VoterDistrictAgreementChart.tsx b/app/frontend/components/legislators/charts/VoterDistrictAgreementChart.tsx
+index 4f701ff56..8cf0e614d 100644
+--- a/app/frontend/components/legislators/charts/VoterDistrictAgreementChart.tsx
++++ b/app/frontend/components/legislators/charts/VoterDistrictAgreementChart.tsx
+@@ -1,4 +1,5 @@
+ import { sway } from "sway";
++import VotePlaceholder from "../../ui/VotePlaceholder";
+ 
+ interface IProps {
+     scores?: sway.scoring.ILegislatorDistrictScore | null;
+@@ -9,6 +10,10 @@ const numberFormatter = new Intl.NumberFormat();
+ 
+ // @lat: [[voter-agreement-chart-legacy-parity#VoterDistrictAgreementChart]]
+ const VoterDistrictAgreementChart: React.FC<IProps> = ({ scores, title }) => {
++    if (scores && !scores.reached_ten_voter_minimum) {
++        return <VotePlaceholder />;
++    }
++
+     const rawAgreed = scores?.count_agreed;
+     const rawDisagreed = scores?.count_disagreed;
+     const agreedScore = typeof rawAgreed === "number" && isFinite(rawAgreed) ? rawAgreed : 0;
+diff --git a/app/frontend/components/organizations/OrganizationCard.tsx b/app/frontend/components/organizations/OrganizationCard.tsx
+index 5b6b1bf71..9c059cf43 100644
+--- a/app/frontend/components/organizations/OrganizationCard.tsx
++++ b/app/frontend/components/organizations/OrganizationCard.tsx
+@@ -38,8 +38,6 @@ const OrganizationCard: React.FC<IProps> = ({
+     const handleIconError = useCallback(() => setIconFailed(true), []);
+     const showIcon = Boolean(organization.icon_url) && !iconFailed;
+ 
+-    const followerLabel = PARITY_COPY.orgs.followerLabel(organization.follower_count ?? 0);
+-
+     return (
+         <Card className="bg-card/95" data-testid="public-organization-card">
+             <CardContent className="flex flex-wrap items-center gap-4 md:flex-nowrap">
+@@ -75,12 +73,6 @@ const OrganizationCard: React.FC<IProps> = ({
+                         )}
+                     </div>
+                     {swayLocaleLabel && <p className="mt-1 text-sm text-muted-foreground">{swayLocaleLabel}</p>}
+-                    <p
+-                        className="mt-1 text-sm text-muted-foreground [font-variant-numeric:tabular-nums_lining-nums]"
+-                        data-testid={`org-card-follower-count-${organization.id}`}
+-                    >
+-                        {followerLabel}
+-                    </p>
+                 </div>
+ 
+                 {isSignedIn && (
+diff --git a/app/frontend/components/organizations/OrganizationFollowControl.tsx b/app/frontend/components/organizations/OrganizationFollowControl.tsx
+index fc746a046..ce04d5734 100644
+--- a/app/frontend/components/organizations/OrganizationFollowControl.tsx
++++ b/app/frontend/components/organizations/OrganizationFollowControl.tsx
+@@ -105,7 +105,7 @@ interface MemberControlProps {
+ const MemberControl: React.FC<MemberControlProps> = ({ organization, isMuted, onPreferencesClick }) => (
+     <div className="flex flex-wrap items-center gap-2">
+         <Badge variant="stamp" tone="neutral" data-testid={`member-badge-${organization.id}`}>
+-            {isMuted ? "Muted · member" : "Following · member"}
++            {isMuted ? "Muted · member" : "Tracking · member"}
+         </Badge>
+         <Button
+             variant="outline"
+diff --git a/app/frontend/index.d.ts b/app/frontend/index.d.ts
+index 1adf412e7..6a7ca2b70 100644
+--- a/app/frontend/index.d.ts
++++ b/app/frontend/index.d.ts
+@@ -475,7 +475,7 @@ declare module "sway" {
+             sway_locale_id: number;
+             sway_locale_slug?: string | null;
+             created_at?: string;
+-            // @lat: [[public-organizations-endpoint#What a signed-out reader is never sent]]
++            has_active_member: boolean;
+             follower_count: number;
+         }
+ 
+@@ -515,6 +515,10 @@ declare module "sway" {
+             summary_ai_unreviewed?: boolean;
+             active: boolean;
+             created_at?: string;
++            origin_type?: string | null;
++            origin_id?: number | null;
++            origin_name?: string | null;
++            organization_has_active_member: boolean;
+         }
+ 
+         interface IFormField<T> {
+@@ -553,10 +557,11 @@ declare module "sway" {
+             }
+ 
+             interface IAgreeable {
+-                count_agreed: number;
+-                count_disagreed: number;
+-                count_no_legislator_vote: number;
+-                count_legislator_abstained: number;
++                count_agreed: number | null;
++                count_disagreed: number | null;
++                count_no_legislator_vote: number | null;
++                count_legislator_abstained: number | null;
++                reached_ten_voter_minimum?: boolean;
+             }
+ 
+             interface ILegislatorDistrictScore extends IAgreeable {
+diff --git a/app/frontend/pages/Organization.tsx b/app/frontend/pages/Organization.tsx
+index d8c527e86..4dd49865e 100644
+--- a/app/frontend/pages/Organization.tsx
++++ b/app/frontend/pages/Organization.tsx
+@@ -64,8 +64,6 @@ const Organization: React.FC<IProps> = ({
+     const positions = organization_bill_positions ?? [];
+     const hasIcon = Boolean(organization.icon_url);
+ 
+-    const followerLabel = PARITY_COPY.orgs.followerLabel(organization.follower_count ?? 0);
+-
+     return (
+         <div className="space-y-6" data-testid="public-organization-detail">
+             <Link
+@@ -98,12 +96,11 @@ const Organization: React.FC<IProps> = ({
+                     <div className="min-w-0 flex-1">
+                         <h1 className="text-2xl font-black text-foreground">{organization.name}</h1>
+                         {swayLocaleLabel && <p className="mt-1 text-sm text-muted-foreground">{swayLocaleLabel}</p>}
+-                        <p
+-                            className="mt-1 text-sm text-muted-foreground [font-variant-numeric:tabular-nums_lining-nums]"
+-                            data-testid="org-detail-follower-count"
+-                        >
+-                            {followerLabel}
+-                        </p>
++                        {organization.has_active_member && (
++                            <p className="mt-1 text-sm font-semibold text-primary">
++                                {organization.name} manages its positions on Sway
++                            </p>
++                        )}
+                     </div>
+ 
+                     {isSignedIn && (
+@@ -130,9 +127,16 @@ const Organization: React.FC<IProps> = ({
+                             <Card key={position.id} data-testid="public-organization-position">
+                                 <CardContent className="space-y-3">
+                                     <div className="flex flex-wrap items-center justify-between gap-3">
+-                                        <Badge variant="stamp" tone={supportTone(position.support)}>
+-                                            {position.support}
+-                                        </Badge>
++                                        <div className="flex items-center gap-2">
++                                            <Badge variant="stamp" tone={supportTone(position.support)}>
++                                                {position.support}
++                                            </Badge>
++                                            <span className="text-xs text-muted-foreground">
++                                                {position.organization_has_active_member
++                                                    ? `Posted by ${organization.name}`
++                                                    : "Compiled by Sway"}
++                                            </span>
++                                        </div>
+                                         <BillRowLink
+                                             billId={position.bill_id}
+                                             className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+diff --git a/app/frontend/sway_constants/parityCopy.ts b/app/frontend/sway_constants/parityCopy.ts
+index aea021764..29460fe2c 100644
+--- a/app/frontend/sway_constants/parityCopy.ts
++++ b/app/frontend/sway_constants/parityCopy.ts
+@@ -157,11 +157,10 @@ export const PARITY_COPY = {
+     orgs: {
+         title: "Organizations",
+         noneFound: (formattedSwayLocaleName: string) => `No organizations found for ${formattedSwayLocaleName}.`,
+-        noPositions: "This organization hasn't published any positions yet.",
+-        follow: "Follow",
+-        following: "Following",
+-        followerLabel: (count: number) => (count === 1 ? "1 follower" : `${count} followers`),
+-        unfollow: "Unfollow",
++        noPositions: "This organization hasn't taken any positions yet.",
++        track: "Track",
++        tracking: "Tracking",
++        untrack: "Untrack",
+     },
+ 
+     // @lat: [[org-notification-cascade-and-defaults#Where organization notification copy is shared across pickers and settings]]
+@@ -177,8 +176,8 @@ export const PARITY_COPY = {
+         eventSupportChange: "Change in support (for/against)",
+         eventSummaryChange: "Summary update",
+         panelTitle: "Organization position updates",
+-        panelDescription: "Get notified when organizations you follow publish or update their position on legislation.",
+-        defaultsEventsLabel: "Default for new follows",
++        panelDescription: "Get notified when organizations you track publish or update their position on legislation.",
++        defaultsEventsLabel: "Default for new tracks",
+         defaultsCadenceLabel: "Default delivery",
+     },
+ 
+@@ -201,7 +200,7 @@ export const PARITY_COPY = {
+     positions: {
+         supports: "Supports",
+         opposes: "Opposes",
+-        empty: "No positions have been published for this organization.",
++        empty: "No positions have been taken by this organization.",
+         newModalTitle: "Propose new position",
+         newSubmitLabel: "Propose position",
+         newBillPickerPlaceholder: "Search bills…",
+@@ -329,8 +328,8 @@ export const PARITY_COPY = {
+             description: "A reminder before voting closes on a bill you haven't voted on yet.",
+         },
+         orgPositionTaken: {
+-            label: "Organization you follow took a position",
+-            description: "When an org you follow publishes a position on a new bill.",
++            label: "Organization you track took a position",
++            description: "When an org you track publishes a position on a new bill.",
+         },
+         push: {
+             title: "Push Notifications",
+@@ -516,7 +515,7 @@ export const PARITY_COPY = {
+         userJoinedActor: "You",
+         userJoinedAction: "joined Sway",
+         userJoinedSummary:
+-            "New Bills of the Month, your representatives' votes and positions from organizations you follow will show up here, newest first.",
++            "New Bills of the Month, your representatives' votes and positions from organizations you track will show up here, newest first.",
+         representativesFoundActor: "Sway",
+         representativesFoundAction: "found your representatives",
+         seeYourRepresentatives: "See your representatives",
+diff --git a/app/models/organization.rb b/app/models/organization.rb
+index c3b14a72a..e6bd7845a 100644
+--- a/app/models/organization.rb
++++ b/app/models/organization.rb
+@@ -43,16 +43,15 @@ class Organization < ApplicationRecord
+   validates :name, uniqueness: {scope: :sway_locale_id, allow_nil: true}
+ 
+   # @lat: [[organizations-controller-notes#What PUBLIC_FIELDS is, and the rule around it]]
+-  PUBLIC_FIELDS = %i[id name icon_url sway_locale_id created_at follower_count].freeze
++  PUBLIC_FIELDS = %i[id name icon_url sway_locale_id created_at has_active_member].freeze
+ 
+   # @lat: [[organization-follower-set-queries#follower_counts_for: batching the same query across a list]]
+   def to_public_json(follower_count: nil)
+-    resolved_follower_count = follower_count.nil? ? self.follower_count : follower_count
+     initial = {} #: Hash[Symbol, untyped]
+     payload = PUBLIC_FIELDS.each_with_object(initial) do |field, hash|
+       case field
+-      when :follower_count
+-        hash[:follower_count] = resolved_follower_count
++      when :has_active_member
++        hash[:has_active_member] = has_active_member?
+       when :icon_url
+         # @lat: [[organizations-controller-notes#Why icon URL provenance rules exist]]
+         hash[:icon_url] = mirrored_icon_url
+@@ -96,6 +95,10 @@ class Organization < ApplicationRecord
+     end
+   end
+ 
++  def has_active_member?
++    user_organization_memberships.where(status: :active).exists?
++  end
++
+   def mirrored_icon_url
+     MirroredAssetUrl.for(icon, fallback: icon_url)
+   end
+diff --git a/app/models/organization_bill_position.rb b/app/models/organization_bill_position.rb
+index fc90dcbc3..45985b43c 100644
+--- a/app/models/organization_bill_position.rb
++++ b/app/models/organization_bill_position.rb
+@@ -9,12 +9,14 @@
+ #  activated_at    :datetime
+ #  active          :boolean          default(FALSE), not null
+ #  ai_summary      :text
++#  origin_type     :string
+ #  summary         :text             not null
+ #  support         :string           not null
+ #  created_at      :datetime         not null
+ #  updated_at      :datetime         not null
+ #  bill_id         :integer          not null
+ #  organization_id :integer          not null
++#  origin_id       :integer
+ #
+ # Indexes
+ #
+@@ -22,6 +24,7 @@
+ #  index_organization_bill_positions_on_active           (active)
+ #  index_organization_bill_positions_on_bill_id          (bill_id)
+ #  index_organization_bill_positions_on_organization_id  (organization_id)
++#  index_organization_bill_positions_on_origin           (origin_type,origin_id)
+ #
+ # Foreign Keys
+ #
+@@ -73,6 +76,7 @@ class OrganizationBillPosition < ApplicationRecord
+ 
+   belongs_to :bill
+   belongs_to :organization
++  belongs_to :origin, polymorphic: true, optional: true
+ 
+   has_one :sway_locale, through: :organization
+   has_many :position_changes,
+@@ -114,11 +118,17 @@ class OrganizationBillPosition < ApplicationRecord
+       obp.summary summary_for_readers
+       # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
+       obp.summary_ai_unreviewed summary_ai_unreviewed?
++      obp.origin do |o|
++        o.id origin_id
++        o.type origin_type
++        o.name origin&.respond_to?(:name) ? origin.name : origin&.respond_to?(:title) ? origin.title : nil
++      end if origin.present?
++      obp.organization_has_active_member organization.has_active_member?
+     end
+   end
+ 
+   # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
+-  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at].freeze
++  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at origin_type origin_id].freeze
+ 
+   def to_public_json
+     initial = {} #: Hash[Symbol, untyped]
+@@ -126,7 +136,12 @@ class OrganizationBillPosition < ApplicationRecord
+       hash[field] = public_send(field) if respond_to?(field)
+     end
+       # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
+-      .merge(summary: summary_for_readers, summary_ai_unreviewed: summary_ai_unreviewed?)
++      .merge(
++        summary: summary_for_readers,
++        summary_ai_unreviewed: summary_ai_unreviewed?,
++        organization_has_active_member: organization.has_active_member?,
++        origin_name: origin&.respond_to?(:name) ? origin.name : origin&.respond_to?(:title) ? origin.title : nil
++      )
+   end
+ 
+   private
+diff --git a/app/serializers/organization_bill_position_resource.rb b/app/serializers/organization_bill_position_resource.rb
+index a74e50ddb..0ab6a7743 100644
+--- a/app/serializers/organization_bill_position_resource.rb
++++ b/app/serializers/organization_bill_position_resource.rb
+@@ -14,4 +14,12 @@ class OrganizationBillPositionResource < ApplicationResource
+   attribute :summary_ai_unreviewed do |position|
+     position.summary_ai_unreviewed?
+   end
++
++  attribute :origin_name do |position|
++    position.origin&.respond_to?(:name) ? position.origin.name : position.origin&.respond_to?(:title) ? position.origin.title : nil
++  end
++
++  attribute :organization_has_active_member do |position|
++    position.organization.has_active_member?
++  end
+ end
+diff --git a/app/services/notify_organization_followers_service.rb b/app/services/notify_organization_followers_service.rb
+index 5706c0a2c..632fc4c9a 100644
+--- a/app/services/notify_organization_followers_service.rb
++++ b/app/services/notify_organization_followers_service.rb
+@@ -134,17 +134,24 @@ class NotifyOrganizationFollowersService
+     @organization.name
+   end
+ 
+-  # @lat: [[bill-title-display#Which outbound messages carry the shortened title]]
+   def notification_body
+     bill_title = BillTitle.headline(@bill.title)
+-    if @change_types == [:new_position]
+-      "#{@organization.name} published a new position on #{bill_title}."
+-    elsif @change_types.size > 1
+-      "#{@organization.name} updated its position on #{bill_title}."
++    if @organization.has_active_member?
++      if @change_types == [:new_position]
++        "#{@organization.name} published a new position on #{bill_title}."
++      elsif @change_types.size > 1
++        "#{@organization.name} updated its position on #{bill_title}."
++      else
++        ct = @change_types.first
++        action = CHANGE_TYPE_COPY.fetch(ct, "updated its position on")
++        "#{@organization.name} #{action} #{bill_title}."
++      end
+     else
+-      ct = @change_types.first
+-      action = CHANGE_TYPE_COPY.fetch(ct, "updated its position on")
+-      "#{@organization.name} #{action} #{bill_title}."
++      if @change_types == [:new_position]
++        "Sway recorded a new position for #{@organization.name} on #{bill_title}."
++      else
++        "Sway updated the position for #{@organization.name} on #{bill_title}."
++      end
+     end
+   end
+ end
+diff --git a/db/migrate/20261117153833_add_origin_to_organization_bill_positions.rb b/db/migrate/20261117153833_add_origin_to_organization_bill_positions.rb
+new file mode 100644
+index 000000000..1b531db0c
+--- /dev/null
++++ b/db/migrate/20261117153833_add_origin_to_organization_bill_positions.rb
+@@ -0,0 +1,5 @@
++class AddOriginToOrganizationBillPositions < ActiveRecord::Migration[8.1]
++  def change
++    add_reference :organization_bill_positions, :origin, polymorphic: true, null: true
++  end
++end
+diff --git a/db/schema.rb b/db/schema.rb
+index 900f7199b..0532a9dae 100644
+--- a/db/schema.rb
++++ b/db/schema.rb
+@@ -10,7 +10,7 @@
+ #
+ # It's strongly recommended that you check this file into your version control system.
+ 
+-ActiveRecord::Schema[8.1].define(version: 2026_11_17_041059) do
++ActiveRecord::Schema[8.1].define(version: 2026_11_17_153833) do
+   create_table "active_storage_attachments", force: :cascade do |t|
+     t.bigint "blob_id", null: false
+     t.datetime "created_at", null: false
+@@ -956,10 +956,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_041059) do
+     t.datetime "updated_at", null: false
+     t.text "ai_summary"
+     t.datetime "activated_at"
++    t.string "origin_type"
++    t.integer "origin_id"
+     t.index ["active"], name: "index_organization_bill_positions_on_active"
+     t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
+     t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"
+     t.index ["organization_id"], name: "index_organization_bill_positions_on_organization_id"
++    t.index ["origin_type", "origin_id"], name: "index_organization_bill_positions_on_origin"
+   end
+ 
+   create_table "organization_follows", force: :cascade do |t|
+diff --git a/lat.md/explanation/mobile-expo-config.md b/lat.md/explanation/mobile-expo-config.md
+index 84797b3a2..8f81fc8f6 100644
+--- a/lat.md/explanation/mobile-expo-config.md
++++ b/lat.md/explanation/mobile-expo-config.md
+@@ -103,6 +103,16 @@ increase, and Play refuses a repeated version code the same way. Each block
+ therefore spreads the static config first and overrides only the keys it
+ owns.
+ 
++## Why every pod target is raised to the app's deployment target
++
++[[mobile/app.config.ts#withPodDeploymentTargetFloor]] adds a step to the Podfile's `post_install` hook. The step raises every pod target below the app's iOS deployment target to that target.
++
++`expo-build-properties` sets the Podfile's `platform :ios` line, and CocoaPods applies that minimum to each pod's library target. It does not apply it to resource bundle targets. A bundle target such as `Sentry-Sentry` or `RNSVG-RNSVGFilters` keeps the minimum its own podspec declares, which was 11.0 and 12.4.
++
++The iPhoneOS 27.2 SDK that came with the Xcode update of 2026-11-16 supports deployment targets from 15.0 only. A target below that range now fails the archive with `ARCHIVE FAILED` and exit status 65. Earlier SDKs gave only a warning for it. The step changes only targets below the app's value. It leaves a target with no explicit setting as it is, because that target inherits the project value.
++
++The step looks in `installer.generated_projects` and not only in `pods_project`. In that way it also reaches pods that CocoaPods puts in their own projects. The value comes from the same constant that is given to `expo-build-properties`, so the pods cannot fall behind the app. The plugin stops `prebuild` with an error if it does not find a `post_install` block, because without the step the archive fails much later.
++
+ ## Deployment identifiers come from the environment
+ 
+ The Apple team id, the Expo account that owns the project and the EAS project id are read from `APPLE_TEAM_ID`, `EXPO_OWNER` and `EAS_PROJECT_ID` rather than written into `app.config.ts`, `app.json` or `eas.json`.
+diff --git a/lat.md/explanation/scores-and-agreement.md b/lat.md/explanation/scores-and-agreement.md
+index f38ecf916..65aed2609 100644
+--- a/lat.md/explanation/scores-and-agreement.md
++++ b/lat.md/explanation/scores-and-agreement.md
+@@ -27,6 +27,10 @@ sum of its district scores, because the district breakdown only counts users
+ who have an active legislator assignment, while the locale figure counts every
+ voter in the jurisdiction. Summing would quietly drop the unassigned.
+ 
++## Privacy threshold for vote tallies
++
++To protect voter privacy, agreement scores and bill tallies are displayed as percentages only after at least ten distinct users have voted. Below this threshold, raw counts are hidden to prevent identification of individual voters.
++
+ ## Bill score builders receive one district snapshot
+ 
+ The bills index preloads each score's district rows and supplies one reader-district list to every personalized score builder.
+diff --git a/mobile/app.config.ts b/mobile/app.config.ts
+index c9f17f1ff..1ffc67302 100644
+--- a/mobile/app.config.ts
++++ b/mobile/app.config.ts
+@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
+ import * as fs from "fs";
+ import * as path from "path";
+ 
+-import { ConfigPlugin, withGradleProperties, AndroidConfig } from "expo/config-plugins";
++import { ConfigPlugin, withGradleProperties, withPodfile, AndroidConfig } from "expo/config-plugins";
+ 
+ // @lat: [[mobile-app-config-ts-import-extension#Why the list is not simply copied into the config]]
+ import { DEEP_LINK_PATTERNS, androidPathData } from "./src/navigation/deepLinkPatterns.ts";
+@@ -21,6 +21,36 @@ const withKotlinTargetValidationWarning: ConfigPlugin = (config) => {
+     });
+ };
+ 
++const IOS_DEPLOYMENT_TARGET = "15.1";
++
++// @lat: [[mobile-expo-config#Why every pod target is raised to the app's deployment target]]
++const withPodDeploymentTargetFloor: ConfigPlugin = (config) => {
++    return withPodfile(config, (modConfig) => {
++        const marker = "# sway: pod deployment target floor";
++        const podfile = modConfig.modResults.contents;
++        if (podfile.includes(marker)) return modConfig;
++        const postInstallEnd = /(post_install do \|installer\|[\s\S]*?\n)(  end\n)/;
++        if (!postInstallEnd.test(podfile)) {
++            throw new Error("withPodDeploymentTargetFloor: no post_install block in the Podfile");
++        }
++        const floor = [
++            `    ${marker}`,
++            "    installer.generated_projects.each do |project|",
++            "      project.targets.each do |target|",
++            "        target.build_configurations.each do |build_config|",
++            "          current = build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']",
++            `          next if current.nil? || Gem::Version.new(current) >= Gem::Version.new('${IOS_DEPLOYMENT_TARGET}')`,
++            `          build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '${IOS_DEPLOYMENT_TARGET}'`,
++            "        end",
++            "      end",
++            "    end",
++            "",
++        ].join("\n");
++        modConfig.modResults.contents = podfile.replace(postInstallEnd, `$1${floor}$2`);
++        return modConfig;
++    });
++};
++
+ // Single source of truth for dynamic + static Expo config (per Task 0 single-config consolidation).
+ // app.json is intentionally a stub holding only name + slug; everything else is set here so the
+ // build matrix (bundle id, team id, AASA, intent filters, plugins, extras) is unified.
+@@ -72,7 +102,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
+     const bundleId = requireBundleId();
+     const devTunnelHost = process.env.EXPO_PUBLIC_DEV_TUNNEL_HOST || undefined;
+ 
+-    return withKotlinTargetValidationWarning({
++    const withKotlin = withKotlinTargetValidationWarning({
+         ...(config as ExpoConfig),
+         ...(expoOwner ? { owner: expoOwner } : {}),
+         name: config.name ?? "Sway",
+@@ -163,14 +193,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
+                 },
+             ],
+             ...(enableSentry ? ["@sentry/react-native/expo" as const] : []),
+-            // iOS 15+ matches react-native-passkey's floor and silences the
+-            // Sentry deployment-target warning (Sentry SDK requires >= 12).
++            // iOS 15+ matches react-native-passkey's floor.
+             // Android Credential Manager / native passkey requires API 28+
+             // (react-native-passkey throws PasskeyNotSupported below this).
+             [
+                 "expo-build-properties",
+                 {
+-                    ios: { deploymentTarget: "15.1" },
++                    ios: { deploymentTarget: IOS_DEPLOYMENT_TARGET },
+                     android: { minSdkVersion: 28 },
+                 },
+             ],
+@@ -195,4 +224,5 @@ export default ({ config }: ConfigContext): ExpoConfig => {
+             googlePlacesApiKeyAndroid: process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY_ANDROID,
+         },
+     });
++    return withPodDeploymentTargetFloor(withKotlin);
+ };
+diff --git a/mobile/app.json b/mobile/app.json
+index 8f4ae45a4..456907a6c 100644
+--- a/mobile/app.json
++++ b/mobile/app.json
+@@ -1,16 +1,16 @@
+ {
+-    "expo": {
+-        "name": "Sway",
+-        "slug": "sway",
+-        "extra": {
+-            "apiBaseUrl": "https://app.sway.vote",
+-            "webauthnRpId": "app.sway.vote"
+-        },
+-        "android": {
+-            "versionCode": 2
+-        },
+-        "ios": {
+-            "buildNumber": "13"
+-        }
++  "expo": {
++    "name": "Sway",
++    "slug": "sway",
++    "extra": {
++      "apiBaseUrl": "https://app.sway.vote",
++      "webauthnRpId": "app.sway.vote"
++    },
++    "android": {
++      "versionCode": 2
++    },
++    "ios": {
++      "buildNumber": "16"
+     }
++  }
+ }
+diff --git a/mobile/src/components/OrgPositionsSection.tsx b/mobile/src/components/OrgPositionsSection.tsx
+index 0287024dc..7c8b0b923 100644
+--- a/mobile/src/components/OrgPositionsSection.tsx
++++ b/mobile/src/components/OrgPositionsSection.tsx
+@@ -13,6 +13,8 @@ export interface OrgPosition {
+     organization?: { name: string };
+     summary?: string | null;
+     summary_ai_unreviewed?: boolean;
++    organization_has_active_member?: boolean;
++    origin_name?: string | null;
+ }
+ 
+ export interface OrgPositionsSectionProps {
+@@ -57,6 +59,13 @@ function StanceCard({
+                             >
+                                 {pos.organization?.name}
+                             </Text>
++                            <Text className="text-xs font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
++                                {pos.organization_has_active_member
++                                    ? `Posted by ${pos.organization?.name}`
++                                    : pos.origin_name
++                                    ? `Compiled by Sway (Source: ${pos.origin_name})`
++                                    : "Compiled by Sway"}
++                            </Text>
+                             <View className="mt-2 gap-1">
+                                 <Markdown
+                                     selectable
+diff --git a/spec/models/organization_bill_position_spec.rb b/spec/models/organization_bill_position_spec.rb
+index d0f3432cd..1e573a851 100644
+--- a/spec/models/organization_bill_position_spec.rb
++++ b/spec/models/organization_bill_position_spec.rb
+@@ -9,12 +9,14 @@
+ #  activated_at    :datetime
+ #  active          :boolean          default(FALSE), not null
+ #  ai_summary      :text
++#  origin_type     :string
+ #  summary         :text             not null
+ #  support         :string           not null
+ #  created_at      :datetime         not null
+ #  updated_at      :datetime         not null
+ #  bill_id         :integer          not null
+ #  organization_id :integer          not null
++#  origin_id       :integer
+ #
+ # Indexes
+ #
+@@ -22,6 +24,7 @@
+ #  index_organization_bill_positions_on_active           (active)
+ #  index_organization_bill_positions_on_bill_id          (bill_id)
+ #  index_organization_bill_positions_on_organization_id  (organization_id)
++#  index_organization_bill_positions_on_origin           (origin_type,origin_id)
+ #
+ # Foreign Keys
+ #
+diff --git a/spec/serializers/bill_score_district_resource_spec.rb b/spec/serializers/bill_score_district_resource_spec.rb
+new file mode 100644
+index 000000000..f9b2af0d0
+--- /dev/null
++++ b/spec/serializers/bill_score_district_resource_spec.rb
+@@ -0,0 +1,27 @@
++require "rails_helper"
++
++RSpec.describe BillScoreDistrictResource, type: :serializer do
++  describe "#for and #against percentages" do
++    it "returns counts when below the ten-voter minimum" do
++      district = create(:district)
++      score = create(:bill_score, for: 5, against: 4)
++      district_score = create(:bill_score_district, bill_score: score, district: district, for: 5, against: 4)
++      
++      resource = BillScoreDistrictResource.new(district_score).serializable_hash
++      expect(resource[:reached_ten_voter_minimum]).to be false
++      expect(resource[:for]).to eq(5)
++      expect(resource[:against]).to eq(4)
++    end
++
++    it "returns percentages when at or above the ten-voter minimum" do
++      district = create(:district)
++      score = create(:bill_score, for: 6, against: 5)
++      district_score = create(:bill_score_district, bill_score: score, district: district, for: 6, against: 4)
++      
++      resource = BillScoreDistrictResource.new(district_score).serializable_hash
++      expect(resource[:reached_ten_voter_minimum]).to be true
++      expect(resource[:for]).to eq(60) # 6 / (6+4) = 0.6
++      expect(resource[:against]).to eq(40) # 4 / (6+4) = 0.4
++    end
++  end
++end

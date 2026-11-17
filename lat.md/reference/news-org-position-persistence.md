@@ -7,6 +7,13 @@ lat:
 
 Persistence pipelines filter draft organization positions against source article snapshots before persisting to database columns, guaranteeing zero ungrounded entries and zero unreviewed organization entity creation.
 
+## Position origin and affiliation
+
+Positions are categorized by origin to support affiliation labeling required by SWAY-7prly ("Epic: Make clear that organizations shown on Sway are not affiliated with Sway").
+
+- **Org-posted**: Positions created by members of the organization. Label: "Posted by {Org}".
+- **Sway-compiled**: Positions sourced from hearing testimony, news, or admin entry. Label: "Compiled by Sway" and accompanied by an affiliation disclaimer.
+
 ## Persistence callers
 
 Four domain execution callers invoke draft position persistence and grounding filters.
@@ -46,4 +53,11 @@ News-sourced draft positions bypass hearing testimony existence checks and requi
 | Membership Check | Target organization must have zero `UserOrganizationMembership` rows. | `:organization_has_users` |
 | Deduplication | Matching against existing organizations uses normalized exact match followed by Jaro-Winkler distance threshold (0.90). | N/A |
 | AI Summary | Sets `ai_summary: nil` on [[app/models/organization_bill_position.rb#OrganizationBillPosition]] since news-sourced positions quote article text verbatim. | N/A |
+
+## Persistence fields
+
+Persistence records the origin of organization positions in [[app/models/organization_bill_position.rb#OrganizationBillPosition]] for public payload serialization.
+
+- `origin`: The provenance of the position ("Org-posted" or "Sway-compiled").
+- `origin_url`: The URL to the backing source article or testimony if available.
 

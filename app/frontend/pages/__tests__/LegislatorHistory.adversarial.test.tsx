@@ -91,6 +91,7 @@ const sampleDistrictScore: sway.scoring.IAgreeable = {
     count_disagreed: 2,
     count_no_legislator_vote: 1,
     count_legislator_abstained: 0,
+    reached_ten_voter_minimum: false,
 };
 
 const sampleLocaleScore: sway.scoring.IAgreeable = {
@@ -98,6 +99,7 @@ const sampleLocaleScore: sway.scoring.IAgreeable = {
     count_disagreed: 6,
     count_no_legislator_vote: 2,
     count_legislator_abstained: 0,
+    reached_ten_voter_minimum: true,
 };
 
 const sampleUserScore: sway.scoring.IAgreeable = {
@@ -105,6 +107,7 @@ const sampleUserScore: sway.scoring.IAgreeable = {
     count_disagreed: 1,
     count_no_legislator_vote: 0,
     count_legislator_abstained: 0,
+    reached_ten_voter_minimum: false,
 };
 
 describe("Adversarial Scenario 1: Executive Office Term Agreement Scoring & Stamp Preservation", () => {
@@ -126,6 +129,7 @@ describe("Adversarial Scenario 1: Executive Office Term Agreement Scoring & Stam
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
+                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -258,6 +262,7 @@ describe("Adversarial Scenario 2: Unvoted Term vs Genuine 0% Agreement vs Zero-V
                 count_disagreed: 8,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
+                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -323,6 +328,7 @@ describe("Adversarial Scenario 2: Unvoted Term vs Genuine 0% Agreement vs Zero-V
                 count_disagreed: 0,
                 count_no_legislator_vote: 4,
                 count_legislator_abstained: 2,
+                reached_ten_voter_minimum: false,
             },
             correction_explanation: null,
         };

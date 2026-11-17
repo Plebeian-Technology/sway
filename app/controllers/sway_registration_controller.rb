@@ -38,6 +38,13 @@ class SwayRegistrationController < ApplicationController
     end
   end
 
+  def edit
+    render inertia: "users/AddressEdit", props: {
+      user: current_user.slice(:id, :is_registration_complete),
+      address: current_user.user_address&.address&.to_builder&.serializable_hash
+    }
+  end
+
   # @lat: [[registration-dead-ends#An empty list says which kind of empty it is]]
   def create
     u = current_user
@@ -360,7 +367,12 @@ class SwayRegistrationController < ApplicationController
     if mobile_api_request?
       render json: json, status: status
     else
-      redirect_to redirect, inertia: {errors: json[:error]}
+      redirect_path = if current_user&.registered? && redirect == sway_registration_index_path
+                        edit_user_address_path
+                      else
+                        redirect
+                      end
+      redirect_to redirect_path, inertia: {errors: json[:error]}
     end
   end
 

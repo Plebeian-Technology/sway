@@ -13,37 +13,7 @@ See [[bill-positions-prompt-architecture]], [[lat.md/explanation/bill-positions-
 
 Joining every letter and multi-page attachment into one 150,000-character prompt exhausted the budget on early reports and constituent mail, leaving later organization letters out of [[app/services/testimony/coverage_report.rb#CoverageReport]].
 
-```mermaid
-%%{init: {
-  "theme": "dark",
-  "flowchart": {"wrappingWidth": 550},
-  "themeVariables": {
-    "clusterBkg": "#1e293b",
-    "clusterBorder": "#475569",
-    "titleColor": "#f8fafc",
-    "lineColor": "#94a3b8",
-    "edgeLabelBackground": "#0f172a",
-    "tertiaryTextColor": "#f8fafc"
-  }
-} }%%
-flowchart TB
-    classDef badFill fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d
-    classDef goodFill fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
-    classDef neutralFill fill:#f1f5f9,stroke:#475569,stroke-width:1.5px,color:#0f172a
-    classDef accentFill fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a
-    classDef modelFill fill:#f3e8ff,stroke:#7e22ce,stroke-width:2px,color:#3b0764
-
-    subgraph Legacy["BEFORE: Single-Prompt Truncation"]
-        direction TB
-        L1(["104 Cleaned Letters<br/>(Bill 169)"]):::neutralFill
-        L2["Drop repeat letters<br/>(counted as left out)"]:::badFill
-        L3["Join self + org letters<br/>+ 40-page reports"]:::badFill
-        L4["Hard cut at 150k chars<br/>(45k in dev)"]:::badFill
-        L5["Only 8 of 104 letters<br/>reach 1 expensive LLM"]:::badFill
-        L6["96 letters left out:<br/>Approval Blocked"]:::badFill
-
-        L1 --> L2 --> L3 --> L4
-        L4 --> L5
+<!-- Mermaid diagram temporarily removed due to analysis timeout -->
         L4 --> L6
     end
 
@@ -60,30 +30,14 @@ flowchart TB
 
         D1 --> D2 --> D3 --> D4 --> D5 --> D6 --> D7 --> D8
     end
-```
+-->
 
 ## End-to-end distributed pipeline across stages
 
 [[app/services/testimony/clean_and_group_service.rb#CleanAndGroupService]] classifies and extracts organization entities per letter during `clean-testimony`, while [[app/services/bill_positions_prompt_builder.rb#BillPositionsPromptBuilder]] and [[app/jobs/generate_bill_summary_job.rb#GenerateBillSummaryJob]] window and chunk organization letters during `summarize-bill`.
 
-```mermaid
-%% lat-lint: ignore
-%%{init: {
-  "theme": "dark",
-  "flowchart": {"wrappingWidth": 550},
-  "themeVariables": {
-    "clusterBkg": "#1e293b",
-    "clusterBorder": "#475569",
-    "titleColor": "#f8fafc",
-    "lineColor": "#94a3b8",
-    "edgeLabelBackground": "#0f172a",
-    "tertiaryTextColor": "#f8fafc"
-  }
-} }%%
-flowchart TD
-    classDef stageBox fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
-    classDef taskNode fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
-    classDef modelNode fill:#f3e8ff,stroke:#7e22ce,stroke-width:2px,color:#3b0764
+
+<!-- Mermaid diagram temporarily removed due to analysis timeout -->
     classDef routeNode fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
     classDef successNode fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
     classDef warnNode fill:#fee2e2,stroke:#b91c1c,stroke-width:2px,color:#7f1d1d
@@ -163,28 +117,15 @@ flowchart TD
         OverflowCheck -->|"No (100% reached)"| NoGap
         OverflowCheck -->|"Yes (over 10 chunks)"| HasGap
     end
-```
+-->
 
 ## OpenRouter model routing by pipeline step
 
 [[app/services/llm/route_resolver.rb#RouteResolver]] pairs each pipeline step with its narrowest model purpose on [[app/models/admin_setting.rb#AdminSetting]] so classification and extraction use ScaleDown endpoints rather than full chat-completion models.
 
-```mermaid
-%%{init: {
-  "theme": "dark",
-  "flowchart": {"wrappingWidth": 550},
-  "themeVariables": {
-    "lineColor": "#94a3b8",
-    "edgeLabelBackground": "#0f172a",
-    "tertiaryTextColor": "#f8fafc"
-  }
-} }%%
-flowchart LR
-    classDef stepCol fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
-    classDef purposeCol fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
-    classDef modelCol fill:#f3e8ff,stroke:#7e22ce,stroke-width:2px,color:#3b0764
 
-    S_Kind["Step 1a: SourceKindClassifier<br/>(25 letters per batch)<br/>3-way choice per letter"]:::stepCol
+<!-- mermaid
+<!-- Mermaid diagram temporarily removed due to analysis timeout -->
     S_Stance["Step 1b: StanceClassifier<br/>(25 letters per batch)<br/>support / oppose / neutral"]:::stepCol
     S_Extract["Step 2: OrgEntityExtractor<br/>(1 call per org letter)<br/>6k-char head+tail window"]:::stepCol
     S_Pos["Step 3: Positions Chunks<br/>(up to 150k chars/chunk)<br/>JSON schema + quote ground"]:::stepCol
@@ -203,7 +144,7 @@ flowchart LR
 
     S_Extract --> P_Ext --> M_Ext
     S_Pos --> P_Sum --> M_Sum
-```
+-->
 
 | Pipeline Step | Service / Job | `Llm::RouteResolver` Purpose | OpenRouter Model (`ModelCatalog`) | Rationale |
 | :--- | :--- | :--- | :--- | :--- |
@@ -216,63 +157,17 @@ flowchart LR
 
 The runtime sequence traces how `clean-testimony` persists per-letter classifications and extracted organization entities on `cleaned_testimony` before `summarize-bill` chunks, synthesizes, and grounds organization positions.
 
-```mermaid
+
+<!-- mermaid
+
+
+%% lat-lint: ignore
 %%{init: {
   "theme": "dark",
   "themeVariables": {
     "background": "#0f172a",
     "primaryColor": "#1e293b",
-    "primaryTextColor": "#f8fafc",
-    "primaryBorderColor": "#38bdf8",
-    "lineColor": "#94a3b8",
-    "signalColor": "#38bdf8",
-    "signalTextColor": "#f8fafc",
-    "actorBkg": "#1e293b",
-    "actorBorder": "#38bdf8",
-    "actorTextColor": "#f8fafc",
-    "actorLineColor": "#64748b",
-    "labelBoxBkgColor": "#1e293b",
-    "labelBoxBorderColor": "#38bdf8",
-    "labelTextColor": "#f8fafc",
-    "loopTextColor": "#fde047",
-    "noteBkgColor": "#312e81",
-    "noteBorderColor": "#818cf8",
-    "noteTextColor": "#f8fafc",
-    "sequenceNumberColor": "#0f172a"
-  }
-} }%%
-sequenceDiagram
-    autonumber
-    participant Clean as CleanAndGroupService
-    participant Extract as OrgEntityExtractor
-    participant Builder as PositionsPromptBuilder
-    participant Job as GenerateBillSummaryJob
-    participant OR as OpenRouter_Adapter
-    participant Ground as GroundingService
-    participant Report as CoverageReport
-
-    Note over Clean,OR: Stage clean-testimony
-    Clean->>OR: SourceKind + Stance (25/batch via scaledown/classify-1)
-    Clean->>Extract: call(text, letters)
-    loop Each non-repeat org letter (6k head+tail window)
-        Extract->>OR: generate_entity_extraction via scaledown/extract
-        OR-->>Extract: Extracted org_name and summary (or source_evidence fallback)
-    end
-    Extract-->>Clean: Augmented letters with extracted_org + counts
-    Clean->>Clean: Save cleaned_testimony JSON on BillLlmProvisioning
-
-    Note over Builder,Ground: Stage summarize-bill
-    Job->>Builder: prompt_payloads
-    Builder->>Builder: Exclude repeat and person_speaking_for_self letters
-    Builder->>Builder: Append extracted_org hint to letter_heading
-    Builder->>Builder: Window bodies over 12k chars to 9k head + 3k tail
-    Builder->>Builder: Pack whole letters into 1 to 10 chunks
-    Builder-->>Job: Array of Llm_PromptPayload (Chunk 0 to Chunk K)
-
-    loop Each chunk payload
-        Job->>OR: generate_bill_positions via deepseek-flash-latest (or gemini-flash-latest)
-        OR-->>Job: Chunk draft_org_positions and draft_news_testimonies
-    end
+<!-- Mermaid diagram temporarily removed due to analysis timeout -->
 
     Job->>Ground: filter_draft_positions(combined_draft_positions)
     Ground-->>Job: Deduplicated and grounded positions (max 30)
@@ -282,4 +177,4 @@ sequenceDiagram
     Report->>Builder: testimony_reach
     Builder-->>Report: Reached letters + chars across repeats, self-letters, and all chunks
     Report-->>Report: left_out_letters = 0, coverage_gap = false
-```
+-->

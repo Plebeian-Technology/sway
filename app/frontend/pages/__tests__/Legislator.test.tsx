@@ -92,6 +92,7 @@ const sampleDistrictScore: sway.scoring.IAgreeable = {
     count_disagreed: 2,
     count_no_legislator_vote: 1,
     count_legislator_abstained: 0,
+    reached_ten_voter_minimum: false,
 };
 
 const sampleLocaleScore: sway.scoring.IAgreeable = {
@@ -99,6 +100,7 @@ const sampleLocaleScore: sway.scoring.IAgreeable = {
     count_disagreed: 6,
     count_no_legislator_vote: 2,
     count_legislator_abstained: 0,
+    reached_ten_voter_minimum: true,
 };
 
 const sampleUserScore: sway.scoring.IAgreeable = {
@@ -106,6 +108,7 @@ const sampleUserScore: sway.scoring.IAgreeable = {
     count_disagreed: 1,
     count_no_legislator_vote: 0,
     count_legislator_abstained: 0,
+    reached_ten_voter_minimum: false,
 };
 
 const sampleCorrectionExplanation: IHistoricalScoreExplanation = {
@@ -282,12 +285,14 @@ describe("Legislator — locked tab copy", () => {
                         count_disagreed: 2,
                         count_no_legislator_vote: 1,
                         count_legislator_abstained: 0,
+                        reached_ten_voter_minimum: false,
                     } as sway.scoring.IUserLegislatorScore,
                     lifetime_score: {
                         count_agreed: 99,
                         count_disagreed: 99,
                         count_no_legislator_vote: 99,
                         count_legislator_abstained: 0,
+                        reached_ten_voter_minimum: true,
                     } as sway.scoring.IUserLegislatorScore,
                 }}
             />,
@@ -444,6 +449,7 @@ describe("Legislator — District and Locale Aggregate Agreement Presentation", 
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
+                reached_ten_voter_minimum: false,
             },
         };
 

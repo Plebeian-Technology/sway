@@ -74,7 +74,7 @@ Organizations are advocacy groups scoped to a locale. They hold positions on bil
 
 - `Organization` — `belongs_to :sway_locale`; name unique per locale; followers via `organization_follows`
 - The `Sway` organization is seeded in every locale by `SeedSwayOrganization` during `db:seed`, before any other organization exists there
-- `OrganizationBillPosition` — `active`, `support`, `summary` (a change to any of the three notifies followers); `activated_at` is set when `active` becomes true
+- `OrganizationBillPosition` — `active`, `support`, `summary` (a change to any of the three notifies followers); `activated_at` is set when `active` becomes true. Positions are either "affiliated" (managed by the organization via active membership) or "compiled" (managed by Sway, and labeled accordingly).
 - `OrganizationBillPositionChange` — the audit trail of edits awaiting approval
 - `Campaign` — `belongs_to :bill`, optional `:organization`; name unique per bill; `organization_link_decision` records a four-state match outcome
 - `UserOrganizationMembership` — membership, with a separate invite record for pending ones

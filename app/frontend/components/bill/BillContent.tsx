@@ -118,6 +118,9 @@ const BillContent: React.FC<IProps> = ({
                                     className="rounded-xl px-4 py-4"
                                 >
                                     <p className="text-sm font-black text-foreground">{org.name}</p>
+                                    <div className="mt-1 text-xs font-semibold uppercase text-muted-foreground">
+                                        {position.origin === "Org-posted" ? `Posted by ${org.name}` : "Compiled by Sway"}
+                                    </div>
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
@@ -145,6 +148,9 @@ const BillContent: React.FC<IProps> = ({
                                     className="rounded-xl px-4 py-4"
                                 >
                                     <p className="text-sm font-black text-foreground">{org.name}</p>
+                                    <div className="mt-1 text-xs font-semibold uppercase text-muted-foreground">
+                                        {position.origin === "Org-posted" ? `Posted by ${org.name}` : "Compiled by Sway"}
+                                    </div>
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}

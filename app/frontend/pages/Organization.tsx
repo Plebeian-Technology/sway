@@ -133,6 +133,13 @@ const Organization: React.FC<IProps> = ({
                                         <Badge variant="stamp" tone={supportTone(position.support)}>
                                             {position.support}
                                         </Badge>
+                                        <div className="text-xs font-semibold uppercase text-muted-foreground">
+                                            {position.origin === "Org-posted" ? (
+                                                `Posted by ${organization.name}`
+                                            ) : (
+                                                "Compiled by Sway"
+                                            )}
+                                        </div>
                                         <BillRowLink
                                             billId={position.bill_id}
                                             className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"

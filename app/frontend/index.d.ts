@@ -453,6 +453,8 @@ declare module "sway" {
             summary: string | null;
             // @lat: [[ai-unreviewed-notice-component-design#AiUnreviewedNotice component design#The server sends a derived boolean, not the source text]]
             summary_ai_unreviewed?: boolean;
+            origin: "Org-posted" | "Sway-compiled";
+            origin_url?: string | null;
         }
 
         // @lat: [[organization-position-removal#Bill reader positions include their organization]]
@@ -515,6 +517,8 @@ declare module "sway" {
             summary_ai_unreviewed?: boolean;
             active: boolean;
             created_at?: string;
+            origin: "Org-posted" | "Sway-compiled";
+            origin_url?: string | null;
         }
 
         interface IFormField<T> {
@@ -557,6 +561,7 @@ declare module "sway" {
                 count_disagreed: number;
                 count_no_legislator_vote: number;
                 count_legislator_abstained: number;
+                reached_ten_voter_minimum: boolean;
             }
 
             interface ILegislatorDistrictScore extends IAgreeable {

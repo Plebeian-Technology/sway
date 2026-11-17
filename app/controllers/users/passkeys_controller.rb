@@ -154,6 +154,25 @@ module Users
       session.delete(:add_passkey_registration)
     end
 
+    def destroy
+      passkey = current_user.passkeys.find(params[:id])
+
+      unless add_passkey_verified?
+        return render json: {success: false, message: "Verification expired or required."}, status: :forbidden
+      end
+
+      if current_user.passkeys.count <= User::MIN_PASSKEY_COUNT
+        return render json: {success: false, message: "The last passkey cannot be removed."}, status: :forbidden
+      end
+
+      if passkey.destroy
+        clear_add_passkey_session
+        render json: {success: true}
+      else
+        render json: {success: false, message: "Could not remove passkey."}, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def disambiguate_passkey_label(raw_label)

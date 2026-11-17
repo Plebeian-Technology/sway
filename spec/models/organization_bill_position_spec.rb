@@ -9,12 +9,16 @@
 #  activated_at    :datetime
 #  active          :boolean          default(FALSE), not null
 #  ai_summary      :text
+#  origin          :string
+#  origin_type     :string
+#  origin_url      :string
 #  summary         :text             not null
 #  support         :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  bill_id         :integer          not null
 #  organization_id :integer          not null
+#  origin_id       :integer
 #
 # Indexes
 #
@@ -22,6 +26,7 @@
 #  index_organization_bill_positions_on_active           (active)
 #  index_organization_bill_positions_on_bill_id          (bill_id)
 #  index_organization_bill_positions_on_organization_id  (organization_id)
+#  index_organization_bill_positions_on_origin           (origin_type,origin_id)
 #
 # Foreign Keys
 #
@@ -232,7 +237,7 @@ RSpec.describe OrganizationBillPosition, type: :model do
 
       expect(payload[:summary]).to be_nil
       expect(payload.keys).to match_array(
-        %i[id organization_id bill_id support summary active created_at summary_ai_unreviewed]
+        %i[id organization_id bill_id support summary active created_at summary_ai_unreviewed origin origin_url]
       )
       expect(position_with("FOR").to_public_json[:summary]).to eql("Stored in the column.")
     end

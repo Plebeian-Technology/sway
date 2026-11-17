@@ -13,6 +13,8 @@ export interface OrgPosition {
     organization?: { name: string };
     summary?: string | null;
     summary_ai_unreviewed?: boolean;
+    origin: "Org-posted" | "Sway-compiled";
+    origin_url?: string | null;
 }
 
 export interface OrgPositionsSectionProps {
@@ -56,6 +58,9 @@ function StanceCard({
                                 className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
                             >
                                 {pos.organization?.name}
+                            </Text>
+                            <Text className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark mt-1">
+                                {pos.origin === "Org-posted" ? `Posted by ${pos.organization?.name}` : "Compiled by Sway"}
                             </Text>
                             <View className="mt-2 gap-1">
                                 <Markdown

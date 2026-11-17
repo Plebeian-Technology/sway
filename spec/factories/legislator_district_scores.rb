@@ -8,6 +8,7 @@
 #  count_disagreed            :integer          default(0), not null
 #  count_legislator_abstained :integer          default(0), not null
 #  count_no_legislator_vote   :integer          default(0), not null
+#  distinct_voter_count       :integer          default(0), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  legislator_term_id         :integer          not null

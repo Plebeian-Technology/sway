@@ -5,6 +5,7 @@ import { Label } from "app/frontend/components/ui/label";
 import { useAddPasskey } from "app/frontend/hooks/authentication/useAddPasskey";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { formatDateShort } from "app/frontend/sway_utils/datetimes";
+import { router } from "@inertiajs/react";
 import { KeyRound } from "lucide-react";
 import { useCallback, useState } from "react";
 
@@ -134,6 +135,19 @@ const PasskeyManagement: React.FC<IProps> = ({ passkeys }) => {
                                 {p.last_used_at
                                     ? `${PARITY_COPY.passkey.lastUsedPrefix} ${formatDateShort(p.last_used_at)}`
                                     : PARITY_COPY.passkey.neverUsed}
+                            </div>
+                            <div className="flex justify-end pt-2">
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => {
+                                        if (confirm("Are you sure you want to remove this passkey?")) {
+                                            router.delete(`/users/passkeys/${p.id}`);
+                                        }
+                                    }}
+                                >
+                                    Remove
+                                </Button>
                             </div>
                         </li>
                     ))}
