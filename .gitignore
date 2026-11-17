@@ -220,3 +220,6 @@ deploy/config/sway.env
 # Real testimony letters with private residents' details (local-only)
 /spec/fixtures/testimony/campaign_bundle.txt
 /spec/fixtures/testimony/no_campaign_bundle.txt
+
+# Local git worktrees
+/worktrees/
