@@ -17,7 +17,6 @@ export interface OrgCardOrganization {
     name: string;
     icon_url?: string | null;
     sway_locale_slug?: string | null;
-    follower_count?: number;
 }
 
 export interface OrgCardProps {
@@ -50,7 +49,6 @@ export function OrgCard({
     testID,
 }: OrgCardProps) {
     const { colorScheme } = useTheme();
-    const [localFollowerCount, setLocalFollowerCount] = useState<number>(org.follower_count ?? 0);
     const [showAuthSheet, setShowAuthSheet] = useState<boolean>(false);
 
     const {
@@ -73,14 +71,10 @@ export function OrgCard({
         initialPrefs,
         defaultPrefs,
         orgName: org.name,
-        onFollowSuccess: () => setLocalFollowerCount((c) => c + 1),
-        onUnfollowSuccess: () => setLocalFollowerCount((c) => Math.max(0, c - 1)),
         onRequireSignIn: () => {
             setShowAuthSheet(true);
         },
     });
-
-    const followerLabel = PARITY_COPY.orgs.followerLabel(localFollowerCount);
 
     return (
         <>
@@ -100,13 +94,6 @@ export function OrgCard({
                             {org.sway_locale_slug}
                         </Text>
                     ) : null}
-
-                    <Text
-                        testID={`org-card-follower-count-${org.id}`}
-                        className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
-                    >
-                        {followerLabel}
-                    </Text>
 
                     {/* @lat: [[mobile-org-membership-components-design#OrgCard]] */}
                     {isMember && isSignedIn ? (
@@ -133,10 +120,10 @@ export function OrgCard({
                             testID={`org-card-following-btn-${org.id}`}
                             variant="outline"
                             onPress={handleUnfollowPress}
-                            accessibilityLabel={`Unfollow ${org.name}`}
+                            accessibilityLabel={`Untrack ${org.name}`}
                         >
                             <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                                {PARITY_COPY.orgs.following}
+                                {PARITY_COPY.orgs.tracking}
                             </Text>
                         </Pressable>
                     ) : (
@@ -144,10 +131,10 @@ export function OrgCard({
                             testID={`org-card-follow-btn-${org.id}`}
                             variant="default"
                             onPress={handleFollowPress}
-                            accessibilityLabel={`Follow ${org.name}`}
+                            accessibilityLabel={`Track ${org.name}`}
                         >
                             <Text className="text-sm font-open-sans-semibold text-white">
-                                {PARITY_COPY.orgs.follow}
+                                {PARITY_COPY.orgs.track}
                             </Text>
                         </Pressable>
                     )}
@@ -171,8 +158,8 @@ export function OrgCard({
                     onRequestSignIn?.();
                 }}
                 onDismiss={() => setShowAuthSheet(false)}
-                heading="Sign in to follow"
-                body="Follow civic organizations and get notified when they take a position on legislation."
+                heading="Sign in to track"
+                body="Track civic organizations and get notified when they take a position on legislation."
                 testID={`auth-prompt-sheet-${org.id}`}
             />
 

@@ -38,8 +38,6 @@ const OrganizationCard: React.FC<IProps> = ({
     const handleIconError = useCallback(() => setIconFailed(true), []);
     const showIcon = Boolean(organization.icon_url) && !iconFailed;
 
-    const followerLabel = PARITY_COPY.orgs.followerLabel(organization.follower_count ?? 0);
-
     return (
         <Card className="bg-card/95" data-testid="public-organization-card">
             <CardContent className="flex flex-wrap items-center gap-4 md:flex-nowrap">
@@ -70,17 +68,11 @@ const OrganizationCard: React.FC<IProps> = ({
                         </Link>
                         {followId && (
                             <Badge variant="stamp" tone="success">
-                                {PARITY_COPY.orgs.following}
+                                {PARITY_COPY.orgs.tracking}
                             </Badge>
                         )}
                     </div>
                     {swayLocaleLabel && <p className="mt-1 text-sm text-muted-foreground">{swayLocaleLabel}</p>}
-                    <p
-                        className="mt-1 text-sm text-muted-foreground [font-variant-numeric:tabular-nums_lining-nums]"
-                        data-testid={`org-card-follower-count-${organization.id}`}
-                    >
-                        {followerLabel}
-                    </p>
                 </div>
 
                 {isSignedIn && (

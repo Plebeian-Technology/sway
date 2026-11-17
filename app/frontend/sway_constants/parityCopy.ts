@@ -157,11 +157,10 @@ export const PARITY_COPY = {
     orgs: {
         title: "Organizations",
         noneFound: (formattedSwayLocaleName: string) => `No organizations found for ${formattedSwayLocaleName}.`,
-        noPositions: "This organization hasn't published any positions yet.",
-        follow: "Follow",
-        following: "Following",
-        followerLabel: (count: number) => (count === 1 ? "1 follower" : `${count} followers`),
-        unfollow: "Unfollow",
+        noPositions: "This organization hasn't added any positions yet.",
+        track: "Track",
+        tracking: "Tracking",
+        untrack: "Untrack",
     },
 
     // @lat: [[org-notification-cascade-and-defaults#Where organization notification copy is shared across pickers and settings]]
@@ -177,7 +176,7 @@ export const PARITY_COPY = {
         eventSupportChange: "Change in support (for/against)",
         eventSummaryChange: "Summary update",
         panelTitle: "Organization position updates",
-        panelDescription: "Get notified when organizations you follow publish or update their position on legislation.",
+        panelDescription: "Get notified when organizations you track add or update their position on legislation.",
         defaultsEventsLabel: "Default for new follows",
         defaultsCadenceLabel: "Default delivery",
     },
@@ -201,7 +200,7 @@ export const PARITY_COPY = {
     positions: {
         supports: "Supports",
         opposes: "Opposes",
-        empty: "No positions have been published for this organization.",
+        empty: "No positions have been added for this organization.",
         newModalTitle: "Propose new position",
         newSubmitLabel: "Propose position",
         newBillPickerPlaceholder: "Search bills…",
@@ -318,7 +317,7 @@ export const PARITY_COPY = {
         lead: "Choose how Sway reaches you. Bill of the Month is on by default; the others are opt-in.",
         botmAnnouncement: {
             label: "Bill of the Month announcements",
-            description: "We'll let you know when a new Bill of the Month is published.",
+            description: "We'll let you know when a new Bill of the Month is released.",
         },
         legislatorVoted: {
             label: "Legislator voted on a bill you voted on",
@@ -329,8 +328,8 @@ export const PARITY_COPY = {
             description: "A reminder before voting closes on a bill you haven't voted on yet.",
         },
         orgPositionTaken: {
-            label: "Organization you follow took a position",
-            description: "When an org you follow publishes a position on a new bill.",
+            label: "Organization you track took a position",
+            description: "When an org you track adds a position on a new bill.",
         },
         push: {
             title: "Push Notifications",

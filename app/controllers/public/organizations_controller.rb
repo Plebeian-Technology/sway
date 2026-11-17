@@ -20,11 +20,8 @@ module Public
       # @lat: [[public-organizations-endpoint#The public organizations endpoint#Why the list preloads icons and the detail does not]]
       orgs = scope.with_attached_icon.includes(:sway_locale).order(:name).limit(MAX_ORGANIZATIONS_PER_INDEX_PAGE)
 
-      # @lat: [[organization-follower-set-queries#follower_counts_for: batching the same query across a list]]
-      follower_counts = Organization.follower_counts_for(orgs.map(&:id))
-
       props = {
-        organizations: orgs.map { |org| org.to_public_json(follower_count: follower_counts.fetch(org.id, 0)) },
+        organizations: orgs.map(&:to_public_json),
         applied_filters: {
           locale_id: filter_locale_id,
           sway_locale_id: filter_locale_id

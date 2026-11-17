@@ -43,16 +43,13 @@ class Organization < ApplicationRecord
   validates :name, uniqueness: {scope: :sway_locale_id, allow_nil: true}
 
   # @lat: [[organizations-controller-notes#What PUBLIC_FIELDS is, and the rule around it]]
-  PUBLIC_FIELDS = %i[id name icon_url sway_locale_id created_at follower_count].freeze
+  PUBLIC_FIELDS = %i[id name icon_url sway_locale_id created_at].freeze
 
   # @lat: [[organization-follower-set-queries#follower_counts_for: batching the same query across a list]]
-  def to_public_json(follower_count: nil)
-    resolved_follower_count = follower_count.nil? ? self.follower_count : follower_count
+  def to_public_json
     initial = {} #: Hash[Symbol, untyped]
     payload = PUBLIC_FIELDS.each_with_object(initial) do |field, hash|
       case field
-      when :follower_count
-        hash[:follower_count] = resolved_follower_count
       when :icon_url
         # @lat: [[organizations-controller-notes#Why icon URL provenance rules exist]]
         hash[:icon_url] = mirrored_icon_url
@@ -112,34 +109,6 @@ class Organization < ApplicationRecord
     self.class.connection.execute(
       self.class.sanitize_sql_array([sql, id, id])
     ).map { |row| (row["user_id"] || row.values.first).to_i }
-  end
-
-  def follower_count
-    follower_set.size
-  end
-
-  # @lat: [[organization-follower-set-queries#follower_counts_for: batching the same query across a list]]
-  def self.follower_counts_for(org_ids)
-    ids = Array(org_ids).map(&:to_i).uniq
-    return {} if ids.empty?
-
-    placeholders = ids.map { "?" }.join(", ")
-    sql = <<~SQL
-      SELECT organization_id, COUNT(*) AS follower_count FROM (
-        SELECT organization_id, user_id FROM user_organization_memberships
-          WHERE organization_id IN (#{placeholders}) AND status = 'active'
-        UNION
-        SELECT organization_id, user_id FROM organization_follows
-          WHERE organization_id IN (#{placeholders})
-      ) AS deduped
-      GROUP BY organization_id
-    SQL
-    args = [sql] + ids + ids
-    connection.execute(sanitize_sql_array(args)).each_with_object({}) do |row, acc|
-      oid = (row["organization_id"] || row.values[0]).to_i
-      cnt = (row["follower_count"] || row.values[1]).to_i
-      acc[oid] = cnt
-    end
   end
 
   # @lat: [[organization-follower-set-queries#notifiable_follower_set_for: the notify set across two sub-populations]]

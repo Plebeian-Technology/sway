@@ -477,8 +477,6 @@ declare module "sway" {
             sway_locale_id: number;
             sway_locale_slug?: string | null;
             created_at?: string;
-            // @lat: [[public-organizations-endpoint#What a signed-out reader is never sent]]
-            follower_count: number;
         }
 
         // @lat: [[organization-follows-controller#The follow preference payload matches the saved controls]]

@@ -10,7 +10,6 @@ export interface OrganizationRecord {
     sway_locale_id?: number;
     sway_locale_slug?: string | null;
     created_at?: string;
-    follower_count?: number;
 }
 
 // @lat: [[mobile-organizations-hook#Payload fields]]

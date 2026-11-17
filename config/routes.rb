@@ -422,7 +422,6 @@ Rails.application.routes.draw do
     resource :profile, only: %i[show]
     resource :address, only: %i[edit update]
 
-
     namespace :webauthn do
       resources :sessions, only: %i[create destroy] do
         post :callback, on: :collection

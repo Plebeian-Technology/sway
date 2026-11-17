@@ -108,10 +108,10 @@ function OrgDetailFollowSection({
                         testID="org-detail-following-btn"
                         variant="outline"
                         onPress={handleUnfollowPress}
-                        accessibilityLabel={`Unfollow ${orgName}`}
+                        accessibilityLabel={`Untrack ${orgName}`}
                     >
                         <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                            {PARITY_COPY.orgs.following}
+                            {PARITY_COPY.orgs.tracking}
                         </Text>
                     </Pressable>
                 ) : (
@@ -119,9 +119,9 @@ function OrgDetailFollowSection({
                         testID="org-detail-follow-btn"
                         variant="default"
                         onPress={handleFollowPress}
-                        accessibilityLabel={`Follow ${orgName}`}
+                        accessibilityLabel={`Track ${orgName}`}
                     >
-                        <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.follow}</Text>
+                        <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.track}</Text>
                     </Pressable>
                 )}
                 {followError ? (
@@ -195,7 +195,6 @@ export default function OrgDetailScreen({ route }: OrgDetailScreenProps) {
 
     const org = data.organization;
     const positions = data.organization_bill_positions ?? [];
-    const followerLabel = PARITY_COPY.orgs.followerLabel(org.follower_count ?? 0);
 
     const isSignedIn = data.current_user_follow_id !== undefined || data.is_member_of_org_ids !== undefined;
     const isMember = isSignedIn && (data.is_member_of_org_ids?.includes(orgId) ?? false);
@@ -215,13 +214,6 @@ export default function OrgDetailScreen({ route }: OrgDetailScreenProps) {
                         {org.sway_locale_slug}
                     </Text>
                 ) : null}
-
-                <Text
-                    testID="org-detail-follower-count"
-                    className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
-                >
-                    {followerLabel}
-                </Text>
 
                 {isSignedIn ? (
                     // @lat: [[mobile-org-detail-screen#Why the follow section is keyed on the server-assigned follow id]]

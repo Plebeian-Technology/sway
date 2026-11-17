@@ -5,11 +5,9 @@ lat:
 
 # Passkey management page overview
 
-`app/frontend/pages/PasskeyManagement.tsx` is the page where a signed-in user sees the passkeys they have registered — the label, the date it was created, and when it was last used. Users may remove a passkey on the web.
+`app/frontend/pages/PasskeyManagement.tsx` is the page where a signed-in user manages their registered passkeys.
 
 A passkey is the fingerprint, face, or device PIN this app uses in place of a password.
-
-There is also an optional "Add a passkey" step: after proving the phone number is theirs with an SMS code, a user can register another passkey on the device they are using. That gives people a way to add a second device themselves, replacing the old read-only page whose only answer was "contact support." Being locked out of everything still means contacting support.
 
 The list arrives as server props, which is the usual Inertia way. Adding a passkey posts JSON through `useHttp` and then re-fetches just this list, so the user never has to reload the page.
 

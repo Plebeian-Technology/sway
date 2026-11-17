@@ -64,8 +64,6 @@ const Organization: React.FC<IProps> = ({
     const positions = organization_bill_positions ?? [];
     const hasIcon = Boolean(organization.icon_url);
 
-    const followerLabel = PARITY_COPY.orgs.followerLabel(organization.follower_count ?? 0);
-
     return (
         <div className="space-y-6" data-testid="public-organization-detail">
             <Link
@@ -98,12 +96,6 @@ const Organization: React.FC<IProps> = ({
                     <div className="min-w-0 flex-1">
                         <h1 className="text-2xl font-black text-foreground">{organization.name}</h1>
                         {swayLocaleLabel && <p className="mt-1 text-sm text-muted-foreground">{swayLocaleLabel}</p>}
-                        <p
-                            className="mt-1 text-sm text-muted-foreground [font-variant-numeric:tabular-nums_lining-nums]"
-                            data-testid="org-detail-follower-count"
-                        >
-                            {followerLabel}
-                        </p>
                     </div>
 
                     {isSignedIn && (
