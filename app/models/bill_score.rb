@@ -34,6 +34,8 @@ class BillScore < ApplicationRecord
       bs.bill_id bill_id
       bs.for self.for
       bs.against against
+      bs.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
+      bs.voters_needed VoteComparisonPrivacy.voters_needed(self.for, against)
 
       bs.districts bill_score_districts.map(&:to_sway_json)
     end
@@ -65,6 +67,8 @@ class BillScore < ApplicationRecord
       bs.bill_id bill_id
       bs.for self.for
       bs.against against
+      bs.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
+      bs.voters_needed VoteComparisonPrivacy.voters_needed(self.for, against)
       bs.districts bill_districts.map(&:to_sway_json)
     end
   end

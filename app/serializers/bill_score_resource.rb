@@ -10,6 +10,14 @@ class BillScoreResource < ApplicationResource
 
   attributes :against
 
+  attribute :comparison_suppressed do |score|
+    VoteComparisonPrivacy.suppressed?(score.for, score.against)
+  end
+
+  attribute :voters_needed do |score|
+    VoteComparisonPrivacy.voters_needed(score.for, score.against)
+  end
+
   attribute :districts do |score|
     district_scores = score.bill_score_districts
     # @lat: [[district-chart-tooltip#The mobile bill JSON carries the names, the web page does not]]
