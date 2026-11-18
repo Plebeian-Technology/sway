@@ -71,6 +71,16 @@ quiet pass would read as "looked, and found nothing" when nothing was looked
 at. The same reasoning makes the check raise rather than answer nothing when
 `git ls-files` lists no files, which is how a worktree inside Docker turns up.
 
+### Why a bare machine name is matched as a whole word
+
+A machine name with no dot, colon or slash, such as a Tailscale name, is often part of ordinary words, so the check matches it only where it stands alone.
+
+A substring search for a two-letter name reports lockfiles, recorded HTTP
+responses and every spec that mentions an API. The real leak still shows up,
+because a machine name in a command, an address or a settings line stands
+alone. An address or a path keeps the substring search, since a dot or a slash
+already makes it distinctive.
+
 ### Why some keys are left out of the search
 
 A value that is also an ordinary English phrase cannot be told apart from that phrase by a substring search, so searching for it reports every innocent mention instead.

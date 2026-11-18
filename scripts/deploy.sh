@@ -236,6 +236,49 @@ sway_report_run_time() {
 }
 trap sway_report_run_time EXIT
 
+# The macOS app puts its command-line tool inside the app bundle, and the shell
+# alias that usually names it is not loaded in a script.
+sway_tailscale_cli() {
+    if command -v tailscale >/dev/null 2>&1; then
+        print -r -- tailscale
+    elif [[ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]]; then
+        print -r -- /Applications/Tailscale.app/Contents/MacOS/Tailscale
+    fi
+}
+
+sway_with_timeout() {
+    local seconds=$1
+    shift
+    if command -v timeout >/dev/null 2>&1; then
+        timeout "$seconds" "$@"
+    else
+        perl -e 'alarm shift; exec @ARGV' "$seconds" "$@"
+    fi
+}
+
+# @lat: [[troubleshoot-deploys#Tailscale is not active]]
+TAILSCALE_CLI="$(sway_tailscale_cli)"
+TAILSCALE_PROBLEM=""
+SWAY_USES_TAILSCALE=0
+if [[ -n "${SWAY_TAILSCALE_IP:-}" || "${SWAY_HOST:-}" =~ ^100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\. ]]; then
+    SWAY_USES_TAILSCALE=1
+fi
+if [[ "$SWAY_USES_TAILSCALE" == 1 && -z "$TAILSCALE_CLI" ]]; then
+    TAILSCALE_PROBLEM="Tailscale is not installed on this machine."
+elif [[ "$SWAY_USES_TAILSCALE" == 1 ]] && ! sway_with_timeout 3 "$TAILSCALE_CLI" status --peers=false >/dev/null 2>&1; then
+    TAILSCALE_PROBLEM="Tailscale is not active on this machine."
+fi
+if [[ -n "$TAILSCALE_PROBLEM" ]]; then
+    echo "" >&2
+    echo "==============================================================================" >&2
+    echo "WARNING: $TAILSCALE_PROBLEM" >&2
+    echo "deploy/config/sway.env reaches ${SWAY_HOST:-the serving machine} over Tailscale," >&2
+    echo "so SSH, and an image store reached the same way, will fail." >&2
+    echo "Start Tailscale (open the app, or run 'tailscale up') and run this again." >&2
+    echo "==============================================================================" >&2
+    echo "" >&2
+fi
+
 # export $(cat .env.kamal | xargs)
 # set -a
 # source .env.kamal
@@ -446,14 +489,8 @@ elif [[ -z "${SWAY_TAILSCALE_IP:-}" && -z "$TARGET" ]]; then
     PROBED_TS_IP=""
 
     LOCAL_TS_IP=""
-    if command -v tailscale >/dev/null 2>&1; then
-        if command -v timeout >/dev/null 2>&1; then
-            if timeout 2 tailscale status --peers=false >/dev/null 2>&1; then
-                LOCAL_TS_IP="$(timeout 2 tailscale ip -4 2>/dev/null || true)"
-            fi
-        elif perl -e 'alarm 2; exec @ARGV' tailscale status --peers=false >/dev/null 2>&1; then
-            LOCAL_TS_IP="$(perl -e 'alarm 2; exec @ARGV' tailscale ip -4 2>/dev/null || true)"
-        fi
+    if [[ -n "$TAILSCALE_CLI" ]] && sway_with_timeout 2 "$TAILSCALE_CLI" status --peers=false >/dev/null 2>&1; then
+        LOCAL_TS_IP="$(sway_with_timeout 2 "$TAILSCALE_CLI" ip -4 2>/dev/null | head -n 1 || true)"
     fi
 
     if [[ "$LOCAL_TS_IP" =~ $CGNAT_REGEX ]]; then

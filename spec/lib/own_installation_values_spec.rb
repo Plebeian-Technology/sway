@@ -54,6 +54,13 @@ module OwnInstallationValues
       found.reject(&:empty?).uniq
     end
 
+    # @lat: [[deploy-values-boot-check#Keeping one installation's values out of the tracked repository#Why a bare machine name is matched as a whole word]]
+    def found_in?(contents, candidate)
+      return contents.include?(candidate) unless candidate.match?(/\A[A-Za-z0-9][A-Za-z0-9-]*\z/)
+
+      contents.match?(/(?<![A-Za-z0-9_.-])#{Regexp.escape(candidate)}(?![A-Za-z0-9_-])/)
+    end
+
     # Every tracked path. Raises rather than answering nothing, because an
     # empty list would let this whole check pass while looking at nothing —
     # which is what happens when git cannot read the repository (a worktree
@@ -84,6 +91,14 @@ RSpec.describe "values belonging to one installation" do
 
   it "protects SWAY_TAILSCALE_IP from leaking into git" do
     expect(OwnInstallationValues::KEYS).to include("SWAY_TAILSCALE_IP")
+  end
+
+  it "matches a bare machine name only as a whole name" do
+    expect(OwnInstallationValues.found_in?("ssh kamal@sway-pi uptime", "sway-pi")).to be(true)
+    expect(OwnInstallationValues.found_in?("SWAY_HOST=sway-pi\n", "sway-pi")).to be(true)
+    expect(OwnInstallationValues.found_in?("rapid2.example.test", "id2")).to be(false)
+    expect(OwnInstallationValues.found_in?("sway-pi-2", "sway-pi")).to be(false)
+    expect(OwnInstallationValues.found_in?("http://10.0.0.10:8090", "10.0.0.10")).to be(true)
   end
 
   it "protects the Android signing fingerprints from leaking into git, one at a time" do
@@ -125,7 +140,7 @@ RSpec.describe "values belonging to one installation" do
       next if path == SwayDeployConfig::EXAMPLE_FILE
 
       contents = Rails.root.join(path).read
-      wanted.each { |candidate, keys| leaks << "#{path} — #{keys.join(", ")}" if contents.include?(candidate) }
+      wanted.each { |candidate, keys| leaks << "#{path} — #{keys.join(", ")}" if OwnInstallationValues.found_in?(contents, candidate) }
     rescue ArgumentError, Errno::EISDIR, Errno::ENOENT
       next # not text, or gone since git listed it
     end

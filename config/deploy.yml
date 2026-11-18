@@ -9,8 +9,7 @@
 # <% sway_host = SwayDeployConfig.fetch("SWAY_HOST") %>
 # <% sway_tailscale_ip = SwayDeployConfig["SWAY_TAILSCALE_IP"].to_s.strip; sway_tailscale_ip = nil if sway_tailscale_ip.empty? %>
 # <% sway_host_is_ip = sway_host.match?(/\A\d{1,3}(\.\d{1,3}){3}\z/) %>
-# @lat: [[deploy-configuration#What the deploy file decides#Why the monitoring accessories are capped and bound to private addresses]]
-# <% raise "SWAY_HOST is the name #{sway_host}, and Docker publishes the monitoring dashboard only on an IP address. Set SWAY_TAILSCALE_IP to the serving machine's Tailscale address." if !sway_host_is_ip && sway_tailscale_ip.nil? %>
+# <% sway_loopback = "127.0.0.1" %>
 # <% sway_android_cert_sha256_fingerprints = SwayDeployConfig["SWAY_ANDROID_CERT_SHA256_FINGERPRINTS"].to_s.strip %>
 # <% sway_apple_app_store_id = SwayDeployConfig["SWAY_APPLE_APP_STORE_ID"].to_s.strip %>
 # <% sway_storage_dir = SwayDeployConfig.fetch("SWAY_STORAGE_DIR") %>
@@ -327,6 +326,8 @@ accessories:
             publish:
                 # <% if sway_host_is_ip %>
                 - "<%= sway_host %>:8090:8090"
+                # <% elsif sway_tailscale_ip.nil? %>
+                - "<%= sway_loopback %>:8090:8090"
                 # <% end %>
                 # <% if sway_tailscale_ip && sway_tailscale_ip != sway_host %>
                 - "<%= sway_tailscale_ip %>:8090:8090"

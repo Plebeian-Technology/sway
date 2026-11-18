@@ -60,6 +60,17 @@ RSpec.describe "config/deploy.yml release build args" do
     expect(args["SWAY_PREVIOUS_SHA"]).to eq("")
   end
 
+  it "warns before the build when the installation uses Tailscale and it is missing or stopped" do
+    deploy_script = Rails.root.join("scripts", "deploy.sh").read
+    warning_at = deploy_script.index("TAILSCALE_PROBLEM=\"Tailscale is not active on this machine.\"")
+
+    expect(warning_at).not_to be_nil
+    expect(deploy_script).to include("/Applications/Tailscale.app/Contents/MacOS/Tailscale")
+    expect(deploy_script).to include('TAILSCALE_PROBLEM="Tailscale is not installed on this machine."')
+    expect(warning_at).to be < deploy_script.index("RAILS_ENV=production bundle install")
+    expect(deploy_script).to include('if [[ "$SWAY_USES_TAILSCALE" == 1 && -z "$TAILSCALE_CLI" ]]; then')
+  end
+
   # @lat: [[deploy-configuration#What the deploy file decides#Why the monitoring accessories are capped and bound to private addresses]]
   it "boots and reboots every configured accessory in scripts/deploy.sh and probes Tailscale dynamically" do
     deploy_config = YAML.load(ERB.new(Rails.root.join("config", "deploy.yml").read).result, aliases: true)

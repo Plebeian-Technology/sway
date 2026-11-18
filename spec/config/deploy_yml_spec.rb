@@ -222,13 +222,12 @@ RSpec.describe "config/deploy.yml" do
         end
       end
 
-      it "publishes only on SWAY_TAILSCALE_IP when SWAY_HOST is a name such as a Tailscale machine name" do
-        expect(beszel_publish(host: "pi2", tailscale_ip: "100.64.0.10")).to eq(["100.64.0.10:8090:8090"])
+      it "publishes only on SWAY_TAILSCALE_IP when SWAY_HOST is a name" do
+        expect(beszel_publish(host: "sway-pi", tailscale_ip: "100.64.0.10")).to eq(["100.64.0.10:8090:8090"])
       end
 
-      it "refuses to render when SWAY_HOST is a name and no SWAY_TAILSCALE_IP gives an address to publish on" do
-        expect { beszel_publish(host: "pi2", tailscale_ip: nil) }
-          .to raise_error(RuntimeError, /SWAY_HOST is the name pi2.*Set SWAY_TAILSCALE_IP/)
+      it "publishes only on loopback when SWAY_HOST is a name and no SWAY_TAILSCALE_IP is set" do
+        expect(beszel_publish(host: "sway-pi.local", tailscale_ip: nil)).to eq(["127.0.0.1:8090:8090"])
       end
     end
 
