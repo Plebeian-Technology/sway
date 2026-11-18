@@ -79,7 +79,7 @@ RSpec.describe "config/deploy.yml release build args" do
     expect(preflight_call).not_to be_nil
     expect(preflight_call).to be < deploy_script.index("RAILS_ENV=production bundle install")
     expect(preflight_call).to be > deploy_script.index("sway_secrets_unlock --sync")
-    expect(deploy_script).to include('sway_with_timeout 60 kamal registry login "${kamal_target[@]}"')
+    expect(deploy_script).to include('sway_with_timeout 60 kamal registry login "${kamal_target[@]}" --verbose')
     expect(deploy_script).to include("cat scripts/verify-pi.sh")
     expect(deploy_script).to include("sway_with_timeout 30 ssh")
     expect(deploy_script).to include("--preflight-only)")

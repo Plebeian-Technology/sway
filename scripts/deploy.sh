@@ -365,11 +365,17 @@ PRELUDE
     [[ "$registry_host" == *.local ]] && (( ${lookup_seconds:-99} > 2 )) &&
         echo "        a .local name goes to multicast DNS; see lat.md/how-to/troubleshoot-deploys.md"
 
-    if sway_with_timeout 60 kamal registry login "${kamal_target[@]}" > "$work/login" 2>&1; then
-        echo "  ok    logged in to $SWAY_REGISTRY from this machine's Docker and from every deploy host"
+    local login_started=$SECONDS login_rc=0
+    sway_with_timeout 60 kamal registry login "${kamal_target[@]}" --verbose > "$work/login" 2>&1 || login_rc=$?
+    if [[ "$login_rc" == 0 ]]; then
+        echo "  ok    logged in to $SWAY_REGISTRY from this machine's Docker and from every deploy host ($(( SECONDS - login_started ))s)"
     else
-        echo "  FAIL  could not log in to $SWAY_REGISTRY; the build would fail at its upload:"
-        grep -E 'ERROR|Error response|denied|refused|timeout|Timeout' "$work/login" | tail -n 4 | sed 's/^/          /'
+        if [[ "$login_rc" == 124 || "$login_rc" == 142 ]]; then
+            echo "  FAIL  kamal registry login did not finish within 60s. The last thing it printed:"
+        else
+            echo "  FAIL  kamal registry login failed after $(( SECONDS - login_started ))s (exit $login_rc):"
+        fi
+        grep -v '^[[:space:]]*/' "$work/login" | grep -v '^[[:space:]]*$' | tail -n 8 | cut -c1-200 | sed 's/^/          /'
         failed=1
     fi
 
