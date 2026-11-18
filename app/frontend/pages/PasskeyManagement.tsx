@@ -137,17 +137,24 @@ const PasskeyManagement: React.FC<IProps> = ({ passkeys }) => {
                                     : PARITY_COPY.passkey.neverUsed}
                             </div>
                             <div className="flex justify-end pt-2">
-                                <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => {
-                                        if (confirm("Are you sure you want to remove this passkey?")) {
-                                            router.delete(`/users/passkeys/${p.id}`);
-                                        }
-                                    }}
-                                >
-                                    Remove
-                                </Button>
+                                {passkeys.length > 1 && (
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => {
+                                            if (confirm(`Are you sure you want to remove the passkey "${p.label ?? "Passkey"}"?`)) {
+                                                router.delete(`/users/passkeys/${p.id}`);
+                                            }
+                                        }}
+                                    >
+                                        Remove
+                                    </Button>
+                                )}
+                                {passkeys.length === 1 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        {PARITY_COPY.passkey.lastPasskeyCannotBeRemoved}
+                                    </p>
+                                )}
                             </div>
                         </li>
                     ))}
