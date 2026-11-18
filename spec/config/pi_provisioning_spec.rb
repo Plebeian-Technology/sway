@@ -85,7 +85,7 @@ RSpec.describe "Raspberry Pi provisioning scripts" do
 
   # @lat: [[raspberry-pi-provisioning#A readiness check asks about the account that does the work]]
   describe "the docker wait-for-disk check in scripts/verify-pi.sh" do
-    def run_verify_pi(requires_mounts_for)
+    def run_verify_pi(requires_mounts_for, mount: "/mnt/ssd")
       Dir.mktmpdir("verify-pi", Rails.root.join("tmp")) do |dir|
         File.write(File.join(dir, "systemctl"), <<~SH)
           #!/bin/sh
@@ -96,7 +96,7 @@ RSpec.describe "Raspberry Pi provisioning scripts" do
         FileUtils.chmod(0o755, Dir[File.join(dir, "*")])
 
         output, _status = Open3.capture2e(
-          {"PATH" => "#{dir}:/usr/bin:/bin", "SWAY_PI_MOUNT" => "/mnt/ssd", "SWAY_PI_STORAGE_DIR" => dir,
+          {"PATH" => "#{dir}:/usr/bin:/bin", "SWAY_PI_MOUNT" => mount, "SWAY_PI_STORAGE_DIR" => dir,
            "FAKE_REQUIRES_MOUNTS_FOR" => requires_mounts_for},
           "bash", Rails.root.join("scripts", "verify-pi.sh").to_s
         )
@@ -104,14 +104,19 @@ RSpec.describe "Raspberry Pi provisioning scripts" do
       end
     end
 
-    it "passes when systemd makes docker require the mount, whatever the drop-in file is called" do
+    it "passes when docker's RequiresMountsFor lists the mount or a path under it, whatever the drop-in file is called" do
       expect(run_verify_pi("/mnt/ssd")).to include("ok    docker waits for the disk before starting")
       expect(run_verify_pi("/var/lib /mnt/ssd")).to include("ok    docker waits for the disk before starting")
+      expect(run_verify_pi("/mnt/ssd/docker")).to include("ok    docker waits for the disk before starting")
     end
 
-    it "warns when docker does not require the mount" do
+    it "passes when the configured mount carries a trailing slash" do
+      expect(run_verify_pi("/mnt/ssd", mount: "/mnt/ssd/")).to include("ok    docker waits for the disk before starting")
+    end
+
+    it "warns when docker does not require the mount, including a sibling that shares its prefix" do
       expect(run_verify_pi("")).to include("note  docker does not wait for /mnt/ssd")
-      expect(run_verify_pi("/mnt/ssd/other")).to include("note  docker does not wait for /mnt/ssd")
+      expect(run_verify_pi("/mnt/ssdx")).to include("note  docker does not wait for /mnt/ssd")
     end
   end
 end

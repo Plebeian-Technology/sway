@@ -163,7 +163,8 @@ if command -v docker >/dev/null 2>&1; then
         bad "$say_user cannot talk to docker. Add it to the docker group, then log out and back in."
     fi
 
-    if systemctl show docker -p RequiresMountsFor --value 2>/dev/null | tr ' ' '\n' | grep -qxF "$MOUNT_POINT"; then
+    if systemctl show docker -p RequiresMountsFor --value 2>/dev/null | tr ' ' '\n' \
+        | awk -v m="${MOUNT_POINT%/}" 'NF && ($0 == m || index($0, m "/") == 1) { found = 1 } END { exit !found }'; then
         pass "docker waits for the disk before starting"
     else
         warn "docker does not wait for $MOUNT_POINT. After a reboot it can start first and build an empty world on the SD card."
