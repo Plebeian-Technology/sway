@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-# @lat: [[address-change-flow#System tests for address change]]
+# @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
 RSpec.describe "Address Change", type: :system, js: true do
   let(:user) { create(:user, :registered) }
 

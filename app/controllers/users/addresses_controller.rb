@@ -20,6 +20,8 @@ module Users
       new_address = address
       
       handle_address_switch(u, previous_address, new_address)
+    rescue => e
+      render_address_switch_unavailable(u, address, e)
     end
     
     private
