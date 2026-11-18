@@ -19,12 +19,44 @@ class UserLegislatorTermScoreResource < ApplicationResource
 
   attribute :legislator_district_score do |score|
     row = score.legislator_term.legislator_district_scores.first
-    row && {legislator_id: row.legislator_term.legislator_id}.merge(UserLegislatorTermScoreResource.counters([row]))
+    if row
+      suppressed = VoteComparisonPrivacy.suppressed?(row.count_agreed, row.count_disagreed)
+      percentages = VoteComparisonPercentageCalculator.calculate(
+        UserLegislatorTermScoreResource.counters([row]),
+        row.distinct_voter_count
+      )
+      {
+        legislator_id: row.legislator_term.legislator_id,
+        comparison_suppressed: suppressed,
+        agreed_percent: suppressed ? nil : percentages[:agreed],
+        disagreed_percent: suppressed ? nil : percentages[:disagreed],
+        abstained_percent: suppressed ? nil : percentages[:abstained],
+        no_vote_percent: suppressed ? nil : percentages[:no_vote]
+      }.merge(
+        suppressed ? {count_agreed: nil, count_disagreed: nil, count_no_legislator_vote: nil, count_legislator_abstained: nil} : UserLegislatorTermScoreResource.counters([row])
+      )
+    end
   end
 
   attribute :legislator_locale_score do |score|
     row = score.legislator_term.legislator_locale_scores.first
-    row && {legislator_id: row.legislator_term.legislator_id}.merge(UserLegislatorTermScoreResource.counters([row]))
+    if row
+      suppressed = VoteComparisonPrivacy.suppressed?(row.count_agreed, row.count_disagreed)
+      percentages = VoteComparisonPercentageCalculator.calculate(
+        UserLegislatorTermScoreResource.counters([row]),
+        row.distinct_voter_count
+      )
+      {
+        legislator_id: row.legislator_term.legislator_id,
+        comparison_suppressed: suppressed,
+        agreed_percent: suppressed ? nil : percentages[:agreed],
+        disagreed_percent: suppressed ? nil : percentages[:disagreed],
+        abstained_percent: suppressed ? nil : percentages[:abstained],
+        no_vote_percent: suppressed ? nil : percentages[:no_vote]
+      }.merge(
+        suppressed ? {count_agreed: nil, count_disagreed: nil, count_no_legislator_vote: nil, count_legislator_abstained: nil} : UserLegislatorTermScoreResource.counters([row])
+      )
+    end
   end
 
   class << self

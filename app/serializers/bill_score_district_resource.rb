@@ -9,21 +9,23 @@ class BillScoreDistrictResource < ApplicationResource
   end
 
   attribute :for do |district_score|
-    district_score.for
+    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.for
   end
 
-  attributes :against
+  attribute :against do |district_score|
+    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.against
+  end
 
   attribute :comparison_suppressed do |district_score|
     VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against)
   end
 
   attribute :for_percent do |district_score|
-    district_score.for_percent
+    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.for_percent
   end
 
   attribute :against_percent do |district_score|
-    district_score.against_percent
+    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.against_percent
   end
 
   attribute :at_large do |district_score|

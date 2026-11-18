@@ -142,7 +142,11 @@ const PasskeyManagement: React.FC<IProps> = ({ passkeys }) => {
                                         variant="destructive"
                                         size="sm"
                                         onClick={() => {
-                                            if (confirm(`Are you sure you want to remove the passkey "${p.label ?? "Passkey"}"?`)) {
+                                            if (
+                                                confirm(
+                                                    `Are you sure you want to remove the passkey "${p.label ?? "Passkey"}"?`,
+                                                )
+                                            ) {
                                                 router.delete(`/users/passkeys/${p.id}`);
                                             }
                                         }}

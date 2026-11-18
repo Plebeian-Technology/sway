@@ -106,7 +106,7 @@ const Organization: React.FC<IProps> = ({
                             isMuted={isMuted}
                             isSignedIn={isSignedIn}
                             masterEnabled={org_position_taken}
-                            followPrefs={followPrefs}
+                            trackPrefs={followPrefs}
                             orgDefaults={current_user_org_defaults}
                         />
                     )}
@@ -126,11 +126,9 @@ const Organization: React.FC<IProps> = ({
                                             {position.support}
                                         </Badge>
                                         <div className="text-xs font-semibold uppercase text-muted-foreground">
-                                            {position.origin === "Org-posted" ? (
-                                                `Posted by ${organization.name}`
-                                            ) : (
-                                                "Compiled by Sway"
-                                            )}
+                                            {position.origin === "Org-posted"
+                                                ? `Posted by ${organization.name}`
+                                                : "Compiled by Sway"}
                                         </div>
                                         <BillRowLink
                                             billId={position.bill_id}

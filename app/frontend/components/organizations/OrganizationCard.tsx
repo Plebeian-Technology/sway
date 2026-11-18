@@ -83,7 +83,7 @@ const OrganizationCard: React.FC<IProps> = ({
                         isMuted={isMuted}
                         isSignedIn={isSignedIn}
                         masterEnabled={masterEnabled}
-                        followPrefs={followPrefs}
+                        trackPrefs={followPrefs}
                         orgDefaults={orgDefaults}
                     />
                 )}

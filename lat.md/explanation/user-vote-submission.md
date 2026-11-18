@@ -44,6 +44,16 @@ The web hook centralizes confirmation, optimistic display, offline handling and 
 
 On an error the web hook restores the server-provided vote, including an absent choice, and clears the pending state so a failed optimistic choice does not remain recorded on screen. The useForm test mock keeps data in React state to make that rollback observable.
 
+## VoteComparisonPlaceholder component
+
+The `VoteComparisonPlaceholder` component renders when a vote comparison is hidden due to low user engagement, specifically when fewer than ten users have voted on a bill. It informs readers of the threshold and provides a path to invite others.
+
+It exists in two states based on `votersNeeded`:
+- When `votersNeeded` is present, it displays the specific count of users required for comparisons and a button to either copy an invite link (if signed in) or link to the sign-up page (if signed out).
+- When `votersNeeded` is absent, it renders a simple 'Not enough votes yet' line.
+
+The component reuses strings from `[[app/frontend/sway_constants/parityCopy.ts#bill]]` to ensure parity between web and mobile applications. It uses `navigator.clipboard.writeText` and `flashToasts` to handle invite link copying for signed-in users.
+
 ## Themed web vote controls
 
 The default, ballot and corner-store controls share submission behavior so theme choice cannot change what casting a vote means.

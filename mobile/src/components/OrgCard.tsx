@@ -133,9 +133,7 @@ export function OrgCard({
                             onPress={handleFollowPress}
                             accessibilityLabel={`Track ${org.name}`}
                         >
-                            <Text className="text-sm font-open-sans-semibold text-white">
-                                {PARITY_COPY.orgs.track}
-                            </Text>
+                            <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.track}</Text>
                         </Pressable>
                     )}
                     {followError ? (

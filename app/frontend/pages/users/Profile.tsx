@@ -37,10 +37,7 @@ const Profile: React.FC<IProps> = ({ user, address, is_api_user }) => {
                         <div className="font-semibold">Address:</div>
                         <div className="flex items-center justify-between">
                             <span>{address?.full_address || "No address set"}</span>
-                            <a
-                                href="/users/address/edit"
-                                className="text-sm text-blue-600 hover:underline"
-                            >
+                            <a href="/users/address/edit" className="text-sm text-blue-600 hover:underline">
                                 Change Address
                             </a>
                         </div>
@@ -76,7 +73,7 @@ const Profile: React.FC<IProps> = ({ user, address, is_api_user }) => {
                             variant="destructive"
                             onClick={() => {
                                 if (confirm("Are you sure? This action cannot be undone.")) {
-                                    router.delete(`/users/${user.id}`)
+                                    router.delete(`/users/${user.id}`);
                                 }
                             }}
                             className="w-full"

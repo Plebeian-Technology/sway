@@ -62,6 +62,15 @@ export const PARITY_COPY = {
         reportFailed: "Could not send your report. Please try again.",
         detailError: "Could not load this bill. Pull to refresh.",
         noVotesYet: "No votes recorded yet.",
+        voteComparisonPlaceholder: {
+            message: (votersNeeded: number) =>
+                votersNeeded === 1
+                    ? "Visual comparisons will be shown when 1 more user has voted."
+                    : `Visual comparisons will be shown when ${votersNeeded} more users have voted.`,
+            invitePrompt: "Invite others by sharing Sway",
+            inviteButton: "Share invite link",
+            notEnoughVotesYet: "Not enough votes yet",
+        },
         compareWithReps: "Compare with representatives",
         voteOnPastLegislation: "Vote on past legislation",
         summaryPending: "Summary pending. Check back soon.",
@@ -370,6 +379,7 @@ export const PARITY_COPY = {
         devicePrefix: "Device",
         deviceUnknown: "Unknown device",
         empty: "No passkeys on this account.",
+        lastPasskeyCannotBeRemoved: "You must keep at least one passkey to sign in.",
         errorLoad: "Could not load passkeys.",
         addCta: "Add a passkey",
         addLead: "Add this device so you can sign in on it without your phone. We'll text a code to confirm it's you.",

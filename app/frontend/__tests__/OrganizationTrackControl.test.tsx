@@ -89,7 +89,6 @@ const org: sway.IPublicOrganization = {
     id: 42,
     name: "Civic League",
     sway_locale_id: 1,
-    follower_count: 7,
 };
 
 const savedFollowPrefs: sway.IOrgFollowPrefs = {
@@ -159,10 +158,7 @@ describe("OrganizationTrackControl — not following (signed-in, non-member)", (
         renderControl({ followId: null, isMember: false });
         const form = screen.getByTestId("follow-btn-42").closest("form")!;
         fireEvent.submit(form);
-        expect(postSpy).toHaveBeenCalledWith(
-            "/organization_tracks",
-            expect.objectContaining({ preserveScroll: true }),
-        );
+        expect(postSpy).toHaveBeenCalledWith("/organization_tracks", expect.objectContaining({ preserveScroll: true }));
     });
 
     it("does not use fetch or axios (Inertia PRG assertion)", () => {
@@ -296,10 +292,7 @@ describe("OrganizationTrackControl — member with NO follow row", () => {
         const form = saveBtn.closest("form")!;
         fireEvent.submit(form);
         // It posts to the create route: the follow row is made when Save runs.
-        expect(postSpy).toHaveBeenCalledWith(
-            "/organization_tracks",
-            expect.objectContaining({ preserveScroll: true }),
-        );
+        expect(postSpy).toHaveBeenCalledWith("/organization_tracks", expect.objectContaining({ preserveScroll: true }));
         // It must never PATCH the broken /0/preferences URL.
         expect(patchSpy).not.toHaveBeenCalledWith("/organization_tracks/0/preferences", expect.anything());
     });

@@ -156,4 +156,6 @@ which drops the district number, and the jurisdiction title carries
 
 To prevent voter identification in small groupings, aggregate scores (bill totals, district splits, and legislator agreement) are suppressed until a minimum of ten distinct users stand behind the number.
 
-For bill totals, exact counts are replaced by a placeholder below this threshold. District and legislator scores are only shown as percentages once the ten-user minimum is met, with no counts or raw totals exposed.
+For bill totals, exact counts are replaced by a placeholder below this threshold. District and legislator scores are only shown as percentages once the ten-voter minimum is met, with both counts and percentages returned as `nil` when suppressed.
+
+Each `LegislatorDistrictScore` and `LegislatorLocaleScore` row stores `distinct_voter_count` to track the number of users contributing to the aggregate, facilitating this privacy threshold.

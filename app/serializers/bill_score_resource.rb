@@ -5,10 +5,12 @@ class BillScoreResource < ApplicationResource
   attributes :id, :bill_id
 
   attribute :for do |score|
-    score.for
+    VoteComparisonPrivacy.suppressed?(score.for, score.against) ? nil : score.for
   end
 
-  attributes :against
+  attribute :against do |score|
+    VoteComparisonPrivacy.suppressed?(score.for, score.against) ? nil : score.against
+  end
 
   attribute :comparison_suppressed do |score|
     VoteComparisonPrivacy.suppressed?(score.for, score.against)

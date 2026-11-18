@@ -5,7 +5,7 @@ Why Sway is built the way it is. These pages carry every why-comment's reasoning
 <!-- lat:index:begin -->
 - [A locale's name is derived, not stored](locale-name-is-derived.md) — \`sway_locales\` has no \`name\` column. \`SwayLocale#name\` composes one from \`city\`, \`state\` and \`country\` — \`"city-region-country"\` — every time it is asked, so the name cannot drift from the columns it describes.
 - [About campaign scope and identity](campaign-scope-and-identity.md) — A campaign, in Sway, is advocacy by an organization's members about one specific bill. Members write letters about that bill as part of that campaign. An organization spans many bills; a campaign does not.
-- [About the voter privacy threshold](voter-privacy-threshold.md) — Enforcement of minimum-voter counts to protect individual voter privacy.
+- [[voter-privacy-threshold]] — Enforcement of minimum-voter counts to protect individual voter privacy.
 - [About linking a campaign to an organization](campaign-organization-link.md) — Why naming the organization behind a campaign is a second approval with four states, how candidates are proposed from letters and bill positions, and why the two columns must agree.
 - [About rejecting a campaign draft](campaign-draft-rejection.md) — Why rejecting a campaign draft is stored against the bill by content hash, and why a rejected card stays on screen instead of disappearing.
 - [Account-existence disclosure on the sign-in challenge](decoy-challenge-non-disclosure.md) — \`Users::Webauthn::SessionsController\`'s sign-in challenge must never reveal whether a phone number has a Sway account through its status code or response shape.

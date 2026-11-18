@@ -42,11 +42,18 @@ interface IProps {
     isChangeAddressMode?: boolean;
 }
 
-const SwayRegistration: React.FC<IProps> = ({ user, registration_outcome, sway_locale, locale, isChangeAddressMode }) => {
+const SwayRegistration: React.FC<IProps> = ({
+    user,
+    registration_outcome,
+    sway_locale,
+    locale,
+    isChangeAddressMode,
+}) => {
     const activeLocale = locale ?? sway_locale ?? null;
     const logout = useLogout();
     const hasAddressNotLocatedOutcome = registration_outcome?.reason === "address_not_located";
-    const requiresAddressSwitchConfirmation = (Boolean(user?.is_registration_complete) || isChangeAddressMode) && !hasAddressNotLocatedOutcome;
+    const requiresAddressSwitchConfirmation =
+        (Boolean(user?.is_registration_complete) || isChangeAddressMode) && !hasAddressNotLocatedOutcome;
     const form = useForm<IRegistrationFormData>({
         is_voter_registration_address_confirmed: false,
         ...(requiresAddressSwitchConfirmation ? { confirm_deactivate_legislators: false } : {}),

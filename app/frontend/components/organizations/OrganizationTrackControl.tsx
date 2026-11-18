@@ -38,7 +38,7 @@ const FollowForm: React.FC<FollowFormProps> = ({ organization, masterEnabled: _m
 
     const follow = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(ROUTES.organizationTracks, {
+        post(ROUTES.organizationFollows, {
             preserveScroll: true,
             // @lat: [[organization-follow-control-state-machine#Why the preferences-picker's open/closed state lives above the follow/unfollow branch]]
             onSuccess: onTrackSuccess,
@@ -48,7 +48,7 @@ const FollowForm: React.FC<FollowFormProps> = ({ organization, masterEnabled: _m
     return (
         <form onSubmit={follow}>
             <Button type="submit" variant="default" disabled={processing} data-testid={`follow-btn-${organization.id}`}>
-                {PARITY_COPY.orgs.follow}
+                {PARITY_COPY.orgs.track}
             </Button>
         </form>
     );
@@ -71,7 +71,7 @@ const UnfollowControl: React.FC<UnfollowControlProps> = ({
 
     const unfollow = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        destroy(ROUTES.organizationTrack(followId), {
+        destroy(ROUTES.organizationFollow(followId), {
             preserveScroll: true,
         });
     };
@@ -86,7 +86,7 @@ const UnfollowControl: React.FC<UnfollowControlProps> = ({
                     aria-label={`Unfollow ${organization.name}`}
                     data-testid={`following-btn-${organization.id}`}
                 >
-                    {PARITY_COPY.orgs.unfollow}
+                    {PARITY_COPY.orgs.untrack}
                 </Button>
             </form>
             <Button variant="outline" onClick={onPreferencesClick} data-testid={`preferences-btn-${organization.id}`}>
@@ -157,7 +157,7 @@ const OrganizationTrackControl: React.FC<IProps> = ({
                     <OrgPreferencePickerModal
                         organization={organization}
                         followId={followId ?? 0}
-                        isFirstTrack={isCreateMode}
+                        isFirstFollow={isCreateMode}
                         createMode={isCreateMode}
                         masterEnabled={masterEnabled}
                         open={pickerOpen}
@@ -188,7 +188,7 @@ const OrganizationTrackControl: React.FC<IProps> = ({
                     <OrgPreferencePickerModal
                         organization={organization}
                         followId={followId}
-                        isFirstTrack={pickerIsFirstFollow}
+                        isFirstFollow={pickerIsFirstFollow}
                         masterEnabled={masterEnabled}
                         open={pickerOpen}
                         onClose={() => {

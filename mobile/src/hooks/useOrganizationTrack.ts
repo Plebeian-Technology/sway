@@ -23,10 +23,7 @@ export interface UseOrganizationTrackResult {
 }
 
 // @lat: [[mobile-organization-follow-hook#@param initialFollowId]]
-export function useOrganizationTrack(
-    orgId: number,
-    initialFollowId: number | null = null,
-): UseOrganizationTrackResult {
+export function useOrganizationTrack(orgId: number, initialFollowId: number | null = null): UseOrganizationTrackResult {
     const [followId, setFollowId] = useState<number | null>(initialFollowId);
 
     const follow = useCallback(async () => {

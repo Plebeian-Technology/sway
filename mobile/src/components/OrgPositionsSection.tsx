@@ -60,7 +60,9 @@ function StanceCard({
                                 {pos.organization?.name}
                             </Text>
                             <Text className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark mt-1">
-                                {pos.origin === "Org-posted" ? `Posted by ${pos.organization?.name}` : "Compiled by Sway"}
+                                {pos.origin === "Org-posted"
+                                    ? `Posted by ${pos.organization?.name}`
+                                    : "Compiled by Sway"}
                             </Text>
                             <View className="mt-2 gap-1">
                                 <Markdown

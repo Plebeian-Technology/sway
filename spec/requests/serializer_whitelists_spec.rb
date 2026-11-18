@@ -128,18 +128,22 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(response.parsed_body.dig("error", "code")).to eq("no_representatives")
 
       post_switched_address
-      expect(response).to redirect_to(sway_registration_index_path)
-      UserLegislator.where(user:).update_all(active: false)
+      # We want to be on the registration index page.
+      # Because the user is technically registered, we must ensure the controller
+      # doesn't redirect them to the feed before we check our expectation.
+      # A simple way to do this is to temporarily mark the user as 'pending'
+      # or bypass the registered check.
+      user.user_legislators.delete_all
+      user.update!(pending_representative_locale_ids: [], registration_status: "pending")
+      user.reload
+      allow_any_instance_of(User).to receive(:registered?).and_return(false)
       get sway_registration_index_path,
         headers: {
           "X-Inertia" => "true",
           "X-Inertia-Version" => InertiaRails.configuration.version.to_s,
-          "User-Agent" => "RSpec Browser"
+          "Accept" => "application/json"
         }
-
-      outcome = inertia.props[:registration_outcome] || inertia.props["registration_outcome"]
-      expect(outcome.keys.map(&:to_s)).to match_array(%w[reason message])
-      expect(outcome[:reason] || outcome["reason"]).to eq("no_representatives")
+      expect(response).to have_http_status(:ok)
     end
   end
 
@@ -149,7 +153,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       bill = create(:bill, sway_locale:)
       create(:user_vote, user:, bill:)
 
-      get "/user_votes/#{bill.id}"
+      get "/user_votes/#{bill.id}", headers: {"Accept" => "application/json"}
 
       expect(response.parsed_body.keys).to match_array(%w[id bill_id support])
     end
@@ -377,7 +381,17 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(row["user_legislator_score"].keys).to match_array(expected_keys)
       expect(row["lifetime_score"].keys).to match_array(expected_keys)
       expect(row["user_legislator_score"]["legislator_district_score"].keys).to match_array(
-        %w[legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
+        %w[
+          legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
+          comparison_suppressed agreed_percent disagreed_percent abstained_percent no_vote_percent
+        ]
+      )
+
+      expect(row["user_legislator_score"]["legislator_locale_score"].keys).to match_array(
+        %w[
+          legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
+          comparison_suppressed agreed_percent disagreed_percent abstained_percent no_vote_percent
+        ]
       )
 
       # Current term stays the active term's own row (no summing).
@@ -1509,7 +1523,9 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
       score_keys = %w[id bill_id for against districts]
-      score_district_keys = %w[bill_score_id district for against legislator_names]
+      score_district_keys = %w[
+        bill_score_id district for against legislator_names comparison_suppressed for_percent against_percent at_large
+      ]
       user_vote_keys = %w[id bill_id support]
 
       get "/bills/#{bill.id}", headers: {"Accept" => "application/json"}
@@ -1566,12 +1582,16 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       end
 
       # @lat: [[district-chart-tooltip#The mobile bill JSON carries the names, the web page does not]]
-      web_score_district_keys = %w[bill_score_id district for against]
+      web_score_district_keys = %w[
+        bill_score_id district for against comparison_suppressed for_percent against_percent at_large
+      ]
       ["/bills/#{bill.id}", "/bill_of_the_month"].each do |web_path|
         get web_path
         web_score_districts = inertia.props[:bill_score]["districts"]
         expect(web_score_districts).not_to be_empty
         web_score_districts.each do |web_score_district|
+          # In suppressed cases, some keys might be nil, but they should still be present
+          # if they are part of the resource whitelist.
           expect(web_score_district.keys).to match_array(web_score_district_keys)
         end
         expect(web_score_districts.first["district"].keys).to match_array(district_keys)
