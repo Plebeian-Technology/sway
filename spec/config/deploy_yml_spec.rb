@@ -57,9 +57,14 @@ RSpec.describe "config/deploy.yml" do
     end
 
     # @lat: [[deploy-configuration#What the deploy file decides#Why PDF_EXTRACTOR_URL points at the host extractor port]]
-    it "sets PDF_EXTRACTOR_URL to the host sway-pdf-extractor port" do
+    it "sets PDF_EXTRACTOR_URL to the host sway-pdf-extractor port through the Docker host gateway" do
       expect(deploy_config.dig("env", "clear", "PDF_EXTRACTOR_URL"))
-        .to eq("http://#{SwayDeployConfig.fetch("SWAY_HOST")}:8085")
+        .to eq("http://host.docker.internal:8085")
+
+      %w[web job].each do |role|
+        expect(deploy_config.dig("servers", role, "options", "add-host"))
+          .to eq(["host.docker.internal:host-gateway"]), "expected the #{role} role to map host.docker.internal to the host gateway"
+      end
     end
   end
 
@@ -184,7 +189,7 @@ RSpec.describe "config/deploy.yml" do
   end
 
   describe "accessories.beszel and accessories.beszel_agent" do
-    it "configures beszel hub with pinned image, LAN and Tailscale host publish, and SSD persistence" do
+    it "configures beszel hub with pinned image, no port or proxy, and SSD persistence" do
       beszel = deploy_config.dig("accessories", "beszel")
 
       expect(beszel).to be_a(Hash)
@@ -194,23 +199,36 @@ RSpec.describe "config/deploy.yml" do
       expect(beszel["volumes"]).to eq(["#{SwayDeployConfig.fetch("SWAY_STORAGE_DIR")}/beszel:/beszel_data"])
       expect(beszel).not_to have_key("port")
       expect(beszel).not_to have_key("proxy")
-
-      expected_publish = [
-        "#{SwayDeployConfig.fetch("SWAY_HOST")}:8090:8090",
-        "#{SwayDeployConfig["SWAY_TAILSCALE_IP"]}:8090:8090"
-      ]
-      expect(beszel.dig("options", "publish")).to eq(expected_publish)
     end
 
-    it "binds beszel hub strictly to SWAY_HOST when SWAY_TAILSCALE_IP is omitted" do
-      allow(SwayDeployConfig).to receive(:[]).and_call_original
-      [nil, "", "   ", SwayDeployConfig.fetch("SWAY_HOST")].each do |value|
-        allow(SwayDeployConfig).to receive(:[]).with("SWAY_TAILSCALE_IP").and_return(value)
+    describe "where the beszel hub is published" do
+      def beszel_publish(host:, tailscale_ip:)
+        allow(SwayDeployConfig).to receive(:fetch).and_call_original
+        allow(SwayDeployConfig).to receive(:fetch).with("SWAY_HOST").and_return(host)
+        allow(SwayDeployConfig).to receive(:[]).and_call_original
+        allow(SwayDeployConfig).to receive(:[]).with("SWAY_TAILSCALE_IP").and_return(tailscale_ip)
 
-        rendered = YAML.load(ERB.new(deploy_path.read).result, aliases: true)
-        beszel = rendered.dig("accessories", "beszel")
+        YAML.load(ERB.new(deploy_path.read).result, aliases: true).dig("accessories", "beszel", "options", "publish")
+      end
 
-        expect(beszel.dig("options", "publish")).to eq(["#{SwayDeployConfig.fetch("SWAY_HOST")}:8090:8090"])
+      it "publishes on both addresses when SWAY_HOST is a LAN IP and SWAY_TAILSCALE_IP differs" do
+        expect(beszel_publish(host: "192.0.2.10", tailscale_ip: "100.64.0.10"))
+          .to eq(["192.0.2.10:8090:8090", "100.64.0.10:8090:8090"])
+      end
+
+      it "publishes only on SWAY_HOST when SWAY_TAILSCALE_IP is omitted, blank, or the same address" do
+        [nil, "", "   ", "100.64.0.10"].each do |value|
+          expect(beszel_publish(host: "100.64.0.10", tailscale_ip: value)).to eq(["100.64.0.10:8090:8090"])
+        end
+      end
+
+      it "publishes only on SWAY_TAILSCALE_IP when SWAY_HOST is a name such as a Tailscale machine name" do
+        expect(beszel_publish(host: "pi2", tailscale_ip: "100.64.0.10")).to eq(["100.64.0.10:8090:8090"])
+      end
+
+      it "refuses to render when SWAY_HOST is a name and no SWAY_TAILSCALE_IP gives an address to publish on" do
+        expect { beszel_publish(host: "pi2", tailscale_ip: nil) }
+          .to raise_error(RuntimeError, /SWAY_HOST is the name pi2.*Set SWAY_TAILSCALE_IP/)
       end
     end
 

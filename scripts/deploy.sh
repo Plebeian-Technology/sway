@@ -437,10 +437,13 @@ echo "##########################################################################
 echo ""
 
 # @lat: [[deploy-configuration#What the deploy file decides#Why the monitoring accessories are capped and bound to private addresses]]
-if [[ -z "${SWAY_TAILSCALE_IP:-}" && -z "$TARGET" ]]; then
+CGNAT_REGEX="^100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3}$"
+if [[ -z "${SWAY_TAILSCALE_IP:-}" && -z "$TARGET" && "$SWAY_HOST" =~ $CGNAT_REGEX ]]; then
+    export SWAY_TAILSCALE_IP="$SWAY_HOST"
+    echo "  SWAY_HOST is already a Tailscale address: $SWAY_TAILSCALE_IP"
+elif [[ -z "${SWAY_TAILSCALE_IP:-}" && -z "$TARGET" ]]; then
     echo "deploy.sh -> Probing for active Tailscale on $SWAY_HOST..."
     PROBED_TS_IP=""
-    CGNAT_REGEX="^100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3}$"
 
     LOCAL_TS_IP=""
     if command -v tailscale >/dev/null 2>&1; then

@@ -8,6 +8,9 @@
 # <% require sway_root.join("lib", "sway_deploy_config.rb").to_s %>
 # <% sway_host = SwayDeployConfig.fetch("SWAY_HOST") %>
 # <% sway_tailscale_ip = SwayDeployConfig["SWAY_TAILSCALE_IP"].to_s.strip; sway_tailscale_ip = nil if sway_tailscale_ip.empty? %>
+# <% sway_host_is_ip = sway_host.match?(/\A\d{1,3}(\.\d{1,3}){3}\z/) %>
+# @lat: [[deploy-configuration#What the deploy file decides#Why the monitoring accessories are capped and bound to private addresses]]
+# <% raise "SWAY_HOST is the name #{sway_host}, and Docker publishes the monitoring dashboard only on an IP address. Set SWAY_TAILSCALE_IP to the serving machine's Tailscale address." if !sway_host_is_ip && sway_tailscale_ip.nil? %>
 # <% sway_android_cert_sha256_fingerprints = SwayDeployConfig["SWAY_ANDROID_CERT_SHA256_FINGERPRINTS"].to_s.strip %>
 # <% sway_apple_app_store_id = SwayDeployConfig["SWAY_APPLE_APP_STORE_ID"].to_s.strip %>
 # <% sway_storage_dir = SwayDeployConfig.fetch("SWAY_STORAGE_DIR") %>
@@ -43,6 +46,8 @@ servers:
             cpus: "2.0"
             cap-drop: ["ALL"]
             security-opt: ["no-new-privileges:true"]
+            # @lat: [[deploy-configuration#What the deploy file decides#Why PDF_EXTRACTOR_URL points at the host extractor port]]
+            add-host: ["host.docker.internal:host-gateway"]
     # @lat: [[deploy-configuration#What the deploy file decides#Why exactly one host runs jobs]]
     job:
         hosts:
@@ -54,6 +59,8 @@ servers:
             cpus: "1.0"
             cap-drop: ["ALL"]
             security-opt: ["no-new-privileges:true"]
+            # @lat: [[deploy-configuration#What the deploy file decides#Why PDF_EXTRACTOR_URL points at the host extractor port]]
+            add-host: ["host.docker.internal:host-gateway"]
 
 # ssl: false — TLS terminates at the Cloudflare tunnel, not here. Cloudflare's
 # SSL/TLS mode must be "Full" for CF-to-app encryption to work.
@@ -168,7 +175,7 @@ env:
         # @lat: [[admin-hub-index#Who sees the monitoring link]]
         BESZEL_ADMIN_EMAIL_DOMAINS: "sway.vote"
         # @lat: [[deploy-configuration#What the deploy file decides#Why PDF_EXTRACTOR_URL points at the host extractor port]]
-        PDF_EXTRACTOR_URL: "http://<%= sway_host %>:8085"
+        PDF_EXTRACTOR_URL: "http://host.docker.internal:8085"
         # LEGISLATION_SERVICE_BASE_URL is NOT injected: the Python sidecar is
         # evicted from production. PipelinePreviewService computes the preview
         # in-process; no production path depends on that service.
@@ -318,7 +325,9 @@ accessories:
             - <%= sway_storage_dir %>/beszel:/beszel_data
         options:
             publish:
+                # <% if sway_host_is_ip %>
                 - "<%= sway_host %>:8090:8090"
+                # <% end %>
                 # <% if sway_tailscale_ip && sway_tailscale_ip != sway_host %>
                 - "<%= sway_tailscale_ip %>:8090:8090"
             # <% end %>
