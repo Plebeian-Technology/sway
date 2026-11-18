@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# @lat: [[voter-privacy-threshold]]
 module VoteComparisonPrivacy
   MINIMUM_VOTERS = 10
 
