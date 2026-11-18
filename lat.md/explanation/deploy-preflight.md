@@ -26,8 +26,8 @@ Each check is bounded by a timeout, and the slow ones run at the same time, so t
   from its own virtual machine. The serving machine runs the same probe over
   the readiness connection, since it pulls from the store during the deploy.
   The probe needs no credentials. `kamal registry login` was the first choice
-  and was dropped: it resolves every deploy secret first, one Kamal process per
-  secret, which takes longer than a minute and is paid again by the deploy.
+  and was dropped: it resolves every deploy secret before logging in, which took longer than
+  a minute on 2026-11-18 and is paid again by the deploy itself.
 - **Name lookup time.** The image store's name is looked up with a four-second
   limit. A slow answer is reported as a note, because Docker gives up on a slow
   lookup and then blames the connection — [[troubleshoot-deploys#Registry login times out]].
