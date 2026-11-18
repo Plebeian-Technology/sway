@@ -82,4 +82,36 @@ RSpec.describe "Raspberry Pi provisioning scripts" do
     expect(verify_script).to include("/etc/systemd/system/sway-pdf-extractor.service")
     expect(verify_script).to include("/etc/systemd/system/sway-pdf-extractor.path")
   end
+
+  # @lat: [[raspberry-pi-provisioning#A readiness check asks about the account that does the work]]
+  describe "the docker wait-for-disk check in scripts/verify-pi.sh" do
+    def run_verify_pi(requires_mounts_for)
+      Dir.mktmpdir("verify-pi", Rails.root.join("tmp")) do |dir|
+        File.write(File.join(dir, "systemctl"), <<~SH)
+          #!/bin/sh
+          [ "$1 $2 $3 $4 $5" = "show docker -p RequiresMountsFor --value" ] && printf '%s\n' "$FAKE_REQUIRES_MOUNTS_FOR"
+          exit 0
+        SH
+        File.write(File.join(dir, "docker"), "#!/bin/sh\nexit 1\n")
+        FileUtils.chmod(0o755, Dir[File.join(dir, "*")])
+
+        output, _status = Open3.capture2e(
+          {"PATH" => "#{dir}:/usr/bin:/bin", "SWAY_PI_MOUNT" => "/mnt/ssd", "SWAY_PI_STORAGE_DIR" => dir,
+           "FAKE_REQUIRES_MOUNTS_FOR" => requires_mounts_for},
+          "bash", Rails.root.join("scripts", "verify-pi.sh").to_s
+        )
+        output
+      end
+    end
+
+    it "passes when systemd makes docker require the mount, whatever the drop-in file is called" do
+      expect(run_verify_pi("/mnt/ssd")).to include("ok    docker waits for the disk before starting")
+      expect(run_verify_pi("/var/lib /mnt/ssd")).to include("ok    docker waits for the disk before starting")
+    end
+
+    it "warns when docker does not require the mount" do
+      expect(run_verify_pi("")).to include("note  docker does not wait for /mnt/ssd")
+      expect(run_verify_pi("/mnt/ssd/other")).to include("note  docker does not wait for /mnt/ssd")
+    end
+  end
 end

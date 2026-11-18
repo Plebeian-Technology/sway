@@ -28,6 +28,12 @@ file, because a directory above it belongs to somebody else. The check therefore
 privileges and uses none — on a properly set-up machine the deploy account has
 none at all, so a check that needed it could never run where it matters.
 
+It asks what the machine will do rather than whether a particular file is
+there. The wait-for-disk check reads the requirement systemd reports for
+Docker, so a setting written by hand under another file name counts; looking
+for the file the provisioning script writes reported the production machine
+unprotected on 2026-11-18 when it was not.
+
 It reads and reports and changes nothing, and it exits non-zero when any check
 fails so it can gate a deploy rather than merely inform one. Its error handling
 is deliberately permissive in one direction: one failed check must not stop the
