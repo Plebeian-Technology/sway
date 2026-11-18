@@ -33,6 +33,33 @@ class BillScoreDistrict < ApplicationRecord
       bsd.district district.to_sway_json
       bsd.for self.for
       bsd.against against
+      bsd.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
+      bsd.for_percent for_percent
+      bsd.against_percent against_percent
+      bsd.at_large at_large?
     end
+  end
+
+  def at_large?
+    # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
+    district.at_large?
+  end
+
+  def for_percent
+    return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
+
+    total = self.for + against
+    return 0 if total.zero?
+
+    ((self.for.to_f / total) * 100).round
+  end
+
+  def against_percent
+    return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
+
+    total = self.for + against
+    return 0 if total.zero?
+
+    ((against.to_f / total) * 100).round
   end
 end
