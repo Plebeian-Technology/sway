@@ -10,7 +10,7 @@ import { supportTone } from "app/frontend/sway_utils/support";
 import { Badge } from "app/frontend/components/ui/badge";
 import { Card, CardContent } from "app/frontend/components/ui/card";
 import { cn } from "app/frontend/lib/utils";
-import OrganizationFollowControl from "app/frontend/components/organizations/OrganizationFollowControl";
+import OrganizationTrackControl from "app/frontend/components/organizations/OrganizationTrackControl";
 import { sway } from "sway";
 import OrgPositionSummary from "app/frontend/components/bill/OrgPositionSummary";
 import BillRowLink from "app/frontend/components/bill/BillRowLink";
@@ -99,7 +99,7 @@ const Organization: React.FC<IProps> = ({
                     </div>
 
                     {isSignedIn && (
-                        <OrganizationFollowControl
+                        <OrganizationTrackControl
                             organization={organization}
                             followId={current_user_follow_id}
                             isMember={isMember}

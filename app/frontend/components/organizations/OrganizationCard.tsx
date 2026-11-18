@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { PREFETCH_CACHE_FOR, ROUTES } from "app/frontend/sway_constants";
 import { Card, CardContent } from "app/frontend/components/ui/card";
-import OrganizationFollowControl from "app/frontend/components/organizations/OrganizationFollowControl";
+import OrganizationTrackControl from "app/frontend/components/organizations/OrganizationTrackControl";
 import { sway } from "sway";
 import { Badge } from "app/frontend/components/ui/badge";
 import { cn } from "app/frontend/lib/utils";
@@ -76,7 +76,7 @@ const OrganizationCard: React.FC<IProps> = ({
                 </div>
 
                 {isSignedIn && (
-                    <OrganizationFollowControl
+                    <OrganizationTrackControl
                         organization={organization}
                         followId={followId}
                         isMember={isMember}
