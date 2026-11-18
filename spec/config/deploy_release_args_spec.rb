@@ -71,6 +71,21 @@ RSpec.describe "config/deploy.yml release build args" do
     expect(deploy_script).to include('if [[ "$SWAY_USES_TAILSCALE" == 1 && -z "$TAILSCALE_CLI" ]]; then')
   end
 
+  # @lat: [[deploy-preflight#What the preflight checks]]
+  it "checks the registry login and the serving machine before anything is built" do
+    deploy_script = Rails.root.join("scripts", "deploy.sh").read
+    preflight_call = deploy_script.index(/^    sway_preflight$/)
+
+    expect(preflight_call).not_to be_nil
+    expect(preflight_call).to be < deploy_script.index("RAILS_ENV=production bundle install")
+    expect(preflight_call).to be > deploy_script.index("sway_secrets_unlock --sync")
+    expect(deploy_script).to include('sway_with_timeout 60 kamal registry login "${kamal_target[@]}"')
+    expect(deploy_script).to include("cat scripts/verify-pi.sh")
+    expect(deploy_script).to include("sway_with_timeout 30 ssh")
+    expect(deploy_script).to include("--preflight-only)")
+    expect(deploy_script).to include("--skip-preflight)")
+  end
+
   # @lat: [[deploy-configuration#What the deploy file decides#Why the monitoring accessories are capped and bound to private addresses]]
   it "boots and reboots every configured accessory in scripts/deploy.sh and probes Tailscale dynamically" do
     deploy_config = YAML.load(ERB.new(Rails.root.join("config", "deploy.yml").read).result, aliases: true)

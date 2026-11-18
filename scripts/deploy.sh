@@ -18,12 +18,15 @@ TARGET=""
 SKIP_FILE_UPLOADS=0
 NO_BUILD=0
 INITIAL_DEPLOY=0
+PREFLIGHT_ONLY=0
+SKIP_PREFLIGHT=0
 
 usage() {
     cat <<'USAGE'
 Deploy Sway.
 
     ./scripts/deploy.sh [--target <name>] [--skip-file-upload] [--no-build] [--initial-deploy]
+                        [--preflight-only] [--skip-preflight]
 
     --target <name>      Deploy to a practice machine instead of production.
                          Reads config/deploy.<name>.yml layered on top of
@@ -39,6 +42,12 @@ Deploy Sway.
                          of rebooting them, and run initial bill seeding and
                          score backfills inside the web container. Defaults to
                          false.
+    --preflight-only     Run the checks that come before the build, then stop.
+                         They take seconds: the image store login from this
+                         machine's Docker and from the serving machine, and
+                         the serving machine's readiness check.
+    --skip-preflight     Do not run those checks. For when one of them is wrong
+                         and you have confirmed the deploy will work anyway.
     -h, --help           Show this and stop.
 
 With no --target this deploys production, which is the normal case.
@@ -86,6 +95,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-build)
             NO_BUILD=1
+            shift
+            ;;
+        --preflight-only)
+            PREFLIGHT_ONLY=1
+            shift
+            ;;
+        --skip-preflight)
+            SKIP_PREFLIGHT=1
             shift
             ;;
         --initial-deploy)
@@ -289,6 +306,123 @@ export $(cat .env.kamal | xargs)
 # @lat: [[use-your-own-secret-store]]
 source "$(dirname "$0")/lib/secrets.sh"
 sway_secrets_unlock --sync
+
+# @lat: [[deploy-preflight]]
+sway_preflight() {
+    setopt local_options no_bg_nice
+    local started=$SECONDS failed=0 work pi_pid="" registry_host="${SWAY_REGISTRY%%:*}"
+    local -a kamal_target=()
+    [[ -n "$TARGET" ]] && kamal_target=(-d "$TARGET")
+    work="$(mktemp -d)"
+
+    echo ""
+    echo "#############################################################################"
+    echo "deploy.sh -> Preflight: connections and readiness, before anything is built"
+    echo "#############################################################################"
+    echo ""
+
+    if [[ -z "$TARGET" && "$INITIAL_DEPLOY" != 1 ]]; then
+        local -a ssh_opts=(-o BatchMode=yes -o ConnectTimeout=5)
+        [[ -n "${SWAY_SSH_KEY:-}" ]] && ssh_opts+=(-i "${SWAY_SSH_KEY/#\~/$HOME}" -o IdentitiesOnly=yes)
+        (
+            if {
+                cat <<'PRELUDE'
+if [ ! -d "$SWAY_PI_STORAGE_DIR" ]; then
+    echo "  FAIL  $SWAY_PI_STORAGE_DIR does not exist"
+    exit 1
+fi
+SWAY_PI_MOUNT="$(findmnt -n -o TARGET --target "$SWAY_PI_STORAGE_DIR" 2>/dev/null)"
+if [ -z "$SWAY_PI_MOUNT" ] || [ "$SWAY_PI_MOUNT" = / ]; then
+    echo "  FAIL  $SWAY_PI_STORAGE_DIR is not on a mounted disk, so the database would be written to the SD card"
+    exit 1
+fi
+export SWAY_PI_MOUNT
+PRELUDE
+                cat scripts/verify-pi.sh
+            } | sway_with_timeout 30 ssh "${ssh_opts[@]}" "${SWAY_DEPLOY_USER}@${SWAY_HOST}" \
+                "SWAY_PI_STORAGE_DIR=${(q)SWAY_STORAGE_DIR} SWAY_PI_REGISTRY=${(q)SWAY_REGISTRY} SWAY_PI_DEPLOY_USER=${(q)SWAY_DEPLOY_USER} bash -s" \
+                > "$work/pi" 2>&1
+            then
+                echo 0 > "$work/pi.rc"
+            else
+                echo $? > "$work/pi.rc"
+            fi
+        ) &
+        pi_pid=$!
+    fi
+
+    local lookup_started=$EPOCHREALTIME lookup_seconds
+    if sway_with_timeout 4 ruby -rsocket -e 'Addrinfo.getaddrinfo(ARGV[0], nil, nil, :STREAM)' "$registry_host" >/dev/null 2>&1; then
+        lookup_seconds=$(( EPOCHREALTIME - lookup_started ))
+        if (( lookup_seconds > 2 )); then
+            printf '  note  looking up %s took %.1fs; Docker can give up before it answers\n' "$registry_host" "$lookup_seconds"
+        else
+            echo "  ok    $registry_host resolves"
+        fi
+    else
+        echo "  note  looking up $registry_host failed or took more than 4s; Docker can give up before it answers"
+    fi
+    [[ "$registry_host" == *.local ]] && (( ${lookup_seconds:-99} > 2 )) &&
+        echo "        a .local name goes to multicast DNS; see lat.md/how-to/troubleshoot-deploys.md"
+
+    if sway_with_timeout 60 kamal registry login "${kamal_target[@]}" > "$work/login" 2>&1; then
+        echo "  ok    logged in to $SWAY_REGISTRY from this machine's Docker and from every deploy host"
+    else
+        echo "  FAIL  could not log in to $SWAY_REGISTRY; the build would fail at its upload:"
+        grep -E 'ERROR|Error response|denied|refused|timeout|Timeout' "$work/login" | tail -n 4 | sed 's/^/          /'
+        failed=1
+    fi
+
+    if [[ -n "$pi_pid" ]]; then
+        wait "$pi_pid"
+        local pi_rc
+        pi_rc="$(cat "$work/pi.rc" 2>/dev/null || echo 1)"
+        if [[ "$pi_rc" == 0 ]]; then
+            echo "  ok    ${SWAY_HOST} passed scripts/verify-pi.sh"
+            grep -E '^  note  ' "$work/pi" | sed 's/^/  /'
+        elif [[ "$pi_rc" == 255 ]]; then
+            echo "  FAIL  could not SSH to ${SWAY_DEPLOY_USER}@${SWAY_HOST}:"
+            tail -n 2 "$work/pi" | sed 's/^/          /'
+            echo "          check SWAY_SSH_KEY, and accept the host key on a first connection: ssh ${SWAY_DEPLOY_USER}@${SWAY_HOST} true"
+            failed=1
+        elif [[ "$pi_rc" == 124 || "$pi_rc" == 142 ]]; then
+            echo "  FAIL  ${SWAY_HOST} did not finish scripts/verify-pi.sh within 30s"
+            failed=1
+        else
+            echo "  FAIL  ${SWAY_HOST} is not ready (scripts/verify-pi.sh):"
+            grep -E '^  (FAIL|note)  ' "$work/pi" | sed 's/^/  /'
+            failed=1
+        fi
+    else
+        echo "  skip  scripts/verify-pi.sh: it runs only for a production redeploy"
+    fi
+
+    if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+        echo "  note  uncommitted changes will ship under release $(git rev-parse --short HEAD), which does not contain them"
+    fi
+    if ! git merge-base --is-ancestor HEAD '@{upstream}' 2>/dev/null; then
+        echo "  note  $(git rev-parse --short HEAD) is not on its upstream branch yet"
+    fi
+
+    rm -rf "$work"
+    echo ""
+    if [[ "$failed" == 1 ]]; then
+        echo "deploy.sh -> Preflight FAILED after $(( SECONDS - started ))s. Nothing was built or changed." >&2
+        echo "             Fix the FAIL lines above, or pass --skip-preflight." >&2
+        exit 1
+    fi
+    echo "deploy.sh -> Preflight passed in $(( SECONDS - started ))s."
+}
+
+zmodload zsh/datetime
+if [[ "$SKIP_PREFLIGHT" == 1 && "$PREFLIGHT_ONLY" != 1 ]]; then
+    echo "deploy.sh -> --skip-preflight: not checking connections before the build."
+else
+    sway_preflight
+fi
+if [[ "$PREFLIGHT_ONLY" == 1 ]]; then
+    exit 0
+fi
 
 echo ""
 echo "#############################################################################"
