@@ -33,5 +33,5 @@ A name ending in `.local` is sent to multicast DNS. A host-table line answers th
 1. Time the lookup inside Docker: `docker run --rm alpine sh -c 'apk add -q bind-tools; time dig +short <registry name> AAAA'`.
 2. If it takes seconds, add an IPv6 line for the name to `/etc/hosts` holding the IPv4-mapped form of its address, for example `::ffff:100.64.0.10 <registry name>`.
 3. Repeat step 1 and confirm the answer is instant.
-4. Run `scripts/deploy.sh --preflight-only` and confirm the login line reads `ok`.
+4. Run `scripts/deploy.sh --preflight-only` and confirm the image store line reads `ok`.
 

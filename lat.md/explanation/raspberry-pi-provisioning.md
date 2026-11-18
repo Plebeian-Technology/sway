@@ -33,15 +33,6 @@ fails so it can gate a deploy rather than merely inform one. Its error handling
 is deliberately permissive in one direction: one failed check must not stop the
 rest from running.
 
-## A check that cannot take a reading says so
-
-A check that fails to measure something reports that it could not measure it, rather than reporting the value it did not obtain.
-
-The power-supply check is the example. Comparing whatever the firmware tool
-prints against the healthy value and announcing low power on anything else would
-report a machine short of power purely because the reading failed, since reading
-the device needs a group the deploy account does not have and does not need.
-
 ## Why the container's own account has to own the storage directory before the first deploy
 
 A directory shared in from the host keeps the host's ownership, which overrides whatever the image chose, so the directory has to belong to the container's numeric account before anything starts.

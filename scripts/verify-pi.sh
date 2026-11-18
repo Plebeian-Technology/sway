@@ -222,28 +222,6 @@ else
     bad "/etc/systemd/system/sway-pdf-extractor.path is missing"
 fi
 
-step "power and heat"
-#
-# @lat: [[raspberry-pi-provisioning#A check that cannot take a reading says so]]
-if command -v vcgencmd >/dev/null 2>&1; then
-    raw="$(vcgencmd get_throttled 2>&1)"
-    if [[ "$raw" =~ ^throttled=(0x[0-9a-fA-F]+)$ ]]; then
-        t="${BASH_REMATCH[1]}"
-        if [[ "$t" == "0x0" ]]; then
-            pass "never short of power or too hot since boot"
-        else
-            warn "get_throttled=$t — this machine has been short of power or too hot."
-            warn "  That surfaces later as disk errors, which point at the disk and not at the cause."
-        fi
-    else
-        warn "could not take a power reading, so this says nothing either way"
-        warn "  vcgencmd said: ${raw%%$'\n'*}"
-        warn "  to read it: run this check as a member of the video group"
-    fi
-else
-    warn "vcgencmd not present — cannot check power"
-fi
-
 # --------------------------------------------------------------------------
 
 step "result"

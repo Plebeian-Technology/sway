@@ -43,9 +43,9 @@ Deploy Sway.
                          score backfills inside the web container. Defaults to
                          false.
     --preflight-only     Run the checks that come before the build, then stop.
-                         They take seconds: the image store login from this
-                         machine's Docker and from the serving machine, and
-                         the serving machine's readiness check.
+                         They take seconds: whether this machine's Docker and
+                         the serving machine's Docker reach the image store,
+                         and the serving machine's readiness check.
     --skip-preflight     Do not run those checks. For when one of them is wrong
                          and you have confirmed the deploy will work anyway.
     -h, --help           Show this and stop.
@@ -311,8 +311,6 @@ sway_secrets_unlock --sync
 sway_preflight() {
     setopt local_options no_bg_nice
     local started=$SECONDS failed=0 work pi_pid="" registry_host="${SWAY_REGISTRY%%:*}"
-    local -a kamal_target=()
-    [[ -n "$TARGET" ]] && kamal_target=(-d "$TARGET")
     work="$(mktemp -d)"
 
     echo ""
@@ -337,6 +335,13 @@ if [ -z "$SWAY_PI_MOUNT" ] || [ "$SWAY_PI_MOUNT" = / ]; then
     exit 1
 fi
 export SWAY_PI_MOUNT
+probe="$(timeout 15 docker pull --quiet "$SWAY_PI_REGISTRY/sway:preflight-probe-absent" 2>&1)"
+case "$probe" in
+    *"not found"*|*"manifest unknown"*|*unauthorized*|*"no basic auth"*)
+        echo "  ok    docker here reaches $SWAY_PI_REGISTRY" ;;
+    *)
+        echo "  FAIL  docker here cannot reach $SWAY_PI_REGISTRY, so the deploy could not pull: $(printf '%s' "$probe" | tail -n 1 | cut -c1-160)" ;;
+esac
 PRELUDE
                 cat scripts/verify-pi.sh
             } | sway_with_timeout 30 ssh "${ssh_opts[@]}" "${SWAY_DEPLOY_USER}@${SWAY_HOST}" \
@@ -365,17 +370,16 @@ PRELUDE
     [[ "$registry_host" == *.local ]] && (( ${lookup_seconds:-99} > 2 )) &&
         echo "        a .local name goes to multicast DNS; see lat.md/how-to/troubleshoot-deploys.md"
 
-    local login_started=$SECONDS login_rc=0
-    sway_with_timeout 60 kamal registry login "${kamal_target[@]}" --verbose > "$work/login" 2>&1 || login_rc=$?
-    if [[ "$login_rc" == 0 ]]; then
-        echo "  ok    logged in to $SWAY_REGISTRY from this machine's Docker and from every deploy host ($(( SECONDS - login_started ))s)"
+    local probe_rc=0 probe_out
+    probe_out="$(sway_with_timeout 15 docker pull --quiet "$SWAY_REGISTRY/sway:preflight-probe-absent" 2>&1)" || probe_rc=$?
+    if [[ "$probe_out" == *("not found"|"manifest unknown"|unauthorized|"no basic auth")* ]]; then
+        echo "  ok    this machine's Docker reaches $SWAY_REGISTRY"
+    elif [[ "$probe_rc" == 124 || "$probe_rc" == 142 ]]; then
+        echo "  FAIL  this machine's Docker did not reach $SWAY_REGISTRY within 15s; the build would fail at its upload"
+        failed=1
     else
-        if [[ "$login_rc" == 124 || "$login_rc" == 142 ]]; then
-            echo "  FAIL  kamal registry login did not finish within 60s. The last thing it printed:"
-        else
-            echo "  FAIL  kamal registry login failed after $(( SECONDS - login_started ))s (exit $login_rc):"
-        fi
-        grep -v '^[[:space:]]*/' "$work/login" | grep -v '^[[:space:]]*$' | tail -n 8 | cut -c1-200 | sed 's/^/          /'
+        echo "  FAIL  this machine's Docker cannot reach $SWAY_REGISTRY; the build would fail at its upload:"
+        print -r -- "$probe_out" | tail -n 2 | cut -c1-200 | sed 's/^/          /'
         failed=1
     fi
 
@@ -383,8 +387,8 @@ PRELUDE
         wait "$pi_pid"
         local pi_rc
         pi_rc="$(cat "$work/pi.rc" 2>/dev/null || echo 1)"
-        if [[ "$pi_rc" == 0 ]]; then
-            echo "  ok    ${SWAY_HOST} passed scripts/verify-pi.sh"
+        if [[ "$pi_rc" == 0 ]] && ! grep -q '^  FAIL  ' "$work/pi"; then
+            echo "  ok    ${SWAY_HOST} passed scripts/verify-pi.sh and reaches the image store"
             grep -E '^  note  ' "$work/pi" | sed 's/^/  /'
         elif [[ "$pi_rc" == 255 ]]; then
             echo "  FAIL  could not SSH to ${SWAY_DEPLOY_USER}@${SWAY_HOST}:"

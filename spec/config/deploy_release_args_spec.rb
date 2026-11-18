@@ -72,14 +72,16 @@ RSpec.describe "config/deploy.yml release build args" do
   end
 
   # @lat: [[deploy-preflight#What the preflight checks]]
-  it "checks the registry login and the serving machine before anything is built" do
+  it "checks that both Dockers reach the image store, and the serving machine, before anything is built" do
     deploy_script = Rails.root.join("scripts", "deploy.sh").read
     preflight_call = deploy_script.index(/^    sway_preflight$/)
 
     expect(preflight_call).not_to be_nil
     expect(preflight_call).to be < deploy_script.index("RAILS_ENV=production bundle install")
     expect(preflight_call).to be > deploy_script.index("sway_secrets_unlock --sync")
-    expect(deploy_script).to include('sway_with_timeout 60 kamal registry login "${kamal_target[@]}" --verbose')
+    expect(deploy_script).to include('sway_with_timeout 15 docker pull --quiet "$SWAY_REGISTRY/sway:preflight-probe-absent"')
+    expect(deploy_script).to include('timeout 15 docker pull --quiet "$SWAY_PI_REGISTRY/sway:preflight-probe-absent"')
+    expect(deploy_script).not_to include("kamal registry login")
     expect(deploy_script).to include("cat scripts/verify-pi.sh")
     expect(deploy_script).to include("sway_with_timeout 30 ssh")
     expect(deploy_script).to include("--preflight-only)")
