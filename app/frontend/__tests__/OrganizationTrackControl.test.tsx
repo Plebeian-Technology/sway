@@ -1,4 +1,4 @@
-// @lat: [[organization-follow-control-test-regressions#OrganizationTrackControl: two regression guards]]
+// @lat: [[organization-track-control-test-regressions#OrganizationFollowControl: two regression guards]]
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";

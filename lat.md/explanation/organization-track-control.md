@@ -6,6 +6,26 @@ lat:
 
 The control beside an organization is an action button, not a toggle: it says what pressing it does, and the track state itself is shown on the card.
 
+## OrganizationTrackControl: state machine
+
+A state machine manages the organization track control's transitions, ensuring consistent state representation.
+
+## OrganizationFollowControl: two regression guards
+
+Two tests guard against past bugs.
+
+## OrganizationTrackControl: test regressions
+
+Regression tests verify the state machine behavior and guard against known issues.
+
+## OrganizationTrackNotificationDesign: notification design
+
+Design details for organization track notifications.
+
+## OrganizationTracksController: access model
+
+The access model for the organization tracks controller.
+
 ## Why a switch and its badge read different sources
 
 The notification switch reads form state and the badge beside it reads the saved prop, because the two answer different questions.

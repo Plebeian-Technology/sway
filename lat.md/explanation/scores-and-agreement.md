@@ -151,3 +151,9 @@ the first appends the qualifier, as `Your agreement with <name> · lifetime`;
 the district title becomes `All districts · lifetime agreement with <name>`,
 which drops the district number, and the jurisdiction title carries
 `· lifetime` after the locale name. Neither surface names the metric a score.
+
+## Privacy thresholds for aggregates
+
+To prevent voter identification in small groupings, aggregate scores (bill totals, district splits, and legislator agreement) are suppressed until a minimum of ten distinct users stand behind the number.
+
+For bill totals, exact counts are replaced by a placeholder below this threshold. District and legislator scores are only shown as percentages once the ten-user minimum is met, with no counts or raw totals exposed.
