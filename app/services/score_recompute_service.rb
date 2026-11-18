@@ -39,7 +39,7 @@ class ScoreRecomputeService
           .where(legislator_id: legislator.id, active: true)
           .pluck(:user_id)
       
-      # @lat: [[scores-and-agreement#Legislator agreement scores are shown only when ten distinct users stand behind them]]
+      # @lat: [[scores-and-agreement#Privacy thresholds for aggregates]]
       score = LegislatorDistrictScore.create_or_find_by!(legislator_term: legislator_term)
       tally = tally_agreement(district_user_ids, legislator_term, legislator.sway_locale)
       
