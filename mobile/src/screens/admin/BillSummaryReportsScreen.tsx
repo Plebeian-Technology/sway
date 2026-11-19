@@ -1,5 +1,7 @@
 // @lat: [[mobile-admin-area#The bill summary reports screen]]
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
 
 import { Card } from "../../components/ui/Card";
@@ -10,6 +12,7 @@ import {
     type BillSummaryReportRow,
     type BillSummaryReportStatusCounts,
 } from "../../hooks/admin/useBillSummaryReports";
+import type { AdminStackParamList } from "../../navigation/types";
 
 const STATUS_TABS: { key: keyof BillSummaryReportStatusCounts; label: string }[] = [
     { key: "all", label: "All" },
@@ -25,8 +28,6 @@ const STATUS_LABELS: Record<BillSummaryReportRow["status"], string> = {
     resolved: "Resolved",
     dismissed: "Dismissed",
 };
-
-const openReport = () => undefined;
 
 const FilterChip = ({
     label,
@@ -58,8 +59,8 @@ const FilterChip = ({
     </Pressable>
 );
 
-const ReportCard = ({ report }: { report: BillSummaryReportRow }) => (
-    <Card testID={`admin-bill-summary-report-${report.id}`} className="mx-4 mb-3" onPress={openReport}>
+const ReportCard = ({ report, onPress }: { report: BillSummaryReportRow; onPress: () => void }) => (
+    <Card testID={`admin-bill-summary-report-${report.id}`} className="mx-4 mb-3" onPress={onPress}>
         <View className="flex-row items-center justify-between gap-2">
             <Text className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
                 {`#${report.id}`}
@@ -97,6 +98,15 @@ export default function BillSummaryReportsScreen() {
     const [status, setStatus] = useState<string>("all");
     const [localeId, setLocaleId] = useState<number | null>(null);
     const { data, loading, error, refresh } = useBillSummaryReports(status, localeId);
+    const navigation = useNavigation<NativeStackNavigationProp<AdminStackParamList>>();
+
+    useEffect(
+        () =>
+            navigation.addListener("focus", () => {
+                void refresh();
+            }),
+        [navigation, refresh],
+    );
 
     return (
         <ScrollView
@@ -161,7 +171,13 @@ export default function BillSummaryReportsScreen() {
                     {data.reports.length === 0 ? (
                         <EmptyState title="No reports match the current filters." />
                     ) : (
-                        data.reports.map((report) => <ReportCard key={report.id} report={report} />)
+                        data.reports.map((report) => (
+                            <ReportCard
+                                key={report.id}
+                                report={report}
+                                onPress={() => navigation.navigate("AdminBillSummaryReport", { id: report.id })}
+                            />
+                        ))
                     )}
                 </>
             )}

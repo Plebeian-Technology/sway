@@ -3,6 +3,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AdminHubScreen from "../screens/admin/AdminHubScreen";
+import BillSummaryReportScreen from "../screens/admin/BillSummaryReportScreen";
 import BillSummaryReportsScreen from "../screens/admin/BillSummaryReportsScreen";
 import CategoriesScreen from "../screens/admin/CategoriesScreen";
 import LlmSettingsScreen from "../screens/admin/LlmSettingsScreen";
@@ -29,6 +30,11 @@ export default function AdminStack() {
             <Stack.Screen name="AdminCategories" component={CategoriesScreen} options={fromHub} />
             <Stack.Screen name="AdminLlmSettings" component={LlmSettingsScreen} options={fromHub} />
             <Stack.Screen name="AdminBillSummaryReports" component={BillSummaryReportsScreen} options={fromHub} />
+            <Stack.Screen
+                name="AdminBillSummaryReport"
+                component={BillSummaryReportScreen}
+                options={pushedScreenOptions(colorScheme, "Reports")}
+            />
         </Stack.Navigator>
     );
 }

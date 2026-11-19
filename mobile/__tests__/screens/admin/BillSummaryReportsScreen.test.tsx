@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import { ApiRequestError } from "../../../src/api/errors";
 
@@ -10,6 +10,13 @@ jest.mock("../../../src/api/client", () => ({
 
 jest.mock("../../../src/theme/ThemeProvider", () => ({
     useTheme: () => ({ colorScheme: "light" }),
+}));
+
+const mockNavigate = jest.fn();
+const mockAddListener = jest.fn(() => jest.fn());
+jest.mock("@react-navigation/native", () => ({
+    ...jest.requireActual("@react-navigation/native"),
+    useNavigation: () => ({ navigate: mockNavigate, addListener: mockAddListener }),
 }));
 
 import BillSummaryReportsScreen from "../../../src/screens/admin/BillSummaryReportsScreen";
@@ -110,6 +117,30 @@ describe("BillSummaryReportsScreen", () => {
 
         const card = await screen.findByTestId("admin-bill-summary-report-7");
         expect(card.props.accessibilityRole).toBe("button");
+    });
+
+    it("opens the report detail when a card is pressed", async () => {
+        mockApiGet.mockResolvedValue(page());
+        render(<BillSummaryReportsScreen />);
+
+        fireEvent.press(await screen.findByTestId("admin-bill-summary-report-7"));
+
+        expect(mockNavigate).toHaveBeenCalledWith("AdminBillSummaryReport", { id: 7 });
+    });
+
+    it("refetches the list when the screen regains focus", async () => {
+        mockApiGet.mockResolvedValue(page());
+        render(<BillSummaryReportsScreen />);
+        await screen.findByText("Pending (4)");
+        expect(mockAddListener).toHaveBeenCalledWith("focus", expect.any(Function));
+        const calls = mockApiGet.mock.calls.length;
+
+        const onFocus = (mockAddListener.mock.calls as unknown as [string, () => void][])[0][1];
+        await act(async () => {
+            onFocus();
+        });
+
+        await waitFor(() => expect(mockApiGet.mock.calls.length).toBe(calls + 1));
     });
 
     it("shows the server's message when the request fails", async () => {

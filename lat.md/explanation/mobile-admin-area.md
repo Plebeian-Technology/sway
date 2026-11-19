@@ -109,7 +109,15 @@ The tool id `bill_summary_reports` maps to the `AdminBillSummaryReports` route. 
 
 Five chips show All, Pending, Reviewed, Resolved and Dismissed with the server's count in brackets. A second row of chips holds All locales and one chip per locale. Choosing a chip refetches with the new query and keeps the other filter. The list stays on screen while the refetch runs. The cards show the bill, locale, reason, the first lines of the reader's details, the reporter and the filing time. The web page's keyword search and its inline Resolve and Dismiss actions are not on this screen. An empty result shows an `EmptyState`, and a failed request shows the server's message there.
 
-Each card is pressable and does nothing yet; the detail screen takes the press over.
+Pressing a card opens [[mobile/src/screens/admin/BillSummaryReportScreen.tsx#BillSummaryReportScreen]] for that report. The list listens for the stack's `focus` event and refetches, so a status saved on the detail shows when the admin goes back.
+
+## The bill summary report screen
+
+[[mobile/src/screens/admin/BillSummaryReportScreen.tsx#BillSummaryReportScreen]] shows one report and lets the admin set its status and admin notes.
+
+The route `AdminBillSummaryReport` takes `{ id }`, is pushed from the list and has no tool id, since the hub never opens it directly. [[mobile/src/hooks/admin/useBillSummaryReport.ts#useBillSummaryReport]] fetches `GET /admin/bill_summary_reports/:id`, which [[app/controllers/admin/bill_summary_reports_controller.rb]] answers with the report resource. The screen shows the bill and locale, the reason, the reader's feedback, the reporter, who resolved it and when, the summary snapshot the reader saw (marked when it was AI-written and unreviewed) and the bill's current summary.
+
+The review card holds one chip per status (Pending, Reviewed, Resolved, Dismissed, the web page's four) and a text field for the admin notes. Save sends `PATCH /admin/bill_summary_reports/:id` with `bill_summary_report: { status, admin_notes }` through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]]. The controller sets or clears the resolver from the status, so the phone sends no resolver. A good save shows "Saved." and refetches the report; a 422 shows the server's message above the button and leaves the form as typed.
 
 ## Admin writes
 

@@ -79,4 +79,5 @@ export type AdminStackParamList = {
     AdminCategories: undefined;
     AdminLlmSettings: undefined;
     AdminBillSummaryReports: undefined;
+    AdminBillSummaryReport: { id: number };
 };
