@@ -49,6 +49,12 @@ The map starts empty, so every tool shows "Not on mobile yet" until its screen s
 
 The tool id `shared_addresses` maps to the `AdminSharedAddresses` route. [[mobile/src/hooks/admin/useSharedAddresses.ts#useSharedAddresses]] fetches `GET /admin/shared_addresses`, which [[app/controllers/admin/shared_addresses_controller.rb]] answers as `{ shared_addresses: [{ address_ids, user_count }] }` to a mobile request. The screen is read-only and carries no street or coordinate, the same counts-only rule as the web page ([[personal-detail-encryption#Why the shared-addresses admin page reports counts only]]). An empty list shows an `EmptyState`, and a failed request shows the server's message there.
 
+## The user address changes screen
+
+[[mobile/src/screens/admin/UserAddressChangesScreen.tsx#UserAddressChangesScreen]] lists the latest 100 user address switches, one card per switch, with the same fields as the web page.
+
+The tool id `user_address_changes` maps to the `AdminUserAddressChanges` route. [[mobile/src/hooks/admin/useUserAddressChanges.ts#useUserAddressChanges]] fetches `GET /admin/user_address_changes`, which [[app/controllers/admin/user_address_changes_controller.rb]] answers as `{ user_address_changes: [...] }` to a mobile request, serialized by `UserAddressChangeResource` as on the web. Each card shows the user, the switch count, the cross-district, cross-locale and voted-before-switch flags, and the address, locale, district, legislator and prior vote lines. The screen is read-only and carries no street or coordinate. An empty list shows an `EmptyState`, and a failed request shows the server's message there.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.

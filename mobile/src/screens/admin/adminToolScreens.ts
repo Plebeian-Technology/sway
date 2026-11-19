@@ -3,4 +3,5 @@ import type { AdminStackParamList } from "../../navigation/types";
 
 export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList, "AdminHub">> = {
     shared_addresses: "AdminSharedAddresses",
+    user_address_changes: "AdminUserAddressChanges",
 };
