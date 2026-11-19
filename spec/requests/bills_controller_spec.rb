@@ -1111,6 +1111,19 @@ RSpec.describe "BillsController", type: :request do
         }
       )
     end
+
+    # @lat: [[mobile-bill-creator#The bill picker]]
+    it "serves the picker bills as JSON to an admin bearer request" do
+      sway_locale, user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+
+      get "/admin/bill_creator/new", headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      expect(response.parsed_body.fetch("bills").pluck("id", "external_id")).to eq([[bill.id, bill.external_id]])
+    end
   end
 
   describe "GET /edit vote-entry roster" do

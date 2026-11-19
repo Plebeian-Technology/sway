@@ -170,7 +170,7 @@ class BillsController < ApplicationController
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props]]
   def new
-    render inertia: Pages::BILL_CREATOR,
+    render_inertia_or_json(page: Pages::BILL_CREATOR,
       props: {
         bills: -> {
           picker_bills(Bill.where(sway_locale: current_sway_locale).order(introduced_date_time_utc: :desc, external_id: :desc))
@@ -199,7 +199,7 @@ class BillsController < ApplicationController
         download_missing_assets: -> { pipeline_controls_state[:download_missing_assets] },
         news_articles: -> { [] },
         receipt_status: -> {}
-      }
+      })
   end
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
