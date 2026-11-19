@@ -44,6 +44,12 @@ The mobile feed renders a Bill of the Month summary as markdown cut to a few lin
 
 [[mobile/src/components/feed/FeedBillBlock.tsx#FeedBillBlock]] draws the raw summary through [[mobile/src/components/Markdown.tsx#Markdown]] with a character budget rather than a line clamp, because the renderer already cuts on the parsed tree and never splits a link or list item. [[app/frontend/components/feed/feedSummary.ts#cleanFeedSummary]] stays only as the emptiness check, so an empty summary or the placeholder shows nothing on both surfaces. A "Show more" link appears only when [[mobile/src/components/Markdown.tsx#markdownExceedsLimit]] reports a cut, and it opens the bill like the card does.
 
+## Mobile subject icon
+
+The mobile feed header shows a small muted icon beside the who-line that names what the item is about.
+
+[[mobile/src/components/feed/FeedItemShell.tsx#FeedItemShell]] takes an optional `subject` and draws a 14-point lucide icon for it: Landmark for a locale, User for a legislator, Building2 for an organization. The Bill of the Month and legislative term items are locale items, the legislator vote item is a legislator item, and the organization position item is an organization item. The user-joined and representatives-found items pass no subject and show no icon, because representatives-found already carries its own map pin. The web feed is unchanged.
+
 ## Live feed updates
 
 [[app/channels/feed_channel.rb#FeedChannel]] and [[app/services/feed_broadcaster.rb#FeedBroadcaster]] deliver lightweight per-user invalidation signals so open home feeds refresh without pushing feed item payloads over ActionCable.

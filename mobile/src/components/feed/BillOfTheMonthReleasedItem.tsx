@@ -22,6 +22,7 @@ const BillOfTheMonthReleasedItem: React.FC<IProps> = ({ item, onPressBill, onSha
     return (
         <FeedItemShell
             item={item}
+            subject="locale"
             avatar={<FeedAvatar kind="locale" localeName={localeName} />}
             whoLine={
                 <>

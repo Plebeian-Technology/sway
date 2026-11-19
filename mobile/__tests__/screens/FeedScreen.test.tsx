@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList } from "react-native";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 
 const mockApiGet = jest.fn();
 jest.mock("../../src/api/client", () => ({
@@ -281,6 +281,31 @@ describe("FeedScreen", () => {
 
         expect(screen.getByText(/joined Sway/)).toBeTruthy();
         expect(screen.getByText(PARITY_COPY.feed.userJoinedSummary)).toBeTruthy();
+    });
+
+    it.each([
+        ["botm-1", "lucide-landmark"],
+        ["leg-vote-1", "lucide-user"],
+        ["org-pos-1", "lucide-building2"],
+        ["term-1", "lucide-landmark"],
+        ["reps-1", null],
+        ["joined-1", null],
+    ])("shows the subject icon in the header of feed item %s", async (itemKey, iconTestId) => {
+        mockApiGet.mockResolvedValueOnce({
+            items: ALL_KIND_ITEMS,
+            feed_cursor: null,
+            feed_search: null,
+        });
+
+        render(<FeedScreen navigation={makeNav()} />);
+
+        const row = await screen.findByTestId(`feed-item-${itemKey}`);
+        const subjectIconTestIds = ["lucide-landmark", "lucide-user", "lucide-building2"];
+
+        subjectIconTestIds.forEach((testId) => {
+            const expectedCount = testId === iconTestId ? 1 : 0;
+            expect(within(row).queryAllByTestId(testId)).toHaveLength(expectedCount);
+        });
     });
 
     it("strips 'FOR the purpose of' clauses from bill titles and omits a pending summary", async () => {
