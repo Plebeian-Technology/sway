@@ -59,11 +59,10 @@ class LegislatorVotesController < ApplicationController
       error_redirect("Failed to save votes for legislator(s): #{failed_legislator_ids.join(", ")}.")
     else
       # @lat: [[bill-creator-redirect-query-params#notice: rides the flash instead]]
-      redirect_to creator_bill_creator_path(
-        id: @bill.id,
-        event_key: "organizations"
-      ),
+      respond_after_write(
+        creator_bill_creator_path(id: @bill.id, event_key: "organizations"),
         **saved_flash(votes.size, skipped_legislator_ids)
+      )
     end
   rescue => e
     SwayLogging.log_exception(
@@ -80,8 +79,10 @@ class LegislatorVotesController < ApplicationController
   private
 
   def error_redirect(message)
-    redirect_to creator_bill_creator_path(id: @bill&.id, event_key: "legislator_votes"),
-      inertia: {errors: {legislator_votes: message}}
+    respond_after_write(
+      creator_bill_creator_path(id: @bill&.id, event_key: "legislator_votes"),
+      errors: {legislator_votes: message}
+    )
   end
 
   # @lat: [[legislator-votes-controller-admin-entry#Collecting failures instead of committing partial rows]]
