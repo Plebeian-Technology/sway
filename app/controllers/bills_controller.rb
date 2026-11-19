@@ -47,6 +47,32 @@ class BillsController < ApplicationController
   # @lat: [[bills-controller-design#BillsController design#The web bills index grows a stable page window]]
   BILLS_INDEX_PAGE_SIZE = 24
 
+  # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+  BILL_CREATOR_TAB_PROPS = {
+    "creator" => %i[
+      bill bill_id tab_key legislators legislator_votes legislator_votes_refreshed_at legislator_votes_source
+      organizations
+    ],
+    "schedule" => %i[bill bill_id bills],
+    "pipeline" => %i[
+      bill bill_id bills pipeline_preview selected_stages download_missing_assets testimony_coverage
+      testimony_campaign_drafts sending_service_domains sending_service_domains_total bill_artifact_mirrors
+      fetched_bills activity_log_entries activity_log_next_cursor activity_log_has_more
+    ],
+    "summary" => %i[
+      bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
+      summary_sources active_categories max_active_categories_per_bill news_articles receipt_status
+      review_draft_revision
+    ],
+    "positions" => %i[
+      bill bill_id tab_key organizations testimony_coverage testimony_campaign_drafts
+      testimony_claimed_affiliations campaigns campaign_organization_candidates public_testimony_counts
+    ]
+  }.freeze
+
+  # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+  BILL_PICKER_PROPS = %i[bills].freeze
+
   def index
     # @lat: [[bills-controller-design#BillsController design#Why the search and sort labels in parityCopy.ts note the underlying split]]
     allowed_sort_columns = %w[
@@ -171,7 +197,7 @@ class BillsController < ApplicationController
   # @lat: [[lazy-inertia-props#Lazy Inertia props]]
   def new
     render_inertia_or_json(page: Pages::BILL_CREATOR,
-      props: {
+      props: mobile_bill_creator_tab_props({
         bills: -> {
           picker_bills(Bill.where(sway_locale: current_sway_locale).order(introduced_date_time_utc: :desc, external_id: :desc))
         },
@@ -199,7 +225,7 @@ class BillsController < ApplicationController
         download_missing_assets: -> { pipeline_controls_state[:download_missing_assets] },
         news_articles: -> { [] },
         receipt_status: -> {}
-      })
+      }))
   end
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
@@ -213,7 +239,7 @@ class BillsController < ApplicationController
       bill_artifact_mirrors: -> { ::BillCreator::ResourceCachePanelSerializer.call(@bill) },
       fetched_bills: -> { ::BillCreator::FetchedBillsPanelSerializer.call(@bill&.sway_locale || current_sway_locale) }
     )
-    render_inertia_or_json(page: Pages::BILL_CREATOR, props: props)
+    render_inertia_or_json(page: Pages::BILL_CREATOR, props: mobile_bill_creator_tab_props(props))
   end
 
   def create
@@ -1039,6 +1065,13 @@ class BillsController < ApplicationController
       external_id: bill.external_id,
       bill_llm_provisioning: provisioning&.to_sway_json
     }
+  end
+
+  # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+  def mobile_bill_creator_tab_props(props)
+    return props unless mobile_api_request?
+
+    props.slice(*BILL_CREATOR_TAB_PROPS.fetch(bill_creator_tab_param.to_s, BILL_PICKER_PROPS))
   end
 
   # @lat: [[lazy-inertia-props#Why the props became callables]]

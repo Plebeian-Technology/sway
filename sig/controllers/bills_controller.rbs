@@ -2,6 +2,11 @@ class BillsController < ApplicationController
     # Cumulative page-window size for #index
     BILLS_INDEX_PAGE_SIZE: Integer
 
+    # Bill creator tab name to the prop keys that tab reads.
+    BILL_CREATOR_TAB_PROPS: Hash[String, Array[Symbol]]
+
+    BILL_PICKER_PROPS: Array[Symbol]
+
     @meta_title: String
 
     @bill: Bill
@@ -128,6 +133,9 @@ class BillsController < ApplicationController
       supplemental_testimony: String?,
       clear_supplemental_testimony: bool,
     }
+
+    # The props unchanged for the web; for mobile, only the requested tab's keys.
+    def mobile_bill_creator_tab_props: (Hash[Symbol, untyped] props) -> Hash[Symbol, untyped]
 
     # Shared prop hash for #edit.
     def bill_creator_props: () -> Hash[Symbol, untyped]

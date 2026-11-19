@@ -1124,6 +1124,34 @@ RSpec.describe "BillsController", type: :request do
       expect(response.media_type).to eq("application/json")
       expect(response.parsed_body.fetch("bills").pluck("id", "external_id")).to eq([[bill.id, bill.external_id]])
     end
+
+    it "serves only the picker bills to a bearer request that names no tab" do
+      _sway_locale, user = setup
+
+      get "/admin/bill_creator/new", headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.keys).to eq(["bills"])
+    end
+
+    it "serves only the named tab's props to a bearer request for a new bill" do
+      _sway_locale, user = setup
+
+      get "/admin/bill_creator/new",
+        params: {bill_creator_tab: "creator"},
+        headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.keys).to match_array(%w[bill bill_id tab_key legislators legislator_votes organizations])
+    end
+
+    it "still gives the web page every prop when a tab is named" do
+      setup
+
+      get "/admin/bill_creator/new", params: {bill_creator_tab: "creator"}
+
+      expect(inertia.props).to include(:bills, :pipeline_preview, :fetched_bills, :legislators)
+    end
   end
 
   describe "GET /edit vote-entry roster" do
@@ -1374,6 +1402,59 @@ RSpec.describe "BillsController", type: :request do
       expect(picker_row).to be_present
       expect(picker_row["interesting_score_normalized"]).to be_nil
       expect(picker_row["interesting_badges"]).to eq([])
+    end
+
+    describe "one tab's props for a bearer request" do
+      def get_tab_as_json(bill, user, tab)
+        get "/admin/bill_creator/#{bill.id}/#{tab}", headers: authenticate_as(user).merge("Accept" => "application/json")
+      end
+
+      # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+      it "serves the schedule tab only the bill and the picker bills" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "schedule")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.keys).to match_array(%w[bill bill_id bills])
+        expect(response.parsed_body.fetch("bill").fetch("id")).to eq(bill.id)
+      end
+
+      it "serves the creator tab the vote-entry legislators" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "creator")
+
+        expect(response.parsed_body.keys).to include("legislators", "legislator_votes", "organizations")
+        expect(response.parsed_body.keys).not_to include("bills", "pipeline_preview", "summary_sources")
+      end
+
+      it "serves each tab exactly the keys its list names" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        BillsController::BILL_CREATOR_TAB_PROPS.each do |tab, keys|
+          get_tab_as_json(bill, user, tab)
+
+          expect(response.parsed_body.keys).to match_array(keys.map(&:to_s)), "tab #{tab}"
+        end
+      end
+
+      it "still gives the web page every tab's props" do
+        sway_locale, _user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get "/admin/bill_creator/#{bill.id}/schedule"
+
+        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq
+        expect(inertia.props).to include(*every_key)
+      end
     end
   end
 
