@@ -7,11 +7,12 @@ import {
     type DrawerContentComponentProps,
 } from "@react-navigation/drawer";
 import { getFocusedRouteNameFromRoute, type RouteProp } from "@react-navigation/native";
-import { Bookmark, FileText, Newspaper, Users, Building2, User } from "lucide-react-native";
+import { Bookmark, FileText, Newspaper, Users, Building2, ShieldCheck, User } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
+import { useUserProfile } from "../hooks/useUserProfile";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import { chromeColors } from "../theme/chrome";
@@ -23,6 +24,7 @@ import BillsStack from "./BillsStack";
 import LegislatorsStack from "./LegislatorsStack";
 import OrgsStack from "./OrgsStack";
 import ProfileStack from "./ProfileStack";
+import AdminStack from "./AdminStack";
 
 // @lat: [[mobile-tab-navigation-architecture#AppDrawer]]
 const Drawer = createDrawerNavigator<AppDrawerParamList>();
@@ -35,6 +37,7 @@ const TOP_LEVEL_ROUTE_NAMES = [
     "LegislatorsList",
     "OrgsList",
     "ProfileHub",
+    "AdminHub",
 ];
 
 // @lat: [[mobile-tab-navigation-architecture#AppDrawer#Drawer panel padding comes from the root SafeAreaView]]
@@ -63,6 +66,7 @@ const AppDrawer: React.FC = () => {
     const t = swayTokens[colorScheme];
     const chrome = chromeColors(colorScheme);
     const insets = useSafeAreaInsets();
+    const { user } = useUserProfile();
 
     return (
         <View className="flex-1 bg-dominant-light dark:bg-dominant-dark" testID="app-shell">
@@ -161,6 +165,20 @@ const AppDrawer: React.FC = () => {
                             ),
                         }}
                     />
+                    {/* @lat: [[mobile-admin-area#The drawer entry]] */}
+                    {user?.is_sway_admin === true ? (
+                        <Drawer.Screen
+                            name="Admin"
+                            component={AdminStack}
+                            options={{
+                                drawerLabel: "Admin",
+                                drawerItemTestID: "drawer-item-admin",
+                                drawerIcon: ({ color, focused }) => (
+                                    <ShieldCheck color={color} size={24} strokeWidth={focused ? 2.5 : 2} />
+                                ),
+                            }}
+                        />
+                    ) : null}
                 </Drawer.Navigator>
             </SafeAreaView>
         </View>

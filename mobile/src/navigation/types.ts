@@ -7,6 +7,7 @@ export type RootParamList = {
     Legislators: undefined;
     Orgs: undefined;
     Profile: undefined;
+    Admin: undefined;
 };
 
 // @lat: [[mobile-auth-and-onboarding-flow#AuthStack#types.ts's AuthStackParamList]]
@@ -27,6 +28,7 @@ export type AppDrawerParamList = {
     Legislators: undefined;
     Orgs: undefined;
     Profile: undefined;
+    Admin: undefined;
 };
 
 export type FeedStackParamList = {
@@ -65,4 +67,9 @@ export type ProfileStackParamList = {
     DeleteAccount: undefined;
     MembershipsList: undefined;
     MembershipDetail: { orgId: number; id: number; tab?: string };
+};
+
+// @lat: [[mobile-admin-area#The admin stack]]
+export type AdminStackParamList = {
+    AdminHub: undefined;
 };

@@ -1,0 +1,4 @@
+// @lat: [[mobile-admin-area#The tool map]]
+import type { AdminStackParamList } from "../../navigation/types";
+
+export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList, "AdminHub">> = {};
