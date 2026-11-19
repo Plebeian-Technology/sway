@@ -42,6 +42,10 @@ export const Routes = {
     adminLlmRemoveModel: (modelId: string) =>
         `/admin/llm_settings/remove_model?model_id=${encodeURIComponent(modelId)}`,
 
+    adminRegistrationFunnel: (timeRange: string, traffic: string, attributionKey: string | null) =>
+        `/admin/registration_funnel?time_range=${timeRange}` +
+        (attributionKey === null ? "" : `&attribution_key=${encodeURIComponent(attributionKey)}`) +
+        (traffic === "humans" ? "" : `&traffic=${traffic}`),
     adminPartnerReports: () => "/admin/partner_reports",
     adminPartnerReport: (partnerSlug: string) => `/admin/partner_reports/${encodeURIComponent(partnerSlug)}`,
     adminBillSummaryReport: (id: number) => `/admin/bill_summary_reports/${id}`,

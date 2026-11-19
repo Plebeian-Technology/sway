@@ -10,6 +10,7 @@ import LlmSettingsScreen from "../screens/admin/LlmSettingsScreen";
 import LocalesScreen from "../screens/admin/LocalesScreen";
 import PartnerReportScreen from "../screens/admin/PartnerReportScreen";
 import PartnerReportsScreen from "../screens/admin/PartnerReportsScreen";
+import RegistrationFunnelScreen from "../screens/admin/RegistrationFunnelScreen";
 import SharedAddressesScreen from "../screens/admin/SharedAddressesScreen";
 import SystemPromptsScreen from "../screens/admin/SystemPromptsScreen";
 import UserAddressChangesScreen from "../screens/admin/UserAddressChangesScreen";
@@ -43,6 +44,7 @@ export default function AdminStack() {
                 component={PartnerReportScreen}
                 options={pushedScreenOptions(colorScheme, "Partners")}
             />
+            <Stack.Screen name="AdminRegistrationFunnel" component={RegistrationFunnelScreen} options={fromHub} />
         </Stack.Navigator>
     );
 }

@@ -10,4 +10,5 @@ export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList,
     llm_settings: "AdminLlmSettings",
     bill_summary_reports: "AdminBillSummaryReports",
     partner_reports: "AdminPartnerReports",
+    registration_funnel: "AdminRegistrationFunnel",
 };
