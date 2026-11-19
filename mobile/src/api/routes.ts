@@ -37,6 +37,10 @@ export const Routes = {
     adminCategories: () => "/admin/categories",
     adminCategory: (id: number) => `/admin/categories/${id}`,
     adminLlmSettings: () => "/admin/llm_settings",
+    adminLlmRefreshModels: () => "/admin/llm_settings/refresh_models",
+    adminLlmAddModel: () => "/admin/llm_settings/add_model",
+    adminLlmRemoveModel: (modelId: string) =>
+        `/admin/llm_settings/remove_model?model_id=${encodeURIComponent(modelId)}`,
 
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",

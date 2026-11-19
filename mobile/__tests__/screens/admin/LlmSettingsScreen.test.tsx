@@ -5,10 +5,14 @@ import { ApiRequestError } from "../../../src/api/errors";
 
 const mockApiGet = jest.fn();
 const mockApiPatch = jest.fn();
+const mockApiPost = jest.fn();
+const mockApiDelete = jest.fn();
 jest.mock("../../../src/api/client", () => ({
     apiClient: {
         get: (...args: unknown[]) => mockApiGet(...args),
         patch: (...args: unknown[]) => mockApiPatch(...args),
+        post: (...args: unknown[]) => mockApiPost(...args),
+        delete: (...args: unknown[]) => mockApiDelete(...args),
     },
 }));
 
@@ -33,7 +37,10 @@ const settings = (overrides: Record<string, unknown> = {}) => ({
     supported_models: [HAIKU, SONNET, OPUS, RETIRED],
     supported_decision_models: [SCALEDOWN],
     supported_extraction_models: [SCALEDOWN_EXTRACT],
-    available_openrouter_models: [],
+    available_openrouter_models: [
+        { id: "vendor/new-model", label: "New Model" },
+        { id: "vendor/other-model", label: "Other Model" },
+    ],
     current_summarization_model: HAIKU.id,
     current_classification_model: HAIKU.id,
     current_decision_model: SCALEDOWN.id,
@@ -251,5 +258,153 @@ describe("LlmSettingsScreen", () => {
         render(<LlmSettingsScreen />);
 
         await waitFor(() => expect(screen.getByText("You are not allowed to do that.")).toBeTruthy());
+    });
+
+    describe("model catalog", () => {
+        it("lists the offered models and leaves out the ones that are not selectable", async () => {
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            expect(screen.getByTestId(`admin-llm-catalog-model-${HAIKU.id}`)).toBeTruthy();
+            expect(screen.getByTestId(`admin-llm-catalog-model-${OPUS.id}`)).toBeTruthy();
+            expect(screen.queryByTestId(`admin-llm-catalog-model-${RETIRED.id}`)).toBeNull();
+        });
+
+        it("keeps Remove off for a model that is in use", async () => {
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            expect(screen.getByTestId(`admin-llm-catalog-remove-${HAIKU.id}`).props.accessibilityState.disabled).toBe(
+                true,
+            );
+            expect(screen.getByTestId(`admin-llm-catalog-remove-${OPUS.id}`).props.accessibilityState.disabled).toBe(
+                false,
+            );
+        });
+
+        it("keeps Remove off for a model chosen in the unsaved form", async () => {
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            chooseSummarizationModel(OPUS.id);
+            expect(screen.getByTestId(`admin-llm-catalog-remove-${OPUS.id}`).props.accessibilityState.disabled).toBe(
+                true,
+            );
+        });
+
+        it("adds a model by posting its model_id", async () => {
+            mockApiPost.mockResolvedValue(settings());
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-result-vendor/new-model"));
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-add"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/admin/llm_settings/add_model", {
+                    model_id: "vendor/new-model",
+                }),
+            );
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+        });
+
+        it("keeps Add off until a catalog model is chosen", async () => {
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            expect(screen.getByTestId("admin-llm-catalog-add").props.accessibilityState.disabled).toBe(true);
+        });
+
+        it("narrows the catalog list by what is typed", async () => {
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            fireEvent.changeText(screen.getByTestId("admin-llm-catalog-search-input"), "other");
+
+            expect(screen.queryByTestId("admin-llm-catalog-result-vendor/new-model")).toBeNull();
+            expect(screen.getByTestId("admin-llm-catalog-result-vendor/other-model")).toBeTruthy();
+        });
+
+        it("removes a model with DELETE and the encoded model_id in the query string", async () => {
+            mockApiDelete.mockResolvedValue(settings());
+            mockApiGet.mockResolvedValue(
+                settings({ supported_models: [HAIKU, { ...SONNET, id: "vendor/sonnet", label: "Vendor Sonnet" }] }),
+            );
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-remove-vendor/sonnet"));
+
+            await waitFor(() =>
+                expect(mockApiDelete).toHaveBeenCalledWith("/admin/llm_settings/remove_model?model_id=vendor%2Fsonnet"),
+            );
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+        });
+
+        it("shows the server's message when an add is rejected", async () => {
+            mockApiPost.mockRejectedValue(
+                new ApiRequestError("validation_failed", "Model is not in the OpenRouter catalog.", undefined, 422),
+            );
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-result-vendor/new-model"));
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-add"));
+
+            expect(await screen.findByText("Model is not in the OpenRouter catalog.")).toBeTruthy();
+            expect(mockApiGet).toHaveBeenCalledTimes(1);
+        });
+
+        it("shows the server's message when a removal is rejected", async () => {
+            mockApiDelete.mockRejectedValue(
+                new ApiRequestError("validation_failed", "Offered models must keep one model.", undefined, 422),
+            );
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            fireEvent.press(screen.getByTestId(`admin-llm-catalog-remove-${OPUS.id}`));
+
+            expect(await screen.findByText("Offered models must keep one model.")).toBeTruthy();
+        });
+
+        it("replaces the model list with the refreshed catalog", async () => {
+            mockApiPost.mockResolvedValue(settings());
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+            expect(screen.queryByTestId("admin-llm-catalog-model-vendor/fresh")).toBeNull();
+
+            mockApiGet.mockResolvedValue(
+                settings({ supported_models: [HAIKU, { id: "vendor/fresh", label: "Fresh", selectable: true }] }),
+            );
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-refresh"));
+
+            expect(await screen.findByTestId("admin-llm-catalog-model-vendor/fresh")).toBeTruthy();
+            expect(mockApiPost).toHaveBeenCalledWith("/admin/llm_settings/refresh_models", {});
+            expect(screen.queryByTestId(`admin-llm-catalog-model-${OPUS.id}`)).toBeNull();
+        });
+
+        it("shows the server's message when the refresh fails", async () => {
+            mockApiPost.mockRejectedValue(
+                new ApiRequestError("server_error", "OpenRouter is unreachable.", undefined, 502),
+            );
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            fireEvent.press(screen.getByTestId("admin-llm-catalog-refresh"));
+
+            expect(await screen.findByText("OpenRouter is unreachable.")).toBeTruthy();
+        });
+
+        it("keeps the unsaved form choices when the catalog changes", async () => {
+            mockApiDelete.mockResolvedValue(settings());
+            render(<LlmSettingsScreen />);
+            await screen.findByTestId("admin-llm-catalog");
+
+            chooseSummarizationModel(SONNET.id);
+            fireEvent.press(screen.getByTestId(`admin-llm-catalog-remove-${OPUS.id}`));
+            await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+
+            expect(screen.getByTestId("admin-llm-summarization_model-current")).toHaveTextContent("Sonnet 5.5");
+        });
     });
 });

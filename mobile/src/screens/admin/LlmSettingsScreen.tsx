@@ -10,6 +10,7 @@ import { Pressable } from "../../components/ui/Pressable";
 import { SegmentedControl } from "../../components/ui/SegmentedControl";
 import { useAdminLlmSettings, type AdminLlmSettings, type LlmModelOption } from "../../hooks/admin/useAdminLlmSettings";
 import { useAdminMutation } from "../../hooks/admin/useAdminMutation";
+import { LlmModelCatalog } from "./LlmModelCatalog";
 
 export const STALE_SAVE_MESSAGE = "Someone else changed these settings. Pull to refresh, then save again.";
 
@@ -165,7 +166,13 @@ const provenanceCaption = (settings: AdminLlmSettings) =>
         ? `Last changed by ${settings.updated_by.name} at ${new Date(settings.updated_at).toLocaleString()}`
         : "No changes recorded yet.";
 
-const LlmSettingsForm = ({ settings, onSaved }: { settings: AdminLlmSettings; onSaved: () => void }) => {
+interface LlmSettingsFormProps {
+    settings: AdminLlmSettings;
+    onSaved: () => void;
+    onCatalogChanged: () => void;
+}
+
+const LlmSettingsForm = ({ settings, onSaved, onCatalogChanged }: LlmSettingsFormProps) => {
     const baseline = draftFrom(settings);
     const [draft, setDraft] = useState(baseline);
     const { run, loading, errorMessage, errorStatus } = useAdminMutation("patch", Routes.adminLlmSettings());
@@ -271,6 +278,23 @@ const LlmSettingsForm = ({ settings, onSaved }: { settings: AdminLlmSettings; on
                     </Text>
                 </Pressable>
             </Card>
+            <LlmModelCatalog
+                offeredModels={supportedModels.filter((model) => model.selectable)}
+                catalog={settings.available_openrouter_models ?? []}
+                inUseModelIds={[
+                    ...new Set([
+                        baseline.summarization_model,
+                        baseline.classification_model,
+                        baseline.decision_model,
+                        baseline.extraction_model,
+                        draft.summarization_model,
+                        draft.classification_model,
+                        draft.decision_model,
+                        draft.extraction_model,
+                    ]),
+                ]}
+                onChanged={onCatalogChanged}
+            />
         </>
     );
 };
@@ -313,7 +337,12 @@ export default function LlmSettingsScreen() {
             ) : data === null ? (
                 <ActivityIndicator testID="admin-llm-settings-loading" className="py-12" />
             ) : (
-                <LlmSettingsForm key={formVersion} settings={data} onSaved={() => void reload()} />
+                <LlmSettingsForm
+                    key={formVersion}
+                    settings={data}
+                    onSaved={() => void reload()}
+                    onCatalogChanged={() => void refresh()}
+                />
             )}
         </ScrollView>
     );

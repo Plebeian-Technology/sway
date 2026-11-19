@@ -12,10 +12,16 @@ export interface LlmModelOption {
     supports_reasoning?: boolean;
 }
 
+export interface CatalogModel {
+    id: string;
+    label: string;
+}
+
 export interface AdminLlmSettings {
     supported_models: LlmModelOption[];
     supported_decision_models?: LlmModelOption[];
     supported_extraction_models?: LlmModelOption[];
+    available_openrouter_models?: CatalogModel[];
     current_summarization_model: string;
     current_classification_model: string;
     current_decision_model?: string;

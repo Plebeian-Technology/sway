@@ -83,7 +83,7 @@ The rows follow [[app/frontend/components/admin/categories/CategoryRow.tsx]]. De
 
 [[mobile/src/screens/admin/LlmSettingsScreen.tsx#LlmSettingsScreen]] shows the model Sway uses for each task and lets an admin change them, with the web page's stale-save guard.
 
-The tool id `llm_settings` maps to the `AdminLlmSettings` route. [[mobile/src/hooks/admin/useAdminLlmSettings.ts#useAdminLlmSettings]] fetches `GET /admin/llm_settings`, which [[app/controllers/admin/llm_settings_controller.rb]] already answered as JSON, so the screen needed no backend change. The screen reads the model lists, the four current models, the two reasoning levels, the batch flag and the last-changed line. It leaves the OpenRouter catalog props alone.
+The tool id `llm_settings` maps to the `AdminLlmSettings` route. [[mobile/src/hooks/admin/useAdminLlmSettings.ts#useAdminLlmSettings]] fetches `GET /admin/llm_settings`, which [[app/controllers/admin/llm_settings_controller.rb]] already answered as JSON, so the screen needed no backend change. The screen reads the model lists, the four current models, the two reasoning levels, the batch flag and the last-changed line. It also reads `available_openrouter_models` for [[mobile-admin-area#The LLM model catalog]].
 
 Each of the four models (summarization, classification, decision, extraction) is a row with its current label and a Change button that opens an inline list of the offered models. A model the server marks not selectable shows disabled, and a current model missing from its list shows its raw id. The two Claude tasks show a Low, Medium and High level control only while the chosen model supports reasoning, and choosing a model without that support clears the level. The batch switch is a `PreferenceToggle`.
 
@@ -91,7 +91,15 @@ Save sends `PATCH /admin/llm_settings` with an `admin_setting` body holding only
 
 A 409 shows the mobile copy "Someone else changed these settings. Pull to refresh, then save again." in place of the server's message, which addresses API callers. The screen keys on `errorStatus` from [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]]. Every load, whether a pull to refresh or the reload after a good save, remounts the form from the fresh data, so the draft, the expected block and the error all reset together. Pull to refresh replaces the web page's polling and its changed-elsewhere banner. Any other failure shows the server's message above Save.
 
-The model catalog (refresh, add, remove) is not on this screen. A catalog section belongs below the settings form.
+## The LLM model catalog
+
+[[mobile/src/screens/admin/LlmModelCatalog.tsx#LlmModelCatalog]] sits below the settings form and ports the web page's Offered Models card: refresh the OpenRouter list, add a model, remove one.
+
+It lists the selectable models of `supported_models`, each with a Remove button. Remove is off for a model in use, meaning any of the four current models or any model chosen in the unsaved form, and off when only one model remains, as on the web page. Adding searches `available_openrouter_models` by label or id, shows the first eight matches, and posts the chosen `model_id` to `POST /admin/llm_settings/add_model`. Refresh posts to `refresh_models`.
+
+A removal sends `DELETE /admin/llm_settings/remove_model` with `model_id` in the query string, because `apiClient.delete` sends no body. The id passes through `encodeURIComponent` since OpenRouter ids contain slashes. Each row owns its own `useAdminMutation`, so the path carries that row's id.
+
+The three endpoints answer the model lists but not `available_openrouter_models`. After a good write the section therefore asks the screen to refetch `GET /admin/llm_settings` instead of reading the answer. The refetch replaces the data without remounting the form, so unsaved choices survive. A 422 shows the server's `error` message beside the control that failed, and nothing refetches.
 
 ## Admin writes
 
