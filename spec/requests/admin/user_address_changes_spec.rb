@@ -9,6 +9,55 @@ RSpec.describe "Admin::UserAddressChanges", type: :request do
     verb: :get,
     path: "/admin/user_address_changes"
 
+  context "with a bearer token and Accept: application/json" do
+    let(:api_token) { SecureRandom.hex(32) }
+    let(:headers) { {"Authorization" => "Bearer #{api_token}", "Accept" => "application/json"} }
+
+    # @lat: [[mobile-admin-area#The user address changes screen]]
+    it "serves the user address changes as JSON to a sway admin" do
+      ApiKey.create!(bearer: create(:user, :sway_admin), token: api_token)
+      baltimore = create(:sway_locale, city: "baltimore", region_name: "maryland", country: "united_states")
+      annapolis = create(:sway_locale, city: "annapolis", region_name: "maryland", country: "united_states")
+      change = create(
+        :user_address_change,
+        previous_sway_locale_ids: [baltimore.id],
+        new_sway_locale_ids: [annapolis.id],
+        deactivated_district_ids: [10],
+        activated_district_ids: [20],
+        prior_vote_count: 2,
+        prior_voted_bill_ids: [501, 502]
+      )
+
+      get "/admin/user_address_changes", headers: headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      row = response.parsed_body.fetch("user_address_changes").sole
+      expect(row).to include(
+        "id" => change.id,
+        "previous_sway_locale_names" => [baltimore.name],
+        "new_sway_locale_names" => [annapolis.name],
+        "prior_vote_count" => 2,
+        "cross_district" => true,
+        "cross_sway_locale" => true,
+        "voted_before_switch" => true,
+        "user_switch_count" => 1
+      )
+    end
+
+    it "refuses a non-admin with a forbidden JSON error" do
+      user = create(:user)
+      create(:user_legislator, user: user)
+      user.complete!
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/admin/user_address_changes", headers: headers
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+    end
+  end
+
   context "as a sway admin" do
     let(:admin) { create(:user, :sway_admin) }
 
