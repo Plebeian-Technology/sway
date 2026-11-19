@@ -89,24 +89,26 @@ class OrganizationsController < ApplicationController
     end
 
     if errored
-      flash[:alert] = "Error Saving Supporting/Opposing Arguments"
-      redirect_to bill_creator_tab_path(
-        bill_creator_tab_param,
-        bill_id: @bill.id,
-        default: :positions_bill_creator_path,
-        event_key: "organizations"
-      ),
-        inertia: {
-          errors: errors
-        }
+      respond_after_write(
+        bill_creator_tab_path(
+          bill_creator_tab_param,
+          bill_id: @bill.id,
+          default: :positions_bill_creator_path,
+          event_key: "organizations"
+        ),
+        alert: "Error Saving Supporting/Opposing Arguments",
+        errors: errors
+      )
     else
-      flash[:notice] = "Supporting/Opposing Arguments Saved"
-      redirect_to bill_creator_tab_path(
-        bill_creator_tab_param,
-        bill_id: @bill.id,
-        default: :positions_bill_creator_path,
-        saved: "Supporting/Opposing Arguments Saved",
-        event_key: "organizations"
+      respond_after_write(
+        bill_creator_tab_path(
+          bill_creator_tab_param,
+          bill_id: @bill.id,
+          default: :positions_bill_creator_path,
+          saved: "Supporting/Opposing Arguments Saved",
+          event_key: "organizations"
+        ),
+        notice: "Supporting/Opposing Arguments Saved"
       )
     end
   end

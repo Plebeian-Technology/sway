@@ -256,6 +256,76 @@ RSpec.describe "OrganizationsController", type: :request do
       expect(OrganizationBillPosition.find_by(organization_id: existing_local.id, bill_id: bill.id)).to be_present
       expect(OrganizationBillPosition.find_by(organization_id: foreign_org.id, bill_id: bill.id)).to be_nil
     end
+
+    it "keeps the web failure redirect with its alert flash and row errors" do
+      sway_locale, = setup
+      params = get_params(sway_locale)
+      params[:organizations][0][:summary] = ""
+
+      post organizations_path, params: params
+
+      expect(response).to have_http_status(302)
+      follow_redirect!
+      expect(inertia).to have_flash(alert: "Error Saving Supporting/Opposing Arguments")
+      expect(inertia).to have_props { |props| props.dig(:errors, :organizations, 0, :summary).present? }
+    end
+
+    describe "for a bearer request" do
+      let(:bearer_json_headers) do
+        lambda do |user|
+          authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+        end
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The organizations section]]
+      it "saves the organizations and answers 200 JSON with no redirect" do
+        sway_locale, user = setup
+        organization_params = get_params(sway_locale)
+
+        expect {
+          post organizations_path, params: organization_params.to_json, headers: bearer_json_headers.call(user)
+        }.to change(Organization, :count).by(2)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("application/json")
+        expect(response.headers["Location"]).to be_nil
+        expect(Organization.find_by!(name: organization_params[:organizations][1][:label]).positions.sole.support).to eq("AGAINST")
+      end
+
+      it "answers an invalid row with 422 and each row's errors under organizations, saving nothing" do
+        sway_locale, user = setup
+        params = get_params(sway_locale)
+        params[:organizations][1][:summary] = ""
+
+        expect {
+          post organizations_path, params: params.to_json, headers: bearer_json_headers.call(user)
+        }.not_to change(Organization, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.fetch("message")).to eq("Error Saving Supporting/Opposing Arguments")
+        rows = error.dig("details", "organizations")
+        expect(rows.size).to eq(2)
+        expect(rows[0].values).to all(be_nil)
+        expect(rows[1]["summary"]).to be_present
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        organization_params = get_params(sway_locale)
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        expect {
+          post organizations_path, params: organization_params.to_json, headers: bearer_json_headers.call(non_admin)
+        }.not_to change(Organization, :count)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+      end
+    end
   end
 
   describe "organization membership redirects" do
