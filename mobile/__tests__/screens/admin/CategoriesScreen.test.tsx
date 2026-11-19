@@ -146,6 +146,7 @@ describe("CategoriesScreen", () => {
 
         expect(await screen.findByText("Deactivate the category before deleting it.")).toBeTruthy();
         expect(screen.getByText("Housing")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenCalledTimes(1);
     });
 
     it("shows the server's message when the list request fails", async () => {

@@ -38,7 +38,7 @@ describe("useAdminMutation", () => {
     test("patch sends the body and returns the response", async () => {
         mockPatch.mockResolvedValue({ id: 1 });
         const { result } = renderHook(() => useAdminMutation<{ id: number }>("patch", "/x"));
-        let response: { id: number } | undefined;
+        let response: { id: number } | null | undefined;
         await act(async () => {
             response = await result.current.run({ name: "a" });
         });
@@ -59,12 +59,23 @@ describe("useAdminMutation", () => {
     test("delete sends no body and returns the response", async () => {
         mockDelete.mockResolvedValue({ removed: 2 });
         const { result } = renderHook(() => useAdminMutation<{ removed: number }>("delete", "/x?id=2"));
-        let response: { removed: number } | undefined;
+        let response: { removed: number } | null | undefined;
         await act(async () => {
             response = await result.current.run();
         });
         expect(mockDelete).toHaveBeenCalledWith("/x?id=2");
         expect(response).toEqual({ removed: 2 });
+    });
+
+    test("a 204 delete resolves to null", async () => {
+        mockDelete.mockResolvedValue(undefined);
+        const { result } = renderHook(() => useAdminMutation("delete", "/x"));
+        let response: unknown = "unset";
+        await act(async () => {
+            response = await result.current.run();
+        });
+        expect(response).toBeNull();
+        expect(result.current.errorMessage).toBeNull();
     });
 
     test("reports loading, then the error message and field errors on a 422", async () => {

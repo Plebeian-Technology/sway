@@ -77,7 +77,7 @@ The tool id `categories` maps to the `AdminCategories` route. [[mobile/src/hooks
 
 The add form at the foot posts `{ category: { name } }` to `/admin/categories`. A row's Rename opens an inline field and saves `{ category: { name } }` with a PATCH; Activate and Deactivate send `{ category: { active } }` to the same path. Delete asks through a native `Alert` and then sends DELETE. A 422 shows the server's message under the add field or in the row, as [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads it, and a successful write reloads the list.
 
-The Delete button shows on every row, not only inactive ones as on the web page, so the server's "Deactivate the category before deleting it." message reaches the admin. A 204 resolves `run` to `undefined`, the same value a failure gives, so the row reloads the list after every delete attempt and keeps its error message. Deactivate sends at once, without the web page's confirmation.
+The Delete button shows on every row, not only inactive ones as on the web page, so the server's "Deactivate the category before deleting it." message reaches the admin. A 204 resolves `run` to `null` and a refusal to `undefined`, so the row reloads the list only after a successful delete. Deactivate sends at once, without the web page's confirmation.
 
 ## Admin writes
 
@@ -85,7 +85,7 @@ Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useA
 
 The call is `const { run, loading, errorMessage, fieldErrors } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
 
-`run(body?)` resolves to the parsed response on success and to `undefined` on failure. It never throws, so a screen branches on the result and reads `errorMessage` instead of wrapping each call in `try`. Each call clears the previous error first.
+`run(body?)` resolves to the parsed response on success, to `null` when a successful response has no body (a 204 DELETE), and to `undefined` on failure. A screen tells success from failure with `result === undefined`. `run` never throws, so a screen reads `errorMessage` instead of wrapping each call in `try`. Each call clears the previous error first.
 
 - `loading` is true from the start of `run` until the request settles.
 - `errorMessage` is the server's message for an `ApiRequestError` (including `NetworkError`), the offline message when the device is offline, and [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] for anything else.

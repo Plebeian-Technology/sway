@@ -72,8 +72,8 @@ const CategoryRow = ({ category, onChanged }: { category: AdminCategory; onChang
     };
 
     const deleteCategory = async () => {
-        await remove.run();
-        onChanged();
+        const removed = await remove.run();
+        if (removed !== undefined) onChanged();
     };
 
     const confirmDelete = () => {

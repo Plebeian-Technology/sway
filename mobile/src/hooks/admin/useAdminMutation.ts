@@ -11,7 +11,7 @@ export const ADMIN_OFFLINE_MESSAGE = "You need a connection to make this change.
 export type AdminMutationMethod = "post" | "patch" | "delete";
 
 export interface UseAdminMutationResult<TResponse> {
-    run: (body?: unknown) => Promise<TResponse | undefined>;
+    run: (body?: unknown) => Promise<TResponse | null | undefined>;
     loading: boolean;
     errorMessage: string | null;
     fieldErrors: Record<string, unknown> | null;
@@ -27,15 +27,17 @@ export function useAdminMutation<TResponse = void>(
     const [fieldErrors, setFieldErrors] = useState<Record<string, unknown> | null>(null);
 
     const run = useCallback(
-        async (body?: unknown): Promise<TResponse | undefined> => {
+        async (body?: unknown): Promise<TResponse | null | undefined> => {
             setLoading(true);
             setErrorMessage(null);
             setFieldErrors(null);
             try {
                 assertOnlineForWrite(reach.isOnline);
-                return method === "delete"
-                    ? await apiClient.delete<TResponse>(path)
-                    : await apiClient[method]<TResponse>(path, body);
+                const response =
+                    method === "delete"
+                        ? await apiClient.delete<TResponse>(path)
+                        : await apiClient[method]<TResponse>(path, body);
+                return response ?? null;
             } catch (e: unknown) {
                 if (e instanceof ApiRequestError) {
                     setErrorMessage(e.message);
