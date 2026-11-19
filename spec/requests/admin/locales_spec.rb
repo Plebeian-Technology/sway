@@ -14,6 +14,83 @@ RSpec.describe "Admin::Locales", type: :request do
     path: "/admin/locales/0",
     params: {sway_locale: {sample_street: "1 Main St"}}
 
+  context "with a bearer token and Accept: application/json" do
+    let(:api_token) { SecureRandom.hex(32) }
+    let(:headers) { {"Authorization" => "Bearer #{api_token}", "Accept" => "application/json"} }
+
+    context "as a sway admin" do
+      before { ApiKey.create!(bearer: create(:user, :sway_admin), token: api_token) }
+
+      # @lat: [[mobile-admin-area#The locales screen]]
+      it "serves the locales page as JSON" do
+        sway_locale = create(:sway_locale, :baltimore)
+
+        get "/admin/locales", headers: headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("application/json")
+        body = response.parsed_body
+        expect(body["tiers"].pluck("key")).to eq(%w[city state congress])
+        row = body["tiers"].first["locales"].find { |locale| locale["id"] == sway_locale.id }
+        expect(row).to include("sample_street" => "100 N Holliday St", "user_count" => 0)
+      end
+
+      # @lat: [[mobile-admin-area#The locales screen]]
+      it "saves a sample address and answers the updated locale as JSON" do
+        sway_locale = create(:sway_locale, :congress)
+
+        patch "/admin/locales/#{sway_locale.id}", headers: headers, params: {
+          sway_locale: {
+            sample_street: "100 N Holliday St",
+            sample_postal_code: "21202",
+            sample_latitude: "39.29105",
+            sample_longitude: "-76.61069"
+          }
+        }, as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["sway_locale"]).to eq(
+          "id" => sway_locale.id,
+          "sample_street" => "100 N Holliday St",
+          "sample_postal_code" => "21202",
+          "sample_latitude" => 39.29105,
+          "sample_longitude" => -76.61069
+        )
+        expect(sway_locale.reload.sample_street).to eq("100 N Holliday St")
+      end
+
+      # @lat: [[mobile-admin-area#The locales screen]]
+      it "answers a rejected save as 422 JSON with the field errors" do
+        sway_locale = create(:sway_locale, :baltimore)
+        sway_locale.errors.add(:sample_latitude, "must be between -90 and 90")
+        rejected = ActiveRecord::RecordInvalid.new(sway_locale)
+        allow_any_instance_of(SwayLocale).to receive(:update!).and_raise(rejected)
+
+        patch "/admin/locales/#{sway_locale.id}", headers: headers, params: {
+          sway_locale: {sample_latitude: "91"}
+        }, as: :json
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body["error"]
+        expect(error["code"]).to eq("validation_failed")
+        expect(error["message"]).to include("must be between -90 and 90")
+        expect(error["details"]).to eq("sample_latitude" => ["must be between -90 and 90"])
+      end
+    end
+
+    it "refuses a non-admin with a forbidden JSON error" do
+      user = create(:user)
+      create(:user_legislator, user: user)
+      user.complete!
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/admin/locales", headers: headers
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+    end
+  end
+
   context "as a sway admin" do
     let(:admin) { create(:user, :sway_admin) }
 
@@ -74,6 +151,18 @@ RSpec.describe "Admin::Locales", type: :request do
         sample_latitude: 39.29105,
         sample_longitude: -76.61069
       )
+    end
+
+    it "redirects back with the model errors when the save is rejected" do
+      sway_locale = create(:sway_locale, :baltimore)
+      sway_locale.errors.add(:sample_latitude, "must be between -90 and 90")
+      rejected = ActiveRecord::RecordInvalid.new(sway_locale)
+      allow_any_instance_of(SwayLocale).to receive(:update!).and_raise(rejected)
+
+      patch "/admin/locales/#{sway_locale.id}", params: {sway_locale: {sample_latitude: "91"}}
+
+      expect(response).to redirect_to("/admin/locales")
+      expect(flash[:alert]).to include("must be between -90 and 90")
     end
 
     it "reads a cleared field as absent rather than as empty text" do

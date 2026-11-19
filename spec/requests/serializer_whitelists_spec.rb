@@ -1996,6 +1996,17 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
     end
   end
 
+  describe "AdminLocaleSampleAddressResource" do
+    # @lat: [[mobile-admin-area#The locales screen]]
+    it "ships the exact sample address key set" do
+      locale = create(:sway_locale, :baltimore)
+
+      hash = AdminLocaleSampleAddressResource.new(locale).serializable_hash.transform_keys(&:to_s)
+
+      expect(hash.keys).to match_array(%w[id sample_street sample_postal_code sample_latitude sample_longitude])
+    end
+  end
+
   describe "FeedItemResource" do
     it "ships the exact feed item keys and nested hash shapes" do
       locale = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
