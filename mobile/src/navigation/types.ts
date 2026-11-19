@@ -75,4 +75,5 @@ export type AdminStackParamList = {
     AdminSharedAddresses: undefined;
     AdminUserAddressChanges: undefined;
     AdminSystemPrompts: undefined;
+    AdminLocales: undefined;
 };

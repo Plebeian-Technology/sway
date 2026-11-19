@@ -61,6 +61,14 @@ The tool id `user_address_changes` maps to the `AdminUserAddressChanges` route. 
 
 The tool id `system_prompts` maps to the `AdminSystemPrompts` route. [[mobile/src/hooks/admin/useSystemPrompts.ts#useSystemPrompts]] fetches `GET /admin/system_prompts`, which [[app/controllers/admin/system_prompts_controller.rb]] answers with the same props as the web page ([[admin-system-prompts-page#Reading the instructions Sway sends the model]]). A row shows the label, the locale name when the prompt is per locale, and a character count or "Not sent". Pressing the row reveals the purpose, builder, model and the full text as selectable text in a height-capped scroll area; an unavailable prompt shows its reason there instead. The screen is read-only. A failed request shows the server's message in an `EmptyState`.
 
+## The locales screen
+
+[[mobile/src/screens/admin/LocalesScreen.tsx#LocalesScreen]] lists every locale by tier with its user count and lets an admin edit a locale's sample address.
+
+The tool id `locales` maps to the `AdminLocales` route. [[mobile/src/hooks/admin/useAdminLocales.ts#useAdminLocales]] fetches `GET /admin/locales`, which [[app/controllers/admin/locales_controller.rb]] answers with the web page's props to a mobile request ([[admin-locales-registration-visibility#Why one user can count toward three locale rows]]). The screen reads only the id, label, user count and sample address of each row. The summarization and news source blocks stay on the web page.
+
+A row's button opens an inline form of four fields: street, postal code, latitude and longitude. Save sends `PATCH /admin/locales/:id` with a `sway_locale` body of the four values as text, through `useAdminMutation`. A cleared field reaches the server as an empty string, which the controller reads as absent. On success the controller answers `{ sway_locale: { id, sample_* } }`, `AdminLocaleSampleAddressResource`'s key set, and the screen closes the form and reloads the list. A rejected save answers 422 with the model errors, and the form stays open with the server's message under the fields.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.

@@ -5,4 +5,5 @@ export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList,
     shared_addresses: "AdminSharedAddresses",
     user_address_changes: "AdminUserAddressChanges",
     system_prompts: "AdminSystemPrompts",
+    locales: "AdminLocales",
 };
