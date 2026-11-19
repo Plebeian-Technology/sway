@@ -38,6 +38,12 @@ The endpoint relies on `ApplicationController`'s default `authenticate_sway_user
 
 Only `bill_of_the_month_released` items show a summary excerpt, so [[app/serializers/feed_item_resource.rb#FeedItemResource]] fills a bill's `summary` and `summary_ai_unreviewed` on those items alone and sends `nil` and `false` on every other kind. [[app/models/bill.rb#Bill#summary_ai_unreviewed?]] reads each bill's published summary revision and LLM provisioning, and [[app/controllers/feed_controller.rb#FeedController#serialized_items]] preloads both for the page's Bill of the Month bills, so the flag adds a fixed two queries per page however many such items it holds. The flag drives the notice described in [[ai-unreviewed-notice-component-design#The server sends a derived boolean, not the source text]].
 
+## Mobile summary excerpt
+
+The mobile feed renders a Bill of the Month summary as markdown cut to a few lines, while the web feed keeps a flat plain-text excerpt.
+
+[[mobile/src/components/feed/FeedBillBlock.tsx#FeedBillBlock]] draws the raw summary through [[mobile/src/components/Markdown.tsx#Markdown]] with a character budget rather than a line clamp, because the renderer already cuts on the parsed tree and never splits a link or list item. [[app/frontend/components/feed/feedSummary.ts#cleanFeedSummary]] stays only as the emptiness check, so an empty summary or the placeholder shows nothing on both surfaces. A "Show more" link appears only when [[mobile/src/components/Markdown.tsx#markdownExceedsLimit]] reports a cut, and it opens the bill like the card does.
+
 ## Live feed updates
 
 [[app/channels/feed_channel.rb#FeedChannel]] and [[app/services/feed_broadcaster.rb#FeedBroadcaster]] deliver lightweight per-user invalidation signals so open home feeds refresh without pushing feed item payloads over ActionCable.
