@@ -78,3 +78,13 @@ Saving refuses locally, with the web's messages from [[app/frontend/components/a
 After a save the form shows the server's copy of the bill and "Bill saved.". A new bill then switches the screen to its id, which loads the saved bill's tab; an update reloads the tab so the header shows the new title.
 
 The bill model requires a summary, and this section sends none. Creating a bill from the phone therefore fails with the server's "Summary can't be blank" until the phone can edit the summary. Updates are unaffected.
+
+### The legislator votes section
+
+[[mobile/src/components/admin/billCreator/LegislatorVotesSection.tsx#LegislatorVotesSection]] ports the web's [[app/frontend/components/admin/creator/BillCreatorLegislatorVotes.tsx]] ledger. The Creator tab renders it below the bill fields.
+
+Each legislator of the tab's `legislators` prop is a row, sorted by display name ignoring case, with the district line and a Former stamp when the legislator no longer serves. The row offers For, Against and Abstain, and the saved `legislator_votes` start selected. Picking one position clears the other two. A saved vote for a legislator outside the roster stays in the payload, as on the web. An empty roster shows "No legislators available for this locale yet." and no save button. The tab shows "Legislator votes refreshed at ... from ..." when the server names both a time and a source.
+
+Save posts `bill_id` and every selected `{legislator_id, support}` to `POST /legislator_votes`, grouped For, Against, Abstain. A bill with no id refuses locally; the web names its Details and Summary tab there, and the phone has no such tab. The section keeps its selections after a save and does not reread them when the tab reloads, because the web's form behaves the same.
+
+[[app/controllers/legislator_votes_controller.rb#LegislatorVotesController#create]] answers every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). The phone gets 200 JSON on success. A refusal answers 422 with the message under `legislator_votes`, the key the web's `notifyServerRefusal` reads, and the section shows that message, then the server's message, then "Could not save legislator votes.". A save that skipped a legislator whose term misses the bill's date commits the other votes yet answers 422 with the web's alert, because `respond_after_write` treats any alert as a failure. The web keeps its redirects.

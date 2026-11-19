@@ -18,6 +18,16 @@ jest.mock("../../../../src/components/admin/billCreator/BillFieldsSection", () =
     };
 });
 
+jest.mock("../../../../src/components/admin/billCreator/LegislatorVotesSection", () => {
+    const { Text } = jest.requireActual("react-native");
+    return {
+        __esModule: true,
+        default: (props: Record<string, unknown>) => (
+            <Text testID="legislator-votes-props">{JSON.stringify(props)}</Text>
+        ),
+    };
+});
+
 import CreatorTab from "../../../../src/screens/admin/billCreator/tabs/CreatorTab";
 
 // @lat: [[mobile-bill-creator#Sections#The bill fields section]]
@@ -42,5 +52,32 @@ describe("CreatorTab", () => {
 
         expect(refresh).toHaveBeenCalled();
         expect(mockSetParams).not.toHaveBeenCalled();
+    });
+
+    // @lat: [[mobile-bill-creator#Sections#The legislator votes section]]
+    it("gives the legislator votes section the tab's roster, votes and refresh notice", () => {
+        const legislators = [{ id: 3, first_name: "zeke", last_name: "cohen", district: null }];
+        const legislatorVotes = [{ legislator_id: 3, support: "FOR" }];
+        render(
+            <CreatorTab
+                billId={42}
+                data={{
+                    bill: undefined,
+                    legislators,
+                    legislator_votes: legislatorVotes,
+                    legislator_votes_refreshed_at: "2026-11-18 09:30",
+                    legislator_votes_source: "legistar",
+                }}
+                refresh={jest.fn()}
+            />,
+        );
+
+        expect(JSON.parse(screen.getByTestId("legislator-votes-props").props.children)).toEqual({
+            billId: 42,
+            legislators,
+            legislatorVotes,
+            refreshedAt: "2026-11-18 09:30",
+            source: "legistar",
+        });
     });
 });
