@@ -15,7 +15,7 @@ Supported HTTP request signatures, parameter structures, and return types provid
 apiClient.get<T>(path, opts?)        : Promise<T>
 apiClient.post<T>(path, body, opts?) : Promise<T>
 apiClient.patch<T>(path, body, opts?): Promise<T>
-apiClient.delete(path, opts?)        : Promise<void>
+apiClient.delete<T = void>(path, opts?): Promise<T>
 ```
 
 - Every method takes an optional `signal: AbortSignal`, so a screen's hook can cancel a request that is still running when the screen goes away. That stops the React warning about setting state on a screen that is gone, which happens when someone switches between tabs on a slow network. An `AbortError` raised by the caller's own signal is swallowed rather than surfaced as a failure.
@@ -28,9 +28,10 @@ Each request reads the bearer token from `tokenStore` and sends `Authorization: 
 
 The server may send either error shape; `apiClient` accepts both — the JSON:API-style `{ errors: [...] }` array, and the older `{ error: { code, message, details? } }` object.
 
+- a string `error`: `{ error: "message" }` gives that message, and `{ error: "code", message: "..." }` gives the code and the message
 - `401` → clears both `tokenStore` and `sessionStore`, then throws `UnauthorizedError`
 - `429` → throws `RateLimitedError`, carrying the `Retry-After` header's positive whole seconds as `retryAfterSeconds`, or nothing when the header is absent or unreadable
-- any other non-2xx → throws `ApiRequestError`
+- any other non-2xx → throws `ApiRequestError`, whose `body` holds the parsed response body and whose `details` values are `unknown` (arrays, nested hashes or strings, as the endpoint sent them)
 - `fetch` itself failing (DNS, TCP) → throws `NetworkError`
 - the request outliving its timeout (15 seconds unless `timeoutMs` is passed) → throws `NetworkError`
 - the caller's signal aborting → throws `ApiRequestError` with code `aborted`
