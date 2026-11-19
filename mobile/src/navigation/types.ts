@@ -84,4 +84,6 @@ export type AdminStackParamList = {
     AdminPartnerReport: { partnerSlug: string };
     AdminRegistrationFunnel: undefined;
     AdminPipelineRuns: undefined;
+    AdminBillPicker: undefined;
+    AdminBillCreator: { billId: number | null };
 };

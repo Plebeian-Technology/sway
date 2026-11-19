@@ -12,4 +12,5 @@ export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList,
     partner_reports: "AdminPartnerReports",
     registration_funnel: "AdminRegistrationFunnel",
     pipeline_runs: "AdminPipelineRuns",
+    bill_creator: "AdminBillPicker",
 };

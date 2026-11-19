@@ -3,6 +3,8 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AdminHubScreen from "../screens/admin/AdminHubScreen";
+import BillCreatorScreen from "../screens/admin/billCreator/BillCreatorScreen";
+import BillPickerScreen from "../screens/admin/billCreator/BillPickerScreen";
 import BillSummaryReportScreen from "../screens/admin/BillSummaryReportScreen";
 import BillSummaryReportsScreen from "../screens/admin/BillSummaryReportsScreen";
 import CategoriesScreen from "../screens/admin/CategoriesScreen";
@@ -47,6 +49,12 @@ export default function AdminStack() {
             />
             <Stack.Screen name="AdminRegistrationFunnel" component={RegistrationFunnelScreen} options={fromHub} />
             <Stack.Screen name="AdminPipelineRuns" component={PipelineRunsScreen} options={fromHub} />
+            <Stack.Screen name="AdminBillPicker" component={BillPickerScreen} options={fromHub} />
+            <Stack.Screen
+                name="AdminBillCreator"
+                component={BillCreatorScreen}
+                options={pushedScreenOptions(colorScheme, "Bills")}
+            />
         </Stack.Navigator>
     );
 }

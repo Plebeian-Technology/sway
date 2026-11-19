@@ -52,6 +52,9 @@ export const Routes = {
     adminBillSummaryReport: (id: number) => `/admin/bill_summary_reports/${id}`,
     adminBillSummaryReports: (status: string, localeId: number | null) =>
         `/admin/bill_summary_reports?status=${status}${localeId === null ? "" : `&locale_id=${localeId}`}`,
+    adminBillCreatorNew: () => "/admin/bill_creator/new",
+    adminBillCreatorTab: (billId: number | null, tab: string) =>
+        billId === null ? `/admin/bill_creator/new?bill_creator_tab=${tab}` : `/admin/bill_creator/${billId}/${tab}`,
 
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",
