@@ -99,7 +99,7 @@ class EnvCredentialScanner
     "GOOGLE_CLOUD_PROJECT" => "not a credential — a project id",
     "NEW_RELIC_ACCOUNT_ID" => "not a credential — an account id",
     "ADMIN_PHONES" => "a phone list, whitespace-immune via String#normalize_phone -- verified, " \
-      "not merely asserted, by spec/models/user_spec.rb on Ruby 4.0.9 (68-03)"
+      "not merely asserted, by spec/models/user_spec.rb on Ruby 4.0.10 (68-03)"
   }.freeze
 
   # @lat: [[env-credential-scanner-design#Why an undelivered credential is a claim rather than a silencer]]

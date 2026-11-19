@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG RUBY_VERSION=4.0.9
+ARG RUBY_VERSION=4.0.10
 
 # ─── base ───────────────────────────────────────────────────────────
 # Shared by build stages and the final runtime image.

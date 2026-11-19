@@ -4,7 +4,7 @@
 # @lat: [[toolchain-pins#Why a moving alias is refused]]
 node = "24.19.0"
 python = "latest"
-ruby = "4.0.9"
+ruby = "4.0.10"
 
 [env]
 # @lat: [[browser-error-reporting#Development reports stay on this machine#Where each development address is read]]

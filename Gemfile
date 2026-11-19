@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby ">= 4.0.9", "< 4.1.0"
+ruby ">= 4.0.10", "< 4.1.0"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 # gem "rails", "~> 8"
@@ -180,7 +180,7 @@ gem "octokit", "~> 10.0"
 
 # Phase 68 D-24: the third settings door, replacing scattered ENV reads with
 # one declared class per group. Version 2.8.1 installed and run against
-# Ruby 4.0.9, this project's version, before the decision. MIT licence, one
+# Ruby 4.0.10, this project's version, before the decision. MIT licence, one
 # runtime dependency (ruby-next-core), 33,854,084 downloads on rubygems.org,
 # confirmed 2026-08-16. Source: github.com/palkan/anyway_config. Ungrouped
 # because the running application reads settings in every environment.
@@ -232,7 +232,7 @@ group :development, :test do
 
   # https://github.com/grosser/parallel_tests — Phase 64: shards rspec into
   # per-lane worker groups. 5.x changelog read: only breaking change is 5.0.0
-  # dropping Ruby 3.0/3.1 (this project is on 4.0.9), and 5.7.0 stopped
+  # dropping Ruby 3.0/3.1 (this project is on 4.0.10), and 5.7.0 stopped
   # parallel:prepare dumping the schema, which sway:test:prepare_shards
   # (lib/tasks/sway_test_shards.rake) never called anyway.
   gem "parallel_tests", "~> 5.7"
