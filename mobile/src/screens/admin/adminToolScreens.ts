@@ -6,4 +6,5 @@ export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList,
     user_address_changes: "AdminUserAddressChanges",
     system_prompts: "AdminSystemPrompts",
     locales: "AdminLocales",
+    categories: "AdminCategories",
 };

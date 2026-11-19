@@ -69,6 +69,16 @@ The tool id `locales` maps to the `AdminLocales` route. [[mobile/src/hooks/admin
 
 A row's button opens an inline form of four fields: street, postal code, latitude and longitude. Save sends `PATCH /admin/locales/:id` with a `sway_locale` body of the four values as text, through `useAdminMutation`. A cleared field reaches the server as an empty string, which the controller reads as absent. On success the controller answers `{ sway_locale: { id, sample_* } }`, `AdminLocaleSampleAddressResource`'s key set, and the screen closes the form and reloads the list. A rejected save answers 422 with the model errors, and the form stays open with the server's message under the fields.
 
+## The categories screen
+
+[[mobile/src/screens/admin/CategoriesScreen.tsx#CategoriesScreen]] lists every category with its bill count and lets an admin add, rename, activate, deactivate and delete categories.
+
+The tool id `categories` maps to the `AdminCategories` route. [[mobile/src/hooks/admin/useAdminCategories.ts#useAdminCategories]] fetches `GET /admin/categories`, which [[app/controllers/admin/categories_controller.rb]] answers as `{ categories: [{ id, name, slug, active, bill_count }] }` ([[admin-categories-controller-design#Categories.tsx, the frontend page]]). The controller already answered JSON, so the screen needed no backend change.
+
+The add form at the foot posts `{ category: { name } }` to `/admin/categories`. A row's Rename opens an inline field and saves `{ category: { name } }` with a PATCH; Activate and Deactivate send `{ category: { active } }` to the same path. Delete asks through a native `Alert` and then sends DELETE. A 422 shows the server's message under the add field or in the row, as [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads it, and a successful write reloads the list.
+
+The Delete button shows on every row, not only inactive ones as on the web page, so the server's "Deactivate the category before deleting it." message reaches the admin. A 204 resolves `run` to `undefined`, the same value a failure gives, so the row reloads the list after every delete attempt and keeps its error message. Deactivate sends at once, without the web page's confirmation.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
