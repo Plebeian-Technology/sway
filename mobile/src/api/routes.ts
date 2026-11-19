@@ -46,6 +46,7 @@ export const Routes = {
         `/admin/registration_funnel?time_range=${timeRange}` +
         (attributionKey === null ? "" : `&attribution_key=${encodeURIComponent(attributionKey)}`) +
         (traffic === "humans" ? "" : `&traffic=${traffic}`),
+    adminPipelineRuns: () => "/pipeline_runs",
     adminPartnerReports: () => "/admin/partner_reports",
     adminPartnerReport: (partnerSlug: string) => `/admin/partner_reports/${encodeURIComponent(partnerSlug)}`,
     adminBillSummaryReport: (id: number) => `/admin/bill_summary_reports/${id}`,

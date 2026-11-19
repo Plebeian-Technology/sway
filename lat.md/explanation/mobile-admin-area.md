@@ -147,6 +147,12 @@ The tool id `registration_funnel` maps to the `AdminRegistrationFunnel` route. [
 
 Top Friction Points ranks the transitions by lost users or by drop-off rate, switched by a second `SegmentedControl`, with the rate coloured at 15% and 30%. Geocoding latency shows the median, 95th percentile, average with its range and the sample count, and a verdict: healthy up to a 5 second median, elevated above it, or a note when no sample exists. Each referral source is a card with its visitors, registrations, first votes and the two rates, and its Inspect button sets the source filter. The web page's table becomes cards, and its 15 second poll becomes a refetch on the stack's `focus` event plus pull to refresh. An empty list shows its web wording, and a failed request shows the server's message in an `EmptyState`.
 
+## The pipeline runs screen
+
+[[mobile/src/screens/admin/PipelineRunsScreen.tsx#PipelineRunsScreen]] lists the latest 50 legislation pipeline runs, one card per run, with every column of the web table.
+
+The tool id `pipeline_runs` maps to the `AdminPipelineRuns` route. [[mobile/src/hooks/admin/usePipelineRuns.ts#usePipelineRuns]] fetches `GET /pipeline_runs`, which [[app/controllers/pipeline_runs_controller.rb]] already answered as `{ runs: [...] }` to a mobile request, so the backend is unchanged. Each card shows the run number, the status (coloured by the web page's tone table), the kind ("single" or "all bills"), the bill's external id, the started and completed times, the succeeded, failed and total bill counts, and the failing stage; a missing value shows a dash. A time reads as relative age plus the exact ISO value, which replaces the web page's hover tooltip. The screen is read-only: force fail and orphan cleanup stay with the bill creator. The web page's ActionCable subscription and poll become pull to refresh. An empty list shows "No pipeline runs yet.", and a failed request shows the server's message in an `EmptyState`.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
