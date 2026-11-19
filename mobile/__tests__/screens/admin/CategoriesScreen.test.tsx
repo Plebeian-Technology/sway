@@ -105,19 +105,62 @@ describe("CategoriesScreen", () => {
         expect(screen.queryByTestId("admin-category-1-name-input")).toBeNull();
     });
 
-    it("sends a PATCH that toggles active", async () => {
+    it("activates an inactive category at once", async () => {
+        mockApiPatch.mockResolvedValue({ ...parks, active: true });
+        render(<CategoriesScreen />);
+
+        await screen.findByText("Parks");
+        expect(screen.getByTestId("admin-category-2-active")).toHaveTextContent("Activate");
+        fireEvent.press(screen.getByTestId("admin-category-2-active"));
+
+        expect(alertSpy).not.toHaveBeenCalled();
+        await waitFor(() =>
+            expect(mockApiPatch).toHaveBeenCalledWith("/admin/categories/2", { category: { active: true } }),
+        );
+        await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+    });
+
+    it("deactivates only after the admin confirms", async () => {
         mockApiPatch.mockResolvedValue({ ...housing, active: false });
         render(<CategoriesScreen />);
 
         await screen.findByText("Housing");
         expect(screen.getByTestId("admin-category-1-active")).toHaveTextContent("Deactivate");
-        expect(screen.getByTestId("admin-category-2-active")).toHaveTextContent("Activate");
         fireEvent.press(screen.getByTestId("admin-category-1-active"));
+
+        expect(alertSpy).toHaveBeenCalledWith(
+            "Deactivate category?",
+            "This removes the category from the taxonomy and the bill filter chips immediately. Existing bill assignments are preserved.",
+            expect.any(Array),
+        );
+        expect(mockApiPatch).not.toHaveBeenCalled();
+
+        pressConfirmButton(alertSpy, "Deactivate");
 
         await waitFor(() =>
             expect(mockApiPatch).toHaveBeenCalledWith("/admin/categories/1", { category: { active: false } }),
         );
         await waitFor(() => expect(mockApiGet).toHaveBeenCalledTimes(2));
+    });
+
+    it("keeps the category active when the admin declines to deactivate it", async () => {
+        render(<CategoriesScreen />);
+
+        await screen.findByText("Housing");
+        fireEvent.press(screen.getByTestId("admin-category-1-active"));
+        const buttons = alertSpy.mock.calls[0][2] as { text: string; style?: string }[];
+
+        expect(buttons.map((button) => button.text)).toEqual(["Keep active", "Deactivate"]);
+        expect(buttons[0].style).toBe("cancel");
+        expect(mockApiPatch).not.toHaveBeenCalled();
+    });
+
+    it("shows Delete only on inactive categories", async () => {
+        render(<CategoriesScreen />);
+
+        await screen.findByText("Housing");
+        expect(screen.queryByTestId("admin-category-1-delete")).toBeNull();
+        expect(screen.getByTestId("admin-category-2-delete")).toBeTruthy();
     });
 
     it("deletes only after the admin confirms", async () => {
@@ -127,6 +170,12 @@ describe("CategoriesScreen", () => {
         await screen.findByText("Parks");
         fireEvent.press(screen.getByTestId("admin-category-2-delete"));
         expect(mockApiDelete).not.toHaveBeenCalled();
+
+        expect(alertSpy).toHaveBeenCalledWith(
+            "Delete category?",
+            'This permanently deletes "Parks" and removes it from 1 bill. This cannot be undone.',
+            expect.any(Array),
+        );
 
         pressConfirmButton(alertSpy, "Delete");
 
@@ -140,12 +189,12 @@ describe("CategoriesScreen", () => {
         );
         render(<CategoriesScreen />);
 
-        await screen.findByText("Housing");
-        fireEvent.press(screen.getByTestId("admin-category-1-delete"));
+        await screen.findByText("Parks");
+        fireEvent.press(screen.getByTestId("admin-category-2-delete"));
         pressConfirmButton(alertSpy, "Delete");
 
         expect(await screen.findByText("Deactivate the category before deleting it.")).toBeTruthy();
-        expect(screen.getByText("Housing")).toBeTruthy();
+        expect(screen.getByText("Parks")).toBeTruthy();
         expect(mockApiGet).toHaveBeenCalledTimes(1);
     });
 

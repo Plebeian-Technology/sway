@@ -75,9 +75,9 @@ A row's button opens an inline form of four fields: street, postal code, latitud
 
 The tool id `categories` maps to the `AdminCategories` route. [[mobile/src/hooks/admin/useAdminCategories.ts#useAdminCategories]] fetches `GET /admin/categories`, which [[app/controllers/admin/categories_controller.rb]] answers as `{ categories: [{ id, name, slug, active, bill_count }] }` ([[admin-categories-controller-design#Categories.tsx, the frontend page]]). The controller already answered JSON, so the screen needed no backend change.
 
-The add form at the foot posts `{ category: { name } }` to `/admin/categories`. A row's Rename opens an inline field and saves `{ category: { name } }` with a PATCH; Activate and Deactivate send `{ category: { active } }` to the same path. Delete asks through a native `Alert` and then sends DELETE. A 422 shows the server's message under the add field or in the row, as [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads it, and a successful write reloads the list.
+The add form at the foot posts `{ category: { name } }` to `/admin/categories`. A row's Rename opens an inline field and saves `{ category: { name } }` with a PATCH. Activate and Deactivate send `{ category: { active } }` to the same path. A 422 shows the server's message under the add field or in the row, as [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads it, and a successful write reloads the list.
 
-The Delete button shows on every row, not only inactive ones as on the web page, so the server's "Deactivate the category before deleting it." message reaches the admin. A 204 resolves `run` to `null` and a refusal to `undefined`, so the row reloads the list only after a successful delete. Deactivate sends at once, without the web page's confirmation.
+The rows follow [[app/frontend/components/admin/categories/CategoryRow.tsx]]. Deactivate and Delete each ask through a native `Alert` with the web page's wording (Deactivate says existing bill assignments are preserved; Delete names the bill count) and send the request only on confirm. Activate sends at once. Delete shows only on inactive rows, because the controller refuses to delete an active category. A 204 resolves `run` to `null` and a refusal to `undefined`, so the row reloads the list only after a successful delete.
 
 ## Admin writes
 

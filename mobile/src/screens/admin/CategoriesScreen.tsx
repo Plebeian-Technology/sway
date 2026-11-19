@@ -66,9 +66,20 @@ const CategoryRow = ({ category, onChanged }: { category: AdminCategory; onChang
         onChanged();
     };
 
-    const toggleActive = async () => {
-        const saved = await update.run({ category: { active: !category.active } });
+    const setActive = async (active: boolean) => {
+        const saved = await update.run({ category: { active } });
         if (saved !== undefined) onChanged();
+    };
+
+    const confirmDeactivate = () => {
+        Alert.alert(
+            "Deactivate category?",
+            "This removes the category from the taxonomy and the bill filter chips immediately. Existing bill assignments are preserved.",
+            [
+                { text: "Keep active", style: "cancel" },
+                { text: "Deactivate", style: "destructive", onPress: () => void setActive(false) },
+            ],
+        );
     };
 
     const deleteCategory = async () => {
@@ -77,7 +88,11 @@ const CategoryRow = ({ category, onChanged }: { category: AdminCategory; onChang
     };
 
     const confirmDelete = () => {
-        Alert.alert("Delete category?", `This permanently deletes "${category.name}". This cannot be undone.`, [
+        const description =
+            category.bill_count > 0
+                ? `This permanently deletes "${category.name}" and removes it from ${billCountLabel(category.bill_count)}. This cannot be undone.`
+                : `This permanently deletes "${category.name}". This cannot be undone.`;
+        Alert.alert("Delete category?", description, [
             { text: "Keep", style: "cancel" },
             { text: "Delete", style: "destructive", onPress: () => void deleteCategory() },
         ]);
@@ -150,27 +165,42 @@ const CategoryRow = ({ category, onChanged }: { category: AdminCategory; onChang
                             Rename
                         </Text>
                     </Pressable>
-                    <Pressable
-                        testID={`admin-category-${category.id}-active`}
-                        variant="outline"
-                        disabled={busy}
-                        onPress={() => void toggleActive()}
-                    >
-                        <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                            {category.active ? "Deactivate" : "Activate"}
-                        </Text>
-                    </Pressable>
-                    <Pressable
-                        testID={`admin-category-${category.id}-delete`}
-                        variant="destructive"
-                        disabled={busy}
-                        onPress={confirmDelete}
-                        accessibilityLabel={`Delete ${category.name}`}
-                    >
-                        <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
-                            Delete
-                        </Text>
-                    </Pressable>
+                    {category.active ? (
+                        <Pressable
+                            testID={`admin-category-${category.id}-active`}
+                            variant="outline"
+                            disabled={busy}
+                            onPress={confirmDeactivate}
+                        >
+                            <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                                Deactivate
+                            </Text>
+                        </Pressable>
+                    ) : (
+                        <>
+                            <Pressable
+                                testID={`admin-category-${category.id}-active`}
+                                variant="outline"
+                                disabled={busy}
+                                onPress={() => void setActive(true)}
+                            >
+                                <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                                    Activate
+                                </Text>
+                            </Pressable>
+                            <Pressable
+                                testID={`admin-category-${category.id}-delete`}
+                                variant="destructive"
+                                disabled={busy}
+                                onPress={confirmDelete}
+                                accessibilityLabel={`Delete ${category.name}`}
+                            >
+                                <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
+                                    Delete
+                                </Text>
+                            </Pressable>
+                        </>
+                    )}
                 </View>
             )}
             {errorMessage ? (
