@@ -257,14 +257,13 @@ class BillsController < ApplicationController
       # @lat: [[bootstrap-caching-and-rate-limiting#Why locale and featured bill are cached per locale]]
       Api::V1::BootstrapController.expire_botm_cache(b.sway_locale_id)
       # @lat: [[bill-creator-shell#The Bill Creator shell#Why the Bill Creator carries query parameters across navigation]]
-      redirect_to creator_bill_creator_path(b.id, {event_key: "legislator_votes"}),
-        notice: "Bill Created"
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      respond_after_write(creator_bill_creator_path(b.id, {event_key: "legislator_votes"}),
+        notice: "Bill Created",
+        json: BillResource.new(b).serializable_hash)
     else
       SwayLogging.error("bills.save_failed", errors: b.errors.full_messages)
-      redirect_to new_bill_creator_path({event_key: "bill"}),
-        inertia: {
-          errors: b.errors
-        }
+      respond_after_write(new_bill_creator_path({event_key: "bill"}), errors: b.errors)
     end
   rescue => e
     # @lat: [[bills-controller-design#BillsController design#Bill creation rescues ordinary application failures]]
@@ -275,12 +274,7 @@ class BillsController < ApplicationController
       sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale&.id,
       legislator_id: bill_params[:legislator_id]
     )
-    redirect_to new_bill_creator_path({event_key: "bill"}),
-      inertia: {
-        errors: {
-          external_id: e.message
-        }
-      }
+    respond_after_write(new_bill_creator_path({event_key: "bill"}), errors: {external_id: e.message})
   end
 
   def update
@@ -415,19 +409,14 @@ class BillsController < ApplicationController
         Api::V1::BootstrapController.expire_botm_cache(locale_id)
       end
       # @lat: [[bill-creator-shell#The Bill Creator shell#Why a bill save carries its own return tab#Summary saves own their success toast]]
-      redirect_to update_return_path, notice: update_success_notice
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      respond_after_write(update_return_path, notice: update_success_notice, json: BillResource.new(@bill).serializable_hash)
     else
-      redirect_to update_return_path,
-        inertia: {
-          errors: @bill.errors
-        }
+      respond_after_write(update_return_path, errors: @bill.errors)
     end
   rescue ActiveRecord::RecordInvalid => e
     @bill.reload
-    redirect_to update_return_path,
-      inertia: {
-        errors: {base: e.message}
-      }
+    respond_after_write(update_return_path, errors: {base: e.message})
   end
 
   def destroy

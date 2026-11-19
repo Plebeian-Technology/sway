@@ -1591,6 +1591,50 @@ RSpec.describe "BillsController", type: :request do
     it "does not create a new bill, because the sway_locale_id is missing" do
       spec_create_failure.call(:sway_locale_id)
     end
+
+    describe "for a bearer request" do
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      it "answers with the created bill as JSON" do
+        sway_locale, user = setup
+        bill, params = build_bill_params.call(sway_locale)
+
+        post "/bills", params: params.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        created_bill = Bill.last!
+        expect(response.parsed_body).to include("id" => created_bill.id, "external_id" => bill.external_id)
+      end
+
+      it "answers an invalid bill with 422 and the field errors" do
+        sway_locale, user = setup
+        _bill, params = build_bill_params.call(sway_locale, partial_bill: {title: nil})
+
+        expect {
+          post "/bills", params: params.to_json,
+            headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+        }.not_to change(Bill, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.dig("details", "title").first).to include("can't be blank")
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        _bill, params = build_bill_params.call(sway_locale)
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        post "/bills", params: params.to_json,
+          headers: authenticate_as(non_admin).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+      end
+    end
   end
 
   describe "PUT /update" do
@@ -1690,6 +1734,62 @@ RSpec.describe "BillsController", type: :request do
       put "/bills/#{bill.id}", params: {summary: "Failed replacement summary", news_usage: "none"}
 
       expect(bill.reload.summary).to eq("Original bill text before failure")
+    end
+
+    it "redirects an invalid web update to the Creator tab with the field errors" do
+      sway_locale, _user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+
+      put "/bills/#{bill.id}", params: {title: ""}
+
+      expect(response).to redirect_to(creator_bill_creator_path(bill.id, {event_key: "legislator_votes"}))
+      follow_redirect!
+      expect(inertia.props[:errors][:title].first).to include("can't be blank")
+    end
+
+    describe "for a bearer request" do
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      it "answers with the updated bill as JSON" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        patch "/bills/#{bill.id}", params: {title: "Brand New Title", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("id" => bill.id, "title" => "Brand New Title")
+        expect(bill.reload.title).to eq("Brand New Title")
+      end
+
+      it "answers an invalid update with 422 and the field errors" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        patch "/bills/#{bill.id}", params: {title: "", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "details", "title").first).to include("can't be blank")
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        patch "/bills/#{bill.id}", params: {title: "Brand New Title"}.to_json,
+          headers: authenticate_as(non_admin).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+        expect(bill.reload.title).not_to eq("Brand New Title")
+      end
     end
 
     describe "Validate manual news summary publication" do
