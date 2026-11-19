@@ -3,6 +3,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AdminHubScreen from "../screens/admin/AdminHubScreen";
+import BillSummaryReportsScreen from "../screens/admin/BillSummaryReportsScreen";
 import CategoriesScreen from "../screens/admin/CategoriesScreen";
 import LlmSettingsScreen from "../screens/admin/LlmSettingsScreen";
 import LocalesScreen from "../screens/admin/LocalesScreen";
@@ -27,6 +28,7 @@ export default function AdminStack() {
             <Stack.Screen name="AdminLocales" component={LocalesScreen} options={fromHub} />
             <Stack.Screen name="AdminCategories" component={CategoriesScreen} options={fromHub} />
             <Stack.Screen name="AdminLlmSettings" component={LlmSettingsScreen} options={fromHub} />
+            <Stack.Screen name="AdminBillSummaryReports" component={BillSummaryReportsScreen} options={fromHub} />
         </Stack.Navigator>
     );
 }

@@ -101,6 +101,16 @@ A removal sends `DELETE /admin/llm_settings/remove_model` with `model_id` in the
 
 The three endpoints answer the model lists but not `available_openrouter_models`. After a good write the section therefore asks the screen to refetch `GET /admin/llm_settings` instead of reading the answer. The refetch replaces the data without remounting the form, so unsaved choices survive. A 422 shows the server's `error` message beside the control that failed, and nothing refetches.
 
+## The bill summary reports screen
+
+[[mobile/src/screens/admin/BillSummaryReportsScreen.tsx#BillSummaryReportsScreen]] lists the reports readers filed about bill summaries, filtered by status and locale, with a count per status.
+
+The tool id `bill_summary_reports` maps to the `AdminBillSummaryReports` route. [[mobile/src/hooks/admin/useBillSummaryReports.ts#useBillSummaryReports]] fetches `GET /admin/bill_summary_reports` with a `status` query and, when a locale is chosen, a `locale_id` query. [[app/controllers/admin/bill_summary_reports_controller.rb]] answers a mobile request with the web page's props: `reports`, `status_counts`, `locales`, `filter_status` and `filter_locale_id` ([[bill-summary-reporting#Bill summary reporting#Admin triage and remediation]]). The index answered a bare array before, which only its specs read.
+
+Five chips show All, Pending, Reviewed, Resolved and Dismissed with the server's count in brackets. A second row of chips holds All locales and one chip per locale. Choosing a chip refetches with the new query and keeps the other filter. The list stays on screen while the refetch runs. The cards show the bill, locale, reason, the first lines of the reader's details, the reporter and the filing time. The web page's keyword search and its inline Resolve and Dismiss actions are not on this screen. An empty result shows an `EmptyState`, and a failed request shows the server's message there.
+
+Each card is pressable and does nothing yet; the detail screen takes the press over.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.

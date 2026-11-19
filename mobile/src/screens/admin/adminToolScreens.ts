@@ -8,4 +8,5 @@ export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList,
     locales: "AdminLocales",
     categories: "AdminCategories",
     llm_settings: "AdminLlmSettings",
+    bill_summary_reports: "AdminBillSummaryReports",
 };

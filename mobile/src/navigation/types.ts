@@ -78,4 +78,5 @@ export type AdminStackParamList = {
     AdminLocales: undefined;
     AdminCategories: undefined;
     AdminLlmSettings: undefined;
+    AdminBillSummaryReports: undefined;
 };
