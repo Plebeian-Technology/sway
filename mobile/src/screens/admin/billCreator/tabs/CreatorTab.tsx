@@ -8,6 +8,7 @@ import LegislatorVotesSection, {
     type CreatorLegislatorVote,
     type CreatorVoteLegislator,
 } from "../../../../components/admin/billCreator/LegislatorVotesSection";
+import OrganizationsSection from "../../../../components/admin/billCreator/OrganizationsSection";
 import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
 import type { AdminStackParamList } from "../../../../navigation/types";
 
@@ -37,6 +38,7 @@ export default function CreatorTab({ billId, data, refresh }: BillCreatorTabProp
                 refreshedAt={(data.legislator_votes_refreshed_at ?? null) as string | null}
                 source={(data.legislator_votes_source ?? null) as string | null}
             />
+            <OrganizationsSection billId={billId} data={data} refresh={refresh} />
         </>
     );
 }

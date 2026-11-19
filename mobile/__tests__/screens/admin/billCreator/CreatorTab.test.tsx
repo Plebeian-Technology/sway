@@ -28,6 +28,15 @@ jest.mock("../../../../src/components/admin/billCreator/LegislatorVotesSection",
     };
 });
 
+const mockOrganizationsSection = jest.fn();
+jest.mock("../../../../src/components/admin/billCreator/OrganizationsSection", () => ({
+    __esModule: true,
+    default: (props: Record<string, unknown>) => {
+        mockOrganizationsSection(props);
+        return null;
+    },
+}));
+
 import CreatorTab from "../../../../src/screens/admin/billCreator/tabs/CreatorTab";
 
 // @lat: [[mobile-bill-creator#Sections#The bill fields section]]
@@ -79,5 +88,14 @@ describe("CreatorTab", () => {
             refreshedAt: "2026-11-18 09:30",
             source: "legistar",
         });
+    });
+
+    // @lat: [[mobile-bill-creator#Sections#The organizations section]]
+    it("gives the organizations section the bill id, the tab's data and refresh", () => {
+        const refresh = jest.fn();
+        const data = { bill: undefined, organizations: [], tab_key: "creator" };
+        render(<CreatorTab billId={42} data={data} refresh={refresh} />);
+
+        expect(mockOrganizationsSection).toHaveBeenCalledWith({ billId: 42, data, refresh });
     });
 });
