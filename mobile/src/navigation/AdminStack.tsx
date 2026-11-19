@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AdminHubScreen from "../screens/admin/AdminHubScreen";
 import SharedAddressesScreen from "../screens/admin/SharedAddressesScreen";
+import SystemPromptsScreen from "../screens/admin/SystemPromptsScreen";
 import UserAddressChangesScreen from "../screens/admin/UserAddressChangesScreen";
 import { useTheme } from "../theme/ThemeProvider";
 import { navigatorScreenOptions, pushedScreenOptions } from "./headerOptions";
@@ -19,6 +20,7 @@ export default function AdminStack() {
             <Stack.Screen name="AdminHub" component={AdminHubScreen} />
             <Stack.Screen name="AdminSharedAddresses" component={SharedAddressesScreen} options={fromHub} />
             <Stack.Screen name="AdminUserAddressChanges" component={UserAddressChangesScreen} options={fromHub} />
+            <Stack.Screen name="AdminSystemPrompts" component={SystemPromptsScreen} options={fromHub} />
         </Stack.Navigator>
     );
 }

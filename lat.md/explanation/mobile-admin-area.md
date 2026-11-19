@@ -55,6 +55,12 @@ The tool id `shared_addresses` maps to the `AdminSharedAddresses` route. [[mobil
 
 The tool id `user_address_changes` maps to the `AdminUserAddressChanges` route. [[mobile/src/hooks/admin/useUserAddressChanges.ts#useUserAddressChanges]] fetches `GET /admin/user_address_changes`, which [[app/controllers/admin/user_address_changes_controller.rb]] answers as `{ user_address_changes: [...] }` to a mobile request, serialized by `UserAddressChangeResource` as on the web. Each card shows the user, the switch count, the cross-district, cross-locale and voted-before-switch flags, and the address, locale, district, legislator and prior vote lines. The screen is read-only and carries no street or coordinate. An empty list shows an `EmptyState`, and a failed request shows the server's message there.
 
+## The system prompts screen
+
+[[mobile/src/screens/admin/SystemPromptsScreen.tsx#SystemPromptsScreen]] shows the two models and one expandable row per standing instruction Sway sends the model.
+
+The tool id `system_prompts` maps to the `AdminSystemPrompts` route. [[mobile/src/hooks/admin/useSystemPrompts.ts#useSystemPrompts]] fetches `GET /admin/system_prompts`, which [[app/controllers/admin/system_prompts_controller.rb]] answers with the same props as the web page ([[admin-system-prompts-page#Reading the instructions Sway sends the model]]). A row shows the label, the locale name when the prompt is per locale, and a character count or "Not sent". Pressing the row reveals the purpose, builder, model and the full text as selectable text in a height-capped scroll area; an unavailable prompt shows its reason there instead. The screen is read-only. A failed request shows the server's message in an `EmptyState`.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.

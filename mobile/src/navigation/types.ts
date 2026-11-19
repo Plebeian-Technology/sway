@@ -74,4 +74,5 @@ export type AdminStackParamList = {
     AdminHub: undefined;
     AdminSharedAddresses: undefined;
     AdminUserAddressChanges: undefined;
+    AdminSystemPrompts: undefined;
 };

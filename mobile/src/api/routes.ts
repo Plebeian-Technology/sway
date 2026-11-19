@@ -31,6 +31,7 @@ export const Routes = {
     admin: () => "/admin",
     adminSharedAddresses: () => "/admin/shared_addresses",
     adminUserAddressChanges: () => "/admin/user_address_changes",
+    adminSystemPrompts: () => "/admin/system_prompts",
 
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",
