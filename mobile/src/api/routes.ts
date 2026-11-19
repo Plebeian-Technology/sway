@@ -29,6 +29,7 @@ export const Routes = {
     feed: () => "/feed",
 
     admin: () => "/admin",
+    adminSharedAddresses: () => "/admin/shared_addresses",
 
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",

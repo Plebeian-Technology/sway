@@ -72,4 +72,5 @@ export type ProfileStackParamList = {
 // @lat: [[mobile-admin-area#The admin stack]]
 export type AdminStackParamList = {
     AdminHub: undefined;
+    AdminSharedAddresses: undefined;
 };

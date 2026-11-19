@@ -3,17 +3,20 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AdminHubScreen from "../screens/admin/AdminHubScreen";
+import SharedAddressesScreen from "../screens/admin/SharedAddressesScreen";
 import { useTheme } from "../theme/ThemeProvider";
-import { navigatorScreenOptions } from "./headerOptions";
+import { navigatorScreenOptions, pushedScreenOptions } from "./headerOptions";
 import type { AdminStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 
 export default function AdminStack() {
     const { colorScheme } = useTheme();
+    const fromHub = pushedScreenOptions(colorScheme, "Admin");
     return (
         <Stack.Navigator screenOptions={navigatorScreenOptions(colorScheme)}>
             <Stack.Screen name="AdminHub" component={AdminHubScreen} />
+            <Stack.Screen name="AdminSharedAddresses" component={SharedAddressesScreen} options={fromHub} />
         </Stack.Navigator>
     );
 }

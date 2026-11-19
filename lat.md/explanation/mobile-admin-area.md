@@ -43,6 +43,12 @@ Read hooks for admin screens live in `mobile/src/hooks/admin/`.
 
 The map starts empty, so every tool shows "Not on mobile yet" until its screen ships. Keeping the map apart from the screen lets the hub show the server's full tool list without importing any tool screen, and lets one edit per tool turn a row from disabled to tappable.
 
+## The shared addresses screen
+
+[[mobile/src/screens/admin/SharedAddressesScreen.tsx#SharedAddressesScreen]] lists the addresses that more than one registered user has given, each with its address id and user count.
+
+The tool id `shared_addresses` maps to the `AdminSharedAddresses` route. [[mobile/src/hooks/admin/useSharedAddresses.ts#useSharedAddresses]] fetches `GET /admin/shared_addresses`, which [[app/controllers/admin/shared_addresses_controller.rb]] answers as `{ shared_addresses: [{ address_ids, user_count }] }` to a mobile request. The screen is read-only and carries no street or coordinate, the same counts-only rule as the web page ([[personal-detail-encryption#Why the shared-addresses admin page reports counts only]]). An empty list shows an `EmptyState`, and a failed request shows the server's message there.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
