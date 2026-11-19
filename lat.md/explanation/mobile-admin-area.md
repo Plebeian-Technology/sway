@@ -79,16 +79,31 @@ The add form at the foot posts `{ category: { name } }` to `/admin/categories`. 
 
 The rows follow [[app/frontend/components/admin/categories/CategoryRow.tsx]]. Deactivate and Delete each ask through a native `Alert` with the web page's wording (Deactivate says existing bill assignments are preserved; Delete names the bill count) and send the request only on confirm. Activate sends at once. Delete shows only on inactive rows, because the controller refuses to delete an active category. A 204 resolves `run` to `null` and a refusal to `undefined`, so the row reloads the list only after a successful delete.
 
+## The LLM settings screen
+
+[[mobile/src/screens/admin/LlmSettingsScreen.tsx#LlmSettingsScreen]] shows the model Sway uses for each task and lets an admin change them, with the web page's stale-save guard.
+
+The tool id `llm_settings` maps to the `AdminLlmSettings` route. [[mobile/src/hooks/admin/useAdminLlmSettings.ts#useAdminLlmSettings]] fetches `GET /admin/llm_settings`, which [[app/controllers/admin/llm_settings_controller.rb]] already answered as JSON, so the screen needed no backend change. The screen reads the model lists, the four current models, the two reasoning levels, the batch flag and the last-changed line. It leaves the OpenRouter catalog props alone.
+
+Each of the four models (summarization, classification, decision, extraction) is a row with its current label and a Change button that opens an inline list of the offered models. A model the server marks not selectable shows disabled, and a current model missing from its list shows its raw id. The two Claude tasks show a Low, Medium and High level control only while the chosen model supports reasoning, and choosing a model without that support clears the level. The batch switch is a `PreferenceToggle`.
+
+Save sends `PATCH /admin/llm_settings` with an `admin_setting` body holding only the changed fields plus an `expected` block of the loaded value for each, as [[admin-llm-settings-stale-write-race#Two admins, one LLM settings form#The fix: a per-field baseline and an expected guard]] describes. A null reasoning level travels as an empty string. Save stays off until a field changes.
+
+A 409 shows the mobile copy "Someone else changed these settings. Pull to refresh, then save again." in place of the server's message, which addresses API callers. The screen keys on `errorStatus` from [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]]. Every load, whether a pull to refresh or the reload after a good save, remounts the form from the fresh data, so the draft, the expected block and the error all reset together. Pull to refresh replaces the web page's polling and its changed-elsewhere banner. Any other failure shows the server's message above Save.
+
+The model catalog (refresh, add, remove) is not on this screen. A catalog section belongs below the settings form.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
 
-The call is `const { run, loading, errorMessage, fieldErrors } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
+The call is `const { run, loading, errorMessage, fieldErrors, errorStatus } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
 
 `run(body?)` resolves to the parsed response on success, to `null` when a successful response has no body (a 204 DELETE), and to `undefined` on failure. A screen tells success from failure with `result === undefined`. `run` never throws, so a screen reads `errorMessage` instead of wrapping each call in `try`. Each call clears the previous error first.
 
 - `loading` is true from the start of `run` until the request settles.
 - `errorMessage` is the server's message for an `ApiRequestError` (including `NetworkError`), the offline message when the device is offline, and [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] for anything else.
+- `errorStatus` is the HTTP status of a failed request, or `null`. A screen reads it to replace the server's message for one status, as the LLM settings screen does for 409.
 - `fieldErrors` is the error's `details` as the server sent it, or `null`. Its values are `unknown` because real endpoints send arrays, nested hashes, plain strings and arrays of row hashes, so the screen narrows what it reads.
 - A screen that needs an extra key of a 422 body (the news article `receipt_status`, for example) reads it from `ApiRequestError.body`, which holds the parsed response body. The hook keeps only the message and field errors.
 

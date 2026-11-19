@@ -33,6 +33,7 @@ describe("useAdminMutation", () => {
         expect(result.current.loading).toBe(false);
         expect(result.current.errorMessage).toBeNull();
         expect(result.current.fieldErrors).toBeNull();
+        expect(result.current.errorStatus).toBeNull();
     });
 
     test("patch sends the body and returns the response", async () => {
@@ -98,6 +99,20 @@ describe("useAdminMutation", () => {
         expect(result.current.loading).toBe(false);
         expect(result.current.errorMessage).toBe("Name is blank");
         expect(result.current.fieldErrors).toEqual({ name: ["is blank"] });
+    });
+
+    test("reports the HTTP status of a failed request until the next run", async () => {
+        mockPatch.mockRejectedValueOnce(new ApiRequestError("stale_write", "Moved.", undefined, 409));
+        mockPatch.mockResolvedValueOnce({});
+        const { result } = renderHook(() => useAdminMutation("patch", "/x"));
+        await act(async () => {
+            await result.current.run({});
+        });
+        expect(result.current.errorStatus).toBe(409);
+        await act(async () => {
+            await result.current.run({});
+        });
+        expect(result.current.errorStatus).toBeNull();
     });
 
     test("run resolves to undefined when the request fails", async () => {

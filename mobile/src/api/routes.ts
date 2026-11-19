@@ -36,6 +36,7 @@ export const Routes = {
     adminLocale: (id: number) => `/admin/locales/${id}`,
     adminCategories: () => "/admin/categories",
     adminCategory: (id: number) => `/admin/categories/${id}`,
+    adminLlmSettings: () => "/admin/llm_settings",
 
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",

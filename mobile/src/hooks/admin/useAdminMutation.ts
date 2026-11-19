@@ -15,6 +15,7 @@ export interface UseAdminMutationResult<TResponse> {
     loading: boolean;
     errorMessage: string | null;
     fieldErrors: Record<string, unknown> | null;
+    errorStatus: number | null;
 }
 
 export function useAdminMutation<TResponse = void>(
@@ -25,12 +26,14 @@ export function useAdminMutation<TResponse = void>(
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, unknown> | null>(null);
+    const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
     const run = useCallback(
         async (body?: unknown): Promise<TResponse | null | undefined> => {
             setLoading(true);
             setErrorMessage(null);
             setFieldErrors(null);
+            setErrorStatus(null);
             try {
                 assertOnlineForWrite(reach.isOnline);
                 const response =
@@ -42,6 +45,7 @@ export function useAdminMutation<TResponse = void>(
                 if (e instanceof ApiRequestError) {
                     setErrorMessage(e.message);
                     setFieldErrors(e.details ?? null);
+                    setErrorStatus(e.status ?? null);
                 } else if (e instanceof Error && e.message === "offline_write_blocked") {
                     setErrorMessage(ADMIN_OFFLINE_MESSAGE);
                 } else {
@@ -55,5 +59,5 @@ export function useAdminMutation<TResponse = void>(
         [method, path, reach.isOnline],
     );
 
-    return { run, loading, errorMessage, fieldErrors };
+    return { run, loading, errorMessage, fieldErrors, errorStatus };
 }

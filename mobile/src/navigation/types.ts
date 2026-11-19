@@ -77,4 +77,5 @@ export type AdminStackParamList = {
     AdminSystemPrompts: undefined;
     AdminLocales: undefined;
     AdminCategories: undefined;
+    AdminLlmSettings: undefined;
 };

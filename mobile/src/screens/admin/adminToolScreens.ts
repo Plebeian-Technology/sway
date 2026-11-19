@@ -7,4 +7,5 @@ export const adminToolScreens: Record<string, Exclude<keyof AdminStackParamList,
     system_prompts: "AdminSystemPrompts",
     locales: "AdminLocales",
     categories: "AdminCategories",
+    llm_settings: "AdminLlmSettings",
 };
