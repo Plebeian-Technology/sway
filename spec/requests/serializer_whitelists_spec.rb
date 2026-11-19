@@ -911,8 +911,9 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       get "/admin/bill_summary_reports.json"
 
       body = response.parsed_body
-      expect(body.length).to eq(1)
-      expect(body.first.keys).to match_array(
+      expect(body.keys).to match_array(%w[reports status_counts locales filter_status filter_locale_id])
+      expect(body["reports"].length).to eq(1)
+      expect(body["reports"].first.keys).to match_array(
         %w[
           id bill_id user_id reason details status summary_snapshot summary_ai_unreviewed
           resolved_at admin_notes created_at updated_at reporter_display reason_label

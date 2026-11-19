@@ -24,25 +24,26 @@ module Admin
 
       serialized_reports = BillSummaryReportResource.new(reports).serializable_hash
 
+      props = {
+        reports: serialized_reports,
+        filter_status: params[:status].presence || "all",
+        filter_locale_id: params[:locale_id].presence || params[:sway_locale_id].presence,
+        locales: SwayLocale.all.map { |l| {id: l.id, name: l.name} },
+        status_counts: {
+          all: BillSummaryReport.joins(:bill).count,
+          pending: BillSummaryReport.joins(:bill).pending.count,
+          reviewed: BillSummaryReport.joins(:bill).reviewed.count,
+          resolved: BillSummaryReport.joins(:bill).resolved.count,
+          dismissed: BillSummaryReport.joins(:bill).dismissed.count
+        }
+      }
+
       respond_to do |format|
         format.html do
-          props = {
-            reports: serialized_reports,
-            filter_status: params[:status].presence || "all",
-            filter_locale_id: params[:locale_id].presence || params[:sway_locale_id].presence,
-            locales: SwayLocale.all.map { |l| {id: l.id, name: l.name} },
-            status_counts: {
-              all: BillSummaryReport.joins(:bill).count,
-              pending: BillSummaryReport.joins(:bill).pending.count,
-              reviewed: BillSummaryReport.joins(:bill).reviewed.count,
-              resolved: BillSummaryReport.joins(:bill).resolved.count,
-              dismissed: BillSummaryReport.joins(:bill).dismissed.count
-            }
-          }
           render_inertia_or_json(page: Pages::ADMIN_BILL_SUMMARY_REPORTS, props: props)
         end
         format.json do
-          render json: serialized_reports, status: :ok
+          render json: props, status: :ok
         end
       end
     end
