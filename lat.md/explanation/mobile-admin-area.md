@@ -42,3 +42,20 @@ Read hooks for admin screens live in `mobile/src/hooks/admin/`.
 [[mobile/src/screens/admin/adminToolScreens.ts#adminToolScreens]] maps a tool id from `GET /admin` to the name of an admin stack route.
 
 The map starts empty, so every tool shows "Not on mobile yet" until its screen ships. Keeping the map apart from the screen lets the hub show the server's full tool list without importing any tool screen, and lets one edit per tool turn a row from disabled to tappable.
+
+## Admin writes
+
+Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
+
+The call is `const { run, loading, errorMessage, fieldErrors } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
+
+`run(body?)` resolves to the parsed response on success and to `undefined` on failure. It never throws, so a screen branches on the result and reads `errorMessage` instead of wrapping each call in `try`. Each call clears the previous error first.
+
+- `loading` is true from the start of `run` until the request settles.
+- `errorMessage` is the server's message for an `ApiRequestError` (including `NetworkError`), the offline message when the device is offline, and [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] for anything else.
+- `fieldErrors` is the error's `details` as the server sent it, or `null`. Its values are `unknown` because real endpoints send arrays, nested hashes, plain strings and arrays of row hashes, so the screen narrows what it reads.
+- A screen that needs an extra key of a 422 body (the news article `receipt_status`, for example) reads it from `ApiRequestError.body`, which holds the parsed response body. The hook keeps only the message and field errors.
+
+The hook calls `assertOnlineForWrite` first ([[mobile-offline-cache-hook#Writes must check isOnline first]]), so an offline device sends nothing and `errorMessage` reads "You need a connection to make this change."
+
+Admin endpoints answer `{ error: "some message" }` as often as the `error` object. [[mobile-api-client-contract#Errors]] lists how the client reads each shape, so `errorMessage` carries the endpoint's own words in every case.
