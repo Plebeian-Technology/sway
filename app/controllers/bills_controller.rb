@@ -260,7 +260,7 @@ class BillsController < ApplicationController
       # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
       respond_after_write(creator_bill_creator_path(b.id, {event_key: "legislator_votes"}),
         notice: "Bill Created",
-        json: BillResource.new(b).serializable_hash)
+        json: written_bill_json(b))
     else
       SwayLogging.error("bills.save_failed", errors: b.errors.full_messages)
       respond_after_write(new_bill_creator_path({event_key: "bill"}), errors: b.errors)
@@ -410,7 +410,7 @@ class BillsController < ApplicationController
       end
       # @lat: [[bill-creator-shell#The Bill Creator shell#Why a bill save carries its own return tab#Summary saves own their success toast]]
       # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
-      respond_after_write(update_return_path, notice: update_success_notice, json: BillResource.new(@bill).serializable_hash)
+      respond_after_write(update_return_path, notice: update_success_notice, json: written_bill_json(@bill))
     else
       respond_after_write(update_return_path, errors: @bill.errors)
     end
@@ -830,6 +830,12 @@ class BillsController < ApplicationController
   end
 
   private
+
+  def written_bill_json(bill)
+    return {} unless mobile_api_request?
+
+    BillResource.new(bill).serializable_hash
+  end
 
   # @lat: [[bill-creator-summary-tab#Choosing the model for one regeneration]]
   def summarization_model_arg

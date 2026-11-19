@@ -1748,6 +1748,18 @@ RSpec.describe "BillsController", type: :request do
       expect(inertia.props[:errors][:title].first).to include("can't be blank")
     end
 
+    it "does not serialize the bill for a web update" do
+      sway_locale, _user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+
+      expect(BillResource).not_to receive(:new)
+
+      put "/bills/#{bill.id}", params: {title: "Brand New Title"}
+
+      expect(response).to have_http_status(:found)
+    end
+
     describe "for a bearer request" do
       # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
       it "answers with the updated bill as JSON" do

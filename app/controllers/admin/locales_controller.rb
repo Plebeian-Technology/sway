@@ -27,6 +27,8 @@ module Admin
     private
 
     def updated_locale_json(sway_locale)
+      return {} unless mobile_api_request?
+
       {sway_locale: AdminLocaleSampleAddressResource.new(sway_locale).serializable_hash}
     end
 
