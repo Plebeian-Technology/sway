@@ -62,3 +62,19 @@ The screen passes every tab the same props, [[mobile/src/hooks/admin/useBillCrea
 A section is one part of a web tab, ported as a component in `mobile/src/components/admin/billCreator/` and rendered by its tab file.
 
 Porting a section adds its component to the tab file and a short section to this document describing it. Writes go through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] ([[mobile-admin-area#Admin writes]]).
+
+### The bill fields section
+
+[[mobile/src/components/admin/billCreator/BillFieldsSection.tsx#BillFieldsSection]] ports the bill fields of the web Creator form, plus the shell's locale selector. The Creator tab renders it.
+
+It edits the locale, external id, external version, title, link, sponsor, chamber, status, the introduced and vote dates, and both roll-call numbers. The summary text and the audio fields belong to their own sections. The web form also shows a Withdrawn On date, but the bills table has no such column and the controller does not permit it, so the phone leaves it out.
+
+The locale list is the bootstrap's `sway_locales`, the same declared locales the web's admin selector offers. A saved bill starts in its own locale, a new one in the app's current locale. The chamber starts at the bill's chamber or the locale's default, stays fixed when the locale declares one chamber, and resets to the new default when the admin picks another locale. The Senate vote date is disabled for a locale with chambers but no Senate. The sponsor list is the one the tab loaded, so it follows the bill's locale (or the app's, for a new bill) rather than the locale picked on screen, as the web's does for a saved bill.
+
+Saving refuses locally, with the web's messages from [[app/frontend/components/admin/creator/hooks/useBillFormSubmit.ts#useBillFormSubmit]], when the locale, status, chamber or sponsor is missing. A date typed in any shape but YYYY-MM-DD is also refused; the web's date input cannot produce one. The body matches the web's: every field, `sway_locale_id`, `active` (the bill's value, or true), `news_usage` `none`, and each date as midnight UTC. A new bill goes to `POST /bills`, a saved one to `PATCH /bills/:id`; the web sends `PUT`, which reaches the same action.
+
+[[app/controllers/bills_controller.rb#BillsController#create]] and [[app/controllers/bills_controller.rb#BillsController#update]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). The phone gets the saved bill through [[app/serializers/bill_resource.rb#BillResource]], or a 422 whose field errors appear under their fields. The web keeps its redirects.
+
+After a save the form shows the server's copy of the bill and "Bill saved.". A new bill then switches the screen to its id, which loads the saved bill's tab; an update reloads the tab so the header shows the new title.
+
+The bill model requires a summary, and this section sends none. Creating a bill from the phone therefore fails with the server's "Summary can't be blank" until the phone can edit the summary. Updates are unaffected.

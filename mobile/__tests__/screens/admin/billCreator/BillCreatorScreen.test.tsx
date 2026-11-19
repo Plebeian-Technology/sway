@@ -12,6 +12,15 @@ jest.mock("../../../../src/theme/ThemeProvider", () => ({
     useTheme: () => ({ colorScheme: "light" }),
 }));
 
+jest.mock("@react-navigation/native", () => ({
+    useNavigation: () => ({ setParams: jest.fn() }),
+}));
+
+jest.mock("../../../../src/components/admin/billCreator/BillFieldsSection", () => {
+    const { Text } = jest.requireActual("react-native");
+    return { __esModule: true, default: () => <Text>Bill fields</Text> };
+});
+
 import BillCreatorScreen from "../../../../src/screens/admin/billCreator/BillCreatorScreen";
 
 const routeFor = (billId: number | null) => ({
@@ -32,7 +41,7 @@ describe("BillCreatorScreen", () => {
     it("opens a bill on the Creator tab", async () => {
         render(<BillCreatorScreen route={routeFor(42)} />);
 
-        expect(await screen.findByText("The Creator tab is not on mobile yet.")).toBeTruthy();
+        expect(await screen.findByText("Bill fields")).toBeTruthy();
         expect(screen.getByText("25-0042")).toBeTruthy();
         expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/creator", expect.anything());
     });
@@ -44,7 +53,7 @@ describe("BillCreatorScreen", () => {
         [4, "Positions", "positions"],
     ])("switches to the %s segment's tab and requests its path", async (index, label, path) => {
         render(<BillCreatorScreen route={routeFor(42)} />);
-        await screen.findByText("The Creator tab is not on mobile yet.");
+        await screen.findByText("Bill fields");
 
         fireEvent.press(screen.getByTestId(`admin-bill-creator-tabs-segment-${index}`));
 
@@ -55,7 +64,7 @@ describe("BillCreatorScreen", () => {
     it("opens a new bill on the Creator tab", async () => {
         render(<BillCreatorScreen route={routeFor(null)} />);
 
-        expect(await screen.findByText("The Creator tab is not on mobile yet.")).toBeTruthy();
+        expect(await screen.findByText("Bill fields")).toBeTruthy();
         expect(screen.getByText("New bill")).toBeTruthy();
         expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/new?bill_creator_tab=creator", expect.anything());
     });
@@ -65,6 +74,6 @@ describe("BillCreatorScreen", () => {
         render(<BillCreatorScreen route={routeFor(42)} />);
 
         expect(await screen.findByText("Bill not found.")).toBeTruthy();
-        await waitFor(() => expect(screen.queryByText("The Creator tab is not on mobile yet.")).toBeNull());
+        await waitFor(() => expect(screen.queryByText("Bill fields")).toBeNull());
     });
 });
