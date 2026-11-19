@@ -80,4 +80,6 @@ export type AdminStackParamList = {
     AdminLlmSettings: undefined;
     AdminBillSummaryReports: undefined;
     AdminBillSummaryReport: { id: number };
+    AdminPartnerReports: undefined;
+    AdminPartnerReport: { partnerSlug: string };
 };

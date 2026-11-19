@@ -119,6 +119,24 @@ The route `AdminBillSummaryReport` takes `{ id }`, is pushed from the list and h
 
 The review card holds one chip per status (Pending, Reviewed, Resolved, Dismissed, the web page's four) and a text field for the admin notes. Save sends `PATCH /admin/bill_summary_reports/:id` with `bill_summary_report: { status, admin_notes }` through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]]. The controller sets or clears the resolver from the status, so the phone sends no resolver. A good save shows "Saved." and refetches the report; a 422 shows the server's message above the button and leaves the form as typed.
 
+## The partner reports screen
+
+[[mobile/src/screens/admin/PartnerReportsScreen.tsx#PartnerReportsScreen]] shows how newsroom partners' articles drive clicks, registrations and votes, across every partner.
+
+The tool id `partner_reports` maps to the `AdminPartnerReports` route. [[mobile/src/hooks/admin/usePartnerReports.ts#usePartnerReports]] fetches `GET /admin/partner_reports`, which [[app/controllers/admin/partner_reports_controller.rb]] answers with a bare array of partner reports ([[partner-article-engagement#Administrative interface]]). The array already carries every figure the web page shows, so the backend is unchanged.
+
+[[mobile/src/screens/admin/PartnerReportSections.tsx]] holds the parts both partner screens share. Four figure cards come first: total articles with the partner count, total clicks, registrations with the click-to-register rate, and votes cast, each summed over the partners. A card per partner follows, with its name, slug, article and bill counts, clicks, registrations, votes and sentiment. The Covered Articles list ends the screen, one card per article with its partner, bill, publication date, counts and sentiment. A partner or article whose vote count is under five shows "Suppressed (k < 5)" instead of a split, as the web page does. The report's own `sentiment_suppressed` is read when present, and the vote count is the fallback because the partner resource omits it.
+
+An article title opens in the browser only when [[mobile/src/utils/safeUrl.ts#isSafeCitationUrl]] accepts its address, the same http and https check the web page applies. Any other address shows the title as plain text. The web page's table layout becomes cards, and its 15 second poll becomes a refetch on the stack's `focus` event plus pull to refresh.
+
+Pressing a partner card opens [[mobile/src/screens/admin/PartnerReportScreen.tsx#PartnerReportScreen]].
+
+## The partner report screen
+
+[[mobile/src/screens/admin/PartnerReportScreen.tsx#PartnerReportScreen]] shows one partner's engagement figures and its covered articles.
+
+The route `AdminPartnerReport` takes `{ partnerSlug }`, is pushed from the list and has no tool id. [[mobile/src/hooks/admin/usePartnerReport.ts#usePartnerReport]] fetches `GET /admin/partner_reports/:partner_slug`; the controller resolves an organization id or a partner slug, and the list sends the slug because the report carries no id. The slug passes through `encodeURIComponent`. The screen shows the partner name and slug, then the same four figure cards, with Articles & Bills giving the distinct bill count and Votes Cast giving the Pro and Con split, or the suppression label, instead of the list's generic note. The Covered Articles list follows without a partner line. The web page's "All Partners" button is the stack's back button.
+
 ## Admin writes
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.

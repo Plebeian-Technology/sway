@@ -8,6 +8,8 @@ import BillSummaryReportsScreen from "../screens/admin/BillSummaryReportsScreen"
 import CategoriesScreen from "../screens/admin/CategoriesScreen";
 import LlmSettingsScreen from "../screens/admin/LlmSettingsScreen";
 import LocalesScreen from "../screens/admin/LocalesScreen";
+import PartnerReportScreen from "../screens/admin/PartnerReportScreen";
+import PartnerReportsScreen from "../screens/admin/PartnerReportsScreen";
 import SharedAddressesScreen from "../screens/admin/SharedAddressesScreen";
 import SystemPromptsScreen from "../screens/admin/SystemPromptsScreen";
 import UserAddressChangesScreen from "../screens/admin/UserAddressChangesScreen";
@@ -34,6 +36,12 @@ export default function AdminStack() {
                 name="AdminBillSummaryReport"
                 component={BillSummaryReportScreen}
                 options={pushedScreenOptions(colorScheme, "Reports")}
+            />
+            <Stack.Screen name="AdminPartnerReports" component={PartnerReportsScreen} options={fromHub} />
+            <Stack.Screen
+                name="AdminPartnerReport"
+                component={PartnerReportScreen}
+                options={pushedScreenOptions(colorScheme, "Partners")}
             />
         </Stack.Navigator>
     );

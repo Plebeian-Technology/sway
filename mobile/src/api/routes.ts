@@ -42,6 +42,8 @@ export const Routes = {
     adminLlmRemoveModel: (modelId: string) =>
         `/admin/llm_settings/remove_model?model_id=${encodeURIComponent(modelId)}`,
 
+    adminPartnerReports: () => "/admin/partner_reports",
+    adminPartnerReport: (partnerSlug: string) => `/admin/partner_reports/${encodeURIComponent(partnerSlug)}`,
     adminBillSummaryReport: (id: number) => `/admin/bill_summary_reports/${id}`,
     adminBillSummaryReports: (status: string, localeId: number | null) =>
         `/admin/bill_summary_reports?status=${status}${localeId === null ? "" : `&locale_id=${localeId}`}`,
