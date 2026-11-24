@@ -1,6 +1,7 @@
 // @lat: [[mobile-bill-creator#The tabs]]
 import React from "react";
 
+import NewsArticlesSection from "../../../../components/admin/billCreator/NewsArticlesSection";
 import PasteSummarySection from "../../../../components/admin/billCreator/PasteSummarySection";
 import SummaryGenerationSection from "../../../../components/admin/billCreator/SummaryGenerationSection";
 import SummaryRevisionsSection from "../../../../components/admin/billCreator/SummaryRevisionsSection";
@@ -25,6 +26,7 @@ export default function SummaryTab({ billId, data, refresh, onReviewDraft }: Bil
                 refresh={refresh}
                 onReviewDraft={onReviewDraft}
             />
+            <NewsArticlesSection key={`news-${billId ?? "new"}`} billId={billId} data={data} refresh={refresh} />
         </>
     );
 }

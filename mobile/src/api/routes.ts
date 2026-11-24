@@ -78,6 +78,7 @@ export const Routes = {
     adminBillCreatorSummarySourceDocuments: (billId: number) =>
         `/admin/bill_creator/${billId}/summary?summary_source_documents=1`,
     adminBillCreatorSummaryPrompt: (billId: number) => `/admin/bill_creator/${billId}/summary?summary_prompt=1`,
+    adminBillNewsArticles: (billId: number) => `/admin/bills/${billId}/news_articles`,
     adminPipelineRunResume: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/resume`,
     adminPipelineRunRestart: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/restart`,
     adminPipelineRunCancel: (runId: number) => `/bills/legislation_pipeline_runs/${runId}`,
