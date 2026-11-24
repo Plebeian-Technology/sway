@@ -9,7 +9,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
       create(:sway_locale, city: "baltimore", state: "MD", country: "United States")
   end
 
-  it "follows an org from the list: Follow → first-follow picker → save → Following + count increments" do
+  it "follows an org from the list: Follow → first-follow picker → save → Following, with no follower count" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Followable Org")
@@ -19,7 +19,6 @@ RSpec.describe "Organization follows", type: :system, js: true do
     wait_until_loaded
 
     card = find("[data-testid='public-organization-card']", text: "Followable Org", wait: 10)
-    expect(card).to have_text("0 followers")
 
     card.find("[data-testid='follow-btn-#{organization.id}']").click
 
@@ -28,11 +27,11 @@ RSpec.describe "Organization follows", type: :system, js: true do
     expect(page).to have_text("Notification preferences", wait: 10)
     click_button "Save preferences"
 
-    # What you can see: the Following button appears, the follower count goes
-    # up, and the row is in the database.
+    # What you can see: the Following button appears, no follower count is
+    # shown, and the row is in the database.
     expect(page).to have_css("[data-testid='following-btn-#{organization.id}']", wait: 10)
     within("[data-testid='public-organization-card']", text: "Followable Org") do
-      expect(page).to have_css("[data-testid='org-card-follower-count-#{organization.id}']", text: "1 follower")
+      expect(page).to have_no_text(/\d+ followers?/)
     end
     follow = OrganizationFollow.find_by(user_id: user.id, organization_id: organization.id)
     expect(follow).to be_present
@@ -49,12 +48,9 @@ RSpec.describe "Organization follows", type: :system, js: true do
     wait_until_loaded
 
     expect(page).to have_css("[data-testid='following-btn-#{organization.id}']", wait: 10)
-    within("[data-testid='public-organization-card']", text: "Already Followed Org") do
-      expect(page).to have_css("[data-testid='org-card-follower-count-#{organization.id}']", text: "1 follower")
-    end
   end
 
-  it "unfollows from the detail page: Following → Follow + count decrements + row destroyed" do
+  it "unfollows from the detail page: Following → Follow + row destroyed" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Unfollowable Org")
@@ -65,15 +61,12 @@ RSpec.describe "Organization follows", type: :system, js: true do
     wait_until_loaded
 
     detail = find("[data-testid='public-organization-detail']", wait: 10)
-    # @lat: [[testing-the-toolchain#An assertion that cannot fail proves nothing]]
-    expect(detail.find("[data-testid='org-detail-follower-count']")).to have_text("1 follower")
+    expect(detail).to have_no_text(/\d+ followers?/)
 
     detail.find("[data-testid='following-btn-#{organization.id}']").click
 
-    # The redirect and reload flip the button back to Follow and the count to
-    # zero.
+    # The redirect and reload flip the button back to Follow.
     expect(page).to have_css("[data-testid='follow-btn-#{organization.id}']", wait: 10)
-    expect(page).to have_css("[data-testid='org-detail-follower-count']", text: "0 followers")
     expect(OrganizationFollow.find_by(user_id: user.id, organization_id: organization.id)).to be_nil
   end
 

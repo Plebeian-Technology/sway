@@ -123,7 +123,7 @@ RSpec.describe "to_public_json whitelists" do
 
     it "returns only the whitelisted public fields" do
       payload = position.to_public_json
-      expect(payload.keys).to match_array(%i[id organization_id bill_id support summary summary_ai_unreviewed active created_at])
+      expect(payload.keys).to match_array(%i[id organization_id bill_id support summary summary_ai_unreviewed active created_at source_kind source_url])
     end
 
     it "never includes admin / internal field names" do

@@ -49,7 +49,7 @@ bookkeeping becomes part of a public response the day it is created, and an
 endpoint serving signed-out readers turns into an information-disclosure hole
 without anyone editing it. It also sends too little, because the computed
 values a payload is expected to carry — a district's number and region code,
-an organization's follower count — are not columns and never appear.
+an organization's managed flag — are not columns and never appear.
 
 A resource states the key set instead, so both faults are visible in one file
 and an exact key-set request spec can pin it.

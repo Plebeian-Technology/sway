@@ -14,7 +14,7 @@ One organization on a card, with the control for following it.
 What the card offers:
 
 - a follow control with three states: Follow, Following, and Member
-- the follower count under the locale slug ("N followers" / "1 follower")
+- the managed label when the organization manages its positions on Sway, and no follower count
 - tapping Follow while signed out opens AuthPromptSheet, headed "Sign in to
   follow", rather than calling the server
 - a Preferences button that opens OrgPreferenceSheet
@@ -81,14 +81,6 @@ Hierarchical resolution rules prioritizing organization-specific alert settings 
   failure is passed on to the sheet. Holding the saved settings means that reopening
   the sheet before the parent refetches shows them, rather than everything switched
   on.
-
-### Optimistic follower count
-
-`localFollowerCount` keeps the follower count in local state, so following or unfollowing changes the number at once instead of waiting for a pull-to-refresh.
-
-It starts from org.follower_count, which is what the server said, and resets whenever the card is rebuilt (see the keyExtractor in OrgsListScreen).
-
-`handleFollowPress` raises the follower count straight away, so the card matches the server without the user having to pull down to refresh. `handleUnfollowPress` lowers it straight away, never below zero.
 
 ### Follow control states (JSX)
 

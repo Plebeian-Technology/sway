@@ -22,9 +22,8 @@ same membership ids. Both read through `current_user`, so the widest thing
 either can disclose is the requesting reader's own relationships. A signed-out
 request gets the payload the endpoint has always returned.
 
-The organization's follower count is different in kind: it is a public fact
-about the organization rather than about any reader, so it travels for
-everyone.
+No payload carries a follower count
+([[organization-follower-set-queries#Organization's follower-set queries#No public follower count]]).
 
 ## Why the list preloads icons and the detail does not
 

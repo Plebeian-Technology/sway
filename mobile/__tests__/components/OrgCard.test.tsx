@@ -34,7 +34,6 @@ const BASE_ORG = {
     id: 7,
     name: "Civic Alliance",
     sway_locale_slug: "baltimore-maryland-united_states",
-    follower_count: 12,
 };
 
 describe("OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow restore)", () => {
@@ -48,9 +47,9 @@ describe("OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow resto
         expect(screen.getByText("baltimore-maryland-united_states")).toBeTruthy();
     });
 
-    test("renders follower count ('N followers') — REQ-9", () => {
+    test("renders no follower count", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={() => {}} />);
-        expect(screen.getByText("12 followers")).toBeTruthy();
+        expect(screen.queryByText(/\d+ followers?/)).toBeNull();
     });
 
     test("shows 'Follow' CTA for signed-in not-following user (REQ-8)", () => {

@@ -37,7 +37,6 @@ const BASE_ORG = {
     id: 7,
     name: "Civic Alliance",
     sway_locale_slug: "baltimore-maryland-united_states",
-    follower_count: 42,
 };
 
 describe("OrgPreferenceSheet", () => {
@@ -221,20 +220,10 @@ describe("OrgCard follow control", () => {
         expect(screen.getByText("Follow")).toBeTruthy();
     });
 
-    test("renders follower count (REQ-9)", () => {
+    test("renders no follower count", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} />);
-        expect(screen.getByTestId(`org-card-follower-count-${BASE_ORG.id}`)).toBeTruthy();
-        expect(screen.getByText("42 followers")).toBeTruthy();
-    });
-
-    test("renders '1 follower' (singular) when count is 1", () => {
-        wrap(<OrgCard org={{ ...BASE_ORG, follower_count: 1 }} onPress={jest.fn()} isSignedIn={false} />);
-        expect(screen.getByText("1 follower")).toBeTruthy();
-    });
-
-    test("renders '0 followers' when count is 0", () => {
-        wrap(<OrgCard org={{ ...BASE_ORG, follower_count: 0 }} onPress={jest.fn()} isSignedIn={false} />);
-        expect(screen.getByText("0 followers")).toBeTruthy();
+        expect(screen.queryByTestId(`org-card-follower-count-${BASE_ORG.id}`)).toBeNull();
+        expect(screen.queryByText(/\d+ followers?/)).toBeNull();
     });
 
     // The prompt sheet gets follow-specific wording here, not its usual voting wording.

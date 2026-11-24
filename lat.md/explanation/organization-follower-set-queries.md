@@ -5,29 +5,13 @@ lat:
 
 # Organization's follower-set queries
 
-Explains Organization's raw-SQL UNION follower-set queries (single-org and batch), and how #notifiable_follower_set_for computes the notify set across two sub-populations without N+1 queries.
+Explains how #notifiable_follower_set_for computes the notify set across two sub-populations without N+1 queries, and why no follower count is computed.
 
-## follower_set: the one raw-SQL UNION in the codebase
+## No public follower count
 
-`Organization#follower_set` returns the `Array[Integer]` of user ids who are either active members OR explicit followers of the organization.
+Sway shows no follower count for an organization, and the public organization payloads carry none.
 
-It is a raw SQL `UNION` (without `ALL`), which removes duplicates automatically so a user who is both a member and a follower is counted exactly once. Pending and removed memberships are excluded (`status = 'active'`).
-
-This is the only raw-SQL UNION in the codebase — a deliberate exception, justified because a set operation expresses "either of these two sets, deduped" more cleanly in SQL than in Ruby, and the production hardware (a single Raspberry Pi) favors doing the dedup in one query over pulling both sets into Ruby and deduping there.
-
-Because the query is raw SQL, `sanitize_sql_array` with `?` placeholders is MANDATORY for the interpolated `id`; string interpolation of the id value into the SQL text is forbidden.
-
-`#follower_count` (`follower_set.size`) counts everyone in that set, including muted members — muting notifications is not the same as leaving the organization. It is listed in `PUBLIC_FIELDS` so `#to_public_json` includes it.
-
-## follower_counts_for: batching the same query across a list
-
-`Organization.follower_counts_for(org_ids)` computes deduped follower counts for a SET of organizations in ONE query, returning `Hash[org_id => count]`.
-
-The list serializer's path (`#to_public_json` -> `#follower_count` -> `#follower_set`) used to run one raw UNION PER organization, an N+1 across the whole organizations list page. This grouped version wraps the same member+follower UNION in a subquery, dedups `(organization_id, user_id)` pairs across it, then `COUNT(*)` per `organization_id` counts distinct users per org in a single round trip.
-
-The same `sanitize_sql_array` rule applies: placeholders are mandatory for every interpolated id, and the only literal string interpolation allowed is the `"?, ?, ..."` placeholder list itself, built from a count of ids rather than from any value that could carry attacker input.
-
-`Organization#to_public_json` accepts an optional `follower_count:` argument for exactly this reason — the index serializer passes in the precomputed, deduped count from `follower_counts_for` instead of letting `#to_public_json` fall back to running its own `#follower_count` query per row. The single-org show page omits the argument and gets the fallback, since there is no list to batch across there.
+A public audience count implies that the organization has a following on Sway, which most organizations never joined ([[organization-affiliation-labels]]). With the count gone, the member-or-follower set and its batched count had no reader and were removed; notification fan-out never used them.
 
 ## notifiable_follower_set_for: the notify set across two sub-populations
 

@@ -48,7 +48,6 @@ import { PREFETCH_CACHE_FOR } from "app/frontend/sway_constants";
 const ORGANIZATION = {
     id: 11,
     name: "Baltimore Tenants Union",
-    follower_count: 4,
     icon_url: null,
 } as unknown as sway.IPublicOrganization;
 

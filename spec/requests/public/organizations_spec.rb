@@ -234,14 +234,13 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(names).to contain_exactly("Followed")
     end
 
-    # follower_count is part of each org's payload.
-    it "follower_count is present in the org payload" do
+    it "sends no follower count in the org payload" do
       create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations", headers: {"Accept" => "application/json"}
 
       body = JSON.parse(response.body, symbolize_names: true)
-      expect(body[:organizations].first).to have_key(:follower_count)
+      expect(body[:organizations].first).not_to have_key(:follower_count)
     end
 
     # A mobile request with a bearer token gets the follow and membership props too.
@@ -440,14 +439,13 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(body).not_to have_key(:current_user_org_defaults)
     end
 
-    # follower_count is part of the show payload.
-    it "follower_count is present in the show payload" do
+    it "sends no follower count in the show payload" do
       org = create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations/#{org.id}", headers: {"Accept" => "application/json"}
 
       body = JSON.parse(response.body, symbolize_names: true)
-      expect(body[:organization]).to have_key(:follower_count)
+      expect(body[:organization]).not_to have_key(:follower_count)
     end
 
     # A mobile bearer request to show gets current_user_follow_id and is_member_of_org_ids.

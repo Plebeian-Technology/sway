@@ -107,20 +107,6 @@ class Organization < ApplicationRecord
     MirroredAssetUrl.for(icon, fallback: icon_url)
   end
 
-  # @lat: [[organization-follower-set-queries#follower_set: the one raw-SQL UNION in the codebase]]
-  def follower_set
-    sql = <<~SQL
-      SELECT user_id FROM user_organization_memberships
-        WHERE organization_id = ? AND status = 'active'
-      UNION
-      SELECT user_id FROM organization_follows
-        WHERE organization_id = ?
-    SQL
-    self.class.connection.execute(
-      self.class.sanitize_sql_array([sql, id, id])
-    ).map { |row| (row["user_id"] || row.values.first).to_i }
-  end
-
   # @lat: [[organization-follower-set-queries#notifiable_follower_set_for: the notify set across two sub-populations]]
   def notifiable_follower_set_for(change_types)
     follow_rows = organization_follows.select(

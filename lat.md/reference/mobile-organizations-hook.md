@@ -9,7 +9,6 @@ lat:
 
 - Along with the organizations themselves, the response carries who the reader follows:
 
-- `follower_count` on each organization
 - `user_follows`, a lookup of organization id → follow id
 - `is_member_of_org_ids`, the organizations this person actually belongs to
 
@@ -21,8 +20,6 @@ lat:
 
 Attribute definitions and types returned in the mobile organization subscription response payload.
 
-- `OrganizationRecord.follower_count` — how many people follow this
-  organization. The server always sends it.
 - `OrganizationRecord.managed_on_sway` — true while the organization has an
   active member on Sway
   ([[organizations-controller-notes#managed_on_sway: an active member, batched across a list]]).

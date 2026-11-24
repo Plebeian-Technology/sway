@@ -10,7 +10,6 @@ lat:
 - What is on it:
 
 - a follow control in the header (`testID="org-detail-header"`)
-- a follower count ("N followers") under the organization's name
 - a preferences sheet, opened by the Preferences button
 
 - There is no sign-in prompt sheet here, because `OrgDetailFollowSection` is only mounted for a signed-in user. One used to sit here that could never open, and it was removed rather than left as a trap if that signed-in check is ever loosened.

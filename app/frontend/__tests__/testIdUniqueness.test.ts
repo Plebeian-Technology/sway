@@ -273,12 +273,9 @@ describe("data-testid uniqueness across production components", () => {
         }
     });
 
-    it("keeps the follower count addressable per surface", () => {
-        expect(filesFor("org-card-follower-count-${}")).toEqual(
-            new Set(["app/frontend/components/organizations/OrganizationCard.tsx"]),
-        );
-        expect(filesFor("org-detail-follower-count")).toEqual(new Set(["app/frontend/pages/Organization.tsx"]));
-        expect(owners.get("follower-count")).toBeUndefined();
+    it("finds no follower count on any surface", () => {
+        expect(filesFor("org-card-follower-count-${}")).toEqual(new Set());
+        expect(filesFor("org-detail-follower-count")).toEqual(new Set());
     });
 
     it("still exempts only allowlisted values that are actually duplicated", () => {
