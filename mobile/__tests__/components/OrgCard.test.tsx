@@ -55,14 +55,14 @@ describe("OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow resto
     test("shows 'Follow' CTA for signed-in not-following user (REQ-8)", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={() => {}} isSignedIn={true} initialFollowId={null} />);
         expect(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeTruthy();
-        expect(screen.getByText("Follow")).toBeTruthy();
+        expect(screen.getByText("Track")).toBeTruthy();
     });
 
     test("member (isMember=true) shows Member label + Preferences, NO follow/unfollow (D-04)", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={() => {}} isSignedIn={true} isMember={true} initialFollowId={null} />);
         expect(screen.getByText("Member")).toBeTruthy();
-        expect(screen.queryByText("Follow")).toBeNull();
-        expect(screen.queryByText("Following")).toBeNull();
+        expect(screen.queryByText("Track")).toBeNull();
+        expect(screen.queryByText("Tracking")).toBeNull();
     });
 
     test("snapshot matches (signed-out view)", () => {

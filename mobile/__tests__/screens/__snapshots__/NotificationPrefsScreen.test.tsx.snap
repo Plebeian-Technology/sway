@@ -353,7 +353,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
           <Text
             className="text-xs font-open-sans-semibold tracking-widest uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
           >
-            Default for new follows
+            Default for newly tracked organizations
           </Text>
           <View
             accessibilityLabel="New position on a bill"
@@ -1160,7 +1160,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
           <Text
             className="text-xs font-open-sans-semibold tracking-widest uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
           >
-            Default for new follows
+            Default for newly tracked organizations
           </Text>
           <View
             accessibilityLabel="New position on a bill"

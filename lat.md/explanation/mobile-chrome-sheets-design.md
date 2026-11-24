@@ -21,7 +21,7 @@ Default wording, for voting:
 
 Wording for following:
 
-- Heading: "Sign in to follow"
+- Heading: "Sign in to track"
 - Body: "Follow civic organizations and get notified when they take a position on legislation."
 
 Pass the `heading` and `body` props to swap the defaults for these.

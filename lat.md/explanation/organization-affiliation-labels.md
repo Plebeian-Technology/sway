@@ -25,6 +25,12 @@ An organization's own page then says one of two things. With an active member it
 
 The member's own organization page (the membership page) receives `source_kind` on each position so its cards can tag positions the same way.
 
+## Tracking, not following
+
+A reader tracks an organization to hear when Sway records its positions. "Follow" and a follower count read as if the organization had an audience on Sway, so the copy says Track, Tracking and Stop tracking.
+
+The code keeps the follow names (`OrganizationFollow`, `organization_follows`, its routes and props); [[docs/terminology.md]] records the split.
+
 ## The bill page carries the notice once
 
 Every bill layout tags each organization position the same way and shows the list page's notice once near its organization positions, only when the bill has any.

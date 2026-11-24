@@ -53,7 +53,7 @@ export function useOrganizationFollow(
         const prevId = followId;
         if (prevId === -1) {
             // @lat: [[mobile-organization-follow-hook#unfollow()]]
-            throw new Error("Follow ID not yet resolved. Please wait and try again.");
+            throw new Error("Tracking is not ready yet. Please wait and try again.");
         }
         setFollowId(null);
         try {
@@ -72,7 +72,7 @@ export function useOrganizationFollow(
                 return;
             }
             if (followId === -1) {
-                throw new Error("Follow not yet resolved. Please wait and try again.");
+                throw new Error("Tracking is not ready yet. Please wait and try again.");
             }
             await apiClient.patch(Routes.organizationFollowPreferences(followId), {
                 organization_follow: prefs,

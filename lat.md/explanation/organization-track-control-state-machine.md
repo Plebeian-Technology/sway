@@ -12,8 +12,8 @@ What renders in each state:
 | State | Renders |
 |---|---|
 | signed-out | nothing |
-| not following | "Follow" button (primary) → `POST /organization_follows` |
-| following, non-member | "Following" badge + "Following" button (outline) → `DELETE` |
+| not following | "Track" button (primary) → `POST /organization_follows` |
+| following, non-member | "Tracking" badge on the card + "Stop tracking" button (outline) → `DELETE` |
 | following, member | "Following · member" badge + "Preferences" button (no Unfollow button) |
 | muted member | "Muted · member" badge + "Preferences" button |
 

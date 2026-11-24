@@ -126,7 +126,7 @@ export function OrgCard({
                             testID={`org-card-following-btn-${org.id}`}
                             variant="outline"
                             onPress={handleUnfollowPress}
-                            accessibilityLabel={`Untrack ${org.name}`}
+                            accessibilityLabel={`${PARITY_COPY.orgs.untrack} ${org.name}`}
                         >
                             <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                                 {PARITY_COPY.orgs.tracking}
@@ -137,7 +137,7 @@ export function OrgCard({
                             testID={`org-card-follow-btn-${org.id}`}
                             variant="default"
                             onPress={handleFollowPress}
-                            accessibilityLabel={`Track ${org.name}`}
+                            accessibilityLabel={`${PARITY_COPY.orgs.track} ${org.name}`}
                         >
                             <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.track}</Text>
                         </Pressable>

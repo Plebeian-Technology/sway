@@ -178,7 +178,7 @@ export const PARITY_COPY = {
         compiledBySway: "Compiled by Sway",
         track: "Track",
         tracking: "Tracking",
-        untrack: "Untrack",
+        untrack: "Stop tracking",
     },
 
     // @lat: [[org-notification-cascade-and-defaults#Where organization notification copy is shared across pickers and settings]]
@@ -195,7 +195,7 @@ export const PARITY_COPY = {
         eventSummaryChange: "Summary update",
         panelTitle: "Organization position updates",
         panelDescription: "Get notified when Sway records or updates a position from an organization you track.",
-        defaultsEventsLabel: "Default for new follows",
+        defaultsEventsLabel: "Default for newly tracked organizations",
         defaultsCadenceLabel: "Default delivery",
     },
 
@@ -535,7 +535,7 @@ export const PARITY_COPY = {
         userJoinedActor: "You",
         userJoinedAction: "joined Sway",
         userJoinedSummary:
-            "New Bills of the Month, your representatives' votes and positions from organizations you follow will show up here, newest first.",
+            "New Bills of the Month, your representatives' votes and positions from organizations you track will show up here, newest first.",
         representativesFoundActor: "Sway",
         representativesFoundAction: "found your representatives",
         seeYourRepresentatives: "See your representatives",

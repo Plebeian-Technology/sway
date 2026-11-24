@@ -110,7 +110,7 @@ function OrgDetailFollowSection({
                         testID="org-detail-following-btn"
                         variant="outline"
                         onPress={handleUnfollowPress}
-                        accessibilityLabel={`Untrack ${orgName}`}
+                        accessibilityLabel={`${PARITY_COPY.orgs.untrack} ${orgName}`}
                     >
                         <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                             {PARITY_COPY.orgs.tracking}
@@ -121,7 +121,7 @@ function OrgDetailFollowSection({
                         testID="org-detail-follow-btn"
                         variant="default"
                         onPress={handleFollowPress}
-                        accessibilityLabel={`Track ${orgName}`}
+                        accessibilityLabel={`${PARITY_COPY.orgs.track} ${orgName}`}
                     >
                         <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.track}</Text>
                     </Pressable>

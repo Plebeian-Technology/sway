@@ -83,7 +83,7 @@ const UnfollowControl: React.FC<UnfollowControlProps> = ({
                     type="submit"
                     variant="outline"
                     disabled={processing}
-                    aria-label={`Unfollow ${organization.name}`}
+                    aria-label={`${PARITY_COPY.orgs.untrack} ${organization.name}`}
                     data-testid={`following-btn-${organization.id}`}
                 >
                     {PARITY_COPY.orgs.untrack}

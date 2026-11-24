@@ -136,6 +136,7 @@ RSpec.describe "OrganizationFollowsController", type: :request do
       # A redirect after the write, so a refresh cannot resubmit — any 3xx.
       expect(response).to have_http_status(:redirect)
         .or have_http_status(:see_other)
+      expect(flash[:notice]).to eq("Tracking #{organization.name}!")
     end
 
     it "the mobile bearer path returns JSON" do
@@ -165,6 +166,7 @@ RSpec.describe "OrganizationFollowsController", type: :request do
         # Before this route existed, the call raised ActionController::RoutingError.
         delete "/organization_follows/#{follow.id}"
       }.to change(OrganizationFollow, :count).by(-1)
+      expect(flash[:notice]).to eq("Stopped tracking.")
     end
   end
 

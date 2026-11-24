@@ -92,7 +92,7 @@ Visual and interactive states rendered by the follow button across unfollowed, a
 - The member case, decided by isMember alone and never by followId. A member with no
   follow row still reads as Member. There is no unfollow here, only the Preferences
   button.
-- Following but not a member: the button reads "Following", and tapping it unfollows.
+- Following but not a member: the button reads "Tracking", and tapping it stops tracking.
 - Not following, or signed out: the accent-coloured Follow button. A signed-out tap
   opens AuthPromptSheet, not the API.
 

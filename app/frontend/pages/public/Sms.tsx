@@ -43,7 +43,7 @@ const Sms: React.FC<IProps> = ({ sms_phone }) => {
                     </li>
                     <li>
                         Organization position notices, sent when Sway records a position on a bill from an advocacy
-                        organization you follow.
+                        organization you track.
                     </li>
                 </ul>
 

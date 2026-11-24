@@ -11,7 +11,7 @@ Test-setup and behavior rationale from OrgPreferenceSheet.test.tsx and useOrgani
 
 `useOrganizationFollow` does not fetch anything on mount, but following and unfollowing both go through the API client, so the tests stand in a fake one.
 
-Signed-out people are allowed to browse, so "Follow" is still on screen even when tapping it opens the sign-in prompt sheet.
+Signed-out people are allowed to browse, so "Track" is still on screen even when tapping it opens the sign-in prompt sheet.
 
 ## useOrganizationFollow.test.tsx
 
