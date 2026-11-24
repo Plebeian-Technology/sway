@@ -626,7 +626,7 @@ The buttons follow the web card:
 
 Every write reloads the tab on success and shows the server's notice on the card. A refusal shows `details.campaign_position`, else the server's message.
 
-An approved card will carry the organization link below the note, where the web places it.
+An approved card carries the organization link below the note, where the web places it ([[mobile-bill-creator#Sections#The campaign drafts section#Linking a campaign to an organization]]).
 
 The letters open under "Show 2 letters". The first open on any card fetches every draft's letters once ([[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]) and keeps them in the section, so every other card opens without a request and the poll never carries them ([[campaign-letter-disclosure#Why the list asks for its own letters]]). The list shows one letter at a time with Previous, Next and "1 of 2", each with its number, sender (address, else domain, else "Unknown sender"), a DUPLICATE stamp for a repeat and the selectable text. It says when the letters are loading, could not be loaded (with Try again), or could not be produced. A draft whose `letter_count` is zero offers no letters ([[campaign-letter-disclosure#Why the disclosure is gated on the count rather than the letters]]).
 
@@ -642,11 +642,28 @@ The letters are a draft's whole testimony text, so they must never ride the tab'
 
 Each write answers 200 with `notice`, the sentence the web puts in its flash. The phone shows it on the card, because the approval notice is the only place an admin learns that the approval replaced an earlier decision for the same campaign name ([[campaign-letter-disclosure#Why replacing an earlier decision is reported as success]]). Every refusal answers 422 with the web's reason under `details.campaign_position`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. The organization link answers its refusals under `details.campaign_organization`, the key the web reads, and its three recorded outcomes with a `notice` too. The web keeps its redirects, flash notices and Inertia errors.
 
+#### Linking a campaign to an organization
+
+An approved card carries a second approval, the organization behind the campaign, as the web's [[app/frontend/components/admin/creator/campaign-position-card/CampaignOrganizationLink.tsx#CampaignOrganizationLink]] does ([[campaign-organization-link#Why this is a second approval and not part of the first]]).
+
+[[mobile/src/components/admin/billCreator/CampaignOrganizationLink.tsx#CampaignOrganizationLink]] draws one stamp for the four states ([[campaign-organization-link#Why there are four states and not two]]): the linked organization's name (LINKED when the name is missing), NO ORGANIZATION, NOT DETERMINABLE YET and NOT DECIDED. The section hands it the campaign's `organization_link_decision`, `organization_id` and `organization_name` from `campaigns`, and the candidates from `campaign_organization_candidates`, keyed by campaign id. Both props are already in the Positions tab's list. The section also hands it the card's run-in-flight check.
+
+Each candidate is a radio option reading "name, then the evidence": "12 letters signed off as "X"", "12 letters named this organization" or "Already holds a position on this bill" ([[campaign-organization-link#How candidates are proposed, and why the evidence travels with them]]). A linked organization the candidates lack is added as "Linked to this campaign". With no candidates the card says no organization matches, and still offers the two answers that name none.
+
+A text field creates an organization. Typing a name clears the selection, and clearing the field restores the server's choice. The return key submits a typed name unless a write or a run is in flight. The buttons follow the web:
+
+- The link button reads "Create and link organization" with a typed name, "Change the organization" when the campaign already has a link, else "Link this organization". It stays off until an option is chosen or a name typed.
+- "None of these" and "Can't tell yet" record the two answers that name no organization.
+- Every button and the field stay off while a write or a summary or clean-testimony run is in flight.
+
+A link posts `decision: "linked"` with `organization_id` or the trimmed `organization_name`, and the other two post `decision` alone, to `/bills/:id/campaigns/:id/link_organization`. A success reloads the tab and shows the server's notice. It also empties the name field, clears the selection after "none" or "undetermined", and otherwise keeps the choice. A refusal shows `details.campaign_organization`, else the server's message ([[mobile-bill-creator#Sections#The campaign drafts section#Answering campaign writes in JSON]]).
+
+The phone leaves out the info popover beside the title, the stamp colours and the web's "Saving the organization failed." fallback, because the phone always has the server's or the client's message. A radio list replaces the web's dropdown.
+
 #### What the phone leaves out
 
 The card keeps the web card's rules and drops its chrome.
 
-- Linking an approved campaign to an organization, which a later section adds.
 - The info popovers beside the CAMPAIGN stamp, the evidence line and the letters toggle, and the stamp colours.
 - The numbered page buttons: Previous and Next replace them, and the letter list shows its page count once rather than above and below.
 - The screen-reader link from a disabled Approve to the notice that explains it. The draft section's notices sit above the cards.

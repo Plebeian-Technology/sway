@@ -109,6 +109,8 @@ export const Routes = {
     billRegenerateSummary: (billId: number) => `/bills/${billId}/regenerate_summary`,
     billApproveOrgPosition: (billId: number) => `/bills/${billId}/approve_org_position`,
     billCampaigns: (billId: number) => `/bills/${billId}/campaigns`,
+    billCampaignLinkOrganization: (billId: number, campaignId: number) =>
+        `/bills/${billId}/campaigns/${campaignId}/link_organization`,
     billRejectCampaignDraft: (billId: number) => `/bills/${billId}/campaigns/reject_draft`,
     billRestoreCampaignDraft: (billId: number) => `/bills/${billId}/campaigns/restore_draft`,
     billMarkIndividualCampaignDraft: (billId: number) => `/bills/${billId}/campaigns/mark_individual_draft`,

@@ -7,6 +7,10 @@ import { Routes } from "../../../api/routes";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
 import type { BillCreatorTabProps } from "../../../hooks/admin/useBillCreator";
 import { Pressable } from "../../ui/Pressable";
+import CampaignOrganizationLink, {
+    type LinkableCampaign,
+    type OrganizationCandidate,
+} from "./CampaignOrganizationLink";
 
 type Stance = "support" | "oppose" | "neutral";
 
@@ -19,8 +23,7 @@ interface CampaignDraft {
     marked_individual?: boolean;
 }
 
-interface ApprovedCampaign {
-    id: number;
+interface ApprovedCampaign extends LinkableCampaign {
     name: string | null;
     support: string;
     summary: string;
@@ -178,6 +181,7 @@ interface CampaignDraftCardProps {
     billId: number;
     draft: CampaignDraft;
     approved: ApprovedCampaign | undefined;
+    organizationCandidates: OrganizationCandidate[];
     letters: CampaignLetter[] | undefined;
     lettersState: LettersState;
     onRequestLetters: () => void;
@@ -190,6 +194,7 @@ const CampaignDraftCard: React.FC<CampaignDraftCardProps> = ({
     billId,
     draft,
     approved,
+    organizationCandidates,
     letters,
     lettersState,
     onRequestLetters,
@@ -349,6 +354,15 @@ const CampaignDraftCard: React.FC<CampaignDraftCardProps> = ({
                 onRequest={onRequestLetters}
             />
             <Text className={mutedText}>Approving records a campaign position. It never creates an organization.</Text>
+            {approved ? (
+                <CampaignOrganizationLink
+                    billId={billId}
+                    campaign={approved}
+                    candidates={organizationCandidates}
+                    runInFlight={guards.runInFlight}
+                    refresh={refresh}
+                />
+            ) : null}
             {editing ? (
                 <View className="gap-2">
                     <Text className={mutedText}>Campaign name</Text>
@@ -457,6 +471,10 @@ const CampaignDraftsSection: React.FC<BillCreatorTabProps> = ({ billId, data, re
     if (drafts.length === 0) return null;
 
     const campaigns = (data.campaigns ?? []) as ApprovedCampaign[];
+    const candidatesByCampaignId = (data.campaign_organization_candidates ?? {}) as Record<
+        string,
+        OrganizationCandidate[] | undefined
+    >;
     const bill = (data.bill ?? {}) as {
         bill_llm_provisioning?: { generation_status?: string | null; has_testimony?: boolean } | null;
     };
@@ -490,19 +508,25 @@ const CampaignDraftsSection: React.FC<BillCreatorTabProps> = ({ billId, data, re
 
     return (
         <View testID="admin-campaign-drafts" className="px-4 mt-6 gap-3">
-            {drafts.map((draft, index) => (
-                <CampaignDraftCard
-                    key={draft.content_hash || index}
-                    billId={billId}
-                    draft={draft}
-                    approved={campaigns.find((campaign) => campaign.source_campaign_draft_hash === draft.content_hash)}
-                    letters={letterBundles?.get(draft.content_hash)}
-                    lettersState={lettersState}
-                    onRequestLetters={() => void requestLetters()}
-                    guards={guards}
-                    refresh={refresh}
-                />
-            ))}
+            {drafts.map((draft, index) => {
+                const approvedCampaign = campaigns.find(
+                    (campaign) => campaign.source_campaign_draft_hash === draft.content_hash,
+                );
+                return (
+                    <CampaignDraftCard
+                        key={draft.content_hash || index}
+                        billId={billId}
+                        draft={draft}
+                        approved={approvedCampaign}
+                        organizationCandidates={(approvedCampaign && candidatesByCampaignId[approvedCampaign.id]) || []}
+                        letters={letterBundles?.get(draft.content_hash)}
+                        lettersState={lettersState}
+                        onRequestLetters={() => void requestLetters()}
+                        guards={guards}
+                        refresh={refresh}
+                    />
+                );
+            })}
         </View>
     );
 };

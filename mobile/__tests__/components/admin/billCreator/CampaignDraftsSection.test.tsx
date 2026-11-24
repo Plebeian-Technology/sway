@@ -291,6 +291,46 @@ describe("CampaignDraftsSection", () => {
         expect(screen.getByTestId(`${card}-approve`)).toBeTruthy();
     });
 
+    it("offers the organization link on an approved card with the candidates for that campaign", () => {
+        renderSection(
+            tabData({
+                campaigns: [approvedCampaign],
+                campaign_organization_candidates: {
+                    "7": [
+                        {
+                            organization_id: 9,
+                            organization_name: "Baltimore Renters United",
+                            evidence_kind: "bill_position",
+                            letter_count: 0,
+                            claimed_name: null,
+                        },
+                    ],
+                    "8": [],
+                },
+            }),
+        );
+
+        expect(screen.getByTestId("admin-campaign-organization-7")).toBeTruthy();
+        expect(screen.getByTestId("admin-campaign-organization-7-option-9")).toBeTruthy();
+    });
+
+    it("offers no organization link before the campaign is approved", () => {
+        renderSection(tabData());
+
+        expect(screen.queryByTestId("admin-campaign-organization-7")).toBeNull();
+    });
+
+    it("blocks the organization link while a clean-testimony run is in flight", () => {
+        renderSection(
+            tabData({
+                campaigns: [approvedCampaign],
+                active_legislation_pipeline_run: { status: "cleaning_testimony", bill_id: 42 },
+            }),
+        );
+
+        expect(screen.getByTestId("admin-campaign-organization-7-none")).toBeDisabled();
+    });
+
     it("shows a refusal's reason from campaign_position", async () => {
         mockApiPost.mockRejectedValue(
             new ApiRequestError(
