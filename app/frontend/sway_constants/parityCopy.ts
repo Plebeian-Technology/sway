@@ -398,6 +398,13 @@ export const PARITY_COPY = {
         addSuccess: "Passkey added.",
         addError: "Couldn't add the passkey. Please try again.",
         codeError: "That code didn't work. Please try again.",
+        removeCta: "Remove",
+        removeCodeHint: "We texted you a code. Enter it to remove this passkey.",
+        removeConfirmCodeCta: "Continue",
+        removeConfirmTitle: "Remove this passkey?",
+        removeConfirmBody: (label: string) => `"${label}" will no longer sign you in to Sway.`,
+        removeSuccess: "Passkey removed.",
+        removeError: "Couldn't remove the passkey. Please try again.",
     },
 
     address: {

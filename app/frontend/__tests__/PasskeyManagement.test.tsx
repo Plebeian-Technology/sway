@@ -15,6 +15,16 @@ vi.mock("app/frontend/hooks/authentication/useAddPasskey", () => ({
     useAddPasskey: () => addPasskeyMock,
 }));
 
+vi.mock("app/frontend/hooks/authentication/useRemovePasskey", () => ({
+    useRemovePasskey: () => ({
+        step: "idle",
+        target: null,
+        begin: vi.fn<() => Promise<void>>(),
+        submit: vi.fn<(code: string) => Promise<void>>(),
+        cancel: vi.fn<() => void>(),
+    }),
+}));
+
 import PasskeyManagement from "app/frontend/pages/PasskeyManagement";
 
 describe("pages/PasskeyManagement (add a passkey)", () => {

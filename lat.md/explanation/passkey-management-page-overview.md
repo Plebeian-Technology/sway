@@ -31,6 +31,12 @@ The last passkey stays. The action counts the reader's passkeys and destroys the
 
 Removal does not change recovery: SMS alone still never opens an existing account, and a reader who loses every passkey still contacts support ([[identity-and-access#The phone number is the account]]).
 
+### The web remove flow
+
+Each passkey row shows a Remove button while the reader has more than one passkey; with one left, the page says it must stay instead.
+
+[[app/frontend/hooks/authentication/useRemovePasskey.ts#useRemovePasskey]] reuses the add flow's `verify_phone` and `confirm_phone` steps to open the window, then asks in the shared confirm dialog, naming the passkey, before it sends the DELETE. The dialog comes after the code because the code is the costly step: a reader who backs out at the dialog leaves an open window rather than a wasted text. A removal refreshes only the `passkeys` prop. A refusal from the server, or a failed request, shows as a toast and leaves the list as it was.
+
 ## Threats considered
 
 The listing and removal are scoped to the signed-in reader's own passkeys.
