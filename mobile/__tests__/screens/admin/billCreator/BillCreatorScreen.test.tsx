@@ -1,5 +1,6 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { RefreshControl } from "react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import { ApiRequestError } from "../../../../src/api/errors";
 
@@ -17,9 +18,17 @@ jest.mock("@react-navigation/native", () => ({
     useFocusEffect: jest.fn(),
 }));
 
-jest.mock("../../../../src/components/admin/billCreator/BillFieldsSection", () => {
-    const { Text } = jest.requireActual("react-native");
-    return { __esModule: true, default: () => <Text>Bill fields</Text> };
+jest.mock("../../../../src/screens/admin/billCreator/tabs/CreatorTab", () => {
+    const { Pressable, Text } = jest.requireActual("react-native");
+    return {
+        __esModule: true,
+        default: ({ refresh }: { refresh: () => Promise<void> }) => (
+            <>
+                <Text>Bill fields</Text>
+                <Pressable testID="background-refresh" onPress={() => void refresh()} />
+            </>
+        ),
+    };
 });
 
 jest.mock("../../../../src/state/BootstrapContext", () => ({
@@ -98,5 +107,31 @@ describe("BillCreatorScreen", () => {
 
         expect(await screen.findByText("Bill not found.")).toBeTruthy();
         await waitFor(() => expect(screen.queryByText("Bill fields")).toBeNull());
+    });
+
+    it("keeps the pull spinner off and the data shown during a background refresh", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+        mockApiGet.mockReturnValue(new Promise(() => {}));
+
+        fireEvent.press(screen.getByTestId("background-refresh"));
+
+        expect(screen.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(false);
+        expect(screen.getByText("Bill fields")).toBeTruthy();
+    });
+
+    it("shows the pull spinner while a pull refreshes", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+        let finish: (value: typeof page) => void = () => {};
+        mockApiGet.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+
+        act(() => {
+            screen.UNSAFE_getByType(RefreshControl).props.onRefresh();
+        });
+        expect(screen.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(true);
+
+        await act(async () => finish(page));
+        expect(screen.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(false);
     });
 });

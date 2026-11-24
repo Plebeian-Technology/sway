@@ -39,8 +39,15 @@ const TAB_COMPONENTS: Record<BillCreatorTab, React.ComponentType<BillCreatorTabP
 export default function BillCreatorScreen({ route }: Props) {
     const { billId } = route.params;
     const [tab, setTab] = useState<BillCreatorTab>("creator");
-    const { data, loading, error, refresh } = useBillCreator(billId, tab);
+    const { data, error, refresh } = useBillCreator(billId, tab);
+    const [pulling, setPulling] = useState(false);
     const TabComponent = TAB_COMPONENTS[tab];
+
+    const pullToRefresh = async () => {
+        setPulling(true);
+        await refresh();
+        setPulling(false);
+    };
 
     return (
         <ScrollView
@@ -49,9 +56,9 @@ export default function BillCreatorScreen({ route }: Props) {
             contentContainerStyle={{ paddingBottom: 24 }}
             refreshControl={
                 <RefreshControl
-                    refreshing={loading && data !== null}
+                    refreshing={pulling}
                     onRefresh={() => {
-                        void refresh();
+                        void pullToRefresh();
                     }}
                     accessibilityLabel="Pull to refresh the bill"
                 />

@@ -31,7 +31,7 @@ The header shows the bill's external id and title from the loaded `bill` prop, o
 
 Each tab may receive a different set of props from the server, so the hook clears its data when the bill or the tab changes and the screen shows a spinner until the new answer arrives.
 
-A tab therefore renders only from the answer to its own path. Pull to refresh keeps the current data on screen, because the tab does not change.
+A tab therefore renders only from the answer to its own path. Pull to refresh keeps the current data on screen, because the tab does not change, and only a pull shows the spinner: a background refresh, such as the pipeline tab's poll, reloads without it.
 
 ## Each tab gets only its own props
 
