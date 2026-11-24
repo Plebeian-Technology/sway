@@ -228,12 +228,14 @@ describe("OrgCard follow control", () => {
     });
 
     test("renders '1 follower' (singular) when count is 1", () => {
-        wrap(<OrgCard org={{ ...BASE_ORG, follower_count: 1 }} onPress={jest.fn()} isSignedIn={false} />);
+        const org = { ...BASE_ORG, follower_count: 1 };
+        wrap(<OrgCard org={org} onPress={jest.fn()} isSignedIn={false} />);
         expect(screen.getByText("1 follower")).toBeTruthy();
     });
 
     test("renders '0 followers' when count is 0", () => {
-        wrap(<OrgCard org={{ ...BASE_ORG, follower_count: 0 }} onPress={jest.fn()} isSignedIn={false} />);
+        const org = { ...BASE_ORG, follower_count: 0 };
+        wrap(<OrgCard org={org} onPress={jest.fn()} isSignedIn={false} />);
         expect(screen.getByText("0 followers")).toBeTruthy();
     });
 
