@@ -33,10 +33,12 @@ export interface OrgPositionDisplay {
 
 export interface PositionCardProps {
     position: OrgPositionDisplay;
+    // @lat: [[organization-affiliation-labels#Organization affiliation labels#Every position carries its own tag]]
+    organizationName?: string;
     testID?: string;
 }
 
-export function PositionCard({ position, testID }: PositionCardProps) {
+export function PositionCard({ position, organizationName, testID }: PositionCardProps) {
     const { colorScheme } = useTheme();
     const t = swayTokens[colorScheme];
     const isSupport = position.support === "FOR";
@@ -57,6 +59,16 @@ export function PositionCard({ position, testID }: PositionCardProps) {
                     </View>
                 ) : null}
                 <StampedBadge label={badgeLabel} color={badgeColor} />
+                {organizationName !== undefined ? (
+                    <Text
+                        testID="org-position-source-tag"
+                        className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
+                    >
+                        {position.source_kind === "organization"
+                            ? PARITY_COPY.orgs.postedBy(organizationName)
+                            : PARITY_COPY.orgs.compiledBySway}
+                    </Text>
+                ) : null}
                 {position.bill?.title ? (
                     <Text className="text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                         {position.bill.headline ?? billHeadline(position.bill.title)}

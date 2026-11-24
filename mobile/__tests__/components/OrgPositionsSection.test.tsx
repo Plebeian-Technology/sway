@@ -170,3 +170,28 @@ describe("OrgPositionsSection", () => {
         expect(screen.getByTestId("ai-unreviewed-notice")).toBeTruthy();
     });
 });
+
+describe("OrgPositionsSection affiliation labels", () => {
+    test("shows the notice once and tags each position by who wrote it", () => {
+        wrap([
+            { ...forPosition, source_kind: "organization" },
+            { ...againstPosition, source_kind: "news_article" },
+        ]);
+
+        expect(screen.getAllByText(PARITY_COPY.orgs.listNotice)).toHaveLength(1);
+        const tags = screen.getAllByTestId("org-position-source-tag").map((tag) => tag.props.children);
+        expect(tags.toSorted()).toEqual(["Compiled by Sway", "Posted by ACLU"]);
+    });
+
+    test("tags a position with no recorded origin as compiled by Sway", () => {
+        wrap([{ ...forPosition, source_kind: null }]);
+
+        expect(screen.getByTestId("org-position-source-tag").props.children).toBe(PARITY_COPY.orgs.compiledBySway);
+    });
+
+    test("shows no notice when there are no positions", () => {
+        wrap([]);
+
+        expect(screen.queryByText(PARITY_COPY.orgs.listNotice)).toBeNull();
+    });
+});

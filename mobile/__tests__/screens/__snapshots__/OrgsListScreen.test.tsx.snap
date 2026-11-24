@@ -104,8 +104,13 @@ exports[`OrgsListScreen (Phase 35 parity rebuild — RED) snapshot: empty state 
   >
     <View>
       <View
-        className="py-3"
+        className="py-3 gap-3"
       >
+        <Text
+          className="px-4 text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+        >
+          Sway compiles organizations' positions from public testimony and news reporting. An organization is not affiliated with Sway unless its page says it manages its positions on Sway.
+        </Text>
         <View
           accessibilityLabel="Change locale, currently Baltimore, Maryland, United States"
           accessibilityRole="button"

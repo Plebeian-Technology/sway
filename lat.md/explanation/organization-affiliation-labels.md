@@ -7,7 +7,7 @@ lat:
 
 Most organizations on Sway never joined it: Sway compiled their positions from public testimony and news. The labels tell a reader who wrote each position, so no organization appears to act on Sway.
 
-The copy lives in the `orgs` section of [[app/frontend/sway_constants/parityCopy.ts#PARITY_COPY]] so web and mobile show the same words. Who wrote a position comes from its `source_kind` ([[news-org-position-persistence#Position origin and affiliation]]); whether an organization takes part comes from `managed_on_sway` ([[organizations-controller-notes#OrganizationsController design notes#managed_on_sway: an active member, batched across a list]]).
+The copy lives in the `orgs` section of [[app/frontend/sway_constants/parityCopy.ts#PARITY_COPY]] so web and mobile show the same words in the same places: the organizations list, an organization's page, its cards, and the organization positions on a bill. Who wrote a position comes from its `source_kind` ([[news-org-position-persistence#Position origin and affiliation]]); whether an organization takes part comes from `managed_on_sway` ([[organizations-controller-notes#OrganizationsController design notes#managed_on_sway: an active member, batched across a list]]).
 
 ## Every position carries its own tag
 

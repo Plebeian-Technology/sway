@@ -17,6 +17,7 @@ export interface OrgCardOrganization {
     name: string;
     icon_url?: string | null;
     sway_locale_slug?: string | null;
+    managed_on_sway?: boolean;
 }
 
 export interface OrgCardProps {
@@ -92,6 +93,11 @@ export function OrgCard({
                     {org.sway_locale_slug ? (
                         <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
                             {org.sway_locale_slug}
+                        </Text>
+                    ) : null}
+                    {org.managed_on_sway ? (
+                        <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                            {PARITY_COPY.orgs.managedOnSway(org.name)}
                         </Text>
                     ) : null}
 
