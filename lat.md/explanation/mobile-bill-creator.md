@@ -46,6 +46,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Creator and Positions both render the organizations panel, so both carry `organizations` and `tab_key`, which the panel sends back on save.
 - Pipeline carries the keys that [[app/controllers/bills_controller.rb#BillsController#edit]] adds outside the shared prop builder: the activity log, the artifact mirrors and the fetched bills. The web pipeline poll list also names `testimony_claimed_affiliations`, but nothing on that tab reads it, so the mobile list leaves it out.
 - Pipeline also carries `legislation_pipeline_run`, the run the web progress panel shows. The web gets it as a shared prop ([[legislation-pipeline-run-sourcing-concern]]), and mobile JSON holds only the action's own props, so [[app/controllers/bills_controller.rb#BillsController#mobile_bill_creator_tab_props]] adds the shared run props before it slices.
+- Pipeline also carries `recent_pipeline_runs` for the run selector, and `stale_pipeline_run_count` and `orphan_pipeline_run_count` for the cleanup buttons ([[mobile-bill-creator#Sections#The pipeline cleanup section]]). All three come from the same shared run props.
 - Summary carries `review_draft_revision`, which reads the `draft_revision_id` query parameter, so a summary request still answers the draft named in its address.
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The props the web marks optional and never builds for mobile, such as the summary prompt and the campaign letter text, stay absent whatever the tab.
@@ -249,6 +250,26 @@ The web rules that carry over:
 A queued resume or restart creates a new run, so the tab returns to the latest run and refetches. The web keeps its address pin across the redirect and relies on a page-wide banner to reveal the new run; the phone has no banner, so it follows the new run itself.
 
 The phone leaves out the web's failure header ("Failed at stage N: ..."), which the progress section's failed alert already covers, and the "Resume of run N" origin line.
+
+### The pipeline cleanup section
+
+[[mobile/src/components/admin/billCreator/PipelineCleanupSection.tsx#PipelineCleanupSection]] ports the web's cleanup controls: Force fail, the stuck-run sweep and the orphan delete.
+
+The web code is [[app/frontend/components/admin/creator/ForceFailDialog.tsx#ForceFailDialog]] and the buttons of [[app/frontend/components/admin/creator/pipeline-controls/PipelineActionButtons.tsx#PipelineActionButtons]]. The Pipeline tab renders the section after the progress section, and the tab's prop list carries the `stale_pipeline_run_count` and `orphan_pipeline_run_count` it reads.
+
+The web rules that carry over:
+
+- Force fail shows only while the shown run is in flight, the same statuses that give the progress section its Cancel button.
+- Force fail asks the admin to type `force fail`. The confirm button stays disabled until the text matches exactly, and it posts the typed phrase to `POST /pipeline_runs/:id/force_fail`. Cancelling, or a successful fail, clears the text.
+- "Remove N stuck runs" shows only when the stale count is above zero and posts to `POST /bills/sweep_stale_pipeline_runs`. The server fails only unfinished runs with no update for four hours and no background job or live summary batch, and keeps their history ([[legislation-pipeline#The legislation pipeline#Runs, resume and restart#Stuck runs require evidence of abandonment]]).
+- "Delete N orphan runs" shows only when the orphan count is above zero and sends `DELETE /pipeline_runs/orphans`. Orphans are runs queued or running for over four hours with no active worker, and the delete cannot be undone.
+- A refusal shows the server's reason under the control that sent the request.
+
+The web confirms the two bulk buttons in a dialog that names the count. The phone uses a two-tap button ([[mobile/src/hooks/useTwoTapConfirm.ts#useTwoTapConfirm]]): the first tap reads "Tap again to ..." with the count and lapses after three seconds, and the explanation the dialog carried sits under the button as a hint. Each button shows the server's result after it runs: "Cleared N stuck pipeline runs." from the sweep's count, and the orphan delete's "Removed N orphan runs." or "No orphan runs to remove.". The result stays after the counts drop to zero. The section then refetches the tab so the counts and the shown run update.
+
+[[app/controllers/pipeline_runs_controller.rb#PipelineRunsController#force_fail]] and [[app/controllers/bills_controller.rb#BillsController#sweep_stale_pipeline_runs]] answer through `respond_after_write`. A force fail answers 200 with the failed run's summary. A wrong phrase or a run that is no longer in flight answers 422 with the `pipeline` error under `details`, as the cancel and resume refusals do. The sweep answers 200 with the number of runs it failed. The web redirects exactly as before.
+
+The phone leaves out the info popovers and tooltips, the `back_to` parameter of the web's redirects, and the web's rule that disables Force fail while a Resume, Restart or Run request posts: on the phone those controls never show for an in-flight run.
 
 ### The run selector section
 

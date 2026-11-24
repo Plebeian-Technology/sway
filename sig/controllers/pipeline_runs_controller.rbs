@@ -13,6 +13,9 @@ class PipelineRunsController < ApplicationController
 
   private
 
+  # The failed run's summary for a bearer client; empty for the web.
+  def force_failed_run_json: (LegislationPipelineRun run) -> Hash[Symbol, untyped]
+
   # Solid Queue lookup; fail-closed on raise.
   def solid_queue_job_exists_for?: (LegislationPipelineRun run) -> bool
 end

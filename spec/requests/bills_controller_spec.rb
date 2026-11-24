@@ -1489,6 +1489,23 @@ RSpec.describe "BillsController", type: :request do
         expect(body.fetch("recent_pipeline_runs").pluck("id")).to eq([newer_run.id, older_run.id])
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+      it "gives the pipeline tab the stuck and orphan run counts" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        allow(LegislationPipelineRun).to receive(:solid_queue_job_exists_for?).and_return(false)
+        create(:legislation_pipeline_run, status: "running", created_at: 5.hours.ago, updated_at: 5.hours.ago)
+        create(:legislation_pipeline_run, status: "queued")
+
+        get_tab_as_json(bill, user, "pipeline")
+
+        expect(response.parsed_body.slice("stale_pipeline_run_count", "orphan_pipeline_run_count")).to eq(
+          "stale_pipeline_run_count" => 1,
+          "orphan_pipeline_run_count" => 1
+        )
+      end
+
       it "serves each tab exactly the keys its list names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)

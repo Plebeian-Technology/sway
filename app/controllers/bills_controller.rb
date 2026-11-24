@@ -58,7 +58,7 @@ class BillsController < ApplicationController
       bill bill_id bills pipeline_preview selected_stages download_missing_assets testimony_coverage
       testimony_campaign_drafts sending_service_domains sending_service_domains_total bill_artifact_mirrors
       fetched_bills activity_log_entries activity_log_next_cursor activity_log_has_more legislation_pipeline_run
-      recent_pipeline_runs
+      recent_pipeline_runs stale_pipeline_run_count orphan_pipeline_run_count
     ],
     "summary" => %i[
       bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
@@ -750,8 +750,11 @@ class BillsController < ApplicationController
       user_id: current_user&.id
     )
 
-    flash[:notice] = "Cleared #{rails_swept} stuck pipeline run#{"s" unless rails_swept == 1}."
-    redirect_to back_path
+    respond_after_write(
+      back_path,
+      notice: "Cleared #{rails_swept} stuck pipeline run#{"s" unless rails_swept == 1}.",
+      json: {count: rails_swept}
+    )
   end
 
   # @lat: [[paste-summary-dialog#Paste summary dialog#The dialog validates a pasted draft before publishing]]

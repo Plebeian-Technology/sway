@@ -499,6 +499,18 @@ RSpec.describe "Bill pipeline runs", type: :request do
       expect(expired.reload.status).to eq("failed")
     end
 
+    # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+    it "answers a bearer client with 200 and the number of runs it failed" do
+      stuck = LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "running", updated_at: 5.hours.ago)
+      LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "queued")
+
+      post sweep_stale_pipeline_runs_bills_path, headers: authenticate_as(admin).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq("count" => 1)
+      expect(stuck.reload.status).to eq("failed")
+    end
+
     # The "requires sway admin" group earlier in this file covers the
     # admin gate. This example only checks the side effect. The run's
     # status does not change for a non-admin.
