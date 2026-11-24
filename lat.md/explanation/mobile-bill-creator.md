@@ -195,3 +195,32 @@ The phone leaves out these web pieces, which need the current run's controls or 
 The Pipeline tab's progress section shows the current pipeline run, its stage and its terminal result, refetching the tab while the run is in flight.
 
 The tab's `legislation_pipeline_run` prop is the same run the web surfaces ([[legislation-pipeline-run-sourcing-concern]]): a run picked by `run_id`, else the newest active run, else the newest run of any status. Its `pipeline_run_stages` list each stage with its status and position. The bill's `bill_pipeline_last_failure` and `bill_pipeline_refresh` already arrive inside `bill`.
+
+[[mobile/src/components/admin/billCreator/PipelineProgressSection.tsx#PipelineProgressSection]] ports the web's [[app/frontend/components/admin/creator/PipelineProgress.tsx#PipelineProgress]] panel and its header, running detail, error list and terminal alerts. The Pipeline tab renders it below the stage section. The web files import Radix and the page's type namespace, so the section copies their status labels, phase labels and time formats.
+
+The web states that carry over:
+
+- No run shows "No pipeline run yet." with the web's hint.
+- The header names the status as the web's global badge does: a stage status such as "Extracting text", Queued, Running, Done, Succeeded, Partial, Failed (or "Failed — no output" for an `empty_artifact:` error) and Cancelled. A running run with bill errors adds the error count, and a run with a phase adds its label.
+- An abandoned run shows the web's notice and no progress bar. Any other in-flight run shows the bar, filled to the share of bills processed.
+- A running run shows its current bill, the time left, the bill count and a collapsed queue. Bill errors list under a toggle that starts open for a failed run.
+- Terminal runs show the web's alerts: complete with the bills updated, succeeded, partial, cancelled with its time and count, and failed with the phase, the reason, the remedy and the failure's age and time. A failed single-bill run also lists its stages, marking each succeeded or failed stage.
+
+The remedy text follows the web's three cases. A failed single-bill run names Resume and Restart, which the phone does not offer yet. A run over every bill names Run pipeline, for the picked bill or, on a new bill, for every bill.
+
+The run JSON carries no `processed`, `total`, `phase`, `eta_seconds`, `errors` or `queued` today, on the web or the phone ([[pipeline-run-optional-progress-fields]]). The section reads them with the web's defaults, so a running run shows "—", "0 / ? bills" and an empty bar until the server sends them.
+
+The phone leaves out these web pieces:
+
+- The Cancel and Clear buttons, which belong with Resume and Restart.
+- The live connection and its "Live updates paused" line, because the phone polls instead.
+- The info popovers.
+- The bill's `bill_pipeline_last_failure`. The web reads it only in the Summary tab's empty state, so the Pipeline tab ports nothing for it.
+
+#### Polling while a run is in flight
+
+[[mobile/src/hooks/admin/usePolling.ts#usePolling]] calls a refresh function every interval while a condition holds, and the progress section uses it to refetch the tab every five seconds.
+
+The hook takes three arguments: `refresh`, `active` and the interval in milliseconds. It starts a timer only while `active` is true and the screen has focus, and clears it when `active` turns false, the screen loses focus or the component unmounts. It returns nothing; the caller's `refresh` owns the request and its state. The first call comes one interval after the start, because the tab has just loaded.
+
+The progress section polls while the run's status is in flight or the bill's `bill_pipeline_refresh` is queued or running, the same condition the web's [[app/frontend/components/admin/creator/BillCreatorPipelineLlm.tsx#BillCreatorPipelineLlm]] uses for its five-second poll. A finished run turns `active` off, so the tab stops refetching. The web pushes run updates over a live connection and polls as a fallback; the phone has no live connection here and only polls.

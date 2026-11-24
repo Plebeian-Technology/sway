@@ -14,6 +14,7 @@ jest.mock("../../../../src/theme/ThemeProvider", () => ({
 
 jest.mock("@react-navigation/native", () => ({
     useNavigation: () => ({ setParams: jest.fn() }),
+    useFocusEffect: jest.fn(),
 }));
 
 jest.mock("../../../../src/components/admin/billCreator/BillFieldsSection", () => {
