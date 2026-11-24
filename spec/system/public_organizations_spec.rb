@@ -21,6 +21,9 @@ RSpec.describe "Public Organizations", type: :system, js: true do
     # embedded in the page cannot fake a pass.
     expect(find_by_id("app", wait: 10)).to have_text("Browseable Civic Org")
     expect(page).to have_css("[data-testid='public-organization-card']", wait: 10)
+    expect(find_by_id("app")).to have_text(
+      "Sway compiles organizations' positions from public testimony and news reporting."
+    )
   end
 
   it "switches the list to another locale from the picker and keeps it on reload" do
@@ -85,6 +88,8 @@ RSpec.describe "Public Organizations", type: :system, js: true do
     expect(detail).to have_text("Detailed Org")
     expect(detail).to have_css("[data-testid='public-organization-position']")
     expect(detail).to have_text("We support this measure.")
+    expect(detail).to have_text("Detailed Org is not affiliated with Sway")
+    expect(detail.find("[data-testid='org-position-source-tag']")).to have_text("Compiled by Sway")
   end
 
   it "renders the copy-constant empty state when an organization has no positions" do

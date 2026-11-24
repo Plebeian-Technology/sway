@@ -69,6 +69,8 @@ const Organizations: React.FC<IProps> = ({
                 <p className="text-sm text-muted-foreground">
                     Browse civic organizations and the positions they've taken on legislation.
                 </p>
+                {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Organization pages say whether the organization takes part]] */}
+                <p className="text-sm text-muted-foreground">{PARITY_COPY.orgs.listNotice}</p>
             </div>
 
             <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-2 px-4 py-3">

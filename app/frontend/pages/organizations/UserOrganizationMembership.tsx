@@ -89,6 +89,7 @@ const UserOrganizationMembership: React.FC = () => {
                     <TabsContent value="positions">
                         <PositionsList
                             organizationId={(membership.organization as sway.IOrganization).id}
+                            organizationName={membership.organization.name}
                             positions={positions}
                             isAdmin={isAdmin}
                         />

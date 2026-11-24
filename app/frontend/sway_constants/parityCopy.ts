@@ -166,6 +166,14 @@ export const PARITY_COPY = {
         title: "Organizations",
         noneFound: (formattedSwayLocaleName: string) => `No organizations found for ${formattedSwayLocaleName}.`,
         noPositions: "This organization hasn't added any positions yet.",
+        // @lat: [[organization-affiliation-labels#Organization affiliation labels]]
+        listNotice:
+            "Sway compiles organizations' positions from public testimony and news reporting. An organization is not affiliated with Sway unless its page says it manages its positions on Sway.",
+        notAffiliated: (organizationName: string) =>
+            `${organizationName} is not affiliated with Sway and is not responsible for its content. Sway compiled these positions from public testimony and news reporting.`,
+        managedOnSway: (organizationName: string) => `${organizationName} manages its positions on Sway.`,
+        postedBy: (organizationName: string) => `Posted by ${organizationName}`,
+        compiledBySway: "Compiled by Sway",
         track: "Track",
         tracking: "Tracking",
         untrack: "Untrack",

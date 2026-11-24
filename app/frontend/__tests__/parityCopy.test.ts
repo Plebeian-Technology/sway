@@ -140,6 +140,27 @@ describe("PARITY_COPY — Organizations keys (nested)", () => {
     it("orgs.noPositions is the public organization page's positions empty state", () => {
         expect(PARITY_COPY.orgs.noPositions).toBe("This organization hasn't published any positions yet.");
     });
+
+    it("orgs.listNotice says where positions come from and when an organization is affiliated", () => {
+        expect(PARITY_COPY.orgs.listNotice).toBe(
+            "Sway compiles organizations' positions from public testimony and news reporting. An organization is not affiliated with Sway unless its page says it manages its positions on Sway.",
+        );
+    });
+
+    it("orgs.notAffiliated names the organization and says Sway compiled its positions", () => {
+        expect(PARITY_COPY.orgs.notAffiliated("Bikemore")).toBe(
+            "Bikemore is not affiliated with Sway and is not responsible for its content. Sway compiled these positions from public testimony and news reporting.",
+        );
+    });
+
+    it("orgs.managedOnSway names the organization", () => {
+        expect(PARITY_COPY.orgs.managedOnSway("Bikemore")).toBe("Bikemore manages its positions on Sway.");
+    });
+
+    it("orgs.postedBy and orgs.compiledBySway are the per-position tags", () => {
+        expect(PARITY_COPY.orgs.postedBy("Bikemore")).toBe("Posted by Bikemore");
+        expect(PARITY_COPY.orgs.compiledBySway).toBe("Compiled by Sway");
+    });
 });
 
 describe("PARITY_COPY — Memberships keys (nested)", () => {

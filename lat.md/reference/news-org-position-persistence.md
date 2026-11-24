@@ -29,7 +29,7 @@ A nil `source_kind` reads as compiled by Sway. The backfill sets `organization` 
 
 ### Payloads
 
-Both public position payloads send `source_kind` and `source_url`, null when unknown: `to_public_json` on [[app/models/organization_bill_position.rb#OrganizationBillPosition]] and [[app/serializers/bill_page_organization_bill_position_resource.rb#BillPageOrganizationBillPositionResource]].
+Both public position payloads send `source_kind` and `source_url`, null when unknown: `to_public_json` on [[app/models/organization_bill_position.rb#OrganizationBillPosition]] and [[app/serializers/bill_page_organization_bill_position_resource.rb#BillPageOrganizationBillPositionResource]]. The membership page props from [[app/controllers/organizations/base_controller.rb#BaseController#membership_as_props]] send `source_kind` only.
 
 ## Persistence callers
 

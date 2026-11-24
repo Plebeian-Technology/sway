@@ -527,8 +527,6 @@ declare module "sway" {
             summary_ai_unreviewed?: boolean;
             active: boolean;
             created_at?: string;
-            origin: "Org-posted" | "Sway-compiled";
-            origin_url?: string | null;
             // @lat: [[news-org-position-persistence#Position origin and affiliation]]
             source_kind: "hearing_testimony" | "news_article" | "sway_admin" | "organization" | null;
             source_url: string | null;
