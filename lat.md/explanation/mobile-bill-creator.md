@@ -71,7 +71,7 @@ Porting a section adds its component to the tab file and a short section to this
 
 [[mobile/src/components/admin/billCreator/BillFieldsSection.tsx#BillFieldsSection]] ports the bill fields of the web Creator form, plus the shell's locale selector. The Creator tab renders it.
 
-It edits the locale, external id, external version, title, link, sponsor, chamber, status, the introduced and vote dates, and both roll-call numbers. The summary text and the audio fields belong to their own sections. The web form also shows a Withdrawn On date, but the bills table has no such column and the controller does not permit it, so the phone leaves it out.
+It edits the locale, external id, external version, title, link, sponsor, chamber, status, the introduced and vote dates, both roll-call numbers and the summary. The audio fields belong to their own section. The web form also shows a Withdrawn On date, but the bills table has no such column and the controller does not permit it, so the phone leaves it out.
 
 The locale list is the bootstrap's `sway_locales`, the same declared locales the web's admin selector offers. A saved bill starts in its own locale, a new one in the app's current locale. The chamber starts at the bill's chamber or the locale's default, stays fixed when the locale declares one chamber, and resets to the new default when the admin picks another locale. The Senate vote date is disabled for a locale with chambers but no Senate. The sponsor list is the one the tab loaded, so it follows the bill's locale (or the app's, for a new bill) rather than the locale picked on screen, as the web's does for a saved bill.
 
@@ -81,7 +81,17 @@ Saving refuses locally, with the web's messages from [[app/frontend/components/a
 
 After a save the form shows the server's copy of the bill and "Bill saved.". A new bill then switches the screen to its id, which loads the saved bill's tab; an update reloads the tab so the header shows the new title.
 
-The bill model requires a summary, and this section sends none. Creating a bill from the phone therefore fails with the server's "Summary can't be blank" until the phone can edit the summary. Updates are unaffected.
+#### The summary field
+
+The summary editor is a field of this form, as on the web's [[app/frontend/components/admin/creator/fields/SummaryField.tsx#SummaryField]], so the bill save carries it. The bill model requires a summary, so a new bill needs one.
+
+The field starts at the bill's published summary and sends the text untrimmed. The server publishes a summary only when the text differs from the stored one, and a trimmed copy would differ for a summary that ends in a newline.
+
+A new bill's summary goes in with the rest of `POST /bills`; a blank one comes back as the model's "can't be blank" under the field. On a saved bill, [[app/controllers/bills_controller.rb#BillsController#update]] sends a changed summary through [[app/services/manual_news_summary_publication_service.rb#ManualNewsSummaryPublicationService]] with the `news_usage` `none` the form already sends. A refusal answers 422 with a generic message and the real reasons in `details.errors`, so the field lists each reason under the input. The same `details` also carries the publication's `status` string; the form ignores field errors while reasons are present, so that status never lands under the Bill Status choice.
+
+The ported rules are the web's label, the required marker, the helper text, the link to the Markdown syntax guide, and a live preview drawn by the app's [[mobile-markdown-rendering#Rendering|Markdown renderer]]. The web sets no length limit and validates nothing locally, so neither does the phone.
+
+The phone leaves out four web behaviours. The web turns `:name:` emoji shortcodes into emoji as the admin types; that table is a 100 KB JSON file behind the web's import alias. The web keeps an unsaved draft in browser storage, with the summary it was written against; the phone keeps no drafts. The web swaps in a newly published summary when the admin has not touched the text; the phone's form reads the bill once per load. The web's preview carries no AI-unreviewed notice, and the phone matches it: the Summary tab shows that notice beside the published summary ([[mobile-bill-creator#Sections#The summary generation section]]).
 
 ### The legislator votes section
 

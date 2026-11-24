@@ -211,4 +211,102 @@ describe("BillFieldsSection", () => {
         expect(screen.getByText("Validation failed.")).toBeTruthy();
         expect(screen.queryByText("Bill saved.")).toBeNull();
     });
+
+    // @lat: [[mobile-bill-creator#Sections#The bill fields section#The summary field]]
+    describe("the summary field", () => {
+        it("creates a new bill with its summary and succeeds", async () => {
+            const onSaved = jest.fn();
+            mockApiPost.mockResolvedValue({ ...savedBill, summary: "Caps yearly rent increases." });
+            render(<BillFieldsSection billId={null} bill={newBill} legislators={legislators} onSaved={onSaved} />);
+            typeInto("external_id", "25-0042");
+            typeInto("title", "Rent Stabilization");
+            choose("legislator_id", 3);
+            typeInto("summary", "Caps yearly rent increases.");
+
+            fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith(
+                    "/bills",
+                    expect.objectContaining({ summary: "Caps yearly rent increases.", news_usage: "none" }),
+                ),
+            );
+            expect(await screen.findByText("Bill saved.")).toBeTruthy();
+            expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ id: 42 }));
+        });
+
+        it("starts from the saved summary and publishes an edit with news usage none", async () => {
+            mockApiPatch.mockResolvedValue({ ...savedBill, summary: "Caps rent increases at 3%." });
+            render(
+                <BillFieldsSection
+                    billId={42}
+                    bill={{ ...savedBill, summary: "Caps rent increases." }}
+                    legislators={legislators}
+                    onSaved={jest.fn()}
+                />,
+            );
+            expect(screen.getByTestId("admin-bill-fields-summary-input").props.value).toBe("Caps rent increases.");
+            typeInto("summary", "Caps rent increases at 3%.");
+
+            fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+            await waitFor(() =>
+                expect(mockApiPatch).toHaveBeenCalledWith(
+                    "/bills/42",
+                    expect.objectContaining({ summary: "Caps rent increases at 3%.", news_usage: "none" }),
+                ),
+            );
+            expect(await screen.findByText("Bill saved.")).toBeTruthy();
+        });
+
+        it("shows each reason the server gives for refusing the summary", async () => {
+            mockApiPatch.mockRejectedValue(
+                new ApiRequestError(
+                    "validation_failed",
+                    "Manual summary publication failed validation.",
+                    {
+                        status: "news_usage_mismatch",
+                        errors: ["The summary links to news but declares no news use.", "Remove the link."],
+                    },
+                    422,
+                ),
+            );
+            render(<BillFieldsSection billId={42} bill={savedBill} legislators={legislators} onSaved={jest.fn()} />);
+            typeInto("summary", "Read [the Banner](https://thebaltimorebanner.com/rent).");
+
+            fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+            expect(await screen.findByText("The summary links to news but declares no news use.")).toBeTruthy();
+            expect(screen.getByText("Remove the link.")).toBeTruthy();
+            expect(screen.getByText("Manual summary publication failed validation.")).toBeTruthy();
+            expect(screen.queryByTestId("admin-bill-fields-status-error")).toBeNull();
+            expect(screen.queryByText("Bill saved.")).toBeNull();
+        });
+
+        it("shows the server's blank-summary error under the summary", async () => {
+            mockApiPost.mockRejectedValue(
+                new ApiRequestError(
+                    "validation_failed",
+                    "Validation failed.",
+                    { summary: ["Summary can't be blank"] },
+                    422,
+                ),
+            );
+            render(<BillFieldsSection billId={null} bill={newBill} legislators={legislators} onSaved={jest.fn()} />);
+            choose("legislator_id", 3);
+
+            fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+            expect(await screen.findByTestId("admin-bill-fields-summary-error")).toHaveTextContent(
+                "Summary can't be blank",
+            );
+        });
+
+        it("previews the summary as markdown", () => {
+            render(<BillFieldsSection billId={42} bill={savedBill} legislators={legislators} onSaved={jest.fn()} />);
+            typeInto("summary", "Caps **rent** increases.");
+
+            expect(screen.getByTestId("admin-bill-fields-summary-preview")).toHaveTextContent("Caps rent increases.");
+        });
+    });
 });

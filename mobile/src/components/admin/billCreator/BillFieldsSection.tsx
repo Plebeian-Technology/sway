@@ -1,8 +1,9 @@
 // @lat: [[mobile-bill-creator#Sections#The bill fields section]]
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { Linking, Text, TextInput, View } from "react-native";
 
 import { Routes } from "../../../api/routes";
+import { Markdown } from "../../Markdown";
 import { FormField } from "../../ui/FormField";
 import { Pressable } from "../../ui/Pressable";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
@@ -23,6 +24,7 @@ export interface CreatorBill {
     senate_vote_date_time_utc?: string | null;
     legislator_id?: number | null;
     sway_locale_id?: number | null;
+    summary?: string | null;
     vote?: {
         house_roll_call_vote_number?: number | string | null;
         senate_roll_call_vote_number?: number | string | null;
@@ -57,6 +59,7 @@ interface Fields {
     senate_vote_date_time_utc: string;
     house_roll_call_vote_number: string;
     senate_roll_call_vote_number: string;
+    summary: string;
 }
 
 type DateFieldName = "introduced_date_time_utc" | "house_vote_date_time_utc" | "senate_vote_date_time_utc";
@@ -89,6 +92,8 @@ const REQUIRED_FIELDS: readonly [keyof Fields, string][] = [
 ];
 
 const DATE_MESSAGE = "Enter the date as YYYY-MM-DD.";
+
+const MARKDOWN_GUIDE_URL = "https://www.markdownguide.org/basic-syntax";
 
 const asText = (value: string | number | null | undefined) =>
     value === null || value === undefined ? "" : String(value);
@@ -124,6 +129,7 @@ const fieldsFromBill = (bill: CreatorBill | undefined, locale: CreatorLocale | u
     senate_vote_date_time_utc: asDateText(bill?.senate_vote_date_time_utc),
     house_roll_call_vote_number: asText(bill?.vote?.house_roll_call_vote_number),
     senate_roll_call_vote_number: asText(bill?.vote?.senate_roll_call_vote_number),
+    summary: asText(bill?.summary),
 });
 
 const firstMessage = (errors: Record<string, unknown> | null, name: string) => {
@@ -131,6 +137,62 @@ const firstMessage = (errors: Record<string, unknown> | null, name: string) => {
     if (Array.isArray(messages)) return typeof messages[0] === "string" ? messages[0] : undefined;
     return typeof messages === "string" ? messages : undefined;
 };
+
+const publicationReasons = (errors: Record<string, unknown> | null) =>
+    Array.isArray(errors?.errors) ? errors.errors.filter((reason): reason is string => typeof reason === "string") : [];
+
+interface SummaryFieldProps {
+    value: string;
+    onChange: (value: string) => void;
+    disabled: boolean;
+    errors: string[];
+}
+
+// @lat: [[mobile-bill-creator#Sections#The bill fields section#The summary field]]
+const SummaryField = ({ value, onChange, disabled, errors }: SummaryFieldProps) => (
+    <View testID="admin-bill-fields-summary" className="mb-4">
+        <Text className="mb-1 text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+            Sway Bill Summary *
+        </Text>
+        <Text className="mb-2 text-xs font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+            {"Sway's short summary of the bill's contents."}
+        </Text>
+        <TextInput
+            testID="admin-bill-fields-summary-input"
+            accessibilityLabel="Sway Bill Summary"
+            multiline
+            value={value}
+            onChangeText={onChange}
+            editable={!disabled}
+            className="min-h-48 rounded-md border border-border-light dark:border-border-dark bg-input-light dark:bg-input-dark p-3 font-open-sans-light text-foreground-light dark:text-foreground-dark"
+        />
+        {errors.map((error, index) => (
+            <Text
+                key={`${index}-${error}`}
+                testID={index === 0 ? "admin-bill-fields-summary-error" : `admin-bill-fields-summary-error-${index}`}
+                className="mt-1 text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark"
+            >
+                {error}
+            </Text>
+        ))}
+        <Pressable
+            testID="admin-bill-fields-summary-guide"
+            variant="ghost"
+            accessibilityRole="link"
+            onPress={() => void Linking.openURL(MARKDOWN_GUIDE_URL)}
+        >
+            <Text className="text-xs font-open-sans-semibold uppercase text-accent-light dark:text-accent-dark underline">
+                Markdown Syntax Guide
+            </Text>
+        </Pressable>
+        <View
+            testID="admin-bill-fields-summary-preview"
+            className="rounded-md border border-border-light dark:border-border-dark p-3"
+        >
+            <Markdown content={value} className="text-sm text-foreground-light dark:text-foreground-dark" />
+        </View>
+    </View>
+);
 
 interface ChoiceFieldProps {
     name: string;
@@ -227,7 +289,8 @@ export default function BillFieldsSection({ billId, bill, legislators, onSaved }
         .map((legislator) => ({ label: sponsorLabel(legislator), value: String(legislator.id) }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
-    const errorFor = (name: string) => firstMessage(fieldErrors, name);
+    const reasons = publicationReasons(fieldErrors);
+    const errorFor = (name: string) => (reasons.length > 0 ? undefined : firstMessage(fieldErrors, name));
 
     const save = async () => {
         setSaved(false);
@@ -338,6 +401,12 @@ export default function BillFieldsSection({ billId, bill, legislators, onSaved }
             )}
             {textField("house_roll_call_vote_number", "House Vote Roll Call Number")}
             {textField("senate_roll_call_vote_number", "Senate Vote Roll Call Number")}
+            <SummaryField
+                value={fields.summary}
+                onChange={setField("summary")}
+                disabled={loading}
+                errors={reasons.length > 0 ? reasons : [errorFor("summary")].filter((error) => error !== undefined)}
+            />
             {formMessage || errorMessage ? (
                 <Text
                     testID="admin-bill-fields-error"
