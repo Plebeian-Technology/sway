@@ -597,7 +597,7 @@ The section seeds its rows from `bill.organizations` once, at mount. An approval
 
 The section ports the draft cards only; the rest of the web's testimony panel belongs to later sections.
 
-- The campaign cards, the testimony coverage notice with its acknowledgement, the supplemental testimony field, the positions error notice and the public testimony letters.
+- The testimony coverage notice with its acknowledgement, the supplemental testimony field, the positions error notice and the public testimony letters.
 - The success toasts. The card leaving the list on the reload is the confirmation.
 - The info popovers beside the heading, the stance stamp, Approve and Edit, and the stamp colours.
 - The screen-reader link from a disabled Approve to the notice that explains it. The notices sit above the cards in reading order instead.
@@ -613,6 +613,23 @@ An approval, a reject and an edit answer 200 with an empty body, and so does a r
 
 The Positions tab lists each campaign draft, a set of people who sent one letter template, and the admin approves, rejects or releases it, as the web's campaign card does ([[campaign-position-cards]]).
 
+[[mobile/src/components/admin/billCreator/CampaignDraftsSection.tsx#CampaignDraftsSection]] ports [[app/frontend/components/admin/creator/BillCreatorCampaignPositionCard.tsx#BillCreatorCampaignPositionCard]] and its letter list. The tab renders it between the draft positions and the claimed affiliations, the web's order, keyed on the bill id. It reads `testimony_campaign_drafts` and `campaigns`, already in the Positions tab's prop list, and draws nothing when there are no drafts. Each card is keyed on the draft's `content_hash` and finds its approved campaign through `source_campaign_draft_hash`.
+
+A card shows the name line, the APPROVED and CAMPAIGN stamps, the evidence line ("3 senders · 2 letters · sent through <domain>") and the web's note that approving never creates an organization. An unnamed campaign reads "3 people sent this letter". A name over 120 characters shows one line with a "Show full name" toggle. The name, position and summary start from the approved campaign, or empty and Support for a new one, and a reload takes the server's values unless the editor is open.
+
+The buttons follow the web card:
+
+- The Edit button opens fields for the name, a Support, Oppose or Neutral choice and the summary; Cancel closes them and keeps what was typed.
+- Approve as this campaign, or Update this campaign once approved, posts `name`, `support`, `summary` and `content_hash` to `/bills/:id/campaigns`. It stays off while the summary is blank, the bill has no testimony, a summary run or a clean-testimony run is in flight, or left-out testimony is unacknowledged: the claimed affiliation card's checks ([[mobile-bill-creator#Sections#The claimed affiliations section]]).
+- Reject and, before approval, Mark as Individual Letters post `content_hash` to `reject_draft` and `mark_individual_draft`.
+- A rejected draft, or one marked individual and not approved, collapses to a stamped row (REJECTED or INDIVIDUAL LETTERS) whose Restore posts to `restore_draft`.
+
+Every write reloads the tab on success and shows the server's notice on the card. A refusal shows `details.campaign_position`, else the server's message.
+
+An approved card will carry the organization link below the note, where the web places it.
+
+The letters open under "Show 2 letters". The first open on any card fetches every draft's letters once ([[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]) and keeps them in the section, so every other card opens without a request and the poll never carries them ([[campaign-letter-disclosure#Why the list asks for its own letters]]). The list shows one letter at a time with Previous, Next and "1 of 2", each with its number, sender (address, else domain, else "Unknown sender"), a DUPLICATE stamp for a repeat and the selectable text. It says when the letters are loading, could not be loaded (with Try again), or could not be produced. A draft whose `letter_count` is zero offers no letters ([[campaign-letter-disclosure#Why the disclosure is gated on the count rather than the letters]]).
+
 #### Serving the letter text to the phone
 
 The phone reads a campaign's member letters only on the Positions tab, and only when its address carries `testimony_campaign_letters=1`.
@@ -624,6 +641,17 @@ The letters are a draft's whole testimony text, so they must never ride the tab'
 [[app/controllers/campaigns_controller.rb#CampaignsController]] answers the approve, reject, restore and mark-as-individual writes through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
 
 Each write answers 200 with `notice`, the sentence the web puts in its flash. The phone shows it on the card, because the approval notice is the only place an admin learns that the approval replaced an earlier decision for the same campaign name ([[campaign-letter-disclosure#Why replacing an earlier decision is reported as success]]). Every refusal answers 422 with the web's reason under `details.campaign_position`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. The web keeps its redirects, flash notices and Inertia errors. Linking a campaign to an organization keeps its redirects for now.
+
+#### What the phone leaves out
+
+The card keeps the web card's rules and drops its chrome.
+
+- Linking an approved campaign to an organization, which a later section adds.
+- The info popovers beside the CAMPAIGN stamp, the evidence line and the letters toggle, and the stamp colours.
+- The numbered page buttons: Previous and Next replace them, and the letter list shows its page count once rather than above and below.
+- The screen-reader link from a disabled Approve to the notice that explains it. The draft section's notices sit above the cards.
+- The web's "Approve failed.", "Reject failed.", "Restore failed." and "Mark individual failed." fallbacks. The phone shows the server's or the client's message, which always exists.
+- A failed letter fetch is remembered for the section, not per card, so Try again on any card retries for all.
 
 ### The claimed affiliations section
 

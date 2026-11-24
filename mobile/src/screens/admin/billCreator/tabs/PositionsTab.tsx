@@ -2,6 +2,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 
+import CampaignDraftsSection from "../../../../components/admin/billCreator/CampaignDraftsSection";
 import ClaimedAffiliationsSection from "../../../../components/admin/billCreator/ClaimedAffiliationsSection";
 import DraftPositionsSection from "../../../../components/admin/billCreator/DraftPositionsSection";
 import OrganizationsSection from "../../../../components/admin/billCreator/OrganizationsSection";
@@ -28,6 +29,7 @@ export default function PositionsTab({ billId, data, refresh }: BillCreatorTabPr
     return (
         <>
             <DraftPositionsSection key={`drafts-${billId}`} billId={billId} data={data} refresh={refresh} />
+            <CampaignDraftsSection key={`campaigns-${billId}`} billId={billId} data={data} refresh={refresh} />
             <ClaimedAffiliationsSection key={`claimed-${billId}`} billId={billId} data={data} refresh={refresh} />
             <View className="px-4 mt-8 mb-2">
                 <Text
