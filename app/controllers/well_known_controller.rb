@@ -77,7 +77,10 @@ class WellKnownController < ApplicationController
               "/bill_of_the_month",
               "/organizations/*/memberships/*",
               "/organizations/*",
-              "/organizations"
+              "/organizations",
+              "/s/*",
+              "/invite/*/*",
+              "/invites/*/*"
             ]
           }
         ]

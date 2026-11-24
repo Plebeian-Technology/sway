@@ -72,7 +72,10 @@ RSpec.describe "WellKnown", type: :request do
           "/legislators/*",
           "/bill_of_the_week",
           "/bill_of_the_month",
-          "/organizations/*/memberships/*"
+          "/organizations/*/memberships/*",
+          "/s/*",
+          "/invite/*/*",
+          "/invites/*/*"
         )
       end
     end

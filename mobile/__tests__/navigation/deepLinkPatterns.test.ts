@@ -33,6 +33,13 @@ describe("androidPathData", () => {
         });
     });
 
+    it("claims the user invite links", () => {
+        expect(DEEP_LINK_PATTERNS).toEqual(expect.arrayContaining(["/s/*", "/invite/*/*", "/invites/*/*"]));
+        expect(androidPathData("/s/*")).toEqual({ pathPrefix: "/s/" });
+        expect(androidPathData("/invite/*/*")).toEqual({ pathPattern: "/invite/.*/.*" });
+        expect(androidPathData("/invites/*/*")).toEqual({ pathPattern: "/invites/.*/.*" });
+    });
+
     // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
     it("never hands Android a prefix containing a star", () => {
         for (const pattern of DEEP_LINK_PATTERNS) {
@@ -83,13 +90,27 @@ describe("every claimed address has a screen that answers it", () => {
         });
     };
 
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
+    const attributionOnlyPatterns = ["/s/*", "/invite/*/*", "/invites/*/*"];
+
     // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
     it("finds a screen for each one", () => {
         const paths = routePaths();
         expect(paths).not.toHaveLength(0);
 
-        const unanswered = DEEP_LINK_PATTERNS.filter((pattern) => !paths.some((route) => answers(pattern, route)));
+        const unanswered = DEEP_LINK_PATTERNS.filter(
+            (pattern) => !attributionOnlyPatterns.includes(pattern) && !paths.some((route) => answers(pattern, route)),
+        );
 
         expect(unanswered).toEqual([]);
+    });
+
+    it("exempts only patterns that are claimed and have no screen", () => {
+        const paths = routePaths();
+
+        for (const pattern of attributionOnlyPatterns) {
+            expect(DEEP_LINK_PATTERNS).toContain(pattern);
+            expect(paths.some((route) => answers(pattern, route))).toBe(false);
+        }
     });
 });

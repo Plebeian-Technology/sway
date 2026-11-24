@@ -10,6 +10,9 @@ export const DEEP_LINK_PATTERNS = [
     "/organizations/*/memberships/*",
     "/organizations/*",
     "/organizations",
+    "/s/*",
+    "/invite/*/*",
+    "/invites/*/*",
 ];
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]

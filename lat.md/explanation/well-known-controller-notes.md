@@ -82,6 +82,7 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 - `organizations/:orgId/memberships/:id` — one membership
 - `organizations/:id` — an organization's detail
 - `organizations` — the organizations list
+- `s/:key`, `invite/:userId/:inviteUuid` and `invites/:userId/:inviteUuid` — a user invite link, which opens no screen ([[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]])
 
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
@@ -94,6 +95,10 @@ A user invite link gives the app nothing to show, so the app remembers who invit
 The paths are `s/<key>`, the short link, and `invite/<user id>/<invite uuid>` with its twin `invites/…`. `linking.getStateFromPath` in [[mobile/src/navigation/linking.ts]] recognises them before React Navigation looks for a screen, stores `s:<key>` or `invite:<invite uuid>` in [[mobile/src/state/inviteAttribution.ts#inviteAttribution]], and answers that there is no screen. Those are the two forms the web writes into its own funnel cookie, so the server reads one format from both.
 
 The key lives in memory for the life of the app process, and a newer invite link replaces an older one. Only letters, digits, hyphens and underscores are accepted, so a crafted link cannot place other text in a request.
+
+Because they open no screen, the three invite patterns are the one named exemption in the test that every claimed address has a screen. That test also fails if an exempted pattern stops being claimed or gains a screen, so the exemption cannot outlive its reason.
+
+Claiming `/s/*` has a cost on the web side. With the app installed, a tap on a short link never reaches the server, so the shortener's click count and the web funnel cookie record nothing for it. Every shortened address today belongs to a user invite link, so the claim takes nothing else with it.
 
 An invite link is never kept for replay after sign-in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]). Replaying it would store the key a second time, after registration had already used and cleared it.
 
