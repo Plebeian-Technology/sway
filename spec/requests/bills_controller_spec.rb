@@ -1506,6 +1506,23 @@ RSpec.describe "BillsController", type: :request do
         )
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The summary generation section]]
+      it "gives the summary tab the active pipeline run and the bill's summary state" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        create(:bill_llm_provisioning, :completed, bill: bill)
+        run = create(:legislation_pipeline_run, status: "queued")
+
+        get_tab_as_json(bill, user, "summary")
+
+        body = response.parsed_body
+        expect(body.dig("active_legislation_pipeline_run", "id")).to eq(run.id)
+        expect(body.fetch("bill").keys).to include("summary", "summary_ai_unreviewed", "bill_llm_provisioning",
+          "bill_pipeline_refresh", "bill_pipeline_last_failure")
+        expect(body.dig("bill", "bill_llm_provisioning", "generation_status")).to eq("completed")
+      end
+
       it "serves each tab exactly the keys its list names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)

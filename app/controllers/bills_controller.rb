@@ -63,7 +63,7 @@ class BillsController < ApplicationController
     "summary" => %i[
       bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
       summary_sources active_categories max_active_categories_per_bill news_articles receipt_status
-      review_draft_revision
+      review_draft_revision active_legislation_pipeline_run
     ],
     "positions" => %i[
       bill bill_id tab_key organizations testimony_coverage testimony_campaign_drafts
@@ -434,24 +434,19 @@ class BillsController < ApplicationController
       **reasoning_effort_arg
     ).call
     when :no_pipeline_data
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "No pipeline data available"}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "No pipeline data available"})
     when :unsupported_model
       # @lat: [[bill-creator-summary-tab#Choosing the model for one regeneration]]
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That model is not one Sway offers. Reload the page and choose again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That model is not one Sway offers. Reload the page and choose again."})
     when :unsupported_reasoning_effort
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."})
     when :already_in_progress
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "Generation already in progress"}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "Generation already in progress"})
     when :enqueue_failed
       # @lat: [[bill-creator-summary-tab#The Bill Creator summary tab#A failed enqueue leaves a retry path]]
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "The summary could not be queued. Try again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "The summary could not be queued. Try again."})
     else
-      redirect_to summary_bill_creator_path(@bill)
+      respond_after_write(summary_bill_creator_path(@bill))
     end
   end
 
@@ -535,27 +530,20 @@ class BillsController < ApplicationController
       **summary_instructions_arg, **reasoning_effort_arg
     ).call
     when :invalid_summary_instructions
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "Instructions must be text up to 2,000 characters."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "Instructions must be text up to 2,000 characters."})
     when :no_pipeline_data
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "No pipeline data available for regeneration."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "No pipeline data available for regeneration."})
     when :unsupported_model
       # @lat: [[bill-creator-summary-tab#Choosing the model for one regeneration]]
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That model is not one Sway offers. Reload the page and choose again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That model is not one Sway offers. Reload the page and choose again."})
     when :unsupported_reasoning_effort
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."})
     when :already_in_progress
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "Generation already in progress"}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "Generation already in progress"})
     when :enqueue_failed
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "The summary could not be queued. Try again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "The summary could not be queued. Try again."})
     else
-      redirect_to summary_bill_creator_path(@bill),
-        notice: "Summary regeneration queued successfully."
+      respond_after_write(summary_bill_creator_path(@bill), notice: "Summary regeneration queued successfully.")
     end
   end
 

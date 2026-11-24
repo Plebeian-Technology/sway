@@ -286,6 +286,46 @@ RSpec.describe "Bills LLM actions", type: :request do
         }.not_to have_enqueued_job(GenerateBillSummaryJob)
       end
     end
+
+    describe "for a bearer request" do
+      let(:bill) { summarizable_bill }
+      let(:json_headers) { authenticate_as(user).merge("Accept" => "application/json") }
+
+      # @lat: [[mobile-bill-creator#Sections#The summary generation section#Answering generate and regenerate in JSON]]
+      it "queues the run and answers 200 with an empty body" do
+        create(:bill_llm_provisioning, :with_diff_content, bill: bill)
+
+        expect {
+          post generate_summary_bill_path(bill), headers: json_headers
+        }.to have_enqueued_job(GenerateBillSummaryJob).with(bill.id)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({})
+      end
+
+      it "answers a run already in flight with 422 and the reason under generation" do
+        create(:bill_llm_provisioning, :pending, :with_diff_content, bill: bill)
+
+        expect {
+          post generate_summary_bill_path(bill), headers: json_headers
+        }.not_to have_enqueued_job(GenerateBillSummaryJob)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+        expect(response.parsed_body.dig("error", "details", "generation")).to eq("Generation already in progress")
+      end
+
+      it "still redirects a web refusal to the summary tab with the reason as an Inertia error" do
+        create(:bill_llm_provisioning, :pending, :with_diff_content, bill: bill)
+
+        post generate_summary_bill_path(bill)
+
+        expect(response).to redirect_to(summary_bill_creator_path(bill))
+        follow_redirect!
+        expect(inertia).to render_component(Pages::BILL_CREATOR)
+        expect(inertia.props[:errors][:generation]).to eq("Generation already in progress")
+      end
+    end
   end
 
   describe "GET /bills/:id/edit" do
