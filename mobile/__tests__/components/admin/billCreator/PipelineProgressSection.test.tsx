@@ -1,5 +1,16 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+
+import { ApiRequestError } from "../../../../src/api/errors";
+
+const mockApiDelete = jest.fn();
+jest.mock("../../../../src/api/client", () => ({
+    apiClient: { delete: (...args: unknown[]) => mockApiDelete(...args) },
+}));
+
+jest.mock("../../../../src/hooks/useReachability", () => ({
+    useReachability: () => ({ isOnline: true, isResolved: true }),
+}));
 
 import PipelineProgressSection from "../../../../src/components/admin/billCreator/PipelineProgressSection";
 
@@ -20,6 +31,11 @@ const tabData = (pipelineRun: unknown, bill: Record<string, unknown> = {}) => ({
     legislation_pipeline_run: pipelineRun,
 });
 
+const renderView = (data: ReturnType<typeof tabData>, billId: number | null = 42) => {
+    const view = render(<PipelineProgressSection billId={billId} data={data} refresh={jest.fn()} />);
+    return { view };
+};
+
 const renderSection = (data: ReturnType<typeof tabData>, billId: number | null = 42) => {
     const refresh = jest.fn(async () => {});
     const view = render(<PipelineProgressSection billId={billId} data={data} refresh={refresh} />);
@@ -29,6 +45,8 @@ const renderSection = (data: ReturnType<typeof tabData>, billId: number | null =
 // @lat: [[mobile-bill-creator#Sections#The pipeline progress section]]
 describe("PipelineProgressSection", () => {
     beforeEach(() => {
+        jest.clearAllMocks();
+        mockApiDelete.mockResolvedValue({});
         jest.useFakeTimers();
         jest.setSystemTime(new Date("2026-11-24T12:00:00Z"));
     });
@@ -201,5 +219,80 @@ describe("PipelineProgressSection", () => {
         renderSection(tabData(run({ status: "failed", error_message: "empty_artifact: nothing extracted" })));
 
         expect(screen.getByTestId("admin-pipeline-status")).toHaveTextContent("Failed — no output");
+    });
+    describe("cancelling a run", () => {
+        it("asks to tap again, then cancels the run and refreshes the tab", async () => {
+            const { refresh } = renderSection(tabData(run()));
+
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+            expect(screen.getByText("Tap again to cancel")).toBeTruthy();
+            expect(mockApiDelete).not.toHaveBeenCalled();
+
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+
+            await waitFor(() => expect(mockApiDelete).toHaveBeenCalledWith("/bills/legislation_pipeline_runs/9"));
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+            expect(screen.getByText("Cancel run")).toBeTruthy();
+        });
+
+        it("forgets the first tap after three seconds", () => {
+            renderSection(tabData(run()));
+
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+            act(() => {
+                jest.advanceTimersByTime(3000);
+            });
+
+            expect(screen.getByText("Cancel run")).toBeTruthy();
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+            expect(mockApiDelete).not.toHaveBeenCalled();
+        });
+
+        it("offers Clear this run for an abandoned run", async () => {
+            renderSection(tabData(run({ status: "running", abandoned: true })));
+
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+            expect(screen.getByText("Tap again to clear")).toBeTruthy();
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+
+            await waitFor(() => expect(mockApiDelete).toHaveBeenCalledWith("/bills/legislation_pipeline_runs/9"));
+        });
+
+        it("names the button Cancel run before the first tap, and Clear this run when abandoned", () => {
+            const { rerender } = renderSection(tabData(run({ status: "queued" })));
+            expect(screen.getByText("Cancel run")).toBeTruthy();
+
+            rerender(
+                <PipelineProgressSection
+                    billId={42}
+                    data={tabData(run({ status: "queued", abandoned: true }))}
+                    refresh={jest.fn()}
+                />,
+            );
+            expect(screen.getByText("Clear this run")).toBeTruthy();
+        });
+
+        it("offers no button for a finished run", () => {
+            for (const status of ["completed", "succeeded", "partial", "failed", "cancelled"]) {
+                const { view } = renderView(tabData(run({ status })));
+                expect(screen.queryByTestId("admin-pipeline-cancel")).toBeNull();
+                view.unmount();
+            }
+        });
+
+        it("shows the server's reason when the run cannot be cancelled and does not refresh", async () => {
+            mockApiDelete.mockRejectedValue(
+                new ApiRequestError("validation_failed", "Cannot cancel run in status=completed", undefined, 422),
+            );
+            const { refresh } = renderSection(tabData(run()));
+
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+            fireEvent.press(screen.getByTestId("admin-pipeline-cancel"));
+
+            expect(await screen.findByTestId("admin-pipeline-cancel-error")).toHaveTextContent(
+                "Cannot cancel run in status=completed",
+            );
+            expect(refresh).not.toHaveBeenCalled();
+        });
     });
 });

@@ -1,15 +1,46 @@
 // @lat: [[mobile-bill-creator#The tabs]]
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import PipelineProgressSection from "../../../../components/admin/billCreator/PipelineProgressSection";
+import PipelineRunActionsSection from "../../../../components/admin/billCreator/PipelineRunActionsSection";
 import PipelineStagesSection from "../../../../components/admin/billCreator/PipelineStagesSection";
+import RunSelectorSection, {
+    type RecentPipelineRun,
+} from "../../../../components/admin/billCreator/RunSelectorSection";
 import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
+import { usePinnedPipelineRun } from "../../../../hooks/admin/usePinnedPipelineRun";
 
 export default function PipelineTab({ billId, data, refresh }: BillCreatorTabProps) {
+    const [pinnedRunId, setPinnedRunId] = useState<number | null>(null);
+    const pinnedRun = usePinnedPipelineRun(billId, pinnedRunId);
+
+    useEffect(() => setPinnedRunId(null), [billId]);
+
+    const shownData =
+        pinnedRunId !== null && pinnedRun.data
+            ? {
+                  ...data,
+                  legislation_pipeline_run: pinnedRun.data.legislation_pipeline_run,
+                  recent_pipeline_runs: pinnedRun.data.recent_pipeline_runs,
+              }
+            : data;
+    const shownRefresh = pinnedRunId === null ? refresh : pinnedRun.refresh;
+    const startedNewRun = async () => {
+        setPinnedRunId(null);
+        await refresh();
+    };
+
     return (
         <>
             <PipelineStagesSection key={billId} billId={billId} data={data} refresh={refresh} />
-            <PipelineProgressSection billId={billId} data={data} refresh={refresh} />
+            <RunSelectorSection
+                runs={(shownData.recent_pipeline_runs ?? []) as RecentPipelineRun[]}
+                currentRunId={(shownData.legislation_pipeline_run as { id?: number } | null)?.id ?? null}
+                pinned={pinnedRunId !== null}
+                onPick={setPinnedRunId}
+            />
+            <PipelineRunActionsSection billId={billId} data={shownData} refresh={startedNewRun} />
+            <PipelineProgressSection billId={billId} data={shownData} refresh={shownRefresh} />
         </>
     );
 }

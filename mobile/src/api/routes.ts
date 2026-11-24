@@ -62,6 +62,13 @@ export const Routes = {
     adminBillCreatorNew: () => "/admin/bill_creator/new",
     adminBillCreatorTab: (billId: number | null, tab: string) =>
         billId === null ? `/admin/bill_creator/new?bill_creator_tab=${tab}` : `/admin/bill_creator/${billId}/${tab}`,
+    adminBillCreatorPipelineRun: (billId: number | null, runId: number) =>
+        billId === null
+            ? `/admin/bill_creator/new?bill_creator_tab=pipeline&run_id=${runId}`
+            : `/admin/bill_creator/${billId}/pipeline?run_id=${runId}`,
+    adminPipelineRunResume: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/resume`,
+    adminPipelineRunRestart: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/restart`,
+    adminPipelineRunCancel: (runId: number) => `/bills/legislation_pipeline_runs/${runId}`,
     adminBillCreatorPipelinePreview: (billId: number | null, stages: string[], downloadMissingAssets: boolean) =>
         (billId === null
             ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"

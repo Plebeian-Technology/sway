@@ -42,7 +42,7 @@ const STAGES = [
     },
 ] as const;
 
-const ALL_STAGE_KEYS: string[] = STAGES.map((s) => s.key);
+export const ALL_STAGE_KEYS: string[] = STAGES.map((s) => s.key);
 
 const DEFAULT_STAGE_KEYS: string[] = ALL_STAGE_KEYS.filter((key) => key !== "summarize-bill");
 

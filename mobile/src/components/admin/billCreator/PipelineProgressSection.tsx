@@ -2,8 +2,12 @@
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 
+import { Routes } from "../../../api/routes";
+import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
 import type { BillCreatorTabProps } from "../../../hooks/admin/useBillCreator";
 import { usePolling } from "../../../hooks/admin/usePolling";
+import { useTwoTapConfirm } from "../../../hooks/useTwoTapConfirm";
+import { exactTime, parseTime, relativeTime } from "../../../utils/runTime";
 import { Pressable } from "../../ui/Pressable";
 
 interface PipelineRunStage {
@@ -14,6 +18,7 @@ interface PipelineRunStage {
 }
 
 interface PipelineRun {
+    id: number;
     status: string | null;
     kind: "single" | "all_bills" | null;
     error_message: string | null;
@@ -69,30 +74,6 @@ const isInFlight = (status: string | null | undefined) =>
 const statusLabel = (run: PipelineRun) => {
     if (run.status === "failed" && run.error_message?.startsWith("empty_artifact:")) return "Failed — no output";
     return run.status ? (STATUS_LABELS[run.status] ?? run.status) : "Unknown status";
-};
-
-const parseTime = (iso: string | null | undefined) => {
-    const date = iso?.trim() ? new Date(iso.trim()) : null;
-    return date && !isNaN(date.getTime()) ? date : null;
-};
-
-const exactTime = (iso: string | null | undefined) => {
-    const date = parseTime(iso);
-    if (!date) return null;
-    const day = date.toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" });
-    const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
-    return `${day} at ${time}`;
-};
-
-const relativeTime = (date: Date) => {
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (seconds < 0) return "just now";
-    if (seconds < 60) return `${seconds}s ago`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
 };
 
 const failureTiming = (iso: string | null | undefined) => {
@@ -152,6 +133,53 @@ const Disclosure: React.FC<DisclosureProps> = ({ testID, title, initiallyOpen, c
                 <Text className={labelText}>{title}</Text>
             </Pressable>
             {open ? children : null}
+        </View>
+    );
+};
+
+interface CancelRunButtonProps {
+    runId: number;
+    abandoned: boolean;
+    refresh: () => Promise<void>;
+}
+
+const CancelRunButton: React.FC<CancelRunButtonProps> = ({ runId, abandoned, refresh }) => {
+    const { confirming, arm, disarm } = useTwoTapConfirm();
+    const { run, loading, errorMessage } = useAdminMutation<unknown>("delete", Routes.adminPipelineRunCancel(runId));
+
+    const press = async () => {
+        if (!confirming) {
+            arm();
+            return;
+        }
+        disarm();
+        if ((await run()) === undefined) return;
+        await refresh();
+    };
+
+    const label = confirming
+        ? abandoned
+            ? "Tap again to clear"
+            : "Tap again to cancel"
+        : abandoned
+          ? "Clear this run"
+          : "Cancel run";
+
+    return (
+        <View className="gap-1">
+            <Pressable
+                testID="admin-pipeline-cancel"
+                variant={confirming ? "destructive" : "outline"}
+                disabled={loading}
+                onPress={() => void press()}
+            >
+                <Text className={labelText}>{label}</Text>
+            </Pressable>
+            {errorMessage ? (
+                <Text testID="admin-pipeline-cancel-error" className={errorText}>
+                    {errorMessage}
+                </Text>
+            ) : null}
         </View>
     );
 };
@@ -336,6 +364,9 @@ export default function PipelineProgressSection({ billId, data, refresh }: BillC
                         {processed} of {total ?? "?"} bills processed before cancel.
                     </Text>
                 </Alert>
+            ) : null}
+            {isInFlight(run.status) ? (
+                <CancelRunButton key={run.id} runId={run.id} abandoned={abandoned} refresh={refresh} />
             ) : null}
         </View>
     );

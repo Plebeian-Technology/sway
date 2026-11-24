@@ -186,7 +186,7 @@ The server builds `pipeline_preview` only for a request whose address names `sel
 
 A queued run shows "Pipeline run queued." and refreshes the tab. A refusal shows the server's reason: `details.pipeline` for a 422, and the message naming the active run for a 409. The web shows a toast, plus a fixed "already running" alert whenever its `pipeline` error is set.
 
-The phone leaves out these web pieces, which need the current run's controls or the stale and orphan counts that the tab does not serve: the in-flight state that disables the controls, the failure header with Resume and Restart, Force fail, the origin hint, the live-update banner, and the stuck-run and orphan-run buttons. The server refuses a second run with 409 meanwhile. The info popovers and the selection kept in the address are left out too.
+The phone leaves out these web pieces, which need the current run's controls or the stale and orphan counts that the tab does not serve: the in-flight state that disables the controls, the failure header, Force fail, the origin hint, the live-update banner, and the stuck-run and orphan-run buttons. The server refuses a second run with 409 meanwhile. The info popovers and the selection kept in the address are left out too.
 
 [[app/controllers/bills_controller.rb#BillsController#run_pipeline]], `resume_pipeline_run` and `restart_pipeline_run` answer through `respond_after_write` ([[bills-controller-design#enqueue_pipeline_run! and render_pipeline_duplicate_run]]). A queued run answers 200 with an empty body. A refused run (no locale, a conflicting locale, a refused resume, a bad stage) answers 422 `validation_failed` with the reason under `details.pipeline`, because the web reads the same reason from its `pipeline` Inertia error. A run started while another is active still answers 409 `duplicate_run` with the active run's id.
 
@@ -206,16 +206,26 @@ The web states that carry over:
 - A running run shows its current bill, the time left, the bill count and a collapsed queue. Bill errors list under a toggle that starts open for a failed run.
 - Terminal runs show the web's alerts: complete with the bills updated, succeeded, partial, cancelled with its time and count, and failed with the phase, the reason, the remedy and the failure's age and time. A failed single-bill run also lists its stages, marking each succeeded or failed stage.
 
-The remedy text follows the web's three cases. A failed single-bill run names Resume and Restart, which the phone does not offer yet. A run over every bill names Run pipeline, for the picked bill or, on a new bill, for every bill.
+The remedy text follows the web's three cases. A failed single-bill run names Resume and Restart, which [[mobile/src/components/admin/billCreator/PipelineRunActionsSection.tsx#PipelineRunActionsSection]] offers. A run over every bill names Run pipeline, for the picked bill or, on a new bill, for every bill.
 
 The run JSON carries no `processed`, `total`, `phase`, `eta_seconds`, `errors` or `queued` today, on the web or the phone ([[pipeline-run-optional-progress-fields]]). The section reads them with the web's defaults, so a running run shows "—", "0 / ? bills" and an empty bar until the server sends them.
 
 The phone leaves out these web pieces:
 
-- The Cancel and Clear buttons, which belong with Resume and Restart.
+- The Cancel button of the web's page-wide run banner. The phone shows the button in the progress panel only.
 - The live connection and its "Live updates paused" line, because the phone polls instead.
 - The info popovers.
 - The bill's `bill_pipeline_last_failure`. The web reads it only in the Summary tab's empty state, so the Pipeline tab ports nothing for it.
+
+#### Cancelling a run
+
+An in-flight run shows Cancel run below its progress, as the web panel does.
+
+The button takes two taps: the first reads "Tap again to cancel" and lapses after three seconds, the second sends `DELETE /bills/legislation_pipeline_runs/:id` ([[mobile/src/hooks/useTwoTapConfirm.ts#useTwoTapConfirm]] holds the window). An abandoned run reads "Clear this run" and "Tap again to clear" instead, and uses the same endpoint, because the server cancels a run nobody carries the same way as a live one. A finished run shows no button.
+
+[[app/controllers/bills_controller.rb#BillsController#cancel_pipeline_run_bill]] answers through `respond_after_write`. A cancelled run answers 200 with an empty body, and a run in a status that cannot be cancelled answers 422 with "Cannot cancel run in status=..." as the message, which the button shows under itself. The web redirects with the same texts as a notice and an alert.
+
+The web asks for a second confirmation when the creator form has unsaved changes, because cancelling navigates away. The phone has no such form on this tab and leaves that dialog out.
 
 #### Polling while a run is in flight
 
@@ -224,3 +234,32 @@ The phone leaves out these web pieces:
 The hook takes three arguments: `refresh`, `active` and the interval in milliseconds. It starts a timer only while `active` is true and the screen has focus, and clears it when `active` turns false, the screen loses focus or the component unmounts. It returns nothing; the caller's `refresh` owns the request and its state. The first call comes one interval after the start, because the tab has just loaded.
 
 The progress section polls while the run's status is in flight or the bill's `bill_pipeline_refresh` is queued or running, the same condition the web's [[app/frontend/components/admin/creator/BillCreatorPipelineLlm.tsx#BillCreatorPipelineLlm]] uses for its five-second poll. A finished run turns `active` off, so the tab stops refetching. The web pushes run updates over a live connection and polls as a fallback; the phone has no live connection here and only polls.
+
+### The pipeline run controls section
+
+[[mobile/src/components/admin/billCreator/PipelineRunActionsSection.tsx#PipelineRunActionsSection]] ports the Resume and Restart buttons of the web's [[app/frontend/components/admin/creator/pipeline-controls/PipelineResumeActions.tsx#PipelineResumeActions]]. The Pipeline tab renders it between the run selector and the progress section, so the remedy text's "above" is true.
+
+The web rules that carry over:
+
+- The buttons show only for a failed single-bill run.
+- Resume reads "Resume from stage N", where N is the position of the failed stage row or, without one, the place of the run's current stage in the stage list; it reads "Resume" when neither is known. Restart reads "Restart entire run".
+- Both buttons post an empty body to `/bills/legislation_pipeline_runs/:id/resume` or `/restart` and stay disabled while either request runs. Neither asks for confirmation, as on the web.
+- A refusal shows the server's reason, the `pipeline` error of a 422 or the message of a 409 for a run already in flight, as the stage section does.
+
+A queued resume or restart creates a new run, so the tab returns to the latest run and refetches. The web keeps its address pin across the redirect and relies on a page-wide banner to reveal the new run; the phone has no banner, so it follows the new run itself.
+
+The phone leaves out the web's failure header ("Failed at stage N: ..."), which the progress section's failed alert already covers, and the "Resume of run N" origin line.
+
+### The run selector section
+
+[[mobile/src/components/admin/billCreator/RunSelectorSection.tsx#RunSelectorSection]] ports the web's [[app/frontend/components/admin/creator/RunSelector.tsx#RunSelector]], which picks the run the Pipeline tab shows. The tab asks for `recent_pipeline_runs` and the server's twenty newest runs fill the list.
+
+The web rules that carry over:
+
+- The selector shows nothing when there are no runs.
+- A pinned run shows as "Run #id · status · bill or all bills · start time". A failed run adds its age after the status. Without a pin the selector reads "Latest run (auto)", even when the newest run is the one shown.
+- Choosing "Latest run (auto)" clears the pin, and the tab follows the newest run again.
+
+The web keeps the pin in the address as `?run_id=`. The phone keeps it in the tab's state and fetches `/admin/bill_creator/:id/pipeline?run_id=N` through [[mobile/src/hooks/admin/usePinnedPipelineRun.ts#usePinnedPipelineRun]]. That response replaces the tab's `legislation_pipeline_run` and `recent_pipeline_runs`, and the progress section polls it while the pinned run is in flight. Switching bills drops the pin, as the server's redirects refuse to carry a pin across bills ([[bill-creator-run-pin-redirect-interceptor#Why it refuses to cross bills]]).
+
+The phone shows the options in a list under a toggle, in place of the web's select element.
