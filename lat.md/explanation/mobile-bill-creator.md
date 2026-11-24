@@ -141,3 +141,28 @@ The phone leaves out four web pieces:
 - The blur handler the web form passes down, which has no counterpart without a shared form.
 
 The web's info popover for the audio field becomes a line of help text above the button.
+
+### The schedule section
+
+[[mobile/src/components/admin/billCreator/BillScheduleSection.tsx#BillScheduleSection]] and [[mobile/src/components/admin/billCreator/ScheduledBillsSection.tsx#ScheduledBillsSection]] port the web Schedule tab, where an admin picks the release day of the bill of the month.
+
+The first section ports the web's selected-bill panel. It shows the bill and either a date field or, for a scheduled bill, its release day. The second ports the web sidebar: upcoming bills grouped under month headings, earliest first, then past bills and unscheduled bills. The tab needs no new props, because the picker's `bills` already carry each bill's id, external id, title and release day.
+
+The web rules that carry over:
+
+- A new bill cannot be scheduled. The section shows the web's message, "Save new Bill of the Month before scheduling release date."
+- Schedule bill stays disabled until the field holds a real day, written `YYYY-MM-DD`, that is not before today. [[mobile/src/utils/calendarDay.ts#parseCalendarDay]] rejects overflow such as `2026-02-31` by formatting the parsed day back and comparing, as the web does ([[bill-schedule-calendar-dates#Scheduler navigation, today control, and pagination]]).
+- The write sends the bare day, never an instant ([[bill-schedule-calendar-dates#Why a picked day travels as a bare day]]).
+- A scheduled bill offers only Remove from schedule, which sends a null day, and the same reminder: to re-schedule, remove first.
+- A day another bill holds is refused at the field, as the web marks such a day taken. Pressing a row in the lists opens that bill on the Schedule tab, as the web's Select button does.
+- Upcoming means today or later by the phone's local midnight. Past bills show five at a time with the full count, and so do unscheduled bills, which start collapsed.
+
+Both writes are `PATCH /bill_of_the_month_schedule/:id`, because the phone client has no PUT and the resource route answers both verbs. [[app/controllers/bill_of_the_month_schedule_controller.rb#BillOfTheMonthScheduleController#update]] answers through `respond_after_write`. The unique index on the release day and locale means two bills cannot share a day, and a race with another admin would otherwise raise `ActiveRecord::RecordNotUnique` and answer 500. The action rescues it and answers 422 (the web a redirect with the same message), which the section shows under the field.
+
+The phone leaves out these web pieces:
+
+- The month grid and the Month and Agenda toggle, because a typed day and the month-grouped list give the same information in less space. Today and the month arrows go with the grid.
+- The `date` query parameter, which only carried the picked day across a reload; the phone keeps the typed day in the section while it stays mounted, and a bill switch starts a fresh field.
+- The info popovers beside each heading.
+- The server's list order: the phone sorts upcoming bills earliest first and past bills latest first, so the month headings read in order.
+- The page-number control of the past and unscheduled lists, replaced by a Show more button.

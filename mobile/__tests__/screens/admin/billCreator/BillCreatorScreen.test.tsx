@@ -47,7 +47,6 @@ describe("BillCreatorScreen", () => {
     });
 
     it.each([
-        [1, "Schedule", "schedule"],
         [2, "Pipeline", "pipeline"],
         [3, "Summary", "summary"],
         [4, "Positions", "positions"],
@@ -59,6 +58,16 @@ describe("BillCreatorScreen", () => {
 
         expect(await screen.findByText(`The ${label} tab is not on mobile yet.`)).toBeTruthy();
         expect(mockApiGet).toHaveBeenLastCalledWith(`/admin/bill_creator/42/${path}`, expect.anything());
+    });
+
+    it("switches to the Schedule tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-1"));
+
+        expect(await screen.findByTestId("admin-schedule-selected")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/schedule", expect.anything());
     });
 
     it("opens a new bill on the Creator tab", async () => {
