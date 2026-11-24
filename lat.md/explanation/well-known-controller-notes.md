@@ -87,6 +87,16 @@ The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bi
 
 `feed`, `profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those four answer `sway://` links from inside the app only.
 
+### Invite links store a key and open no screen
+
+A user invite link gives the app nothing to show, so the app remembers who invited the person and stays where it is.
+
+The paths are `s/<key>`, the short link, and `invite/<user id>/<invite uuid>` with its twin `invites/…`. `linking.getStateFromPath` in [[mobile/src/navigation/linking.ts]] recognises them before React Navigation looks for a screen, stores `s:<key>` or `invite:<invite uuid>` in [[mobile/src/state/inviteAttribution.ts#inviteAttribution]], and answers that there is no screen. Those are the two forms the web writes into its own funnel cookie, so the server reads one format from both.
+
+The key lives in memory for the life of the app process, and a newer invite link replaces an older one. Only letters, digits, hyphens and underscores are accepted, so a crafted link cannot place other text in a request.
+
+An invite link is never kept for replay after sign-in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]). Replaying it would store the key a second time, after registration had already used and cleared it.
+
 ### Why each path maps to one screen
 
 A path that two screens share stops every link, not only links to that path.

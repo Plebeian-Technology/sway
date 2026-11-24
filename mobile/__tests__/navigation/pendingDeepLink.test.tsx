@@ -35,6 +35,7 @@ jest.mock("../../src/screens/MembershipDetailScreen", () => mockScreen("membersh
 import RootNavigator from "../../src/navigation/RootNavigator";
 import { linking } from "../../src/navigation/linking";
 import type { RootParamList } from "../../src/navigation/types";
+import { inviteAttribution } from "../../src/state/inviteAttribution";
 
 const BILL_LINK = "https://sway.vote/bills/12";
 
@@ -144,5 +145,20 @@ describe("a link received before the main screens", () => {
 
         await waitFor(() => expect(navRef.current?.getCurrentRoute()).toBeDefined());
         expect(navRef.current?.getCurrentRoute()?.name).not.toBe("BillDetail");
+    });
+
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
+    it("does not keep an invite link, so its key is not stored again after registration used it", async () => {
+        const { rerender } = render(app());
+        await screen.findByTestId("auth-screen");
+        receiveLink("https://sway.vote/s/abc123");
+        expect(inviteAttribution.get()).toBe("s:abc123");
+        inviteAttribution.clear();
+
+        signedIn(true);
+        rerender(app());
+
+        await waitFor(() => expect(navRef.current?.getCurrentRoute()).toBeDefined());
+        expect(inviteAttribution.get()).toBeNull();
     });
 });

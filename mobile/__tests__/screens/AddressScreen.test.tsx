@@ -80,6 +80,7 @@ import { act, render, fireEvent, screen, waitFor } from "@testing-library/react-
 import { Linking } from "react-native";
 import { apiClient } from "../../src/api/client";
 import AddressScreen from "../../src/screens/AddressScreen";
+import { inviteAttribution } from "../../src/state/inviteAttribution";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -282,6 +283,48 @@ describe("AddressScreen", () => {
         });
     });
 
+    // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Onboarding sends the invite the app was opened with]]
+    describe("edit mode with a stored invite attribution key", () => {
+        afterEach(() => {
+            inviteAttribution.clear();
+        });
+
+        it("never sends the key for an address change", async () => {
+            inviteAttribution.set("s:abc123");
+            mockUseUserProfile.mockReturnValue({
+                user: {
+                    ...baseUser,
+                    is_registration_complete: true,
+                    address: { street: "1 Old St", city: "Baltimore" },
+                },
+                loading: false,
+                refresh: jest.fn(),
+            });
+            wrap(<AddressScreen />);
+            act(() => {
+                mockOnSelectAddress?.({
+                    street1: "100 N Holliday St",
+                    street2: "",
+                    city: "Baltimore",
+                    region_code: "MD",
+                    postal_code: "21202",
+                    country: "United States",
+                    latitude: 39.29105,
+                    longitude: -76.61069,
+                    place_types: ["street_address"],
+                });
+            });
+            fireEvent.press(screen.getByTestId("address-submit-cta"));
+            await act(async () => {
+                fireEvent.press(screen.getByTestId("address-confirm-deactivate-cta"));
+            });
+
+            const posted = (apiClient.post as jest.Mock).mock.calls[0][1].sway_registration;
+            expect(posted).not.toHaveProperty("invite_attribution_key");
+            expect(inviteAttribution.get()).toBe("s:abc123");
+        });
+    });
+
     describe("processing state", () => {
         it("renders the address form without polling when registration_status is processing", () => {
             jest.useFakeTimers();
@@ -395,6 +438,57 @@ describe("AddressScreen", () => {
                 user: { ...baseUser, address: undefined },
                 loading: false,
                 refresh: jest.fn(),
+            });
+        });
+
+        // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Onboarding sends the invite the app was opened with]]
+        describe("invite attribution key", () => {
+            const submitTypedAddress = async () => {
+                wrap(<AddressScreen />);
+                type("street1", "100 N Holliday St");
+                type("city", "Baltimore");
+                type("region_code", "MD");
+                type("postal_code", "21202");
+                await act(async () => {
+                    fireEvent.press(screen.getByTestId("address-submit-cta"));
+                });
+            };
+
+            afterEach(() => {
+                inviteAttribution.clear();
+            });
+
+            it("sends a stored key in onboarding and clears it once the address is saved", async () => {
+                inviteAttribution.set("s:abc123");
+
+                await submitTypedAddress();
+
+                expect(postedRegistration().invite_attribution_key).toBe("s:abc123");
+                expect(inviteAttribution.get()).toBeNull();
+            });
+
+            it("sends no key when none is stored", async () => {
+                await submitTypedAddress();
+
+                expect(postedRegistration()).not.toHaveProperty("invite_attribution_key");
+            });
+
+            it("keeps the key when the request fails", async () => {
+                inviteAttribution.set("s:abc123");
+                (apiClient.post as jest.Mock).mockRejectedValueOnce(new Error("Network failure"));
+
+                await submitTypedAddress();
+
+                expect(inviteAttribution.get()).toBe("s:abc123");
+            });
+
+            it("keeps the key when the address was not located", async () => {
+                inviteAttribution.set("s:abc123");
+                (apiClient.post as jest.Mock).mockResolvedValueOnce({ address_located: false, message: "Not found" });
+
+                await submitTypedAddress();
+
+                expect(inviteAttribution.get()).toBe("s:abc123");
             });
         });
 

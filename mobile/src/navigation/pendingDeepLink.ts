@@ -20,6 +20,10 @@ export const subscribeToLinks = (listener: OpenLink): (() => void) => {
     };
 };
 
+export const discardPendingDeepLink = (): void => {
+    pendingUrl = null;
+};
+
 // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]
 export function usePendingDeepLink(mainScreensReady: boolean, isAuthenticated: boolean): void {
     useEffect(() => {

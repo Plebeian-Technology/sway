@@ -176,6 +176,17 @@ When `POST /sway_registration` answers with `address_located: false`, [[mobile/s
 
 During onboarding, refreshing immediately would load `is_registration_complete: true` from the Congress fallback and cause `RootNavigator` to unmount the onboarding stack before the user could see the prompt or add a city or ZIP, so cache eviction, `refresh()`, and navigation wait until a corrected submission succeeds or the user presses `PARITY_COPY.address.notLocated.continueCta`. Outside onboarding, `is_registration_complete` is already `true` and the server switch has already committed, so caches clear and `refresh()` runs immediately before showing the card so tapping Cancel never leaves stale profile or SQLite cache state.
 
+
+### Onboarding sends the invite the app was opened with
+
+A new person who opened the app from an invite link is credited to their inviter when they register their address.
+
+The key that [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]] stored goes into the registration request as `invite_attribution_key`, and the server turns it into the inviter ([[identity-and-access#The app names its inviter with an attribution key]]).
+
+Only onboarding sends it. A registered person who changes their address is not being invited by anyone, so the key stays out of that request and stays stored.
+
+The key is cleared once the address is saved and located. A failed request, or an address the server could not locate, leaves it in place, because the person submits again and that later request is the one that completes registration.
+
 ## Why isOnboarding only changes wording
 
 Onboarding mode means no address has been saved yet.

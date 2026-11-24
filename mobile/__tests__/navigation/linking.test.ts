@@ -2,7 +2,10 @@
  // @lat: [[mobile-navigation-test-guards#Why linking.test.ts checks the path pattern string instead of calling getStateFromPath]]
  */
 
+import { getStateFromPath } from "@react-navigation/native";
+
 import { linking } from "../../src/navigation/linking";
+import { inviteAttribution } from "../../src/state/inviteAttribution";
 
 describe("linking config", () => {
     const profileScreens = (
@@ -66,5 +69,44 @@ describe("linking config", () => {
         expect(pattern).toContain(":id");
         // The pattern must not be a fixed path with no placeholders.
         expect(pattern).toMatch(/organizations\/:orgId\/memberships\/:id/);
+    });
+});
+
+// @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
+describe("invite links", () => {
+    const INVITE_UUID = "0b9f6c2e-1d4a-4c8e-9f3b-2a7d5e6c1f00";
+    const stateFor = (path: string) => linking.getStateFromPath!(path, linking.config as never);
+
+    beforeEach(() => {
+        inviteAttribution.clear();
+    });
+
+    it("stores the short key of an s/<key> link and opens no screen", () => {
+        expect(stateFor("s/abc-123_x")).toBeUndefined();
+        expect(inviteAttribution.get()).toBe("s:abc-123_x");
+    });
+
+    it.each(["invite", "invites"])("stores the invite uuid of an %s/<user id>/<uuid> link", (prefix) => {
+        expect(stateFor(`/${prefix}/42/${INVITE_UUID}?utm=1`)).toBeUndefined();
+        expect(inviteAttribution.get()).toBe(`invite:${INVITE_UUID}`);
+    });
+
+    it("replaces an older key with a newer one", () => {
+        stateFor("s/first");
+        stateFor("s/second");
+
+        expect(inviteAttribution.get()).toBe("s:second");
+    });
+
+    it.each(["s/abc%2F..", "s/a:b", "invite/42/not%20safe", "s", "invite/42"])("stores nothing for %s", (path) => {
+        stateFor(path);
+
+        expect(inviteAttribution.get()).toBeNull();
+    });
+
+    it("leaves every other path to React Navigation", () => {
+        expect(stateFor("bills/12")).toEqual(getStateFromPath("bills/12", linking.config as never));
+        expect(stateFor("bills/12")).toBeDefined();
+        expect(inviteAttribution.get()).toBeNull();
     });
 });
