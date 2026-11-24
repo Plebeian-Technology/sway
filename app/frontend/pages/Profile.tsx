@@ -1,10 +1,14 @@
 // @lat: [[web-profile-page#Web profile page]]
+import { Button } from "app/frontend/components/ui/button";
+import { useConfirm } from "app/frontend/components/ui/confirm-dialog";
+import { clearIdentityCaches } from "app/frontend/hooks/authentication/prepareIdentityChange";
 import { useUser } from "app/frontend/hooks/users/useUser";
 import { ROUTES } from "app/frontend/sway_constants";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { formatPhone } from "app/frontend/sway_utils/phone";
-import { Link } from "@inertiajs/react";
-import { Bell, ChevronRight, KeyRound, KeySquare, UserRound, Users } from "lucide-react";
+import { Link, router } from "@inertiajs/react";
+import { Bell, ChevronRight, KeyRound, KeySquare, Trash, UserRound, Users } from "lucide-react";
+import { useCallback } from "react";
 
 interface IAccountLink {
     href: string;
@@ -26,7 +30,21 @@ interface IProps {
 
 const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
     const user = useUser();
+    const confirm = useConfirm();
     const accountLinks = can_manage_api_keys ? [...ACCOUNT_LINKS, API_KEYS_LINK] : ACCOUNT_LINKS;
+
+    const handleDeleteAccount = useCallback(async () => {
+        const confirmed = await confirm({
+            title: PARITY_COPY.profile.account.deleteAccountTitle,
+            description: PARITY_COPY.profile.account.deleteAccountBody,
+            confirmLabel: PARITY_COPY.profile.rows.deleteAccount,
+            tone: "destructive",
+        });
+        if (!confirmed) return;
+
+        // @lat: [[web-profile-page#Web profile page#Deleting the account from the web]]
+        router.delete(ROUTES.user(user.id), { onSuccess: clearIdentityCaches });
+    }, [confirm, user.id]);
 
     return (
         <div className="mx-auto w-full max-w-2xl space-y-6 px-4 py-6">
@@ -64,6 +82,20 @@ const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
                     </li>
                 ))}
             </ul>
+
+            <div className="rounded-xl border-neo border-border-strong bg-card shadow-neo px-4 py-4">
+                <Button
+                    type="button"
+                    variant="destructive"
+                    className="gap-2 font-bold"
+                    onClick={() => {
+                        handleDeleteAccount().catch(console.error);
+                    }}
+                >
+                    <Trash className="size-4" aria-hidden="true" />
+                    {PARITY_COPY.profile.rows.deleteAccount}
+                </Button>
+            </div>
         </div>
     );
 };

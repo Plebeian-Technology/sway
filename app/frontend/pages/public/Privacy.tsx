@@ -53,7 +53,7 @@ const Privacy: React.FC = () => {
                 <p className="mt-3 text-sm text-muted-foreground">
                     We keep account and voting data for as long as your account is active, so your voting history stays
                     available to you. Can I delete my Sway account? Yes. You can remove all your data at any point. You
-                    can do this by deleting your account in the Sway mobile app.
+                    can do this by deleting your account from your Profile page on the web or in the Sway mobile app.
                 </p>
 
                 <h2 className="mt-8 text-lg font-black text-foreground">Who we share it with</h2>

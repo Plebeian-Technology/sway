@@ -17,3 +17,9 @@ The navigation now carries a single Profile item for readers and in admin mode (
 API keys stay limited to the phone allowlist behind [[app/models/user.rb#User#is_sway_api_user?]], and only allowlisted users see an API Keys link.
 
 The flag travels as the page's own `can_manage_api_keys` prop rather than a field on the shared user JSON, so no other page learns who is allowlisted and the [[identity-and-access#Identity and access#User JSON exposes only selected fields|user JSON field set]] stays unchanged.
+
+## Deleting the account from the web
+
+The Delete Account button asks for confirmation in the shared confirm dialog, naming what is lost, then sends `DELETE /users/:id` with Inertia for the reader's own id.
+
+[[identity-and-access#Why UsersController#destroy revokes devices before cascading account deletion|The destroy action]] refuses any other id, revokes mobile devices, signs the browser out and redirects to the public home page with history cleared. On success the page also runs [[app/frontend/hooks/authentication/prepareIdentityChange.ts#clearIdentityCaches]], the same cache purge an identity change uses, so no page data from the deleted account stays in the tab. The dialog copy matches the mobile delete sheet ([[mobile-profile-and-delete-account-screens#DeleteAccountScreen]]).

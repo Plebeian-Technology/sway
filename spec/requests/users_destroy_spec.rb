@@ -198,5 +198,24 @@ RSpec.describe "DELETE /users/:id", type: :request do
 
       expect(session_hash[:inertia_clear_history]).to be true
     end
+
+    it "signs the browser out, so the next signed-in page redirects" do
+      sign_in(user)
+
+      delete "/users/#{user.id}", headers: {"X-Inertia" => "true"}
+      get "/profile"
+
+      expect(response).to redirect_to(root_url)
+    end
+
+    it "refuses to delete another user's account and keeps both" do
+      other = create(:user).tap { |u| complete_registration_with_active_link(u) }
+      sign_in(user)
+
+      delete "/users/#{other.id}", headers: {"X-Inertia" => "true"}
+
+      expect(User.exists?(user.id)).to be(true)
+      expect(User.exists?(other.id)).to be(true)
+    end
   end
 end

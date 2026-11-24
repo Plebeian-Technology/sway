@@ -318,6 +318,8 @@ export const PARITY_COPY = {
             signOutAllTitle: "Sign out all devices",
             signOutAllBody: "You'll be signed out on every device. Sign back in with your passkey.",
             signOutAllAction: "Sign Out All Devices",
+            deleteAccountTitle: "Delete account",
+            deleteAccountBody: "This permanently removes your votes, profile, and history. This cannot be undone.",
         },
     },
 

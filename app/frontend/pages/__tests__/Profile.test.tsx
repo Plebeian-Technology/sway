@@ -1,19 +1,25 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render as rtlRender, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const inertia = vi.hoisted(() => ({
     usePage: vi.fn<() => { props: Record<string, unknown> }>(() => ({ props: {} })),
+    router: { delete: vi.fn<(url: string, options?: unknown) => void>() },
 }));
 
 vi.mock("@inertiajs/react", () => ({
     usePage: inertia.usePage,
+    router: inertia.router,
     Link: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
 }));
 
+import { ConfirmProvider } from "app/frontend/components/ui/confirm-dialog";
 import Profile from "app/frontend/pages/Profile";
+
+const render = (ui: React.ReactElement) => rtlRender(<ConfirmProvider>{ui}</ConfirmProvider>);
 
 describe("Profile", () => {
     beforeEach(() => {
+        inertia.router.delete.mockReset();
         inertia.usePage.mockReturnValue({
             props: { user: { id: 7, full_name: "Ada Lovelace", phone: "4105550123" } },
         });
@@ -62,5 +68,40 @@ describe("Profile", () => {
         render(<Profile can_manage_api_keys={false} />);
 
         expect(screen.queryByRole("link", { name: "API Keys" })).toBeNull();
+    });
+
+    describe("Delete Account", () => {
+        it("asks for confirmation, saying what is deleted, before deleting anything", () => {
+            render(<Profile can_manage_api_keys={false} />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Delete Account" }));
+
+            const dialog = screen.getByRole("dialog", { name: "Delete account" });
+            expect(dialog.textContent).toContain(
+                "This permanently removes your votes, profile, and history. This cannot be undone.",
+            );
+            expect(inertia.router.delete).not.toHaveBeenCalled();
+        });
+
+        it("does nothing when the confirmation is cancelled", async () => {
+            render(<Profile can_manage_api_keys={false} />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Delete Account" }));
+            fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+
+            await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+            expect(inertia.router.delete).not.toHaveBeenCalled();
+        });
+
+        it("deletes the signed-in user's own account once confirmed", async () => {
+            render(<Profile can_manage_api_keys={false} />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Delete Account" }));
+            const dialog = screen.getByRole("dialog", { name: "Delete account" });
+            fireEvent.click(within(dialog).getByRole("button", { name: "Delete Account" }));
+
+            await vi.waitFor(() => expect(inertia.router.delete).toHaveBeenCalledTimes(1));
+            expect(inertia.router.delete.mock.calls[0][0]).toBe("/users/7");
+        });
     });
 });
