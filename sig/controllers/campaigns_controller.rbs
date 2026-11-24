@@ -22,6 +22,10 @@ class CampaignsController < ApplicationController
 
   def apply_draft_decision: (Symbol decision) -> void
 
+  def answer_campaign_write: (String notice) -> void
+
+  def refuse_campaign_write: (String reason) -> void
+
   def log_draft_decision: (Symbol decision, String content_hash) -> void
 
   def set_bill: -> void

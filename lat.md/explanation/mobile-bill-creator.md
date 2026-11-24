@@ -608,6 +608,16 @@ The section ports the draft cards only; the rest of the web's testimony panel be
 
 An approval, a reject and an edit answer 200 with an empty body, and so does a reject of a draft that is already gone. Every approval refusal answers 422 with the web's reason under `details.org_position`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. A refusal for a person writing for themselves also carries `details.private_individual_refusal`, so the phone can offer the override the web offers ([[private-individual-guard-override]]). A reject or edit that names a draft the list no longer holds at that index answers 422 with the same list-changed reason under `org_position`. The update action's other refusals (a malformed id, no change named, an invalid stance, an over-long field, a missing identity) were already JSON, `{error, message}`, and the phone's client reads that message. The web keeps its redirects, flash notices and Inertia errors.
 
+### The campaign drafts section
+
+The Positions tab lists each campaign draft, a set of people who sent one letter template, and the admin approves, rejects or releases it, as the web's campaign card does ([[campaign-position-cards]]).
+
+#### Answering campaign writes in JSON
+
+[[app/controllers/campaigns_controller.rb#CampaignsController]] answers the approve, reject, restore and mark-as-individual writes through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
+
+Each write answers 200 with `notice`, the sentence the web puts in its flash. The phone shows it on the card, because the approval notice is the only place an admin learns that the approval replaced an earlier decision for the same campaign name ([[campaign-letter-disclosure#Why replacing an earlier decision is reported as success]]). Every refusal answers 422 with the web's reason under `details.campaign_position`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. The web keeps its redirects, flash notices and Inertia errors. Linking a campaign to an organization keeps its redirects for now.
+
 ### The claimed affiliations section
 
 The Positions tab lists each position a letter's sender claimed on behalf of an organization, and the admin approves it or drops it, as the web's claimed-affiliation card does ([[campaign-position-cards#Claimed affiliation card shape and partial-evidence rule]]).
