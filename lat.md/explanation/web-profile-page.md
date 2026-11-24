@@ -11,3 +11,9 @@ Its labels come from the `profile` block of the parity copy, which [[mobile-prof
 The navigation had grown one item per account page, and a page reached only through a browser feature check was easy to lose.
 
 The navigation now carries a single Profile item for readers and in admin mode ([[system-shape#Auth navigation]]). Notifications stays reachable from the Profile page even when the browser lacks the Notification API, because its SMS settings work without push. The memberships link stays in the navigation as Organizations as well, since it is also a reader's way into their organizations.
+
+## Why the API keys link is a page prop
+
+API keys stay limited to the phone allowlist behind [[app/models/user.rb#User#is_sway_api_user?]], and only allowlisted users see an API Keys link.
+
+The flag travels as the page's own `can_manage_api_keys` prop rather than a field on the shared user JSON, so no other page learns who is allowlisted and the [[identity-and-access#Identity and access#User JSON exposes only selected fields|user JSON field set]] stays unchanged.

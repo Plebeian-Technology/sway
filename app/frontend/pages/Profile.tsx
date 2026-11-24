@@ -4,7 +4,7 @@ import { ROUTES } from "app/frontend/sway_constants";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { formatPhone } from "app/frontend/sway_utils/phone";
 import { Link } from "@inertiajs/react";
-import { Bell, ChevronRight, KeyRound, UserRound, Users } from "lucide-react";
+import { Bell, ChevronRight, KeyRound, KeySquare, UserRound, Users } from "lucide-react";
 
 interface IAccountLink {
     href: string;
@@ -18,8 +18,15 @@ const ACCOUNT_LINKS: IAccountLink[] = [
     { href: ROUTES.users.passkeys, label: PARITY_COPY.profile.rows.passkeyManagement, Icon: KeyRound },
 ];
 
-const Profile: React.FC = () => {
+const API_KEYS_LINK: IAccountLink = { href: ROUTES.apiKeys, label: "API Keys", Icon: KeySquare };
+
+interface IProps {
+    can_manage_api_keys: boolean;
+}
+
+const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
     const user = useUser();
+    const accountLinks = can_manage_api_keys ? [...ACCOUNT_LINKS, API_KEYS_LINK] : ACCOUNT_LINKS;
 
     return (
         <div className="mx-auto w-full max-w-2xl space-y-6 px-4 py-6">
@@ -44,7 +51,7 @@ const Profile: React.FC = () => {
                 data-testid="profile-account-links"
                 className="overflow-hidden rounded-xl border-neo border-border-strong bg-card shadow-neo"
             >
-                {ACCOUNT_LINKS.map(({ href, label, Icon }) => (
+                {accountLinks.map(({ href, label, Icon }) => (
                     <li key={href} className="border-b border-border last:border-b-0">
                         <Link
                             href={href}

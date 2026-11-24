@@ -47,6 +47,7 @@ export const ROUTES = {
     },
 
     profile: "/profile",
+    apiKeys: "/api_keys",
 
     users: {
         organization_memberships: "/users/organization_memberships",
