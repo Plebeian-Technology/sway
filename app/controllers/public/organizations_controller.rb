@@ -28,9 +28,10 @@ module Public
 
       # @lat: [[public-organizations-endpoint#The public organizations endpoint#Why the list preloads icons and the detail does not]]
       orgs = scope.with_attached_icon.includes(:sway_locale).order(:name).limit(MAX_ORGANIZATIONS_PER_INDEX_PAGE)
+      managed_ids = Organization.managed_on_sway_ids(orgs.map(&:id)).to_set
 
       props = {
-        organizations: orgs.map(&:to_public_json),
+        organizations: orgs.map { |org| org.to_public_json(managed_on_sway: managed_ids.include?(org.id)) },
         applied_filters: {
           locale_id: filter_locale_id,
           sway_locale_id: filter_locale_id,

@@ -89,6 +89,7 @@ const org: sway.IPublicOrganization = {
     id: 42,
     name: "Civic League",
     sway_locale_id: 1,
+    managed_on_sway: false,
 };
 
 const savedFollowPrefs: sway.IOrgFollowPrefs = {

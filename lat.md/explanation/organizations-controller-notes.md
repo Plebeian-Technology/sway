@@ -35,7 +35,15 @@ Neither does an address the form hands back that already points at our own stora
 
 `Organization::PUBLIC_FIELDS` is the explicit allow-list of fields the non-admin `Public::OrganizationsController` may expose.
 
-The record's raw `as_json` must NEVER be called from a public surface — callers always go through `#to_public_json`, which reads only from this list. The regression that would catch a future violation is `spec/models/organization_public_json_spec.rb`. `:follower_count` is included in the list (backed by `#follower_count`, not a real column) so web and mobile org pages can render it without a separate lookup.
+The record's raw `as_json` must NEVER be called from a public surface — callers always go through `#to_public_json`, which reads only from this list. The regression that would catch a future violation is `spec/models/organization_public_json_spec.rb`. Two keys are added after the list because neither is a column: `sway_locale_slug` and `managed_on_sway`.
+
+## managed_on_sway: an active member, batched across a list
+
+`managed_on_sway` is true while the organization has at least one active membership, so a page can say the organization manages its positions on Sway.
+
+Pending invites and removed members do not count, so an organization whose members all left reads as not managed. The publishing guard in [[news-org-position-persistence#Approval of news-sourced draft positions]] counts every membership row instead, so Sway still will not publish for that organization.
+
+The index answers for the whole list with one query through `Organization.managed_on_sway_ids` and passes each answer to `to_public_json`. A single organization, on the detail page, asks the database itself, which is one query either way.
 
 ## Why create rolls the whole batch back on any failure
 

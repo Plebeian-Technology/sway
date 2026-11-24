@@ -25,8 +25,11 @@ class Organization < ApplicationRecord
   def to_simple_builder: -> Jbuilder
   def to_builder: -> Jbuilder
   def mirrored_icon_url: () -> String?
-  # IN-08: optional follower_count override injected by the index serializer.
-  def to_public_json: (?follower_count: Integer?) -> Hash[Symbol, untyped]
+  # managed_on_sway: nil reads it from the database.
+  def to_public_json: (?managed_on_sway: bool?) -> Hash[Symbol, untyped]
+
+  # Ids among org_ids with at least one active membership, in one query.
+  def self.managed_on_sway_ids: (Array[Integer] org_ids) -> Array[Integer]
 
   # Phase 61 D-14 — deduped follower set (active members ∪ explicit follows)
   def follower_set: () -> Array[Integer]

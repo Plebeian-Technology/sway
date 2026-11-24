@@ -485,6 +485,7 @@ declare module "sway" {
             sway_locale_id: number;
             sway_locale_slug?: string | null;
             created_at?: string;
+            managed_on_sway: boolean;
         }
 
         // @lat: [[organization-follows-controller#The follow preference payload matches the saved controls]]

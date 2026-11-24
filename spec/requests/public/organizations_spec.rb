@@ -109,14 +109,13 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       )
     end
 
-    # follower_count is one of PUBLIC_FIELDS, so to_public_json includes it.
-    it "renders the explicit whitelist including follower_count (no admin/internal fields leak)" do
+    it "renders the explicit whitelist (no admin/internal fields leak)" do
       create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations", headers: {"Accept" => "application/json"}
       body = JSON.parse(response.body, symbolize_names: true)
       payload = body[:organizations].first
-      expect(payload.keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug follower_count])
+      expect(payload.keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug managed_on_sway])
     end
 
     # A signed-out request must NOT get the follow or membership props.
@@ -299,7 +298,7 @@ RSpec.describe "Public::OrganizationsController", type: :request do
   end
 
   describe "GET /public/organizations/:id" do
-    it "returns the org payload with explicit fields including follower_count" do
+    it "returns the org payload with explicit fields" do
       org = create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations/#{org.id}", headers: {"Accept" => "application/json"}
@@ -307,7 +306,7 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body, symbolize_names: true)
       expect(body[:organization][:name]).to eq("Alpha")
-      expect(body[:organization].keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug follower_count])
+      expect(body[:organization].keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug managed_on_sway])
     end
 
     it "returns active bill positions via to_public_json" do
@@ -500,6 +499,34 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       # would read exactly like one holding its cost steady.
       expect(small).to be_positive, "measured no icon reads at all, so this compares nothing"
       expect(count_asset_queries.call(6)).to eq(small)
+    end
+  end
+
+  # @lat: [[query-plan-indexes#A query-cost guard measures growth, not a ceiling]]
+  describe "listing organizations costs the same number of queries however many there are" do
+    it "runs the same number of queries for 3 organizations as for 30" do
+      count_queries = lambda do |org_count|
+        sway_locale = create(:sway_locale, :baltimore)
+        Organization.destroy_all
+        org_count.times do |i|
+          org = create(:organization, name: "Counted Org #{i}", sway_locale: sway_locale)
+          create(:user_organization_membership, organization: org, status: i.even? ? "active" : "removed")
+        end
+
+        seen = 0
+        subscription = ActiveSupport::Notifications.subscribe("sql.active_record") do |*, payload|
+          next if /SCHEMA|TRANSACTION/.match?(payload[:name].to_s)
+
+          seen += 1
+        end
+        get "/public/organizations", headers: {"Accept" => "application/json"}
+        ActiveSupport::Notifications.unsubscribe(subscription)
+
+        expect(response).to have_http_status(:ok)
+        seen
+      end
+
+      expect(count_queries.call(30)).to eq(count_queries.call(3))
     end
   end
 end

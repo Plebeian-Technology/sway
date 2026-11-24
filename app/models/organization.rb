@@ -45,8 +45,16 @@ class Organization < ApplicationRecord
   # @lat: [[organizations-controller-notes#What PUBLIC_FIELDS is, and the rule around it]]
   PUBLIC_FIELDS = %i[id name icon_url sway_locale_id created_at].freeze
 
-  # @lat: [[organization-follower-set-queries#follower_counts_for: batching the same query across a list]]
-  def to_public_json
+  # @lat: [[organizations-controller-notes#managed_on_sway: an active member, batched across a list]]
+  def self.managed_on_sway_ids(org_ids)
+    UserOrganizationMembership
+      .where(organization_id: org_ids, status: "active")
+      .distinct
+      .pluck(:organization_id)
+  end
+
+  # managed_on_sway: nil reads it from the database.
+  def to_public_json(managed_on_sway: nil)
     initial = {} #: Hash[Symbol, untyped]
     payload = PUBLIC_FIELDS.each_with_object(initial) do |field, hash|
       case field
@@ -58,6 +66,8 @@ class Organization < ApplicationRecord
       end
     end
     payload[:sway_locale_slug] = sway_locale&.city if respond_to?(:sway_locale)
+    payload[:managed_on_sway] =
+      managed_on_sway.nil? ? user_organization_memberships.where(status: "active").exists? : managed_on_sway
     payload
   end
 

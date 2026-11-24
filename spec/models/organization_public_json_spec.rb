@@ -10,11 +10,47 @@ RSpec.describe "to_public_json whitelists" do
     it "returns only the whitelisted public fields" do
       payload = organization.to_public_json
 
-      # follower_count is included for the public org card and detail views.
       expect(payload.keys).to match_array([
         :id, :name, :icon_url, :sway_locale_id, :created_at,
-        :sway_locale_slug, :follower_count
+        :sway_locale_slug, :managed_on_sway
       ])
+    end
+
+    describe "managed_on_sway" do
+      it "is true when the organization has an active member" do
+        create(:user_organization_membership, organization: organization, status: "active")
+
+        expect(organization.to_public_json[:managed_on_sway]).to be(true)
+      end
+
+      it "is false when the organization's only members are pending or removed" do
+        create(:user_organization_membership, organization: organization, status: "pending")
+        create(:user_organization_membership, organization: organization, status: "removed")
+
+        expect(organization.to_public_json[:managed_on_sway]).to be(false)
+      end
+
+      it "is false when the organization has no members" do
+        expect(organization.to_public_json[:managed_on_sway]).to be(false)
+      end
+
+      it "uses a batched answer when one is passed" do
+        create(:user_organization_membership, organization: organization, status: "active")
+
+        expect(organization.to_public_json(managed_on_sway: false)[:managed_on_sway]).to be(false)
+      end
+    end
+
+    describe ".managed_on_sway_ids" do
+      it "returns the ids among those given that have an active member" do
+        managed = create(:organization, name: "Managed Org")
+        lapsed = create(:organization, name: "Lapsed Org")
+        create(:user_organization_membership, organization: managed, status: "active")
+        create(:user_organization_membership, organization: lapsed, status: "removed")
+
+        expect(Organization.managed_on_sway_ids([managed.id, lapsed.id, organization.id]))
+          .to contain_exactly(managed.id)
+      end
     end
 
     # @lat: [[organizations-controller-notes#Why icon URL provenance rules exist]]
