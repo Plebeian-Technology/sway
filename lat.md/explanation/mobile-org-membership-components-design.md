@@ -9,14 +9,14 @@ Design rationale for the mobile organization and membership components.
 
 ## OrgCard
 
-One organization on a card, with the control for following it.
+One organization on a card, with the control for tracking it.
 
 What the card offers:
 
-- a follow control with three states: Follow, Following, and Member
-- the follower count under the locale slug ("N followers" / "1 follower")
-- tapping Follow while signed out opens AuthPromptSheet, headed "Sign in to
-  follow", rather than calling the server
+- a track control with three states: Track, Tracking, and Member
+- no follower count: the card shows only the name and the locale slug
+- tapping Track while signed out opens AuthPromptSheet, headed "Sign in to
+  track", rather than calling the server
 - a Preferences button that opens OrgPreferenceSheet
 
 Membership comes ONLY from is_member_of_org_ids, never from whether a follow row exists. A member sees the "Member" label and the "Preferences" button and no way to unfollow, even when they have no follow row at all.
@@ -82,31 +82,22 @@ Hierarchical resolution rules prioritizing organization-specific alert settings 
   the sheet before the parent refetches shows them, rather than everything switched
   on.
 
-### Optimistic follower count
-
-`localFollowerCount` keeps the follower count in local state, so following or unfollowing changes the number at once instead of waiting for a pull-to-refresh.
-
-It starts from org.follower_count, which is what the server said, and resets whenever the card is rebuilt (see the keyExtractor in OrgsListScreen).
-
-`handleFollowPress` raises the follower count straight away, so the card matches the server without the user having to pull down to refresh. `handleUnfollowPress` lowers it straight away, never below zero.
-
 ### Follow control states (JSX)
 
 Visual and interactive states rendered by the follow button across unfollowed, active, pending, and member-restricted conditions.
 
-- Follower count sits under the locale slug.
-- The follow control. Signed-out users see the Follow button too; tapping it opens
+- The track control. Signed-out users see the Track button too; tapping it opens
   AuthPromptSheet instead of calling the server.
 - The member case, decided by isMember alone and never by followId. A member with no
   follow row still reads as Member. There is no unfollow here, only the Preferences
   button.
-- Following but not a member: the button reads "Following", and tapping it unfollows.
-- Not following, or signed out: the accent-coloured Follow button. A signed-out tap
+- Tracking but not a member: the button reads "Tracking", and tapping it untracks.
+- Not tracking, or signed out: the accent-coloured Track button. A signed-out tap
   opens AuthPromptSheet, not the API.
 
 ### AuthPromptSheet wiring
 
-Shown when a signed-out user taps Follow.
+Shown when a signed-out user taps Track.
 
 onSignIn and onDismiss do different things: onSignIn closes the sheet AND sends the user to the sign-in screens, through the onRequestSignIn callback that OrgsListScreen passes down. onDismiss only closes it, so the user carries on browsing.
 
