@@ -1,8 +1,9 @@
 // @lat: [[mobile-bill-creator#The tabs]]
 import React from "react";
 
-import { EmptyState } from "../../../../components/ui/EmptyState";
+import SummaryGenerationSection from "../../../../components/admin/billCreator/SummaryGenerationSection";
+import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
 
-export default function SummaryTab() {
-    return <EmptyState title="The Summary tab is not on mobile yet." testID="admin-bill-creator-summary-tab" />;
+export default function SummaryTab({ billId, data, refresh }: BillCreatorTabProps) {
+    return <SummaryGenerationSection key={billId ?? "new"} billId={billId} data={data} refresh={refresh} />;
 }

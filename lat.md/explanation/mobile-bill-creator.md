@@ -48,6 +48,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Pipeline also carries `legislation_pipeline_run`, the run the web progress panel shows. The web gets it as a shared prop ([[legislation-pipeline-run-sourcing-concern]]), and mobile JSON holds only the action's own props, so [[app/controllers/bills_controller.rb#BillsController#mobile_bill_creator_tab_props]] adds the shared run props before it slices.
 - Pipeline also carries `recent_pipeline_runs` for the run selector, and `stale_pipeline_run_count` and `orphan_pipeline_run_count` for the cleanup buttons ([[mobile-bill-creator#Sections#The pipeline cleanup section]]). All three come from the same shared run props.
 - Summary carries `review_draft_revision`, which reads the `draft_revision_id` query parameter, so a summary request still answers the draft named in its address.
+- Summary also carries `active_legislation_pipeline_run`, from the same shared run props, because the web summary view keeps Regenerate off while a clean-testimony run covers the bill ([[mobile-bill-creator#Sections#The summary generation section]]).
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The props the web marks optional and never builds for mobile, such as the summary prompt and the campaign letter text, stay absent whatever the tab.
 
@@ -333,3 +334,43 @@ The phone leaves out these web pieces:
 - The remembered open or closed state of the panel. The phone starts it closed, like every collapsible section ([[mobile-bill-creator#Sections#The pipeline read-only panels]]).
 - The page-number links of the web pagination. The phone shows Previous and Next buttons with "Page N of M".
 - The toast for a refused label change, replaced by the message under the row.
+
+### The summary generation section
+
+[[mobile/src/components/admin/billCreator/SummaryGenerationSection.tsx#SummaryGenerationSection]] opens the Summary tab: the bill's summary status, the published summary as Markdown, and the controls that queue a generation or a regeneration.
+
+It ports the status and run parts of the web's [[app/frontend/components/admin/creator/BillCreatorLlmSummary.tsx#BillCreatorLlmSummary]] and the views under `llm-summary/` ([[bill-creator-summary-tab]]). The web files import Radix, Inertia and the page's type namespace, so the section copies their wording. It reads `bill` (with its `bill_llm_provisioning`, `bill_pipeline_refresh`, `bill_pipeline_last_failure`, `summary` and `summary_ai_unreviewed`) and `active_legislation_pipeline_run`, which the Summary tab's prop list gained for this section.
+
+The section picks its view the way [[app/frontend/components/admin/creator/llm-summary/BillCreatorLlmSummaryStatus.tsx#BillCreatorLlmSummaryStatus]] does:
+
+- A bill with no provisioning row says the pipeline has no data yet and offers Generate summary, which posts to `regenerate_summary` as the web's empty state does. A failed pipeline run adds the web's alert with the bill's external id and the run's reason, pointing to the Pipeline tab.
+- A row that is completed or carries a draft summary shows the status badge, the Operator-pasted stamp for a pasted summary, and the published `bill.summary` as Markdown with the AI-unreviewed line when `summary_ai_unreviewed` is true. A draft that differs from the published text shows beneath it as Markdown, under the web's draft notice title. The view keeps the web's in-flight, unverified citation, failure and dropped-run notices, the breakdown toggle (or its "no section breakdown" line), and Regenerate summary.
+- A generating row with no draft reads "Generating summary…" beside a disabled button. An abandoned one shows the web's notice instead and offers Generate summary.
+- Any other row (queued, failed, dropped or never run) shows the badge, the failure reason or its fallback, the abandoned, queued and dropped notices, and Generate summary, labelled Retry after a failure. These buttons post to `generate_summary`.
+
+The badge reads the web's words: Abandoned for a reclaimable queued or generating row, Ready, Failed, Queued…, Generating…, Skipped and Not generated. A stale row adds the web's "Summary is out of date" header with its change stamp and Regenerate from latest data. Every run button reads "Queueing…" while its request runs, and stays disabled while the bill's pipeline refresh is busy, under the web's pipeline-busy line. Regenerate also stays disabled while a run writes this row's summary or a clean-testimony run covers this bill, unless the row is abandoned.
+
+Regenerate summary and Regenerate from latest data replace the draft, so each takes two taps through [[mobile/src/hooks/useTwoTapConfirm.ts#useTwoTapConfirm]], where the web opens a confirmation dialog. Generate summary and Retry take one tap, as on the web.
+
+#### Answering generate and regenerate in JSON
+
+[[app/controllers/bills_controller.rb#BillsController#generate_summary]] and [[app/controllers/bills_controller.rb#BillsController#regenerate_summary]] answer through `respond_after_write`, so the phone gets 200 with an empty body when the run is queued.
+
+A refusal answers 422 with the reason under `details.generation`, the key the web reads from its Inertia errors, and the section shows that reason under the buttons. The reasons are the web's: no pipeline data, a model or reasoning level Sway does not offer, a generation already in progress, invalid instructions and a failed enqueue. A failed enqueue restores the row's retryable state ([[bill-creator-summary-tab#A failed enqueue leaves a retry path]]), so the same button works on the next tap. The web redirects exactly as before, with the same errors and the same regeneration notice.
+
+A queued run refetches the tab. The row then reads queued, and polling takes over.
+
+#### Polling while a summary is generated
+
+The section refetches the tab every five seconds with [[mobile/src/hooks/admin/usePolling.ts#usePolling]] under the web's three conditions ([[bill-creator-summary-tab#Why the no-provisioning poll runs out]]).
+
+The conditions are a queued or generating row, a busy pipeline refresh for this bill, and a bill with no provisioning row. The first two end on their own. The third is a standing fact about an unsummarised bill, so the phone bounds it as the web does: one minute per bill, twelve refetches. A different bill starts a fresh minute. A generation that finishes turns the poll off, because the row then reads completed or failed.
+
+#### What the phone leaves out
+
+The section leaves out web pieces that belong to other sections, or that the phone has no way to show.
+
+- The model picker, the reasoning level and the per-run instructions of the confirmation dialog. Every phone run uses the standing model.
+- Prepare prompt and its dialog. The summary prompt is an optional prop the server never builds for mobile.
+- Paste summary JSON, editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
+- The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.

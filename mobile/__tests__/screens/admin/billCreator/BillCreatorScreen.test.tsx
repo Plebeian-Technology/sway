@@ -60,18 +60,18 @@ describe("BillCreatorScreen", () => {
         expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/creator", expect.anything());
     });
 
-    it.each([
-        [3, "Summary", "summary"],
-        [4, "Positions", "positions"],
-    ])("switches to the %s segment's tab and requests its path", async (index, label, path) => {
-        render(<BillCreatorScreen route={routeFor(42)} />);
-        await screen.findByText("Bill fields");
+    it.each([[4, "Positions", "positions"]])(
+        "switches to the %s segment's tab and requests its path",
+        async (index, label, path) => {
+            render(<BillCreatorScreen route={routeFor(42)} />);
+            await screen.findByText("Bill fields");
 
-        fireEvent.press(screen.getByTestId(`admin-bill-creator-tabs-segment-${index}`));
+            fireEvent.press(screen.getByTestId(`admin-bill-creator-tabs-segment-${index}`));
 
-        expect(await screen.findByText(`The ${label} tab is not on mobile yet.`)).toBeTruthy();
-        expect(mockApiGet).toHaveBeenLastCalledWith(`/admin/bill_creator/42/${path}`, expect.anything());
-    });
+            expect(await screen.findByText(`The ${label} tab is not on mobile yet.`)).toBeTruthy();
+            expect(mockApiGet).toHaveBeenLastCalledWith(`/admin/bill_creator/42/${path}`, expect.anything());
+        },
+    );
 
     it("switches to the Schedule tab and requests its path", async () => {
         render(<BillCreatorScreen route={routeFor(42)} />);
@@ -91,6 +91,16 @@ describe("BillCreatorScreen", () => {
 
         expect(await screen.findByTestId("admin-pipeline-stages")).toBeTruthy();
         expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/pipeline", expect.anything());
+    });
+
+    it("switches to the Summary tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-3"));
+
+        expect(await screen.findByTestId("admin-summary-generation")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/summary", expect.anything());
     });
 
     it("opens a new bill on the Creator tab", async () => {
