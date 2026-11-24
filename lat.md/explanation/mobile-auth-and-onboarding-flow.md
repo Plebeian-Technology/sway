@@ -21,6 +21,16 @@ For a signed-in person, the loading screen also shows while their first profile 
 
 Onboarding is only for a user whose profile loaded and says registration is incomplete. Without the retry screen, a person who finished sign-up long ago and signs in on a new phone during a brief outage would hold no cached profile, receive the signed-out payload with no user, and land on the address form meant for brand-new users.
 
+### A link that arrives before the main screens is kept
+
+A link tapped while the person is signed out or still onboarding opens its screen once the main drawer shows.
+
+The sign-in and onboarding stacks hold none of the screens a link names, so React Navigation finds nowhere to go and lets the link fall. [[mobile/src/navigation/pendingDeepLink.ts#subscribeToLinks]] is the link subscription the navigation container uses: it passes every link on as before, and remembers the most recent one that came in while the drawer was not showing. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]], called by `RootNavigator`, hands the remembered link back to React Navigation's own link handler when the drawer mounts, so a kept link takes the same path as a fresh one.
+
+The link that launched the app needs none of this. The navigation container already holds a launch link until a navigator that knows its screen mounts.
+
+Signing out forgets the kept link. Otherwise a link tapped by one person would open for the next person to sign in on the same phone.
+
 ## AuthStack
 
 `AuthStack` (`mobile/src/navigation/AuthStack.tsx`) is the sign-in flow, which is only two screens:

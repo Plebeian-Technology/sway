@@ -1,9 +1,11 @@
 import type { LinkingOptions } from "@react-navigation/native";
+import { subscribeToLinks } from "./pendingDeepLink";
 import type { RootParamList } from "./types";
 
 // @lat: [[well-known-controller-notes#Mobile: linking.ts]]
 export const linking: LinkingOptions<RootParamList> = {
     prefixes: ["https://sway.vote", "https://app.sway.vote", "sway://"],
+    subscribe: subscribeToLinks,
     config: {
         screens: {
             Auth: "sign-in",
