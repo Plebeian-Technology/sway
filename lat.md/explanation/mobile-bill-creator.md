@@ -596,7 +596,7 @@ The section seeds its rows from `bill.organizations` once, at mount. An approval
 
 The section ports the draft cards only; the rest of the web's testimony panel belongs to later sections.
 
-- The claimed-affiliation and campaign cards, the testimony coverage notice with its acknowledgement, the supplemental testimony field, the positions error notice and the public testimony letters.
+- The campaign cards, the testimony coverage notice with its acknowledgement, the supplemental testimony field, the positions error notice and the public testimony letters.
 - The success toasts. The card leaving the list on the reload is the confirmation.
 - The info popovers beside the heading, the stance stamp, Approve and Edit, and the stamp colours.
 - The screen-reader link from a disabled Approve to the notice that explains it. The notices sit above the cards in reading order instead.
@@ -607,3 +607,27 @@ The section ports the draft cards only; the rest of the web's testimony panel be
 [[app/controllers/bills_controller.rb#BillsController#approve_org_position]] and [[app/controllers/bill_draft_org_positions_controller.rb#BillDraftOrgPositionsController#update]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
 
 An approval, a reject and an edit answer 200 with an empty body, and so does a reject of a draft that is already gone. Every approval refusal answers 422 with the web's reason under `details.org_position`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. A refusal for a person writing for themselves also carries `details.private_individual_refusal`, so the phone can offer the override the web offers ([[private-individual-guard-override]]). A reject or edit that names a draft the list no longer holds at that index answers 422 with the same list-changed reason under `org_position`. The update action's other refusals (a malformed id, no change named, an invalid stance, an over-long field, a missing identity) were already JSON, `{error, message}`, and the phone's client reads that message. The web keeps its redirects, flash notices and Inertia errors.
+
+### The claimed affiliations section
+
+The Positions tab lists each position a letter's sender claimed on behalf of an organization, and the admin approves it or drops it, as the web's claimed-affiliation card does ([[campaign-position-cards#Claimed affiliation card shape and partial-evidence rule]]).
+
+[[mobile/src/components/admin/billCreator/ClaimedAffiliationsSection.tsx#ClaimedAffiliationsSection]] ports [[app/frontend/components/admin/creator/BillCreatorClaimedAffiliationCard.tsx#BillCreatorClaimedAffiliationCard]]. The tab renders it between the draft positions and the organizations, keyed on the bill id, and the section draws nothing when `testimony_claimed_affiliations` is empty. That key is already in the Positions tab's prop list, so no server change was needed. Each card is keyed on the claim's `position`, and a claim with no phrase, role or sender draws no card.
+
+A card shows "Maybe: <name>", the stamp "CLAIMED, NOT VERIFIED", the evidence under "Why this organization" and the web's caution that nothing has confirmed the claim. The evidence lists the phrase, the role claimed and the sender, each only when present. A phrase longer than 160 characters shows two lines with a "Show the whole phrase" toggle. The name starts as the claim's `org_name`, or empty when the claim names none, the position as Support, and the summary as empty ([[campaign-position-cards#Why the affiliation card seeds from the organization name]]).
+
+Approve, Reject and Edit follow the web card:
+
+- The Edit button opens fields for the name, a Support, Oppose or Neutral choice and the summary, and pressing it again closes them. Cancel closes them too and keeps what was typed.
+- Approve posts `org_name`, `support`, `summary` and `claimed_affiliation_position` to `/bills/:id/approve_org_position`, then reloads the tab. It stays off while the summary is blank, the bill has no testimony, a summary run or a clean-testimony run is in flight, or testimony the run left out is unacknowledged. The summary and run checks are the draft cards' checks ([[mobile-bill-creator#Sections#The draft positions section]]).
+- Reject hides the card until the tab remounts and sends nothing, as on the web. The claim stays in the list the server sends.
+
+A refused approval shows its reason on the card, `details.org_position` first, else the server's message. A refusal flagged `private_individual_refusal` opens the "Approve anyway?" panel instead, and Approve anyway resends with `override_private_individual: true`. A refusal that survives the override is shown, not offered again ([[private-individual-guard-override]]). The panel stands in for the web's confirmation dialog.
+
+#### What the phone leaves out
+
+The card keeps the web card's rules and drops its chrome.
+
+- The info popover beside "Why this organization" and the stance badge colours.
+- The screen-reader link from a disabled Approve to the notice that explains it. A blank summary shows "No summary yet" beside Approve, and the draft section's notices sit above the cards.
+- The web's "Approve failed." fallback. The phone shows the server's or the client's message, which always exists.
