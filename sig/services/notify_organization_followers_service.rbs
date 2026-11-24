@@ -5,6 +5,8 @@ class NotifyOrganizationFollowersService
   # Valid change type symbols.
   type change_type = :new_position | :support_change | :summary_change
 
+  NOTIFICATION_TITLE: String
+
   CHANGE_TYPE_COPY: Hash[change_type, String]
 
   @position: OrganizationBillPosition

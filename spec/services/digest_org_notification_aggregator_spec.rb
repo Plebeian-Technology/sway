@@ -63,8 +63,8 @@ RSpec.describe DigestOrgNotificationAggregator do
 
       expect(OrgNotificationFanout).to receive(:deliver).with(
         user: user,
-        title: "Clean Water Action",
-        body: "Clean Water Action and 1 other organization updated their positions today.",
+        title: "Organization update",
+        body: "Sway recorded new positions from Clean Water Action and 1 other organization today.",
         url: "/organizations"
       ).once
 
@@ -147,8 +147,8 @@ RSpec.describe DigestOrgNotificationAggregator do
 
       expect(OrgNotificationFanout).to receive(:deliver).with(
         user: user,
-        title: "Big Data Org",
-        body: "Big Data Org updated their positions today.",
+        title: "Organization update",
+        body: "Sway recorded new positions from Big Data Org today.",
         url: "/organizations"
       ).once
 
@@ -305,20 +305,20 @@ RSpec.describe DigestOrgNotificationAggregator do
   describe ".build_digest_copy" do
     it "formats copy for a single organization" do
       title, body = described_class.send(:build_digest_copy, ["Sway Advocacy"], 1, "today")
-      expect(title).to eq("Sway Advocacy")
-      expect(body).to eq("Sway Advocacy updated their positions today.")
+      expect(title).to eq("Organization update")
+      expect(body).to eq("Sway recorded new positions from Sway Advocacy today.")
     end
 
     it "formats copy for two organizations" do
       title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Clean Water Action"], 2, "this week")
-      expect(title).to eq("Sway Advocacy")
-      expect(body).to eq("Sway Advocacy and 1 other organization updated their positions this week.")
+      expect(title).to eq("Organization update")
+      expect(body).to eq("Sway recorded new positions from Sway Advocacy and 1 other organization this week.")
     end
 
     it "formats copy for three or more organizations" do
       title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Clean Water Action", "Bike MD"], 3, "today")
-      expect(title).to eq("Sway Advocacy")
-      expect(body).to eq("Sway Advocacy and 2 other organizations updated their positions today.")
+      expect(title).to eq("Organization update")
+      expect(body).to eq("Sway recorded new positions from Sway Advocacy and 2 other organizations today.")
     end
   end
 end

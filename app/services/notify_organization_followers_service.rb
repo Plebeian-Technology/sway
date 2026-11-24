@@ -2,10 +2,13 @@
 
 # @lat: [[organization-notification-delivery#Organization notification delivery]]
 class NotifyOrganizationFollowersService
+  NOTIFICATION_TITLE = "Organization update"
+
+  # @lat: [[organization-notification-delivery#Notification wording names Sway as the recorder]]
   CHANGE_TYPE_COPY = {
-    new_position: "published a new position on",
-    support_change: "changed its position on",
-    summary_change: "updated its summary for"
+    new_position: "Sway recorded %<org>s's position on %<bill>s.",
+    support_change: "Sway recorded a change in %<org>s's position on %<bill>s.",
+    summary_change: "Sway updated its summary of %<org>s's position on %<bill>s."
   }.freeze #: Hash[NotifyOrganizationFollowersService::change_type, String]
 
   def initialize(position, change_types:, delivery_token: nil)
@@ -131,20 +134,13 @@ class NotifyOrganizationFollowersService
   end
 
   def notification_title
-    @organization.name
+    NOTIFICATION_TITLE
   end
 
   # @lat: [[bill-title-display#Which outbound messages carry the shortened title]]
   def notification_body
-    bill_title = BillTitle.headline(@bill.title)
-    if @change_types == [:new_position]
-      "#{@organization.name} published a new position on #{bill_title}."
-    elsif @change_types.size > 1
-      "#{@organization.name} updated its position on #{bill_title}."
-    else
-      ct = @change_types.first
-      action = CHANGE_TYPE_COPY.fetch(ct, "updated its position on")
-      "#{@organization.name} #{action} #{bill_title}."
-    end
+    change_type = (@change_types.size == 1) ? @change_types.first : :support_change
+    template = CHANGE_TYPE_COPY.fetch(change_type, CHANGE_TYPE_COPY.fetch(:support_change))
+    format(template, org: @organization.name, bill: BillTitle.headline(@bill.title))
   end
 end

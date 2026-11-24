@@ -44,3 +44,11 @@ Daily and weekly entries use the durable queue described in [[pending-org-digest
 [[app/services/sway_push_notification_service.rb#SwayPushNotificationService]] includes a nested URL payload only when a caller supplies a target path, omitting the key entirely otherwise.
 
 Compacting the top-level payload hash before JSON serialization allows web-push notifications to deep-link to a specific page while preserving the exact historical payload structure for callers that do not pass a URL.
+
+## Notification wording names Sway as the recorder
+
+Every organization notification is titled "Organization update", and every body says what Sway recorded rather than what the organization did.
+
+Most organizations shown on Sway never joined it, so copy such as "{Org} published a new position" would claim the organization acted on Sway. "Sway recorded {Org}'s position on {bill}" stays true whether the position came from testimony, a news article, a Sway admin or the organization's own members, so one wording serves every position origin ([[news-org-position-persistence#Position origin and affiliation]]).
+
+The organization's name moved out of the title and into the body, and a text message reads "Organization update: " followed by the body. The daily and weekly digests use the same title and say "Sway recorded new positions from {Org} {period}."

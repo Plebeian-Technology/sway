@@ -138,8 +138,8 @@ RSpec.describe "DigestOrgNotificationAggregator Adversarial Stress Harness" do
       delivery_count = 0
       allow(OrgNotificationFanout).to receive(:deliver) do |args|
         expect(args[:user].id).to eq(user.id)
-        expect(args[:title]).to eq("Mass Notification Watch")
-        expect(args[:body]).to eq("Mass Notification Watch updated their positions today.")
+        expect(args[:title]).to eq("Organization update")
+        expect(args[:body]).to eq("Sway recorded new positions from Mass Notification Watch today.")
         delivery_count += 1
       end
 

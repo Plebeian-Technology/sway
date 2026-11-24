@@ -354,7 +354,7 @@ RSpec.describe "NotifyOrganizationFollowersService", type: :service do
       NotifyOrganizationFollowersService.new(position, change_types: [:new_position]).call
     }.to have_enqueued_job(SmsDeliveryJob).with(
       to: user.phone,
-      body: "Baltimore Renters United: Baltimore Renters United published a new position on Sale of Property."
+      body: "Organization update: Sway recorded Baltimore Renters United's position on Sale of Property."
     )
   end
 
@@ -372,7 +372,7 @@ RSpec.describe "NotifyOrganizationFollowersService", type: :service do
     position = create(:organization_bill_position, organization: org, bill: bill,
       active: true, support: "FOR", summary: "Supports this bill")
 
-    expected = "Baltimore Renters United published a new position on Sale of Property."
+    expected = "Sway recorded Baltimore Renters United's position on Sale of Property."
 
     web_pushed = nil
     allow(SwayPushNotificationService).to receive(:new) do |_sub, **kwargs|
@@ -385,5 +385,47 @@ RSpec.describe "NotifyOrganizationFollowersService", type: :service do
     }.to have_enqueued_job(SendNativePushJob).with(anything, hash_including(body: expected))
 
     expect(web_pushed).to eq(expected)
+  end
+
+  describe "wording: Sway is the one recording the position" do
+    let(:organization) { create(:organization, name: "Baltimore Renters United") }
+    let(:bill) { create(:bill, title: "Sale of Property") }
+    let(:position) { create(:organization_bill_position, organization: organization, bill: bill) }
+
+    def copy_for(change_types)
+      service = NotifyOrganizationFollowersService.new(position, change_types: change_types)
+      [service.send(:notification_title), service.send(:notification_body)]
+    end
+
+    it "titles every notification 'Organization update'" do
+      [[:new_position], [:support_change], [:summary_change], %i[support_change summary_change]].each do |types|
+        expect(copy_for(types).first).to eq("Organization update")
+      end
+    end
+
+    it "says Sway recorded a new position" do
+      expect(copy_for([:new_position]).last).to eq("Sway recorded Baltimore Renters United's position on Sale of Property.")
+    end
+
+    it "says Sway recorded a change in the position" do
+      expect(copy_for([:support_change]).last)
+        .to eq("Sway recorded a change in Baltimore Renters United's position on Sale of Property.")
+    end
+
+    it "says Sway updated its summary of the position" do
+      expect(copy_for([:summary_change]).last)
+        .to eq("Sway updated its summary of Baltimore Renters United's position on Sale of Property.")
+    end
+
+    it "says Sway recorded a change when several things changed at once" do
+      expect(copy_for(%i[support_change summary_change]).last)
+        .to eq("Sway recorded a change in Baltimore Renters United's position on Sale of Property.")
+    end
+
+    it "never says the organization published, changed or updated anything" do
+      [[:new_position], [:support_change], [:summary_change], %i[support_change summary_change]].each do |types|
+        expect(copy_for(types).last).not_to match(/United (published|changed|updated)/)
+      end
+    end
   end
 end

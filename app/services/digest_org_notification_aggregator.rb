@@ -75,15 +75,16 @@ class DigestOrgNotificationAggregator
     end
   end
 
+  # @lat: [[organization-notification-delivery#Notification wording names Sway as the recorder]]
   def self.build_digest_copy(org_names, _change_count, period_label)
+    title = NotifyOrganizationFollowersService::NOTIFICATION_TITLE
     if org_names.size == 1
-      title = org_names.first
-      body = "#{org_names.first} updated their positions #{period_label}."
+      body = "Sway recorded new positions from #{org_names.first} #{period_label}."
     else
       first = org_names.first
       others = [org_names.size - 1, 0].max
-      title = first
-      body = "#{first} and #{others} other #{"organization".pluralize(others)} updated their positions #{period_label}."
+      body = "Sway recorded new positions from #{first} and #{others} other " \
+        "#{"organization".pluralize(others)} #{period_label}."
     end
     [title, body]
   end
