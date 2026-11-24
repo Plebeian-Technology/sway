@@ -20,6 +20,7 @@ interface OrgPosition {
     active?: boolean;
     created_at?: string;
     source_kind?: OrgPositionDisplay["source_kind"];
+    source_url?: string | null;
 }
 
 interface OrgDetailPayload {

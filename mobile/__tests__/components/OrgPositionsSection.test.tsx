@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { OrgPositionsSection, type OrgPosition } from "../../src/components/OrgPositionsSection";
 import type { NewsArticleTestimony as NewsArticleTestimonyType } from "../../src/types/bill";
@@ -193,5 +193,40 @@ describe("OrgPositionsSection affiliation labels", () => {
         wrap([]);
 
         expect(screen.queryByText(PARITY_COPY.orgs.listNotice)).toBeNull();
+    });
+});
+
+describe("OrgPositionsSection source line", () => {
+    const renderWith = (position: OrgPosition, onOpenUrl = jest.fn()) => {
+        render(
+            <ThemeProvider initialMode="light">
+                <OrgPositionsSection positions={[position]} onOpenUrl={onOpenUrl} />
+            </ThemeProvider>,
+        );
+        return onOpenUrl;
+    };
+
+    test("a news position with a URL opens its article", () => {
+        const onOpenUrl = renderWith({
+            ...forPosition,
+            source_kind: "news_article",
+            source_url: "https://news.example/story",
+        });
+
+        fireEvent.press(screen.getByRole("link", { name: PARITY_COPY.orgs.sourceNewsArticle }));
+        expect(onOpenUrl).toHaveBeenCalledWith("https://news.example/story");
+    });
+
+    test("a testimony position without a URL shows the label alone", () => {
+        renderWith({ ...forPosition, source_kind: "hearing_testimony", source_url: null });
+
+        expect(screen.getByText(PARITY_COPY.orgs.sourceHearingTestimony)).toBeTruthy();
+        expect(screen.queryByRole("link", { name: PARITY_COPY.orgs.sourceHearingTestimony })).toBeNull();
+    });
+
+    test.each(["organization", "sway_admin", null] as const)("a %s position shows no source line", (sourceKind) => {
+        renderWith({ ...forPosition, source_kind: sourceKind, source_url: "https://news.example/story" });
+
+        expect(screen.queryByTestId("org-position-source")).toBeNull();
     });
 });

@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Markdown } from "./Markdown";
 import { NewsArticleTestimony } from "./NewsArticleTestimony";
+import { PositionSourceLine } from "./PositionSourceLine";
 import type { NewsArticleTestimony as NewsArticleTestimonyType } from "../types/bill";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -69,6 +70,11 @@ function StanceCard({
                                     ? PARITY_COPY.orgs.postedBy(pos.organization.name)
                                     : PARITY_COPY.orgs.compiledBySway}
                             </Text>
+                            <PositionSourceLine
+                                sourceKind={pos.source_kind}
+                                sourceUrl={pos.source_url}
+                                onOpenUrl={onOpenUrl}
+                            />
                             <View className="mt-2 gap-1">
                                 <Markdown
                                     selectable

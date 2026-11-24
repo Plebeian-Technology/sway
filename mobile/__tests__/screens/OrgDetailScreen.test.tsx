@@ -28,7 +28,8 @@ jest.mock("expo-haptics", () => ({
 
 import React from "react";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { Linking } from "react-native";
 import OrgDetailScreen from "../../src/screens/OrgDetailScreen";
 import { apiClient } from "../../src/api/client";
 
@@ -152,5 +153,31 @@ describe("OrgDetailScreen affiliation labels", () => {
         render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
         const tags = await screen.findAllByTestId("org-position-source-tag");
         expect(tags.map((tag) => tag.props.children)).toEqual(["Posted by Civic Alliance", "Compiled by Sway"]);
+    });
+});
+
+describe("OrgDetailScreen source line", () => {
+    const mockGet = apiClient.get as jest.Mock;
+
+    test("a news position links to its article", async () => {
+        const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+        mockGet.mockResolvedValue({
+            ...ORG_PAYLOAD,
+            organization: { ...ORG_PAYLOAD.organization, managed_on_sway: false },
+            organization_bill_positions: [
+                {
+                    id: 1,
+                    bill_id: 10,
+                    support: "FOR",
+                    summary: "Good policy",
+                    source_kind: "news_article",
+                    source_url: "https://news.example/story",
+                },
+            ],
+        });
+        render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
+
+        fireEvent.press(await screen.findByRole("link", { name: PARITY_COPY.orgs.sourceNewsArticle }));
+        expect(openURL).toHaveBeenCalledWith("https://news.example/story");
     });
 });

@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/Card";
 import { Pressable } from "./ui/Pressable";
 import { Markdown } from "./Markdown";
 import { StampedBadge } from "./StampedBadge";
+import { PositionSourceLine } from "./PositionSourceLine";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
@@ -69,6 +70,7 @@ export function PositionCard({ position, organizationName, testID }: PositionCar
                             : PARITY_COPY.orgs.compiledBySway}
                     </Text>
                 ) : null}
+                <PositionSourceLine sourceKind={position.source_kind} sourceUrl={position.source_url} />
                 {position.bill?.title ? (
                     <Text className="text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                         {position.bill.headline ?? billHeadline(position.bill.title)}

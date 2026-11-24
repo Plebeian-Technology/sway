@@ -29,7 +29,7 @@ The member's own organization page (the membership page) receives `source_kind` 
 
 A position Sway compiled from hearing testimony or a news article carries a source line, so a reader can check the record Sway relied on instead of taking Sway's word for the organization's stance.
 
-The line reads "Source: hearing testimony" or "Source: news article" and links to `source_url` in a new tab when one is known and safe; without a URL it shows the label alone. A position the organization posted, one a Sway admin entered, and one with no recorded origin show no source line, since there is no outside record to point to. Testimony positions carry no URL today ([[news-org-position-persistence#Position origin and affiliation#Values and write paths]]), so they show the label alone.
+The line reads "Source: hearing testimony" or "Source: news article" and links to `source_url` when one is known and safe, in a new tab on the web and in the system browser on mobile; without a URL it shows the label alone. A position the organization posted, one a Sway admin entered, and one with no recorded origin show no source line, since there is no outside record to point to. Testimony positions carry no URL today ([[news-org-position-persistence#Position origin and affiliation#Values and write paths]]), so they show the label alone.
 
 ## Tracking, not following
 
