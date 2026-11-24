@@ -9,10 +9,23 @@ Persistence pipelines filter draft organization positions against source article
 
 ## Position origin and affiliation
 
-Positions are categorized by origin to support affiliation labeling required by SWAY-7prly ("Epic: Make clear that organizations shown on Sway are not affiliated with Sway").
+Each organization position records who wrote it in `source_kind` and where it came from in `source_url`, both nullable columns on [[app/models/organization_bill_position.rb#OrganizationBillPosition]].
 
-- **Org-posted**: Positions created by members of the organization. Label: "Posted by {Org}".
-- **Sway-compiled**: Positions sourced from hearing testimony, news, or admin entry. Label: "Compiled by Sway" and accompanied by an affiliation disclaimer.
+### Values and write paths
+
+Every write path sets both columns for what it wrote, so the latest write decides the origin.
+
+| `source_kind` | Who wrote the position | Write paths | `source_url` |
+| --- | --- | --- | --- |
+| `hearing_testimony` | Sway, from hearing testimony | [[app/services/approve_org_position_service.rb#ApproveOrgPositionService]] approving a testimony draft or a claimed affiliation | Always nil: testimony attachment entries carry no public URL for a letter |
+| `news_article` | Sway, from a news article | [[app/services/approve_org_position_service.rb#ApproveOrgPositionService]] approving a news-sourced draft | The draft's `source_url` |
+| `sway_admin` | A Sway admin, by hand | [[app/controllers/organizations_controller.rb#OrganizationsController]] `#create`, [[app/services/replace_bill_org_positions_service.rb#ReplaceBillOrgPositionsService]], and an approval that names no draft | Nil |
+| `organization` | The organization's own members | [[app/services/approve_position_change_service.rb#ApprovePositionChangeService]] approving a member's change; the development seeds | Nil |
+| nil | Sway, origin not recorded | Positions written before the columns existed and not matched by the backfill | Nil |
+
+### Existing positions
+
+A nil `source_kind` reads as compiled by Sway. The backfill sets `organization` only where an approved member change was the latest write: updated no earlier than five seconds before the position.
 
 ## Persistence callers
 
@@ -53,11 +66,3 @@ News-sourced draft positions bypass hearing testimony existence checks and requi
 | Membership Check | Target organization must have zero `UserOrganizationMembership` rows. | `:organization_has_users` |
 | Deduplication | Matching against existing organizations uses normalized exact match followed by Jaro-Winkler distance threshold (0.90). | N/A |
 | AI Summary | Sets `ai_summary: nil` on [[app/models/organization_bill_position.rb#OrganizationBillPosition]] since news-sourced positions quote article text verbatim. | N/A |
-
-## Persistence fields
-
-Persistence records the origin of organization positions in [[app/models/organization_bill_position.rb#OrganizationBillPosition]] for public payload serialization.
-
-- `origin`: The provenance of the position ("Org-posted" or "Sway-compiled").
-- `origin_url`: The URL to the backing source article or testimony if available.
-

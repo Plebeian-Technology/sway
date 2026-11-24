@@ -364,6 +364,86 @@ class ::OrganizationBillPosition < ::ApplicationRecord
 
     def ai_summary_for_database: () -> ::String?
 
+    def source_kind: () -> ::String?
+
+    def source_kind=: (::String?) -> ::String?
+
+    def source_kind?: () -> bool
+
+    def source_kind_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def source_kind_change: () -> [ ::String?, ::String? ]
+
+    def source_kind_will_change!: () -> void
+
+    def source_kind_was: () -> ::String?
+
+    def source_kind_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def source_kind_previous_change: () -> ::Array[::String?]?
+
+    def source_kind_previously_was: () -> ::String?
+
+    def source_kind_before_last_save: () -> ::String?
+
+    def source_kind_change_to_be_saved: () -> ::Array[::String?]?
+
+    def source_kind_in_database: () -> ::String?
+
+    def saved_change_to_source_kind: () -> ::Array[::String?]?
+
+    def saved_change_to_source_kind?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_source_kind?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_source_kind!: () -> void
+
+    def clear_source_kind_change: () -> void
+
+    def source_kind_before_type_cast: () -> ::String?
+
+    def source_kind_for_database: () -> ::String?
+
+    def source_url: () -> ::String?
+
+    def source_url=: (::String?) -> ::String?
+
+    def source_url?: () -> bool
+
+    def source_url_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def source_url_change: () -> [ ::String?, ::String? ]
+
+    def source_url_will_change!: () -> void
+
+    def source_url_was: () -> ::String?
+
+    def source_url_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def source_url_previous_change: () -> ::Array[::String?]?
+
+    def source_url_previously_was: () -> ::String?
+
+    def source_url_before_last_save: () -> ::String?
+
+    def source_url_change_to_be_saved: () -> ::Array[::String?]?
+
+    def source_url_in_database: () -> ::String?
+
+    def saved_change_to_source_url: () -> ::Array[::String?]?
+
+    def saved_change_to_source_url?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_source_url?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_source_url!: () -> void
+
+    def clear_source_url_change: () -> void
+
+    def source_url_before_type_cast: () -> ::String?
+
+    def source_url_for_database: () -> ::String?
+
     def activated_at: () -> ::ActiveSupport::TimeWithZone?
 
     def activated_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?

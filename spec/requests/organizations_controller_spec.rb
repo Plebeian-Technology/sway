@@ -82,6 +82,18 @@ RSpec.describe "OrganizationsController", type: :request do
       expect(OrganizationBillPosition.where(bill_id: bill.id).pluck(:active)).to all(be(true))
     end
 
+    it "records each saved position as a Sway admin entry with no URL" do
+      sway_locale, = setup
+      organization_params = get_params(sway_locale)
+
+      post organizations_path, params: organization_params
+
+      positions = OrganizationBillPosition.where(bill_id: organization_params[:bill_id])
+      expect(positions.count).to eq(2)
+      expect(positions.pluck(:source_kind)).to all(eq("sway_admin"))
+      expect(positions.pluck(:source_url)).to all(be_nil)
+    end
+
     # @lat: [[organizations-controller#Icon addresses keep their source meaning]]
     describe "the icon_url column" do
       it "stays empty when an admin uploads an icon" do

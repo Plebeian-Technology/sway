@@ -237,7 +237,7 @@ RSpec.describe OrganizationBillPosition, type: :model do
 
       expect(payload[:summary]).to be_nil
       expect(payload.keys).to match_array(
-        %i[id organization_id bill_id support summary active created_at summary_ai_unreviewed origin origin_url]
+        %i[id organization_id bill_id support summary active created_at summary_ai_unreviewed]
       )
       expect(position_with("FOR").to_public_json[:summary]).to eql("Stored in the column.")
     end

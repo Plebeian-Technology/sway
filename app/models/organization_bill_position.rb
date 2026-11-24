@@ -9,9 +9,9 @@
 #  activated_at    :datetime
 #  active          :boolean          default(FALSE), not null
 #  ai_summary      :text
-#  origin          :string
 #  origin_type     :string
-#  origin_url      :string
+#  source_kind     :string
+#  source_url      :string
 #  summary         :text             not null
 #  support         :string           not null
 #  created_at      :datetime         not null
@@ -51,6 +51,15 @@ class OrganizationBillPosition < ApplicationRecord
 
   NEUTRAL_SUPPORT = STANCE_TO_SUPPORT.fetch("neutral")
 
+  # @lat: [[news-org-position-persistence#Position origin and affiliation]]
+  module SourceKind
+    HEARING_TESTIMONY = "hearing_testimony"
+    NEWS_ARTICLE = "news_article"
+    SWAY_ADMIN = "sway_admin"
+    ORGANIZATION = "organization"
+    ALL = [HEARING_TESTIMONY, NEWS_ARTICLE, SWAY_ADMIN, ORGANIZATION].freeze
+  end
+
   def self.normalize_support(value)
     STANCE_TO_SUPPORT[value.to_s]
   end
@@ -85,6 +94,7 @@ class OrganizationBillPosition < ApplicationRecord
     dependent: :destroy
 
   validates :bill_id, uniqueness: {scope: :organization_id, allow_nil: true}
+  validates :source_kind, inclusion: {in: SourceKind::ALL}, allow_nil: true
 
   validates :support,
     :summary,
@@ -123,7 +133,7 @@ class OrganizationBillPosition < ApplicationRecord
   end
 
   # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
-  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at origin origin_url].freeze
+  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at].freeze
 
   def to_public_json
     initial = {} #: Hash[Symbol, untyped]

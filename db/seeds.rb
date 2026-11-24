@@ -113,7 +113,7 @@ if Rails.env.development?
             end
           ),
         summary: "This is a sample position statement for #{bill.title}"
-      )
+      ) { |position| position.source_kind = OrganizationBillPosition::SourceKind::ORGANIZATION }
     end
 
   User.all.each do |user|

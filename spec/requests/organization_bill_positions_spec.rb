@@ -144,6 +144,27 @@ RSpec.describe "OrganizationBillPositionsController#create authoritative active 
     expect(score&.signals&.fetch("org_against")).to eq(1)
     expect(score&.signals&.fetch("org_for")).to eq(1)
   end
+
+  it "records every saved position as a Sway admin entry with no URL, replacing an organization's own origin" do
+    OrganizationBillPosition.create!(
+      bill: bill, organization: organization, support: "FOR", summary: "Written by the organization.",
+      active: true, source_kind: "organization"
+    )
+
+    post organization_bill_positions_path,
+      params: {
+        organization_bill_position: {
+          positions: [
+            {bill_id: bill.id, organization_id: organization.id, support: "oppose", summary: "Replaced by an admin."},
+            {bill_id: bill.id, organization_id: other_organization.id, support: "support", summary: "Entered by an admin."}
+          ]
+        }
+      }
+
+    positions = OrganizationBillPosition.where(bill_id: bill.id)
+    expect(positions.pluck(:source_kind)).to all(eq("sway_admin"))
+    expect(positions.pluck(:source_url)).to all(be_nil)
+  end
 end
 
 # @lat: [[replace-bill-org-positions-service-design#Why the write upserts by (bill, organization) instead of deleting and re-inserting]]

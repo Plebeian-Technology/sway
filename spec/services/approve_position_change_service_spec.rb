@@ -25,6 +25,19 @@ RSpec.describe ApprovePositionChangeService do
     expect(position.active).to be(true)
   end
 
+  it "records the approved position as written by the organization, replacing a Sway-compiled origin" do
+    approver = create(:user)
+    position = create(:organization_bill_position,
+      organization: create(:organization), source_kind: "news_article", source_url: "https://example.com/article")
+    change = create(:organization_bill_position_change,
+      organization_bill_position: position, updated_by: approver, status: :pending)
+
+    described_class.new(change: change, approver: approver).call
+
+    expect(position.reload.source_kind).to eq("organization")
+    expect(position.source_url).to be_nil
+  end
+
   it "returns :already_finalized and mutates nothing when the change was already approved" do
     approver = create(:user)
     organization = create(:organization)

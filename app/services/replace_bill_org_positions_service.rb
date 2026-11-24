@@ -116,6 +116,8 @@ class ReplaceBillOrgPositionsService
           )
           position.support = pos["support"]
           position.summary = summary_for(pos)
+          position.source_kind = OrganizationBillPosition::SourceKind::SWAY_ADMIN
+          position.source_url = nil
           position.active = true
           position.save!
           position
