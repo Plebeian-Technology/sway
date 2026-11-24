@@ -1,8 +1,9 @@
 // @lat: [[mobile-bill-creator#The tabs]]
 import React from "react";
 
-import { EmptyState } from "../../../../components/ui/EmptyState";
+import PipelineStagesSection from "../../../../components/admin/billCreator/PipelineStagesSection";
+import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
 
-export default function PipelineTab() {
-    return <EmptyState title="The Pipeline tab is not on mobile yet." testID="admin-bill-creator-pipeline-tab" />;
+export default function PipelineTab({ billId, data, refresh }: BillCreatorTabProps) {
+    return <PipelineStagesSection key={billId} billId={billId} data={data} refresh={refresh} />;
 }

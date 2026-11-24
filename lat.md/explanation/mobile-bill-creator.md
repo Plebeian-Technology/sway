@@ -171,4 +171,20 @@ The phone leaves out these web pieces:
 
 The Pipeline tab's stage section lets an admin choose which pipeline stages to run and start a run with `POST /bills/run_pipeline`.
 
+[[mobile/src/components/admin/billCreator/PipelineStagesSection.tsx#PipelineStagesSection]] ports the stage selector and the Run button of the web's [[app/frontend/components/admin/creator/BillCreatorPipelineControls.tsx#BillCreatorPipelineControls]]. The web stage list lives in a file the phone cannot import, so the section copies its labels, help lines, default set and reduced-work set. The selection starts from the tab's `selected_stages` and `download_missing_assets` props.
+
+The web rules that carry over:
+
+- Each stage is a checkbox row with its help line. A count reads "N of 8 selected"; Select all is disabled when every stage is ticked, and Clear all when none is.
+- Download missing assets reads as ticked and is disabled while both fetch stages are ticked, with the web's "nothing to backfill" line, because the server forces it on then.
+- The Run button stays disabled, with "Pick at least one stage to run.", until a stage is ticked. Its label names the bill, or all bills for a new bill, and the locale's city.
+- The body matches the web's: the stages in the order they were ticked, the bill id (null for a new bill, which runs every bill of the locale), the bootstrap locale's id and the asset choice.
+- The "Also required" note, its reduced-work line and the prerequisite warning come from the server's `pipeline_preview`, as on the web.
+
+The server builds `pipeline_preview` only for a request whose address names `selected_stages`, and the tab's own request names none. The web refetches the preview with a partial reload each time the selection changes. [[mobile/src/hooks/admin/usePipelinePreview.ts#usePipelinePreview]] does the same: every change requests the tab path with the selection in its query and keeps only the preview, aborting the previous request. That request builds the whole pipeline tab, because mobile JSON has no partial reload; an admin changes the selection rarely enough for that cost. A failed preview request hides the notes, and the server still checks the run.
+
+A queued run shows "Pipeline run queued." and refreshes the tab. A refusal shows the server's reason: `details.pipeline` for a 422, and the message naming the active run for a 409. The web shows a toast, plus a fixed "already running" alert whenever its `pipeline` error is set.
+
+The phone leaves out these web pieces, which need the current run (`legislation_pipeline_run`) or the stale and orphan counts that the tab does not serve yet: the in-flight state that disables the controls, the failure header with Resume and Restart, Force fail, the origin hint, the live-update banner, and the stuck-run and orphan-run buttons. The server refuses a second run with 409 meanwhile. The info popovers and the selection kept in the address are left out too.
+
 [[app/controllers/bills_controller.rb#BillsController#run_pipeline]], `resume_pipeline_run` and `restart_pipeline_run` answer through `respond_after_write` ([[bills-controller-design#enqueue_pipeline_run! and render_pipeline_duplicate_run]]). A queued run answers 200 with an empty body. A refused run (no locale, a conflicting locale, a refused resume, a bad stage) answers 422 `validation_failed` with the reason under `details.pipeline`, because the web reads the same reason from its `pipeline` Inertia error. A run started while another is active still answers 409 `duplicate_run` with the active run's id.

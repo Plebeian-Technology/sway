@@ -21,6 +21,10 @@ jest.mock("../../../../src/components/admin/billCreator/BillFieldsSection", () =
     return { __esModule: true, default: () => <Text>Bill fields</Text> };
 });
 
+jest.mock("../../../../src/state/BootstrapContext", () => ({
+    useBootstrap: () => ({ bootstrap: { locale: null } }),
+}));
+
 import BillCreatorScreen from "../../../../src/screens/admin/billCreator/BillCreatorScreen";
 
 const routeFor = (billId: number | null) => ({
@@ -47,7 +51,6 @@ describe("BillCreatorScreen", () => {
     });
 
     it.each([
-        [2, "Pipeline", "pipeline"],
         [3, "Summary", "summary"],
         [4, "Positions", "positions"],
     ])("switches to the %s segment's tab and requests its path", async (index, label, path) => {
@@ -68,6 +71,16 @@ describe("BillCreatorScreen", () => {
 
         expect(await screen.findByTestId("admin-schedule-selected")).toBeTruthy();
         expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/schedule", expect.anything());
+    });
+
+    it("switches to the Pipeline tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-2"));
+
+        expect(await screen.findByTestId("admin-pipeline-stages")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/pipeline", expect.anything());
     });
 
     it("opens a new bill on the Creator tab", async () => {

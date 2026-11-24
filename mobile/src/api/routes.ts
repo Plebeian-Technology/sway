@@ -62,6 +62,12 @@ export const Routes = {
     adminBillCreatorNew: () => "/admin/bill_creator/new",
     adminBillCreatorTab: (billId: number | null, tab: string) =>
         billId === null ? `/admin/bill_creator/new?bill_creator_tab=${tab}` : `/admin/bill_creator/${billId}/${tab}`,
+    adminBillCreatorPipelinePreview: (billId: number | null, stages: string[], downloadMissingAssets: boolean) =>
+        (billId === null
+            ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"
+            : `/admin/bill_creator/${billId}/pipeline?`) +
+        `selected_stages=${encodeURIComponent(stages.join(","))}&download_missing_assets=${downloadMissingAssets ? "1" : "0"}`,
+    adminRunPipeline: () => "/bills/run_pipeline",
 
     bills: () => "/bills",
     pastBillsOfTheMonth: () => "/past_bills_of_the_month",
