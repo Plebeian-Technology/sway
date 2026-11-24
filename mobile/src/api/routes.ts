@@ -76,6 +76,7 @@ export const Routes = {
     adminPipelineRunForceFail: (runId: number) => `/pipeline_runs/${runId}/force_fail`,
     adminSweepStalePipelineRuns: () => "/bills/sweep_stale_pipeline_runs",
     adminDeleteOrphanPipelineRuns: () => "/pipeline_runs/orphans",
+    adminSendingServiceDomain: (domainId: number) => `/sending_service_domains/${domainId}`,
     adminBillCreatorPipelinePreview: (billId: number | null, stages: string[], downloadMissingAssets: boolean) =>
         (billId === null
             ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"

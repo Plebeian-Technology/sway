@@ -16,6 +16,7 @@ import ResourceCacheSection, {
 import RunSelectorSection, {
     type RecentPipelineRun,
 } from "../../../../components/admin/billCreator/RunSelectorSection";
+import SendingServicesSection from "../../../../components/admin/billCreator/SendingServicesSection";
 import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
 import { usePinnedPipelineRun } from "../../../../hooks/admin/usePinnedPipelineRun";
 
@@ -60,6 +61,7 @@ export default function PipelineTab({ billId, data, refresh }: BillCreatorTabPro
                 currentBillExternalId={data.bill?.external_id ?? ""}
             />
             <PipelineCleanupSection billId={billId} data={shownData} refresh={refreshAfterCleanup} />
+            <SendingServicesSection billId={billId} data={data} refresh={refresh} />
             <ResourceCacheSection mirrors={(data.bill_artifact_mirrors ?? []) as ResourceCacheRow[]} />
             <FetchedBillsSection rows={(data.fetched_bills ?? []) as FetchedBillsRow[]} />
             <ActivityLogSection

@@ -311,3 +311,25 @@ The phone leaves out these web pieces:
 - The Copy button for the inspect query. The text is selectable instead, because the app has no clipboard library.
 - The View link on each bill row and the link on each fetched bill, which open another bill's Pipeline tab. The sections hold no navigation.
 - The tooltips with full timestamps, the info popovers, and the row virtualization, which the closed-by-default panels make unnecessary for the grid but not for a very long fetched-bills list.
+
+### The sending services section
+
+[[mobile/src/components/admin/billCreator/SendingServicesSection.tsx#SendingServicesSection]] ports the web's [[app/frontend/components/admin/creator/SendingServicesPanel.tsx#SendingServicesPanel]]: a collapsible list of sending-service domains where the admin confirms a domain or removes its label. The tab already asks for `sending_service_domains` and `sending_service_domains_total`, so the prop lists did not change.
+
+The web rules that carry over:
+
+- The panel opens with the line that a sending service says only that a letter was machine-sent, never which campaign it belongs to or what it argues. A list capped below the total says "Showing the N domains with the most machine-sent letters, of T." An empty list reads "No sending-service domains yet."
+- A search over the domain text filters the loaded rows, five to a page. A search with no match says so, and when the server capped the list it adds how many domains are not loaded ([[pagination#Search filters the capped list, not the full table]]).
+- Each row shows the domain, sender count, bill count, the machine-sent share as a rounded percentage (zero letters count as 0%) with "N of M letters" beneath, and a stamp: CONFIRMED, PROPOSED or UNLABELED. Rows key on the numeric id, never on the domain text, because testimony submitters supply the domain ([[bill-creator-pipeline-llm-tab#SendingServicesPanel design and untrusted-domain guards]]).
+- A confirmed domain offers "Remove this label". Any other domain offers "Confirm as a sending service" and "Not a sending service". Confirming sends `PATCH /sending_service_domains/:id` with `label: "confirmed"` and the bill id; both removal buttons send `label: "none"`.
+- Each action first asks for confirmation with the web's wording, and a row's buttons stay disabled while its request runs.
+- A refusal shows the server's `sending_service` reason under the row, with the generic message as fallback.
+
+[[app/controllers/sending_service_domains_controller.rb#SendingServiceDomainsController#update]] answers through `respond_after_write`: 200 on success, 422 with the `sending_service` error under `details` for an unknown label. The web redirects exactly as before. Mobile JSON has no partial reload, so a successful write refetches the whole Pipeline tab.
+
+The phone leaves out these web pieces:
+
+- The info popover on the actions column.
+- The remembered open or closed state of the panel. The phone starts it closed, like every collapsible section ([[mobile-bill-creator#Sections#The pipeline read-only panels]]).
+- The page-number links of the web pagination. The phone shows Previous and Next buttons with "Page N of M".
+- The toast for a refused label change, replaced by the message under the row.
