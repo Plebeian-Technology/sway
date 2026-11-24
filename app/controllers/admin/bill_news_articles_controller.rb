@@ -46,10 +46,9 @@ module Admin
 
         status_code = (receipt&.status == "failed") ? :unprocessable_content : :ok
 
-        render json: {
-          receipt_status: receipt&.status,
-          articles: serialized
-        }, status: status_code
+        body = {receipt_status: receipt&.status, articles: serialized}
+        body[:error] = extract_receipt_error(receipt) if status_code == :unprocessable_content
+        render json: body, status: status_code
       end
     end
 

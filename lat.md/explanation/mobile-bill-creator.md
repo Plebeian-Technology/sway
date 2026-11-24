@@ -476,7 +476,7 @@ The Summary tab lists the news articles found for the bill and runs a newsroom d
 
 [[mobile/src/components/admin/billCreator/NewsArticlesSection.tsx#NewsArticlesSection]] ports the list and discovery parts of [[app/frontend/components/admin/creator/BillCreatorNewsArticles.tsx]] and renders last on the tab, as the web places the panel below the summary card. It reads `news_articles` and `receipt_status`, which the Summary tab's prop list already carried, so the section needs no fetch of its own.
 
-Fetch articles posts to `/admin/bills/:bill_id/news_articles`. [[app/controllers/admin/bill_news_articles_controller.rb#Admin#BillNewsArticlesController]] answers any request that is not an Inertia request in JSON with `receipt_status` and `articles`, so the phone needs no backend change. The section shows that answer until the tab data next reloads, and from then on the reloaded props, which name the same latest discovery. The button reads "Fetching articles..." while the request runs, and an unsaved bill disables it under "Save this bill to retrieve news articles."
+Fetch articles posts to `/admin/bills/:bill_id/news_articles`. [[app/controllers/admin/bill_news_articles_controller.rb#Admin#BillNewsArticlesController]] answers any request that is not an Inertia request in JSON with `receipt_status` and `articles`. The section shows that answer until the tab data next reloads, and from then on the reloaded props, which name the same latest discovery. The button reads "Fetching articles..." while the request runs, and an unsaved bill disables it under "Save this bill to retrieve news articles."
 
 The section keeps the web's notices for the receipt status (succeeded, no matches, unsupported and failed), its "No news articles retrieved yet" line when there are no articles and no status, and each article's row: outlet or "Unknown outlet", domain, the Direct coverage or Issue context stamp, Approved or Unapproved candidate, the title (a link only for an address [[mobile/src/utils/safeUrl.ts#isSafeCitationUrl]] accepts), byline and date, Text Available with Eligible for synthesis and the text origin, or the Link-only explanation, and a three-line excerpt.
 
@@ -488,14 +488,13 @@ The web polls the same way, and also while its own request runs. The phone's req
 
 #### A refused discovery
 
-A failed discovery answers 422 with `receipt_status` and `articles` and no error key, so the error envelope carries only the generic message.
+A failed discovery answers 422 with `receipt_status`, `articles` and `error`, the receipt's failure reason, which the web reads from the Inertia error its redirect carries.
 
-The section reads the receipt and its articles from the hook's `errorBody` ([[mobile-admin-area#Admin writes]]) and shows the web's failed alert. A request that fails with no such body (offline, a network error, a refusal from the admin guard) shows the same alert with the hook's message in parentheses, as the web shows its fallback.
+The section reads the receipt, its articles and the reason from the hook's `errorBody` ([[mobile-admin-area#Admin writes]]) and shows the web's failed alert with the reason in parentheses. A receipt that recorded no reason sends a null `error`, and the alert then has no parentheses. A request that fails with no such body (offline, a network error, a refusal from the admin guard) shows the same alert with the hook's message in parentheses, as the web shows its fallback.
 
 #### What the phone leaves out
 
-The section leaves out the web's per-article review and one detail of the failed alert.
+The section leaves out the web's per-article review.
 
 - Approving or withdrawing an article, its genre and stance pickers, and the manual text editor, which the next section ports into each row.
-- The receipt's own failure reason. The web reads it from the Inertia error the redirect carries; the JSON answer has no such key, so the phone's failed alert has no reason after a refusal.
 - The `readOnly` mode, which no web caller sets.

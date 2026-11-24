@@ -264,6 +264,25 @@ describe("NewsArticlesSection", () => {
         expect(screen.queryByTestId("admin-news-articles-empty")).toBeNull();
     });
 
+    it("names a refused discovery's reason in brackets", async () => {
+        mockApiPost.mockRejectedValue(
+            new ApiRequestError("http_422", "Connection refused: provider timeout", undefined, 422, {
+                receipt_status: "failed",
+                articles: [],
+                error: "Connection refused: provider timeout",
+            }),
+        );
+        renderSection(tabData());
+
+        fireEvent.press(screen.getByTestId("admin-news-articles-fetch"));
+
+        await waitFor(() =>
+            expect(screen.getByTestId("admin-news-failed")).toHaveTextContent(
+                "Failed to fetch articles from news sources. (Connection refused: provider timeout)",
+            ),
+        );
+    });
+
     it("shows the error message when the request fails without a receipt", async () => {
         mockApiPost.mockRejectedValue(new NetworkError("network_error", "Network request failed"));
         renderSection(tabData());

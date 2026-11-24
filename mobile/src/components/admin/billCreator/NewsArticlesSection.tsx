@@ -27,6 +27,7 @@ interface NewsArticle {
 interface Discovery {
     receipt_status: string | null;
     articles: NewsArticle[];
+    error?: string | null;
 }
 
 interface Answer {
@@ -46,8 +47,12 @@ const panelClass = "gap-2 rounded-lg border border-border-light dark:border-bord
 
 const discoveryFrom = (body: unknown): Discovery | null => {
     if (!body || typeof body !== "object" || !("receipt_status" in body)) return null;
-    const { receipt_status, articles } = body as Partial<Discovery>;
-    return { receipt_status: receipt_status ?? null, articles: Array.isArray(articles) ? articles : [] };
+    const { receipt_status, articles, error } = body as Partial<Discovery>;
+    return {
+        receipt_status: receipt_status ?? null,
+        articles: Array.isArray(articles) ? articles : [],
+        error: typeof error === "string" && error ? error : null,
+    };
 };
 
 const formatDate = (iso: string) =>
@@ -150,13 +155,13 @@ const NewsArticlesSection: React.FC<BillCreatorTabProps> = ({ billId, data, refr
     const [answer, setAnswer] = useState<Answer | null>(null);
 
     const refusal = discoveryFrom(errorBody);
-    const requestError = !loading && errorMessage !== null && refusal === null ? errorMessage : null;
+    const requestError = loading ? null : refusal ? (refusal.error ?? null) : errorMessage;
     const answered = refusal ?? (answer !== null && answer.data === data ? answer.discovery : null);
 
     let receiptStatus: string | null = (data.receipt_status as string | null | undefined) ?? null;
     if (loading) receiptStatus = null;
-    else if (requestError !== null) receiptStatus = "failed";
     else if (answered !== null) receiptStatus = answered.receipt_status;
+    else if (requestError !== null) receiptStatus = "failed";
 
     const articles = answered?.articles ?? (data.news_articles as NewsArticle[] | undefined) ?? [];
 
