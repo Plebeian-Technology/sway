@@ -17,6 +17,8 @@ const mockBill: IEmbedBill = {
     pro_count: 75,
     con_count: 25,
     total_votes: 100,
+    comparison_suppressed: false,
+    voters_needed: 0,
     cta_url: "/bills/42?partner=the-banner&ref=art-99",
 };
 
@@ -50,18 +52,41 @@ describe("embed/BillCard", () => {
         expect(screen.getByTestId("con-bar")).toBeTruthy();
     });
 
-    it("renders empty vote state when total votes is zero", () => {
-        const zeroVotesBill: IEmbedBill = {
+    // @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it("shows the placeholder with a sign-up link and no percentage below the ten-voter minimum", () => {
+        const nineVotesBill: IEmbedBill = {
             ...mockBill,
-            pro_count: 0,
-            con_count: 0,
-            total_votes: 0,
+            pro_count: null,
+            con_count: null,
+            total_votes: 9,
+            comparison_suppressed: true,
+            voters_needed: 1,
         };
 
-        render(<BillCard bill={zeroVotesBill} />);
+        render(<BillCard bill={nineVotesBill} />);
 
         expect(screen.queryByTestId("vote-meter")).toBeNull();
-        expect(screen.getByTestId("vote-meter-empty").textContent).toContain("No votes recorded yet");
+        const placeholder = screen.getByTestId("vote-meter-suppressed");
+        expect(placeholder.textContent).toContain("Visual comparisons will be shown when 1 more user has voted.");
+        expect(placeholder.textContent).not.toContain("%");
+        const signUp = screen.getByRole("link", { name: "Sign up" });
+        expect(signUp.getAttribute("href")).toBe("/");
+        expect(signUp.getAttribute("target")).toBe("_blank");
+        expect(signUp.getAttribute("rel")).toBe("noopener noreferrer");
+    });
+
+    it("keeps counts hidden when a payload says suppressed but still carries them", () => {
+        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true, voters_needed: 3 }} />);
+
+        expect(screen.queryByTestId("vote-meter")).toBeNull();
+        expect(screen.getByTestId("vote-meter-suppressed").textContent).not.toMatch(/75|25|%/);
+    });
+
+    it("treats top-level props with no flag as suppressed", () => {
+        render(<BillCard id={mockBill.id} title={mockBill.title} pro_count={75} con_count={25} total_votes={100} />);
+
+        expect(screen.queryByTestId("vote-meter")).toBeNull();
+        expect(screen.getByTestId("vote-meter-suppressed").textContent).toContain("Not enough votes yet");
     });
 
     it("renders the CTA button linking to cta_url with target=_blank and rel=noopener noreferrer", () => {

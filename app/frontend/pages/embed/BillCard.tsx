@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
 
+import { ROUTES } from "app/frontend/sway_constants/routes";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
+
 export interface IEmbedBill {
     id: number;
     identifier: string;
@@ -11,9 +14,11 @@ export interface IEmbedBill {
         state: string;
     };
     current_status: string;
-    pro_count: number;
-    con_count: number;
+    pro_count: number | null;
+    con_count: number | null;
     total_votes: number;
+    comparison_suppressed: boolean;
+    voters_needed: number;
     cta_url: string;
 }
 
@@ -29,9 +34,11 @@ export interface IProps {
         state: string;
     };
     current_status?: string;
-    pro_count?: number;
-    con_count?: number;
+    pro_count?: number | null;
+    con_count?: number | null;
     total_votes?: number;
+    comparison_suppressed?: boolean;
+    voters_needed?: number;
     cta_url?: string;
 }
 
@@ -46,6 +53,8 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         pro_count: props.pro_count ?? 0,
         con_count: props.con_count ?? 0,
         total_votes: props.total_votes ?? 0,
+        comparison_suppressed: props.comparison_suppressed ?? true,
+        voters_needed: props.voters_needed ?? 0,
         cta_url: props.cta_url ?? "",
     };
 
@@ -62,9 +71,11 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         }
         return defaultVoteUrl;
     })();
-    const totalVotes = bill.total_votes || bill.pro_count + bill.con_count;
-    const proCount = bill.pro_count || 0;
-    const conCount = bill.con_count || 0;
+    // @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    const comparisonSuppressed = bill.comparison_suppressed !== false;
+    const proCount = bill.pro_count ?? 0;
+    const conCount = bill.con_count ?? 0;
+    const totalVotes = proCount + conCount;
     const proPct = totalVotes > 0 ? Math.round((proCount / totalVotes) * 100) : 0;
     const conPct = totalVotes > 0 ? 100 - proPct : 0;
 
@@ -163,7 +174,7 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
             </div>
 
             <div className="mt-4 space-y-3 pt-2">
-                {totalVotes > 0 ? (
+                {!comparisonSuppressed ? (
                     <div data-testid="vote-meter" className="space-y-1.5">
                         <div
                             className="flex h-6 w-full overflow-hidden rounded-lg border-neo border-border bg-muted shadow-neo"
@@ -206,10 +217,25 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
                     </div>
                 ) : (
                     <div
-                        data-testid="vote-meter-empty"
-                        className="rounded-lg border-neo border-border bg-surface-3 px-3 py-2 text-center text-xs font-semibold text-muted-foreground shadow-neo"
+                        data-testid="vote-meter-suppressed"
+                        className="space-y-1 rounded-lg border-neo border-border bg-surface-3 px-3 py-2 text-center text-xs font-semibold text-muted-foreground shadow-neo"
                     >
-                        No votes recorded yet · Be the first to vote on Sway
+                        <p>
+                            {bill.voters_needed > 0
+                                ? PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(bill.voters_needed)
+                                : PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
+                        </p>
+                        <p>
+                            {PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}{" "}
+                            <a
+                                href={ROUTES.signin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-black text-foreground underline"
+                            >
+                                {PARITY_COPY.bill.voteComparisonPlaceholder.signUp}
+                            </a>
+                        </p>
                     </div>
                 )}
 

@@ -7,6 +7,7 @@ class LegislativeSessionResource < ApplicationResource
 end
 
 class EmbedBillResource < ApplicationResource
+  def self.tally: (Bill bill) -> [Integer, Integer]
 end
 
 class UserVoteResource < ApplicationResource

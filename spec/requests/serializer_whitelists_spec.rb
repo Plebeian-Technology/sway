@@ -1055,12 +1055,17 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       hash = raw.transform_keys(&:to_s)
 
       expect(hash.keys).to match_array(
-        %w[id identifier title brief_summary sway_locale current_status pro_count con_count total_votes cta_url]
+        %w[
+          id identifier title brief_summary sway_locale current_status pro_count con_count total_votes cta_url
+          comparison_suppressed voters_needed
+        ]
       )
       expect(hash["sway_locale"].keys.map(&:to_s)).to match_array(%w[name jurisdiction state])
       expect(hash["pro_count"]).to eq(42)
       expect(hash["con_count"]).to eq(13)
       expect(hash["total_votes"]).to eq(55)
+      expect(hash["comparison_suppressed"]).to be(false)
+      expect(hash["voters_needed"]).to eq(0)
       expect(hash["cta_url"]).to include("/bills/#{bill.id}")
       expect(hash["cta_url"]).to include("partner=the-banner")
       expect(hash["cta_url"]).to include("ref=banner-123")

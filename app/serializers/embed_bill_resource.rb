@@ -27,17 +27,27 @@ class EmbedBillResource < ApplicationResource
     bill.status.presence || "Introduced"
   end
 
+  # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
   attribute :pro_count do |bill|
-    bill.bill_score&.for || 0
+    for_count, against_count = EmbedBillResource.tally(bill)
+    VoteComparisonPrivacy.suppressed?(for_count, against_count) ? nil : for_count
   end
 
   attribute :con_count do |bill|
-    bill.bill_score&.against || 0
+    for_count, against_count = EmbedBillResource.tally(bill)
+    VoteComparisonPrivacy.suppressed?(for_count, against_count) ? nil : against_count
   end
 
   attribute :total_votes do |bill|
-    bs = bill.bill_score
-    bs ? (bs.for + bs.against) : 0
+    EmbedBillResource.tally(bill).sum
+  end
+
+  attribute :comparison_suppressed do |bill|
+    VoteComparisonPrivacy.suppressed?(*EmbedBillResource.tally(bill))
+  end
+
+  attribute :voters_needed do |bill|
+    VoteComparisonPrivacy.voters_needed(*EmbedBillResource.tally(bill))
   end
 
   attribute :cta_url do |bill|
@@ -62,5 +72,10 @@ class EmbedBillResource < ApplicationResource
 
     base_path = "/bills/#{bill.id}"
     query_params.any? ? "#{base_path}?#{query_params.to_query}" : base_path
+  end
+
+  def self.tally(bill)
+    score = bill.bill_score
+    [score&.for || 0, score&.against || 0]
   end
 end

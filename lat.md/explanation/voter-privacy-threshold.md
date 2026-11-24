@@ -86,6 +86,14 @@ A term tile's headline is agreement among the bills the legislator voted on, so 
 
 The reader's own chart and tile keep their counts: [[app/frontend/components/legislators/charts/VoterAgreementChart.tsx#VoterAgreementChart]] is untouched.
 
+## The embed widget withholds counts on the server
+
+The partner embed at `/embed/bills/:id` is public and a CDN keeps each response for up to fifteen minutes, so a count hidden only by the card would still be published.
+
+[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count` and `con_count` as nil below the minimum, with `comparison_suppressed` and `voters_needed`. `total_votes` stays, because it says how many voted and not how. The card shows the placeholder sentences and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed.
+
+A deploy that adds this leaves older responses in the CDN until they expire. The first check after such a deploy waits out the fifteen minutes or follows a purge of the embed path.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

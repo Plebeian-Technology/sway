@@ -35,6 +35,36 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(inertia.props[:cta_url]).to eq("/bills/#{bill.id}")
     end
 
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "withholds the For and Against counts while the bill has nine votes" do
+      bill_score.update!(for: 6, against: 3)
+
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill]).to include(
+        pro_count: nil,
+        con_count: nil,
+        comparison_suppressed: true,
+        voters_needed: 1,
+        total_votes: 9
+      )
+      expect(response.body).not_to match(/pro_count&quot;:\s*6|con_count&quot;:\s*3/)
+    end
+
+    it "sends the counts and the two flags once the bill has ten votes" do
+      bill_score.update!(for: 7, against: 3)
+
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill]).to include(
+        pro_count: 7,
+        con_count: 3,
+        comparison_suppressed: false,
+        voters_needed: 0,
+        total_votes: 10
+      )
+    end
+
     it "sets public CDN caching headers with s-maxage and stale-while-revalidate" do
       get "/embed/bills/#{bill.id}"
 
