@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert } from "react-native";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import { ApiRequestError } from "../../../../src/api/errors";
 
@@ -57,9 +57,11 @@ const renderSection = (overrides: Partial<React.ComponentProps<typeof Organizati
     return { refresh };
 };
 
-const pressConfirmButton = (spy: jest.SpyInstance, label: string) => {
+const pressConfirmButton = async (spy: jest.SpyInstance, label: string) => {
     const buttons = spy.mock.calls[0][2] as { text: string; onPress?: () => void }[];
-    buttons.find((button) => button.text === label)?.onPress?.();
+    await act(async () => {
+        buttons.find((button) => button.text === label)?.onPress?.();
+    });
 };
 
 const search = (text: string) => fireEvent.changeText(screen.getByTestId("admin-organizations-search"), text);
@@ -312,7 +314,7 @@ describe("OrganizationsSection", () => {
             expect(mockApiDelete).not.toHaveBeenCalled();
             expect(screen.getByTestId("admin-organizations-row-0")).toBeTruthy();
 
-            pressConfirmButton(alertSpy, "Remove");
+            await pressConfirmButton(alertSpy, "Remove");
 
             await waitFor(() => expect(mockApiDelete).toHaveBeenCalledTimes(1));
             expect(mockApiDelete.mock.calls[0][0]).toBe("/organization_bill_positions/71?bill_creator_tab=creator");
@@ -338,7 +340,7 @@ describe("OrganizationsSection", () => {
             renderSection();
 
             fireEvent.press(screen.getByTestId("admin-organizations-row-0-remove"));
-            pressConfirmButton(alertSpy, "Remove");
+            await pressConfirmButton(alertSpy, "Remove");
 
             expect(await screen.findByText("Organization position not found.")).toBeTruthy();
             expect(screen.getByTestId("admin-organizations-row-0")).toBeTruthy();
@@ -350,7 +352,7 @@ describe("OrganizationsSection", () => {
             search("tenants");
             fireEvent.press(screen.getByTestId("admin-organizations-option-8"));
             fireEvent.press(screen.getByTestId("admin-organizations-row-1-remove"));
-            pressConfirmButton(alertSpy, "Remove");
+            await pressConfirmButton(alertSpy, "Remove");
 
             await waitFor(() => expect(screen.queryByTestId("admin-organizations-row-1")).toBeNull());
             expect(mockApiDelete).not.toHaveBeenCalled();
