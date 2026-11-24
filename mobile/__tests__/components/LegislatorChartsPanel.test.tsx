@@ -52,6 +52,10 @@ jest.mock("react-native-svg", () => {
     };
 });
 
+jest.mock("../../src/hooks/useBootstrap", () => ({
+    useBootstrap: () => ({ bootstrap: { current_user: null } }),
+}));
+
 import React from "react";
 import { render, screen } from "@testing-library/react-native";
 import { LegislatorChartsPanel } from "../../src/components/LegislatorChartsPanel";
@@ -107,5 +111,64 @@ describe("LegislatorChartsPanel (Phase 35 D-03 SVG bar chart)", () => {
         // The fake Rect copies its width prop straight into style.width
         const width = agreedBar.props.style?.width ?? 0;
         expect(width).toBeGreaterThan(0);
+    });
+});
+
+// @lat: [[voter-privacy-threshold#The mobile legislator screens draw percentages or the placeholder]]
+describe("LegislatorChartsPanel for a district or locale score", () => {
+    const counters = {
+        count_agreed: 4321,
+        count_disagreed: 1234,
+        count_legislator_abstained: 0,
+        count_no_legislator_vote: 0,
+    };
+    const shown = {
+        ...counters,
+        comparison_suppressed: false,
+        agreed_percent: 62,
+        disagreed_percent: 30,
+        no_legislator_vote_percent: 8,
+        legislator_abstained_percent: 0,
+    };
+    const hidden = {
+        ...counters,
+        comparison_suppressed: true,
+        agreed_percent: null,
+        disagreed_percent: null,
+        no_legislator_vote_percent: null,
+        legislator_abstained_percent: null,
+    };
+
+    test("draws an unsuppressed score from its percentages and shows no raw counter", () => {
+        render(<LegislatorChartsPanel group score={shown} title="District 7" testID="district-panel" />);
+
+        expect(screen.getByLabelText("Agreed 62 percent")).toBeTruthy();
+        expect(screen.getByLabelText("Disagreed 30 percent")).toBeTruthy();
+        expect(screen.getByLabelText("No Legislator Vote 8 percent")).toBeTruthy();
+        expect(screen.getByText("62%")).toBeTruthy();
+        expect(JSON.stringify(screen.toJSON())).not.toMatch(/4,?321|1,?234/);
+    });
+
+    test("shows 'Not enough votes yet' under the title and no chart for a suppressed score", () => {
+        render(<LegislatorChartsPanel group score={hidden} title="District 7" testID="district-panel" />);
+
+        expect(screen.getByText("District 7")).toBeTruthy();
+        expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+        expect(screen.queryByTestId("district-panel-bar-agreed")).toBeNull();
+        expect(JSON.stringify(screen.toJSON())).not.toMatch(/4,?321|1,?234|%/);
+    });
+
+    test("treats a cached score with no flag as suppressed", () => {
+        render(<LegislatorChartsPanel group score={counters} testID="district-panel" />);
+
+        expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+        expect(screen.queryByTestId("district-panel-bar-agreed")).toBeNull();
+    });
+
+    test("leaves the reader's own score drawn from its counters", () => {
+        render(<LegislatorChartsPanel score={counters} testID="own-panel" />);
+
+        expect(screen.getByLabelText("Agreed 4321")).toBeTruthy();
+        expect(screen.queryByText("Not enough votes yet")).toBeNull();
     });
 });

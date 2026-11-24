@@ -104,6 +104,14 @@ Above the minimum, [[mobile/src/utils/districtVotes.ts#selectDistrictVotes]] kee
 
 [[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] reads the invite link from the bootstrap response's current user. The phone has no clipboard module, so the button hands the link to the system share sheet, which offers Copy among its actions. A signed-out reader gets the sign-in prompt the vote buttons use.
 
+## The mobile legislator screens draw percentages or the placeholder
+
+The phone draws a district, locale or lifetime agreement score on the legislator detail screen and on each term card, through one chart component that also draws the reader's own score.
+
+[[mobile/src/components/LegislatorChartsPanel.tsx#LegislatorChartsPanel]] takes a `group` flag for the scores that cover many users. With it set, a suppressed score draws "Not enough votes yet" under the title, and a visible one draws its four bars from the percentage fields on a fixed scale of 100. A cached score with no flag counts as suppressed, for the reason the bill screen gives. Without the flag the panel draws the reader's own counters as before.
+
+The term card's district and locale tiles follow [[mobile/src/types/legislator.ts#calculateGroupAgreement]], which gives the same headline the web tile shows.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

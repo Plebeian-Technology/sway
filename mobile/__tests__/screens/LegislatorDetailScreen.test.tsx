@@ -112,6 +112,11 @@ const sampleDistrictScore = {
     count_disagreed: 2,
     count_no_legislator_vote: 1,
     count_legislator_abstained: 0,
+    comparison_suppressed: false,
+    agreed_percent: 73,
+    disagreed_percent: 18,
+    no_legislator_vote_percent: 9,
+    legislator_abstained_percent: 0,
 };
 
 const sampleLocaleScore = {
@@ -119,6 +124,11 @@ const sampleLocaleScore = {
     count_disagreed: 6,
     count_no_legislator_vote: 2,
     count_legislator_abstained: 0,
+    comparison_suppressed: false,
+    agreed_percent: 69,
+    disagreed_percent: 23,
+    no_legislator_vote_percent: 8,
+    legislator_abstained_percent: 0,
 };
 
 const sampleUserScore = {
@@ -680,7 +690,7 @@ describe("LegislatorDetailScreen (Phase 35 PARITY-09 mobile-canonical)", () => {
         expect(pastBadge).toHaveTextContent("Ended");
     });
 
-    test("renders district and locale aggregate score tiles with percentages and counts", () => {
+    test("renders district and locale aggregate score tiles from percentages, with no counts", () => {
         const legWithTerms = {
             ...LEG_FULL,
             terms: [sampleTerm2025],
@@ -691,27 +701,33 @@ describe("LegislatorDetailScreen (Phase 35 PARITY-09 mobile-canonical)", () => {
         const districtTile = screen.getByTestId("term-district-score-tile");
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(districtTile).toHaveTextContent(/80%/);
-        expect(districtTile).toHaveTextContent(/8 Agreed/);
-        expect(districtTile).toHaveTextContent(/2 Disagreed/);
+        expect(districtTile).toHaveTextContent(/73% Agreed/);
+        expect(districtTile).toHaveTextContent(/18% Disagreed/);
         expect(districtTile).toHaveTextContent(/MD3 Agreement/);
         expect(localeTile).toHaveTextContent(/75%/);
-        expect(localeTile).toHaveTextContent(/18 Agreed/);
-        expect(localeTile).toHaveTextContent(/6 Disagreed/);
+        expect(localeTile).toHaveTextContent(/69% Agreed/);
+        expect(localeTile).toHaveTextContent(/23% Disagreed/);
         expect(localeTile).toHaveTextContent(/Locale Agreement/);
     });
 
-    test("safely handles division by zero when aggregate scores have zero total votes", () => {
+    // @lat: [[voter-privacy-threshold#The mobile legislator screens draw percentages or the placeholder]]
+    test("says 'Not enough votes yet' on a suppressed tile and on a cached score with no flag", () => {
         const zeroScoreTerm = {
             ...sampleTerm2025,
             district_score: {
-                count_agreed: 0,
-                count_disagreed: 0,
+                count_agreed: 6,
+                count_disagreed: 3,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
+                comparison_suppressed: true,
+                agreed_percent: null,
+                disagreed_percent: null,
+                no_legislator_vote_percent: null,
+                legislator_abstained_percent: null,
             },
             locale_score: {
-                count_agreed: 0,
-                count_disagreed: 0,
+                count_agreed: 4321,
+                count_disagreed: 1234,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
             },
@@ -720,8 +736,11 @@ describe("LegislatorDetailScreen (Phase 35 PARITY-09 mobile-canonical)", () => {
         render(<LegislatorDetailScreen route={makeRoute(99)} />);
         fireEvent.press(screen.getByRole("tab", { name: "Term History" }));
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent(/No votes recorded \(--%\)/);
-        expect(districtTile).not.toHaveTextContent("NaN");
+        expect(districtTile).toHaveTextContent(/Not enough votes yet/);
+        expect(districtTile).not.toHaveTextContent(/NaN|%|6 Agreed/);
+        const localeTile = screen.getByTestId("term-locale-score-tile");
+        expect(localeTile).toHaveTextContent(/Not enough votes yet/);
+        expect(localeTile).not.toHaveTextContent(/4321|1234|%/);
     });
 
     test("renders personal agreement score tile when authenticated user voted in term", () => {

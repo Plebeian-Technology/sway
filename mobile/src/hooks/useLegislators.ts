@@ -13,9 +13,17 @@ export type LegislatorAgreeableScore = {
     count_legislator_abstained?: number | string;
 };
 
+export type LegislatorGroupScore = LegislatorAgreeableScore & {
+    comparison_suppressed?: boolean | null;
+    agreed_percent?: number | null;
+    disagreed_percent?: number | null;
+    no_legislator_vote_percent?: number | null;
+    legislator_abstained_percent?: number | null;
+};
+
 export type LegislatorScorePair = LegislatorAgreeableScore & {
-    legislator_district_score?: LegislatorAgreeableScore | null;
-    legislator_locale_score?: LegislatorAgreeableScore | null;
+    legislator_district_score?: LegislatorGroupScore | null;
+    legislator_locale_score?: LegislatorGroupScore | null;
 };
 
 // @lat: [[mobile-use-legislators-hook#Return value]]
