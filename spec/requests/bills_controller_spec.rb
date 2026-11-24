@@ -139,7 +139,7 @@ RSpec.describe "BillsController", type: :request do
       expect(user_votes.compact).not_to be_empty
     end
 
-    it "includes bill_score totals for each bill in the deferred payload" do
+    it "withholds bill_score totals for a bill with one vote in the deferred payload" do
       sway_locale, user = setup
       bill, _params = build_bill_params.call(sway_locale)
       bill.save!
@@ -156,8 +156,9 @@ RSpec.describe "BillsController", type: :request do
 
       bill_payload = inertia.props[:bills].find { |entry| entry["id"] == bill.id }
 
-      expect(bill_payload.dig("bill_score", "for")).to eq(1)
-      expect(bill_payload.dig("bill_score", "against")).to eq(0)
+      expect(bill_payload["bill_score"]).to include(
+        "for" => nil, "against" => nil, "comparison_suppressed" => true, "voters_needed" => 9
+      )
     end
 
     it "passes the filters prop" do
@@ -737,7 +738,7 @@ RSpec.describe "BillsController", type: :request do
           began_on: Date.current - 3.years, ended_on: Date.current - 1.year
         )
         [shared_district, vacant_district, former_district].each do |district|
-          create(:bill_score_district, bill_score: bill.bill_score, district:, for: 2, against: 1)
+          create(:bill_score_district, bill_score: bill.bill_score, district:, for: 8, against: 4)
         end
         api_token = SecureRandom.hex(32)
         ApiKey.create!(bearer: user, token: api_token)
@@ -745,7 +746,9 @@ RSpec.describe "BillsController", type: :request do
         get "/bills/#{bill.id}", headers: {"Authorization" => "Bearer #{api_token}"}
 
         districts = response.parsed_body.fetch("bill_score").fetch("districts")
-        expect(districts.map(&:keys).uniq).to eq([%w[bill_score_id district for against legislator_names]])
+        expect(districts.map(&:keys).uniq).to eq(
+          [%w[bill_score_id district comparison_suppressed for_percent against_percent at_large legislator_names]]
+        )
         expect(districts.to_h { |entry| [entry["district"]["name"], entry["legislator_names"]] }).to eq(
           "D-1" => ["Amy Adams", "Zed Zane"],
           "D-2" => [],
@@ -753,13 +756,13 @@ RSpec.describe "BillsController", type: :request do
         )
       end
 
-      it "sends the web page the unchanged four-key district scores" do
+      it "sends the web page district scores without legislator names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)
         bill.save!
         district = create(:district, sway_locale:, name: "D-1")
         BillsControllerSpecHelpers.seat_legislator(district, "Amy", "Adams")
-        score_district = create(:bill_score_district, bill_score: bill.bill_score, district:, for: 2, against: 1)
+        score_district = create(:bill_score_district, bill_score: bill.bill_score, district:, for: 8, against: 4)
         sign_in(user)
 
         get "/bills/#{bill.id}"
@@ -770,8 +773,10 @@ RSpec.describe "BillsController", type: :request do
             {
               "bill_score_id" => score_district.bill_score_id,
               "district" => {"name" => "D-1", "number" => 1, "region_code" => "D"},
-              "for" => 2,
-              "against" => 1
+              "comparison_suppressed" => false,
+              "for_percent" => 67,
+              "against_percent" => 33,
+              "at_large" => false
             }
           ]
         )
@@ -798,7 +803,7 @@ RSpec.describe "BillsController", type: :request do
           count.times do |index|
             district = create(:district, sway_locale:, name: "D-#{offset + index}")
             BillsControllerSpecHelpers.seat_legislator(district, "First#{offset + index}", "Last#{offset + index}")
-            create(:bill_score_district, bill_score: bill.bill_score, district:, for: 2, against: 1)
+            create(:bill_score_district, bill_score: bill.bill_score, district:, for: 8, against: 4)
           end
         end #: ^(Integer, Integer) -> void
 

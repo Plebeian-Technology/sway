@@ -1509,9 +1509,10 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       create(:legislator_vote, bill:, legislator: sponsor, legislator_term: current_term,
         support: LegislatorVote::Support::AGAINST)
       create(:organization_bill_position, bill:, organization: create(:organization, sway_locale:))
+      current_term.district.update!(name: "#{sway_locale.region_code}3")
       score = bill.bill_score
-      score.update!(for: 4, against: 2)
-      create(:bill_score_district, bill_score: score, district: current_term.district, for: 3, against: 1)
+      score.update!(for: 12, against: 6)
+      create(:bill_score_district, bill_score: score, district: current_term.district, for: 9, against: 3)
 
       other_locale = create(:sway_locale, (sway_locale.city == "congress") ? :maryland : :congress)
       other_district = create(:district, sway_locale: other_locale)
@@ -1543,9 +1544,9 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
-      score_keys = %w[id bill_id for against districts]
+      score_keys = %w[id bill_id for against comparison_suppressed voters_needed districts]
       score_district_keys = %w[
-        bill_score_id district for against legislator_names comparison_suppressed for_percent against_percent at_large
+        bill_score_id district legislator_names comparison_suppressed for_percent against_percent at_large
       ]
       user_vote_keys = %w[id bill_id support]
 
@@ -1604,15 +1605,13 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       # @lat: [[district-chart-tooltip#The mobile bill JSON carries the names, the web page does not]]
       web_score_district_keys = %w[
-        bill_score_id district for against comparison_suppressed for_percent against_percent at_large
+        bill_score_id district comparison_suppressed for_percent against_percent at_large
       ]
       ["/bills/#{bill.id}", "/bill_of_the_month"].each do |web_path|
         get web_path
         web_score_districts = inertia.props[:bill_score]["districts"]
         expect(web_score_districts).not_to be_empty
         web_score_districts.each do |web_score_district|
-          # In suppressed cases, some keys might be nil, but they should still be present
-          # if they are part of the resource whitelist.
           expect(web_score_district.keys).to match_array(web_score_district_keys)
         end
         expect(web_score_districts.first["district"].keys).to match_array(district_keys)

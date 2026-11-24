@@ -58,8 +58,8 @@ RSpec.describe "Reading response payloads and stored copies", type: :request do
 
   def add_bill_score_districts(count:, from:, sway_locale:, bill_score:)
     count.times do |index|
-      district = create(:district, sway_locale:, name: "Score District #{from + index}")
-      create(:bill_score_district, bill_score:, district:, for: 4, against: 2)
+      district = create(:district, sway_locale:, name: "Score District #{from + index + 1}")
+      create(:bill_score_district, bill_score:, district:, for: 8, against: 4)
     end
   end
 

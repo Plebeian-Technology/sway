@@ -193,7 +193,7 @@ end
 class BillScoreResource < ApplicationResource
   private
 
-  def legislator_names_by_district_id: (BillScoreDistrict::ActiveRecord_Associations_CollectionProxy district_scores) -> Hash[Integer, Array[String]]
+  def legislator_names_by_district_id: (Array[BillScoreDistrict] district_scores) -> Hash[Integer, Array[String]]
 end
 
 class BillScoreDistrictResource < ApplicationResource

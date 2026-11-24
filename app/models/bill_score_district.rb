@@ -27,17 +27,25 @@ class BillScoreDistrict < ApplicationRecord
   belongs_to :bill_score
   belongs_to :district
 
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
   def to_builder
     Jbuilder.new do |bsd|
       bsd.bill_score_id bill_score_id
       bsd.district district.to_sway_json
-      bsd.for self.for
-      bsd.against against
-      bsd.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
+      bsd.comparison_suppressed comparison_suppressed?
       bsd.for_percent for_percent
       bsd.against_percent against_percent
       bsd.at_large at_large?
     end
+  end
+
+  def comparison_suppressed?
+    VoteComparisonPrivacy.suppressed?(self.for, against)
+  end
+
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+  def publishable?
+    !comparison_suppressed? && !at_large?
   end
 
   # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
@@ -47,7 +55,7 @@ class BillScoreDistrict < ApplicationRecord
 
   # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   def for_percent
-    return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
+    return nil if comparison_suppressed?
 
     ((self.for.to_f / (self.for + against)) * 100).round
   end

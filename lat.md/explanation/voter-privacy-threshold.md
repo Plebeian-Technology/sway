@@ -10,7 +10,7 @@ Two things sit outside the threat by decision. A reader who watches an exact tot
 
 ## Bill totals show exact counts at ten voters
 
-A bill's For and Against counts are exact once ten users have voted on it. Below ten the reader gets `comparison_suppressed` and `voters_needed`, the number of further voters that would reveal the total.
+A bill's For and Against counts are exact once ten users have voted on it. Below ten both are sent as nil, and the reader gets `comparison_suppressed` and `voters_needed`, the number of further voters that would reveal the total.
 
 The count of voters still needed is safe to send for a bill, because the feed already publishes how many users voted on it.
 
@@ -20,7 +20,17 @@ A district with ten voters shows its split as two whole-number percentages, with
 
 With district counts on the page, a hidden district's exact tally would equal the bill total minus the visible districts. Hiding every district's size removes that subtraction, and it lets each district appear as soon as it reaches ten rather than waiting for its neighbours.
 
-A district under ten has no `voters_needed`, because that number would give its size away. The at-large district is left out as well: it covers every voter, so it repeats the bill total.
+A district under ten has no `voters_needed`, because that number would give its size away, and its row is not sent at all. A row exists only once someone in that district has voted, so even an empty-looking row would say that someone there did. The at-large district is left out as well: it covers every voter, so it repeats the bill total.
+
+## No endpoint sends a count that could identify a voter
+
+Hiding a number on the page is not the guarantee, because anyone can read the JSON behind it. The guarantee is that the server never sends the number.
+
+Every bill score leaves through one of two doors, and both ask the model. [[app/models/bill_score.rb#BillScore#visible_for]] and its Against twin answer nil below the minimum, and [[app/models/bill_score_district.rb#BillScoreDistrict#publishable?]] decides whether a district row leaves at all. [[app/serializers/bill_score_resource.rb#BillScoreResource]] serves the bill page and Bill of the Month to the web and the phone. The two `to_builder` methods serve the bills index, past Bills of the Month and the `bill_scores` and `bill_score_districts` endpoints.
+
+A district row carries its two percentages and never a count. Its `comparison_suppressed` and `at_large` keys stay, always false, because the phone treats a row without the flag as hidden.
+
+The feed's count of how many users voted on a bill stays. It says how many, not how.
 
 ## Legislator scores count only bills that reached the minimum
 
@@ -111,6 +121,12 @@ The phone draws a district, locale or lifetime agreement score on the legislator
 [[mobile/src/components/LegislatorChartsPanel.tsx#LegislatorChartsPanel]] takes a `group` flag for the scores that cover many users. With it set, a suppressed score draws "Not enough votes yet" under the title, and a visible one draws its four bars from the percentage fields on a fixed scale of 100. A cached score with no flag counts as suppressed, for the reason the bill screen gives. Without the flag the panel draws the reader's own counters as before.
 
 The term card's district and locale tiles follow [[mobile/src/types/legislator.ts#calculateGroupAgreement]], which gives the same headline the web tile shows.
+
+## Bill tallies are recomputed before the legislator scores that read them
+
+A legislator score decides which bills to count by reading stored bill tallies, so a caller that refreshes both refreshes the bills first.
+
+A vote already does: `ScoreUpdaterService` recomputes the bill and then the scores. A change of address or a late registration moves a user's votes between districts, and `ReconcileUserDistrictsService`, `UserAddressSwitchService` and the registration controller follow the same order. Run the other way round, a district score would count a bill by its old district tally, including one that has just dropped under ten.
 
 ## Specs that are not about the minimum
 

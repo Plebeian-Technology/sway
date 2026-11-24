@@ -5,4 +5,8 @@
 class BillScore < ApplicationRecord
     def sway_locale: -> SwayLocale
     def to_builder_with_user: (User? user, ?user_districts: Array[District]?) -> Jbuilder
+    def comparison_suppressed?: -> bool
+    def voters_needed: -> Integer
+    def visible_for: -> Integer?
+    def visible_against: -> Integer?
 end

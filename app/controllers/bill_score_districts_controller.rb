@@ -5,7 +5,7 @@ class BillScoreDistrictsController < ApplicationController
     render json:
              BillScoreDistrict.includes(:district).where(
                bill_score_id: bill_score_district_params[:bill_score_id]
-             ).map(&:to_sway_json),
+             ).select(&:publishable?).map(&:to_sway_json),
       status: :ok
   end
 
