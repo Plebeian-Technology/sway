@@ -10,14 +10,14 @@ class SendingServiceDomainsController < ApplicationController
       domain: @domain, actor: current_user, label: params[:label]
     ).call
     when :invalid_label
-      redirect_to redirect_target,
-        inertia: {errors: {sending_service: "Unknown label value (expected confirmed|none)"}}
+      respond_after_write(
+        redirect_target,
+        errors: {sending_service: "Unknown label value (expected confirmed|none)"}
+      )
     when :confirmed
-      flash[:notice] = "Confirmed #{@domain.domain} as a sending service."
-      redirect_to redirect_target
+      respond_after_write(redirect_target, notice: "Confirmed #{@domain.domain} as a sending service.")
     when :removed
-      flash[:notice] = "Removed the sending-service label from #{@domain.domain}."
-      redirect_to redirect_target
+      respond_after_write(redirect_target, notice: "Removed the sending-service label from #{@domain.domain}.")
     end
   end
 

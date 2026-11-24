@@ -96,6 +96,40 @@ RSpec.describe "PATCH /sending_service_domains/:id", type: :request do
     end
   end
 
+  describe "for a bearer client" do
+    let(:bearer_headers) { authenticate_as(admin).merge("Accept" => "application/json") }
+
+    # @lat: [[mobile-bill-creator#Sections#The sending services section]]
+    it "confirms the domain and answers 200 JSON" do
+      patch sending_service_domain_path(domain), params: {label: "confirmed", bill_id: bill.id}, headers: bearer_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      expect(domain.reload.label).to eq(SendingServiceDomain::CONFIRMED)
+      expect(domain.confirmed_by).to eq(admin)
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The sending services section]]
+    it "clears the label and answers 200 JSON" do
+      domain.update!(label: SendingServiceDomain::CONFIRMED, confirmed_by: admin, confirmed_at: Time.current)
+
+      patch sending_service_domain_path(domain), params: {label: "none", bill_id: bill.id}, headers: bearer_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(domain.reload.label).to eq(SendingServiceDomain::NO_LABEL)
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The sending services section]]
+    it "answers an unknown label with 422 and the sending_service error under details" do
+      patch sending_service_domain_path(domain), params: {label: "bogus", bill_id: bill.id}, headers: bearer_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+      expect(response.parsed_body.dig("error", "details", "sending_service")).to be_present
+      expect(domain.reload.label).to eq(SendingServiceDomain::NO_LABEL)
+    end
+  end
+
   describe "a request with an array-valued bill_id" do
     it "falls back to the admin hub instead of building a nonsense path" do
       patch sending_service_domain_path(domain), params: {label: "confirmed", bill_id: ["1", "2"]}
