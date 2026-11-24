@@ -7,6 +7,7 @@ import { Pressable } from "./ui/Pressable";
 import { Markdown } from "./Markdown";
 import { StampedBadge } from "./StampedBadge";
 import { PositionSourceLine } from "./PositionSourceLine";
+import { organizationPositionTag } from "../../../app/frontend/sway_utils/organizationPositionLabels";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
@@ -65,9 +66,7 @@ export function PositionCard({ position, organizationName, testID }: PositionCar
                         testID="org-position-source-tag"
                         className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
                     >
-                        {position.source_kind === "organization"
-                            ? PARITY_COPY.orgs.postedBy(organizationName)
-                            : PARITY_COPY.orgs.compiledBySway}
+                        {organizationPositionTag(organizationName, position.source_kind)}
                     </Text>
                 ) : null}
                 <PositionSourceLine sourceKind={position.source_kind} sourceUrl={position.source_url} />

@@ -15,6 +15,8 @@ The tag sits on each position, not on the organization, because one organization
 
 A position whose `source_kind` is `organization` reads "Posted by {Org}". Every other value, including nil for positions recorded before the origin existed, reads "Compiled by Sway". Unknown origin is treated as compiled because claiming an organization wrote something it may not have written is the error the labels exist to prevent.
 
+Web and mobile both take the tag and the source label from [[app/frontend/sway_utils/organizationPositionLabels.ts#organizationPositionTag]] and [[app/frontend/sway_utils/organizationPositionLabels.ts#organizationPositionSourceLabel]], so the two apps cannot disagree on who wrote a position.
+
 [[app/frontend/components/bill/OrgPositionSummary.tsx#OrgPositionSummary]] renders the tag only when a caller passes the organization name, so a call site that has not been wired yet renders as it did before. It renders the tag even when the position has no summary.
 
 ## Organization pages say whether the organization takes part

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Markdown } from "./Markdown";
 import { NewsArticleTestimony } from "./NewsArticleTestimony";
 import { PositionSourceLine } from "./PositionSourceLine";
+import { organizationPositionTag } from "../../../app/frontend/sway_utils/organizationPositionLabels";
 import type { NewsArticleTestimony as NewsArticleTestimonyType } from "../types/bill";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -66,9 +67,7 @@ function StanceCard({
                                 testID="org-position-source-tag"
                                 className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                             >
-                                {pos.source_kind === "organization" && pos.organization
-                                    ? PARITY_COPY.orgs.postedBy(pos.organization.name)
-                                    : PARITY_COPY.orgs.compiledBySway}
+                                {organizationPositionTag(pos.organization?.name ?? "", pos.source_kind)}
                             </Text>
                             <PositionSourceLine
                                 sourceKind={pos.source_kind}

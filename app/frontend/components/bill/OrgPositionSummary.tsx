@@ -2,8 +2,11 @@
 
 import AiUnreviewedNotice from "app/frontend/components/bill/AiUnreviewedNotice";
 import LazyBillSummaryMarkdown from "app/frontend/components/bill/layouts/LazyBillSummaryMarkdown";
-import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { isSafeUrl } from "app/frontend/sway_utils/safeHref";
+import {
+    organizationPositionSourceLabel,
+    organizationPositionTag,
+} from "app/frontend/sway_utils/organizationPositionLabels";
 import { sway } from "sway";
 
 interface IProps {
@@ -18,11 +21,6 @@ interface IProps {
     // @lat: [[organization-affiliation-labels#Organization affiliation labels#A compiled position names its source]]
     sourceUrl?: string | null;
 }
-
-const SOURCE_LABELS: Partial<Record<NonNullable<sway.IOrganizationPosition["source_kind"]>, string>> = {
-    hearing_testimony: PARITY_COPY.orgs.sourceHearingTestimony,
-    news_article: PARITY_COPY.orgs.sourceNewsArticle,
-};
 
 const SourceLine: React.FC<{ label: string; url?: string | null }> = ({ label, url }) => (
     <div data-testid="org-position-source" className="text-xs text-muted-foreground">
@@ -46,16 +44,14 @@ const OrgPositionSummary: React.FC<IProps> = ({
     sourceKind,
     sourceUrl,
 }) => {
-    const sourceLabel = sourceKind ? SOURCE_LABELS[sourceKind] : undefined;
+    const sourceLabel = organizationPositionSourceLabel(sourceKind);
     const sourceTag =
         organizationName === undefined ? null : (
             <div
                 data-testid="org-position-source-tag"
                 className="text-xs font-semibold uppercase text-muted-foreground"
             >
-                {sourceKind === "organization"
-                    ? PARITY_COPY.orgs.postedBy(organizationName)
-                    : PARITY_COPY.orgs.compiledBySway}
+                {organizationPositionTag(organizationName, sourceKind)}
             </div>
         );
     const sourceLine = sourceLabel ? <SourceLine label={sourceLabel} url={sourceUrl} /> : null;
