@@ -11,7 +11,11 @@ import BillsSortSelect from "app/frontend/components/bill/list-layouts/BillsSort
 import CategoryMultiSelect from "app/frontend/components/bill/list-layouts/CategoryMultiSelect";
 import SwayLocalePicker from "app/frontend/components/locales/SwayLocalePicker";
 import { isArchivedHistoricalBill } from "app/frontend/components/bill/sway_utils/billArchiving";
-import { selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectVoteTally,
+    suppressedVoteComparisonLine,
+} from "app/frontend/components/bill/sway_utils/billPositions";
 import { briefSummary } from "app/frontend/components/bill/sway_utils/billTitle";
 import { formatCalendarDay, formatDate } from "app/frontend/sway_utils/datetimes";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
@@ -185,8 +189,9 @@ const SwissGridBillListLayout: React.FC<BillListLayoutProps> = ({
 
                                         <div className="sgl-foot">
                                             <span className="sgl-tally">
-                                                {forCount.toLocaleString()} for · {againstCount.toLocaleString()}{" "}
-                                                against
+                                                {isVoteComparisonSuppressed(entry.bill_score)
+                                                    ? suppressedVoteComparisonLine(entry.bill_score)
+                                                    : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                             </span>
                                             {releaseDate && (
                                                 <time dateTime={entry.scheduled_release_date_utc} className="sgl-date">

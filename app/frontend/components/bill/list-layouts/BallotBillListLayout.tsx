@@ -11,7 +11,11 @@ import CategoryMultiSelect from "app/frontend/components/bill/list-layouts/Categ
 import SwayLocaleFlag from "app/frontend/components/locales/SwayLocaleFlag";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { isArchivedHistoricalBill } from "app/frontend/components/bill/sway_utils/billArchiving";
-import { selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectVoteTally,
+    suppressedVoteComparisonLine,
+} from "app/frontend/components/bill/sway_utils/billPositions";
 import { briefSummary } from "app/frontend/components/bill/sway_utils/billTitle";
 import { formatCalendarDay } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
@@ -176,7 +180,9 @@ const BallotBillListLayout: React.FC<BillListLayoutProps> = ({
 
                             <div className="ball-contest__foot">
                                 <span className="ball-tally">
-                                    {forCount.toLocaleString()} for · {againstCount.toLocaleString()} against
+                                    {isVoteComparisonSuppressed(entry.bill_score)
+                                        ? suppressedVoteComparisonLine(entry.bill_score)
+                                        : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="ball-voted">Vote recorded</span>}
                                 <BillEditLink

@@ -2,7 +2,11 @@ import { Deferred } from "@inertiajs/react";
 
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { isArchivedHistoricalBill } from "app/frontend/components/bill/sway_utils/billArchiving";
-import { selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectVoteTally,
+    suppressedVoteComparisonLine,
+} from "app/frontend/components/bill/sway_utils/billPositions";
 import { briefSummary } from "app/frontend/components/bill/sway_utils/billTitle";
 import { formatCalendarDay } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
@@ -177,11 +181,15 @@ const BannerBillListLayout: React.FC<BillListLayoutProps> = ({
                                 </BillRowLink>
                                 {summary && <p className="bnl-brief">{summary}</p>}
                                 <div className="bnl-cardfoot">
-                                    <span className="bnl-bar" aria-hidden="true">
-                                        <span style={{ width: `${forPct}%` }} />
-                                    </span>
+                                    {!isVoteComparisonSuppressed(entry.bill_score) && (
+                                        <span className="bnl-bar" aria-hidden="true">
+                                            <span style={{ width: `${forPct}%` }} />
+                                        </span>
+                                    )}
                                     <span className="bnl-tally">
-                                        {forCount.toLocaleString()} for · {againstCount.toLocaleString()} against
+                                        {isVoteComparisonSuppressed(entry.bill_score)
+                                            ? suppressedVoteComparisonLine(entry.bill_score)
+                                            : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                     </span>
                                     {entry.user_vote?.support && <span className="bnl-voted">Voted</span>}
                                     <BillEditLink

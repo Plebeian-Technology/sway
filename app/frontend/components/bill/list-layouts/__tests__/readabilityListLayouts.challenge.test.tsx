@@ -85,6 +85,8 @@ const SAMPLE_BILLS: sway.IBill[] = [
         bill_score: {
             for: 1420000,
             against: 310000,
+            comparison_suppressed: false,
+            voters_needed: 0,
         } as unknown as sway.IBillScore,
         user_vote: {
             support: Support.For,
@@ -103,6 +105,8 @@ const SAMPLE_BILLS: sway.IBill[] = [
         bill_score: {
             for: 85,
             against: 92,
+            comparison_suppressed: false,
+            voters_needed: 0,
         } as unknown as sway.IBillScore,
     } as unknown as sway.IBill,
 ];
@@ -308,6 +312,44 @@ describe("Empirical Challenge: Readability Bill List Layouts (Add Monochrome, Se
 
                 expect(container.querySelectorAll(".placeholder-block")).toHaveLength(0);
                 expect(container.querySelector("[aria-busy='true']")).toBeNull();
+            });
+
+            // @lat: [[voter-privacy-threshold#Bill lists print one line for a hidden tally]]
+            it("prints one line and no count for a bill under ten voters, and leaves other rows as they were", () => {
+                deferredResolved = true;
+                const hiddenScore = {
+                    for: 7777,
+                    against: 3333,
+                    comparison_suppressed: true,
+                    voters_needed: 4,
+                } as unknown as sway.IBillScore;
+                const bills = [{ ...SAMPLE_BILLS[0], bill_score: hiddenScore }, SAMPLE_BILLS[1]];
+
+                const { container } = render(<Layout {...createProps({ bills })} />);
+
+                expect(
+                    screen.getAllByText("Visual comparisons will be shown when 4 more users have voted."),
+                ).toHaveLength(1);
+                const text = container.textContent ?? "";
+                expect(text).not.toMatch(/7,?777/);
+                expect(text).not.toMatch(/3,?333/);
+                expect(text).toContain("85");
+                expect(text).toContain("92");
+                expect(text).not.toContain("Invite others by sharing Sway");
+                expect(screen.queryByRole("button", { name: "Copy invite link" })).toBeNull();
+                expect(screen.queryByRole("link", { name: "Sign up" })).toBeNull();
+            });
+
+            it("says 'Not enough votes yet' for a row whose score carries no flag", () => {
+                deferredResolved = true;
+                const unflaggedScore = { for: 7777, against: 3333 } as unknown as sway.IBillScore;
+
+                const { container } = render(
+                    <Layout {...createProps({ bills: [{ ...SAMPLE_BILLS[0], bill_score: unflaggedScore }] })} />,
+                );
+
+                expect(screen.getAllByText("Not enough votes yet")).toHaveLength(1);
+                expect(container.textContent ?? "").not.toMatch(/7,?777/);
             });
 
             it("renders the Bill of the Month featured date on each card in past_bills_of_the_month mode and omits it in all_bills mode", () => {

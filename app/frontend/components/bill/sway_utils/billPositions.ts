@@ -1,6 +1,7 @@
 import type { sway } from "sway";
 
 import { Support } from "app/frontend/sway_constants";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 
 export interface BillOrgPosition {
     org: sway.IOrganizationBase;
@@ -39,6 +40,16 @@ export interface VoteTally {
 export const isVoteComparisonSuppressed = (
     billScore: Pick<sway.IBaseScore, "comparison_suppressed"> | null | undefined,
 ): boolean => billScore?.comparison_suppressed !== false;
+
+// @lat: [[voter-privacy-threshold#Bill lists print one line for a hidden tally]]
+export const suppressedVoteComparisonLine = (
+    billScore: Pick<sway.IBaseScore, "voters_needed"> | null | undefined,
+): string => {
+    const votersNeeded = billScore?.voters_needed;
+    return typeof votersNeeded === "number" && votersNeeded > 0
+        ? PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(votersNeeded)
+        : PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes;
+};
 
 export interface DistrictVoteSplit {
     district: sway.IDistrict;

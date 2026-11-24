@@ -70,6 +70,12 @@ Once the bill passes the minimum the total shows exact counts again, and the dis
 
 The reader's own vote and the comparison with their legislators stay on the page throughout. Each compares one user with one official, not users with each other.
 
+## Bill lists print one line for a hidden tally
+
+A row in a bill list has room for a line, not a panel, so a hidden tally becomes the placeholder's first sentence alone, with no invite button.
+
+[[app/frontend/components/bill/sway_utils/billPositions.ts#suppressedVoteComparisonLine]] picks the sentence: the count of voters still needed when the row carries one, and "Not enough votes yet" otherwise. The six themed list layouts and `BillCard` print it where "n for · n against" stood. A row at or above the minimum is unchanged.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

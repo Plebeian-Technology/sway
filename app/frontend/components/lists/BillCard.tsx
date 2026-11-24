@@ -1,3 +1,7 @@
+import {
+    isVoteComparisonSuppressed,
+    suppressedVoteComparisonLine,
+} from "app/frontend/components/bill/sway_utils/billPositions";
 import { isArchivedHistoricalBill } from "app/frontend/components/bill/sway_utils/billArchiving";
 import { briefSummary } from "app/frontend/components/bill/sway_utils/billTitle";
 import BillCategoryTags from "app/frontend/components/bill/BillCategoryTags";
@@ -53,20 +57,28 @@ const BillCard: React.FC<IProps> = ({ bill, listMode }) => {
                         "Open the bill to review the full summary, vote totals, and arguments."}
                 </p>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl border-neo border-border bg-surface-3 px-4 py-4 shadow-neo">
-                        <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">For</div>
-                        <div className="mt-2 text-3xl font-black text-vote-for">{bill.bill_score?.for ?? 0}</div>
-                    </div>
-                    <div className="rounded-xl border-neo border-border bg-surface-3 px-4 py-4 shadow-neo">
-                        <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                            Against
+                {isVoteComparisonSuppressed(bill.bill_score) ? (
+                    <p className="text-sm font-semibold text-muted-foreground">
+                        {suppressedVoteComparisonLine(bill.bill_score)}
+                    </p>
+                ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-xl border-neo border-border bg-surface-3 px-4 py-4 shadow-neo">
+                            <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                For
+                            </div>
+                            <div className="mt-2 text-3xl font-black text-vote-for">{bill.bill_score?.for ?? 0}</div>
                         </div>
-                        <div className="mt-2 text-3xl font-black text-vote-against">
-                            {bill.bill_score?.against ?? 0}
+                        <div className="rounded-xl border-neo border-border bg-surface-3 px-4 py-4 shadow-neo">
+                            <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                Against
+                            </div>
+                            <div className="mt-2 text-3xl font-black text-vote-against">
+                                {bill.bill_score?.against ?? 0}
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 <div className="flex flex-wrap items-center justify-end gap-4">
                     <BillEditLink
