@@ -15,7 +15,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
     organization = create(:organization, sway_locale: sway_locale, name: "Followable Org")
 
     sign_in_as(user)
-    visit public_organizations_path
+    visit public_organizations_path(sway_locale_id: sway_locale.id)
     wait_until_loaded
 
     card = find("[data-testid='public-organization-card']", text: "Followable Org", wait: 10)
@@ -44,7 +44,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
     create(:organization_follow, user: user, organization: organization)
 
     sign_in_as(user)
-    visit public_organizations_path
+    visit public_organizations_path(sway_locale_id: sway_locale.id)
     wait_until_loaded
 
     expect(page).to have_css("[data-testid='following-btn-#{organization.id}']", wait: 10)
@@ -73,7 +73,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
   it "renders no follow control for a guest while the pages stay browseable" do
     organization = create(:organization, sway_locale: sway_locale, name: "Guest Visible Org")
 
-    visit public_organizations_path
+    visit public_organizations_path(sway_locale_id: sway_locale.id)
     expect(find_by_id("app", wait: 10)).to have_text("Guest Visible Org")
     expect(page).to have_no_css("[data-testid='follow-btn-#{organization.id}']")
 
@@ -181,7 +181,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
     organization = create(:organization, sway_locale: sway_locale, name: "Skipped Org")
 
     sign_in_as(user)
-    visit public_organizations_path
+    visit public_organizations_path(sway_locale_id: sway_locale.id)
     wait_until_loaded
 
     card = find("[data-testid='public-organization-card']", text: "Skipped Org", wait: 10)
