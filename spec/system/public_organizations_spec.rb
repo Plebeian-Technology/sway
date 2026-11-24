@@ -23,6 +23,30 @@ RSpec.describe "Public Organizations", type: :system, js: true do
     expect(page).to have_css("[data-testid='public-organization-card']", wait: 10)
   end
 
+  it "switches the list to another locale from the picker and keeps it on reload" do
+    baltimore = create(:sway_locale, :baltimore)
+    maryland = create(:sway_locale, :maryland)
+    create(:organization, sway_locale: baltimore, name: "Baltimore Civic Org")
+    create(:organization, sway_locale: maryland, name: "Maryland Civic Org")
+
+    visit public_organizations_path(sway_locale_id: baltimore.id)
+
+    app = find_by_id("app", wait: 10)
+    expect(app).to have_text("Baltimore Civic Org")
+    expect(app).to have_no_text("Maryland Civic Org")
+
+    find_by_id("organizations-locale").find("option[value='#{maryland.id}']").select_option
+
+    expect(page).to have_current_path(/sway_locale_id=#{maryland.id}/, wait: 10)
+    expect(find_by_id("app")).to have_text("Maryland Civic Org", wait: 10)
+    expect(find_by_id("app")).to have_no_text("Baltimore Civic Org")
+
+    visit current_url
+
+    expect(find_by_id("app", wait: 10)).to have_text("Maryland Civic Org")
+    expect(find_by_id("app")).to have_no_text("Baltimore Civic Org")
+  end
+
   it "renders an organization's detail page with its positions" do
     organization = create(:organization, sway_locale: sway_locale, name: "Detailed Org")
     create(

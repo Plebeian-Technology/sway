@@ -14,7 +14,7 @@ RSpec.describe "Public::OrganizationsController", type: :request do
   let(:user) { create(:user).tap { |u| complete_registration_with_active_link(u) } }
 
   describe "GET /public/organizations" do
-    it "is reachable without authentication and returns active orgs" do
+    it "is reachable without authentication and returns every locale's orgs as JSON when no locale is given" do
       create(:organization, name: "Alpha", sway_locale: sway_locale)
       create(:organization, name: "Beta", sway_locale: other_locale)
 
@@ -271,6 +271,30 @@ RSpec.describe "Public::OrganizationsController", type: :request do
 
       expect(inertia).to render_component(Pages::ORGANIZATIONS)
       expect(inertia.props.keys).to include("organizations", "applied_filters")
+    end
+
+    it "lists only the current locale's organizations on an Inertia request with no locale parameter" do
+      create(:organization, name: "Alpha", sway_locale: sway_locale)
+      create(:organization, name: "Beta", sway_locale: other_locale)
+      cookies_hash[:sway_locale_id] = other_locale.id.to_s
+
+      get "/public/organizations"
+
+      expect(inertia).to render_component(Pages::ORGANIZATIONS)
+      expect(inertia.props[:organizations].pluck(:name)).to contain_exactly("Beta")
+      expect(inertia.props[:applied_filters][:sway_locale_id]).to eq(other_locale.id.to_s)
+      expect(inertia.props[:applied_filters][:locale_id]).to eq(other_locale.id.to_s)
+    end
+
+    it "lists the requested locale's organizations on an Inertia request with ?sway_locale_id=" do
+      create(:organization, name: "Alpha", sway_locale: sway_locale)
+      create(:organization, name: "Beta", sway_locale: other_locale)
+      cookies_hash[:sway_locale_id] = other_locale.id.to_s
+
+      get "/public/organizations", params: {sway_locale_id: sway_locale.id}
+
+      expect(inertia.props[:organizations].pluck(:name)).to contain_exactly("Alpha")
+      expect(inertia.props[:applied_filters][:sway_locale_id]).to eq(sway_locale.id.to_s)
     end
   end
 

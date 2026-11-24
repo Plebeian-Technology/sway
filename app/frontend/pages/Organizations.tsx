@@ -1,12 +1,22 @@
 import { usePage, usePoll } from "@inertiajs/react";
 
-import { useSwayLocales } from "app/frontend/hooks/useSwayLocales";
-import { localeLabelFor } from "app/frontend/sway_utils";
+import { useSwayLocale, useSwayLocales } from "app/frontend/hooks/useSwayLocales";
+import { localeLabelFor, toFormattedLocaleName } from "app/frontend/sway_utils";
 import OrganizationCard from "app/frontend/components/organizations/OrganizationCard";
+import SwayLocalePicker from "app/frontend/components/locales/SwayLocalePicker";
+import { Label } from "app/frontend/components/ui/label";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { sway } from "sway";
+
+interface IAppliedFilters {
+    locale_id?: string | null;
+    sway_locale_id?: string | null;
+    org_search?: string | null;
+}
 
 interface IProps {
     organizations: sway.IPublicOrganization[];
+    applied_filters?: IAppliedFilters;
     user_follows?: sway.IOrganizationFollowPageProps["user_follows"];
     user_follow_prefs?: sway.IOrganizationFollowPageProps["user_follow_prefs"];
     current_user_org_defaults?: sway.IOrganizationFollowPageProps["current_user_org_defaults"];
@@ -33,7 +43,8 @@ const Organizations: React.FC<IProps> = ({
     org_position_taken = false,
 }) => {
     usePoll(15000, { only: POLLING_PROPS }, { background: "pause" });
-    const { sway_locales } = useSwayLocales();
+    const { sway_locales, options } = useSwayLocales();
+    const [swayLocale, getSwayLocale, pendingSwayLocaleId] = useSwayLocale();
     // @lat: [[public-organizations-endpoint#What a signed-out reader is never sent]]
     const { props } = usePage<sway.IPageProps>();
     const isSignedIn = Boolean(props.user?.id);
@@ -47,6 +58,19 @@ const Organizations: React.FC<IProps> = ({
                 <p className="text-sm text-muted-foreground">
                     Browse civic organizations and the positions they've taken on legislation.
                 </p>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-2 px-4 py-3">
+                <Label htmlFor="organizations-locale" className="shrink-0">
+                    Locale
+                </Label>
+                <SwayLocalePicker
+                    id="organizations-locale"
+                    options={options}
+                    value={pendingSwayLocaleId ?? swayLocale?.id}
+                    onChange={getSwayLocale}
+                    className="min-w-0 flex-1"
+                />
             </div>
 
             {orgs.length ? (
@@ -83,7 +107,7 @@ const Organizations: React.FC<IProps> = ({
                     data-testid="public-organizations-empty"
                     className="rounded-xl border-neo border-dashed border-border-strong bg-surface-2 px-4 py-8 text-center text-sm text-muted-foreground"
                 >
-                    No organizations yet.
+                    {PARITY_COPY.orgs.noneFound(toFormattedLocaleName(swayLocale?.name ?? ""))}
                 </p>
             )}
         </div>

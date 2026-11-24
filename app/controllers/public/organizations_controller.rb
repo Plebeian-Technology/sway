@@ -10,6 +10,8 @@ module Public
     def index
       scope = Organization.all
       filter_locale_id = params[:sway_locale_id].presence || params[:locale_id].presence
+      # @lat: [[public-organizations-endpoint#Why the web list defaults to the current locale and JSON does not]]
+      filter_locale_id ||= current_sway_locale&.id&.to_s unless mobile_api_request?
       scope = scope.where(sway_locale_id: filter_locale_id) if filter_locale_id.present?
 
       # @lat: [[public-organizations-endpoint#Why the name search escapes its own wildcards]]

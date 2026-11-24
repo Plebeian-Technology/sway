@@ -50,3 +50,17 @@ first hundred names is still found. SQLite's `LIKE` has no escape character
 unless the query names one, so escaping `%` and `_` alone leaves them acting as
 wildcards. The match names a backslash as its escape character, which makes a
 search for `50%` find "50% Coalition" and not "500 Club".
+
+## Why the web list defaults to the current locale and JSON does not
+
+The web page shows the reader's current locale, with the shared locale picker
+to switch, the same shape the mobile list has
+([[mobile-orgs-list-screen#OrgsListScreen]]).
+
+An Inertia request with no locale parameter is therefore filtered by the
+current locale and reports it in `applied_filters`. Without that default, the
+picker would name one locale while the list showed all of them.
+
+A JSON request with no locale parameter still returns every locale. The mobile
+app leaves the locale parameter off when no locale is chosen, and narrowing that
+request would change what the app shows.
