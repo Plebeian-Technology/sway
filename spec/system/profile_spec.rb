@@ -47,6 +47,28 @@ RSpec.describe "Web profile page", type: :system, js: true do
     expect(page).to have_current_path("/users/passkeys")
   end
 
+  it "signs out of every device from Profile and lands on the public home page" do
+    sign_in_as(user)
+    visit "/profile"
+    wait_until_loaded
+
+    click_button "Sign Out All Devices"
+    within("[role='dialog']", wait: 10) do
+      expect(page).to have_text("You'll be signed out on every device.")
+      click_button "Sign Out All Devices"
+    end
+
+    expect(page).to have_text("You have been signed out on every device.", wait: 15)
+    expect(page).to have_current_path(root_path, ignore_query: true)
+    expect(page).to have_button("Sign in with a passkey", wait: 10)
+    expect(user.reload.session_generation).to eq(1)
+
+    visit "/profile"
+    wait_until_loaded
+    expect(page).to have_current_path(root_path, ignore_query: true, wait: 10)
+    expect(page).to have_no_css("h1", text: "Profile")
+  end
+
   it "deletes the account from Profile and lands signed out on the public home page" do
     sign_in_as(user)
     visit "/profile"

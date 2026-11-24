@@ -7,7 +7,7 @@ import { ROUTES } from "app/frontend/sway_constants";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { formatPhone } from "app/frontend/sway_utils/phone";
 import { Link, router } from "@inertiajs/react";
-import { Bell, ChevronRight, KeyRound, KeySquare, Trash, UserRound, Users } from "lucide-react";
+import { Bell, ChevronRight, KeyRound, KeySquare, Trash, UserRound, Users, UserX } from "lucide-react";
 import { useCallback } from "react";
 
 interface IAccountLink {
@@ -46,6 +46,19 @@ const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
         router.delete(ROUTES.user(user.id), { onSuccess: clearIdentityCaches });
     }, [confirm, user.id]);
 
+    const handleSignOutAllDevices = useCallback(async () => {
+        const confirmed = await confirm({
+            title: PARITY_COPY.profile.account.signOutAllTitle,
+            description: PARITY_COPY.profile.account.signOutAllBody,
+            confirmLabel: PARITY_COPY.profile.account.signOutAllAction,
+            tone: "destructive",
+        });
+        if (!confirmed) return;
+
+        // @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
+        router.post(ROUTES.users.signOutAllDevices, {}, { onSuccess: clearIdentityCaches });
+    }, [confirm]);
+
     return (
         <div className="mx-auto w-full max-w-2xl space-y-6 px-4 py-6">
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">{PARITY_COPY.profile.title}</h1>
@@ -83,7 +96,18 @@ const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
                 ))}
             </ul>
 
-            <div className="rounded-xl border-neo border-border-strong bg-card shadow-neo px-4 py-4">
+            <div className="flex flex-col gap-3 rounded-xl border-neo border-border-strong bg-card shadow-neo px-4 py-4 sm:flex-row">
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="gap-2 font-bold"
+                    onClick={() => {
+                        handleSignOutAllDevices().catch(console.error);
+                    }}
+                >
+                    <UserX className="size-4" aria-hidden="true" />
+                    {PARITY_COPY.profile.rows.signOutAll}
+                </Button>
                 <Button
                     type="button"
                     variant="destructive"

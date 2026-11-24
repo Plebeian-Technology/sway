@@ -23,3 +23,9 @@ The flag travels as the page's own `can_manage_api_keys` prop rather than a fiel
 The Delete Account button asks for confirmation in the shared confirm dialog, naming what is lost, then sends `DELETE /users/:id` with Inertia for the reader's own id.
 
 [[identity-and-access#Why UsersController#destroy revokes devices before cascading account deletion|The destroy action]] refuses any other id, revokes mobile devices, signs the browser out and redirects to the public home page with history cleared. On success the page also runs [[app/frontend/hooks/authentication/prepareIdentityChange.ts#clearIdentityCaches]], the same cache purge an identity change uses, so no page data from the deleted account stays in the tab. The dialog copy matches the mobile delete sheet ([[mobile-profile-and-delete-account-screens#DeleteAccountScreen]]).
+
+## Signing out every device from the web
+
+The Sign Out All Devices button asks in the shared confirm dialog, with the mobile sheet's title and body from the parity copy, then posts to the endpoint described in [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]].
+
+The endpoint redirects to the public home page signed out, and the page runs the same cache purge as account deletion on success. The endpoint takes no account id, so the button can only ever end the reader's own sessions.

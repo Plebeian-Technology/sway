@@ -54,6 +54,7 @@ export const ROUTES = {
     users: {
         organization_memberships: "/users/organization_memberships",
         passkeys: "/users/passkeys",
+        signOutAllDevices: "/users/sign_out_all_devices",
     },
 
     userSettings: "/settings",

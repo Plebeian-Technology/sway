@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const inertia = vi.hoisted(() => ({
     usePage: vi.fn<() => { props: Record<string, unknown> }>(() => ({ props: {} })),
-    router: { delete: vi.fn<(url: string, options?: unknown) => void>() },
+    router: {
+        delete: vi.fn<(url: string, options?: unknown) => void>(),
+        post: vi.fn<(url: string, data?: unknown, options?: unknown) => void>(),
+    },
 }));
 
 vi.mock("@inertiajs/react", () => ({
@@ -20,6 +23,7 @@ const render = (ui: React.ReactElement) => rtlRender(<ConfirmProvider>{ui}</Conf
 describe("Profile", () => {
     beforeEach(() => {
         inertia.router.delete.mockReset();
+        inertia.router.post.mockReset();
         inertia.usePage.mockReturnValue({
             props: { user: { id: 7, full_name: "Ada Lovelace", phone: "4105550123" } },
         });
@@ -102,6 +106,39 @@ describe("Profile", () => {
 
             await vi.waitFor(() => expect(inertia.router.delete).toHaveBeenCalledTimes(1));
             expect(inertia.router.delete.mock.calls[0][0]).toBe("/users/7");
+        });
+    });
+
+    describe("Sign Out All Devices", () => {
+        it("asks for confirmation before signing anything out", () => {
+            render(<Profile can_manage_api_keys={false} />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Sign Out All Devices" }));
+
+            const dialog = screen.getByRole("dialog", { name: "Sign out all devices" });
+            expect(dialog.textContent).toContain("You'll be signed out on every device.");
+            expect(inertia.router.post).not.toHaveBeenCalled();
+        });
+
+        it("does nothing when the confirmation is cancelled", async () => {
+            render(<Profile can_manage_api_keys={false} />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Sign Out All Devices" }));
+            fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+
+            await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+            expect(inertia.router.post).not.toHaveBeenCalled();
+        });
+
+        it("calls the sign-out-everywhere endpoint once confirmed", async () => {
+            render(<Profile can_manage_api_keys={false} />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Sign Out All Devices" }));
+            const dialog = screen.getByRole("dialog", { name: "Sign out all devices" });
+            fireEvent.click(within(dialog).getByRole("button", { name: "Sign Out All Devices" }));
+
+            await vi.waitFor(() => expect(inertia.router.post).toHaveBeenCalledTimes(1));
+            expect(inertia.router.post.mock.calls[0][0]).toBe("/users/sign_out_all_devices");
         });
     });
 });
