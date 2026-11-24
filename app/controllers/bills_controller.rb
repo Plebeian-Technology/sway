@@ -459,7 +459,7 @@ class BillsController < ApplicationController
       bill: @bill, **supplemental_testimony_args
     ).call
 
-    redirect_to positions_bill_creator_path(@bill)
+    respond_after_write(positions_bill_creator_path(@bill))
   end
 
   # @lat: [[testimony-letters#How CleanAndGroupService orders and threads the cleaning steps#Manual stance overrides]]
@@ -476,9 +476,9 @@ class BillsController < ApplicationController
     provisioning = @bill.bill_llm_provisioning
     cleaned = provisioning&.cleaned_testimony
     unless provisioning && cleaned.is_a?(Hash) && cleaned["letters"].is_a?(Array)
-      return redirect_back_or_to(
-        positions_bill_creator_path(@bill),
-        inertia: {errors: {testimony_letter_stance: "No cleaned testimony letters available on this bill."}}
+      return respond_after_write(
+        positions_bill_creator_path(@bill), back: true,
+        errors: {testimony_letter_stance: "No cleaned testimony letters available on this bill."}
       )
     end
 
@@ -508,9 +508,9 @@ class BillsController < ApplicationController
     end
 
     unless updated
-      return redirect_back_or_to(
-        positions_bill_creator_path(@bill),
-        inertia: {errors: {testimony_letter_stance: "Testimony letter not found."}}
+      return respond_after_write(
+        positions_bill_creator_path(@bill), back: true,
+        errors: {testimony_letter_stance: "Testimony letter not found."}
       )
     end
 
@@ -520,8 +520,7 @@ class BillsController < ApplicationController
       "Updated testimony letter stance to #{stance} on #{@bill.external_id}."
     end
 
-    redirect_back_or_to positions_bill_creator_path(@bill),
-      notice: notice_msg
+    respond_after_write(positions_bill_creator_path(@bill), back: true, notice: notice_msg)
   end
 
   # @lat: [[bill-creator-summary-tab#The Bill Creator summary tab#Supplemental testimony is replaced, never appended]]

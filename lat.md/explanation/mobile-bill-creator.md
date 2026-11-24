@@ -693,3 +693,13 @@ The card keeps the web card's rules and drops its chrome.
 - The info popover beside "Why this organization" and the stance badge colours.
 - The screen-reader link from a disabled Approve to the notice that explains it. A blank summary shows "No summary yet" beside Approve, and the draft section's notices sit above the cards.
 - The web's "Approve failed." fallback. The phone shows the server's or the client's message, which always exists.
+
+### The testimony section
+
+The Positions tab edits the bill's testimony: the supplemental text an admin pastes, and the stance of each cleaned constituent letter, as the web's testimony panel does ([[bill-creator-positions-tab]]).
+
+#### Answering testimony writes in JSON
+
+[[app/controllers/bills_controller.rb#BillsController#supplemental_testimony]] and [[app/controllers/bills_controller.rb#BillsController#testimony_letter_stance]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
+
+A saved or cleared supplemental text answers 200 with an empty body, and so does a stance change or a removed letter. A bill with no cleaned letters, and a position the letters lack, answer 422 with the web's reason under `details.testimony_letter_stance`, the key the web reads from its Inertia errors. An invalid position or stance was already JSON, `{error}`, and the phone's client reads that string as the message. The web keeps its redirects, the stance notice, the return to the referring page and the Inertia errors.
