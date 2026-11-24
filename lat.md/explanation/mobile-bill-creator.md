@@ -54,6 +54,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Summary also lists `summary_revisions`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary revisions section]]).
 - Summary also lists `summary_source_documents`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary sources section]]). The ledger's counts, `summary_sources`, are small and ride every request.
 - Summary reads the category override's data from props the list already carried: `active_categories`, `max_active_categories_per_bill` and, inside `bill`, `override_categories` and `bill_llm_provisioning` ([[mobile-bill-creator#Sections#The category override section]]).
+- Positions also carries `active_legislation_pipeline_run`, from the same shared run props, because the web's draft cards keep Approve off while a clean-testimony run covers the bill ([[mobile-bill-creator#Sections#The draft positions section]]).
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the campaign letter text, stay absent whatever the tab.
 
@@ -558,3 +559,13 @@ The section leaves out two details of the web panel.
 
 - The success toasts "Category added" and "Category removed". The phone has no toast; the chip row changing on the reload is the confirmation.
 - The dropdown and its remount after a failed add. Buttons hold no remembered value, so a refused add can be pressed again.
+
+### The draft positions section
+
+The Positions tab lists the organization positions a summary run drafted from testimony, and the admin approves, edits or rejects each one, as the web's draft cards do ([[bill-creator-positions-tab]]).
+
+#### Answering approve and review in JSON
+
+[[app/controllers/bills_controller.rb#BillsController#approve_org_position]] and [[app/controllers/bill_draft_org_positions_controller.rb#BillDraftOrgPositionsController#update]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
+
+An approval, a reject and an edit answer 200 with an empty body, and so does a reject of a draft that is already gone. Every approval refusal answers 422 with the web's reason under `details.org_position`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. A refusal for a person writing for themselves also carries `details.private_individual_refusal`, so the phone can offer the override the web offers ([[private-individual-guard-override]]). A reject or edit that names a draft the list no longer holds at that index answers 422 with the same list-changed reason under `org_position`. The update action's other refusals (a malformed id, no change named, an invalid stance, an over-long field, a missing identity) were already JSON, `{error, message}`, and the phone's client reads that message. The web keeps its redirects, flash notices and Inertia errors.

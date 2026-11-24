@@ -1593,6 +1593,29 @@ RSpec.describe "BillsController", type: :request do
         expect(body.fetch("bill")).to have_key("bill_llm_provisioning")
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The draft positions section]]
+      it "gives the positions tab the drafts, the organizations panel and the run that holds Approve back" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        create(:bill_llm_provisioning, :completed, bill: bill,
+          draft_org_positions: [{"org_name" => "Org B", "stance" => "support", "summary" => "Supports."}])
+        run = create(:legislation_pipeline_run, status: "queued")
+
+        get_tab_as_json(bill, user, "positions")
+
+        body = response.parsed_body
+        expect(body.keys).to match_array(%w[
+          bill bill_id tab_key organizations active_legislation_pipeline_run testimony_coverage
+          testimony_campaign_drafts testimony_claimed_affiliations campaigns campaign_organization_candidates
+          public_testimony_counts
+        ])
+        expect(body.dig("active_legislation_pipeline_run", "id")).to eq(run.id)
+        expect(body.dig("bill", "bill_llm_provisioning", "draft_org_positions", 0)).to include("draft_token", "org_name" => "Org B")
+        expect(body.dig("bill", "bill_llm_provisioning")).to include("has_testimony", "generation_status", "reclaimable")
+        expect(body.fetch("bill")).to include("organizations", "bill_pipeline_refresh")
+      end
+
       # @lat: [[mobile-bill-creator#Sections#The summary sources section]]
       it "gives the summary tab the prompt sections the model read only when the request asks for them" do
         sway_locale, user = setup

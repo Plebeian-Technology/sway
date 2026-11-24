@@ -66,7 +66,7 @@ class BillsController < ApplicationController
       review_draft_revision active_legislation_pipeline_run summary_prompt summary_revisions summary_source_documents
     ],
     "positions" => %i[
-      bill bill_id tab_key organizations testimony_coverage testimony_campaign_drafts
+      bill bill_id tab_key organizations active_legislation_pipeline_run testimony_coverage testimony_campaign_drafts
       testimony_claimed_affiliations campaigns campaign_organization_candidates public_testimony_counts
     ]
   }.freeze
@@ -567,66 +567,65 @@ class BillsController < ApplicationController
       override_private_individual: permitted[:override_private_individual]
     ).call
     when :org_name_required
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Organization name is required"}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Organization name is required"}
     when :summary_required
       # @lat: [[organization-position-removal#Taking an organization's position off a bill#A refusal reaches the operator as a message, not a 500]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Summary is required"}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Summary is required"}
     when :invalid_stance
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Invalid stance (expected support|oppose|neutral)"}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Invalid stance (expected support|oppose|neutral)"}
     when :identity_required
       # @lat: [[bill-draft-org-position-controller#Bill draft organization-position controller#Draft identity separates a moved entry from a removed one]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This request did not say which draft to approve — send draft_token."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This request did not say which draft to approve — send draft_token."}
     when :draft_index_required
       # @lat: [[bill-draft-org-position-controller#Bill draft organization-position controller#Draft identity separates a moved entry from a removed one]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This request named a draft but not its position — send index."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This request named a draft but not its position — send index."}
     when :draft_index_mismatch
       # @lat: [[bill-draft-org-position-controller#Bill draft organization-position controller#Draft identity separates a moved entry from a removed one]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}
     when :evidence_retracted
       # @lat: [[hearing-testimony-census#What a hearings fetch can conclude#Retracting evidence retires the conclusions drawn from it]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "The testimony behind this draft was retracted — regenerate the " \
-          "positions, or reject this draft."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "The testimony behind this draft was retracted — regenerate the " \
+          "positions, or reject this draft."}
     when :no_testimony
       # @lat: [[organization-position-removal#Taking an organization's position off a bill#A draft with no testimony behind it is not approvable]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This bill has no testimony on file, so this draft cannot be " \
-          "approved — paste the testimony back into Supplemental testimony, or reject this draft."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This bill has no testimony on file, so this draft cannot be " \
+          "approved — paste the testimony back into Supplemental testimony, or reject this draft."}
     when :run_in_flight
       # @lat: [[bill-creator-positions-tab#The Bill Creator positions tab#Why Approve says on this tab why it is off]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "A new summary is being written for this bill, and it will replace " \
-          "these drafts when it finishes — wait for it to finish, then review and approve the new drafts."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "A new summary is being written for this bill, and it will replace " \
+          "these drafts when it finishes — wait for it to finish, then review and approve the new drafts."}
     when :private_individual
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This bill's testimony reads #{org_name} as a person writing for " \
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This bill's testimony reads #{org_name} as a person writing for " \
           "themselves, not an organization — a resident who wrote in cannot be published as one.",
-                           private_individual_refusal: true}}
+                 private_individual_refusal: true}
     when :coverage_not_acknowledged
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Some testimony did not reach the model — acknowledge what was left " \
-          "out before publishing a position drawn from it."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Some testimony did not reach the model — acknowledge what was left " \
+          "out before publishing a position drawn from it."}
     when :claimed_affiliation_not_found
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}
     when :organization_has_users
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This organization has registered user accounts on Sway and " \
-          "manages its own positions — positions cannot be published on its behalf."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This organization has registered user accounts on Sway and " \
+          "manages its own positions — positions cannot be published on its behalf."}
     when :approved
-      flash[:notice] = "Approved #{org_name} on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      respond_after_write positions_bill_creator_path(@bill), notice: "Approved #{org_name} on #{@bill.external_id}."
     else
       # @lat: [[bills-controller-design#Why approve_org_position names :approved explicitly and refuses unhandled outcomes]]
       SwayLogging.warn("approve_org_position.unhandled_outcome", bill_id: @bill.id)
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This position could not be approved. Reload and try again."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This position could not be approved. Reload and try again."}
     end
   end
 
