@@ -106,9 +106,7 @@ describe("OrganizationsNotificationsPanel", () => {
     it("shows body copy about organizations and legislation", () => {
         renderPanel();
         expect(
-            screen.getByText(
-                /Get notified when organizations you follow publish or update their position on legislation/,
-            ),
+            screen.getByText(/Get notified when Sway records or updates a position from an organization you track/),
         ).toBeTruthy();
     });
 

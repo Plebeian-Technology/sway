@@ -206,7 +206,7 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                                 </article>
                             ))
                         ) : (
-                            <p className="bn-empty">No organizations have filed a position on this bill.</p>
+                            <p className="bn-empty">{PARITY_COPY.orgs.noBillPositions}</p>
                         )}
                     </div>
                     <NewsArticleTestimony testimonies={bill.news_testimonies} variant="banner" />

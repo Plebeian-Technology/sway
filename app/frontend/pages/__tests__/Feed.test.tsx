@@ -242,7 +242,7 @@ describe("Feed page", () => {
                     /Jane Smith\s+voted\s+Against\s+a Maryland bill/.test(element.textContent ?? ""),
             ),
         ).toBeTruthy();
-        expect(screen.getByText(/supports a Maryland bill/)).toBeTruthy();
+        expect(screen.getByText(/Sway recorded that\s+supports a Maryland bill/)).toBeTruthy();
         expect(screen.getByText(/joined Sway/)).toBeTruthy();
         expect(screen.getByText(/found your representatives/)).toBeTruthy();
         expect(screen.getByText("See your representatives")).toBeTruthy();

@@ -283,7 +283,7 @@ function OrgDefaultsCard({ form }: { form: OrgDefaultsForm }) {
                         <PreferenceToggle
                             name="notify_on_new_position_default"
                             label={PARITY_COPY.orgNotifications.eventNewPosition}
-                            description="Notify by default when this org publishes a new position."
+                            description="Notify by default when Sway records a new position from this organization."
                             value={notifyNewPos}
                             onValueChange={setNotifyNewPos}
                             testID="org-default-toggle-new-position"

@@ -246,7 +246,9 @@ describe("OrgCard follow control", () => {
         // Heading is replaced: "Sign in to follow", not the usual "Sign in to vote"
         expect(screen.getByText("Sign in to follow")).toBeTruthy();
         expect(
-            screen.getByText("Follow civic organizations and get notified when they take a position on legislation."),
+            screen.getByText(
+                "Track civic organizations and get notified when Sway records their positions on legislation.",
+            ),
         ).toBeTruthy();
     });
 

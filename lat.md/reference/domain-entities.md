@@ -70,11 +70,11 @@ A `User` is a verified phone number with passkeys, an address, and per-locale le
 
 ## Organizations and campaigns
 
-Organizations are advocacy groups scoped to a locale. They hold positions on bills and run testimony campaigns.
+Organizations are advocacy groups scoped to a locale. Sway records their positions on bills, and a campaign may name the organization behind it.
 
 - `Organization` — `belongs_to :sway_locale`; name unique per locale; followers via `organization_follows`
 - The `Sway` organization is seeded in every locale by `SeedSwayOrganization` during `db:seed`, before any other organization exists there
-- `OrganizationBillPosition` — `active`, `support`, `summary`, `origin` (provenance label), `origin_url` (source link); (a change to any of the three notifies followers); `activated_at` is set when `active` becomes true. Positions are either "affiliated" (managed by the organization via active membership) or "compiled" (managed by Sway, and labeled accordingly).
+- `OrganizationBillPosition` — `active`, `support`, `summary` (a change to any of the three notifies followers), `source_kind` and `source_url` ([[news-org-position-persistence#Position origin and affiliation]]); `activated_at` is set when `active` becomes true
 - `OrganizationBillPositionChange` — the audit trail of edits awaiting approval
 - `Campaign` — `belongs_to :bill`, optional `:organization`; name unique per bill; `organization_link_decision` records a four-state match outcome
 - `UserOrganizationMembership` — membership, with a separate invite record for pending ones

@@ -138,7 +138,36 @@ describe("PARITY_COPY — Organizations keys (nested)", () => {
     });
 
     it("orgs.noPositions is the public organization page's positions empty state", () => {
-        expect(PARITY_COPY.orgs.noPositions).toBe("This organization hasn't published any positions yet.");
+        expect(PARITY_COPY.orgs.noPositions).toBe("Sway has not recorded any positions from this organization yet.");
+    });
+
+    it("orgs.noBillPositions says Sway found no organization positions on the bill", () => {
+        expect(PARITY_COPY.orgs.noBillPositions).toBe("Sway has not found any organization positions on this bill.");
+    });
+
+    it("orgs.subtitle says Sway recorded the positions", () => {
+        expect(PARITY_COPY.orgs.subtitle).toBe(
+            "Browse organizations and the positions Sway has recorded from public testimony and news.",
+        );
+    });
+
+    it("feed.organizationPositionRecordedPrefix names Sway as the recorder", () => {
+        expect(PARITY_COPY.feed.organizationPositionRecordedPrefix).toBe("Sway recorded that");
+    });
+
+    it("notifications.orgPositionTaken says Sway records the position", () => {
+        expect(PARITY_COPY.notifications.orgPositionTaken.label).toBe(
+            "Sway recorded a position from an organization you track",
+        );
+        expect(PARITY_COPY.notifications.orgPositionTaken.description).toBe(
+            "When Sway records a position from an organization you track on a new bill.",
+        );
+    });
+
+    it("orgNotifications.panelDescription says Sway records the positions", () => {
+        expect(PARITY_COPY.orgNotifications.panelDescription).toBe(
+            "Get notified when Sway records or updates a position from an organization you track.",
+        );
     });
 
     it("orgs.listNotice says where positions come from and when an organization is affiliated", () => {

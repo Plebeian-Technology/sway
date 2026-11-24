@@ -66,9 +66,7 @@ const Organizations: React.FC<IProps> = ({
         <div className="space-y-6">
             <div className="space-y-2">
                 <h1 className="text-2xl font-black">Organizations</h1>
-                <p className="text-sm text-muted-foreground">
-                    Browse civic organizations and the positions they've taken on legislation.
-                </p>
+                <p className="text-sm text-muted-foreground">{PARITY_COPY.orgs.subtitle}</p>
                 {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Organization pages say whether the organization takes part]] */}
                 <p className="text-sm text-muted-foreground">{PARITY_COPY.orgs.listNotice}</p>
             </div>

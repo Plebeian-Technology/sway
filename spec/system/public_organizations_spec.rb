@@ -98,7 +98,7 @@ RSpec.describe "Public Organizations", type: :system, js: true do
     visit public_organization_path(organization)
 
     empty_state = find("[data-testid='public-organization-positions-empty']", wait: 10)
-    expect(empty_state).to have_text("This organization hasn't published any positions yet.")
+    expect(empty_state).to have_text("Sway has not recorded any positions from this organization yet.")
   end
 
   it "renders the stamped-status badge with a real inset ring" do

@@ -163,7 +163,7 @@ export function OrgCard({
                 }}
                 onDismiss={() => setShowAuthSheet(false)}
                 heading="Sign in to track"
-                body="Track civic organizations and get notified when they take a position on legislation."
+                body="Track civic organizations and get notified when Sway records their positions on legislation."
                 testID={`auth-prompt-sheet-${org.id}`}
             />
 

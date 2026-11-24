@@ -31,6 +31,7 @@ const OrganizationPositionTakenItem: React.FC<IProps> = ({ item }) => {
             avatar={<FeedAvatar kind="organization" organizationName={organization.name} />}
             whoLine={
                 <>
+                    {PARITY_COPY.feed.organizationPositionRecordedPrefix}{" "}
                     <strong className="font-semibold">{organization.name}</strong>{" "}
                     {PARITY_COPY.feed.organizationPositionTaken(positionVerb, localeName)}
                 </>

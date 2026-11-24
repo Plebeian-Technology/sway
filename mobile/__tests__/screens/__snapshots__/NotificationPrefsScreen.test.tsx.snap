@@ -73,7 +73,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  We'll let you know when a new Bill of the Month is published.
+                  We'll let you know when a new Bill of the Month is released.
                 </Text>
               </View>
             </View>
@@ -220,7 +220,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
             </View>
           </View>
           <View
-            accessibilityLabel="Organization you follow took a position"
+            accessibilityLabel="Sway recorded a position from an organization you track"
             accessibilityRole="none"
             className="bg-card-light dark:bg-card-dark border-b border-border-soft-light dark:border-border-soft-dark flex-row items-center justify-between px-4 py-3"
             style={
@@ -239,12 +239,12 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
                 <Text
                   className="text-base font-open-sans text-foreground-light dark:text-foreground-dark"
                 >
-                  Organization you follow took a position
+                  Sway recorded a position from an organization you track
                 </Text>
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  When an org you follow publishes a position on a new bill.
+                  When Sway records a position from an organization you track on a new bill.
                 </Text>
               </View>
             </View>
@@ -253,7 +253,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
             >
               <View>
                 <RCTSwitch
-                  accessibilityLabel="Organization you follow took a position"
+                  accessibilityLabel="Sway recorded a position from an organization you track"
                   accessibilityRole="switch"
                   accessibilityState={
                     {
@@ -348,7 +348,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
           <Text
             className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
           >
-            Get notified when organizations you follow publish or update their position on legislation.
+            Get notified when Sway records or updates a position from an organization you track.
           </Text>
           <Text
             className="text-xs font-open-sans-semibold tracking-widest uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
@@ -380,7 +380,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  Notify by default when this org publishes a new position.
+                  Notify by default when Sway records a new position from this organization.
                 </Text>
               </View>
             </View>
@@ -820,7 +820,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  We'll let you know when a new Bill of the Month is published.
+                  We'll let you know when a new Bill of the Month is released.
                 </Text>
               </View>
             </View>
@@ -967,7 +967,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
             </View>
           </View>
           <View
-            accessibilityLabel="Organization you follow took a position"
+            accessibilityLabel="Sway recorded a position from an organization you track"
             accessibilityRole="none"
             className="bg-card-light dark:bg-card-dark border-b border-border-soft-light dark:border-border-soft-dark flex-row items-center justify-between px-4 py-3"
             style={
@@ -986,12 +986,12 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
                 <Text
                   className="text-base font-open-sans text-foreground-light dark:text-foreground-dark"
                 >
-                  Organization you follow took a position
+                  Sway recorded a position from an organization you track
                 </Text>
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  When an org you follow publishes a position on a new bill.
+                  When Sway records a position from an organization you track on a new bill.
                 </Text>
               </View>
             </View>
@@ -1000,7 +1000,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
             >
               <View>
                 <RCTSwitch
-                  accessibilityLabel="Organization you follow took a position"
+                  accessibilityLabel="Sway recorded a position from an organization you track"
                   accessibilityRole="switch"
                   accessibilityState={
                     {
@@ -1155,7 +1155,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
           <Text
             className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
           >
-            Get notified when organizations you follow publish or update their position on legislation.
+            Get notified when Sway records or updates a position from an organization you track.
           </Text>
           <Text
             className="text-xs font-open-sans-semibold tracking-widest uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
@@ -1187,7 +1187,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  Notify by default when this org publishes a new position.
+                  Notify by default when Sway records a new position from this organization.
                 </Text>
               </View>
             </View>

@@ -123,7 +123,7 @@ export function OrgPreferenceSheet({
                             <PreferenceToggle
                                 name="notify_on_new_position"
                                 label="New position"
-                                description="When this org publishes a new position on a bill."
+                                description="When Sway records a new position from this organization on a bill."
                                 value={notifyNewPosition}
                                 onValueChange={setNotifyNewPosition}
                                 testID="pref-toggle-new-position"

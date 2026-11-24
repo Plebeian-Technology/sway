@@ -156,7 +156,7 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
                         ))}
                     </ul>
                 ) : (
-                    <p className="cs-empty">No statements of support or opposition are on file yet.</p>
+                    <p className="cs-empty">{PARITY_COPY.orgs.noBillPositions}</p>
                 )}
                 <NewsArticleTestimony testimonies={bill.news_testimonies} variant="cornerstore" />
             </div>
