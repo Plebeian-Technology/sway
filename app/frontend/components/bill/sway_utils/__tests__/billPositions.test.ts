@@ -27,6 +27,8 @@ const billPosition = (
     organization: { id, sway_locale_id: 1, name: orgName },
     origin: "Org-posted",
     origin_url: null,
+    source_kind: null,
+    source_url: null,
 });
 
 describe("selectBillPositions", () => {

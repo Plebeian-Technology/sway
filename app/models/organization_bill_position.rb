@@ -133,7 +133,7 @@ class OrganizationBillPosition < ApplicationRecord
   end
 
   # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
-  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at].freeze
+  PUBLIC_FIELDS = %i[id organization_id bill_id support summary active created_at source_kind source_url].freeze
 
   def to_public_json
     initial = {} #: Hash[Symbol, untyped]

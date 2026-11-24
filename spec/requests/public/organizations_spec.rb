@@ -326,7 +326,25 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       body = JSON.parse(response.body, symbolize_names: true)
       expect(body[:organization_bill_positions].length).to eq(1)
       pos_keys = body[:organization_bill_positions].first.keys
-      expect(pos_keys).to match_array(%i[id organization_id bill_id support summary summary_ai_unreviewed active created_at])
+      expect(pos_keys).to match_array(
+        %i[id organization_id bill_id support summary summary_ai_unreviewed active created_at source_kind source_url]
+      )
+    end
+
+    it "sends each position's source kind and URL, null when the origin is unknown" do
+      org = create(:organization, name: "Alpha", sway_locale: sway_locale)
+      create(:organization_bill_position, organization: org, bill: create(:bill, sway_locale: sway_locale),
+        active: true, source_kind: "news_article", source_url: "https://example.com/article")
+      create(:organization_bill_position, organization: org, bill: create(:bill, sway_locale: sway_locale),
+        active: true)
+
+      get "/public/organizations/#{org.id}", headers: {"Accept" => "application/json"}
+
+      positions = JSON.parse(response.body, symbolize_names: true)[:organization_bill_positions]
+      expect(positions.map { |p| p.slice(:source_kind, :source_url) }).to contain_exactly(
+        {source_kind: "news_article", source_url: "https://example.com/article"},
+        {source_kind: nil, source_url: nil}
+      )
     end
 
     # A signed-out show request must NOT include the follow or membership props.

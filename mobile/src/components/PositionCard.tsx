@@ -18,6 +18,9 @@ export interface OrgPositionDisplay {
     summary: string | null;
     // @lat: [[mobile-org-membership-components-design#PositionCard]]
     summary_ai_unreviewed?: boolean;
+    // @lat: [[news-org-position-persistence#Position origin and affiliation]]
+    source_kind?: "hearing_testimony" | "news_article" | "sway_admin" | "organization" | null;
+    source_url?: string | null;
     link?: string | null;
     bill?: {
         id?: number;

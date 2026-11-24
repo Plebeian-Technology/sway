@@ -27,6 +27,10 @@ Every write path sets both columns for what it wrote, so the latest write decide
 
 A nil `source_kind` reads as compiled by Sway. The backfill sets `organization` only where an approved member change was the latest write: updated no earlier than five seconds before the position.
 
+### Payloads
+
+Both public position payloads send `source_kind` and `source_url`, null when unknown: `to_public_json` on [[app/models/organization_bill_position.rb#OrganizationBillPosition]] and [[app/serializers/bill_page_organization_bill_position_resource.rb#BillPageOrganizationBillPositionResource]].
+
 ## Persistence callers
 
 Four domain execution callers invoke draft position persistence and grounding filters.

@@ -1540,7 +1540,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
         phone fax party photo_url district twitter
       ]
       district_keys = %w[name number region_code]
-      position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
+      position_keys = %w[id bill_id organization support summary summary_ai_unreviewed source_kind source_url]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
       score_keys = %w[id bill_id for_percent against_percent comparison_suppressed districts]

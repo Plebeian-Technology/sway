@@ -17,4 +17,7 @@ class BillPageOrganizationBillPositionResource < ApplicationResource
   attribute :summary_ai_unreviewed do |position|
     position.summary_ai_unreviewed?
   end
+
+  # @lat: [[news-org-position-persistence#Position origin and affiliation]]
+  attributes :source_kind, :source_url
 end
