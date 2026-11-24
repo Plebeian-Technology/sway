@@ -1523,7 +1523,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
-      score_keys = %w[id bill_id for against districts]
+      score_keys = %w[id bill_id for against comparison_suppressed voters_needed districts]
       score_district_keys = %w[
         bill_score_id district for against legislator_names comparison_suppressed for_percent against_percent at_large
       ]

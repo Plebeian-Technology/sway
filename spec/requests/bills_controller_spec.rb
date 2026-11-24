@@ -745,7 +745,7 @@ RSpec.describe "BillsController", type: :request do
         get "/bills/#{bill.id}", headers: {"Authorization" => "Bearer #{api_token}"}
 
         districts = response.parsed_body.fetch("bill_score").fetch("districts")
-        expect(districts.map(&:keys).uniq).to eq([%w[bill_score_id district for against legislator_names]])
+        expect(districts.map(&:keys).uniq).to eq([%w[bill_score_id district for against comparison_suppressed for_percent against_percent at_large legislator_names]])
         expect(districts.to_h { |entry| [entry["district"]["name"], entry["legislator_names"]] }).to eq(
           "D-1" => ["Amy Adams", "Zed Zane"],
           "D-2" => [],
@@ -753,7 +753,7 @@ RSpec.describe "BillsController", type: :request do
         )
       end
 
-      it "sends the web page the unchanged four-key district scores" do
+      it "sends the web page the district scores without legislator names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)
         bill.save!
@@ -770,8 +770,12 @@ RSpec.describe "BillsController", type: :request do
             {
               "bill_score_id" => score_district.bill_score_id,
               "district" => {"name" => "D-1", "number" => 1, "region_code" => "D"},
-              "for" => 2,
-              "against" => 1
+              "for" => nil,
+              "against" => nil,
+              "comparison_suppressed" => true,
+              "for_percent" => nil,
+              "against_percent" => nil,
+              "at_large" => false
             }
           ]
         )
