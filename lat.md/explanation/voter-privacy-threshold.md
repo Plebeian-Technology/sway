@@ -60,6 +60,16 @@ Without that number it says only that there are not enough votes yet. Districts 
 
 The strings live in `PARITY_COPY.bill.voteComparisonPlaceholder`, so the mobile app shows the same words.
 
+## The web bill page asks one helper whether to draw a comparison
+
+Seven bill layouts draw the tally, and each asks [[app/frontend/components/bill/sway_utils/billPositions.ts#isVoteComparisonSuppressed]] rather than reading the flag itself.
+
+When it answers yes, the layout draws one placeholder with the bill's `voters_needed` where its tally stood. The chart panels, the affinity panel and any sentence about the majority draw nothing, so the page says it once. A score with no flag counts as suppressed: a payload the page does not understand is hidden, never shown.
+
+Once the bill passes the minimum the total shows exact counts again, and the district charts follow [[bill-vote-charts-design]].
+
+The reader's own vote and the comparison with their legislators stay on the page throughout. Each compares one user with one official, not users with each other.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

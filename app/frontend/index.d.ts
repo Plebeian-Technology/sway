@@ -282,12 +282,21 @@ declare module "sway" {
             correction_explanation: IHistoricalScoreExplanation | null;
         }
 
+        // @lat: [[voter-privacy-threshold#Bill totals show exact counts at ten voters]]
         interface IBaseScore {
-            for: number;
-            against: number;
+            for: number | null;
+            against: number | null;
+            comparison_suppressed: boolean;
+            voters_needed: number;
         }
-        interface IBillScoreDistrct extends IBaseScore {
+
+        // @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
+        interface IBillScoreDistrct {
             district: IDistrict;
+            comparison_suppressed: boolean;
+            for_percent: number | null;
+            against_percent: number | null;
+            at_large: boolean;
         }
 
         interface IBillScore extends IBaseScore {

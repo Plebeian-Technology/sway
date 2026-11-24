@@ -239,23 +239,31 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             expect(screen.queryByText("Councilmember Jane Doe")).toBeNull();
         });
 
-        it("Stress: Zero-score edge case handles 0% votes without NaN rendering", async () => {
+        it("Stress: Zero-score edge case shows the placeholder without NaN rendering", async () => {
             const zeroScore = {
-                for: 0,
-                against: 0,
+                for: null,
+                against: null,
+                comparison_suppressed: true,
+                voters_needed: 10,
+                districts: [],
             } as unknown as sway.IBillScore;
 
             renderTestLayout({ bill_score: zeroScore });
             await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
 
             expect(document.body.textContent).not.toContain("NaN");
-            expect(screen.getAllByText(/\b0\b|\b0%/).length).toBeGreaterThan(0);
+            expect(
+                screen.getByText("Visual comparisons will be shown when 10 more users have voted."),
+            ).toBeInTheDocument();
         });
 
         it("Stress: Extreme vote tallies handle large numbers with comma formatting", async () => {
             const extremeScore = {
                 for: 1250000,
                 against: 850000,
+                comparison_suppressed: false,
+                voters_needed: 0,
+                districts: [],
             } as unknown as sway.IBillScore;
 
             renderTestLayout({ bill_score: extremeScore });
@@ -297,6 +305,80 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             expect(screen.getByTestId("btn-share-bill")).toBeInTheDocument();
         });
     });
+
+    // @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
+    describe.each(THEMES.map((theme) => ({ themeId: theme.id })))(
+        "Ten-voter minimum: $themeId theme",
+        ({ themeId }) => {
+            const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
+                bill_id: SAMPLE_BILL.id,
+                for: 7777,
+                against: 3333,
+                comparison_suppressed: false,
+                voters_needed: 0,
+                districts: [
+                    {
+                        district: { name: "D-4", number: 4, region_code: "D" } as sway.IDistrict,
+                        comparison_suppressed: false,
+                        for_percent: 75,
+                        against_percent: 25,
+                        at_large: false,
+                    },
+                ],
+                ...overrides,
+            });
+            const userVote = { id: 1, bill_id: SAMPLE_BILL.id, support: Support.For } as unknown as sway.IUserVote;
+
+            const renderWithScore = async (bill_score: sway.IBillScore) => {
+                const Layout = billLayoutFor(themeId);
+                render(
+                    <Suspense fallback={<div data-testid="loading" />}>
+                        <Layout
+                            bill={SAMPLE_BILL}
+                            sponsor={SAMPLE_SPONSOR}
+                            organizations={[]}
+                            isAwaitingScoreUpdate={false}
+                            user_vote={userVote}
+                            bill_score={bill_score}
+                        />
+                    </Suspense>,
+                );
+                await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
+            };
+
+            it("replaces every tally, chart and majority statement with one placeholder", async () => {
+                await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
+
+                expect(
+                    screen.getAllByText("Visual comparisons will be shown when 4 more users have voted."),
+                ).toHaveLength(1);
+                const text = document.body.textContent ?? "";
+                expect(text).not.toMatch(/7,?777/);
+                expect(text).not.toMatch(/3,?333/);
+                expect(text).not.toContain("%");
+                expect(text).not.toMatch(/majority|leading|evenly split|no votes yet/i);
+                for (const testId of [
+                    "total-votes-chart",
+                    "total-votes-chart-empty",
+                    "district-votes-chart",
+                    "affinity-district-chart",
+                    "bill-charts-panel",
+                    "bill-affinity-panel",
+                ]) {
+                    expect(screen.queryByTestId(testId)).toBeNull();
+                }
+            });
+
+            it("shows the exact bill total once ten users have voted", async () => {
+                await renderWithScore(score({}));
+
+                const text = document.body.textContent ?? "";
+                expect(text).toMatch(/7,?777/);
+                expect(text).toMatch(/3,?333/);
+                expect(text).not.toContain("Visual comparisons will be shown");
+            });
+        },
+    );
 
     describe("3. SwissGrid Specialized Split Stance Verification", () => {
         it("splits testimonies strictly between Why Support and Why Oppose rows", async () => {

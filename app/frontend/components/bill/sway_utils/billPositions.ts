@@ -35,7 +35,31 @@ export interface VoteTally {
     forPct: number;
 }
 
-export const selectVoteTally = (billScore: sway.IBaseScore | null | undefined): VoteTally => {
+// @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
+export const isVoteComparisonSuppressed = (
+    billScore: Pick<sway.IBaseScore, "comparison_suppressed"> | null | undefined,
+): boolean => billScore?.comparison_suppressed !== false;
+
+export interface DistrictVoteSplit {
+    district: sway.IDistrict;
+    forPercent: number;
+    againstPercent: number;
+}
+
+// @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
+export const selectDistrictVoteSplits = (billScore: sway.IBillScore | null | undefined): DistrictVoteSplit[] => {
+    if (!billScore || isVoteComparisonSuppressed(billScore)) return [];
+
+    return (billScore.districts ?? [])
+        .flatMap((row) =>
+            row.comparison_suppressed || row.at_large || row.for_percent === null || row.against_percent === null
+                ? []
+                : [{ district: row.district, forPercent: row.for_percent, againstPercent: row.against_percent }],
+        )
+        .sort((a, b) => a.district.number - b.district.number);
+};
+
+export const selectVoteTally = (billScore: Pick<sway.IBaseScore, "for" | "against"> | null | undefined): VoteTally => {
     const forCount = billScore?.for ?? 0;
     const againstCount = billScore?.against ?? 0;
     const total = forCount + againstCount;

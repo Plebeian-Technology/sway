@@ -3,7 +3,9 @@ import type { sway } from "sway";
 
 import { Support } from "app/frontend/sway_constants";
 import {
+    isVoteComparisonSuppressed,
     selectBillPositions,
+    selectDistrictVoteSplits,
     selectVoteMajority,
     selectVoteTally,
 } from "app/frontend/components/bill/sway_utils/billPositions";
@@ -134,5 +136,94 @@ describe("selectVoteMajority", () => {
         expect(r.userVoted).toBe(false);
         expect(r.userSupports).toBe(false);
         expect(r.withMajority).toBeNull();
+    });
+});
+
+const district = (number: number): sway.IDistrict =>
+    ({ name: `D-${number}`, number, region_code: "D" }) as sway.IDistrict;
+
+const billScore = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
+    bill_id: 1,
+    for: 18,
+    against: 12,
+    comparison_suppressed: false,
+    voters_needed: 0,
+    districts: [],
+    ...overrides,
+});
+
+// @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
+describe("isVoteComparisonSuppressed", () => {
+    it("is true when the server says the tally is suppressed", () => {
+        expect(isVoteComparisonSuppressed(billScore({ comparison_suppressed: true, voters_needed: 4 }))).toBe(true);
+    });
+
+    it("is false only when the server says the tally may be shown", () => {
+        expect(isVoteComparisonSuppressed(billScore({ comparison_suppressed: false }))).toBe(false);
+    });
+
+    it("is true when there is no score or no flag", () => {
+        expect(isVoteComparisonSuppressed(undefined)).toBe(true);
+        expect(isVoteComparisonSuppressed(null)).toBe(true);
+        expect(isVoteComparisonSuppressed({ for: 40, against: 2 } as unknown as sway.IBillScore)).toBe(true);
+    });
+});
+
+describe("selectDistrictVoteSplits", () => {
+    const score = billScore({
+        districts: [
+            {
+                district: district(7),
+                comparison_suppressed: false,
+                for_percent: 40,
+                against_percent: 60,
+                at_large: false,
+            },
+            {
+                district: district(0),
+                comparison_suppressed: false,
+                for_percent: 60,
+                against_percent: 40,
+                at_large: true,
+            },
+            {
+                district: district(4),
+                comparison_suppressed: false,
+                for_percent: 75,
+                against_percent: 25,
+                at_large: false,
+            },
+            {
+                district: district(2),
+                comparison_suppressed: true,
+                for_percent: null,
+                against_percent: null,
+                at_large: false,
+            },
+        ],
+    });
+
+    it("keeps districts that carry percentages, in district order", () => {
+        expect(
+            selectDistrictVoteSplits(score).map((split) => [
+                split.district.number,
+                split.forPercent,
+                split.againstPercent,
+            ]),
+        ).toEqual([
+            [4, 75, 25],
+            [7, 40, 60],
+        ]);
+    });
+
+    it("drops suppressed districts and the at-large district", () => {
+        const numbers = selectDistrictVoteSplits(score).map((split) => split.district.number);
+        expect(numbers).not.toContain(2);
+        expect(numbers).not.toContain(0);
+    });
+
+    it("returns nothing when the bill tally itself is suppressed", () => {
+        expect(selectDistrictVoteSplits({ ...score, comparison_suppressed: true })).toEqual([]);
+        expect(selectDistrictVoteSplits(undefined)).toEqual([]);
     });
 });

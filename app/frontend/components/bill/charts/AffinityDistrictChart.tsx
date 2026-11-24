@@ -1,47 +1,38 @@
 import { sway } from "sway";
 
 import DistrictLabel from "app/frontend/components/bill/charts/DistrictLabel";
+import { selectDistrictVoteSplits } from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 
 interface IProps {
     score: sway.IBillScore;
     title?: string;
 }
 
-const numberFormatter = new Intl.NumberFormat();
+type DistrictAmount = { key: string; district: sway.IDistrict; label: string; amount: number };
 
-type DistrictAmount = { key: string; district?: sway.IDistrict; label: string; number: number; amount: number };
+const signed = (amount: number) => `${amount > 0 ? "+" : ""}${amount}%`;
 
 // @lat: [[bill-vote-charts-design#AffinityDistrictChart.tsx]]
 const AffinityDistrictChart: React.FC<IProps> = ({ score, title }) => {
-    const districts = Array.isArray(score?.districts) ? score.districts : [];
-
     // @lat: [[bill-vote-charts-design#AffinityDistrictChart.tsx]]
-    const rows: DistrictAmount[] = districts
-        .filter((d) => d?.district?.number !== 0)
-        .map((d) => {
-            const amount = Number(d?.for || 0) - Number(d?.against || 0);
-            const num = d?.district?.number ?? 0;
-            const symbol = amount > 0 ? "+" : "";
-            return {
-                key: d?.district?.name ?? `d-${num}`,
-                district: d?.district,
-                label: `D-${num} (${symbol}${numberFormatter.format(amount)})`,
-                number: num,
-                amount,
-            };
-        });
+    const rows: DistrictAmount[] = selectDistrictVoteSplits(score).map(({ district, forPercent, againstPercent }) => {
+        const amount = forPercent - againstPercent;
+        return {
+            key: district.name,
+            district,
+            label: `D-${district.number} (${signed(amount)})`,
+            amount,
+        };
+    });
 
-    rows.sort((a, b) => a.number - b.number);
-
-    const absMax = rows.reduce((acc, r) => Math.max(acc, Math.abs(r.amount)), 0);
-
-    if (rows.length === 0 || absMax === 0) {
+    if (rows.length === 0) {
         return (
             <div
                 data-testid="affinity-district-chart-empty"
                 className="rounded-xl border-neo border-border bg-surface-3 px-4 py-6 text-center text-sm font-semibold text-muted-foreground shadow-neo"
             >
-                No votes recorded yet.
+                <VoteComparisonPlaceholder />
             </div>
         );
     }
@@ -51,7 +42,7 @@ const AffinityDistrictChart: React.FC<IProps> = ({ score, title }) => {
             {title && <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">{title}</div>}
             <div className="grid gap-1.5">
                 {rows.map((row) => {
-                    const pct = absMax > 0 ? (Math.abs(row.amount) / absMax) * 50 : 0;
+                    const pct = Math.abs(row.amount) / 2;
                     const positive = row.amount >= 0;
                     return (
                         <div
@@ -78,8 +69,7 @@ const AffinityDistrictChart: React.FC<IProps> = ({ score, title }) => {
                                 />
                             </div>
                             <div className="text-right text-xs font-black text-foreground tabular-nums lining-nums">
-                                {row.amount > 0 ? "+" : ""}
-                                {numberFormatter.format(row.amount)}
+                                {signed(row.amount)}
                             </div>
                         </div>
                     );

@@ -11,7 +11,12 @@ import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import BillAffinityPanel from "app/frontend/components/bill/charts/BillAffinityPanel";
 import BillChartsPanel from "app/frontend/components/bill/charts/BillChartsPanel";
-import { selectBillPositions, selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectBillPositions,
+    selectVoteTally,
+} from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 import { Card, CardContent, CardHeader, CardTitle } from "app/frontend/components/ui/card";
 import { sway } from "sway";
 import OrgPositionSummary from "app/frontend/components/bill/OrgPositionSummary";
@@ -54,6 +59,7 @@ const BillContent: React.FC<IProps> = ({
         [bill.id, organizations],
     );
     const { forCount, againstCount } = selectVoteTally(bill_score);
+    const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     return (
         <div className="grid gap-6">
             <Card className="border-transparent bg-card/95" data-testid="score-panel">
@@ -61,20 +67,24 @@ const BillContent: React.FC<IProps> = ({
                     <CardTitle className="text-xl font-black">{PARITY_COPY.bill.content.howOthersVoted}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-xl bg-surface-3 px-4 py-4 shadow-neo">
-                            <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                For
+                    {comparisonSuppressed ? (
+                        <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                    ) : (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="rounded-xl bg-surface-3 px-4 py-4 shadow-neo">
+                                <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                    For
+                                </div>
+                                <div className="mt-2 text-3xl font-black text-vote-for">{forCount}</div>
                             </div>
-                            <div className="mt-2 text-3xl font-black text-vote-for">{forCount}</div>
-                        </div>
-                        <div className="rounded-xl bg-surface-3 px-4 py-4 shadow-neo">
-                            <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                Against
+                            <div className="rounded-xl bg-surface-3 px-4 py-4 shadow-neo">
+                                <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                    Against
+                                </div>
+                                <div className="mt-2 text-3xl font-black text-vote-against">{againstCount}</div>
                             </div>
-                            <div className="mt-2 text-3xl font-black text-vote-against">{againstCount}</div>
                         </div>
-                    </div>
+                    )}
 
                     {isAwaitingScoreUpdate && (
                         <p className="text-sm font-semibold text-muted-foreground">

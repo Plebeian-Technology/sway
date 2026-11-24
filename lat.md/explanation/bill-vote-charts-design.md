@@ -5,35 +5,34 @@ lat:
 
 # Bill vote chart components (app/frontend/components/bill/charts/)
 
-Why AffinityDistrictChart, DistrictVotesChart, and TotalVotesChart reproduce the exact numbers of the older pie/bubble charts, drawn instead as hand-built bars with no charting library
+Why the total chart shows exact counts while the two district charts show percentages, all drawn as hand-built bars with no charting library.
 
 ## AffinityDistrictChart.tsx
 
-The "district affinity" chart, in the neobrutalist style.
+The "district affinity" chart draws each district's net lean as a bar growing out from a centre line: net support goes right, net opposition goes left.
 
-The numbers match the old pie and bubble versions exactly:
+The lean is in percentage points, because a district's counts are never sent ([[voter-privacy-threshold#Districts are sent as percentages only]]):
 
 ```
-amount = Number(d.for) - Number(d.against)   (may be negative; NOT clamped)
-label  = `D-{number} ({+|}{amount})`
+amount = forPercent - againstPercent   (may be negative; NOT clamped)
+label  = `D-{number} ({+|}{amount}%)`
 ```
 
-Those older charts drew a pie or bubbles. This one draws horizontal bars growing out from a centre line: net support goes right, net opposition goes left. Same numbers, and no charting library needed.
+A bar's length is the lean itself, so 100 points fills half the track. Scaling to the widest district would make a two-point lead look like a landslide.
 
-At-large districts (district number 0) are left out of all three charts below, because they skew the visual comparison between districts.
+The rows come from [[app/frontend/components/bill/sway_utils/billPositions.ts#selectDistrictVoteSplits]], which leaves out hidden districts and the at-large district. The panel is not drawn at all when no district has a row.
 
 ## DistrictVotesChart.tsx
 
-One horizontal bar per district, showing how many voted FOR and how many voted AGAINST.
+One row per district with two bars, the share that voted For and the share that voted Against, each labelled with its percentage and no count.
 
-The numbers match the older version of this chart exactly:
+It draws the rows [[app/frontend/components/bill/sway_utils/billPositions.ts#selectDistrictVoteSplits]] returns. A district under ten voters has no row, and the at-large district has none either because it repeats the bill total.
 
-```
-for     = Number(d.for || 0)
-against = Number(d.against || 0)
-```
+## The reader's own district is asked for when the chart is drawn
 
-It walks `score.districts`, the array on `sway.IBillScore`, the same way the older charts container did. At-large districts (number 0) are left out, as in `AffinityDistrictChart`, because they distort the comparison between districts.
+A reader whose own district is missing from the chart would wonder whether the page forgot them, so the chart adds a row for it that says there are not enough votes yet.
+
+The page does not carry the reader's districts on first load: `districts` is an optional prop. [[app/frontend/components/bill/charts/DistrictVotesChart.tsx#DistrictVotesChart]] asks for it once with a partial reload when a signed-in reader's chart is drawn, the same way the district tooltip asks for the roster ([[district-chart-tooltip]]).
 
 ## TotalVotesChart.tsx
 
