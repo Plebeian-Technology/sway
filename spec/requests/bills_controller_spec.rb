@@ -1713,6 +1713,19 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body).to include("id" => created_bill.id, "external_id" => bill.external_id)
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section#The summary field]]
+      it "creates the bill with the summary the phone sends" do
+        sway_locale, user = setup
+        _bill, params = build_bill_params.call(sway_locale)
+
+        post "/bills", params: params.merge(summary: "Caps yearly rent increases.", news_usage: "none").to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("summary" => "Caps yearly rent increases.")
+        expect(Bill.last!.summary).to eq("Caps yearly rent increases.")
+      end
+
       it "answers an invalid bill with 422 and the field errors" do
         sway_locale, user = setup
         _bill, params = build_bill_params.call(sway_locale, partial_bill: {title: nil})
@@ -1892,6 +1905,38 @@ RSpec.describe "BillsController", type: :request do
 
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.parsed_body.dig("error", "details", "title").first).to include("can't be blank")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section#The summary field]]
+      it "publishes a changed summary sent with news usage none" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        patch "/bills/#{bill.id}", params: {summary: "Caps rent increases at 3%.", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("summary" => "Caps rent increases at 3%.")
+        expect(bill.reload.summary).to eq("Caps rent increases at 3%.")
+      end
+
+      it "answers a refused summary with 422 and each reason in details.errors" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.summary = "Original public summary"
+        bill.save!
+
+        patch "/bills/#{bill.id}",
+          params: {summary: "As reported by [Banner](https://baltimorebanner.com/transit-plan).", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.dig("details", "errors")).to be_an(Array).and(be_present)
+        expect(error.dig("details", "errors")).to all(be_a(String))
+        expect(bill.reload.summary).to eq("Original public summary")
       end
 
       it "refuses a non-admin with a forbidden JSON error" do
