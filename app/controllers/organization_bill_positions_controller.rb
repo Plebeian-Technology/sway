@@ -85,13 +85,15 @@ class OrganizationBillPositionsController < ApplicationController
       )
     end
 
-    redirect_to bill_creator_tab_path(
-      bill_creator_tab_param,
-      bill_id: bill.id,
-      default: :positions_bill_creator_path,
-      event_key: "organizations"
-    ),
+    respond_after_write(
+      bill_creator_tab_path(
+        bill_creator_tab_param,
+        bill_id: bill.id,
+        default: :positions_bill_creator_path,
+        event_key: "organizations"
+      ),
       notice: "Removed #{position.organization.name} from #{bill.external_id}."
+    )
   end
 
   private

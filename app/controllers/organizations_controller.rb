@@ -128,17 +128,16 @@ class OrganizationsController < ApplicationController
       end
 
     organization = @organization
-    if organization.nil?
-      flash[:alert] = "Organization not found."
-      return redirect_to back_path
-    end
+    return respond_after_write(back_path, alert: "Organization not found.") if organization.nil?
 
     if organization.update(organization_update_params)
-      flash[:notice] = "Organization renamed to #{organization.name}."
+      respond_after_write(back_path, notice: "Organization renamed to #{organization.name}.")
     else
-      flash[:alert] = "Could not rename organization: #{organization.errors.full_messages.join(", ")}"
+      respond_after_write(
+        back_path,
+        alert: "Could not rename organization: #{organization.errors.full_messages.join(", ")}"
+      )
     end
-    redirect_to back_path
   end
 
   private

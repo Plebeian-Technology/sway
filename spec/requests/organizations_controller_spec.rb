@@ -450,5 +450,74 @@ RSpec.describe "OrganizationsController", type: :request do
 
       expect(org.reload.sway_locale_id).to eq(sway_locale.id)
     end
+
+    it "keeps the web alert flash when the name is refused" do
+      sway_locale, = setup
+      create(:organization, sway_locale:, name: "Existing Org")
+      org = create(:organization, sway_locale:, name: "Org To Rename")
+
+      patch "/organizations/#{org.id}", params: {name: "Existing Org"}
+      follow_redirect!
+
+      expect(inertia).to have_flash(alert: "Could not rename organization: Name has already been taken")
+    end
+
+    describe "for a bearer request" do
+      let(:bearer_json_headers) do
+        lambda do |user|
+          authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+        end
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The organizations section]]
+      it "renames the organization and answers 200 JSON with no redirect" do
+        sway_locale, user = setup
+        org = create(:organization, sway_locale:, name: "Md Tenants Union")
+
+        patch "/organizations/#{org.id}", params: {name: "Maryland Tenants Union"}.to_json, headers: bearer_json_headers.call(user)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("application/json")
+        expect(response.headers["Location"]).to be_nil
+        expect(org.reload.name).to eq("Maryland Tenants Union")
+      end
+
+      it "answers an invalid name with 422 whose message is the alert" do
+        sway_locale, user = setup
+        create(:organization, sway_locale:, name: "Existing Org")
+        org = create(:organization, sway_locale:, name: "Org To Rename")
+
+        patch "/organizations/#{org.id}", params: {name: "Existing Org"}.to_json, headers: bearer_json_headers.call(user)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.fetch("message")).to start_with("Could not rename organization")
+        expect(org.reload.name).to eq("Org To Rename")
+      end
+
+      it "answers an unknown organization with 422 and the not-found alert" do
+        _sway_locale, user = setup
+
+        patch "/organizations/0", params: {name: "Anything"}.to_json, headers: bearer_json_headers.call(user)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "message")).to eq("Organization not found.")
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        org = create(:organization, sway_locale:, name: "Md Tenants Union")
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        patch "/organizations/#{org.id}", params: {name: "Renamed"}.to_json, headers: bearer_json_headers.call(non_admin)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+        expect(org.reload.name).to eq("Md Tenants Union")
+      end
+    end
   end
 end
