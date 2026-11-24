@@ -1539,13 +1539,55 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body.fetch("summary_prompt")).to include(bill.external_id, "summary_markdown")
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "gives the summary tab the revision list only when the request asks for it" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        revision = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Older summary",
+          origin: "operator_edit",
+          publication_role: "published",
+          review_state: "reviewed"
+        )
+
+        get_tab_as_json(bill, user, "summary")
+        expect(response.parsed_body).not_to have_key("summary_revisions")
+
+        get "/admin/bill_creator/#{bill.id}/summary?summary_revisions=1",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.fetch("summary_revisions").pluck("id")).to include(revision.id)
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "gives the summary tab the draft revision its address names" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        draft = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Draft text",
+          origin: "restoration",
+          publication_role: "draft",
+          review_state: "reviewed"
+        )
+
+        get "/admin/bill_creator/#{bill.id}/summary?draft_revision_id=#{draft.id}",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response.parsed_body.dig("review_draft_revision", "id")).to eq(draft.id)
+      end
+
       it "serves each tab exactly the keys its list names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)
         bill.save!
 
         BillsController::BILL_CREATOR_TAB_PROPS.each do |tab, keys|
-          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1",
+          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1&summary_revisions=1",
             headers: authenticate_as(user).merge("Accept" => "application/json")
 
           expect(response.parsed_body.keys).to match_array(keys.map(&:to_s)), "tab #{tab}"
@@ -1559,7 +1601,7 @@ RSpec.describe "BillsController", type: :request do
 
         get "/admin/bill_creator/#{bill.id}/schedule"
 
-        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt]
+        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt, :summary_revisions]
         expect(inertia.props).to include(*every_key)
       end
     end
@@ -2469,6 +2511,86 @@ RSpec.describe "BillsController", type: :request do
       latest_rev = bill.bill_summary_revisions.order(:id).last
       expect(latest_rev.publication_role).to eq("draft")
       expect(latest_rev.origin).to eq("restoration")
+    end
+
+    describe "for a bearer request" do
+      let(:json_headers) { {"Accept" => "application/json"} }
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "restores the revision and answers 200 with the new published revision" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale: sway_locale, summary: "Current active summary")
+        old_rev = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Old historical summary markdown",
+          origin: "model_generation",
+          publication_role: "published",
+          review_state: "reviewed"
+        )
+
+        post "/bills/#{bill.id}/restore_summary_revision",
+          params: {revision_id: old_rev.id, news_usage: "none"},
+          headers: authenticate_as(user).merge(json_headers)
+
+        expect(response).to have_http_status(:ok)
+        revision = response.parsed_body.fetch("revision")
+        expect(revision).to include(
+          "summary_markdown" => "Old historical summary markdown",
+          "origin" => "restoration",
+          "publication_role" => "published",
+          "restored_from_id" => old_rev.id
+        )
+        expect(bill.reload.summary).to eq("Old historical summary markdown")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "answers 200 with the draft revision when a legacy revision is restored as a draft" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale: sway_locale, summary: "Current active summary")
+        legacy_rev = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Clean historical summary without news links",
+          origin: "operator_edit",
+          publication_role: "published",
+          review_state: "reviewed",
+          news_source_snapshot: nil
+        )
+
+        post "/bills/#{bill.id}/restore_summary_revision",
+          params: {revision_id: legacy_rev.id},
+          headers: authenticate_as(user).merge(json_headers)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.dig("revision", "publication_role")).to eq("draft")
+        expect(response.parsed_body.dig("revision", "id")).to eq(bill.bill_summary_revisions.order(:id).last.id)
+        expect(bill.reload.summary).to eq("Current active summary")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "answers 422 with the alert as the message when the summary changed since the list loaded" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale: sway_locale, summary: "Current active summary")
+        old_rev = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Old historical summary markdown",
+          origin: "model_generation",
+          publication_role: "published",
+          review_state: "reviewed"
+        )
+
+        expect {
+          post "/bills/#{bill.id}/restore_summary_revision",
+            params: {revision_id: old_rev.id, expected_summary: "Stale summary which does not match"},
+            headers: authenticate_as(user).merge(json_headers)
+        }.not_to change { bill.bill_summary_revisions.count }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+        expect(response.parsed_body.dig("error", "message")).to eq(
+          "The bill summary was modified by another operator. Please review before restoring."
+        )
+        expect(bill.reload.summary).to eq("Current active summary")
+      end
     end
 
     it "restoring a revision with a stale snapshot cannot replace public content; the submitted text survives as a draft" do

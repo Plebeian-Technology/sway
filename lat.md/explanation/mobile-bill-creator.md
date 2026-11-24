@@ -50,6 +50,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Summary carries `review_draft_revision`, which reads the `draft_revision_id` query parameter, so a summary request still answers the draft named in its address.
 - Summary also carries `active_legislation_pipeline_run`, from the same shared run props, because the web summary view keeps Regenerate off while a clean-testimony run covers the bill ([[mobile-bill-creator#Sections#The summary generation section]]).
 - Summary also lists `summary_prompt`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). Every other summary request, the poll included, answers without it.
+- Summary also lists `summary_revisions`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary revisions section]]).
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the campaign letter text, stay absent whatever the tab.
 
@@ -425,3 +426,11 @@ The section leaves out web pieces that belong to other sections, or that the pho
 - The prompt view's Copy to clipboard button, which needs a clipboard module the app does not install. The prompt text is selectable instead.
 - Editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
 - The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.
+
+### The summary revisions section
+
+The Summary tab lists every recorded revision of the bill's summary and restores one, as the web's revision history does ([[bill-creator-summary-tab#Planned recoverable summary history]]).
+
+The web loads the list on demand through the optional `summary_revisions` prop, because a history of full Markdown bodies must not ride on the five-second poll. A JSON caller cannot name a prop, so [[app/controllers/bills_controller.rb#BillsController#summary_revisions_prop]] builds the list for a mobile request only when the address carries `summary_revisions=1`, as it does for the prompt ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). The tab's prop list names the key so the slice keeps it. A draft named by `draft_revision_id` arrives as `review_draft_revision`.
+
+[[app/controllers/bills_controller.rb#BillsController#restore_summary_revision]] answers every branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). A restore answers 200 with the new revision from [[app/serializers/bill_summary_revision_resource.rb#BillSummaryRevisionResource]]. The phone reads that revision's `publication_role` to learn whether a legacy revision came back as a draft. A summary that changed since the list loaded answers 422 with the web's alert as the message. The web keeps its redirects.

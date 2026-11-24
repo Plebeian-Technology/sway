@@ -63,7 +63,7 @@ class BillsController < ApplicationController
     "summary" => %i[
       bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
       summary_sources active_categories max_active_categories_per_bill news_articles receipt_status
-      review_draft_revision active_legislation_pipeline_run summary_prompt
+      review_draft_revision active_legislation_pipeline_run summary_prompt summary_revisions
     ],
     "positions" => %i[
       bill bill_id tab_key organizations testimony_coverage testimony_campaign_drafts
@@ -73,6 +73,8 @@ class BillsController < ApplicationController
 
   # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
   BILL_PICKER_PROPS = %i[bills].freeze
+
+  STALE_SUMMARY_RESTORE_ALERT = "The bill summary was modified by another operator. Please review before restoring."
 
   def index
     # @lat: [[bills-controller-design#BillsController design#Why the search and sort labels in parityCopy.ts note the underlying split]]
@@ -778,7 +780,7 @@ class BillsController < ApplicationController
     revision = @bill.bill_summary_revisions.find(params[:revision_id])
 
     if params[:expected_summary].present? && params[:expected_summary] != @bill.summary
-      redirect_to summary_bill_creator_path(@bill), alert: "The bill summary was modified by another operator. Please review before restoring."
+      respond_after_write(summary_bill_creator_path(@bill), alert: STALE_SUMMARY_RESTORE_ALERT)
       return
     end
 
@@ -786,7 +788,7 @@ class BillsController < ApplicationController
     result_rev = nil
     @bill.with_lock do
       if params[:expected_summary].present? && params[:expected_summary] != @bill.summary
-        redirect_to summary_bill_creator_path(@bill), alert: "The bill summary was modified by another operator. Please review before restoring."
+        respond_after_write(summary_bill_creator_path(@bill), alert: STALE_SUMMARY_RESTORE_ALERT)
         return
       end
 
@@ -810,17 +812,26 @@ class BillsController < ApplicationController
       end
     end
 
+    # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+    json = restored_revision_json(result_rev)
     if result_rev&.publication_role == "draft"
-      redirect_to summary_bill_creator_path(@bill, draft_revision_id: result_rev.id),
-        notice: "Legacy revision restored as draft. Please review and declare news usage before publishing."
+      respond_after_write(summary_bill_creator_path(@bill, draft_revision_id: result_rev.id),
+        json: json,
+        notice: "Legacy revision restored as draft. Please review and declare news usage before publishing.")
     else
       # @lat: [[bootstrap-caching-and-rate-limiting#Why locale and featured bill are cached per locale]]
       Api::V1::BootstrapController.expire_botm_cache(@bill.sway_locale_id)
-      redirect_to summary_bill_creator_path(@bill), notice: "Bill summary restored."
+      respond_after_write(summary_bill_creator_path(@bill), json: json, notice: "Bill summary restored.")
     end
   end
 
   private
+
+  def restored_revision_json(revision)
+    return {} unless mobile_api_request? && revision
+
+    {revision: BillSummaryRevisionResource.new(revision).serializable_hash}
+  end
 
   def written_bill_json(bill)
     return {} unless mobile_api_request?
@@ -1198,19 +1209,22 @@ class BillsController < ApplicationController
 
   # @lat: [[bill-creator-summary-tab#Planned recoverable summary history]]
   def summary_revisions_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+    if mobile_api_request?
+      return {} unless params[:summary_revisions] == "1"
 
-    {
-      summary_revisions: InertiaRails.optional {
-        if @bill&.persisted?
-          BillSummaryRevisionResource.new(
-            @bill.bill_summary_revisions.order(created_at: :desc, id: :desc)
-          ).serializable_hash
-        else
-          []
-        end
-      }
-    }
+      return {summary_revisions: -> { summary_revisions_json }}
+    end
+
+    {summary_revisions: InertiaRails.optional { summary_revisions_json }}
+  end
+
+  def summary_revisions_json
+    return [] unless @bill&.persisted?
+
+    BillSummaryRevisionResource.new(
+      @bill.bill_summary_revisions.order(created_at: :desc, id: :desc)
+    ).serializable_hash
   end
 
   # @lat: [[campaign-letter-disclosure#Why the letter text is a prop of its own]]
