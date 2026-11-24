@@ -5,7 +5,7 @@ lat:
 
 # Voter agreement chart legacy parity
 
-The legacy-parity formulas VoterAgreementChart and VoterDistrictAgreementChart match, and their empty-state conditions.
+The formulas VoterAgreementChart and VoterDistrictAgreementChart draw from, and their empty-state conditions.
 
 ## VoterAgreementChart
 
@@ -25,13 +25,8 @@ max                  = the largest of the four counts above
 
 ## VoterDistrictAgreementChart
 
-A district-level Agreed vs. Disagreed bar chart.
+A district-level or locale-level Agreed vs. Disagreed bar chart, drawn from percentages.
 
-- Matches the numbers the old (legacy) `VoterDistrictAgreementChart.tsx` computed:
-
-```
-agreedScore    = isFinite(scores.count_agreed) ? scores.count_agreed : 0
-disagreedScore = isFinite(scores.count_disagreed) ? scores.count_disagreed : 0
-```
-
-- Shows an empty-state message instead when both counts are 0, matching the legacy version's check.
+- Bar width and label: `scores.agreed_percent` and `scores.disagreed_percent`
+- No counter is read: [[voter-privacy-threshold#Legislator charts draw percentages or the placeholder]]
+- A score with `comparison_suppressed` true, a score with no flag and a missing score all draw the placeholder under `data-testid="voter-district-agreement-chart-suppressed"`

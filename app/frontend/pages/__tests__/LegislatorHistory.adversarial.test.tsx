@@ -441,10 +441,10 @@ describe("Adversarial Scenario 3: Unauthenticated Visitor Flow & Public Transpar
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("80%");
-        expect(districtTile).toHaveTextContent("8 Agreed");
+        expect(districtTile).toHaveTextContent("73% Agreed");
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("75%");
-        expect(localeTile).toHaveTextContent("18 Agreed");
+        expect(localeTile).toHaveTextContent("69% Agreed");
 
         const auditBadge = screen.getByTestId("record-corrected-badge");
         expect(auditBadge).toBeInTheDocument();

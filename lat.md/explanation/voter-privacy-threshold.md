@@ -76,6 +76,16 @@ A row in a bill list has room for a line, not a panel, so a hidden tally becomes
 
 [[app/frontend/components/bill/sway_utils/billPositions.ts#suppressedVoteComparisonLine]] picks the sentence: the count of voters still needed when the row carries one, and "Not enough votes yet" otherwise. The six themed list layouts and `BillCard` print it where "n for · n against" stood. A row at or above the minimum is unchanged.
 
+## Legislator charts draw percentages or the placeholder
+
+The web draws a district, locale or lifetime agreement score in two places: the charts panel on the legislator card and page, and the tiles and charts on each term card.
+
+Each asks the same helper the bill page asks. A suppressed score draws the no-number placeholder under its title, since a legislator score never carries `voters_needed`. A visible score draws its bars and labels from the percentage fields and reads no counter.
+
+A term tile's headline is agreement among the bills the legislator voted on, so it divides the Agreed percentage by Agreed plus Disagreed. The line below it gives the shares as sent.
+
+The reader's own chart and tile keep their counts: [[app/frontend/components/legislators/charts/VoterAgreementChart.tsx#VoterAgreementChart]] is untouched.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

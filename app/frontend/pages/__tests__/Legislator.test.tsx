@@ -427,14 +427,14 @@ describe("Legislator — District and Locale Aggregate Agreement Presentation", 
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("80%");
-        expect(districtTile).toHaveTextContent("8 Agreed");
-        expect(districtTile).toHaveTextContent("2 Disagreed");
+        expect(districtTile).toHaveTextContent("73% Agreed");
+        expect(districtTile).toHaveTextContent("18% Disagreed");
         expect(districtTile).toHaveTextContent("MD3 Agreement");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("75%");
-        expect(localeTile).toHaveTextContent("18 Agreed");
-        expect(localeTile).toHaveTextContent("6 Disagreed");
+        expect(localeTile).toHaveTextContent("69% Agreed");
+        expect(localeTile).toHaveTextContent("23% Disagreed");
     });
 
     it("guards against division by zero when aggregate scores have 0 total votes", () => {
@@ -460,7 +460,7 @@ describe("Legislator — District and Locale Aggregate Agreement Presentation", 
         fireEvent.click(screen.getByRole("tab", { name: "History" }));
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent(/no votes recorded|--%/i);
+        expect(districtTile).toHaveTextContent("Not enough votes yet");
         expect(districtTile).not.toHaveTextContent("NaN");
     });
 });

@@ -326,14 +326,14 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("100%");
-        expect(districtTile).toHaveTextContent("50 Agreed");
-        expect(districtTile).toHaveTextContent("0 Disagreed");
-        expect(districtTile).toHaveTextContent("5 No Vote");
+        expect(districtTile).toHaveTextContent("88% Agreed");
+        expect(districtTile).toHaveTextContent("0% Disagreed");
+        expect(districtTile).toHaveTextContent("9% No Vote");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("100%");
-        expect(localeTile).toHaveTextContent("100 Agreed");
-        expect(localeTile).toHaveTextContent("0 Disagreed");
+        expect(localeTile).toHaveTextContent("91% Agreed");
+        expect(localeTile).toHaveTextContent("0% Disagreed");
 
         const userTile = screen.getByTestId("term-user-score-tile");
         expect(userTile).toHaveTextContent("100%");
@@ -378,8 +378,8 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("0%");
-        expect(districtTile).toHaveTextContent("0 Agreed");
-        expect(districtTile).toHaveTextContent("25 Disagreed");
+        expect(districtTile).toHaveTextContent("0% Agreed");
+        expect(districtTile).toHaveTextContent("100% Disagreed");
 
         const userTile = screen.getByTestId("term-user-score-tile");
         expect(userTile).toHaveTextContent("0%");
@@ -460,14 +460,14 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
         fireEvent.click(screen.getByRole("tab", { name: "History" }));
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent("No votes recorded (--%)");
+        expect(districtTile).toHaveTextContent("--%");
         expect(districtTile).not.toHaveTextContent("NaN");
-        expect(districtTile).toHaveTextContent("14 No Vote");
+        expect(districtTile).toHaveTextContent("82% No Vote");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
+        expect(localeTile).toHaveTextContent("--%");
         expect(localeTile).not.toHaveTextContent("NaN");
-        expect(localeTile).toHaveTextContent("20 No Vote");
+        expect(localeTile).toHaveTextContent("80% No Vote");
 
         const userTile = screen.getByTestId("term-user-score-tile");
         expect(userTile).toHaveTextContent("--%");
@@ -503,8 +503,8 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("67%");
-        expect(districtTile).toHaveTextContent("1000000 Agreed");
-        expect(districtTile).toHaveTextContent("500000 Disagreed");
+        expect(districtTile).toHaveTextContent("66% Agreed");
+        expect(districtTile).toHaveTextContent("33% Disagreed");
     });
 });
 
@@ -619,9 +619,9 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
         fireEvent.click(screen.getByRole("tab", { name: "History" }));
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent("No votes recorded (--%)");
+        expect(districtTile).toHaveTextContent("Not enough votes yet");
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
+        expect(localeTile).toHaveTextContent("Not enough votes yet");
     });
 
     it("authenticated user with unvoted term displays clear explanatory notice without misleading 0%", () => {
@@ -741,9 +741,9 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("70%");
-        expect(districtTile).toHaveTextContent("70 Agreed");
-        expect(districtTile).toHaveTextContent("30 Disagreed");
-        expect(districtTile).toHaveTextContent("5 No Vote");
+        expect(districtTile).toHaveTextContent("67% Agreed");
+        expect(districtTile).toHaveTextContent("29% Disagreed");
+        expect(districtTile).toHaveTextContent("5% No Vote");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("80%");
@@ -782,14 +782,14 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
         expect(screen.queryByTestId("term-user-score-tile")).not.toBeInTheDocument();
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent("No votes recorded (--%)");
+        expect(districtTile).toHaveTextContent("Not enough votes yet");
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
+        expect(localeTile).toHaveTextContent("Not enough votes yet");
 
         expect(screen.queryByTestId("term-charts-toggle-505")).not.toBeInTheDocument();
     });
 
-    it("handles rogue/malformed string and zero-vote scores on executive terms safely", () => {
+    it("handles evenly split and zero-vote scores on executive terms safely", () => {
         const rogueExecutiveTerm: ILegislatorTermEntry = {
             id: 506,
             session_label: "Mayor 2012–2016",
@@ -801,10 +801,10 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             is_executive: true,
             active: false,
             district_score: groupScore({
-                count_agreed: "25" as unknown as number,
-                count_disagreed: "25" as unknown as number,
-                count_no_legislator_vote: "0" as unknown as number,
-                count_legislator_abstained: "0" as unknown as number,
+                count_agreed: 25,
+                count_disagreed: 25,
+                count_no_legislator_vote: 0,
+                count_legislator_abstained: 0,
             }),
             locale_score: groupScore({
                 count_agreed: 0,
@@ -826,13 +826,13 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("50%");
-        expect(districtTile).toHaveTextContent("25 Agreed");
-        expect(districtTile).toHaveTextContent("25 Disagreed");
+        expect(districtTile).toHaveTextContent("50% Agreed");
+        expect(districtTile).toHaveTextContent("50% Disagreed");
         expect(districtTile).not.toHaveTextContent("NaN");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
-        expect(localeTile).toHaveTextContent("8 No Vote");
+        expect(localeTile).toHaveTextContent("--%");
+        expect(localeTile).toHaveTextContent("80% No Vote");
         expect(localeTile).not.toHaveTextContent("NaN");
 
         const userTile = screen.getByTestId("term-user-score-tile");
