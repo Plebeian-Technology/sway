@@ -13,6 +13,7 @@ export const DEEP_LINK_PATTERNS = [
     "/s/*",
     "/invite/*/*",
     "/invites/*/*",
+    "/bill_shares/*",
 ];
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]

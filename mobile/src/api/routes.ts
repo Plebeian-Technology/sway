@@ -123,6 +123,7 @@ export const Routes = {
     userLegislators: () => "/user_legislators",
     userVotes: () => "/user_votes",
     userBillShares: () => "/user_bill_shares",
+    billShare: (shareUuid: string) => `/bill_shares/${shareUuid}`,
 
     up: () => "/up",
 

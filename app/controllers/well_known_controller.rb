@@ -80,7 +80,8 @@ class WellKnownController < ApplicationController
               "/organizations",
               "/s/*",
               "/invite/*/*",
-              "/invites/*/*"
+              "/invites/*/*",
+              "/bill_shares/*"
             ]
           }
         ]

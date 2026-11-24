@@ -72,6 +72,7 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 `DEEP_LINK_PATTERNS` is the claimed list. Rails serves it in the ownership file, and a web link to anything else here opens the browser however well the app could answer it. The claimed paths are:
 
 - `bills/:id` — a bill's detail, in the Bills section
+- `bill_shares/:shareUuid` — a bill share link, which opens the shared bill ([[well-known-controller-notes#Mobile: linking.ts#A bill share link opens the shared bill]])
 - `bills` — the All Bills list
 - `past_bills_of_the_month` — the Past Bills of the Month list
 - `legislators/:id` — a legislator's detail
@@ -87,6 +88,14 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
 `feed`, `profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those four answer `sway://` links from inside the app only.
+
+### A bill share link opens the shared bill
+
+A share link names a share, not a bill, so the app asks the server which bill it is before it can show anything.
+
+[[mobile/src/screens/BillShareScreen.tsx#BillShareScreen]] sits in the Bills section. It requests the same `GET /bill_shares/:share_uuid` address the link points at and receives the share as JSON, which is also what redeems the share, so a tap counts for the sharer exactly as it does on the web. It then replaces itself with the bill's detail screen, so Back does not return to a spent loading screen.
+
+A share uuid that is not hex digits and hyphens never reaches the server, the same guard `bills/:id` has. That case, an unknown share and a failed request all show "Bill not found." with a button to the bills list, the words the web uses for the same link.
 
 ### Invite links store a key and open no screen
 

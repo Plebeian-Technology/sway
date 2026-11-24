@@ -47,6 +47,7 @@ export const linking: LinkingOptions<RootParamList> = {
                     BillsList: "bills",
                     PastBillsOfTheMonth: "past_bills_of_the_month",
                     BillDetail: { path: "bills/:id", parse: { id: Number } },
+                    BillShare: "bill_shares/:shareUuid",
                 },
             },
             Legislators: {

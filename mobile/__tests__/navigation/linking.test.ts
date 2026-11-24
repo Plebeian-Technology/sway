@@ -110,3 +110,21 @@ describe("invite links", () => {
         expect(inviteAttribution.get()).toBeNull();
     });
 });
+
+// @lat: [[well-known-controller-notes#Mobile: linking.ts#A bill share link opens the shared bill]]
+describe("bill share links", () => {
+    it("resolve to the share screen in the Bills section with the share uuid", () => {
+        const shareUuid = "550e8400-e29b-41d4-a716-446655440000";
+
+        const state = linking.getStateFromPath!(`bill_shares/${shareUuid}`, linking.config as never);
+
+        expect(state?.routes[0]).toEqual(
+            expect.objectContaining({
+                name: "Bills",
+                state: expect.objectContaining({
+                    routes: [expect.objectContaining({ name: "BillShare", params: { shareUuid } })],
+                }),
+            }),
+        );
+    });
+});

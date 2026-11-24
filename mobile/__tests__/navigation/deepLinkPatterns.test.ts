@@ -40,6 +40,11 @@ describe("androidPathData", () => {
         expect(androidPathData("/invites/*/*")).toEqual({ pathPattern: "/invites/.*/.*" });
     });
 
+    it("claims bill share links", () => {
+        expect(DEEP_LINK_PATTERNS).toContain("/bill_shares/*");
+        expect(androidPathData("/bill_shares/*")).toEqual({ pathPrefix: "/bill_shares/" });
+    });
+
     // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
     it("never hands Android a prefix containing a star", () => {
         for (const pattern of DEEP_LINK_PATTERNS) {

@@ -45,6 +45,7 @@ export type BillsStackParamList = {
     BillsList: { mode?: "all_bills" | "past_bills_of_the_month" } | undefined;
     PastBillsOfTheMonth?: { mode?: "all_bills" | "past_bills_of_the_month" } | undefined;
     BillDetail: { id: number };
+    BillShare: { shareUuid: string };
 };
 
 export type LegislatorsStackParamList = {

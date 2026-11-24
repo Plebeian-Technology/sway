@@ -75,7 +75,8 @@ RSpec.describe "WellKnown", type: :request do
           "/organizations/*/memberships/*",
           "/s/*",
           "/invite/*/*",
-          "/invites/*/*"
+          "/invites/*/*",
+          "/bill_shares/*"
         )
       end
     end

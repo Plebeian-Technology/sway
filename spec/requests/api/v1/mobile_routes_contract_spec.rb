@@ -52,6 +52,7 @@ RSpec.describe "Mobile API routes contract" do
     "userLegislators" => %i[post],
     "userVotes" => %i[post],
     "userBillShares" => %i[post],
+    "billShare" => %i[get],
     "up" => %i[head],
     "userPreferences" => %i[patch],
     "userDelete" => %i[delete],
