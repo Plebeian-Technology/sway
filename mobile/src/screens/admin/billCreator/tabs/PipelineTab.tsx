@@ -1,10 +1,18 @@
 // @lat: [[mobile-bill-creator#The tabs]]
 import React, { useEffect, useState } from "react";
 
+import ActivityLogSection, { type ActivityLogEntry } from "../../../../components/admin/billCreator/ActivityLogSection";
+import FetchedBillsSection, {
+    type FetchedBillsRow,
+} from "../../../../components/admin/billCreator/FetchedBillsSection";
+import PerBillGridSection, { type PerBillGridRun } from "../../../../components/admin/billCreator/PerBillGridSection";
 import PipelineCleanupSection from "../../../../components/admin/billCreator/PipelineCleanupSection";
 import PipelineProgressSection from "../../../../components/admin/billCreator/PipelineProgressSection";
 import PipelineRunActionsSection from "../../../../components/admin/billCreator/PipelineRunActionsSection";
 import PipelineStagesSection from "../../../../components/admin/billCreator/PipelineStagesSection";
+import ResourceCacheSection, {
+    type ResourceCacheRow,
+} from "../../../../components/admin/billCreator/ResourceCacheSection";
 import RunSelectorSection, {
     type RecentPipelineRun,
 } from "../../../../components/admin/billCreator/RunSelectorSection";
@@ -47,7 +55,20 @@ export default function PipelineTab({ billId, data, refresh }: BillCreatorTabPro
             />
             <PipelineRunActionsSection billId={billId} data={shownData} refresh={startedNewRun} />
             <PipelineProgressSection billId={billId} data={shownData} refresh={shownRefresh} />
+            <PerBillGridSection
+                run={(shownData.legislation_pipeline_run ?? null) as PerBillGridRun | null}
+                currentBillExternalId={data.bill?.external_id ?? ""}
+            />
             <PipelineCleanupSection billId={billId} data={shownData} refresh={refreshAfterCleanup} />
+            <ResourceCacheSection mirrors={(data.bill_artifact_mirrors ?? []) as ResourceCacheRow[]} />
+            <FetchedBillsSection rows={(data.fetched_bills ?? []) as FetchedBillsRow[]} />
+            <ActivityLogSection
+                key={`activity-log-${billId}`}
+                billId={billId}
+                entries={(data.activity_log_entries ?? []) as ActivityLogEntry[]}
+                nextCursor={(data.activity_log_next_cursor ?? null) as string | null}
+                hasMore={(data.activity_log_has_more ?? false) as boolean}
+            />
         </>
     );
 }

@@ -122,4 +122,42 @@ describe("PipelineTab", () => {
             expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/pipeline?run_id=11", expect.anything()),
         );
     });
+
+    // @lat: [[mobile-bill-creator#Sections#The pipeline read-only panels]]
+    it("renders the four read-only panels from the tab response, collapsed", () => {
+        const allBillsRun = run(12, "running", {
+            kind: "all_bills",
+            pipeline_run_bills: [{ bill_external_id: "25-0001", title: "A bill", status: "running", started_at: null }],
+        });
+        render(
+            <PipelineTab
+                billId={42}
+                data={{
+                    ...tabData(allBillsRun),
+                    bill_artifact_mirrors: [],
+                    fetched_bills: [
+                        {
+                            external_id: "25-0001",
+                            bill_id: 42,
+                            title: "A bill",
+                            fetched_at: new Date().toISOString(),
+                            pdf_present: true,
+                            metadata_present: true,
+                            bill_row_exists: true,
+                        },
+                    ],
+                    activity_log_entries: [],
+                    activity_log_next_cursor: null,
+                    activity_log_has_more: false,
+                }}
+                refresh={jest.fn(async () => {})}
+            />,
+        );
+
+        for (const id of ["per-bill-grid", "resource-cache", "fetched-bills", "activity-log"]) {
+            expect(screen.getByTestId(`admin-${id}-toggle`)).toBeTruthy();
+        }
+        fireEvent.press(screen.getByTestId("admin-per-bill-grid-toggle"));
+        expect(screen.getByTestId("admin-per-bill-grid-row-25-0001")).toBeTruthy();
+    });
 });

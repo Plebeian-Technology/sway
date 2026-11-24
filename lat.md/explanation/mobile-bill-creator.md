@@ -284,3 +284,30 @@ The web rules that carry over:
 The web keeps the pin in the address as `?run_id=`. The phone keeps it in the tab's state and fetches `/admin/bill_creator/:id/pipeline?run_id=N` through [[mobile/src/hooks/admin/usePinnedPipelineRun.ts#usePinnedPipelineRun]]. That response replaces the tab's `legislation_pipeline_run` and `recent_pipeline_runs`, and the progress section polls it while the pinned run is in flight. Switching bills drops the pin, as the server's redirects refuse to carry a pin across bills ([[bill-creator-run-pin-redirect-interceptor#Why it refuses to cross bills]]).
 
 The phone shows the options in a list under a toggle, in place of the web's select element.
+
+### The pipeline read-only panels
+
+The Pipeline tab ends with four collapsible panels that only read: the bills of an all-bills run, the resource cache, the fetched bills on disk and the activity log. None of them offers a write on the web, so none writes on the phone.
+
+Each panel is a component in `mobile/src/components/admin/billCreator/`: [[mobile/src/components/admin/billCreator/PerBillGridSection.tsx#PerBillGridSection]], [[mobile/src/components/admin/billCreator/ResourceCacheSection.tsx#ResourceCacheSection]], [[mobile/src/components/admin/billCreator/FetchedBillsSection.tsx#FetchedBillsSection]] and [[mobile/src/components/admin/billCreator/ActivityLogSection.tsx#ActivityLogSection]]. They port [[app/frontend/components/admin/creator/PerBillGrid.tsx#PerBillGrid]], [[app/frontend/components/admin/creator/ResourceCachePanel.tsx#ResourceCachePanel]], [[app/frontend/components/admin/creator/FetchedBillsPanel.tsx#FetchedBillsPanel]] and [[app/frontend/components/admin/creator/ActivityLogPanel.tsx#ActivityLogPanel]]. The web files import Radix, Inertia and the page's type namespace, so each section copies the labels, tier order and freshness thresholds it needs.
+
+[[mobile/src/components/admin/billCreator/CollapsibleSection.tsx#CollapsibleSection]] gives every panel a toggle. The web remembers each panel's state in the browser and opens it by default. The phone starts every panel closed and renders nothing inside until it opens, so a long fetched-bills list or activity log never lengthens the tab or costs a render before the admin asks for it.
+
+The panels read props the tab already serves: `legislation_pipeline_run` (its `pipeline_run_bills` and `pipeline_run_stages`), `bill_artifact_mirrors`, `fetched_bills`, `activity_log_entries`, `activity_log_next_cursor` and `activity_log_has_more`. The bills panel follows the run the tab shows, a pinned run included. The other three read the tab's own response, because a pinned-run response carries none of them.
+
+The rules that carry over:
+
+- The bills panel appears only for an all-bills run. Its rows list the bill being edited first, marked "This bill", then each bill with its title or external id, status, the run's current stage ("—" once the run has finished), stages succeeded out of total, and a relative start time. A run with no bills yet reads "No bills processed yet".
+- The resource cache panel always lists the five tiers in the web's order: PDF, Extracted Text, Parsed Sections, Diff and Summary. A tier with no mirror reads "Not cached" with dashes; a cached tier shows its relative generation time, version and "Fresh" or "Stale".
+- The fetched bills panel shows the count ("N of M bills" while filtering), a search over external id and title, and the four freshness chips. A bill fetched under seven days ago is fresh, under thirty days stale, and older very stale. A row without a bill record reads "(orphan on disk)". An empty list reads "No bill artifacts on disk yet. Run the fetch-bills stage to populate."; a filter with no match offers "Clear filters".
+- The activity log shows each entry's severity, title, subject, actor ("System" without one), relative time and message, with its payload and inspect query behind a Details toggle. An empty log reads "No activity yet".
+
+Load more follows the web: the next page of older entries comes from the same tab address with `cursor` set to `activity_log_next_cursor` ([[app/controllers/bills_controller.rb#BillsController#activity_log_entries_prop]] reads `params[:cursor]`), and the button shows while `activity_log_has_more` is true. [[mobile/src/api/routes.ts#Routes]] builds the address for a saved bill and for a new one. Mobile JSON has no partial reload, so the response is the whole pipeline tab and the section keeps only its three activity log keys. It appends the older entries to the ones the tab holds, drops any id it already shows, and takes the next cursor from the latest response. A refresh of the tab replaces the first page and leaves the older entries in place. A failed request shows its message and keeps the button.
+
+The phone leaves out these web pieces:
+
+- The activity log filters (subject, severity and window) and the live "Show N new entries" button fed by ActionCable. The phone always reads the server's defaults, all bills over seven days, and gets new entries when the tab polls.
+- The client-side paging of ten entries, which the single growing list replaces, and the flash banner and toast for a new or failed entry.
+- The Copy button for the inspect query. The text is selectable instead, because the app has no clipboard library.
+- The View link on each bill row and the link on each fetched bill, which open another bill's Pipeline tab. The sections hold no navigation.
+- The tooltips with full timestamps, the info popovers, and the row virtualization, which the closed-by-default panels make unnecessary for the grid but not for a very long fetched-bills list.
