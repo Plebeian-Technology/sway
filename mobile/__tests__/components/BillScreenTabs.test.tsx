@@ -4,6 +4,11 @@ const mockUseSession = jest.fn();
 jest.mock("../../src/hooks/useSession", () => ({
     useSession: () => mockUseSession(),
 }));
+jest.mock("../../src/hooks/useBootstrap", () => ({
+    useBootstrap: () => ({
+        bootstrap: { current_user: { id: 7, invite_url: "https://app.example.test/invite/7/abc" } },
+    }),
+}));
 jest.mock("../../src/hooks/useCastUserVote", () => ({
     useCastUserVote: () => ({ submit: jest.fn(async () => ({})), isOnline: true }),
 }));
@@ -20,7 +25,7 @@ jest.mock("../../src/api/client", () => ({
 }));
 
 import React from "react";
-import { StyleSheet } from "react-native";
+import { Share, StyleSheet } from "react-native";
 import { fireEvent, render, screen, within } from "@testing-library/react-native";
 import * as WebBrowser from "expo-web-browser";
 
@@ -32,8 +37,10 @@ import type { PublicTestimonyCounts } from "../../src/types/bill";
 const scoreDistrict = (number: number, forCount: number, againstCount: number) => ({
     bill_score_id: 9,
     district: { name: `MD${number}`, number, region_code: "MD" },
-    for: forCount,
-    against: againstCount,
+    comparison_suppressed: false,
+    for_percent: Math.round((forCount / (forCount + againstCount)) * 100),
+    against_percent: 100 - Math.round((forCount / (forCount + againstCount)) * 100),
+    at_large: false,
 });
 
 const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabsProps => ({
@@ -46,7 +53,13 @@ const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabs
     },
     sponsor: { full_name: "Alice Q. Sponsor" },
     userVote: null,
-    billScore: { for: 10, against: 5, districts: [scoreDistrict(1, 6, 2), scoreDistrict(2, 4, 3)] },
+    billScore: {
+        for: 10,
+        against: 5,
+        comparison_suppressed: false,
+        voters_needed: 0,
+        districts: [scoreDistrict(1, 6, 2), scoreDistrict(2, 4, 3)],
+    },
     organizations: [
         {
             id: 1,
@@ -204,12 +217,12 @@ describe("BillScreenTabs", () => {
             expect(screen.getByTestId("bill-score-bar")).toBeTruthy();
         });
 
-        test("a bill with no score row says no votes and does not show a skeleton", () => {
+        test("a bill with no score row says there are not enough votes yet and does not show a skeleton", () => {
             renderTabs({ billScore: null });
             openVotes();
 
             expect(screen.queryByTestId("votes-skeleton")).toBeNull();
-            expect(screen.getByText(PARITY_COPY.bill.noVotesYet)).toBeTruthy();
+            expect(screen.getByText("Not enough votes yet")).toBeTruthy();
             expect(screen.queryByTestId("district-votes-panel")).toBeNull();
         });
 
@@ -217,6 +230,52 @@ describe("BillScreenTabs", () => {
             renderTabs({ organizations: [] });
             openSummaries();
             expect(screen.getByText(PARITY_COPY.org.noSupport)).toBeTruthy();
+        });
+    });
+
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    describe("the Votes tab below the ten-voter minimum", () => {
+        const hiddenScore = {
+            for: 6,
+            against: 3,
+            comparison_suppressed: true,
+            voters_needed: 1,
+            districts: [scoreDistrict(1, 6, 2)],
+        };
+
+        test("shows the placeholder and no count, percentage or district chart", () => {
+            renderTabs({ billScore: hiddenScore, readerDistricts: [{ name: "MD1", number: 1, region_code: "MD" }] });
+            openVotes();
+
+            expect(screen.getByText("Visual comparisons will be shown when 1 more user has voted.")).toBeTruthy();
+            expect(screen.queryByTestId("bill-score-bar")).toBeNull();
+            expect(screen.queryByTestId("district-votes-panel")).toBeNull();
+            expect(screen.queryByText(/For: |Against: |%/)).toBeNull();
+            expect(screen.getByTestId("vote-panel")).toBeTruthy();
+        });
+
+        test("hands the signed-in reader's invite link to the share sheet", () => {
+            const share = jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction" } as never);
+            renderTabs({ billScore: hiddenScore });
+            openVotes();
+
+            fireEvent.press(screen.getByTestId("vote-comparison-invite"));
+
+            expect(share).toHaveBeenCalledWith({
+                message: "https://app.example.test/invite/7/abc",
+                url: "https://app.example.test/invite/7/abc",
+            });
+            share.mockRestore();
+        });
+
+        test("treats a cached payload with no flag as suppressed", () => {
+            renderTabs({ billScore: { for: 40, against: 20, districts: [scoreDistrict(1, 30, 10)] } });
+            openVotes();
+
+            expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+            expect(screen.queryByTestId("bill-score-bar")).toBeNull();
+            expect(screen.queryByTestId("district-votes-panel")).toBeNull();
+            expect(screen.queryByText(/For: |Against: /)).toBeNull();
         });
     });
 
@@ -236,7 +295,9 @@ describe("BillScreenTabs", () => {
         });
 
         test("draws no district section, and no empty slot for one, when the score has no districts", () => {
-            renderTabs({ billScore: { for: 10, against: 5, districts: [] } });
+            renderTabs({
+                billScore: { for: 10, against: 5, comparison_suppressed: false, voters_needed: 0, districts: [] },
+            });
             openVotes();
 
             expect(screen.queryByTestId("district-votes-panel")).toBeNull();

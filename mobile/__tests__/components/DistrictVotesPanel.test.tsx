@@ -16,8 +16,10 @@ const scoreRow = (
 ) => ({
     bill_score_id: 9,
     district: { name: `MD${number}`, number, region_code: regionCode },
-    for: forCount,
-    against: againstCount,
+    comparison_suppressed: false,
+    for_percent: Math.round((forCount / (forCount + againstCount)) * 100),
+    against_percent: 100 - Math.round((forCount / (forCount + againstCount)) * 100),
+    at_large: false,
     ...(legislatorNames ? { legislator_names: legislatorNames } : {}),
 });
 
@@ -54,7 +56,7 @@ describe("DistrictVotesPanel", () => {
         const chart = screen.getByTestId("district-votes-chart");
         expect(chart.props.accessible).toBe(true);
         expect(chart.props.accessibilityLabel).toBe(
-            "Votes by district. District 1: 12 for, 8 against. District 2: 3 for, 4 against. District 3: 9 for, 1 against.",
+            "Votes by district. District 1: 60 percent for, 40 percent against. District 2: 43 percent for, 57 percent against. District 3: 90 percent for, 10 percent against.",
         );
     });
 
@@ -64,22 +66,22 @@ describe("DistrictVotesPanel", () => {
         const chart = screen.getByTestId("district-affinity-chart");
         expect(chart.props.accessible).toBe(true);
         expect(chart.props.accessibilityLabel).toBe(
-            "Net votes by district, for minus against. District 1: plus 4. District 2: minus 1. District 3: plus 8.",
+            "Net lean by district, percent for minus percent against. District 1: plus 20 points. District 2: minus 14 points. District 3: plus 80 points.",
         );
-        expect(screen.getByText("+4")).toBeTruthy();
-        expect(screen.getByText("-1")).toBeTruthy();
-        expect(screen.getByText("+8")).toBeTruthy();
+        expect(screen.getByText("+20%")).toBeTruthy();
+        expect(screen.getByText("-14%")).toBeTruthy();
+        expect(screen.getByText("+80%")).toBeTruthy();
     });
 
-    test("bars share one scale: the largest count fills its track and others are proportionate", () => {
+    test("each bar is as wide as its percentage", () => {
         wrap(panel(scores));
 
         const width = (id: string) => {
             const style = screen.getByTestId(id).props.style;
             return [style].flat(Infinity).find((s) => s && typeof s === "object" && "width" in s)?.width;
         };
-        expect(width("district-votes-for-fill-1")).toBe("100%");
-        expect(width("district-votes-against-fill-1")).toBe("66.66666666666666%");
+        expect(width("district-votes-for-fill-1")).toBe("60%");
+        expect(width("district-votes-against-fill-1")).toBe("40%");
     });
 
     test("net bars grow from the centre line, to the right for net for and to the left for net against", () => {
@@ -90,20 +92,34 @@ describe("DistrictVotesPanel", () => {
             const flat = Object.assign({}, ...[style].flat(Infinity).filter(Boolean));
             return { left: flat.left, width: flat.width };
         };
-        expect(place("district-affinity-fill-1")).toEqual({ left: "50%", width: "50%" });
-        expect(place("district-affinity-fill-2")).toEqual({ left: "0%", width: "50%" });
+        expect(place("district-affinity-fill-1")).toEqual({ left: "50%", width: "33%" });
+        expect(place("district-affinity-fill-2")).toEqual({ left: "17%", width: "33%" });
     });
 
-    test("leaves the net chart out when every district is perfectly tied", () => {
-        wrap(panel([scoreRow(1, 5, 5), scoreRow(2, 3, 3)]));
+    test("draws an empty net bar for a perfectly tied district", () => {
+        wrap(panel([scoreRow(1, 5, 5)]));
 
-        expect(screen.getByTestId("district-votes-chart")).toBeTruthy();
-        expect(screen.queryByTestId("district-affinity-chart")).toBeNull();
+        const fill = screen.getByTestId("district-affinity-fill-1");
+        expect(styleOf(fill).width).toBe("0%");
+        expect(screen.getByText("0%")).toBeTruthy();
     });
 
-    test("draws nothing when no district has a vote", () => {
-        const { toJSON } = wrap(panel([scoreRow(1, 0, 0), scoreRow(0, 4, 4)]));
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    test("draws nothing when no district reaches the minimum and the reader has no district", () => {
+        const hidden = { ...scoreRow(1, 6, 3), comparison_suppressed: true, for_percent: null, against_percent: null };
+        const votes = selectDistrictVotes([hidden, scoreRow(0, 4, 4)], []);
+
+        const { toJSON } = wrap(<DistrictVotesPanel votes={votes} />);
+
         expect(toJSON()).toBeNull();
+    });
+
+    test("shows no count anywhere in the panel", () => {
+        wrap(panel([scoreRow(1, 1234, 567)], [{ name: "MD1", number: 1, region_code: "MD" }], "for"));
+
+        const text = JSON.stringify(screen.toJSON());
+        expect(text).not.toMatch(/1,?234|567/);
+        expect(screen.getAllByText("69%").length).toBeGreaterThan(0);
     });
 
     describe("tracks and text at large type sizes", () => {
@@ -137,7 +153,7 @@ describe("DistrictVotesPanel", () => {
         test("counts grow with the text", () => {
             wrap(panel([scoreRow(12, 1234, 567)]));
 
-            [screen.getByText("1,234"), screen.getByText("567")].forEach((count) => {
+            [screen.getByText("69%"), screen.getByText("31%")].forEach((count) => {
                 const style = Object.assign({}, ...[count.props.style].flat(Infinity).filter(Boolean));
                 expect(style.minWidth).toBeGreaterThan(0);
                 expect(style.width).toBeUndefined();
@@ -166,18 +182,18 @@ describe("DistrictVotesPanel", () => {
             const block = screen.getByTestId("district-votes-reader");
             expect(block).toBeTruthy();
             expect(screen.getByText("Your district")).toBeTruthy();
-            expect(screen.getByText("For: 9 (90%)")).toBeTruthy();
-            expect(screen.getByText("Against: 1 (10%)")).toBeTruthy();
+            expect(screen.getByText("For: 90%")).toBeTruthy();
+            expect(screen.getByText("Against: 10%")).toBeTruthy();
         });
 
         test("is highlighted in both charts and named as the reader's in the spoken label", () => {
             wrap(panel(scores, [READER]));
 
             expect(screen.getByTestId("district-votes-chart").props.accessibilityLabel).toContain(
-                "District 3, your district: 9 for, 1 against.",
+                "District 3, your district: 90 percent for, 10 percent against.",
             );
             expect(screen.getByTestId("district-affinity-chart").props.accessibilityLabel).toContain(
-                "District 3, your district: plus 8.",
+                "District 3, your district: plus 80 points.",
             );
             const background = (id: string) =>
                 Object.assign({}, ...[screen.getByTestId(id).props.style].flat(Infinity).filter(Boolean))
@@ -192,13 +208,14 @@ describe("DistrictVotesPanel", () => {
             expect(screen.queryByText("Your district")).toBeNull();
         });
 
-        test("with no recorded votes yet still says so", () => {
+        // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+        test("says there are not enough votes yet when it has no row, and claims no alignment", () => {
             wrap(panel(scores, [{ name: "MD7", number: 7, region_code: "MD" }], "for"));
             expect(screen.getByTestId("district-votes-reader")).toBeTruthy();
             expect(screen.getByText("District 7")).toBeTruthy();
-            expect(screen.getByTestId("district-votes-alignment")).toHaveTextContent(
-                "Your district has no recorded votes yet.",
-            );
+            expect(screen.getByTestId("district-votes-reader-suppressed")).toHaveTextContent("Not enough votes yet");
+            expect(screen.queryByTestId("district-votes-alignment")).toBeNull();
+            expect(screen.queryByTestId("district-votes-row-7")).toBeNull();
         });
     });
 
@@ -263,7 +280,7 @@ describe("DistrictVotesPanel", () => {
 
             expect(screen.queryByText(/Representative/)).toBeNull();
             expect(screen.getByTestId("district-votes-chart").props.accessibilityLabel).toBe(
-                "Votes by district. District 1: 12 for, 8 against. District 2: 3 for, 4 against. District 3: 9 for, 1 against.",
+                "Votes by district. District 1: 60 percent for, 40 percent against. District 2: 43 percent for, 57 percent against. District 3: 90 percent for, 10 percent against.",
             );
         });
 
@@ -283,10 +300,10 @@ describe("DistrictVotesPanel", () => {
             wrap(panel(named, [READER]));
 
             expect(screen.getByTestId("district-votes-chart").props.accessibilityLabel).toBe(
-                "Votes by district. District 1 (Representative: Jane Doe): 12 for, 8 against. District 2 (Representatives: Amy Adams, Zed Zane): 3 for, 4 against. District 3, your district: 9 for, 1 against.",
+                "Votes by district. District 1 (Representative: Jane Doe): 60 percent for, 40 percent against. District 2 (Representatives: Amy Adams, Zed Zane): 43 percent for, 57 percent against. District 3, your district: 90 percent for, 10 percent against.",
             );
             expect(screen.getByTestId("district-affinity-chart").props.accessibilityLabel).toBe(
-                "Net votes by district, for minus against. District 1: plus 4. District 2: minus 1. District 3, your district: plus 8.",
+                "Net lean by district, percent for minus percent against. District 1: plus 20 points. District 2: minus 14 points. District 3, your district: plus 80 points.",
             );
         });
 
@@ -302,11 +319,11 @@ describe("DistrictVotesPanel", () => {
 
             const bars = screen.getByTestId("district-votes-bars-1");
             expect(within(bars).getByTestId("district-votes-names-1")).toBeTruthy();
-            expect(within(bars).getByText("12")).toBeTruthy();
+            expect(within(bars).getByText("60%")).toBeTruthy();
             expect(styleOf(within(screen.getByTestId("district-votes-row-1")).getByText("District 1")).minWidth).toBe(
                 72,
             );
-            expect(styleOf(within(bars).getByText("12")).minWidth).toBe(52);
+            expect(styleOf(within(bars).getByText("60%")).minWidth).toBe(52);
         });
 
         test("a long list of names wraps to two lines and ends in an ellipsis instead of growing the row", () => {

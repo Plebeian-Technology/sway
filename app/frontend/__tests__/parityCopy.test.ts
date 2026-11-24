@@ -72,6 +72,7 @@ describe("PARITY_COPY — keys (nested paths)", () => {
         const copy = PARITY_COPY.bill.voteComparisonPlaceholder;
         expect(copy.invitePrompt).toBe("Invite others by sharing Sway");
         expect(copy.copyInviteLink).toBe("Copy invite link");
+        expect(copy.shareInviteLink).toBe("Share invite link");
         expect(copy.inviteLinkCopied).toBe("Invite link copied to clipboard.");
         expect(copy.signUp).toBe("Sign up");
         expect(copy.notEnoughVotes).toBe("Not enough votes yet");

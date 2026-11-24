@@ -94,6 +94,16 @@ The partner embed at `/embed/bills/:id` is public and a CDN keeps each response 
 
 A deploy that adds this leaves older responses in the CDN until they expire. The first check after such a deploy waits out the fifteen minutes or follows a purge of the embed path.
 
+## The mobile bill screen hides what the web hides
+
+The phone's Votes tab shows the placeholder in place of the score bar and the district panel while a bill is under ten voters, and a bill card in a list prints the one-line form.
+
+[[mobile/src/utils/districtVotes.ts#isVoteComparisonSuppressed]] answers for the whole screen. It treats a score with no flag as suppressed, because a bill cached before the flag existed still carries exact district counts and the phone would otherwise draw them.
+
+Above the minimum, [[mobile/src/utils/districtVotes.ts#selectDistrictVotes]] keeps only districts that carry percentages and are neither hidden nor at-large. A reader district with no row becomes a suppressed row, which the panel draws as "Not enough votes yet" with no sentence about the majority.
+
+[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] reads the invite link from the bootstrap response's current user. The phone has no clipboard module, so the button hands the link to the system share sheet, which offers Copy among its actions. A signed-out reader gets the sign-in prompt the vote buttons use.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

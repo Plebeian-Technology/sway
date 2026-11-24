@@ -17,6 +17,7 @@ import { PublicTestimonySection, hasPublicTestimony } from "./PublicTestimonySec
 import { RelatedNewsArticles } from "./RelatedNewsArticles";
 import { ReportSummarySheet } from "./ReportSummarySheet";
 import { SkeletonCard } from "./SkeletonCard";
+import { VoteComparisonPlaceholder } from "./VoteComparisonPlaceholder";
 import { VotePanel } from "./VotePanel";
 import { Card } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
@@ -24,7 +25,12 @@ import { FadeInItem } from "./ui/FadeInItem";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import { billHeadline, hasMoreThanHeadline } from "../utils/billTitle";
-import { selectDistrictVotes, type BillScoreDistrict, type DistrictRef } from "../utils/districtVotes";
+import {
+    isVoteComparisonSuppressed,
+    selectDistrictVotes,
+    type BillScoreDistrict,
+    type DistrictRef,
+} from "../utils/districtVotes";
 import type { NewsArticleTestimony, PublicTestimonyCounts, RelatedNewsArticle } from "../types/bill";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { isArchivedHistoricalBill } from "../../../app/frontend/components/bill/sway_utils/billArchiving";
@@ -58,6 +64,8 @@ type UserVote = { support?: "for" | "against" | "FOR" | "AGAINST" | null } | nul
 export interface BillScreenTabsBillScore {
     for?: number | null;
     against?: number | null;
+    comparison_suppressed?: boolean | null;
+    voters_needed?: number | null;
     districts?: BillScoreDistrict[] | null;
 }
 
@@ -182,7 +190,10 @@ export function BillScreenTabs({
     const relatedArticles = bill.related_articles ?? [];
     const detailFailed = !detailLoaded && !!detailError;
     const detailPending = !detailLoaded && !detailFailed;
-    const districtVotes = selectDistrictVotes(billScore?.districts, readerDistricts);
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    const comparisonSuppressed = isVoteComparisonSuppressed(billScore);
+    const districtVotes = selectDistrictVotes(comparisonSuppressed ? [] : billScore?.districts, readerDistricts);
+    const hasDistrictVotes = districtVotes.rows.length > 0 || districtVotes.readerRows.length > 0;
     const sponsorPress = bill.legislator_id != null ? onSponsorPress : undefined;
     const canReportSummary = Boolean(bill.id) && !isArchivedHistoricalBill(bill);
 
@@ -235,13 +246,17 @@ export function BillScreenTabs({
             "tally",
             detailPlaceholder("votes") ?? (
                 <Card>
-                    <BillScoreBar bill_score={billScore} />
+                    {comparisonSuppressed ? (
+                        <VoteComparisonPlaceholder votersNeeded={billScore?.voters_needed} />
+                    ) : (
+                        <BillScoreBar bill_score={billScore} />
+                    )}
                 </Card>
             ),
         ),
         section(
             "districts",
-            detailLoaded && districtVotes.hasVotes ? (
+            detailLoaded && !comparisonSuppressed && hasDistrictVotes ? (
                 <Card>
                     <DistrictVotesPanel votes={districtVotes} userVoteSupport={userSupportOf(userVote)} />
                 </Card>

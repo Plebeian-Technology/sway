@@ -25,7 +25,7 @@ const baseBill = {
     summary: "A bill to improve records access in government agencies.",
     for_count: 12,
     against_count: 3,
-    bill_score: { for: 12, against: 3 },
+    bill_score: { for: 12, against: 3, comparison_suppressed: false, voters_needed: 0 },
     link: "https://mgaleg.maryland.gov/bills/HB1234",
 };
 
@@ -116,5 +116,26 @@ describe("BillCard (D-12 refactor)", () => {
         // footer button both use it
         const nodes = screen.getAllByLabelText("Open bill Open Records Act");
         expect(nodes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    test("shows one line and no counts for a bill under ten voters", () => {
+        const hidden = {
+            ...baseBill,
+            bill_score: { for: 7, against: 2, comparison_suppressed: true, voters_needed: 1 },
+        };
+
+        wrap(<BillCard bill={hidden} onPress={() => {}} />);
+
+        expect(screen.getByText("Visual comparisons will be shown when 1 more user has voted.")).toBeTruthy();
+        expect(screen.queryByTestId("bill-card-42-for-count")).toBeNull();
+        expect(screen.queryByTestId("bill-card-42-against-count")).toBeNull();
+    });
+
+    test("treats a cached bill score with no flag as suppressed", () => {
+        wrap(<BillCard bill={{ ...baseBill, bill_score: { for: 12, against: 3 } }} onPress={() => {}} />);
+
+        expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+        expect(screen.queryByTestId("bill-card-42-for-count")).toBeNull();
     });
 });

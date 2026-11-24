@@ -4,14 +4,13 @@ import { View, Text } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 
 import { CardTitle } from "./ui/Card";
-import { formatVoteCount } from "../utils/districtVotes";
+import { formatVoteCount, isVoteComparisonSuppressed } from "../utils/districtVotes";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
 interface BillScore {
     for?: number | null;
     against?: number | null;
-    for_count?: number | null;
-    against_count?: number | null;
+    comparison_suppressed?: boolean | null;
 }
 
 export interface BillScoreBarProps {
@@ -20,8 +19,8 @@ export interface BillScoreBarProps {
 }
 
 export function BillScoreBar({ bill_score, testID }: BillScoreBarProps) {
-    const forCount = bill_score?.for ?? bill_score?.for_count ?? 0;
-    const againstCount = bill_score?.against ?? bill_score?.against_count ?? 0;
+    const forCount = bill_score?.for ?? 0;
+    const againstCount = bill_score?.against ?? 0;
     const total = forCount + againstCount;
     const forPct = total ? Math.round((forCount / total) * 100) : 0;
     const againstPct = total ? 100 - forPct : 0;
@@ -37,6 +36,9 @@ export function BillScoreBar({ bill_score, testID }: BillScoreBarProps) {
     }, [forPct, againstPct, forW, againstW]);
     const forStyle = useAnimatedStyle(() => ({ width: `${forW.value}%`, height: "100%" }));
     const againstStyle = useAnimatedStyle(() => ({ width: `${againstW.value}%`, height: "100%" }));
+
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    if (isVoteComparisonSuppressed(bill_score)) return null;
 
     return (
         <View
