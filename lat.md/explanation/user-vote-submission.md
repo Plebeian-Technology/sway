@@ -49,7 +49,7 @@ On an error the web hook restores the server-provided vote, including an absent 
 The `VoteComparisonPlaceholder` component renders when a vote comparison is hidden due to low user engagement, specifically when fewer than ten users have voted on a bill. It informs readers of the threshold and provides a path to invite others.
 
 It exists in two states based on `votersNeeded`:
-- When `votersNeeded` is present, it displays the specific count of users required for comparisons and a button to either copy an invite link (if signed in) or link to the sign-up page (if signed out).
+- When `votersNeeded` is present, it displays the specific count of users required for comparisons, the line "Invite others by sharing Sway", and a button to either copy an invite link (if signed in) or link to the sign-up page (if signed out). A signed-in user whose `invite_url` is null sees the count alone, with neither the line nor the button.
 - When `votersNeeded` is absent, it renders a simple 'Not enough votes yet' line.
 
 The component reuses strings from `[[app/frontend/sway_constants/parityCopy.ts#bill]]` to ensure parity between web and mobile applications. It uses `navigator.clipboard.writeText` and `flashToasts` to handle invite link copying for signed-in users.
