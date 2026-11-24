@@ -362,58 +362,105 @@ RSpec.describe "Users::Passkeys", type: :request do
     end
   end
 
+  # @lat: [[passkey-management-page-overview#Removing a passkey]]
   describe "DELETE /users/passkeys/:id" do
-    include_context "WebAuthnDouble"
     include_context "TwilioDouble"
 
-    it "removes a passkey when phone confirmed" do
-      _, user = setup
-      passkey = create(:passkey, user: user)
-      create(:passkey, user: user) # At least two
-
-      post confirm_phone_users_passkeys_path, params: {code: "123456"}
-      
-      delete users_passkey_path(passkey)
-      
-      expect(response).to have_http_status(:ok)
-      expect(user.passkeys.find_by(id: passkey.id)).to be_nil
-      expect(session_hash[:add_passkey_verified_at]).to be_nil # Window cleared
+    around do |example|
+      with_app_config(:dev_login, skip_phone_verification: false) { example.run }
     end
 
-    it "refuses to remove the last passkey" do
-      _, user = setup
-      passkey = create(:passkey, user: user)
-      # Only one passkey
-
+    def confirm_phone
       post confirm_phone_users_passkeys_path, params: {code: "123456"}
-      
-      delete users_passkey_path(passkey)
-      
-      expect(response).to have_http_status(:forbidden)
-      expect(user.passkeys.find_by(id: passkey.id)).not_to be_nil
+      expect(response.parsed_body).to eq({"success" => true})
     end
 
-    it "refuses to remove passkey without phone confirmation" do
+    it "removes the chosen passkey inside a confirmed window and closes the window" do
+      _, user = setup
+      chosen = create(:passkey, user: user, label: "Old phone")
+      kept = create(:passkey, user: user, label: "Laptop")
+
+      confirm_phone
+      delete users_passkey_path(chosen)
+
+      expect(response.parsed_body).to eq({"success" => true})
+      expect(user.passkeys.reload).to contain_exactly(kept)
+      expect(session_hash[:add_passkey_verified_at]).to be_nil
+    end
+
+    it "refuses a second removal until a new SMS check" do
+      _, user = setup
+      first = create(:passkey, user: user)
+      second = create(:passkey, user: user)
+      create(:passkey, user: user)
+
+      confirm_phone
+      delete users_passkey_path(first)
+      delete users_passkey_path(second)
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => Users::PasskeysController::REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE}
+      )
+      expect(Passkey.exists?(second.id)).to be(true)
+      expect(user.passkeys.count).to eq(2)
+    end
+
+    it "refuses without a confirmed window and removes nothing" do
       _, user = setup
       passkey = create(:passkey, user: user)
       create(:passkey, user: user)
 
       delete users_passkey_path(passkey)
-      
-      expect(response).to have_http_status(:forbidden)
-      expect(user.passkeys.find_by(id: passkey.id)).not_to be_nil
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => Users::PasskeysController::REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE}
+      )
+      expect(user.passkeys.count).to eq(2)
     end
 
-    it "refuses to remove another user's passkey" do
+    it "refuses after the confirmed window expires and removes nothing" do
       _, user = setup
-      other_user = create(:user)
-      passkey = create(:passkey, user: other_user)
-      
-      post confirm_phone_users_passkeys_path, params: {code: "123456"}
-      
-      delete users_passkey_path(passkey)
+      passkey = create(:passkey, user: user)
+      create(:passkey, user: user)
+
+      confirm_phone
+      travel(Users::PasskeysController::ADD_PASSKEY_VERIFY_WINDOW + 1.minute) do
+        delete users_passkey_path(passkey)
+      end
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => Users::PasskeysController::REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE}
+      )
+      expect(user.passkeys.count).to eq(2)
+    end
+
+    it "refuses to remove the user's only passkey and says why" do
+      _, user = setup
+      only = create(:passkey, user: user)
+
+      confirm_phone
+      delete users_passkey_path(only)
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => "Your last passkey cannot be removed."}
+      )
+      expect(Passkey.exists?(only.id)).to be(true)
+    end
+
+    it "answers not found for another user's passkey and leaves it in place" do
+      _, user = setup
+      create(:passkey, user: user)
+      create(:passkey, user: user)
+      other = create(:user, :registered)
+      theirs = create(:passkey, user: other)
+      create(:passkey, user: other)
+
+      confirm_phone
+      delete users_passkey_path(theirs)
+
       expect(response).to have_http_status(:not_found)
+      expect(Passkey.exists?(theirs.id)).to be(true)
+      expect(user.passkeys.count).to eq(2)
     end
   end
 end
-

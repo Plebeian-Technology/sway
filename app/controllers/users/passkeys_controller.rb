@@ -9,6 +9,8 @@ module Users
     ADD_PASSKEY_VERIFY_WINDOW = 10.minutes
     ADD_PASSKEY_FAILED_MESSAGE = "We couldn't add this passkey. Try again."
     DEFAULT_PASSKEY_LABELS = ["Passkey", "New passkey"].freeze
+    REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE = "Confirm your phone number first."
+    LAST_PASSKEY_MESSAGE = "Your last passkey cannot be removed."
 
     rate_limit to: 10, within: 1.hour,
       name: "verify_phone_ip",
@@ -154,23 +156,24 @@ module Users
       session.delete(:add_passkey_registration)
     end
 
+    # @lat: [[passkey-management-page-overview#Removing a passkey]]
     def destroy
       passkey = current_user.passkeys.find(params[:id])
 
       unless add_passkey_verified?
-        return render json: {success: false, message: "Verification expired or required."}, status: :forbidden
+        return render json: {success: false, message: REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE}, status: :ok
       end
 
-      if current_user.passkeys.count <= User::MIN_PASSKEY_COUNT
-        return render json: {success: false, message: "The last passkey cannot be removed."}, status: :forbidden
-      end
+      removed = Passkey.transaction do
+        next false if current_user.passkeys.count <= User::MIN_PASSKEY_COUNT
 
-      if passkey.destroy
-        clear_add_passkey_session
-        render json: {success: true}
-      else
-        render json: {success: false, message: "Could not remove passkey."}, status: :unprocessable_entity
+        passkey.destroy!
       end
+      return render json: {success: false, message: LAST_PASSKEY_MESSAGE}, status: :ok unless removed
+
+      SwayLogging.info("passkeys.remove.completed", user_id: current_user.id, passkey_id: passkey.id)
+      clear_add_passkey_session
+      render json: {success: true}
     end
 
     private

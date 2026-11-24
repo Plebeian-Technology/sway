@@ -12,7 +12,9 @@ Registration starts with a phone number verified over SMS through Twilio.
 Passkeys are then bound to that account, and subsequent sign-ins are WebAuthn.
 Email is optional and exists so a user can be reached, not so they can log in.
 
-SMS verifies phone ownership for enrollment, including adding another passkey;
+SMS verifies phone ownership for enrollment, including adding another passkey
+or removing one that is not the last
+([[passkey-management-page-overview#Removing a passkey]]);
 it is not a sign-in or recovery method. A person who loses every passkey needs
 support rather than an in-app SMS fallback. The verified phone binding and
 unique account constraint are deliberate protections against duplicate accounts.

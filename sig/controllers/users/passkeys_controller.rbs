@@ -5,6 +5,8 @@ module Users
         ADD_PASSKEY_VERIFY_WINDOW: ActiveSupport::Duration
         ADD_PASSKEY_FAILED_MESSAGE: String
         DEFAULT_PASSKEY_LABELS: Array[String]
+        REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE: String
+        LAST_PASSKEY_MESSAGE: String
 
         def index: -> untyped
 
@@ -15,6 +17,8 @@ module Users
         def add_options: -> untyped
 
         def add_callback: -> untyped
+
+        def destroy: -> untyped
 
         private
 
