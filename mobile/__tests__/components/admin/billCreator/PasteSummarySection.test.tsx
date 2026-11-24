@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import { ApiRequestError } from "../../../../src/api/errors";
 
@@ -104,8 +104,10 @@ describe("PasteSummarySection", () => {
         await waitFor(() => expect(screen.getByTestId("admin-summary-paste-submit")).toBeDisabled());
         expect(screen.getByTestId("admin-summary-paste-input").props.editable).toBe(false);
         expect(screen.getByTestId("admin-summary-paste-cancel")).toBeDisabled();
-        finish({});
-        await waitFor(() => expect(screen.queryByTestId("admin-summary-paste-input")).toBeNull());
+        await act(async () => {
+            finish({});
+        });
+        expect(screen.queryByTestId("admin-summary-paste-input")).toBeNull();
     });
 
     it("lists each rejected path with its message and keeps the text and the tab as they are", async () => {
