@@ -60,18 +60,15 @@ describe("BillCreatorScreen", () => {
         expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/creator", expect.anything());
     });
 
-    it.each([[4, "Positions", "positions"]])(
-        "switches to the %s segment's tab and requests its path",
-        async (index, label, path) => {
-            render(<BillCreatorScreen route={routeFor(42)} />);
-            await screen.findByText("Bill fields");
+    it("switches to the Positions tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
 
-            fireEvent.press(screen.getByTestId(`admin-bill-creator-tabs-segment-${index}`));
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-4"));
 
-            expect(await screen.findByText(`The ${label} tab is not on mobile yet.`)).toBeTruthy();
-            expect(mockApiGet).toHaveBeenLastCalledWith(`/admin/bill_creator/42/${path}`, expect.anything());
-        },
-    );
+        expect(await screen.findByTestId("admin-draft-positions")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/positions", expect.anything());
+    });
 
     it("switches to the Schedule tab and requests its path", async () => {
         render(<BillCreatorScreen route={routeFor(42)} />);

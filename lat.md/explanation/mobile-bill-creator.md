@@ -564,6 +564,44 @@ The section leaves out two details of the web panel.
 
 The Positions tab lists the organization positions a summary run drafted from testimony, and the admin approves, edits or rejects each one, as the web's draft cards do ([[bill-creator-positions-tab]]).
 
+[[mobile/src/components/admin/billCreator/DraftPositionsSection.tsx#DraftPositionsSection]] ports the draft cards of [[app/frontend/components/admin/creator/llm-summary/LlmSummaryOrgPositions.tsx]] and [[app/frontend/components/admin/creator/BillCreatorOrgPositionCard.tsx#BillCreatorOrgPositionCard]]. The Positions tab renders it first, above the organizations section, as the web places the drafts above the arguments. A new bill shows "Save this bill to work through its testimony and organization positions." in place of both sections; the web names a picker above the tab, which the phone does not have.
+
+The section reads `bill.bill_llm_provisioning` and lists every draft that is not marked rejected, keeping each draft's position in the stored list as its index. Each card is keyed on its `draft_token`, or on its name, stance and summary when the token is missing, with an occurrence count for duplicates, so a reload that drops one card leaves the others' typed edits in place ([[unique-stable-keys-react-list-identity#draftOrgPositionKeys]]).
+
+A card shows the name, a stance stamp (Support, Oppose or Neutral, or the stored word itself when it is none of the three, or "No position" when blank), and the summary. A draft drawn from the news adds its quoted excerpt, the speaker and role, the source (pressable only for an address [[mobile/src/utils/safeUrl.ts#isSafeCitationUrl]] accepts, labelled by outlet, else title, else address) and the page, paragraph and character locator. A draft whose evidence was retracted shows the web's notice.
+
+Approve, Reject and Edit follow the web card:
+
+- Approve posts `org_name`, `support`, `summary`, `index`, and the draft's original `draft_org_name` and `draft_token` to `/bills/:id/approve_org_position`, then reloads the tab.
+- Reject sends `PATCH /bill_draft_org_positions/:billId-:index` with `rejected: true` and the same original identity, then reloads the tab.
+- The Edit button opens fields for the name, a Support, Oppose or Neutral choice and the summary. Apply edits changes the card only, and Approve carries the edits; Cancel edit discards them. No request leaves the phone until Approve, as on the web ([[org-position-card-editing-and-approval-ui#Why the inline editor keeps its own copy of the values]]).
+
+Approve stays off while the draft's evidence is retracted, while a summary run or a clean-testimony run for this bill is in flight, and, for a draft not drawn from the news, while the bill has no testimony or testimony the run left out is unacknowledged. Reject and Edit stay on in every case except a request in progress. The section shows the web's three no-testimony sentences, "No draft positions generated." for an empty list with testimony on file, and the web's run-in-flight notice with its count of drafts held ([[bill-creator-positions-tab#Why Approve says on this tab why it is off]]). The clean-testimony check reads `active_legislation_pipeline_run`, which the Positions tab's prop list carries for this.
+
+A refused approval or reject shows its reason on the card: `details.org_position` when present, else the server's message. A refusal flagged `private_individual_refusal` instead opens a panel on the card, "Approve anyway?", with the reason and the web's warning that approving publishes the name as a followable organization. Approve anyway resends with `override_private_individual: true`; Cancel closes the panel and leaves the reason on the card. A refusal that survives the override is shown, not offered again ([[private-individual-guard-override]]). The panel stands in for the web's confirmation dialog, as other sections on the phone use panels for dialogs.
+
+#### Polling while a run is in flight
+
+The section refetches the tab every five seconds with [[mobile/src/hooks/admin/usePolling.ts#usePolling]] while a summary run is queued or generating, or the bill's pipeline refresh is busy, as the web tab polls ([[bill-creator-positions-tab#What the positions tab polls for]]).
+
+Both conditions end on their own, so the poll stops with them. A finished run reloads the drafts it wrote, and Approve comes back.
+
+#### The organizations section on this tab
+
+The Positions tab renders [[mobile-bill-creator#Sections#The organizations section]] below a "Supporting / opposing arguments" heading, keyed on the bill id and the sorted ids of the bill's organizations.
+
+The section seeds its rows from `bill.organizations` once, at mount. An approval adds an organization to the bill, and without the key the reload would never reach the rows, so the new position would stay off the list. The key changes only when the set of organizations changes, so a poll that returns the same set keeps any summary typed and not yet saved ([[bill-creator-summary-tab#Why the organizations panel carries a remount key]]). Removing a published position uses that section's own Remove.
+
+#### What the phone leaves out
+
+The section ports the draft cards only; the rest of the web's testimony panel belongs to later sections.
+
+- The claimed-affiliation and campaign cards, the testimony coverage notice with its acknowledgement, the supplemental testimony field, the positions error notice and the public testimony letters.
+- The success toasts. The card leaving the list on the reload is the confirmation.
+- The info popovers beside the heading, the stance stamp, Approve and Edit, and the stamp colours.
+- The screen-reader link from a disabled Approve to the notice that explains it. The notices sit above the cards in reading order instead.
+- The web's fallback text, "Approve failed." and "Reject failed.", used when the server names no reason. The phone shows the server's or the client's message instead, which always exists.
+
 #### Answering approve and review in JSON
 
 [[app/controllers/bills_controller.rb#BillsController#approve_org_position]] and [[app/controllers/bill_draft_org_positions_controller.rb#BillDraftOrgPositionsController#update]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
