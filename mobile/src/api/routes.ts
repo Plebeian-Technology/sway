@@ -75,6 +75,8 @@ export const Routes = {
             ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"
             : `/admin/bill_creator/${billId}/pipeline?`) + `cursor=${encodeURIComponent(cursor)}`,
     adminBillCreatorSummaryRevisions: (billId: number) => `/admin/bill_creator/${billId}/summary?summary_revisions=1`,
+    adminBillCreatorSummarySourceDocuments: (billId: number) =>
+        `/admin/bill_creator/${billId}/summary?summary_source_documents=1`,
     adminBillCreatorSummaryPrompt: (billId: number) => `/admin/bill_creator/${billId}/summary?summary_prompt=1`,
     adminPipelineRunResume: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/resume`,
     adminPipelineRunRestart: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/restart`,

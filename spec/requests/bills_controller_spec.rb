@@ -1562,6 +1562,25 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body.fetch("summary_revisions").pluck("id")).to include(revision.id)
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The summary sources section]]
+      it "gives the summary tab the prompt sections the model read only when the request asks for them" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "summary")
+        expect(response.parsed_body).to have_key("summary_sources")
+        expect(response.parsed_body).not_to have_key("summary_source_documents")
+
+        get "/admin/bill_creator/#{bill.id}/summary?summary_source_documents=1",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        documents = response.parsed_body.fetch("summary_source_documents")
+        expect(documents.keys).to match_array(%w[origin built_at bill_details source_text citations news])
+        expect(documents.fetch("origin")).to eq("now")
+      end
+
       # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
       it "gives the summary tab the draft revision its address names" do
         sway_locale, user = setup
@@ -1587,7 +1606,7 @@ RSpec.describe "BillsController", type: :request do
         bill.save!
 
         BillsController::BILL_CREATOR_TAB_PROPS.each do |tab, keys|
-          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1&summary_revisions=1",
+          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1&summary_revisions=1&summary_source_documents=1",
             headers: authenticate_as(user).merge("Accept" => "application/json")
 
           expect(response.parsed_body.keys).to match_array(keys.map(&:to_s)), "tab #{tab}"
@@ -1601,7 +1620,7 @@ RSpec.describe "BillsController", type: :request do
 
         get "/admin/bill_creator/#{bill.id}/schedule"
 
-        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt, :summary_revisions]
+        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt, :summary_revisions, :summary_source_documents]
         expect(inertia.props).to include(*every_key)
       end
     end

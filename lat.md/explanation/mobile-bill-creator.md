@@ -51,6 +51,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Summary also carries `active_legislation_pipeline_run`, from the same shared run props, because the web summary view keeps Regenerate off while a clean-testimony run covers the bill ([[mobile-bill-creator#Sections#The summary generation section]]).
 - Summary also lists `summary_prompt`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). Every other summary request, the poll included, answers without it.
 - Summary also lists `summary_revisions`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary revisions section]]).
+- Summary also lists `summary_source_documents`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary sources section]]). The ledger's counts, `summary_sources`, are small and ride every request.
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the campaign letter text, stay absent whatever the tab.
 
@@ -424,7 +425,7 @@ The section leaves out web pieces that belong to other sections, or that the pho
 
 - The confirmation dialog itself, its warning about a pasted summary, and the per-bill memory of the chosen model and level across page loads. The choice lasts as long as the section stays mounted.
 - The prompt view's Copy to clipboard button, which needs a clipboard module the app does not install. The prompt text is selectable instead.
-- Editing and publishing the summary, Copy the draft into the box, the sources ledger, news articles and categories, which later sections port.
+- Editing and publishing the summary, Copy the draft into the box, news articles and categories, which later sections port.
 - The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.
 
 ### The summary revisions section
@@ -452,3 +453,19 @@ The phone leaves out the following web behaviours.
 - Editing the draft: the web loads it into the summary editor with its news-usage controls. The phone shows the draft read-only and has no news-usage declaration, so it cannot publish a restored draft; the Creator tab's summary field publishes with news usage `none`.
 - Reset to published summary on the draft notice, which resets that editor.
 - The history, chevron and rotate icons, and the spinner on Refresh history, which reads "Refreshing…".
+
+### The summary sources section
+
+The Summary tab lists what the model read for the bill's summary, as the web's ledger does ([[bill-creator-summary-tab#Why the panel lists what the model reads]]). The section is read-only.
+
+[[mobile/src/components/admin/billCreator/SummarySourcesSection.tsx#SummarySourcesSection]] ports [[app/frontend/components/admin/creator/llm-summary/SummarySourcesLedger.tsx#SummarySourcesLedger]] and renders below the generation section. It reads `summary_sources`, which the tab's prop list already carried, and builds the web's four rows (bill details, bill text, law code and news) with the web's sentences, counts and stamps. A recorded run supplies the rows and the "Read by" line; with none recorded, the section shows the "Not recorded" notice and the rows describe what a run would read today. A row that differs from the recorded run gets "Changed since run", and a row built from today's facts gets "Newer than summary" or "Diff record newer" when its input postdates the summary. A bill the server sent no sources for shows an empty state, and an unsaved bill asks to be saved first.
+
+Each row's View button shows the exact prompt section the model was given, in a panel under the row, as the web's modal does ([[bill-creator-summary-tab#Why each input opens a modal of its own]]). The text is large, so [[app/controllers/bills_controller.rb#BillsController#summary_source_documents_prop]] builds `summary_source_documents` for a mobile request only when the address carries `summary_source_documents=1`, as it does for the prompt ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). The tab's prop list names the key so the slice keeps it, and the five-second poll never sends the parameter. Every open asks again, and the panel says whether it is loading, could not load, was rebuilt just now, carried no such section, carried an empty one, or holds the text, which is selectable.
+
+The phone leaves out the following web behaviours.
+
+- The dialog: one panel at a time opens under its row, because a modal over a scrolling tab adds nothing the panel lacks.
+- The info popover beside the heading and the Close button, which the second press on View replaces.
+- The two-column row layout and the stamp badge styling: the phone stacks the name, sentence and stamps.
+
+The web ledger has no write control. View only reads, so the section builds none.

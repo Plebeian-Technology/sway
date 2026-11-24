@@ -149,9 +149,11 @@ class BillsController < ApplicationController
 
     # The four prompt sections behind the ledger's modals, wrapped in
     # InertiaRails.optional for the same reason summary_prompt_prop is: a
-    # recorded source text can reach the 300,000-character cap. Empty hash for
-    # JSON callers, who cannot ask for a prop by name.
+    # recorded source text can reach the 300,000-character cap. A JSON caller
+    # gets it only with summary_source_documents=1 on the address.
     def summary_source_documents_prop: () -> Hash[Symbol, untyped]
+
+    def summary_source_documents_json: () -> untyped
 
     def summary_revisions_prop: () -> Hash[Symbol, untyped]
 

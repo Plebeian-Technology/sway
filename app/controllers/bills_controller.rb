@@ -63,7 +63,7 @@ class BillsController < ApplicationController
     "summary" => %i[
       bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
       summary_sources active_categories max_active_categories_per_bill news_articles receipt_status
-      review_draft_revision active_legislation_pipeline_run summary_prompt summary_revisions
+      review_draft_revision active_legislation_pipeline_run summary_prompt summary_revisions summary_source_documents
     ],
     "positions" => %i[
       bill bill_id tab_key organizations testimony_coverage testimony_campaign_drafts
@@ -1198,13 +1198,18 @@ class BillsController < ApplicationController
 
   # @lat: [[bill-creator-summary-tab#Why the record of a run is kept at run time]]
   def summary_source_documents_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The summary sources section]]
+    if mobile_api_request?
+      return {} unless params[:summary_source_documents] == "1"
 
-    {
-      summary_source_documents: InertiaRails.optional {
-        SummarySourceDocumentsResource.new(SummarySourceDocuments.call(bill: @bill)).serializable_hash
-      }
-    }
+      return {summary_source_documents: -> { summary_source_documents_json }}
+    end
+
+    {summary_source_documents: InertiaRails.optional { summary_source_documents_json }}
+  end
+
+  def summary_source_documents_json
+    SummarySourceDocumentsResource.new(SummarySourceDocuments.call(bill: @bill)).serializable_hash
   end
 
   # @lat: [[bill-creator-summary-tab#Planned recoverable summary history]]
