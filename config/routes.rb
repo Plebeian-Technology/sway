@@ -413,7 +413,7 @@ Rails.application.routes.draw do
 
   # @lat: [[legacy-cookie-json-routes#Retired top-level read routes and numeric user destroy constraint]]
   resources :users, only: %i[destroy], constraints: {id: /\d+/} do
-    post :revoke_all_devices, on: :member
+    post :sign_out_all_devices, on: :collection
   end
 
   # @lat: [[web-profile-page#Web profile page]]

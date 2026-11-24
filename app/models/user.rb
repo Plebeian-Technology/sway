@@ -24,6 +24,7 @@
 #  pending_representative_locale_ids       :json             not null
 #  phone                                   :string
 #  registration_status                     :string           default("pending")
+#  session_generation                      :integer          default(0), not null
 #  sign_in_count                           :integer          default(0), not null
 #  sms_notifications_enabled               :boolean          default(FALSE)
 #  theme                                   :string           default("neutral"), not null
@@ -201,6 +202,12 @@ class User < ApplicationRecord
   attr_accessor :transient_funnel_metadata
 
   # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every device is atomic]]
+  # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
+  def sign_out_all_devices!
+    increment!(:session_generation)
+    revoke_all_devices!
+  end
+
   def revoke_all_devices!
     transaction do
       user_devices.active.find_each(&:revoke!)

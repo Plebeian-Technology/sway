@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_18_034644) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_171428) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -1429,6 +1429,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_034644) do
     t.string "webauthn_id"
     t.boolean "is_voter_registration_address_confirmed", default: false, null: false
     t.json "pending_representative_locale_ids", default: [], null: false
+    t.integer "session_generation", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true

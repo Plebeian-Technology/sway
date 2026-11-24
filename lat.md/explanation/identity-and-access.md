@@ -365,6 +365,16 @@ validation failure does not block authentication; it logs
 
 [[app/models/user.rb#User#revoke_all_devices!]] revokes each active device and its API keys in one transaction. If a revocation fails partway through, rollback prevents the user from ending up signed out on only some devices.
 
+### Signing out every browser
+
+Each account carries a session generation, an integer that every browser session must match to stay signed in. Raising it ends every web session at once.
+
+Web sessions live in Rails' cookie store, so the server holds no session row to delete. Deleting refresh tokens alone left another browser signed in, because its cookie still carried `user_id` and `auth_identity`. [[app/lib/browser_session.rb#BrowserSession]] therefore writes the account's generation into the session at sign-in, beside `auth_identity`, and every place that trusts a session cookie compares both through it: [[app/controllers/application_controller.rb#ApplicationController#authenticate_with_cookies]], the ActionCable connection, the admin direct-upload guard, funnel attribution and the test-only sign-in route. Without the cable check a disconnected browser would simply reconnect.
+
+A session with no generation reads as 0. Authentication never fills the missing value in, the way it backfills a missing `auth_identity`, because filling it with the current value would undo a revocation. Sessions written before the column existed keep working until the account's first sign-out everywhere.
+
+`POST /users/sign_out_all_devices` ([[app/controllers/users_controller.rb#UsersController#sign_out_all_devices]]) acts only on the signed-in account and carries Rails' CSRF check. [[app/models/user.rb#User#sign_out_all_devices!]] raises the generation and revokes every mobile device; the action then signs the calling browser out and redirects to the public home page. The ordinary sign-out it calls deletes all of the account's refresh tokens, so a revoked browser holding a refresh-token cookie cannot sign itself back in.
+
 ### A refused CSRF write leaves a fresh retry path
 
 An invalid authenticity token redirects with both an alert and the machine-readable `page_expired` flag, so a redirected write cannot be mistaken for a successful save. [[app/controllers/application_controller.rb#ApplicationController#inertia_page_expired_error]] owns that refusal response.

@@ -1,5 +1,9 @@
 class UsersController < ApplicationController
+  SIGNED_OUT_ALL_DEVICES_NOTICE: String
+
   def destroy: -> untyped
+
+  def sign_out_all_devices: -> untyped
 
   private
 

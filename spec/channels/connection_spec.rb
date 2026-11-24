@@ -22,6 +22,34 @@ RSpec.describe ApplicationCable::Connection, type: :channel do
       }.to have_rejected_connection
     end
 
+    # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
+    context "after the user signs out of every device" do
+      it "rejects a browser session stamped with the earlier session generation" do
+        stamped = {user_id: user.id, auth_identity: user.created_at.to_i, session_generation: user.session_generation}
+
+        user.sign_out_all_devices!
+
+        expect { connect session: stamped }.to have_rejected_connection
+      end
+
+      it "accepts a session with no generation while the user's generation is 0, and rejects it after an increment" do
+        legacy = {user_id: user.id, auth_identity: user.created_at.to_i}
+        connect session: legacy
+        expect(connection.current_user).to eq(user)
+
+        user.sign_out_all_devices!
+
+        expect { connect session: legacy }.to have_rejected_connection
+      end
+
+      it "accepts a session stamped with the current generation" do
+        user.sign_out_all_devices!
+
+        connect session: {user_id: user.id, auth_identity: user.created_at.to_i, session_generation: user.reload.session_generation}
+        expect(connection.current_user).to eq(user)
+      end
+    end
+
     context "bearer token query param fallback (mobile WebSocket)" do
       it "identifies current_user from a valid active Bearer token" do
         raw_token = SecureRandom.hex(16)

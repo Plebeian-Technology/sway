@@ -29,6 +29,7 @@ class User < ApplicationRecord
     def as_json: (?untyped options) -> Hash[(String | Symbol), untyped]
     def to_builder: -> Jbuilder
     def revoke_all_devices!: () -> void
+    def sign_out_all_devices!: () -> void
     def is_sway_admin?: -> bool
     def sway_admin?: -> bool
     def is_sway_admin: -> bool

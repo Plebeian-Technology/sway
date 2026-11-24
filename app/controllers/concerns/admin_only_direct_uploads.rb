@@ -15,9 +15,8 @@ module AdminOnlyDirectUploads
   # @lat: [[admin-only-direct-uploads-design#Why both the allow and refuse branches are logged]]
   def require_sway_admin_for_upload
     user = User.find_by(id: session[:user_id])
-    if user && session[:auth_identity].present? && session[:auth_identity].to_i != user.created_at.to_i
-      session.delete(:user_id)
-      session.delete(:auth_identity)
+    if user && !BrowserSession.current?(session, user)
+      BrowserSession.forget(session)
       user = nil
     end
 
