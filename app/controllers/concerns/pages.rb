@@ -30,6 +30,7 @@ module Pages
   ORGANIZATIONS = "Organizations"
   PASSKEY_MANAGEMENT = "PasskeyManagement"
   PRIVACY = "public/Privacy"
+  PROFILE = "Profile"
   REGISTRATION = "SwayRegistration"
   SMS = "public/Sms"
   TERMS = "public/Terms"

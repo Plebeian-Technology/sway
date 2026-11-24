@@ -274,33 +274,35 @@ describe("AuthLayout — admin-mode active-state (F-i1-WR-007 + F-i2-WR-002)", (
     });
 });
 
-describe("AuthLayout — passkey navigation", () => {
+describe("AuthLayout — profile navigation", () => {
     it.each([
-        { url: "/users/passkeys", is_admin: false },
+        { url: "/profile", is_admin: false },
         { url: "/admin", is_admin: true },
-    ])("links signed-in users to passkeys from $url", ({ url, is_admin }) => {
+    ])("links signed-in users to their profile, not to passkeys, from $url", ({ url, is_admin }) => {
         setPage({ url, user: { is_admin } });
-        const { getByRole } = renderV2(<AuthLayout />);
+        const { getByRole, queryByRole } = renderV2(<AuthLayout />);
 
-        const link = getByRole("link", { name: "Passkeys" });
-        expect(link).toHaveAttribute("href", "/users/passkeys");
-        expect(link.getAttribute("aria-current")).toBe(url === "/users/passkeys" ? "page" : null);
+        const link = getByRole("link", { name: "Profile" });
+        expect(link).toHaveAttribute("href", "/profile");
+        expect(link.getAttribute("aria-current")).toBe(url === "/profile" ? "page" : null);
+        expect(navLink(queryByRole, "Passkeys")).toBeNull();
     });
 
-    it("includes Passkeys when the mobile navigation drawer opens", () => {
+    it("includes Profile when the mobile navigation drawer opens", () => {
         setPage({ url: "/legislators" });
         const { getByRole } = renderV2(<AuthLayout />);
 
         fireEvent.click(getByRole("button", { name: "Open navigation drawer" }));
 
         const drawer = getByRole("dialog", { name: "Navigate Sway" });
-        expect(within(drawer).getByRole("link", { name: "Passkeys" })).toHaveAttribute("href", "/users/passkeys");
+        expect(within(drawer).getByRole("link", { name: "Profile" })).toHaveAttribute("href", "/profile");
     });
 
-    it("hides the passkey link from guests", () => {
+    it("hides the profile and passkey links from guests", () => {
         inertia.usePage.mockReturnValue({ url: "/", props: { user: null } });
         const { queryByRole } = renderV2(<AuthLayout />);
 
+        expect(navLink(queryByRole, "Profile")).toBeNull();
         expect(navLink(queryByRole, "Passkeys")).toBeNull();
     });
 });

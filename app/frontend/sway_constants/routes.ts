@@ -46,8 +46,11 @@ export const ROUTES = {
         },
     },
 
+    profile: "/profile",
+
     users: {
         organization_memberships: "/users/organization_memberships",
+        passkeys: "/users/passkeys",
     },
 
     userSettings: "/settings",
