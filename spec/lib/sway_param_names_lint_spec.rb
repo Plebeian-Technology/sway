@@ -66,7 +66,7 @@ RSpec.describe "sway:lint:param_names and QueryParameterCheck" do
         ["legislators_tab", "legislators_search"]
       )
       expect(check.canonical_parameters["notifications"]).to eq(["notifications_tab"])
-      expect(check.canonical_parameters["organizations"]).to eq(["org_tab"])
+      expect(check.canonical_parameters["organizations"]).to eq(["org_tab", "org_search"])
       expect(check.global_ambient).to eq(
         ["sway_locale_id", "run_id", "highlight_bill_id"]
       )
