@@ -42,17 +42,35 @@ describe("app.config.ts", () => {
         expect(build().ios?.associatedDomains).toEqual([
             "webcredentials:app.sway.vote",
             "applinks:sway.vote",
+            "applinks:app.sway.vote",
             "webcredentials:tunnel.example.test?mode=developer",
             "applinks:tunnel.example.test?mode=developer",
         ]);
-        expect(build().android?.intentFilters).toHaveLength(2);
+        expect(build().android?.intentFilters).toHaveLength(3);
 
         delete process.env.EXPO_PUBLIC_DEV_TUNNEL_HOST;
 
-        expect(build().ios?.associatedDomains).toEqual(["webcredentials:app.sway.vote", "applinks:sway.vote"]);
+        expect(build().ios?.associatedDomains).toEqual([
+            "webcredentials:app.sway.vote",
+            "applinks:sway.vote",
+            "applinks:app.sway.vote",
+        ]);
         expect(build().android?.intentFilters?.map((filter) => filter.data)).toEqual([
             expect.arrayContaining([expect.objectContaining({ host: "sway.vote" })]),
+            expect.arrayContaining([expect.objectContaining({ host: "app.sway.vote" })]),
         ]);
+    });
+
+    // @lat: [[mobile-expo-config#Deployment identifiers come from the environment#Links are claimed on both Sway hosts]]
+    it("claims every link pattern on app.sway.vote as well as sway.vote", () => {
+        const hostsOf = (filter: { data?: unknown }) => (filter.data as { host: string }[]).map((entry) => entry.host);
+        const appHostFilter = build().android?.intentFilters?.find((filter) =>
+            hostsOf(filter).includes("app.sway.vote"),
+        );
+
+        expect(appHostFilter?.autoVerify).toBe(true);
+        expect(new Set(hostsOf(appHostFilter!))).toEqual(new Set(["app.sway.vote"]));
+        expect(appHostFilter?.data).toHaveLength(DEEP_LINK_PATTERNS.length);
     });
 
     // @lat: [[mobile-sentry-init-design#Why the DSN is trimmed at config time]]
@@ -72,7 +90,7 @@ describe("app.config.ts", () => {
     it("derives both platforms' deep links from one list", () => {
         const config = build();
 
-        expect(config.ios?.associatedDomains).toHaveLength(4);
+        expect(config.ios?.associatedDomains).toHaveLength(5);
         config.android?.intentFilters?.forEach((filter) => {
             expect(filter.data).toHaveLength(DEEP_LINK_PATTERNS.length);
         });
