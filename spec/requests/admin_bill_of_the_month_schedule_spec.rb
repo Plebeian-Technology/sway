@@ -11,6 +11,14 @@ RSpec.describe "BillOfTheMonthScheduleController admin gate", type: :request do
 end
 
 # @lat: [[bill-of-the-month-schedule-admin-guard-order#Bill of the Month schedule: admin guard order and tab redirect default]]
+RSpec.describe "BillOfTheMonthScheduleController admin gate for PATCH", type: :request do
+  include_examples "requires sway admin",
+    verb: :patch,
+    path: "/bill_of_the_month_schedule/0",
+    params: {bill_of_the_month_schedule: {bill_id: 1}}
+end
+
+# @lat: [[bill-of-the-month-schedule-admin-guard-order#Bill of the Month schedule: admin guard order and tab redirect default]]
 RSpec.describe "BillOfTheMonthScheduleController admin gate — discriminating", type: :request do
   include_context "SessionDouble"
 

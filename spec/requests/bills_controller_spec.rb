@@ -1426,6 +1426,23 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body.fetch("bill").fetch("id")).to eq(bill.id)
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+      it "gives the schedule tab each picker bill's id, external id, title and release date" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.scheduled_release_date_utc = Date.new(2026, 9, 8)
+        bill.save!
+
+        get_tab_as_json(bill, user, "schedule")
+
+        row = response.parsed_body.fetch("bills").find { |b| b["id"] == bill.id }
+        expect(row).to include(
+          "external_id" => bill.external_id,
+          "title" => bill.title,
+          "scheduled_release_date_utc" => "2026-09-08"
+        )
+      end
+
       it "serves the creator tab the vote-entry legislators" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)

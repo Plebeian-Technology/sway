@@ -1,11 +1,15 @@
 class BillOfTheMonthScheduleController < ApplicationController
   include BillCreatorTabRedirects
 
+  DATE_TAKEN_MESSAGE: String
+
   @bill: untyped
 
   def update: -> untyped
 
   private
+
+  def redirect_target: -> untyped
 
   def schedule_params: -> untyped
 
