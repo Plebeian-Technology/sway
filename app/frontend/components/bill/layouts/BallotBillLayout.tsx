@@ -142,6 +142,7 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         organizationName={org.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="bal-org__summary"
                                     />
                                 </div>

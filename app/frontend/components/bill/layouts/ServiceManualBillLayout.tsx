@@ -94,6 +94,7 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
                                             organizationName={org.name}
                                             sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             className="smb-org__summary"
                                         />
                                     </li>
@@ -122,6 +123,7 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
                                             organizationName={org.name}
                                             sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             className="smb-org__summary"
                                         />
                                     </li>

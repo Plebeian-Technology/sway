@@ -139,6 +139,7 @@ const BillContent: React.FC<IProps> = ({
                                         className="mt-2 text-sm leading-6 text-muted-foreground"
                                         organizationName={org.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                     />
                                 </div>
                             ))
@@ -168,6 +169,7 @@ const BillContent: React.FC<IProps> = ({
                                         className="mt-2 text-sm leading-6 text-muted-foreground"
                                         organizationName={org.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                     />
                                 </div>
                             ))

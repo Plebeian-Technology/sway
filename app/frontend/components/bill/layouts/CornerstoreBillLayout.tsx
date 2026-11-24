@@ -149,6 +149,7 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         organizationName={org.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="cs-org__summary"
                                     />
                                 </div>

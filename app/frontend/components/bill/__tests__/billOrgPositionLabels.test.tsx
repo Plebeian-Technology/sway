@@ -73,7 +73,7 @@ const POSITIONS = [
         summary: "Raises compliance costs.",
         summary_ai_unreviewed: false,
         source_kind: "news_article",
-        source_url: null,
+        source_url: "https://news.example/chamber",
         organization: { id: 2, name: "Chamber of Commerce", sway_locale_id: 1 },
     },
 ] as sway.IBillOrganizationPosition[];
@@ -112,6 +112,13 @@ describe.each(LAYOUTS)("%s organization positions", (_name, renderLayout) => {
         expect(screen.getAllByText(PARITY_COPY.orgs.listNotice)).toHaveLength(1);
         const tags = screen.getAllByTestId("org-position-source-tag").map((tag) => tag.textContent);
         expect(tags.toSorted()).toEqual(["Compiled by Sway", "Posted by Bay Foundation"]);
+    });
+
+    it("links a position to its source", () => {
+        render(renderLayout(POSITIONS));
+
+        const link = screen.getByRole("link", { name: new RegExp(PARITY_COPY.orgs.sourceNewsArticle) });
+        expect(link.getAttribute("href")).toBe("https://news.example/chamber");
     });
 
     it("shows no notice when the bill has no organization positions", () => {

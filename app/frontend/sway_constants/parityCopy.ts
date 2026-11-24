@@ -176,6 +176,8 @@ export const PARITY_COPY = {
         managedOnSway: (organizationName: string) => `${organizationName} manages its positions on Sway.`,
         postedBy: (organizationName: string) => `Posted by ${organizationName}`,
         compiledBySway: "Compiled by Sway",
+        sourceHearingTestimony: "Source: hearing testimony",
+        sourceNewsArticle: "Source: news article",
         track: "Track",
         tracking: "Tracking",
         untrack: "Stop tracking",

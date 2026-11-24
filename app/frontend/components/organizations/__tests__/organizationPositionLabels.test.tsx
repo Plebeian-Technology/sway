@@ -157,3 +157,56 @@ describe("OrgPositionSummary", () => {
         expect(screen.queryByTestId("org-position-source-tag")).toBeNull();
     });
 });
+
+describe("OrgPositionSummary source line", () => {
+    const renderSource = (sourceKind: sway.IPublicOrganizationPosition["source_kind"], sourceUrl: string | null) =>
+        render(
+            <OrgPositionSummary
+                summary="A summary"
+                summaryAiUnreviewed={false}
+                organizationName="Bikemore"
+                sourceKind={sourceKind}
+                sourceUrl={sourceUrl}
+            />,
+        );
+
+    it("links a news position to its article in a new tab", () => {
+        renderSource("news_article", "https://news.example/story");
+
+        const link = screen.getByRole("link", { name: new RegExp(PARITY_COPY.orgs.sourceNewsArticle) });
+        expect(link.getAttribute("href")).toBe("https://news.example/story");
+        expect(link.getAttribute("target")).toBe("_blank");
+        expect(link.getAttribute("rel")).toContain("noopener");
+    });
+
+    it("links a testimony position to its testimony", () => {
+        renderSource("hearing_testimony", "https://council.example/testimony.pdf");
+
+        expect(screen.getByRole("link", { name: new RegExp(PARITY_COPY.orgs.sourceHearingTestimony) })).toBeTruthy();
+    });
+
+    it("shows the label without a link when the source has no URL", () => {
+        renderSource("hearing_testimony", null);
+
+        expect(screen.getByTestId("org-position-source").textContent).toBe(PARITY_COPY.orgs.sourceHearingTestimony);
+        expect(screen.queryByRole("link")).toBeNull();
+    });
+
+    it.each(["organization", "sway_admin", null] as const)("shows no source line for %s", (sourceKind) => {
+        renderSource(sourceKind, "https://news.example/story");
+
+        expect(screen.queryByTestId("org-position-source")).toBeNull();
+    });
+
+    it("wires the source URL on the organization page", () => {
+        cleanup();
+        render(
+            <Organization
+                organization={organization(false)}
+                organization_bill_positions={[{ ...position(6, "news_article"), source_url: "https://news.example/a" }]}
+            />,
+        );
+
+        expect(screen.getByRole("link", { name: new RegExp(PARITY_COPY.orgs.sourceNewsArticle) })).toBeTruthy();
+    });
+});

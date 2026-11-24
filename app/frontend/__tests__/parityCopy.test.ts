@@ -190,6 +190,11 @@ describe("PARITY_COPY — Organizations keys (nested)", () => {
         expect(PARITY_COPY.orgs.postedBy("Bikemore")).toBe("Posted by Bikemore");
         expect(PARITY_COPY.orgs.compiledBySway).toBe("Compiled by Sway");
     });
+
+    it("orgs.sourceHearingTestimony and orgs.sourceNewsArticle label a position's source", () => {
+        expect(PARITY_COPY.orgs.sourceHearingTestimony).toBe("Source: hearing testimony");
+        expect(PARITY_COPY.orgs.sourceNewsArticle).toBe("Source: news article");
+    });
 });
 
 describe("PARITY_COPY — Memberships keys (nested)", () => {

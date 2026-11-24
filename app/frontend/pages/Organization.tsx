@@ -145,6 +145,7 @@ const Organization: React.FC<IProps> = ({
                                         className="text-sm leading-6 text-muted-foreground"
                                         organizationName={organization.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                     />
                                 </CardContent>
                             </Card>

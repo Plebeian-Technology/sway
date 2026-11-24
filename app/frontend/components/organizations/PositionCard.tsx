@@ -134,6 +134,7 @@ const PositionCard: React.FC<IProps> = ({ position, organizationId, organization
                         className="text-sm"
                         organizationName={organizationName}
                         sourceKind={position.source_kind}
+                        sourceUrl={position.source_url}
                     />
                 )}
                 {isAdmin && (

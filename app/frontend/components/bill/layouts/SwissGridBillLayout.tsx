@@ -183,6 +183,7 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
                                             organizationName={org.name}
                                             sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             className="sgb-org__summary"
                                         />
                                     </li>
@@ -213,6 +214,7 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
                                             organizationName={org.name}
                                             sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             className="sgb-org__summary"
                                         />
                                     </li>

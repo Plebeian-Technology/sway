@@ -182,6 +182,7 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         organizationName={org.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="mcb-org__summary"
                                     />
                                 </div>
@@ -208,6 +209,7 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         organizationName={org.name}
                                         sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="mcb-org__summary"
                                     />
                                 </div>
