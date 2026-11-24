@@ -79,6 +79,8 @@ RSpec.describe ScoreRecomputeService do
   # separate places — this example checks it against the database, so
   # dropping `active: true` anywhere fails a spec.
   describe "active user_legislator filter (D-WS2-b)" do
+    include_context "with a voter minimum of one"
+
     it "excludes a user with an inactive user_legislator from LDS and LLS while their raw vote still counts in BillScore" do
       sway_locale = create(:sway_locale)
       district = create(:district, sway_locale:)
@@ -111,6 +113,8 @@ RSpec.describe ScoreRecomputeService do
   # tally_agreement counts only bills whose date falls inside the term being
   # scored. This filter is the trickiest part of the scoring code.
   describe "term-window bill-date attribution" do
+    include_context "with a voter minimum of one"
+
     it "attributes a 2024-session bill to the 118th term and a 2025-session bill to the 119th term" do
       sway_locale = create(:sway_locale, city: "congress", state: "congress", country: "united_states")
       district = create(:district, sway_locale:)
@@ -140,6 +144,7 @@ RSpec.describe ScoreRecomputeService do
       create(:user_vote, user:, bill: bill_2024, support: LegislatorVote::Support::FOR)
       create(:user_vote, user:, bill: bill_2025, support: LegislatorVote::Support::FOR)
 
+      Bill.find_each { |each_bill| ScoreRecomputeService.recompute_bill!(each_bill) }
       ScoreRecomputeService.recompute_legislator_district!(term_118)
       ScoreRecomputeService.recompute_legislator_district!(term_119)
 
@@ -168,6 +173,7 @@ RSpec.describe ScoreRecomputeService do
       create(:legislator_vote, :for, bill:, legislator:)
       create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
 
+      Bill.find_each { |each_bill| ScoreRecomputeService.recompute_bill!(each_bill) }
       ScoreRecomputeService.recompute_legislator_district!(term)
 
       row = LegislatorDistrictScore.find_by!(legislator_term: term)
@@ -195,6 +201,7 @@ RSpec.describe ScoreRecomputeService do
         )
       create(:user_vote, user:, bill: prior_bill, support: LegislatorVote::Support::FOR)
 
+      Bill.find_each { |each_bill| ScoreRecomputeService.recompute_bill!(each_bill) }
       ScoreRecomputeService.recompute_legislator_district!(prior_term)
       prior_snapshot = LegislatorDistrictScore.find_by!(legislator_term: prior_term).attributes.except("updated_at")
 
@@ -210,6 +217,7 @@ RSpec.describe ScoreRecomputeService do
           scheduled_release_date_utc: Date.new(2025, 4, 1)
         )
       create(:user_vote, user:, bill: current_bill, support: LegislatorVote::Support::AGAINST)
+      Bill.find_each { |each_bill| ScoreRecomputeService.recompute_bill!(each_bill) }
       ScoreRecomputeService.recompute_legislator_district!(current_term)
 
       expect(LegislatorDistrictScore.find_by!(legislator_term: prior_term).attributes.except("updated_at")).to eql(prior_snapshot)
@@ -262,6 +270,7 @@ RSpec.describe ScoreRecomputeService do
         )
       create(:user_vote, user:, bill: ancient_bill, support: LegislatorVote::Support::FOR)
 
+      Bill.find_each { |each_bill| ScoreRecomputeService.recompute_bill!(each_bill) }
       ScoreRecomputeService.recompute_legislator_district!(term)
 
       row = LegislatorDistrictScore.find_by!(legislator_term: term)
@@ -298,6 +307,7 @@ RSpec.describe ScoreRecomputeService do
       )
       create(:user_vote, user:, bill: earlier_bill, support: LegislatorVote::Support::FOR)
 
+      Bill.find_each { |each_bill| ScoreRecomputeService.recompute_bill!(each_bill) }
       ScoreRecomputeService.recompute_legislator_district!(successor_term)
       ScoreRecomputeService.recompute_legislator_district!(predecessor_term)
 
@@ -462,6 +472,145 @@ RSpec.describe ScoreRecomputeService do
       create(:user_vote, user:, bill: after_end_bill, support: LegislatorVote::Support::FOR)
       create(:legislator_vote, bill: after_end_bill, legislator:, support: LegislatorVote::Support::FOR)
       expect(ScoreRecomputeService.send(:tally_agreement, [user.id], appointee_term, sway_locale)[:count_agreed]).to eq(2)
+    end
+  end
+
+  # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+  describe "ten-voter minimum for legislator agreement scores" do
+    def constituents_vote(count, legislator:, bill:, support: LegislatorVote::Support::FOR)
+      Array.new(count) do
+        user = create(:user)
+        create(:user_legislator, user:, legislator:)
+        create(:user_vote, user:, bill:, support:)
+        user
+      end
+    end
+
+    def seat(sway_locale, district_name)
+      district = create(:district, sway_locale:, name: district_name)
+      legislator = create(:legislator, district:)
+      [legislator, create(:legislator_term, legislator:, district:)]
+    end
+
+    def bill_voted_for_by(legislator, sway_locale)
+      bill = create(:bill, sway_locale:, legislator:)
+      create(:legislator_vote, bill:, legislator:, support: LegislatorVote::Support::FOR)
+      bill
+    end
+
+    def recompute(bills, terms)
+      bills.each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
+      terms.each { |term| ScoreRecomputeService.recompute_legislator!(term) }
+    end
+
+    def pairs(score)
+      score.count_agreed + score.count_disagreed + score.count_no_legislator_vote + score.count_legislator_abstained
+    end
+
+    it "stores the distinct voters behind a score, not the number of user-vote and bill pairs" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      first_bill = bill_voted_for_by(legislator, sway_locale)
+      second_bill = bill_voted_for_by(legislator, sway_locale)
+      voters = constituents_vote(10, legislator:, bill: first_bill)
+      voters.each { |user| create(:user_vote, user:, bill: second_bill, support: LegislatorVote::Support::AGAINST) }
+
+      recompute([first_bill, second_bill], [term])
+
+      [LegislatorDistrictScore.find_by!(legislator_term: term), LegislatorLocaleScore.find_by!(legislator_term: term)].each do |score|
+        expect(score.distinct_voter_count).to eq(10)
+        expect([score.count_agreed, score.count_disagreed]).to eq([10, 10])
+      end
+    end
+
+    it "leaves a bill with nine voters out of a locale score until a tenth user votes" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      bill = bill_voted_for_by(legislator, sway_locale)
+      constituents_vote(9, legislator:, bill:)
+
+      recompute([bill], [term])
+
+      locale_score = LegislatorLocaleScore.find_by!(legislator_term: term)
+      expect(pairs(locale_score)).to eq(0)
+      expect(locale_score.distinct_voter_count).to eq(0)
+
+      constituents_vote(1, legislator:, bill:)
+      recompute([bill], [term])
+
+      locale_score.reload
+      expect(locale_score.count_agreed).to eq(10)
+      expect(locale_score.distinct_voter_count).to eq(10)
+    end
+
+    it "leaves a bill out of a district score when that district has fewer than ten of its voters" do
+      sway_locale = create(:sway_locale)
+      large_legislator, large_term = seat(sway_locale, "#{sway_locale.region_code}1")
+      small_legislator, small_term = seat(sway_locale, "#{sway_locale.region_code}2")
+      bill = bill_voted_for_by(large_legislator, sway_locale)
+      create(:legislator_vote, bill:, legislator: small_legislator, support: LegislatorVote::Support::FOR)
+      constituents_vote(10, legislator: large_legislator, bill:)
+      constituents_vote(4, legislator: small_legislator, bill:)
+
+      recompute([bill], [large_term, small_term])
+
+      small_district_score = LegislatorDistrictScore.find_by!(legislator_term: small_term)
+      expect(pairs(small_district_score)).to eq(0)
+      expect(small_district_score.distinct_voter_count).to eq(0)
+
+      large_district_score = LegislatorDistrictScore.find_by!(legislator_term: large_term)
+      expect(large_district_score.count_agreed).to eq(10)
+      expect(large_district_score.distinct_voter_count).to eq(10)
+
+      [large_term, small_term].each do |term|
+        locale_score = LegislatorLocaleScore.find_by!(legislator_term: term)
+        expect(locale_score.count_agreed).to eq(14)
+        expect(locale_score.distinct_voter_count).to eq(14)
+      end
+    end
+
+    it "does not count a user whose only votes are on bills under the minimum" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      counted_bill = bill_voted_for_by(legislator, sway_locale)
+      small_bill = bill_voted_for_by(legislator, sway_locale)
+      constituents_vote(10, legislator:, bill: counted_bill)
+      constituents_vote(1, legislator:, bill: small_bill)
+
+      recompute([counted_bill, small_bill], [term])
+
+      [LegislatorDistrictScore.find_by!(legislator_term: term), LegislatorLocaleScore.find_by!(legislator_term: term)].each do |score|
+        expect(score.distinct_voter_count).to eq(10)
+        expect(pairs(score)).to eq(10)
+      end
+    end
+
+    it "lowers the distinct voter count when a recompute follows a removed vote" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      bill = bill_voted_for_by(legislator, sway_locale)
+      voters = constituents_vote(11, legislator:, bill:)
+      recompute([bill], [term])
+      expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(11)
+
+      UserVote.find_by!(user: voters.first, bill:).destroy!
+      recompute([bill], [term])
+
+      expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(10)
+      expect(LegislatorLocaleScore.find_by!(legislator_term: term).distinct_voter_count).to eq(10)
+    end
+
+    it "keeps counting every bill in a user's own agreement with a legislator" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      bill = bill_voted_for_by(legislator, sway_locale)
+      user = constituents_vote(1, legislator:, bill:).first
+
+      ScoreRecomputeService.recompute_bill!(bill)
+      ScoreRecomputeService.recompute_user_legislator!(user, term)
+
+      user_legislator = UserLegislator.find_by!(user:, legislator:)
+      expect(UserLegislatorTermScore.find_by!(user_legislator:, legislator_term: term).count_agreed).to eq(1)
     end
   end
 end

@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe UserAddressSwitchService do
+  include_context "with a voter minimum of one"
+
   describe ".cooldown_active_for?" do
     it "returns true when a UserAddressChange was created within COOLDOWN_PERIOD and false otherwise" do
       user = create(:user)

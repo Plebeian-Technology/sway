@@ -323,6 +323,46 @@ class ::LegislatorLocaleScore < ::ApplicationRecord
     def updated_at_before_type_cast: () -> ::Time
 
     def updated_at_for_database: () -> ::Time
+
+    def distinct_voter_count: () -> ::Integer
+
+    def distinct_voter_count=: (::Integer) -> ::Integer
+
+    def distinct_voter_count?: () -> bool
+
+    def distinct_voter_count_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def distinct_voter_count_change: () -> [ ::Integer?, ::Integer? ]
+
+    def distinct_voter_count_will_change!: () -> void
+
+    def distinct_voter_count_was: () -> ::Integer?
+
+    def distinct_voter_count_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def distinct_voter_count_previous_change: () -> ::Array[::Integer?]?
+
+    def distinct_voter_count_previously_was: () -> ::Integer?
+
+    def distinct_voter_count_before_last_save: () -> ::Integer?
+
+    def distinct_voter_count_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def distinct_voter_count_in_database: () -> ::Integer?
+
+    def saved_change_to_distinct_voter_count: () -> ::Array[::Integer?]?
+
+    def saved_change_to_distinct_voter_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_distinct_voter_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_distinct_voter_count!: () -> void
+
+    def clear_distinct_voter_count_change: () -> void
+
+    def distinct_voter_count_before_type_cast: () -> ::Integer
+
+    def distinct_voter_count_for_database: () -> ::Integer
   end
   include ::LegislatorLocaleScore::GeneratedAttributeMethods
   module ::LegislatorLocaleScore::GeneratedAliasAttributeMethods

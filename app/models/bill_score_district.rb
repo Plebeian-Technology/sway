@@ -40,26 +40,20 @@ class BillScoreDistrict < ApplicationRecord
     end
   end
 
+  # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
   def at_large?
-    # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
-    district.at_large?
+    district.number.zero?
   end
 
+  # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   def for_percent
     return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
 
-    total = self.for + against
-    return 0 if total.zero?
-
-    ((self.for.to_f / total) * 100).round
+    ((self.for.to_f / (self.for + against)) * 100).round
   end
 
   def against_percent
-    return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
-
-    total = self.for + against
-    return 0 if total.zero?
-
-    ((against.to_f / total) * 100).round
+    percent = for_percent
+    percent && (100 - percent)
   end
 end

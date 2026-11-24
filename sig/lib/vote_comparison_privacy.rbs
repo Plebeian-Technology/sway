@@ -1,0 +1,7 @@
+module VoteComparisonPrivacy
+    MINIMUM_VOTERS: Integer
+
+    def self.suppressed?: (Integer for_count, Integer against_count) -> bool
+
+    def self.voters_needed: (Integer for_count, Integer against_count) -> Integer
+end

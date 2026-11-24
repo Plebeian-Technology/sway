@@ -5,6 +5,8 @@ require "rake"
 
 # @lat: [[scores-recompute-rake-history#The term-keyed API fix]]
 RSpec.describe "sway:scores:recompute_all" do
+  include_context "with a voter minimum of one"
+
   before(:all) do
     Rails.application.load_tasks unless Rake::Task.task_defined?("sway:scores:recompute_all")
   end

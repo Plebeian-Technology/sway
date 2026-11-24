@@ -6,6 +6,8 @@ require "rails_helper"
 # after ScoreUpdaterService#call recomputes: agreed, disagreed,
 # no_legislator_vote, legislator_abstained.
 RSpec.describe ScoreUpdaterService do
+  include_context "with a voter minimum of one"
+
   describe "#call — the score-write case matrix" do
     it "M-U1: user FOR, legislator FOR → agreed across every aggregate" do
       sway_locale = create(:sway_locale)

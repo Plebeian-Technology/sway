@@ -57,4 +57,31 @@ RSpec.describe BillScoreDistrict, type: :model do
       }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
+
+  describe "#at_large?" do
+    it "is true for the district whose name carries no number" do
+      sway_locale = create(:sway_locale)
+      at_large = create(:district, sway_locale:, name: "#{sway_locale.region_code}0")
+      numbered = create(:district, sway_locale:, name: "#{sway_locale.region_code}4")
+
+      expect(build(:bill_score_district, district: at_large).at_large?).to be(true)
+      expect(build(:bill_score_district, district: numbered).at_large?).to be(false)
+    end
+  end
+
+  describe "#for_percent and #against_percent" do
+    it "are nil below ten voters" do
+      district_score = build(:bill_score_district, for: 5, against: 4)
+
+      expect(district_score.for_percent).to be_nil
+      expect(district_score.against_percent).to be_nil
+    end
+
+    it "are whole numbers that sum to 100 at ten voters" do
+      district_score = build(:bill_score_district, for: 2, against: 14)
+
+      expect(district_score.for_percent).to eq(13)
+      expect(district_score.against_percent).to eq(87)
+    end
+  end
 end
