@@ -29,3 +29,11 @@ The Delete Account button asks for confirmation in the shared confirm dialog, na
 The Sign Out All Devices button asks in the shared confirm dialog, with the mobile sheet's title and body from the parity copy, then posts to the endpoint described in [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]].
 
 The endpoint redirects to the public home page signed out, and the page runs the same cache purge as account deletion on success. The endpoint takes no account id, so the button can only ever end the reader's own sessions.
+
+## Changing the address from the web
+
+The Profile page's Address link opens `GET /users/address/edit`, which renders the registration page in change-address mode for a registered reader and sends anyone else to first-time registration.
+
+[[app/controllers/users/addresses_controller.rb#AddressesController#edit]] passes `change_address` and the current address as plain text. In that mode [[app/frontend/pages/SwayRegistration.tsx#SwayRegistration]] shows the current address and the mobile edit copy, cancels back to Profile instead of signing out, and asks for the switch confirmation before it posts. The post goes to `POST /sway_registration`, the same endpoint mobile uses, so the switch keeps its confirmation, cooldown and audit row ([[identity-and-access#A user holds one address]]).
+
+The switch's refusals used to redirect to the registration index, and the index sends a registered reader to the feed, so the message was lost. [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#address_switch_return_path]] sends an Inertia request from a registered reader back to the change-address page instead, for every outcome of an address switch that does not complete: confirmation required, cooldown, geocoding unavailable, switch unavailable, no representatives and address not located. First-time registration and the JSON answers mobile reads keep their old targets.

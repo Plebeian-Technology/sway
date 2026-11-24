@@ -453,3 +453,54 @@ describe("SwayRegistration — the typed address is submitted as a fact", () => 
         expect(post).not.toHaveBeenCalled();
     });
 });
+
+// @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
+describe("SwayRegistration — change-address mode for a registered user", () => {
+    const registeredUser = {
+        id: 11,
+        registration_status: "completed",
+        is_registration_complete: true,
+    } as unknown as sway.IUser;
+
+    const renderChangeAddress = () =>
+        render(
+            <SwayRegistration
+                user={registeredUser}
+                change_address={true}
+                current_address="100 N Holliday St, Baltimore, MD, 21202, US"
+            />,
+        );
+
+    it("shows the current address and the address-change lead instead of the first-time heading", () => {
+        renderChangeAddress();
+
+        expect(screen.getByTestId("current-address").textContent).toContain(
+            "100 N Holliday St, Baltimore, MD, 21202, US",
+        );
+        expect(screen.getByText(PARITY_COPY.address.switchConfirm.editLead)).toBeInTheDocument();
+        expect(screen.queryByText(PARITY_COPY.address.complete.heading)).toBeNull();
+        expect(screen.getByTestId("btn-submit-registration").textContent).toBe(PARITY_COPY.address.edit.saveCta);
+    });
+
+    it("cancels back to the Profile page rather than signing out", () => {
+        renderChangeAddress();
+
+        const cancel = screen.getByRole("link", { name: PARITY_COPY.address.edit.cancelCta });
+        expect(cancel.getAttribute("href")).toBe(ROUTES.profile);
+        expect(screen.queryByTestId("btn-cancel-registration")).toBeNull();
+    });
+
+    it("asks to confirm the switch, saying the legislators change, before posting the new address", () => {
+        renderChangeAddress();
+
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(post).not.toHaveBeenCalled();
+        expect(screen.getByText(PARITY_COPY.address.switchConfirm.body)).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(postedBody).toMatchObject({ confirm_deactivate_legislators: true });
+    });
+});

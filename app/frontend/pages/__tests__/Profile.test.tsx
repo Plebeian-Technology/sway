@@ -41,6 +41,7 @@ describe("Profile", () => {
     });
 
     it.each([
+        ["Address", "/users/address/edit"],
         ["Passkey Management", "/users/passkeys"],
         ["Notification Preferences", "/notifications"],
         ["My Memberships", "/users/organization_memberships"],

@@ -425,6 +425,7 @@ export const PARITY_COPY = {
         edit: {
             saveCta: "Save address",
             cancelCta: "Cancel",
+            currentLabel: "Current address:",
         },
         switchConfirm: {
             editLead:

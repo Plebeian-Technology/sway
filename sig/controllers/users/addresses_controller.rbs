@@ -1,0 +1,9 @@
+module Users
+  class AddressesController < ApplicationController
+    def edit: -> untyped
+
+    private
+
+    def registration_outcome: -> Hash[String, untyped]?
+  end
+end

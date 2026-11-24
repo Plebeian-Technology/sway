@@ -7,7 +7,7 @@ import { ROUTES } from "app/frontend/sway_constants";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { formatPhone } from "app/frontend/sway_utils/phone";
 import { Link, router } from "@inertiajs/react";
-import { Bell, ChevronRight, KeyRound, KeySquare, Trash, UserRound, Users, UserX } from "lucide-react";
+import { Bell, ChevronRight, KeyRound, KeySquare, MapPin, Trash, UserRound, Users, UserX } from "lucide-react";
 import { useCallback } from "react";
 
 interface IAccountLink {
@@ -17,6 +17,7 @@ interface IAccountLink {
 }
 
 const ACCOUNT_LINKS: IAccountLink[] = [
+    { href: ROUTES.users.editAddress, label: PARITY_COPY.profile.rows.address, Icon: MapPin },
     { href: ROUTES.users.organization_memberships, label: PARITY_COPY.profile.rows.memberships, Icon: Users },
     { href: ROUTES.notifications, label: PARITY_COPY.profile.rows.notificationPrefs, Icon: Bell },
     { href: ROUTES.users.passkeys, label: PARITY_COPY.profile.rows.passkeyManagement, Icon: KeyRound },

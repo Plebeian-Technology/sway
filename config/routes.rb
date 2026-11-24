@@ -422,7 +422,8 @@ Rails.application.routes.draw do
   namespace :users do
     # @lat: [[identity-and-access#Identity and access#The phone number is the account#Email is contact data, not an authentication path]]
     resource :email_verification, only: %i[create update destroy]
-    resource :address, only: %i[edit update]
+    # @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
+    resource :address, only: %i[edit]
 
     namespace :webauthn do
       resources :sessions, only: %i[create destroy] do
