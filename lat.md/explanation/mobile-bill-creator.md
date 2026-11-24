@@ -91,7 +91,7 @@ Save posts `bill_id` and every selected `{legislator_id, support}` to `POST /leg
 
 ### The organizations section
 
-[[mobile/src/components/admin/billCreator/OrganizationsSection.tsx#OrganizationsSection]] ports the save path of the web's [[app/frontend/components/admin/creator/BillCreatorOrganizations.tsx#BillCreatorOrganizations]] panel. The Creator tab renders it below the legislator votes.
+[[mobile/src/components/admin/billCreator/OrganizationsSection.tsx#OrganizationsSection]] ports the save, rename and remove paths of the web's [[app/frontend/components/admin/creator/BillCreatorOrganizations.tsx#BillCreatorOrganizations]] panel. The Creator tab renders it below the legislator votes.
 
 The web shows the same panel on its Positions tab, so the section takes the tab props (`billId`, `data`, `refresh`) and reads `bill.organizations`, `organizations` and `tab_key` from `data` itself. It never assumes the Creator tab.
 
@@ -101,4 +101,10 @@ Save posts `bill_id` and every row's `value`, `label`, `support`, `summary` and 
 
 The create action answers both branches through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). Success answers 200 JSON and the section shows "Supporting/Opposing Arguments Saved". A refusal rolls back every row and answers 422 with the web's alert as the message and the row errors under `details.organizations`, one hash per row in the order sent ([[organizations-controller#Create errors retain their row and field shape]]). The section shows the message below the rows and each row's label, icon and summary errors on that row. The web keeps its redirect, flash and Inertia errors.
 
-The web's selected-organization chips, its dirty-state guard and its local draft storage stay web-only. Renaming, removing and icon upload belong to later ports of the same row.
+Each saved row also carries Rename and Remove. Rename opens a field holding the name; Save name sends `PATCH /organizations/:id` with the trimmed name alone. A blank or unchanged name closes the field without a request. An organization belongs to every bill in its locale, so the field says so, and a created row, which has no saved organization yet, offers no Rename. On success the row shows the new name and `refresh` reloads the locale's organization list; on a refusal the field stays open with the server's message.
+
+Removal asks first, because the web's button acts at once and a phone press is easier to mistake. Confirming sends `DELETE /organization_bill_positions/:id?bill_creator_tab=<tab_key>`, which unpublishes the position ([[organization-position-removal#Removal deactivates, it does not delete]]); the organization stays. The position id comes from the latest `bill.organizations`, not from the row, so a row saved in this session can be removed after `refresh` has reread it. A row with no saved position drops locally with no request, as on the web. A refusal leaves the row and shows the message on it.
+
+[[app/controllers/organizations_controller.rb#OrganizationsController#update]] and [[app/controllers/organization_bill_positions_controller.rb#OrganizationBillPositionsController#destroy]] answer through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). Success is 200 JSON. A refused or unknown organization answers 422 with the web's alert as the message and no field errors. The web keeps its redirects and flash.
+
+The web's selected-organization chips, its dirty-state guard and its local draft storage stay web-only: the chips only duplicate the Remove control, and the draft cache that restores a removed row's typed text has no mobile counterpart. Icon upload belongs to a later port of the same row.

@@ -54,6 +54,9 @@ export const Routes = {
         `/admin/bill_summary_reports?status=${status}${localeId === null ? "" : `&locale_id=${localeId}`}`,
     adminLegislatorVotes: () => "/legislator_votes",
     adminOrganizations: (tab: string) => `/organizations?bill_creator_tab=${encodeURIComponent(tab)}`,
+    adminOrganization: (id: number) => `/organizations/${id}`,
+    adminOrganizationBillPosition: (id: number, tab: string) =>
+        `/organization_bill_positions/${id}?bill_creator_tab=${encodeURIComponent(tab)}`,
     adminBillCreatorNew: () => "/admin/bill_creator/new",
     adminBillCreatorTab: (billId: number | null, tab: string) =>
         billId === null ? `/admin/bill_creator/new?bill_creator_tab=${tab}` : `/admin/bill_creator/${billId}/${tab}`,

@@ -1,11 +1,18 @@
 import React from "react";
+import { Alert } from "react-native";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import { ApiRequestError } from "../../../../src/api/errors";
 
 const mockApiPost = jest.fn();
+const mockApiPatch = jest.fn();
+const mockApiDelete = jest.fn();
 jest.mock("../../../../src/api/client", () => ({
-    apiClient: { post: (...args: unknown[]) => mockApiPost(...args) },
+    apiClient: {
+        post: (...args: unknown[]) => mockApiPost(...args),
+        patch: (...args: unknown[]) => mockApiPatch(...args),
+        delete: (...args: unknown[]) => mockApiDelete(...args),
+    },
 }));
 
 jest.mock("../../../../src/hooks/useReachability", () => ({
@@ -50,13 +57,27 @@ const renderSection = (overrides: Partial<React.ComponentProps<typeof Organizati
     return { refresh };
 };
 
+const pressConfirmButton = (spy: jest.SpyInstance, label: string) => {
+    const buttons = spy.mock.calls[0][2] as { text: string; onPress?: () => void }[];
+    buttons.find((button) => button.text === label)?.onPress?.();
+};
+
 const search = (text: string) => fireEvent.changeText(screen.getByTestId("admin-organizations-search"), text);
 
 // @lat: [[mobile-bill-creator#Sections#The organizations section]]
 describe("OrganizationsSection", () => {
+    let alertSpy: jest.SpyInstance;
+
     beforeEach(() => {
         jest.clearAllMocks();
         mockApiPost.mockResolvedValue({});
+        mockApiPatch.mockResolvedValue({});
+        mockApiDelete.mockResolvedValue(null);
+        alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        alertSpy.mockRestore();
     });
 
     it("posts the bill id with each row's label, support and summary", async () => {
@@ -198,5 +219,142 @@ describe("OrganizationsSection", () => {
 
         await waitFor(() => expect(mockApiPost).toHaveBeenCalledTimes(1));
         expect(mockApiPost.mock.calls[0][0]).toBe("/organizations?bill_creator_tab=positions");
+    });
+
+    describe("renaming a row", () => {
+        const startRename = (index = 0) =>
+            fireEvent.press(screen.getByTestId(`admin-organizations-row-${index}-rename`));
+
+        it("patches the organization's name alone and shows the new name", async () => {
+            const { refresh } = renderSection();
+
+            startRename();
+            fireEvent.changeText(
+                screen.getByTestId("admin-organizations-row-0-rename-input"),
+                "  Harford Road Residents ",
+            );
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-rename-save"));
+
+            await waitFor(() => expect(mockApiPatch).toHaveBeenCalledTimes(1));
+            expect(mockApiPatch).toHaveBeenCalledWith("/organizations/7", { name: "Harford Road Residents" });
+            expect(await screen.findByText("Harford Road Residents")).toBeTruthy();
+            expect(screen.queryByTestId("admin-organizations-row-0-rename-input")).toBeNull();
+            expect(refresh).toHaveBeenCalled();
+        });
+
+        it("sends nothing when the name is blank or unchanged, and leaves the editor", () => {
+            renderSection();
+
+            startRename();
+            fireEvent.changeText(screen.getByTestId("admin-organizations-row-0-rename-input"), "   ");
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-rename-save"));
+
+            expect(mockApiPatch).not.toHaveBeenCalled();
+            expect(screen.queryByTestId("admin-organizations-row-0-rename-input")).toBeNull();
+            expect(screen.getByText("Harford Road Neighbors")).toBeTruthy();
+        });
+
+        it("restores the name when the admin cancels", () => {
+            renderSection();
+
+            startRename();
+            fireEvent.changeText(screen.getByTestId("admin-organizations-row-0-rename-input"), "Something else");
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-rename-cancel"));
+            startRename();
+
+            expect(screen.getByTestId("admin-organizations-row-0-rename-input").props.value).toBe(
+                "Harford Road Neighbors",
+            );
+            expect(mockApiPatch).not.toHaveBeenCalled();
+        });
+
+        it("keeps the editor open and shows the server's message when the rename is refused", async () => {
+            mockApiPatch.mockRejectedValue(
+                new ApiRequestError(
+                    "validation_failed",
+                    "Could not rename organization: Name has already been taken",
+                    undefined,
+                    422,
+                ),
+            );
+            const { refresh } = renderSection();
+
+            startRename();
+            fireEvent.changeText(
+                screen.getByTestId("admin-organizations-row-0-rename-input"),
+                "Baltimore Tenants Union",
+            );
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-rename-save"));
+
+            expect(await screen.findByText("Could not rename organization: Name has already been taken")).toBeTruthy();
+            expect(screen.getByLabelText("Rename Harford Road Neighbors")).toBeTruthy();
+            expect(refresh).not.toHaveBeenCalled();
+        });
+
+        it("offers no rename for an organization that is not saved yet", () => {
+            renderSection();
+
+            search("Fresh Group");
+            fireEvent.press(screen.getByTestId("admin-organizations-create"));
+
+            expect(screen.getByTestId("admin-organizations-row-0-rename")).toBeTruthy();
+            expect(screen.queryByTestId("admin-organizations-row-1-rename")).toBeNull();
+        });
+    });
+
+    describe("removing a row", () => {
+        it("deactivates the saved position only after the admin confirms, then drops the row", async () => {
+            const { refresh } = renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-remove"));
+
+            expect(alertSpy).toHaveBeenCalledTimes(1);
+            expect(mockApiDelete).not.toHaveBeenCalled();
+            expect(screen.getByTestId("admin-organizations-row-0")).toBeTruthy();
+
+            pressConfirmButton(alertSpy, "Remove");
+
+            await waitFor(() => expect(mockApiDelete).toHaveBeenCalledTimes(1));
+            expect(mockApiDelete.mock.calls[0][0]).toBe("/organization_bill_positions/71?bill_creator_tab=creator");
+            await waitFor(() => expect(screen.queryByTestId("admin-organizations-row-0")).toBeNull());
+            expect(refresh).toHaveBeenCalled();
+        });
+
+        it("keeps the row when the admin declines", () => {
+            renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-remove"));
+            const buttons = alertSpy.mock.calls[0][2] as { text: string; style?: string }[];
+
+            expect(buttons.find((button) => button.style === "cancel")).toBeTruthy();
+            expect(mockApiDelete).not.toHaveBeenCalled();
+            expect(screen.getByTestId("admin-organizations-row-0")).toBeTruthy();
+        });
+
+        it("keeps the row and shows the server's message when the removal fails", async () => {
+            mockApiDelete.mockRejectedValue(
+                new ApiRequestError("not_found", "Organization position not found.", undefined, 404),
+            );
+            renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-remove"));
+            pressConfirmButton(alertSpy, "Remove");
+
+            expect(await screen.findByText("Organization position not found.")).toBeTruthy();
+            expect(screen.getByTestId("admin-organizations-row-0")).toBeTruthy();
+        });
+
+        it("drops a row that has no saved position without calling the server", async () => {
+            renderSection();
+
+            search("tenants");
+            fireEvent.press(screen.getByTestId("admin-organizations-option-8"));
+            fireEvent.press(screen.getByTestId("admin-organizations-row-1-remove"));
+            pressConfirmButton(alertSpy, "Remove");
+
+            await waitFor(() => expect(screen.queryByTestId("admin-organizations-row-1")).toBeNull());
+            expect(mockApiDelete).not.toHaveBeenCalled();
+            expect(screen.getByTestId("admin-organizations-row-0")).toBeTruthy();
+        });
     });
 });

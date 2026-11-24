@@ -1,6 +1,6 @@
 // @lat: [[mobile-bill-creator#Sections#The organizations section]]
 import React, { useMemo, useRef, useState } from "react";
-import { Switch, Text, TextInput, View } from "react-native";
+import { Alert, Switch, Text, TextInput, View } from "react-native";
 
 import { Routes } from "../../../api/routes";
 import { Pressable } from "../../ui/Pressable";
@@ -74,6 +74,11 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
         Routes.adminOrganizations(tabKey),
     );
 
+    const positionIdOf = (organizationId: number) =>
+        bill?.organizations
+            ?.find((organization) => organization.id === organizationId)
+            ?.positions?.find((position) => position.bill_id === billId)?.id;
+
     const options = useMemo(
         () => ((data.organizations ?? []) as CreatorOrganization[]).map((organization) => toRow(organization, null)),
         [data.organizations],
@@ -137,6 +142,12 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
             setSaved(true);
             void refresh();
         }
+    };
+
+    const removeRow = (index: number) => {
+        setSaved(false);
+        setRows((current) => current.filter((_, i) => i !== index));
+        void refresh();
     };
 
     const rowErrors = errorMessage === null ? [] : rowErrorsFrom(fieldErrors);
@@ -209,7 +220,11 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
                         row={row}
                         error={rowErrors[index]}
                         disabled={loading}
+                        tabKey={tabKey}
+                        positionId={positionIdOf(row.value)}
                         onChange={(change) => updateRow(index, change)}
+                        onRenamed={refresh}
+                        onRemoved={() => removeRow(index)}
                     />
                 ))
             )}
@@ -249,7 +264,11 @@ interface OrganizationRowCardProps {
     row: OrganizationRow;
     error?: OrganizationRowError;
     disabled: boolean;
+    tabKey: string;
+    positionId: number | undefined;
     onChange: (change: Partial<OrganizationRow>) => void;
+    onRenamed: () => void;
+    onRemoved: () => void;
 }
 
 function RowError({ testID, message }: { testID: string; message?: string | null }) {
@@ -264,13 +283,118 @@ function RowError({ testID, message }: { testID: string; message?: string | null
     );
 }
 
-function OrganizationRowCard({ index, row, error, disabled, onChange }: OrganizationRowCardProps) {
+function OrganizationRowCard({
+    index,
+    row,
+    error,
+    disabled,
+    tabKey,
+    positionId,
+    onChange,
+    onRenamed,
+    onRemoved,
+}: OrganizationRowCardProps) {
     const testID = `admin-organizations-row-${index}`;
+    const canRename = row.value > 0;
+    const [renaming, setRenaming] = useState(false);
+    const [nameDraft, setNameDraft] = useState(row.label);
+    const rename = useAdminMutation<unknown>("patch", Routes.adminOrganization(row.value));
+    const removal = useAdminMutation<unknown>("delete", Routes.adminOrganizationBillPosition(positionId ?? 0, tabKey));
+    const busy = disabled || rename.loading || removal.loading;
+
+    const startRename = () => {
+        setNameDraft(row.label);
+        setRenaming(true);
+    };
+
+    const saveRename = async () => {
+        const name = nameDraft.trim();
+        if (name === "" || name === row.label) {
+            setRenaming(false);
+            return;
+        }
+        const response = await rename.run({ name });
+        if (response !== undefined) {
+            onChange({ label: name });
+            setRenaming(false);
+            onRenamed();
+        }
+    };
+
+    const remove = async () => {
+        if (positionId !== undefined && (await removal.run()) === undefined) return;
+        onRemoved();
+    };
+
+    const confirmRemove = () => {
+        Alert.alert("Remove organization?", `Remove ${row.label} from this bill? Its position is unpublished.`, [
+            { text: "Keep", style: "cancel" },
+            { text: "Remove", style: "destructive", onPress: () => void remove() },
+        ]);
+    };
+
     return (
         <View testID={testID} className="mb-4 rounded-lg border border-border-light p-4 dark:border-border-dark">
-            <Text className="text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
-                {row.label}
-            </Text>
+            {renaming ? (
+                <View>
+                    <TextInput
+                        testID={`${testID}-rename-input`}
+                        value={nameDraft}
+                        onChangeText={setNameDraft}
+                        editable={!busy}
+                        accessibilityLabel={`Rename ${row.label}`}
+                        className="rounded-md border border-border-light bg-input-light px-4 py-3 font-open-sans-light text-foreground-light dark:border-border-dark dark:bg-input-dark dark:text-foreground-dark"
+                        style={{ minHeight: 44 }}
+                    />
+                    <Text className="mt-1 text-xs font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                        Renames this organization for every bill in this locale.
+                    </Text>
+                    <View className="mt-2 flex-row gap-2">
+                        <Pressable
+                            testID={`${testID}-rename-save`}
+                            variant="default"
+                            disabled={busy}
+                            accessibilityLabel={`Save new name for ${row.label}`}
+                            onPress={() => void saveRename()}
+                        >
+                            <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
+                                {rename.loading ? "Renaming..." : "Save name"}
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            testID={`${testID}-rename-cancel`}
+                            variant="ghost"
+                            disabled={busy}
+                            accessibilityLabel={`Cancel renaming ${row.label}`}
+                            onPress={() => setRenaming(false)}
+                        >
+                            <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                                Cancel
+                            </Text>
+                        </Pressable>
+                    </View>
+                    <RowError testID={`${testID}-rename-error`} message={rename.errorMessage} />
+                </View>
+            ) : (
+                <View className="flex-row items-center justify-between gap-2">
+                    <Text className="flex-1 text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                        {row.label}
+                    </Text>
+                    {canRename ? (
+                        <Pressable
+                            testID={`${testID}-rename`}
+                            variant="ghost"
+                            disabled={busy}
+                            accessibilityLabel={`Rename ${row.label}`}
+                            onPress={startRename}
+                        >
+                            <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                                Rename
+                            </Text>
+                        </Pressable>
+                    ) : null}
+                </View>
+            )}
             <RowError testID={`${testID}-label-error`} message={error?.label} />
             <RowError testID={`${testID}-icon-error`} message={error?.icon_url} />
 
@@ -313,6 +437,20 @@ function OrganizationRowCard({ index, row, error, disabled, onChange }: Organiza
                 {`${row.label}’s opinion of the bill (markdown supported).`}
             </Text>
             <RowError testID={`${testID}-summary-error`} message={error?.summary} />
+
+            <Pressable
+                testID={`${testID}-remove`}
+                variant="outline"
+                disabled={busy}
+                accessibilityLabel={`Remove ${row.label}`}
+                onPress={confirmRemove}
+                className="mt-4"
+            >
+                <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                    {removal.loading ? "Removing..." : "Remove organization"}
+                </Text>
+            </Pressable>
+            <RowError testID={`${testID}-remove-error`} message={removal.errorMessage} />
         </View>
     );
 }
