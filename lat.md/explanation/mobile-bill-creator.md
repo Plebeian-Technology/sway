@@ -53,6 +53,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Summary also lists `summary_prompt`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). Every other summary request, the poll included, answers without it.
 - Summary also lists `summary_revisions`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary revisions section]]).
 - Summary also lists `summary_source_documents`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary sources section]]). The ledger's counts, `summary_sources`, are small and ride every request.
+- Summary reads the category override's data from props the list already carried: `active_categories`, `max_active_categories_per_bill` and, inside `bill`, `override_categories` and `bill_llm_provisioning` ([[mobile-bill-creator#Sections#The category override section]]).
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the campaign letter text, stay absent whatever the tab.
 
@@ -528,3 +529,32 @@ The section leaves out two details of the web panel.
 
 - The `readOnly` mode, which no web caller sets.
 - The disabled review controls of an unsaved bill. Such a bill has no articles, so the phone renders no controls for it.
+
+### The category override section
+
+The Summary tab lets an admin set a bill's categories by hand, as the web's categories panel does ([[bill-categories-request-spec-design]]).
+
+[[mobile/src/components/admin/billCreator/CategoryOverrideSection.tsx#CategoryOverrideSection]] ports [[app/frontend/components/admin/creator/BillCategoryOverride.tsx]] and renders last on the tab, below the news articles, as the web places it. Like the web, it renders only once the bill has a `bill_llm_provisioning` record, and it renders nothing for an unsaved bill.
+
+Each assigned category is a chip with a remove button. Removing sends DELETE to `/bills/:bill_id/categories/:id` with no confirmation, as the web does, and a successful answer reloads the tab. Below the chips, every active category the bill lacks is a button; pressing one sends POST to `/bills/:bill_id/categories` with `category_id`, and a successful answer reloads the tab. With no chips the section says "No categories assigned yet. Add one below."
+
+#### The category limit
+
+The section counts only active chips against `max_active_categories_per_bill`. An inactive leftover shows as a removable chip but takes no place.
+
+At the limit the buttons give way to "Maximum N categories assigned." A missing limit keeps the buttons, so the server's refusal names the real limit ([[bill-category-redirect-prop-freshness#Why the active-category counter only counts ACTIVE categories, and stays open when the limit prop is missing]]).
+
+The buttons never list a category the bill already has, so the phone never sends a re-add. A direct caller that does gets a created answer and no change from the server ([[bill-categories-request-spec-design#Why re-adding an already-assigned category succeeds instead of erroring]]).
+
+#### A refused category write
+
+A refused add answers 422 with the server's message ([[bills-categories-controller-manual-assignment]]), and the section shows it under the buttons without reloading.
+
+[[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads the message, for example "Maximum 3 categories allowed per bill." A refused removal shows its message under its own chip.
+
+#### What the phone leaves out
+
+The section leaves out two details of the web panel.
+
+- The success toasts "Category added" and "Category removed". The phone has no toast; the chip row changing on the reload is the confirmation.
+- The dropdown and its remount after a failed add. Buttons hold no remembered value, so a refused add can be pressed again.

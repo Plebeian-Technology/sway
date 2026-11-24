@@ -1575,6 +1575,24 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body.fetch("summary_revisions").pluck("id")).to include(revision.id)
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The category override section]]
+      it "gives the summary tab the bill's assigned categories and the categories it may add" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        assigned = create(:category, name: "Zoning")
+        offered = create(:category, name: "Finance")
+        create(:bill_category, bill: bill, category: assigned)
+
+        get_tab_as_json(bill, user, "summary")
+
+        body = response.parsed_body
+        expect(body.dig("bill", "override_categories")).to eq([{"id" => assigned.id, "name" => "Zoning", "active" => true}])
+        expect(body.fetch("active_categories")).to include({"id" => offered.id, "name" => "Finance"})
+        expect(body.fetch("max_active_categories_per_bill")).to eq(Category::MAX_ACTIVE_PER_BILL)
+        expect(body.fetch("bill")).to have_key("bill_llm_provisioning")
+      end
+
       # @lat: [[mobile-bill-creator#Sections#The summary sources section]]
       it "gives the summary tab the prompt sections the model read only when the request asks for them" do
         sway_locale, user = setup
