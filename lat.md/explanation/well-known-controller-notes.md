@@ -71,9 +71,7 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 
 `DEEP_LINK_PATTERNS` is the claimed list. Rails serves it in the ownership file, and a web link to anything else here opens the browser however well the app could answer it. The claimed paths are:
 
-- `bills/:id` — a bill's detail. It is registered in both the Home and
-  Bills stacks, so the link opens inside whichever section the reader was
-  already in.
+- `bills/:id` — a bill's detail, in the Bills section
 - `bills` — the All Bills list
 - `past_bills_of_the_month` — the Past Bills of the Month list
 - `legislators/:id` — a legislator's detail
@@ -88,6 +86,14 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
 `feed`, `profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those four answer `sway://` links from inside the app only.
+
+### Why each path maps to one screen
+
+A path that two screens share stops every link, not only links to that path.
+
+React Navigation builds its whole path table before it matches anything, and it throws when one pattern resolves to two screens. The link handler catches the error, logs it and opens nothing. `bills/:id` was once mapped under both Home and Bills, and while it was, no web link and no `sway://` link opened any screen.
+
+The bill detail screen is still registered in several stacks for navigation inside the app. Only the link table names it once, under Bills, which is where a push notification and the feed already open a bill.
 
 ### Why androidPathData must never hand back a prefix containing a star
 

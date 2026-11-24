@@ -15,7 +15,6 @@ export const linking: LinkingOptions<RootParamList> = {
             Home: {
                 screens: {
                     BillOfTheMonth: { path: "bill_of_the_month", alias: ["bill_of_the_week"] },
-                    BillDetail: { path: "bills/:id", parse: { id: Number } },
                 },
             },
             Bills: {
