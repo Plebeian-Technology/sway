@@ -65,7 +65,7 @@ export const linking: LinkingOptions<RootParamList> = {
             Profile: {
                 screens: {
                     // @lat: [[naming-decisions#Naming decisions#A route name is not a label]]
-                    ProfileHub: "profile",
+                    ProfileHub: { path: "profile", alias: ["users/profile"] },
                     MembershipsList: "users/organization_memberships",
                     MembershipDetail: "organizations/:orgId/memberships/:id",
                     MembershipInviteConfirm: {

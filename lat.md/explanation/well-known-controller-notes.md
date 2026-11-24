@@ -83,11 +83,22 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 - `organizations/:orgId/memberships/:id` — one membership
 - `organizations/:id` — an organization's detail
 - `organizations` — the organizations list
+- `feed` — the feed
+- `users/organization_memberships` — the memberships list
+- `users/profile` — the profile screen, which also answers the app-only path `profile`
 - `s/:key`, `invite/:userId/:inviteUuid` and `invites/:userId/:inviteUuid` — a user invite link, which opens no screen ([[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]])
 
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
-`feed`, `profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those four answer `sway://` links from inside the app only.
+The bare `profile` and `sign-in` paths are the only ones left unclaimed, and only because neither is a web address: the web profile page is `users/profile`. Those two answer `sway://` links from inside the app only.
+
+### Signed-in pages are claimed too
+
+The feed, the memberships list and the profile page open the app like any public page, although each shows something that differs by who is signed in.
+
+They were once left unclaimed. A public page reads the same for everyone, so opening it in the app was simply better; a personal page opened the app on a sign-in wall, and the link was lost by the time the person had signed in, which was worse than a browser page that showed the reader why.
+
+That objection is gone. A link that arrives before the main screens is now kept and opened after sign-in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]), so the person lands where the link pointed either way. With it gone, the rule is the simple one: every Sway web address the app has a screen for opens the app when the app is installed.
 
 ### A bill share link opens the shared bill
 

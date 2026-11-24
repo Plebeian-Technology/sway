@@ -22,8 +22,12 @@ describe("linking config", () => {
         expect(profileScreens.MembershipsList).toBe("users/organization_memberships");
     });
 
-    test("existing Profile route is preserved", () => {
-        expect(profileScreens.ProfileHub).toBe("profile");
+    test("ProfileHub answers the app path and the web profile path", () => {
+        const focusedRoute = (path: string) =>
+            linking.getStateFromPath!(path, linking.config as never)?.routes[0].state?.routes[0].name;
+
+        expect(focusedRoute("profile")).toBe("ProfileHub");
+        expect(focusedRoute("users/profile")).toBe("ProfileHub");
     });
 
     // @lat: [[well-known-controller-notes#Mobile: linking.ts#Why each path maps to one screen]]

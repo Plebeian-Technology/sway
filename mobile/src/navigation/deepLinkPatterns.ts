@@ -14,6 +14,9 @@ export const DEEP_LINK_PATTERNS = [
     "/invite/*/*",
     "/invites/*/*",
     "/bill_shares/*",
+    "/feed",
+    "/users/organization_memberships",
+    "/users/profile",
 ];
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]

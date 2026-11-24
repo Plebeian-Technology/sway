@@ -81,7 +81,10 @@ class WellKnownController < ApplicationController
               "/s/*",
               "/invite/*/*",
               "/invites/*/*",
-              "/bill_shares/*"
+              "/bill_shares/*",
+              "/feed",
+              "/users/organization_memberships",
+              "/users/profile"
             ]
           }
         ]
