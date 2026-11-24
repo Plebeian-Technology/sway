@@ -50,6 +50,16 @@ Distinct voters cannot be added across terms, because the same user may stand be
 
 A term with no counted votes adds nothing to the sum and so reveals nothing. `comparison_suppressed?` leaves such a term out of the check, which keeps one empty early term from hiding a legislator's lifetime figure for good.
 
+## The placeholder shown in place of a hidden comparison
+
+A reader who meets a hidden number sees a placeholder that says why, so an empty space never reads as a broken page. [[app/frontend/components/bill/VoteComparisonPlaceholder.tsx]] draws it on the web.
+
+Given the number of voters still needed, it says how many more users must vote and asks the reader to invite others. A signed-in reader gets a button that copies their own invite link, which the shared `user` prop already carries as `invite_url`. A signed-out visitor gets a sign-up link instead, and a signed-in reader with no invite link gets the message alone.
+
+Without that number it says only that there are not enough votes yet. Districts and legislator scores take this form, because their voter counts are never sent.
+
+The strings live in `PARITY_COPY.bill.voteComparisonPlaceholder`, so the mobile app shows the same words.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.
