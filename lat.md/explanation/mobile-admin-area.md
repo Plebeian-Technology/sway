@@ -163,7 +163,7 @@ The tool id `bill_creator` maps to the `AdminBillPicker` route, which opens the 
 
 Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
 
-The call is `const { run, loading, errorMessage, fieldErrors, errorStatus } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
+The call is `const { run, loading, errorMessage, fieldErrors, errorStatus, errorBody } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
 
 `run(body?)` resolves to the parsed response on success, to `null` when a successful response has no body (a 204 DELETE), and to `undefined` on failure. A screen tells success from failure with `result === undefined`. `run` never throws, so a screen reads `errorMessage` instead of wrapping each call in `try`. Each call clears the previous error first.
 
@@ -171,7 +171,7 @@ The call is `const { run, loading, errorMessage, fieldErrors, errorStatus } = us
 - `errorMessage` is the server's message for an `ApiRequestError` (including `NetworkError`), the offline message when the device is offline, and [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] for anything else.
 - `errorStatus` is the HTTP status of a failed request, or `null`. A screen reads it to replace the server's message for one status, as the LLM settings screen does for 409.
 - `fieldErrors` is the error's `details` as the server sent it, or `null`. Its values are `unknown` because real endpoints send arrays, nested hashes, plain strings and arrays of row hashes, so the screen narrows what it reads.
-- A screen that needs an extra key of a 422 body (the news article `receipt_status`, for example) reads it from `ApiRequestError.body`, which holds the parsed response body. The hook keeps only the message and field errors.
+- `errorBody` is the parsed body of a failed request (`ApiRequestError.body`), or `null`. A screen that needs a key the error envelope drops reads it here: a refused news article discovery answers 422 with `receipt_status` and `articles` and no error key.
 
 The hook calls `assertOnlineForWrite` first ([[mobile-offline-cache-hook#Writes must check isOnline first]]), so an offline device sends nothing and `errorMessage` reads "You need a connection to make this change."
 

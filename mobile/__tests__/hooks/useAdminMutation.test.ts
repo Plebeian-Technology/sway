@@ -115,6 +115,22 @@ describe("useAdminMutation", () => {
         expect(result.current.errorStatus).toBeNull();
     });
 
+    test("keeps the parsed body of a failed request until the next run", async () => {
+        const body = { receipt_status: "failed", articles: [] };
+        mockPost.mockRejectedValueOnce(new ApiRequestError("http_422", "Nope", undefined, 422, body));
+        mockPost.mockResolvedValueOnce({});
+        const { result } = renderHook(() => useAdminMutation("post", "/x"));
+        expect(result.current.errorBody).toBeNull();
+        await act(async () => {
+            await result.current.run({});
+        });
+        expect(result.current.errorBody).toEqual(body);
+        await act(async () => {
+            await result.current.run({});
+        });
+        expect(result.current.errorBody).toBeNull();
+    });
+
     test("run resolves to undefined when the request fails", async () => {
         mockPatch.mockRejectedValue(new ApiRequestError("invalid", "Nope", undefined, 422));
         const { result } = renderHook(() => useAdminMutation("patch", "/x"));
