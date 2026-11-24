@@ -6,15 +6,19 @@ jest.mock("@react-navigation/native", () => ({
     useNavigation: () => ({ setParams: mockSetParams }),
 }));
 
+const mockBillFieldsSection = jest.fn();
 jest.mock("../../../../src/components/admin/billCreator/BillFieldsSection", () => {
     const { Pressable, Text } = jest.requireActual("react-native");
     return {
         __esModule: true,
-        default: ({ onSaved }: { onSaved: (bill: { id: number }) => void }) => (
-            <Pressable testID="bill-fields-save" onPress={() => onSaved({ id: 42 })}>
-                <Text>Save</Text>
-            </Pressable>
-        ),
+        default: (props: { onSaved: (bill: { id: number }) => void }) => {
+            mockBillFieldsSection(props);
+            return (
+                <Pressable testID="bill-fields-save" onPress={() => props.onSaved({ id: 42 })}>
+                    <Text>Save</Text>
+                </Pressable>
+            );
+        },
     };
 });
 
@@ -70,6 +74,13 @@ describe("CreatorTab", () => {
 
         expect(refresh).toHaveBeenCalled();
         expect(mockSetParams).not.toHaveBeenCalled();
+    });
+
+    it("gives the bill fields section the tab's news articles", () => {
+        const newsArticles = [{ id: 9, approved: true, has_text: true, url: null, title: null, source_name: null }];
+        render(<CreatorTab billId={42} data={{ bill: undefined, news_articles: newsArticles }} refresh={jest.fn()} />);
+
+        expect(mockBillFieldsSection).toHaveBeenCalledWith(expect.objectContaining({ newsArticles }));
     });
 
     // @lat: [[mobile-bill-creator#Sections#The legislator votes section]]

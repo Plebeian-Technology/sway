@@ -1146,7 +1146,20 @@ RSpec.describe "BillsController", type: :request do
         headers: authenticate_as(user).merge("Accept" => "application/json")
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body.keys).to match_array(%w[bill bill_id tab_key legislators legislator_votes organizations])
+      expect(response.parsed_body.keys).to match_array(%w[bill bill_id tab_key legislators legislator_votes organizations news_articles])
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The bill fields section#Declaring news evidence]]
+    it "serves the bill's news articles on the Creator tab to a bearer request" do
+      sway_locale, user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+      article = create(:bill_news_article, :approved, :with_text_version, bill: bill)
+
+      get "/admin/bill_creator/#{bill.id}/creator", headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.fetch("news_articles").pluck("id", "approved", "has_text")).to eq([[article.id, true, true]])
     end
 
     it "still gives the web page every prop when a tab is named" do

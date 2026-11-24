@@ -51,7 +51,7 @@ class BillsController < ApplicationController
   BILL_CREATOR_TAB_PROPS = {
     "creator" => %i[
       bill bill_id tab_key legislators legislator_votes legislator_votes_refreshed_at legislator_votes_source
-      organizations
+      organizations news_articles
     ],
     "schedule" => %i[bill bill_id bills],
     "pipeline" => %i[

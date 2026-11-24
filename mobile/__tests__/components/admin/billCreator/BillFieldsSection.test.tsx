@@ -302,6 +302,96 @@ describe("BillFieldsSection", () => {
             );
         });
 
+        // @lat: [[mobile-bill-creator#Sections#The bill fields section#Declaring news evidence]]
+        describe("declaring news evidence", () => {
+            const citable = {
+                id: 9,
+                approved: true,
+                has_text: true,
+                url: "https://www.thebaltimorebanner.com/rent",
+                title: "Council weighs rent cap",
+                source_name: "The Baltimore Banner",
+            };
+
+            it("publishes a summary that cites approved news with the web's declaration", async () => {
+                mockApiPatch.mockResolvedValue(savedBill);
+                render(
+                    <BillFieldsSection
+                        billId={42}
+                        bill={savedBill}
+                        legislators={legislators}
+                        newsArticles={[citable]}
+                        onSaved={jest.fn()}
+                    />,
+                );
+                typeInto("summary", "Rents rose 9% ([Banner](https://www.thebaltimorebanner.com/rent)).");
+                fireEvent.press(screen.getByTestId("admin-news-evidence-cited"));
+
+                expect(screen.getByTestId("admin-news-evidence-article-9")).toBeTruthy();
+
+                fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+                await waitFor(() =>
+                    expect(mockApiPatch).toHaveBeenCalledWith(
+                        "/bills/42",
+                        expect.objectContaining({
+                            summary: "Rents rose 9% ([Banner](https://www.thebaltimorebanner.com/rent)).",
+                            news_usage: "cited",
+                            source_uses: [],
+                        }),
+                    ),
+                );
+                expect(await screen.findByText("Bill saved.")).toBeTruthy();
+            });
+
+            it("declares no news by default", async () => {
+                mockApiPatch.mockResolvedValue(savedBill);
+                render(
+                    <BillFieldsSection billId={42} bill={savedBill} legislators={legislators} onSaved={jest.fn()} />,
+                );
+
+                fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+                await waitFor(() =>
+                    expect(mockApiPatch).toHaveBeenCalledWith(
+                        "/bills/42",
+                        expect.objectContaining({ news_usage: "none", source_uses: [] }),
+                    ),
+                );
+            });
+
+            it("shows why the server refused a cited summary", async () => {
+                mockApiPatch.mockRejectedValue(
+                    new ApiRequestError(
+                        "validation_failed",
+                        "Manual summary publication failed validation.",
+                        {
+                            status: "unsupported_grounding",
+                            errors: [
+                                "Citation URL https://example.com/x does not belong to an approved news article for this bill",
+                            ],
+                        },
+                        422,
+                    ),
+                );
+                render(
+                    <BillFieldsSection billId={42} bill={savedBill} legislators={legislators} onSaved={jest.fn()} />,
+                );
+                typeInto("summary", "See [this](https://example.com/x).");
+                fireEvent.press(screen.getByTestId("admin-news-evidence-cited"));
+
+                fireEvent.press(screen.getByTestId("admin-bill-fields-save"));
+
+                expect(
+                    await screen.findByText(
+                        "Citation URL https://example.com/x does not belong to an approved news article for this bill",
+                    ),
+                ).toBeTruthy();
+                expect(screen.getByText("Manual summary publication failed validation.")).toBeTruthy();
+                expect(screen.queryByText("Bill saved.")).toBeNull();
+            });
+        });
+
         it("previews the summary as markdown", () => {
             render(<BillFieldsSection billId={42} bill={savedBill} legislators={legislators} onSaved={jest.fn()} />);
             typeInto("summary", "Caps **rent** increases.");

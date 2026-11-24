@@ -44,6 +44,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Every tab gets `bill` and `bill_id`.
 - Schedule adds `bills`, because its calendar and sidebar place every bill of the locale on their dates.
 - Creator and Positions both render the organizations panel, so both carry `organizations` and `tab_key`, which the panel sends back on save.
+- Creator also carries `news_articles`, which the web reads only on its Summary tab, because the phone's summary editor sits on the Creator tab and lists the citable articles ([[mobile-bill-creator#Sections#The bill fields section#Declaring news evidence]]).
 - Pipeline carries the keys that [[app/controllers/bills_controller.rb#BillsController#edit]] adds outside the shared prop builder: the activity log, the artifact mirrors and the fetched bills. The web pipeline poll list also names `testimony_claimed_affiliations`, but nothing on that tab reads it, so the mobile list leaves it out.
 - Pipeline also carries `legislation_pipeline_run`, the run the web progress panel shows. The web gets it as a shared prop ([[legislation-pipeline-run-sourcing-concern]]), and mobile JSON holds only the action's own props, so [[app/controllers/bills_controller.rb#BillsController#mobile_bill_creator_tab_props]] adds the shared run props before it slices.
 - Pipeline also carries `recent_pipeline_runs` for the run selector, and `stale_pipeline_run_count` and `orphan_pipeline_run_count` for the cleanup buttons ([[mobile-bill-creator#Sections#The pipeline cleanup section]]). All three come from the same shared run props.
@@ -77,7 +78,7 @@ It edits the locale, external id, external version, title, link, sponsor, chambe
 
 The locale list is the bootstrap's `sway_locales`, the same declared locales the web's admin selector offers. A saved bill starts in its own locale, a new one in the app's current locale. The chamber starts at the bill's chamber or the locale's default, stays fixed when the locale declares one chamber, and resets to the new default when the admin picks another locale. The Senate vote date is disabled for a locale with chambers but no Senate. The sponsor list is the one the tab loaded, so it follows the bill's locale (or the app's, for a new bill) rather than the locale picked on screen, as the web's does for a saved bill.
 
-Saving refuses locally, with the web's messages from [[app/frontend/components/admin/creator/hooks/useBillFormSubmit.ts#useBillFormSubmit]], when the locale, status, chamber or sponsor is missing. A date typed in any shape but YYYY-MM-DD is also refused; the web's date input cannot produce one. The body matches the web's: every field, `sway_locale_id`, `active` (the bill's value, or true), `news_usage` `none`, and each date as midnight UTC. A new bill goes to `POST /bills`, a saved one to `PATCH /bills/:id`; the web sends `PUT`, which reaches the same action.
+Saving refuses locally, with the web's messages from [[app/frontend/components/admin/creator/hooks/useBillFormSubmit.ts#useBillFormSubmit]], when the locale, status, chamber or sponsor is missing. A date typed in any shape but YYYY-MM-DD is also refused; the web's date input cannot produce one. The body matches the web's: every field, `sway_locale_id`, `active` (the bill's value, or true), the declared `news_usage` with an empty `source_uses`, and each date as midnight UTC. A new bill goes to `POST /bills`, a saved one to `PATCH /bills/:id`; the web sends `PUT`, which reaches the same action.
 
 [[app/controllers/bills_controller.rb#BillsController#create]] and [[app/controllers/bills_controller.rb#BillsController#update]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). The phone gets the saved bill through [[app/serializers/bill_resource.rb#BillResource]], or a 422 whose field errors appear under their fields. The web keeps its redirects.
 
@@ -89,11 +90,25 @@ The summary editor is a field of this form, as on the web's [[app/frontend/compo
 
 The field starts at the bill's published summary and sends the text untrimmed. The server publishes a summary only when the text differs from the stored one, and a trimmed copy would differ for a summary that ends in a newline.
 
-A new bill's summary goes in with the rest of `POST /bills`; a blank one comes back as the model's "can't be blank" under the field. On a saved bill, [[app/controllers/bills_controller.rb#BillsController#update]] sends a changed summary through [[app/services/manual_news_summary_publication_service.rb#ManualNewsSummaryPublicationService]] with the `news_usage` `none` the form already sends. A refusal answers 422 with a generic message and the real reasons in `details.errors`, so the field lists each reason under the input. The same `details` also carries the publication's `status` string; the form ignores field errors while reasons are present, so that status never lands under the Bill Status choice.
+A new bill's summary goes in with the rest of `POST /bills`; a blank one comes back as the model's "can't be blank" under the field. On a saved bill, [[app/controllers/bills_controller.rb#BillsController#update]] sends a changed summary through [[app/services/manual_news_summary_publication_service.rb#ManualNewsSummaryPublicationService]] with the news usage the admin declared ([[mobile-bill-creator#Sections#The bill fields section#Declaring news evidence]]). A refusal answers 422 with a generic message and the real reasons in `details.errors`, so the field lists each reason under the input. The same `details` also carries the publication's `status` string; the form ignores field errors while reasons are present, so that status never lands under the Bill Status choice.
 
 The ported rules are the web's label, the required marker, the helper text, the link to the Markdown syntax guide, and a live preview drawn by the app's [[mobile-markdown-rendering#Rendering|Markdown renderer]]. The web sets no length limit and validates nothing locally, so neither does the phone.
 
 The phone leaves out four web behaviours. The web turns `:name:` emoji shortcodes into emoji as the admin types; that table is a 100 KB JSON file behind the web's import alias. The web keeps an unsaved draft in browser storage, with the summary it was written against; the phone keeps no drafts. The web swaps in a newly published summary when the admin has not touched the text; the phone's form reads the bill once per load. The web's preview carries no AI-unreviewed notice, and the phone matches it: the Summary tab shows that notice beside the published summary ([[mobile-bill-creator#Sections#The summary generation section]]).
+
+#### Declaring news evidence
+
+Below the summary field, [[mobile/src/components/admin/billCreator/NewsEvidenceControls.tsx#NewsEvidenceControls]] declares whether the summary cites news reporting, as the web's [[app/frontend/components/admin/creator/llm-summary/ManualNewsEvidenceControls.tsx#ManualNewsEvidenceControls]] does.
+
+The publication service refuses a changed summary without a declaration, and refuses a summary that links to news while declaring none ([[news-manual-evidence-ui#Manual evidence review controls]]). Before these controls the form always declared `none`, so a summary citing news, including a restored legacy draft, could not be published from the phone.
+
+The ported rules are the web's title and help text, the two choices with their labels, `none` selected on load, and the notice shown while `none` is selected and the summary links to any host outside the web's official list (a link that cannot be parsed counts as outside). The declaration survives a save, as the web's does.
+
+The save sends `news_usage` as declared and `source_uses` as an empty list, which is what the web's summary editor sends: it never fills the manifest. With `cited`, the server checks each news link in the prose against the bill's approved articles that carry usable text, and infers the claims from the prose itself. A refusal lists the server's reasons under the summary field ([[mobile-bill-creator#Sections#The bill fields section#The summary field]]).
+
+The phone adds one thing. The web editor shares its Summary tab with the news articles panel, so the admin sees the articles while writing. The phone shows one tab at a time, so with `cited` selected the controls list the approved articles with text (title, outlet and selectable address), or say that none exists yet. The Creator tab's prop list gained `news_articles` for this list.
+
+The phone leaves out the web control's unused `sourceUses`, `onChangeSourceUses` and `newsArticles` props, which render nothing, and the web editor's separate publication error banner, because the summary field already shows each reason.
 
 ### The legislator votes section
 
@@ -450,7 +465,7 @@ The phone leaves out the following web behaviours.
 
 - The two-column layout and the list's scroll box: the phone stacks the list above the preview pane and lets the screen scroll.
 - The dialog: the confirmation is a panel in the section, because a modal over a scrolling form adds nothing the panel lacks.
-- Editing the draft: the web loads it into the summary editor with its news-usage controls. The phone shows the draft read-only and has no news-usage declaration, so it cannot publish a restored draft; the Creator tab's summary field publishes with news usage `none`.
+- Loading the draft into the editor: the web fills its summary editor with the draft. The phone shows the draft as selectable text; to publish it, the admin copies it into the Creator tab's summary field and declares its news usage there ([[mobile-bill-creator#Sections#The bill fields section#Declaring news evidence]]).
 - Reset to published summary on the draft notice, which resets that editor.
 - The history, chevron and rotate icons, and the spinner on Refresh history, which reads "Refreshing…".
 

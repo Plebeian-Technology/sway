@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import BillFieldsSection, { type CreatorBill } from "../../../../components/admin/billCreator/BillFieldsSection";
+import type { EvidenceArticle } from "../../../../components/admin/billCreator/NewsEvidenceControls";
 import LegislatorVotesSection, {
     type CreatorLegislatorVote,
     type CreatorVoteLegislator,
@@ -26,6 +27,7 @@ export default function CreatorTab({ billId, data, refresh }: BillCreatorTabProp
                 billId={billId}
                 bill={data.bill as CreatorBill | undefined}
                 legislators={legislators}
+                newsArticles={(data.news_articles ?? []) as EvidenceArticle[]}
                 onSaved={(saved) => {
                     if (billId === null && saved.id !== null) {
                         navigation.setParams({ billId: saved.id });

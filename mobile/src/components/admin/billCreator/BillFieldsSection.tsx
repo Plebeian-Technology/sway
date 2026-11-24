@@ -9,6 +9,7 @@ import { Pressable } from "../../ui/Pressable";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
 import { useBootstrap } from "../../../state/BootstrapContext";
 import { toFormattedLocaleName, type Locale } from "../../../utils/locale";
+import NewsEvidenceControls, { type EvidenceArticle, type NewsUsage } from "./NewsEvidenceControls";
 
 export interface CreatorBill {
     id: number | null;
@@ -260,10 +261,17 @@ interface BillFieldsSectionProps {
     billId: number | null;
     bill: CreatorBill | undefined;
     legislators: CreatorLegislator[];
+    newsArticles?: EvidenceArticle[];
     onSaved: (bill: CreatorBill) => void;
 }
 
-export default function BillFieldsSection({ billId, bill, legislators, onSaved }: BillFieldsSectionProps) {
+export default function BillFieldsSection({
+    billId,
+    bill,
+    legislators,
+    newsArticles = [],
+    onSaved,
+}: BillFieldsSectionProps) {
     const { bootstrap } = useBootstrap();
     const locales = (bootstrap?.sway_locales ?? []) as CreatorLocale[];
     const [fields, setFields] = useState<Fields>(() =>
@@ -272,6 +280,7 @@ export default function BillFieldsSection({ billId, bill, legislators, onSaved }
     const [formMessage, setFormMessage] = useState<string | null>(null);
     const [dateErrors, setDateErrors] = useState<Partial<Record<DateFieldName, string>>>({});
     const [saved, setSaved] = useState(false);
+    const [newsUsage, setNewsUsage] = useState<NewsUsage>("none");
     const { run, loading, errorMessage, fieldErrors } = useAdminMutation<CreatorBill>(
         billId === null ? "post" : "patch",
         billId === null ? Routes.bills() : Routes.bill(billId),
@@ -325,7 +334,8 @@ export default function BillFieldsSection({ billId, bill, legislators, onSaved }
             sway_locale_id: Number(fields.sway_locale_id),
             legislator_id: Number(fields.legislator_id),
             active: bill?.active ?? true,
-            news_usage: "none",
+            news_usage: newsUsage,
+            source_uses: [],
         });
         if (response) {
             setFields(fieldsFromBill(response, selectedLocale));
@@ -406,6 +416,13 @@ export default function BillFieldsSection({ billId, bill, legislators, onSaved }
                 onChange={setField("summary")}
                 disabled={loading}
                 errors={reasons.length > 0 ? reasons : [errorFor("summary")].filter((error) => error !== undefined)}
+            />
+            <NewsEvidenceControls
+                summary={fields.summary}
+                newsUsage={newsUsage}
+                onChangeNewsUsage={setNewsUsage}
+                articles={newsArticles}
+                disabled={loading}
             />
             {formMessage || errorMessage ? (
                 <Text
