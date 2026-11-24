@@ -125,6 +125,24 @@ An upload changes nothing on the server until Save. The row keeps the `signed_id
 
 The file picker and file system are native modules, so a phone needs a development build made after they were added (`eas build --local`); an older build cannot open the picker.
 
+### The paste summary section
+
+[[mobile/src/components/admin/billCreator/PasteSummarySection.tsx#PasteSummarySection]] ports the web's [[app/frontend/components/admin/creator/PasteSummaryDialog.tsx#PasteSummaryDialog]]. The Summary tab renders it below the generation section.
+
+A Paste summary JSON button opens a box with the web dialog's title, help text, placeholder and a collapsed Schema reference that shows [[app/frontend/components/admin/creator/llm-summary/pasteSummarySchemaExample.ts#PASTE_SUMMARY_SCHEMA_EXAMPLE]]. Validate & paste stays disabled while the box holds only whitespace. It posts the text untrimmed as `summary_json` to [[app/controllers/bills_controller.rb#BillsController#paste_summary]], which already answers mobile in JSON. The box and both buttons stay locked while the request runs.
+
+A rejection answers 422 with `details.errors`, a list of path and message pairs. The section lists each pair, keeps the text, and clears the list when the next paste is sent. Tapping a pair focuses the box and moves the cursor to the rejected key through the web's [[app/frontend/components/admin/creator/paste-summary/resolveJsonPointerOffset.ts#resolveJsonPointerOffset]], or to the start when the key is not found. A refusal without that list, such as an offline phone or a 403, shows the server's message instead.
+
+Success closes the box and refetches the tab, so the new draft appears in the generation section. Cancel clears the text and the errors and closes the box. The form is its own component, so closing it discards the mutation state with it. A new bill has no id to post to, so the section shows "Save the bill before pasting a summary." in place of the button.
+
+The phone leaves out five web pieces:
+
+- The Copy example button, because the app installs no clipboard module; the example is selectable text.
+- The info popover beside the dialog title.
+- The note that a summary was saved but the bill's status was not updated. The mobile answer is 200 either way, and the backend is not changed here, so the phone cannot tell the two outcomes apart.
+- The per-error dismissal memory, because the phone's errors live in the open form and vanish when it closes.
+- The check that the redirect landed on this bill's creator, because the phone reads the response status instead of a redirect.
+
 ### The summary audio section
 
 [[mobile/src/components/admin/billCreator/SummaryAudioSection.tsx#SummaryAudioSection]] ports the audio controls of the web's [[app/frontend/components/admin/creator/BillCreatorSummaryAudio.tsx#BillCreatorSummaryAudio]]. The Creator tab renders it below the bill fields.
@@ -394,6 +412,6 @@ The empty state's Prepare prompt button sends that request and shows the prompt 
 The section leaves out web pieces that belong to other sections, or that the phone has no way to show.
 
 - The confirmation dialog itself, its warning about a pasted summary, and the per-bill memory of the chosen model and level across page loads. The choice lasts as long as the section stays mounted.
-- The prompt view's Copy to clipboard button, which needs a clipboard module the app does not install, and the dialog's line pointing at Paste summary JSON. The prompt text is selectable instead.
-- Paste summary JSON, editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
+- The prompt view's Copy to clipboard button, which needs a clipboard module the app does not install. The prompt text is selectable instead.
+- Editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
 - The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.

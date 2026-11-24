@@ -459,6 +459,17 @@ describe("SummaryGenerationSection", () => {
                 bill_pipeline_refresh: refreshStatus === null ? null : { status: refreshStatus },
             });
 
+        it("points the admin to Paste summary JSON for the agent's reply", async () => {
+            mockApiGet.mockResolvedValueOnce({ summary_prompt: "Summarize bill 25-0001.", bill: {} });
+            renderSection(noRow());
+
+            fireEvent.press(screen.getByTestId("admin-summary-prepare-prompt"));
+
+            expect(await screen.findByTestId("admin-summary-prompt-paste-destination")).toHaveTextContent(
+                "When the agent replies, close this prompt and use Paste summary JSON below. No generation is needed, and pasting costs nothing.",
+            );
+        });
+
         // @lat: [[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]
         it("asks the server for the prompt and shows its text", async () => {
             mockApiGet.mockResolvedValueOnce({ summary_prompt: "Summarize bill 25-0001.", bill: {} });

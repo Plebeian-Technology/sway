@@ -689,6 +689,10 @@ const PreparePrompt: React.FC<{ billId: number; pipelineStatus: string | null }>
                         summary_markdown (required), plus optionally full_breakdown_markdown, categories, and
                         cited_section_keys. Any other key is rejected.
                     </Text>
+                    <Text testID="admin-summary-prompt-paste-destination" className={bodyText}>
+                        When the agent replies, close this prompt and use Paste summary JSON below. No generation is
+                        needed, and pasting costs nothing.
+                    </Text>
                     {promptIsStale ? (
                         <Notice testID="admin-summary-prompt-stale" tone="danger" title="This prompt is out of date">
                             <Text className={bodyText}>

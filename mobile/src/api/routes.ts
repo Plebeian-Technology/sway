@@ -90,6 +90,7 @@ export const Routes = {
     bill: (id: number) => `/bills/${id}`,
     billPublicTestimonyLetters: (billId: number) => `/bills/${billId}/public_testimony_letters`,
     billSummaryReports: (billId: number) => `/bills/${billId}/summary_reports`,
+    billPasteSummary: (billId: number) => `/bills/${billId}/paste_summary`,
     billGenerateSummary: (billId: number) => `/bills/${billId}/generate_summary`,
     billRegenerateSummary: (billId: number) => `/bills/${billId}/regenerate_summary`,
     legislators: () => "/legislators",
