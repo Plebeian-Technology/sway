@@ -38,6 +38,20 @@ class UserInviteLink < ApplicationRecord
     def from(user:)
       create!(user:)
     end
+
+    # Returns the id of the user whose invite link the attribution key names, or nil.
+    # @lat: [[identity-and-access#The app names its inviter with an attribution key]]
+    def inviter_id_for(attribution_key)
+      return nil unless attribution_key.is_a?(String)
+
+      kind, value = attribution_key.split(":", 2)
+      return nil if value.blank?
+
+      case kind
+      when "invite" then find_by(invite_uuid: value)&.user_id
+      when "s" then joins(:shortened_urls).find_by(shortened_urls: {unique_key: value})&.user_id
+      end
+    end
   end
 
   def short_url

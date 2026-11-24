@@ -50,4 +50,25 @@ RSpec.describe UserInviteLink, type: :model do
         .to change(UserInviteLink, :count).by(1)
     end
   end
+
+  # @lat: [[identity-and-access#The app names its inviter with an attribution key]]
+  describe ".inviter_id_for" do
+    let(:invite_link) { create(:user_invite_link) }
+
+    it "resolves an invite:<uuid> key to the link's user" do
+      expect(described_class.inviter_id_for("invite:#{invite_link.invite_uuid}")).to eq(invite_link.user_id)
+    end
+
+    it "resolves an s:<short key> key to the link's user" do
+      short_key = invite_link.shortened_urls.first!.unique_key
+
+      expect(described_class.inviter_id_for("s:#{short_key}")).to eq(invite_link.user_id)
+    end
+
+    it "resolves anything else to nil" do
+      [nil, "", "campaign_alpha", "invite:", "s:", "invite:#{SecureRandom.uuid}", "s:unknownkey", 42].each do |key|
+        expect(described_class.inviter_id_for(key)).to be_nil
+      end
+    end
+  end
 end

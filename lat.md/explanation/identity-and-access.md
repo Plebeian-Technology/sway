@@ -147,6 +147,14 @@ Locale collections in [[app/controllers/application_controller.rb]] depend on th
 
 [[app/models/user.rb#User#create_user_invite_url]] creates the invite link after the user row commits and does not regenerate it on later updates. This gives every newly created account one stable invitation link without making unrelated user edits trigger new links.
 
+## The app names its inviter with an attribution key
+
+The mobile app has no invite cookie, so it sends the invite it was opened with as `sway_registration[invite_attribution_key]`.
+
+On the web, an invite link credits the inviter through the `invited_by_id` cookie that the invite pages set. The app signs in with a bearer token and carries no such cookie, so a person who signed up in the app was never credited to anyone.
+
+The key uses the two forms the web already writes into its funnel cookie: `invite:<invite_uuid>` and `s:<short key>`. [[app/models/user_invite_link.rb#UserInviteLink|UserInviteLink.inviter_id_for]] turns either into the id of the user who owns that invite link, and [[app/controllers/sway_registration_controller.rb#SwayRegistrationController#create]] uses it only when the cookie is absent, so a browser's behaviour is unchanged. A key that names nothing resolves to no inviter and registration carries on, because invite bookkeeping never stops a registration.
+
 ## Registration is asynchronous by necessity
 
 `User` carries a `state_machines-activerecord` machine over
