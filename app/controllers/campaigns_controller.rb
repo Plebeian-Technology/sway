@@ -56,10 +56,7 @@ class CampaignsController < ApplicationController
     permitted = params.permit(:id, :decision, :organization_id, :organization_name)
     campaign = Campaign.find_by(id: permitted[:id])
 
-    if campaign.nil?
-      return redirect_to(positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That campaign no longer exists — reload and try again"}})
-    end
+    return refuse_organization_link("That campaign no longer exists — reload and try again") if campaign.nil?
 
     case LinkCampaignOrganizationService.new(
       bill: @bill, campaign: campaign, actor: current_user,
@@ -68,32 +65,23 @@ class CampaignsController < ApplicationController
       organization_name: permitted[:organization_name]
     ).call
     when :campaign_not_on_bill
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That campaign belongs to a different bill"}}
+      refuse_organization_link("That campaign belongs to a different bill")
     when :invalid_decision
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "Invalid decision (expected linked|none|undetermined)"}}
+      refuse_organization_link("Invalid decision (expected linked|none|undetermined)")
     when :organization_required
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "Choose an organization, or record that there is none"}}
+      refuse_organization_link("Choose an organization, or record that there is none")
     when :organization_name_too_long
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "Organization name must be #{Campaign::MAX_NAME_CHARS} characters or fewer"}}
+      refuse_organization_link("Organization name must be #{Campaign::MAX_NAME_CHARS} characters or fewer")
     when :organization_not_found
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That organization no longer exists — reload and try again"}}
+      refuse_organization_link("That organization no longer exists — reload and try again")
     when :organization_wrong_locale
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That organization belongs to a different locale than this bill"}}
+      refuse_organization_link("That organization belongs to a different locale than this bill")
     when :linked
-      flash[:notice] = "Recorded the organization behind this campaign on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Recorded the organization behind this campaign on #{@bill.external_id}.")
     when :recorded_no_organization
-      flash[:notice] = "Recorded that no organization is behind this campaign on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Recorded that no organization is behind this campaign on #{@bill.external_id}.")
     when :recorded_undetermined
-      flash[:notice] = "Recorded this campaign's organization as not determinable yet on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Recorded this campaign's organization as not determinable yet on #{@bill.external_id}.")
     end
   end
 
@@ -141,6 +129,10 @@ class CampaignsController < ApplicationController
 
   def refuse_campaign_write(reason)
     respond_after_write(positions_bill_creator_path(@bill), errors: {campaign_position: reason})
+  end
+
+  def refuse_organization_link(reason)
+    respond_after_write(positions_bill_creator_path(@bill), errors: {campaign_organization: reason})
   end
 
   # @lat: [[campaign-draft-rejection#The activity log]]

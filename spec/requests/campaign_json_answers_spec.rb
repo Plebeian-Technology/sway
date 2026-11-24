@@ -92,6 +92,68 @@ RSpec.describe "Campaign writes for a bearer request", type: :request do
     end
   end
 
+  describe "POST /bills/:bill_id/campaigns/:id/link_organization" do
+    let(:campaign) { create(:campaign, bill: bill) }
+    let(:organization) { create(:organization, sway_locale: bill.sway_locale) }
+    let(:link_path) { "/bills/#{bill.id}/campaigns/#{campaign.id}/link_organization" }
+
+    it "links the organization and answers 200 JSON with the notice" do
+      post link_path, params: {decision: "linked", organization_id: organization.id}, headers: json_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq(
+        "notice" => "Recorded the organization behind this campaign on #{bill.external_id}."
+      )
+      expect(campaign.reload.organization_id).to eq(organization.id)
+    end
+
+    it "records that there is no organization and answers 200 JSON with the notice" do
+      post link_path, params: {decision: "none"}, headers: json_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq(
+        "notice" => "Recorded that no organization is behind this campaign on #{bill.external_id}."
+      )
+    end
+
+    it "records an undetermined organization and answers 200 JSON with the notice" do
+      post link_path, params: {decision: "undetermined"}, headers: json_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq(
+        "notice" => "Recorded this campaign's organization as not determinable yet on #{bill.external_id}."
+      )
+    end
+
+    it "answers a refusal with 422 and the reason under campaign_organization" do
+      post link_path, params: {decision: "linked"}, headers: json_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+      expect(response.parsed_body.dig("error", "details", "campaign_organization")).to eq(
+        "Choose an organization, or record that there is none"
+      )
+      expect(campaign.reload.organization_link_decision).to be_nil
+    end
+
+    it "answers a campaign that no longer exists with 422 and the reason under campaign_organization" do
+      post "/bills/#{bill.id}/campaigns/0/link_organization", params: {decision: "none"}, headers: json_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "details", "campaign_organization")).to eq(
+        "That campaign no longer exists — reload and try again"
+      )
+    end
+
+    it "answers a non-admin with 403 JSON" do
+      post link_path, params: {decision: "none"}, headers: non_admin_headers
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+      expect(campaign.reload.organization_link_decision).to be_nil
+    end
+  end
+
   it "records a rejection the phone sent" do
     post "/bills/#{bill.id}/campaigns/reject_draft", params: {content_hash: "grp1"}, headers: json_headers
 
@@ -116,6 +178,37 @@ RSpec.describe "Campaign writes for a bearer request", type: :request do
       expect(response).to redirect_to(positions_bill_creator_path(bill))
       inertia_errors = session[:inertia_errors] || {}
       expect(inertia_errors[:campaign_position] || inertia_errors["campaign_position"]).to eq("A summary is required")
+    end
+
+    it "keeps the link redirect and notice" do
+      campaign = create(:campaign, bill: bill)
+
+      post "/bills/#{bill.id}/campaigns/#{campaign.id}/link_organization", params: {decision: "none"}
+
+      expect(response).to redirect_to(positions_bill_creator_path(bill))
+      expect(flash[:notice]).to eq("Recorded that no organization is behind this campaign on #{bill.external_id}.")
+    end
+
+    it "keeps the link refusal redirect with its Inertia error" do
+      campaign = create(:campaign, bill: bill)
+
+      post "/bills/#{bill.id}/campaigns/#{campaign.id}/link_organization", params: {decision: "linked"}
+
+      expect(response).to redirect_to(positions_bill_creator_path(bill))
+      inertia_errors = session[:inertia_errors] || {}
+      expect(inertia_errors[:campaign_organization] || inertia_errors["campaign_organization"]).to eq(
+        "Choose an organization, or record that there is none"
+      )
+    end
+
+    it "keeps the missing campaign redirect with its Inertia error" do
+      post "/bills/#{bill.id}/campaigns/0/link_organization", params: {decision: "none"}
+
+      expect(response).to redirect_to(positions_bill_creator_path(bill))
+      inertia_errors = session[:inertia_errors] || {}
+      expect(inertia_errors[:campaign_organization] || inertia_errors["campaign_organization"]).to eq(
+        "That campaign no longer exists — reload and try again"
+      )
     end
 
     it "keeps the reject redirect and notice" do
