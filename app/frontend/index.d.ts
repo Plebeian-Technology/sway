@@ -276,8 +276,8 @@ declare module "sway" {
             district_name: string | null;
             is_executive: boolean;
             active: boolean;
-            district_score: scoring.IAgreeable | null;
-            locale_score: scoring.IAgreeable | null;
+            district_score: scoring.IGroupAgreeable | null;
+            locale_score: scoring.IGroupAgreeable | null;
             user_score: scoring.IAgreeable | null;
             correction_explanation: IHistoricalScoreExplanation | null;
         }
@@ -559,10 +559,18 @@ declare module "sway" {
                 count_disagreed: number;
                 count_no_legislator_vote: number;
                 count_legislator_abstained: number;
-                reached_ten_voter_minimum: boolean;
             }
 
-            interface ILegislatorDistrictScore extends IAgreeable {
+            // @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+            interface IGroupAgreeable extends IAgreeable {
+                comparison_suppressed: boolean;
+                agreed_percent: number | null;
+                disagreed_percent: number | null;
+                no_legislator_vote_percent: number | null;
+                legislator_abstained_percent: number | null;
+            }
+
+            interface ILegislatorDistrictScore extends IGroupAgreeable {
                 legislator_id: number;
             }
 

@@ -32,6 +32,24 @@ Every legislator in a locale is scored over the same users. Were two of them to 
 
 A user's own agreement with a legislator is one user's record, so `tally_agreement` keeps counting every bill for it.
 
+## Legislator scores are sent as percentages
+
+A district or locale agreement score carries `comparison_suppressed` and one whole-number percentage per counter. With fewer than ten distinct voters behind it the flag is true and every percentage is nil.
+
+Percentages replace counts for the reason districts use them: one count can be subtracted from another. `percentages` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] floors each share and hands the leftover points to the largest remainders, so the four always sum to 100.
+
+No `voters_needed` is sent. The number of users behind a district score would show how few people in a small district take part, so every hidden legislator score reads the same.
+
+A reader's own agreement with a legislator is their own record, so it keeps its counters and gains none of these fields.
+
+## A lifetime figure needs every summed term at the minimum
+
+The lifetime score adds a legislator's terms together, and it is hidden unless every term in the sum has ten distinct voters.
+
+Distinct voters cannot be added across terms, because the same user may stand behind several. Ten voters in one term and four in another are somewhere between ten and fourteen people, and the four-voter term's share of the sum is the small group the minimum protects.
+
+A term with no counted votes adds nothing to the sum and so reveals nothing. `comparison_suppressed?` leaves such a term out of the check, which keeps one empty early term from hiding a legislator's lifetime figure for good.
+
 ## Specs that are not about the minimum
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.

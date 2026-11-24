@@ -78,10 +78,10 @@ class LegislatorResource < ApplicationResource
       is_active_or_display = effective_active_term_id.present? && term.id == effective_active_term_id
 
       district_row = term.legislator_district_scores.first
-      district_score = district_row && UserLegislatorTermScoreResource.counters([district_row])
+      district_score = district_row && UserLegislatorTermScoreResource.group_score([district_row])
 
       locale_row = term.legislator_locale_scores.first
-      locale_score = locale_row && UserLegislatorTermScoreResource.counters([locale_row])
+      locale_score = locale_row && UserLegislatorTermScoreResource.group_score([locale_row])
 
       uts = user_scores[term.id]
       user_score =

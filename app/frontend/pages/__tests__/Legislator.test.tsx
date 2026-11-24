@@ -61,6 +61,7 @@ vi.mock("app/frontend/components/legislators/charts/LegislatorChartsPanel", () =
 }));
 
 import Legislator from "app/frontend/pages/Legislator";
+import { groupScore } from "app/frontend/__tests__/support/groupScore";
 
 afterEach(() => {
     cleanup();
@@ -92,7 +93,6 @@ const sampleDistrictScore: sway.scoring.IAgreeable = {
     count_disagreed: 2,
     count_no_legislator_vote: 1,
     count_legislator_abstained: 0,
-    reached_ten_voter_minimum: false,
 };
 
 const sampleLocaleScore: sway.scoring.IAgreeable = {
@@ -100,7 +100,6 @@ const sampleLocaleScore: sway.scoring.IAgreeable = {
     count_disagreed: 6,
     count_no_legislator_vote: 2,
     count_legislator_abstained: 0,
-    reached_ten_voter_minimum: true,
 };
 
 const sampleUserScore: sway.scoring.IAgreeable = {
@@ -108,7 +107,6 @@ const sampleUserScore: sway.scoring.IAgreeable = {
     count_disagreed: 1,
     count_no_legislator_vote: 0,
     count_legislator_abstained: 0,
-    reached_ten_voter_minimum: false,
 };
 
 const sampleCorrectionExplanation: IHistoricalScoreExplanation = {
@@ -128,8 +126,8 @@ const sampleTerm2025: ILegislatorTermEntry = {
     district_name: "MD3",
     is_executive: false,
     active: true,
-    district_score: sampleDistrictScore,
-    locale_score: sampleLocaleScore,
+    district_score: groupScore(sampleDistrictScore),
+    locale_score: groupScore(sampleLocaleScore),
     user_score: sampleUserScore,
     correction_explanation: null,
 };
@@ -144,8 +142,8 @@ const sampleTerm2021: ILegislatorTermEntry = {
     district_name: "MD3",
     is_executive: false,
     active: false,
-    district_score: sampleDistrictScore,
-    locale_score: sampleLocaleScore,
+    district_score: groupScore(sampleDistrictScore),
+    locale_score: groupScore(sampleLocaleScore),
     user_score: null,
     correction_explanation: sampleCorrectionExplanation,
 };
@@ -285,14 +283,12 @@ describe("Legislator — locked tab copy", () => {
                         count_disagreed: 2,
                         count_no_legislator_vote: 1,
                         count_legislator_abstained: 0,
-                        reached_ten_voter_minimum: false,
                     } as sway.scoring.IUserLegislatorScore,
                     lifetime_score: {
                         count_agreed: 99,
                         count_disagreed: 99,
                         count_no_legislator_vote: 99,
                         count_legislator_abstained: 0,
-                        reached_ten_voter_minimum: true,
                     } as sway.scoring.IUserLegislatorScore,
                 }}
             />,
@@ -444,13 +440,12 @@ describe("Legislator — District and Locale Aggregate Agreement Presentation", 
     it("guards against division by zero when aggregate scores have 0 total votes", () => {
         const zeroVotesTerm: ILegislatorTermEntry = {
             ...sampleTerm2025,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: false,
-            },
+            }),
         };
 
         render(
@@ -495,8 +490,8 @@ describe("Legislator — Unresolved Coverage Handling", () => {
     it("renders agreement scores on executive term cards when score data is present while keeping executive stamp", () => {
         const executiveTermWithScores: ILegislatorTermEntry = {
             ...sampleExecutiveTerm,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: sampleUserScore,
         };
 
@@ -523,8 +518,8 @@ describe("Legislator — Unresolved Coverage Handling", () => {
     it("renders unvoted term notice alongside district and locale score tiles on executive term when user_score is null", () => {
         const executiveTermWithoutUserScore: ILegislatorTermEntry = {
             ...sampleExecutiveTerm,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
         };
 

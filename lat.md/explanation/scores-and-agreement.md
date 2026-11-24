@@ -155,3 +155,5 @@ which drops the district number, and the jurisdiction title carries
 ## Privacy thresholds for aggregates
 
 Bill totals, district splits and legislator agreement scores stay hidden until ten distinct users stand behind each number. [[voter-privacy-threshold]] owns the rule, its reasons and the threat it answers.
+
+A lifetime score is a sum across terms, and [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]] says when that sum may be shown.

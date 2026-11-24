@@ -107,7 +107,15 @@ class UserLegislatorTermScoreResource < ApplicationResource
 
   def self.counters: (Array[untyped] rows) -> Hash[Symbol, Integer]
 
+  PERCENT_KEY_BY_COUNTER: Hash[Symbol, Symbol]
+
   def self.aggregate: (Array[untyped] rows, Integer legislator_id) -> Hash[Symbol, untyped]?
+
+  def self.group_score: (Array[untyped] rows) -> Hash[Symbol, untyped]
+
+  def self.comparison_suppressed?: (Array[untyped] rows, Hash[Symbol, Integer] totals) -> bool
+
+  def self.percentages: (Hash[Symbol, Integer] totals) -> Hash[Symbol, Integer]
 end
 
 # Phase 65 (D-27/D-26): the grouping implementation — every method here is a

@@ -215,8 +215,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       legislator = sway_locale.legislators.first
       term = legislator.active_term
 
-      create(:legislator_district_score, legislator_term: term, count_agreed: 5)
-      create(:legislator_locale_score, legislator_term: term, count_agreed: 10)
+      create(:legislator_district_score, legislator_term: term, count_agreed: 5, distinct_voter_count: 4)
+      create(:legislator_locale_score, legislator_term: term, count_agreed: 9, count_disagreed: 3, distinct_voter_count: 10)
       user_legislator = user.user_legislators.find_by(legislator:)
       create(:user_legislator_term_score, user_legislator:, legislator_term: term, count_agreed: 2)
       create(:historical_score_explanation, user:, legislator:)
@@ -259,10 +259,18 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
         ]
       )
 
-      score_keys = %w[count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
-      expect(term_entry["district_score"].keys).to match_array(score_keys)
-      expect(term_entry["locale_score"].keys).to match_array(score_keys)
-      expect(term_entry["user_score"].keys).to match_array(score_keys)
+      user_score_keys = %w[count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
+      percent_keys = %w[agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent]
+      group_score_keys = user_score_keys + percent_keys + %w[comparison_suppressed]
+      expect(term_entry["district_score"].keys).to match_array(group_score_keys)
+      expect(term_entry["locale_score"].keys).to match_array(group_score_keys)
+      expect(term_entry["user_score"].keys).to match_array(user_score_keys)
+
+      # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+      expect(term_entry["district_score"]["comparison_suppressed"]).to be(true)
+      expect(term_entry["district_score"].values_at(*percent_keys)).to all(be_nil)
+      expect(term_entry["locale_score"]["comparison_suppressed"]).to be(false)
+      expect(term_entry["locale_score"].values_at(*percent_keys)).to eq([75, 25, 0, 0])
 
       expect(term_entry["correction_explanation"].keys).to match_array(
         %w[title body delta score_type]
@@ -362,13 +370,13 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       create(:user_legislator_term_score, user_legislator:, legislator_term: prior_term,
         count_agreed: 2, count_disagreed: 0, count_no_legislator_vote: 1, count_legislator_abstained: 0)
 
-      create(:legislator_district_score, legislator_term: current_term,
+      create(:legislator_district_score, legislator_term: current_term, distinct_voter_count: 10,
         count_agreed: 10, count_disagreed: 2, count_no_legislator_vote: 0, count_legislator_abstained: 1)
-      create(:legislator_district_score, legislator_term: prior_term,
+      create(:legislator_district_score, legislator_term: prior_term, distinct_voter_count: 6,
         count_agreed: 5, count_disagreed: 1, count_no_legislator_vote: 0, count_legislator_abstained: 0)
-      create(:legislator_locale_score, legislator_term: current_term,
+      create(:legislator_locale_score, legislator_term: current_term, distinct_voter_count: 12,
         count_agreed: 20, count_disagreed: 3, count_no_legislator_vote: 1, count_legislator_abstained: 0)
-      create(:legislator_locale_score, legislator_term: prior_term,
+      create(:legislator_locale_score, legislator_term: prior_term, distinct_voter_count: 10,
         count_agreed: 8, count_disagreed: 0, count_no_legislator_vote: 0, count_legislator_abstained: 0)
 
       get "/legislators", headers: {"Accept" => "application/json"}
@@ -380,19 +388,14 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       ]
       expect(row["user_legislator_score"].keys).to match_array(expected_keys)
       expect(row["lifetime_score"].keys).to match_array(expected_keys)
-      expect(row["user_legislator_score"]["legislator_district_score"].keys).to match_array(
-        %w[
-          legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
-          comparison_suppressed agreed_percent disagreed_percent abstained_percent no_vote_percent
-        ]
-      )
-
-      expect(row["user_legislator_score"]["legislator_locale_score"].keys).to match_array(
-        %w[
-          legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
-          comparison_suppressed agreed_percent disagreed_percent abstained_percent no_vote_percent
-        ]
-      )
+      group_score_keys = %w[
+        legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
+        comparison_suppressed agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent
+      ]
+      %w[user_legislator_score lifetime_score].each do |scope|
+        expect(row[scope]["legislator_district_score"].keys).to match_array(group_score_keys)
+        expect(row[scope]["legislator_locale_score"].keys).to match_array(group_score_keys)
+      end
 
       # Current term stays the active term's own row (no summing).
       expect(row["user_legislator_score"]["count_agreed"]).to eq(3)
@@ -404,13 +407,18 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(lifetime["count_disagreed"]).to eq(1)
       expect(lifetime["count_no_legislator_vote"]).to eq(1)
       expect(lifetime["count_legislator_abstained"]).to eq(0)
+      # @lat: [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]
       expect(lifetime["legislator_district_score"]).to eq(
         "legislator_id" => legislator.id, "count_agreed" => 15, "count_disagreed" => 3,
-        "count_no_legislator_vote" => 0, "count_legislator_abstained" => 1
+        "count_no_legislator_vote" => 0, "count_legislator_abstained" => 1,
+        "comparison_suppressed" => true, "agreed_percent" => nil, "disagreed_percent" => nil,
+        "no_legislator_vote_percent" => nil, "legislator_abstained_percent" => nil
       )
       expect(lifetime["legislator_locale_score"]).to eq(
         "legislator_id" => legislator.id, "count_agreed" => 28, "count_disagreed" => 3,
-        "count_no_legislator_vote" => 1, "count_legislator_abstained" => 0
+        "count_no_legislator_vote" => 1, "count_legislator_abstained" => 0,
+        "comparison_suppressed" => false, "agreed_percent" => 88, "disagreed_percent" => 9,
+        "no_legislator_vote_percent" => 3, "legislator_abstained_percent" => 0
       )
     end
   end
@@ -434,6 +442,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       create(:user_legislator_term_score, user_legislator:, legislator_term: term,
         count_agreed: 4, count_disagreed: 1, count_no_legislator_vote: 0, count_legislator_abstained: 0)
+      create(:legislator_district_score, legislator_term: term, count_agreed: 6, count_disagreed: 2, distinct_voter_count: 9)
+      create(:legislator_locale_score, legislator_term: term, count_agreed: 6, count_disagreed: 2, distinct_voter_count: 10)
       user_legislator.update!(active: false)
       create(:user_district, user:, district: legislator.district, active: true)
       create(:user_legislator, user:, legislator: create(:legislator, district: legislator.district))
@@ -456,6 +466,12 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       )
       expect(entry["score"]["count_agreed"]).to eq(4)
       expect(entry["ended_reason"]).to eq("term_ended")
+
+      history_term = entry["legislator"]["terms"].find { |term_entry| term_entry["id"] == term.id }
+      expect(history_term["district_score"]).to include("comparison_suppressed" => true, "agreed_percent" => nil)
+      expect(history_term["locale_score"]).to include(
+        "comparison_suppressed" => false, "agreed_percent" => 75, "disagreed_percent" => 25
+      )
     end
 
     # @lat: [[representative-history-reason-tests#Still-running term with inactive link]]
