@@ -472,9 +472,9 @@ The web ledger has no write control. View only reads, so the section builds none
 
 ### The news articles section
 
-The Summary tab lists the news articles found for the bill and runs a newsroom discovery on request, as the web's news articles panel does ([[news-admin-ui#Explicit article retrieval]]).
+The Summary tab lists the news articles found for the bill, runs a newsroom discovery on request and reviews each article, as the web's news articles panel does ([[news-admin-ui#Explicit article retrieval]]).
 
-[[mobile/src/components/admin/billCreator/NewsArticlesSection.tsx#NewsArticlesSection]] ports the list and discovery parts of [[app/frontend/components/admin/creator/BillCreatorNewsArticles.tsx]] and renders last on the tab, as the web places the panel below the summary card. It reads `news_articles` and `receipt_status`, which the Summary tab's prop list already carried, so the section needs no fetch of its own.
+[[mobile/src/components/admin/billCreator/NewsArticlesSection.tsx#NewsArticlesSection]] ports [[app/frontend/components/admin/creator/BillCreatorNewsArticles.tsx]] and renders last on the tab, as the web places the panel below the summary card. It reads `news_articles` and `receipt_status`, which the Summary tab's prop list already carried, so the section needs no fetch of its own.
 
 Fetch articles posts to `/admin/bills/:bill_id/news_articles`. [[app/controllers/admin/bill_news_articles_controller.rb#Admin#BillNewsArticlesController]] answers any request that is not an Inertia request in JSON with `receipt_status` and `articles`. The section shows that answer until the tab data next reloads, and from then on the reloaded props, which name the same latest discovery. The button reads "Fetching articles..." while the request runs, and an unsaved bill disables it under "Save this bill to retrieve news articles."
 
@@ -492,9 +492,24 @@ A failed discovery answers 422 with `receipt_status`, `articles` and `error`, th
 
 The section reads the receipt, its articles and the reason from the hook's `errorBody` ([[mobile-admin-area#Admin writes]]) and shows the web's failed alert with the reason in parentheses. A receipt that recorded no reason sends a null `error`, and the alert then has no parentheses. A request that fails with no such body (offline, a network error, a refusal from the admin guard) shows the same alert with the hook's message in parentheses, as the web shows its fallback.
 
+The refused articles stay only until the tab data next reloads, as a successful answer does. A review reloads the tab, so the row then shows the reviewed article rather than the copy the refusal carried. The failed alert and its reason stay until the next fetch, as the web's do.
+
+#### Reviewing an article
+
+Each row of a saved bill ends with the web's review controls, and each control sends the web's PATCH body to `/admin/bills/:bill_id/news_articles/:id` ([[news-review#Review action protocol and format negotiation]]).
+
+- Approve for this bill or Withdraw approval sends `approved` as the opposite of the article's state.
+- The genre buttons (Reporting, Op-Ed, Editorial, Unknown) send `article_kind`; an article with no genre reads as Reporting.
+- The stance buttons send `stance` as support, oppose, or an empty string for No stance.
+- The Add text button, which reads Replace text for an article that has text, opens the manual text editor. Save article text sends the trimmed `text`; blank text shows "Article text cannot be blank." and sends nothing ([[news-review#Manual text enables synthesis without mandatory re-approval]]).
+
+The genre and stance buttons stand in for the web's two dropdowns, and pressing the selected one sends nothing, as an unchanged dropdown fires no change. A row disables its controls while its own request runs, as the web disables only the busy article.
+
+A successful review reloads the tab, as the web reloads `news_articles`, and a saved text also closes the editor. A refused review answers 422 with `{error: message}`; [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads that message and the row shows it under its controls. The web shows nothing for a refused review, because its panel reads the Inertia error only when it first mounts.
+
 #### What the phone leaves out
 
-The section leaves out the web's per-article review.
+The section leaves out two details of the web panel.
 
-- Approving or withdrawing an article, its genre and stance pickers, and the manual text editor, which the next section ports into each row.
 - The `readOnly` mode, which no web caller sets.
+- The disabled review controls of an unsaved bill. Such a bill has no articles, so the phone renders no controls for it.

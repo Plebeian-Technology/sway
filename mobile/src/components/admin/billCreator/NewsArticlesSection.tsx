@@ -1,6 +1,6 @@
 // @lat: [[mobile-bill-creator#Sections#The news articles section]]
 import React, { useState } from "react";
-import { Linking, Text, View } from "react-native";
+import { Linking, Text, TextInput, View } from "react-native";
 
 import { Routes } from "../../../api/routes";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
@@ -13,6 +13,8 @@ interface NewsArticle {
     id: number;
     approved: boolean;
     match_kind: string | null;
+    article_kind: string | null;
+    stance: string | null;
     url: string | null;
     title: string | null;
     source_name: string | null;
@@ -30,13 +32,21 @@ interface Discovery {
     error?: string | null;
 }
 
-interface Answer {
-    discovery: Discovery;
-    data: BillCreatorProps;
-}
-
 const POLL_INTERVAL_MS = 5000;
 const IN_FLIGHT_STATUSES = ["queued", "running"];
+
+const GENRES = [
+    { value: "reporting", label: "Reporting" },
+    { value: "op_ed", label: "Op-Ed" },
+    { value: "editorial", label: "Editorial" },
+    { value: "unknown", label: "Unknown" },
+];
+
+const STANCES = [
+    { value: "", testKey: "none", label: "No stance" },
+    { value: "support", testKey: "support", label: "Support" },
+    { value: "oppose", testKey: "oppose", label: "Oppose" },
+];
 
 const mutedText = "text-xs font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark";
 const labelText = "text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark";
@@ -74,7 +84,166 @@ const ArticleTitle: React.FC<{ article: NewsArticle }> = ({ article }) => {
     );
 };
 
-const ArticleRow: React.FC<{ article: NewsArticle }> = ({ article }) => {
+interface IArticleReviewProps {
+    billId: number;
+    article: NewsArticle;
+    refresh: () => Promise<void>;
+}
+
+// @lat: [[mobile-bill-creator#Sections#The news articles section#Reviewing an article]]
+const ArticleReview: React.FC<IArticleReviewProps> = ({ billId, article, refresh }) => {
+    const testID = `admin-news-article-${article.id}`;
+    const { run, loading, errorMessage } = useAdminMutation<NewsArticle>(
+        "patch",
+        Routes.adminBillNewsArticle(billId, article.id),
+    );
+    const [editingText, setEditingText] = useState(false);
+    const [manualText, setManualText] = useState("");
+    const [manualTextError, setManualTextError] = useState<string | null>(null);
+
+    const review = async (body: Record<string, unknown>) => {
+        const result = await run(body);
+        if (result === undefined) return false;
+        await refresh();
+        return true;
+    };
+
+    const toggleTextEditor = () => {
+        setEditingText(!editingText);
+        setManualText("");
+        setManualTextError(null);
+    };
+
+    const saveManualText = async () => {
+        const trimmed = manualText.trim();
+        if (!trimmed) {
+            setManualTextError("Article text cannot be blank.");
+            return;
+        }
+        setManualTextError(null);
+        if (await review({ text: trimmed })) {
+            setEditingText(false);
+            setManualText("");
+        }
+    };
+
+    const articleName = article.title || "article";
+    const genre = article.article_kind || "reporting";
+    const stance = article.stance || "";
+
+    return (
+        <View className="gap-2 border-t border-border-light dark:border-border-dark pt-2">
+            <View className="flex-row">
+                <Pressable
+                    testID={`${testID}-approve`}
+                    variant={article.approved ? "destructive" : "default"}
+                    disabled={loading}
+                    accessibilityLabel={
+                        article.approved ? `Withdraw approval for ${articleName}` : "Approve for this bill"
+                    }
+                    onPress={() => void review({ approved: !article.approved })}
+                >
+                    <Text className={labelText}>
+                        {article.approved ? "Withdraw approval" : "Approve for this bill"}
+                    </Text>
+                </Pressable>
+            </View>
+            <Text className={mutedText}>Genre:</Text>
+            <View className="flex-row flex-wrap gap-2">
+                {GENRES.map((option) => (
+                    <Pressable
+                        key={option.value}
+                        testID={`${testID}-genre-${option.value}`}
+                        variant={genre === option.value ? "default" : "outline"}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected: genre === option.value }}
+                        accessibilityLabel={`Genre for ${articleName}: ${option.label}`}
+                        disabled={loading}
+                        onPress={() => {
+                            if (genre !== option.value) void review({ article_kind: option.value });
+                        }}
+                    >
+                        <Text className={labelText}>{option.label}</Text>
+                    </Pressable>
+                ))}
+            </View>
+            <Text className={mutedText}>Stance:</Text>
+            <View className="flex-row flex-wrap gap-2">
+                {STANCES.map((option) => (
+                    <Pressable
+                        key={option.testKey}
+                        testID={`${testID}-stance-${option.testKey}`}
+                        variant={stance === option.value ? "default" : "outline"}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected: stance === option.value }}
+                        accessibilityLabel={`Opinion stance for ${articleName}: ${option.label}`}
+                        disabled={loading}
+                        onPress={() => {
+                            if (stance !== option.value) void review({ stance: option.value });
+                        }}
+                    >
+                        <Text className={labelText}>{option.label}</Text>
+                    </Pressable>
+                ))}
+            </View>
+            <View className="flex-row">
+                <Pressable
+                    testID={`${testID}-edit-text`}
+                    variant="ghost"
+                    disabled={!editingText && loading}
+                    accessibilityLabel={editingText ? "Cancel" : `Add text for article ${article.id}`}
+                    onPress={toggleTextEditor}
+                >
+                    <Text className={labelText}>
+                        {editingText ? "Cancel" : article.has_text ? "Replace text" : "Add text"}
+                    </Text>
+                </Pressable>
+            </View>
+            {editingText ? (
+                <View className="gap-2">
+                    <Text className={labelText}>Manual article text</Text>
+                    <TextInput
+                        testID={`${testID}-manual-text`}
+                        accessibilityLabel="Manual article text"
+                        placeholder="Paste full article text for synthesis..."
+                        multiline
+                        value={manualText}
+                        onChangeText={setManualText}
+                        className={`min-h-24 rounded-lg border border-border-light dark:border-border-dark p-3 ${bodyText}`}
+                    />
+                    {manualTextError ? (
+                        <Text testID={`${testID}-manual-text-error`} className={errorText}>
+                            {manualTextError}
+                        </Text>
+                    ) : null}
+                    <View className="flex-row">
+                        <Pressable
+                            testID={`${testID}-save-text`}
+                            disabled={loading}
+                            accessibilityLabel="Save article text"
+                            onPress={() => void saveManualText()}
+                        >
+                            <Text className={labelText}>Save article text</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            ) : null}
+            {errorMessage ? (
+                <Text testID={`${testID}-review-error`} accessibilityRole="alert" className={errorText}>
+                    {errorMessage}
+                </Text>
+            ) : null}
+        </View>
+    );
+};
+
+interface IArticleRowProps {
+    billId: number | null;
+    article: NewsArticle;
+    refresh: () => Promise<void>;
+}
+
+const ArticleRow: React.FC<IArticleRowProps> = ({ billId, article, refresh }) => {
     const testID = `admin-news-article-${article.id}`;
     return (
         <View testID={testID} className={panelClass}>
@@ -111,6 +280,7 @@ const ArticleRow: React.FC<{ article: NewsArticle }> = ({ article }) => {
                     {article.excerpt}
                 </Text>
             ) : null}
+            {billId !== null ? <ArticleReview billId={billId} article={article} refresh={refresh} /> : null}
         </View>
     );
 };
@@ -152,25 +322,29 @@ const NewsArticlesSection: React.FC<BillCreatorTabProps> = ({ billId, data, refr
         "post",
         billId === null ? "" : Routes.adminBillNewsArticles(billId),
     );
-    const [answer, setAnswer] = useState<Answer | null>(null);
+    const [fetchedFrom, setFetchedFrom] = useState<BillCreatorProps | null>(null);
+    const [answer, setAnswer] = useState<Discovery | null>(null);
 
+    const isCurrent = fetchedFrom === data;
     const refusal = discoveryFrom(errorBody);
     const requestError = loading ? null : refusal ? (refusal.error ?? null) : errorMessage;
-    const answered = refusal ?? (answer !== null && answer.data === data ? answer.discovery : null);
+    const answered = refusal ?? (isCurrent ? answer : null);
 
     let receiptStatus: string | null = (data.receipt_status as string | null | undefined) ?? null;
     if (loading) receiptStatus = null;
     else if (answered !== null) receiptStatus = answered.receipt_status;
     else if (requestError !== null) receiptStatus = "failed";
 
-    const articles = answered?.articles ?? (data.news_articles as NewsArticle[] | undefined) ?? [];
+    const articles =
+        (isCurrent ? answered?.articles : undefined) ?? (data.news_articles as NewsArticle[] | undefined) ?? [];
 
     usePolling(refresh, receiptStatus !== null && IN_FLIGHT_STATUSES.includes(receiptStatus), POLL_INTERVAL_MS);
 
     const fetchArticles = async () => {
         setAnswer(null);
+        setFetchedFrom(data);
         const result = await run({});
-        if (result) setAnswer({ discovery: result, data });
+        if (result) setAnswer(result);
     };
 
     return (
@@ -202,7 +376,7 @@ const NewsArticlesSection: React.FC<BillCreatorTabProps> = ({ billId, data, refr
                 </Text>
             ) : null}
             {articles.map((article) => (
-                <ArticleRow key={article.id} article={article} />
+                <ArticleRow key={article.id} billId={billId} article={article} refresh={refresh} />
             ))}
         </View>
     );

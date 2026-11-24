@@ -5,9 +5,11 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
 import { ApiRequestError, NetworkError } from "../../../../src/api/errors";
 
 const mockApiPost = jest.fn();
+const mockApiPatch = jest.fn();
 jest.mock("../../../../src/api/client", () => ({
     apiClient: {
         post: (...args: unknown[]) => mockApiPost(...args),
+        patch: (...args: unknown[]) => mockApiPatch(...args),
         get: jest.fn(),
     },
 }));
@@ -294,5 +296,147 @@ describe("NewsArticlesSection", () => {
                 "Failed to fetch articles from news sources. (Network request failed)",
             ),
         );
+    });
+
+    // @lat: [[mobile-bill-creator#Sections#The news articles section#Reviewing an article]]
+    describe("reviewing an article", () => {
+        const articlePath = "/admin/bills/42/news_articles/7";
+
+        it.each([
+            [false, "Approve for this bill", { approved: true }],
+            [true, "Withdraw approval", { approved: false }],
+        ])("sends the approval toggle for an article approved=%s", async (approved, label, body) => {
+            mockApiPatch.mockResolvedValue(article({ approved: !approved }));
+            const { refresh } = renderSection(tabData({ news_articles: [article({ approved })] }));
+
+            expect(screen.getByTestId("admin-news-article-7-approve")).toHaveTextContent(label);
+            fireEvent.press(screen.getByTestId("admin-news-article-7-approve"));
+
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+            expect(mockApiPatch).toHaveBeenCalledWith(articlePath, body);
+        });
+
+        it("sends a new genre and marks the current one selected", async () => {
+            mockApiPatch.mockResolvedValue(article({ article_kind: "op_ed" }));
+            const { refresh } = renderSection(tabData({ news_articles: [article({ article_kind: null })] }));
+
+            expect(screen.getByTestId("admin-news-article-7-genre-reporting")).toBeSelected();
+            fireEvent.press(screen.getByTestId("admin-news-article-7-genre-reporting"));
+            expect(mockApiPatch).not.toHaveBeenCalled();
+
+            fireEvent.press(screen.getByTestId("admin-news-article-7-genre-op_ed"));
+
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+            expect(mockApiPatch).toHaveBeenCalledWith(articlePath, { article_kind: "op_ed" });
+        });
+
+        it.each([
+            [null, "support", { stance: "support" }],
+            ["support", "none", { stance: "" }],
+        ])("sends the stance change from %s to %s", async (stance, option, body) => {
+            mockApiPatch.mockResolvedValue(article());
+            const { refresh } = renderSection(tabData({ news_articles: [article({ stance })] }));
+
+            fireEvent.press(screen.getByTestId(`admin-news-article-7-stance-${option}`));
+
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+            expect(mockApiPatch).toHaveBeenCalledWith(articlePath, body);
+        });
+
+        it("refuses blank manual text and sends trimmed text", async () => {
+            mockApiPatch.mockResolvedValue(article({ has_text: true }));
+            const { refresh } = renderSection(tabData({ news_articles: [article()] }));
+
+            expect(screen.queryByTestId("admin-news-article-7-manual-text")).toBeNull();
+            fireEvent.press(screen.getByTestId("admin-news-article-7-edit-text"));
+            fireEvent.changeText(screen.getByTestId("admin-news-article-7-manual-text"), "   ");
+            fireEvent.press(screen.getByTestId("admin-news-article-7-save-text"));
+
+            expect(screen.getByTestId("admin-news-article-7-manual-text-error")).toHaveTextContent(
+                "Article text cannot be blank.",
+            );
+            expect(mockApiPatch).not.toHaveBeenCalled();
+
+            fireEvent.changeText(screen.getByTestId("admin-news-article-7-manual-text"), "  The full story.  ");
+            fireEvent.press(screen.getByTestId("admin-news-article-7-save-text"));
+
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+            expect(mockApiPatch).toHaveBeenCalledWith(articlePath, { text: "The full story." });
+            expect(screen.queryByTestId("admin-news-article-7-manual-text")).toBeNull();
+        });
+
+        it("labels the text button by whether the article has text, and cancels the editor", () => {
+            renderSection(tabData({ news_articles: [article({ has_text: true })] }));
+
+            expect(screen.getByTestId("admin-news-article-7-edit-text")).toHaveTextContent("Replace text");
+            fireEvent.press(screen.getByTestId("admin-news-article-7-edit-text"));
+            expect(screen.getByTestId("admin-news-article-7-edit-text")).toHaveTextContent("Cancel");
+            fireEvent.press(screen.getByTestId("admin-news-article-7-edit-text"));
+            expect(screen.queryByTestId("admin-news-article-7-manual-text")).toBeNull();
+        });
+
+        it("disables the article's controls while its update runs", () => {
+            mockApiPatch.mockReturnValue(new Promise(() => {}));
+            renderSection(tabData({ news_articles: [article()] }));
+
+            fireEvent.press(screen.getByTestId("admin-news-article-7-approve"));
+
+            expect(screen.getByTestId("admin-news-article-7-approve")).toBeDisabled();
+            expect(screen.getByTestId("admin-news-article-7-genre-op_ed")).toBeDisabled();
+            expect(screen.getByTestId("admin-news-article-7-stance-support")).toBeDisabled();
+            expect(screen.getByTestId("admin-news-article-7-edit-text")).toBeDisabled();
+        });
+
+        it("shows a refused update's message and keeps the tab data", async () => {
+            mockApiPatch.mockRejectedValue(
+                new ApiRequestError("http_422", "Invalid stance: maybe", undefined, 422, {
+                    error: "Invalid stance: maybe",
+                }),
+            );
+            const { refresh } = renderSection(tabData({ news_articles: [article()] }));
+
+            fireEvent.press(screen.getByTestId("admin-news-article-7-stance-oppose"));
+
+            await waitFor(() =>
+                expect(screen.getByTestId("admin-news-article-7-review-error")).toHaveTextContent(
+                    "Invalid stance: maybe",
+                ),
+            );
+            expect(refresh).not.toHaveBeenCalled();
+        });
+
+        it("shows the reloaded articles after reviewing one a refused discovery listed", async () => {
+            mockApiPost.mockRejectedValue(
+                new ApiRequestError("http_422", "Something went wrong. Please try again.", undefined, 422, {
+                    receipt_status: "failed",
+                    articles: [article()],
+                }),
+            );
+            mockApiPatch.mockResolvedValue(article({ approved: true }));
+            const { refresh, rerender } = renderSection(tabData());
+
+            fireEvent.press(screen.getByTestId("admin-news-articles-fetch"));
+            await waitFor(() => expect(screen.getByTestId("admin-news-article-7")).toBeTruthy());
+            fireEvent.press(screen.getByTestId("admin-news-article-7-approve"));
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+
+            rerender(
+                <NewsArticlesSection
+                    billId={42}
+                    data={tabData({ receipt_status: "failed", news_articles: [article({ approved: true })] })}
+                    refresh={refresh}
+                />,
+            );
+
+            expect(screen.getByTestId("admin-news-article-7")).toHaveTextContent(/Approved/);
+            expect(screen.getByTestId("admin-news-article-7")).not.toHaveTextContent(/Unapproved candidate/);
+            expect(screen.getByTestId("admin-news-failed")).toBeTruthy();
+        });
+
+        it("leaves out review controls for an unsaved bill", () => {
+            renderSection(tabData({ news_articles: [article()] }), null);
+
+            expect(screen.queryByTestId("admin-news-article-7-approve")).toBeNull();
+        });
     });
 });
