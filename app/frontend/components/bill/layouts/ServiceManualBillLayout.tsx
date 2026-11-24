@@ -79,6 +79,10 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
 
                     <section className="smb-section">
                         <h2 className="smb-sectionlabel">{PARITY_COPY.bill.content.whySupport}</h2>
+                        {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+                        {supporting.length + opposing.length > 0 && (
+                            <p className="smb-empty">{PARITY_COPY.orgs.listNotice}</p>
+                        )}
                         {supporting.length ? (
                             <ul className="smb-orgs">
                                 {supporting.map(({ org, position }) => (
@@ -88,6 +92,8 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                                         <OrgPositionSummary
                                             summary={position.summary}
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                            organizationName={org.name}
+                                            sourceKind={position.source_kind}
                                             className="smb-org__summary"
                                         />
                                     </li>
@@ -114,6 +120,8 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                                         <OrgPositionSummary
                                             summary={position.summary}
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                            organizationName={org.name}
+                                            sourceKind={position.source_kind}
                                             className="smb-org__summary"
                                         />
                                     </li>

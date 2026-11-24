@@ -9,6 +9,7 @@ import ShareBillButton from "app/frontend/components/bill/ShareBillButton";
 import SwayLocaleFlag from "app/frontend/components/locales/SwayLocaleFlag";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import { Support } from "app/frontend/sway_constants";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { titleize } from "app/frontend/sway_utils";
 import {
     isVoteComparisonSuppressed,
@@ -128,6 +129,8 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
 
             <div className="cs-card cs-card--wide">
                 <h2 className="cs-card__title">Who&rsquo;s for it, who&rsquo;s against</h2>
+                {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+                {positions.length > 0 && <p className="cs-empty">{PARITY_COPY.orgs.listNotice}</p>}
                 {positions.length ? (
                     <ul className="cs-orgs">
                         {positions.map(({ org, position }) => (
@@ -144,6 +147,8 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                        organizationName={org.name}
+                                        sourceKind={position.source_kind}
                                         className="cs-org__summary"
                                     />
                                 </div>

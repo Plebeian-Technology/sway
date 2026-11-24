@@ -114,6 +114,11 @@ const BillContent: React.FC<IProps> = ({
 
             <RelatedNewsArticles articles={bill.related_articles} variant="default" />
 
+            {(supporting.length > 0 || opposing.length > 0) && (
+                // @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]]
+                <p className="text-sm text-muted-foreground">{PARITY_COPY.orgs.listNotice}</p>
+            )}
+
             <div className="grid gap-6 lg:grid-cols-2">
                 <Card className="bg-card/95">
                     <CardHeader>
@@ -128,15 +133,12 @@ const BillContent: React.FC<IProps> = ({
                                     className="rounded-xl px-4 py-4"
                                 >
                                     <p className="text-sm font-black text-foreground">{org.name}</p>
-                                    <div className="mt-1 text-xs font-semibold uppercase text-muted-foreground">
-                                        {position.origin === "Org-posted"
-                                            ? `Posted by ${org.name}`
-                                            : "Compiled by Sway"}
-                                    </div>
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         className="mt-2 text-sm leading-6 text-muted-foreground"
+                                        organizationName={org.name}
+                                        sourceKind={position.source_kind}
                                     />
                                 </div>
                             ))
@@ -160,15 +162,12 @@ const BillContent: React.FC<IProps> = ({
                                     className="rounded-xl px-4 py-4"
                                 >
                                     <p className="text-sm font-black text-foreground">{org.name}</p>
-                                    <div className="mt-1 text-xs font-semibold uppercase text-muted-foreground">
-                                        {position.origin === "Org-posted"
-                                            ? `Posted by ${org.name}`
-                                            : "Compiled by Sway"}
-                                    </div>
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         className="mt-2 text-sm leading-6 text-muted-foreground"
+                                        organizationName={org.name}
+                                        sourceKind={position.source_kind}
                                     />
                                 </div>
                             ))

@@ -24,3 +24,9 @@ The organizations list carries one notice under its title: Sway compiles positio
 An organization's own page then says one of two things. With an active member it reads "{Org} manages its positions on Sway."; without one it says the organization is not affiliated with Sway, is not responsible for the content, and that Sway compiled the positions. A card in the list shows only the managed label, since the list notice already covers every other organization.
 
 The member's own organization page (the membership page) receives `source_kind` on each position so its cards can tag positions the same way.
+
+## The bill page carries the notice once
+
+Every bill layout tags each organization position the same way and shows the list page's notice once near its organization positions, only when the bill has any.
+
+A bill with no organization positions shows no notice, since there is nothing for it to explain.
