@@ -70,6 +70,7 @@ export const Routes = {
         (billId === null
             ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"
             : `/admin/bill_creator/${billId}/pipeline?`) + `cursor=${encodeURIComponent(cursor)}`,
+    adminBillCreatorSummaryPrompt: (billId: number) => `/admin/bill_creator/${billId}/summary?summary_prompt=1`,
     adminPipelineRunResume: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/resume`,
     adminPipelineRunRestart: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/restart`,
     adminPipelineRunCancel: (runId: number) => `/bills/legislation_pipeline_runs/${runId}`,

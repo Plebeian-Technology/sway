@@ -4,8 +4,12 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
 import { ApiRequestError } from "../../../../src/api/errors";
 
 const mockApiPost = jest.fn();
+const mockApiGet = jest.fn();
 jest.mock("../../../../src/api/client", () => ({
-    apiClient: { post: (...args: unknown[]) => mockApiPost(...args) },
+    apiClient: {
+        post: (...args: unknown[]) => mockApiPost(...args),
+        get: (...args: unknown[]) => mockApiGet(...args),
+    },
 }));
 
 jest.mock("../../../../src/hooks/useReachability", () => ({
@@ -81,7 +85,7 @@ describe("SummaryGenerationSection", () => {
         fireEvent.press(screen.getByTestId("admin-summary-generate"));
 
         await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
-        expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", undefined);
+        expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", {});
     });
 
     it("labels the button Retry after a failure and shows the reason", async () => {
@@ -101,7 +105,7 @@ describe("SummaryGenerationSection", () => {
         expect(screen.getByTestId("admin-summary-generate")).toHaveTextContent("Retry");
         fireEvent.press(screen.getByTestId("admin-summary-generate"));
 
-        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", undefined));
+        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", {}));
     });
 
     // @lat: [[mobile-bill-creator#Sections#The summary generation section#Polling while a summary is generated]]
@@ -171,7 +175,7 @@ describe("SummaryGenerationSection", () => {
         expect(screen.getByTestId("admin-summary-pipeline-failure")).toHaveTextContent(/25-0001: PDF missing/);
         fireEvent.press(screen.getByTestId("admin-summary-generate"));
 
-        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", undefined));
+        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", {}));
     });
 
     it("shows the server's reason when the generation is refused", async () => {
@@ -205,7 +209,7 @@ describe("SummaryGenerationSection", () => {
         fireEvent.press(screen.getByTestId("admin-summary-regenerate"));
 
         await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
-        expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", undefined);
+        expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", {});
     });
 
     it("shows a different draft beneath the published summary and the run in flight", () => {
@@ -266,7 +270,244 @@ describe("SummaryGenerationSection", () => {
         fireEvent.press(screen.getByTestId("admin-summary-regenerate-latest"));
         fireEvent.press(screen.getByTestId("admin-summary-regenerate-latest"));
 
-        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", undefined));
+        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", {}));
+    });
+
+    describe("generation options", () => {
+        const modelOptions = [
+            { id: "anthropic/claude-opus", label: "Claude Opus", supports_reasoning: true },
+            { id: "openai/gpt-mini", label: "GPT Mini", supports_reasoning: false },
+        ];
+        const withOptions = (
+            bill: Record<string, unknown> = {},
+            standing: { model?: string | null; effort?: string | null } = {},
+        ) =>
+            tabData(bill, {
+                summary_model_options: modelOptions,
+                current_summarization_model: standing.model === undefined ? "openai/gpt-mini" : standing.model,
+                current_summarization_reasoning_effort: standing.effort ?? null,
+            });
+        const completed = {
+            summary: "Published text",
+            bill_llm_provisioning: provisioning({ generation_status: "completed", llm_summary: "Published text" }),
+        };
+
+        // @lat: [[mobile-bill-creator#Sections#The summary generation section#Generation options]]
+        it("sends the standing model with generate when the admin touches nothing", async () => {
+            renderSection(withOptions());
+
+            expect(screen.getByTestId("admin-summary-model-openai/gpt-mini")).toHaveProp("accessibilityState", {
+                selected: true,
+                disabled: false,
+            });
+            expect(screen.queryByTestId("admin-summary-reasoning")).toBeNull();
+            fireEvent.press(screen.getByTestId("admin-summary-generate"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", {
+                    summarization_model: "openai/gpt-mini",
+                }),
+            );
+        });
+
+        it("sends the chosen model and reasoning level with generate", async () => {
+            renderSection(withOptions());
+
+            fireEvent.press(screen.getByTestId("admin-summary-model-anthropic/claude-opus"));
+            fireEvent.press(screen.getByTestId("admin-summary-reasoning-high"));
+            fireEvent.press(screen.getByTestId("admin-summary-generate"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", {
+                    summarization_model: "anthropic/claude-opus",
+                    reasoning_effort: "high",
+                }),
+            );
+        });
+
+        it("opens on the standing reasoning level and sends default when the admin sets it back", async () => {
+            renderSection(withOptions({}, { model: "anthropic/claude-opus", effort: "medium" }));
+
+            expect(screen.getByTestId("admin-summary-reasoning-medium")).toHaveProp("accessibilityState", {
+                selected: true,
+                disabled: false,
+            });
+            fireEvent.press(screen.getByTestId("admin-summary-reasoning-default"));
+            fireEvent.press(screen.getByTestId("admin-summary-generate"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", {
+                    summarization_model: "anthropic/claude-opus",
+                    reasoning_effort: "default",
+                }),
+            );
+        });
+
+        it("drops the reasoning level for a model that does not reason", async () => {
+            renderSection(withOptions({}, { model: "anthropic/claude-opus", effort: "high" }));
+
+            fireEvent.press(screen.getByTestId("admin-summary-model-openai/gpt-mini"));
+            expect(screen.queryByTestId("admin-summary-reasoning")).toBeNull();
+            fireEvent.press(screen.getByTestId("admin-summary-generate"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/bills/42/generate_summary", {
+                    summarization_model: "openai/gpt-mini",
+                }),
+            );
+        });
+
+        it("says the standing default runs when the standing model is not offered", () => {
+            renderSection(withOptions(completed, { model: "retired/model" }));
+
+            expect(screen.getByTestId("admin-summary-model-standing")).toHaveTextContent("Standing default");
+            expect(screen.getByTestId("admin-summary-run-model")).toHaveTextContent(
+                "This run uses the standing default model.",
+            );
+        });
+
+        it("sends the model, reasoning level and trimmed instructions with regenerate, then clears them", async () => {
+            const { refresh } = renderSection(withOptions(completed));
+
+            fireEvent.press(screen.getByTestId("admin-summary-model-anthropic/claude-opus"));
+            fireEvent.press(screen.getByTestId("admin-summary-reasoning-low"));
+            fireEvent.changeText(screen.getByTestId("admin-summary-instructions"), "  Name the tax rate.\n");
+            expect(screen.getByTestId("admin-summary-instructions-count")).toHaveTextContent("18 / 2,000");
+            expect(screen.getByTestId("admin-summary-run-model")).toHaveTextContent("This run uses Claude Opus.");
+            fireEvent.press(screen.getByTestId("admin-summary-regenerate"));
+            fireEvent.press(screen.getByTestId("admin-summary-regenerate"));
+
+            await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+            expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", {
+                summarization_model: "anthropic/claude-opus",
+                summary_instructions: "Name the tax rate.",
+                reasoning_effort: "low",
+            });
+            expect(screen.getByTestId("admin-summary-instructions")).toHaveProp("value", "");
+        });
+
+        it("keeps the instructions when the regeneration is refused", async () => {
+            mockApiPost.mockRejectedValueOnce(
+                new ApiRequestError("validation_failed", "Validation failed.", { generation: "Too long" }, 422),
+            );
+            renderSection(withOptions(completed));
+
+            fireEvent.changeText(screen.getByTestId("admin-summary-instructions"), "Name the tax rate.");
+            fireEvent.press(screen.getByTestId("admin-summary-regenerate"));
+            fireEvent.press(screen.getByTestId("admin-summary-regenerate"));
+
+            expect(await screen.findByTestId("admin-summary-error")).toHaveTextContent("Too long");
+            expect(screen.getByTestId("admin-summary-instructions")).toHaveProp("value", "Name the tax rate.");
+        });
+
+        it("refuses instructions over 2,000 code points", () => {
+            renderSection(withOptions(completed));
+
+            fireEvent.changeText(screen.getByTestId("admin-summary-instructions"), "é".repeat(2001));
+
+            expect(screen.getByTestId("admin-summary-instructions-error")).toHaveTextContent(
+                "Instructions exceed the 2,000 code point limit. Please shorten them before regenerating.",
+            );
+            expect(screen.getByTestId("admin-summary-regenerate")).toBeDisabled();
+        });
+
+        it("sends the instructions with Regenerate from latest data", async () => {
+            renderSection(
+                withOptions({
+                    ...completed,
+                    bill_llm_provisioning: provisioning({
+                        generation_status: "completed",
+                        llm_summary: "Published text",
+                        stale: true,
+                    }),
+                }),
+            );
+
+            fireEvent.changeText(screen.getByTestId("admin-summary-instructions"), "Name the tax rate.");
+            fireEvent.press(screen.getByTestId("admin-summary-regenerate-latest"));
+            fireEvent.press(screen.getByTestId("admin-summary-regenerate-latest"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", {
+                    summarization_model: "openai/gpt-mini",
+                    summary_instructions: "Name the tax rate.",
+                }),
+            );
+        });
+
+        it("sends only the chosen reasoning level from a bill with no provisioning row", async () => {
+            renderSection(
+                withOptions({ bill_llm_provisioning: null }, { model: "anthropic/claude-opus", effort: "high" }),
+            );
+
+            fireEvent.press(screen.getByTestId("admin-summary-reasoning-default"));
+            fireEvent.press(screen.getByTestId("admin-summary-generate"));
+
+            await waitFor(() =>
+                expect(mockApiPost).toHaveBeenCalledWith("/bills/42/regenerate_summary", {
+                    summarization_model: "anthropic/claude-opus",
+                }),
+            );
+            expect(screen.queryByTestId("admin-summary-instructions")).toBeNull();
+        });
+    });
+
+    describe("Prepare prompt", () => {
+        const noRow = (refreshStatus: string | null = null) =>
+            tabData({
+                bill_llm_provisioning: null,
+                bill_pipeline_refresh: refreshStatus === null ? null : { status: refreshStatus },
+            });
+
+        // @lat: [[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]
+        it("asks the server for the prompt and shows its text", async () => {
+            mockApiGet.mockResolvedValueOnce({ summary_prompt: "Summarize bill 25-0001.", bill: {} });
+            renderSection(noRow());
+
+            fireEvent.press(screen.getByTestId("admin-summary-prepare-prompt"));
+
+            expect(await screen.findByTestId("admin-summary-prompt-text")).toHaveTextContent("Summarize bill 25-0001.");
+            expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/summary?summary_prompt=1");
+            expect(screen.getByTestId("admin-summary-prompt")).toHaveTextContent(/^Bill summary prompt/);
+            expect(screen.queryByTestId("admin-summary-prompt-stale")).toBeNull();
+            fireEvent.press(screen.getByTestId("admin-summary-prompt-close"));
+            expect(screen.queryByTestId("admin-summary-prompt")).toBeNull();
+        });
+
+        it("marks the prompt out of date once the pipeline changes the bill and prepares it again", async () => {
+            mockApiGet.mockResolvedValueOnce({ summary_prompt: "First prompt", bill: { bill_pipeline_refresh: null } });
+            const { refresh, rerender } = renderSection(noRow());
+
+            fireEvent.press(screen.getByTestId("admin-summary-prepare-prompt"));
+            await screen.findByTestId("admin-summary-prompt-text");
+            rerender(<SummaryGenerationSection billId={42} data={noRow("running")} refresh={refresh} />);
+
+            expect(screen.getByTestId("admin-summary-prompt-stale")).toHaveTextContent(
+                "This prompt is out of dateThe pipeline changed this bill after the prompt was prepared, so the text below describes an earlier version. Prepare it again before you copy it.",
+            );
+            mockApiGet.mockResolvedValueOnce({
+                summary_prompt: "Second prompt",
+                bill: { bill_pipeline_refresh: { status: "running" } },
+            });
+            fireEvent.press(screen.getByTestId("admin-summary-prompt-reprepare"));
+
+            await waitFor(() =>
+                expect(screen.getByTestId("admin-summary-prompt-text")).toHaveTextContent("Second prompt"),
+            );
+            expect(screen.queryByTestId("admin-summary-prompt-stale")).toBeNull();
+        });
+
+        it("says so when the prompt cannot be built", async () => {
+            mockApiGet.mockRejectedValueOnce(new Error("boom"));
+            renderSection(noRow());
+
+            fireEvent.press(screen.getByTestId("admin-summary-prepare-prompt"));
+
+            expect(await screen.findByTestId("admin-summary-prompt-error")).toHaveTextContent(
+                "Could not build the prompt — try again.",
+            );
+            expect(screen.queryByTestId("admin-summary-prompt")).toBeNull();
+        });
     });
 
     it("shows the breakdown behind a toggle", () => {

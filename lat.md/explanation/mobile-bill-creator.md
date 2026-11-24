@@ -353,6 +353,20 @@ The badge reads the web's words: Abandoned for a reclaimable queued or generatin
 
 Regenerate summary and Regenerate from latest data replace the draft, so each takes two taps through [[mobile/src/hooks/useTwoTapConfirm.ts#useTwoTapConfirm]], where the web opens a confirmation dialog. Generate summary and Retry take one tap, as on the web.
 
+#### Generation options
+
+The section ports the web's per-run model, reasoning level and instructions, and sends them with the same keys and the same omissions ([[bill-creator-summary-tab#Choosing the model for one regeneration]]).
+
+It reads `summary_model_options`, `current_summarization_model` and `current_summarization_reasoning_effort`, already on the Summary tab's prop list. A row of buttons, one per offered model, stands in for the web's searchable combobox, and a second row offers Default, Low, Medium and High when the chosen model reasons. The picker opens on the standing model and its standing reasoning level, and reads "Standing default" when the server no longer offers the standing model. It sits wherever the web shows it: the empty state, the generate branch, an abandoned generating row and the completed view. A queued or running row disables it as the web does.
+
+The request bodies follow the three web code paths:
+
+- Generate summary and Retry post `summarization_model` when the choice is offered and `reasoning_effort` when one resolves, as [[app/frontend/components/admin/creator/BillCreatorLlmSummary.tsx#BillCreatorLlmSummary]] does. An admin who sets an inherited standing level back to Default sends `"default"`, so the run drops the standing level.
+- Regenerate summary and Regenerate from latest data send the same two keys plus `summary_instructions`, trimmed of ASCII whitespace and left off when empty.
+- The empty state's Generate summary sends the model and only a level the admin picked, never `"default"`, because the web's empty state passes the raw selection.
+
+The web types instructions into its confirmation dialog. The phone's two-tap confirm has no dialog, so the field sits above the regenerate button, with the web's placeholder, help text, 2,000 code point counter, over-limit error and the "This run uses" line. Over the limit, the regenerate button stays disabled. A queued run clears the field, and a refusal keeps it, as the web keeps its retained instructions.
+
 #### Answering generate and regenerate in JSON
 
 [[app/controllers/bills_controller.rb#BillsController#generate_summary]] and [[app/controllers/bills_controller.rb#BillsController#regenerate_summary]] answer through `respond_after_write`, so the phone gets 200 with an empty body when the run is queued.
@@ -373,11 +387,13 @@ The web's Prepare prompt asks for the optional `summary_prompt` prop by name wit
 
 [[app/controllers/bills_controller.rb#BillsController#summary_prompt_prop]] builds the prompt for a mobile request only when that parameter is present, and the Summary tab's prop list names `summary_prompt` so the slice keeps it. The five-second poll never carries the parameter, so it never pays for the prompt ([[bill-summary-prompt-prop-delivery#Why JSON callers get it only on request]]).
 
+The empty state's Prepare prompt button sends that request and shows the prompt as selectable text, under the web dialog's title and description. The prompt lives in the section's own state rather than in the tab data, so a poll that refetches the tab leaves it on screen. Like the web, the section records the pipeline refresh status the prompt was built against; once the bill's status moves on, it shows the web's "This prompt is out of date" notice and a Prepare again button. A failed request shows the web's error line.
+
 #### What the phone leaves out
 
 The section leaves out web pieces that belong to other sections, or that the phone has no way to show.
 
-- The model picker, the reasoning level and the per-run instructions of the confirmation dialog. Every phone run uses the standing model.
-- Prepare prompt and its dialog.
+- The confirmation dialog itself, its warning about a pasted summary, and the per-bill memory of the chosen model and level across page loads. The choice lasts as long as the section stays mounted.
+- The prompt view's Copy to clipboard button, which needs a clipboard module the app does not install, and the dialog's line pointing at Paste summary JSON. The prompt text is selectable instead.
 - Paste summary JSON, editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
 - The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.
