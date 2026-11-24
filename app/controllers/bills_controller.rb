@@ -68,6 +68,7 @@ class BillsController < ApplicationController
     "positions" => %i[
       bill bill_id tab_key organizations active_legislation_pipeline_run testimony_coverage testimony_campaign_drafts
       testimony_claimed_affiliations campaigns campaign_organization_candidates public_testimony_counts
+      testimony_campaign_letters
     ]
   }.freeze
 
@@ -1233,19 +1234,24 @@ class BillsController < ApplicationController
 
   # @lat: [[campaign-letter-disclosure#Why the letter text is a prop of its own]]
   def testimony_campaign_letters_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]
+    if mobile_api_request?
+      return {} unless params[:testimony_campaign_letters] == "1"
 
-    {
-      testimony_campaign_letters: InertiaRails.optional {
-        TestimonyCampaignLettersResource.new(
-          cleaned_testimony_derivation[:campaign_drafts],
-          params: {
-            letters_by_position: cleaned_testimony_derivation[:letters_by_position],
-            full_text: cleaned_testimony_derivation[:full_text]
-          }
-        ).serializable_hash
+      return {testimony_campaign_letters: -> { testimony_campaign_letters_json }}
+    end
+
+    {testimony_campaign_letters: InertiaRails.optional { testimony_campaign_letters_json }}
+  end
+
+  def testimony_campaign_letters_json
+    TestimonyCampaignLettersResource.new(
+      cleaned_testimony_derivation[:campaign_drafts],
+      params: {
+        letters_by_position: cleaned_testimony_derivation[:letters_by_position],
+        full_text: cleaned_testimony_derivation[:full_text]
       }
-    }
+    ).serializable_hash
   end
 
   def public_testimony_letters_prop

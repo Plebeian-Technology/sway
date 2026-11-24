@@ -19,6 +19,12 @@ RSpec.describe "Bill Creator summary tab admin gate", type: :request do
     path: "/admin/bill_creator/1/summary"
 end
 
+RSpec.describe "Bill Creator positions tab campaign letters admin gate", type: :request do
+  include_examples "requires sway admin",
+    verb: :get,
+    path: "/admin/bill_creator/1/positions?testimony_campaign_letters=1"
+end
+
 RSpec.describe "Bills testimony_letter_stance admin gate", type: :request do
   include_examples "requires sway admin",
     verb: :patch,
@@ -850,6 +856,45 @@ RSpec.describe "Bills LLM actions", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("application/json")
       expect(JSON.parse(response.body)).not_to have_key("testimony_campaign_letters")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]
+    context "for the phone" do
+      let(:bearer_headers) do
+        authenticate_as(create(:user, :sway_admin)).merge("Accept" => "application/json")
+      end
+
+      it "is served on the Positions tab when the address asks for it" do
+        get positions_bill_creator_path(bill, testimony_campaign_letters: 1), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        bundles = response.parsed_body["testimony_campaign_letters"]
+        expect(bundles.pluck("content_hash")).to eq(["campaigngroup0001"])
+        expect(bundles.first["letters"].pluck("text")).to eq([campaign_letter_first_body, campaign_letter_second_body])
+      end
+
+      it "is withheld from a Positions tab request that does not ask for it" do
+        get positions_bill_creator_path(bill), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to have_key("testimony_campaign_drafts")
+        expect(response.parsed_body).not_to have_key("testimony_campaign_letters")
+      end
+
+      it "is withheld from another tab even when the address asks for it" do
+        get summary_bill_creator_path(bill, testimony_campaign_letters: 1), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).not_to have_key("testimony_campaign_letters")
+      end
+
+      it "is never part of the public bill page JSON" do
+        get bill_path(bill, testimony_campaign_letters: 1), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("testimony_campaign_letters")
+        expect(response.body).not_to include(campaign_letter_first_body)
+      end
     end
   end
 

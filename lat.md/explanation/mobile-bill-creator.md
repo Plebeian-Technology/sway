@@ -55,8 +55,9 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Summary also lists `summary_source_documents`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary sources section]]). The ledger's counts, `summary_sources`, are small and ride every request.
 - Summary reads the category override's data from props the list already carried: `active_categories`, `max_active_categories_per_bill` and, inside `bill`, `override_categories` and `bill_llm_provisioning` ([[mobile-bill-creator#Sections#The category override section]]).
 - Positions also carries `active_legislation_pipeline_run`, from the same shared run props, because the web's draft cards keep Approve off while a clean-testimony run covers the bill ([[mobile-bill-creator#Sections#The draft positions section]]).
+- Positions also lists `testimony_campaign_letters`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]).
 
-[[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the campaign letter text, stay absent whatever the tab.
+[[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the public testimony letters, stay absent whatever the tab.
 
 A mobile section that needs another prop adds the key to its tab's list.
 
@@ -611,6 +612,12 @@ An approval, a reject and an edit answer 200 with an empty body, and so does a r
 ### The campaign drafts section
 
 The Positions tab lists each campaign draft, a set of people who sent one letter template, and the admin approves, rejects or releases it, as the web's campaign card does ([[campaign-position-cards]]).
+
+#### Serving the letter text to the phone
+
+The phone reads a campaign's member letters only on the Positions tab, and only when its address carries `testimony_campaign_letters=1`.
+
+The letters are a draft's whole testimony text, so they must never ride the tab's five-second poll ([[campaign-letter-disclosure#Why the letter text is a prop of its own]]). A JSON caller cannot name a prop, so [[app/controllers/bills_controller.rb#BillsController#testimony_campaign_letters_prop]] builds the bundles for a mobile request only when the parameter is present, as it does for the revision list ([[mobile-bill-creator#Sections#The summary revisions section]]). The parameter reaches no other tab, because the tab's prop list slices the answer and only the Positions list names the key. The bill creator is admin-gated, and the public bill page builds no creator props, so `GET /bills/:id` never carries the text.
 
 #### Answering campaign writes in JSON
 

@@ -162,9 +162,11 @@ class BillsController < ApplicationController
     def restored_revision_json: (BillSummaryRevision? revision) -> Hash[Symbol, untyped]
 
     # The campaign letter bundles, wrapped in InertiaRails.optional so they are
-    # built only when a request names them. Empty hash when there is no bill,
-    # and for JSON callers, who cannot ask for a prop by name.
+    # built only when a request names them. Empty hash for a JSON caller whose
+    # address lacks testimony_campaign_letters=1.
     def testimony_campaign_letters_prop: () -> Hash[Symbol, untyped]
+
+    def testimony_campaign_letters_json: () -> untyped
 
     def public_testimony_letters_prop: () -> Hash[Symbol, untyped]
 

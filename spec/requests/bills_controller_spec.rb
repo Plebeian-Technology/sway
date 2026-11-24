@@ -1660,7 +1660,7 @@ RSpec.describe "BillsController", type: :request do
         bill.save!
 
         BillsController::BILL_CREATOR_TAB_PROPS.each do |tab, keys|
-          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1&summary_revisions=1&summary_source_documents=1",
+          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1&summary_revisions=1&summary_source_documents=1&testimony_campaign_letters=1",
             headers: authenticate_as(user).merge("Accept" => "application/json")
 
           expect(response.parsed_body.keys).to match_array(keys.map(&:to_s)), "tab #{tab}"
@@ -1674,7 +1674,7 @@ RSpec.describe "BillsController", type: :request do
 
         get "/admin/bill_creator/#{bill.id}/schedule"
 
-        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt, :summary_revisions, :summary_source_documents]
+        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt, :summary_revisions, :summary_source_documents, :testimony_campaign_letters]
         expect(inertia.props).to include(*every_key)
       end
     end
