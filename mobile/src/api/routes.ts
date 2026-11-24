@@ -60,8 +60,12 @@ export const Routes = {
     adminDirectUploads: () => "/rails/active_storage/direct_uploads",
     adminBillOfTheMonthSchedule: (billId: number) => `/bill_of_the_month_schedule/${billId}`,
     adminBillCreatorNew: () => "/admin/bill_creator/new",
-    adminBillCreatorTab: (billId: number | null, tab: string) =>
-        billId === null ? `/admin/bill_creator/new?bill_creator_tab=${tab}` : `/admin/bill_creator/${billId}/${tab}`,
+    adminBillCreatorTab: (billId: number | null, tab: string, query: Record<string, string | number> = {}) => {
+        const extra = Object.entries(query).map(([key, value]) => `${key}=${encodeURIComponent(value)}`);
+        return billId === null
+            ? [`/admin/bill_creator/new?bill_creator_tab=${tab}`, ...extra].join("&")
+            : `/admin/bill_creator/${billId}/${tab}` + (extra.length > 0 ? `?${extra.join("&")}` : "");
+    },
     adminBillCreatorPipelineRun: (billId: number | null, runId: number) =>
         billId === null
             ? `/admin/bill_creator/new?bill_creator_tab=pipeline&run_id=${runId}`
@@ -70,6 +74,7 @@ export const Routes = {
         (billId === null
             ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"
             : `/admin/bill_creator/${billId}/pipeline?`) + `cursor=${encodeURIComponent(cursor)}`,
+    adminBillCreatorSummaryRevisions: (billId: number) => `/admin/bill_creator/${billId}/summary?summary_revisions=1`,
     adminBillCreatorSummaryPrompt: (billId: number) => `/admin/bill_creator/${billId}/summary?summary_prompt=1`,
     adminPipelineRunResume: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/resume`,
     adminPipelineRunRestart: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/restart`,
@@ -92,6 +97,7 @@ export const Routes = {
     billSummaryReports: (billId: number) => `/bills/${billId}/summary_reports`,
     billPasteSummary: (billId: number) => `/bills/${billId}/paste_summary`,
     billGenerateSummary: (billId: number) => `/bills/${billId}/generate_summary`,
+    billRestoreSummaryRevision: (billId: number) => `/bills/${billId}/restore_summary_revision`,
     billRegenerateSummary: (billId: number) => `/bills/${billId}/regenerate_summary`,
     legislators: () => "/legislators",
     legislator: (id: number) => `/legislators/${id}`,

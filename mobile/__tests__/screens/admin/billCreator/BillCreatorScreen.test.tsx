@@ -103,6 +103,36 @@ describe("BillCreatorScreen", () => {
         expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/summary", expect.anything());
     });
 
+    // @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+    it("asks for the draft revision the Summary tab opens and keeps the tab on screen while it loads", async () => {
+        const draft = {
+            id: 3,
+            bill_id: 42,
+            summary_markdown: "Draft summary",
+            origin: "restoration",
+            publication_role: "draft",
+            review_state: "reviewed",
+            created_at: "2026-11-01T15:30:00Z",
+        };
+        mockApiGet.mockImplementation(async (path: string) =>
+            path.includes("summary_revisions=1") ? { summary_revisions: [draft] } : page,
+        );
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-3"));
+        fireEvent.press(await screen.findByTestId("admin-summary-revisions-toggle"));
+
+        fireEvent.press(await screen.findByTestId("admin-summary-revision-review-draft-3"));
+
+        await waitFor(() =>
+            expect(mockApiGet).toHaveBeenLastCalledWith(
+                "/admin/bill_creator/42/summary?draft_revision_id=3",
+                expect.anything(),
+            ),
+        );
+        expect(screen.getByTestId("admin-summary-revisions-list")).toBeTruthy();
+    });
+
     it("opens a new bill on the Creator tab", async () => {
         render(<BillCreatorScreen route={routeFor(null)} />);
 

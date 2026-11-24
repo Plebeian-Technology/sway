@@ -39,7 +39,12 @@ const TAB_COMPONENTS: Record<BillCreatorTab, React.ComponentType<BillCreatorTabP
 export default function BillCreatorScreen({ route }: Props) {
     const { billId } = route.params;
     const [tab, setTab] = useState<BillCreatorTab>("creator");
-    const { data, error, refresh } = useBillCreator(billId, tab);
+    const [draftRevisionId, setDraftRevisionId] = useState<number | null>(null);
+    const { data, error, refresh } = useBillCreator(
+        billId,
+        tab,
+        tab === "summary" && draftRevisionId !== null ? { draft_revision_id: draftRevisionId } : undefined,
+    );
     const [pulling, setPulling] = useState(false);
     const TabComponent = TAB_COMPONENTS[tab];
 
@@ -91,7 +96,7 @@ export default function BillCreatorScreen({ route }: Props) {
             ) : data === null ? (
                 <ActivityIndicator testID="admin-bill-creator-loading" className="py-12" />
             ) : (
-                <TabComponent billId={billId} data={data} refresh={refresh} />
+                <TabComponent billId={billId} data={data} refresh={refresh} onReviewDraft={setDraftRevisionId} />
             )}
         </ScrollView>
     );

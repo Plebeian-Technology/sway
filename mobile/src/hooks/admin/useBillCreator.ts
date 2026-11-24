@@ -18,6 +18,7 @@ export interface BillCreatorTabProps {
     billId: number | null;
     data: BillCreatorProps;
     refresh: () => Promise<void>;
+    onReviewDraft?: (revisionId: number | null) => void;
 }
 
 export interface UseBillCreatorResult {
@@ -27,11 +28,16 @@ export interface UseBillCreatorResult {
     refresh: () => Promise<void>;
 }
 
-export function useBillCreator(billId: number | null, tab: BillCreatorTab): UseBillCreatorResult {
+export function useBillCreator(
+    billId: number | null,
+    tab: BillCreatorTab,
+    query?: Record<string, string | number>,
+): UseBillCreatorResult {
     const [data, setData] = useState<BillCreatorProps | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
     const abortRef = useRef<AbortController | null>(null);
+    const path = Routes.adminBillCreatorTab(billId, tab, query);
 
     const refresh = useCallback(async () => {
         abortRef.current?.abort();
@@ -39,7 +45,7 @@ export function useBillCreator(billId: number | null, tab: BillCreatorTab): UseB
         abortRef.current = ctrl;
         setLoading(true);
         try {
-            const res = await apiClient.get<BillCreatorProps>(Routes.adminBillCreatorTab(billId, tab), {
+            const res = await apiClient.get<BillCreatorProps>(path, {
                 signal: ctrl.signal,
             });
             if (ctrl.signal.aborted) return;
@@ -55,12 +61,15 @@ export function useBillCreator(billId: number | null, tab: BillCreatorTab): UseB
                 setLoading(false);
             }
         }
-    }, [billId, tab]);
+    }, [path]);
 
     useEffect(() => {
         // @lat: [[mobile-bill-creator#The bill creator screen#A tab never sees another tab's props]]
         setData(null);
         setError(null);
+    }, [billId, tab]);
+
+    useEffect(() => {
         void refresh();
         return () => {
             abortRef.current?.abort();

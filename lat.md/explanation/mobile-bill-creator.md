@@ -31,7 +31,7 @@ The header shows the bill's external id and title from the loaded `bill` prop, o
 
 Each tab may receive a different set of props from the server, so the hook clears its data when the bill or the tab changes and the screen shows a spinner until the new answer arrives.
 
-A tab therefore renders only from the answer to its own path. Pull to refresh keeps the current data on screen, because the tab does not change, and only a pull shows the spinner: a background refresh, such as the pipeline tab's poll, reloads without it.
+A tab therefore renders only from the answer to its own path. The hook takes an optional query object that joins the path, and a change of query alone fetches again without clearing the data, so a section keeps its open state while it asks for more ([[mobile-bill-creator#Sections#The summary revisions section]]). Pull to refresh keeps the current data on screen, because the tab does not change, and only a pull shows the spinner: a background refresh, such as the pipeline tab's poll, reloads without it.
 
 ## Each tab gets only its own props
 
@@ -424,7 +424,7 @@ The section leaves out web pieces that belong to other sections, or that the pho
 
 - The confirmation dialog itself, its warning about a pasted summary, and the per-bill memory of the chosen model and level across page loads. The choice lasts as long as the section stays mounted.
 - The prompt view's Copy to clipboard button, which needs a clipboard module the app does not install. The prompt text is selectable instead.
-- Editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
+- Editing and publishing the summary, Copy the draft into the box, the sources ledger, news articles and categories, which later sections port.
 - The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.
 
 ### The summary revisions section
@@ -434,3 +434,21 @@ The Summary tab lists every recorded revision of the bill's summary and restores
 The web loads the list on demand through the optional `summary_revisions` prop, because a history of full Markdown bodies must not ride on the five-second poll. A JSON caller cannot name a prop, so [[app/controllers/bills_controller.rb#BillsController#summary_revisions_prop]] builds the list for a mobile request only when the address carries `summary_revisions=1`, as it does for the prompt ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). The tab's prop list names the key so the slice keeps it. A draft named by `draft_revision_id` arrives as `review_draft_revision`.
 
 [[app/controllers/bills_controller.rb#BillsController#restore_summary_revision]] answers every branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]). A restore answers 200 with the new revision from [[app/serializers/bill_summary_revision_resource.rb#BillSummaryRevisionResource]]. The phone reads that revision's `publication_role` to learn whether a legacy revision came back as a draft. A summary that changed since the list loaded answers 422 with the web's alert as the message. The web keeps its redirects.
+
+#### Listing and restoring revisions
+
+[[mobile/src/components/admin/billCreator/SummaryRevisionsSection.tsx#SummaryRevisionsSection]] ports the web's [[app/frontend/components/admin/creator/llm-summary/BillSummaryRevisionHistory.tsx#BillSummaryRevisionHistory]]. The Summary tab renders it below the paste section.
+
+A toggle opens the history and fetches the list the first time, with `summary_revisions=1` on the tab's address; Refresh history fetches again. The list lives in the section's state, so the five-second poll never carries it. Each row follows the web: the time, a Current badge when the revision's text equals the published summary, the role, the review state, "Evidence snapshot" or "Legacy (no snapshot)", the origin, and the provenance (the actor, else the provider and model, else an italic "Unknown provenance"). Inspect text shows one revision's raw Markdown in a preview pane under the list, which otherwise shows the published summary.
+
+A published row offers Restore, disabled for the current text. A draft row offers Review draft instead. Restore opens a confirmation panel with the web's title, description, origin, provenance and review state. A revision with no evidence snapshot says it will become a review draft. Confirming posts `revision_id` and `expected_summary`, the published text the list was read against, to `restore_summary_revision`. A refusal keeps the panel open with the server's message, which is the web's alert when another operator changed the summary. A success refetches the tab and the list, and shows the web's notice.
+
+The phone opens a draft by passing `draft_revision_id` to [[mobile/src/hooks/admin/useBillCreator.ts#useBillCreator]], which the screen holds as state. The server answers `review_draft_revision`, and the section shows the draft's text under the web's "Historical draft loaded for review" title until the admin closes it. A restore that comes back as a draft opens it the same way.
+
+The phone leaves out the following web behaviours.
+
+- The two-column layout and the list's scroll box: the phone stacks the list above the preview pane and lets the screen scroll.
+- The dialog: the confirmation is a panel in the section, because a modal over a scrolling form adds nothing the panel lacks.
+- Editing the draft: the web loads it into the summary editor with its news-usage controls. The phone shows the draft read-only and has no news-usage declaration, so it cannot publish a restored draft; the Creator tab's summary field publishes with news usage `none`.
+- Reset to published summary on the draft notice, which resets that editor.
+- The history, chevron and rotate icons, and the spinner on Refresh history, which reads "Refreshing…".
