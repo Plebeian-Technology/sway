@@ -52,6 +52,49 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(body[:applied_filters][:sway_locale_id]).to eq(sway_locale.id.to_s)
     end
 
+    describe "?org_search=" do
+      def org_names_for(params)
+        get "/public/organizations", params: params, headers: {"Accept" => "application/json"}
+        JSON.parse(response.body, symbolize_names: true)[:organizations].pluck(:name)
+      end
+
+      it "returns only organizations whose name contains the text, in any case" do
+        create(:organization, name: "Housing Coalition", sway_locale: sway_locale)
+        create(:organization, name: "Lighthouse Fund", sway_locale: sway_locale)
+        create(:organization, name: "Beta", sway_locale: sway_locale)
+
+        expect(org_names_for(org_search: "HOUS")).to contain_exactly("Housing Coalition", "Lighthouse Fund")
+      end
+
+      it "intersects with the locale filter" do
+        create(:organization, name: "Housing Baltimore", sway_locale: sway_locale)
+        create(:organization, name: "Housing Annapolis", sway_locale: other_locale)
+
+        expect(org_names_for(org_search: "hous", sway_locale_id: sway_locale.id))
+          .to contain_exactly("Housing Baltimore")
+      end
+
+      it "treats % and _ as literal characters" do
+        create(:organization, name: "50% Coalition", sway_locale: sway_locale)
+        create(:organization, name: "500 Club", sway_locale: sway_locale)
+        create(:organization, name: "a_b Group", sway_locale: sway_locale)
+        create(:organization, name: "axb Group", sway_locale: sway_locale)
+
+        expect(org_names_for(org_search: "50%")).to contain_exactly("50% Coalition")
+        expect(org_names_for(org_search: "a_b")).to contain_exactly("a_b Group")
+      end
+
+      it "echoes the search text in applied_filters, nil when absent" do
+        get "/public/organizations", params: {org_search: "hous"}, headers: {"Accept" => "application/json"}
+        expect(JSON.parse(response.body, symbolize_names: true)[:applied_filters][:org_search]).to eq("hous")
+
+        get "/public/organizations", headers: {"Accept" => "application/json"}
+        applied_filters = JSON.parse(response.body, symbolize_names: true)[:applied_filters]
+        expect(applied_filters).to have_key(:org_search)
+        expect(applied_filters[:org_search]).to be_nil
+      end
+    end
+
     # @lat: [[sway-google-cloud-storage#A stored file name is not an address]]
     it "serializes a bare bucket icon_url as a full escaped storage address" do
       bucket = SwayGoogleCloudStorage::BUCKETS[:ASSETS]

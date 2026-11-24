@@ -38,3 +38,15 @@ single-record case and the list savings are owned by
 [[lazy-inertia-props#Preload savings depend on result size]]. The same
 row-scaled rule makes the memberships list preload its organizations and their
 icons, because every row there draws one.
+
+## Why the name search escapes its own wildcards
+
+`?org_search=` narrows the index to organizations whose name contains the text,
+in any case, and combines with the locale filter. `applied_filters` echoes it,
+nil when absent.
+
+The search runs in the database, before the 100-row limit, so a match past the
+first hundred names is still found. SQLite's `LIKE` has no escape character
+unless the query names one, so escaping `%` and `_` alone leaves them acting as
+wildcards. The match names a backslash as its escape character, which makes a
+search for `50%` find "50% Coalition" and not "500 Club".

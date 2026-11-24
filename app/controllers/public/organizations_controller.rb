@@ -12,6 +12,13 @@ module Public
       filter_locale_id = params[:sway_locale_id].presence || params[:locale_id].presence
       scope = scope.where(sway_locale_id: filter_locale_id) if filter_locale_id.present?
 
+      # @lat: [[public-organizations-endpoint#Why the name search escapes its own wildcards]]
+      org_search = params[:org_search].presence
+      if org_search
+        pattern = "%#{Organization.sanitize_sql_like(org_search)}%"
+        scope = scope.where(Organization.arel_table[:name].matches(pattern, "\\"))
+      end
+
       if ActiveModel::Type::Boolean.new.cast(params[:following]) && current_user
         scope = scope.joins(:organization_follows)
           .where(organization_follows: {user_id: current_user.id})
@@ -24,7 +31,8 @@ module Public
         organizations: orgs.map(&:to_public_json),
         applied_filters: {
           locale_id: filter_locale_id,
-          sway_locale_id: filter_locale_id
+          sway_locale_id: filter_locale_id,
+          org_search: org_search
         }
       }
 
