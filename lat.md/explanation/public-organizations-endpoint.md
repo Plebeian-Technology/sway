@@ -51,6 +51,11 @@ unless the query names one, so escaping `%` and `_` alone leaves them acting as
 wildcards. The match names a backslash as its escape character, which makes a
 search for `50%` find "50% Coalition" and not "500 Club".
 
+The web page's search box writes `org_search` into the address after a short
+pause and reloads only the list and the per-organization props. The locale and
+the search both live in the address, so each survives a change to the other and
+a reload. An empty result with a search names the search rather than the locale.
+
 ## Why the web list defaults to the current locale and JSON does not
 
 The web page shows the reader's current locale, with the shared locale picker

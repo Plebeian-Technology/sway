@@ -47,6 +47,28 @@ RSpec.describe "Public Organizations", type: :system, js: true do
     expect(find_by_id("app")).to have_no_text("Baltimore Civic Org")
   end
 
+  it "narrows the list to the organizations whose name matches a partial search" do
+    baltimore = create(:sway_locale, :baltimore)
+    create(:organization, sway_locale: baltimore, name: "Housing Coalition")
+    create(:organization, sway_locale: baltimore, name: "Transit Riders")
+
+    visit public_organizations_path(sway_locale_id: baltimore.id)
+    expect(find_by_id("app", wait: 10)).to have_text("Transit Riders")
+
+    fill_in "Search organizations", with: "hous"
+
+    expect(page).to have_current_path(/org_search=hous/, wait: 10)
+    expect(find_by_id("app")).to have_no_text("Transit Riders", wait: 10)
+    expect(find_by_id("app")).to have_text("Housing Coalition")
+    expect(page).to have_current_path(/sway_locale_id=#{baltimore.id}/)
+
+    visit current_url
+
+    expect(find_by_id("app", wait: 10)).to have_text("Housing Coalition")
+    expect(find_by_id("app")).to have_no_text("Transit Riders")
+    expect(page).to have_field("Search organizations", with: "hous")
+  end
+
   it "renders an organization's detail page with its positions" do
     organization = create(:organization, sway_locale: sway_locale, name: "Detailed Org")
     create(
