@@ -123,7 +123,7 @@ describe("parityCopy nested-key contract", () => {
         expect(typeof COPY.notifications.lead).toBe("string");
         expect(COPY.notifications.botmAnnouncement.label).toBe("Bill of the Month announcements");
         expect(COPY.notifications.botmAnnouncement.description).toBe(
-            "We'll let you know when a new Bill of the Month is published.",
+            "We'll let you know when a new Bill of the Month is released.",
         );
     });
 
