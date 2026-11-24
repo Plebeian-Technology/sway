@@ -21,8 +21,8 @@ A partial reload merges props one level deep.
 
 If `summary_prompt` lived nested inside the `bill` prop, it would vanish every time the Summary tab's 5-second poll refreshed `bill` — the poll's reload would replace the whole `bill` object, prompt included, even though the poll never asked for the prompt. Keeping it as its own top-level prop means the poll's refresh of `bill` cannot touch it.
 
-## Why JSON callers never receive it
+## Why JSON callers get it only on request
 
 `#edit`'s JSON half runs every prop through `resolve_inertia_props`, which unwraps `InertiaRails.optional` and keeps whatever value comes out.
 
-`#edit`'s JSON half runs every prop through `resolve_inertia_props`, which unwraps `InertiaRails.optional` and keeps whatever value comes out — that unwrapping is what makes deferred and lazy props work for JSON callers, which have no way to ask for a named prop the way an Inertia partial reload does. Left unguarded, that same unwrapping would rebuild the ~25KB prompt on every JSON request, for a caller with no Prepare-prompt button to press. `summary_prompt_prop` returns `{}` for mobile API requests to avoid that cost. Left unguarded, that cost is not hypothetical: measured at 25KB of prompt on an 85KB response, for a caller with no button to press to ask for it.
+That unwrapping is what makes deferred and lazy props work for JSON callers, which cannot name a prop the way an Inertia partial reload does. Left unguarded, it would rebuild the prompt on every JSON request: measured at 25KB of prompt on an 85KB response, and the Summary tab polls every five seconds. [[app/controllers/bills_controller.rb#BillsController#summary_prompt_prop]] therefore builds nothing for a mobile request unless the request carries `summary_prompt=1`, the phone's equivalent of the web's partial reload ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]).

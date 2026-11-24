@@ -49,8 +49,9 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Pipeline also carries `recent_pipeline_runs` for the run selector, and `stale_pipeline_run_count` and `orphan_pipeline_run_count` for the cleanup buttons ([[mobile-bill-creator#Sections#The pipeline cleanup section]]). All three come from the same shared run props.
 - Summary carries `review_draft_revision`, which reads the `draft_revision_id` query parameter, so a summary request still answers the draft named in its address.
 - Summary also carries `active_legislation_pipeline_run`, from the same shared run props, because the web summary view keeps Regenerate off while a clean-testimony run covers the bill ([[mobile-bill-creator#Sections#The summary generation section]]).
+- Summary also lists `summary_prompt`, which the server builds only for a request that asks for it ([[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]). Every other summary request, the poll included, answers without it.
 
-[[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The props the web marks optional and never builds for mobile, such as the summary prompt and the campaign letter text, stay absent whatever the tab.
+[[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The other props the web marks optional and never builds for mobile, such as the campaign letter text, stay absent whatever the tab.
 
 A mobile section that needs another prop adds the key to its tab's list.
 
@@ -366,11 +367,17 @@ The section refetches the tab every five seconds with [[mobile/src/hooks/admin/u
 
 The conditions are a queued or generating row, a busy pipeline refresh for this bill, and a bill with no provisioning row. The first two end on their own. The third is a standing fact about an unsummarised bill, so the phone bounds it as the web does: one minute per bill, twelve refetches. A different bill starts a fresh minute. A generation that finishes turns the poll off, because the row then reads completed or failed.
 
+#### Preparing the summary prompt
+
+The web's Prepare prompt asks for the optional `summary_prompt` prop by name with a partial reload. A JSON caller has no partial reload, so the phone asks with the query parameter `summary_prompt=1` on the Summary tab's address.
+
+[[app/controllers/bills_controller.rb#BillsController#summary_prompt_prop]] builds the prompt for a mobile request only when that parameter is present, and the Summary tab's prop list names `summary_prompt` so the slice keeps it. The five-second poll never carries the parameter, so it never pays for the prompt ([[bill-summary-prompt-prop-delivery#Why JSON callers get it only on request]]).
+
 #### What the phone leaves out
 
 The section leaves out web pieces that belong to other sections, or that the phone has no way to show.
 
 - The model picker, the reasoning level and the per-run instructions of the confirmation dialog. Every phone run uses the standing model.
-- Prepare prompt and its dialog. The summary prompt is an optional prop the server never builds for mobile.
+- Prepare prompt and its dialog.
 - Paste summary JSON, editing and publishing the summary, Copy the draft into the box, the revision history, the sources ledger, news articles and categories, which later sections port.
 - The busy overlay, the link to the failed run on the Pipeline tab, the pipeline status badge beside the busy line, the info popovers and the hover text on the stale stamp.

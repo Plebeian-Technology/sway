@@ -63,7 +63,7 @@ class BillsController < ApplicationController
     "summary" => %i[
       bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
       summary_sources active_categories max_active_categories_per_bill news_articles receipt_status
-      review_draft_revision active_legislation_pipeline_run
+      review_draft_revision active_legislation_pipeline_run summary_prompt
     ],
     "positions" => %i[
       bill bill_id tab_key organizations testimony_coverage testimony_campaign_drafts
@@ -1175,7 +1175,12 @@ class BillsController < ApplicationController
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
   def summary_prompt_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]
+    if mobile_api_request?
+      return {} unless params[:summary_prompt] == "1"
+
+      return {summary_prompt: -> { BillSummaryPromptBuilder.new(@bill).call }}
+    end
 
     {summary_prompt: InertiaRails.optional { BillSummaryPromptBuilder.new(@bill).call }}
   end

@@ -725,8 +725,8 @@ RSpec.describe "Bills LLM actions", type: :request do
       expect(inertia.props).not_to have_key(:summary_prompt)
     end
 
-    # @lat: [[bill-summary-prompt-prop-delivery#Why JSON callers never receive it]]
-    it "is withheld from JSON callers, who cannot ask for it by name" do
+    # @lat: [[bill-summary-prompt-prop-delivery#Why JSON callers get it only on request]]
+    it "is withheld from JSON callers that do not ask for it" do
       bill.create_bill_llm_provisioning!(diff_content: "diff sample")
 
       get summary_bill_creator_path(bill), as: :json
@@ -844,7 +844,7 @@ RSpec.describe "Bills LLM actions", type: :request do
       expect(inertia.props).not_to have_key(:testimony_campaign_letters)
     end
 
-    it "is withheld from JSON callers, who cannot ask for it by name" do
+    it "is withheld from JSON callers that do not ask for it" do
       get summary_bill_creator_path(bill), as: :json
 
       expect(response).to have_http_status(:ok)

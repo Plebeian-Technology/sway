@@ -1523,13 +1523,30 @@ RSpec.describe "BillsController", type: :request do
         expect(body.dig("bill", "bill_llm_provisioning", "generation_status")).to eq("completed")
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]
+      it "gives the summary tab the summary prompt only when the request asks for it" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "summary")
+        expect(response.parsed_body).not_to have_key("summary_prompt")
+
+        get "/admin/bill_creator/#{bill.id}/summary?summary_prompt=1",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.fetch("summary_prompt")).to include(bill.external_id, "summary_markdown")
+      end
+
       it "serves each tab exactly the keys its list names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)
         bill.save!
 
         BillsController::BILL_CREATOR_TAB_PROPS.each do |tab, keys|
-          get_tab_as_json(bill, user, tab)
+          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1",
+            headers: authenticate_as(user).merge("Accept" => "application/json")
 
           expect(response.parsed_body.keys).to match_array(keys.map(&:to_s)), "tab #{tab}"
         end
@@ -1542,7 +1559,7 @@ RSpec.describe "BillsController", type: :request do
 
         get "/admin/bill_creator/#{bill.id}/schedule"
 
-        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq
+        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt]
         expect(inertia.props).to include(*every_key)
       end
     end
