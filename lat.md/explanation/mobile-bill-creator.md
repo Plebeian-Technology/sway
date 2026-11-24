@@ -45,6 +45,7 @@ Each list comes from the web components that tab renders. [[app/frontend/compone
 - Schedule adds `bills`, because its calendar and sidebar place every bill of the locale on their dates.
 - Creator and Positions both render the organizations panel, so both carry `organizations` and `tab_key`, which the panel sends back on save.
 - Pipeline carries the keys that [[app/controllers/bills_controller.rb#BillsController#edit]] adds outside the shared prop builder: the activity log, the artifact mirrors and the fetched bills. The web pipeline poll list also names `testimony_claimed_affiliations`, but nothing on that tab reads it, so the mobile list leaves it out.
+- Pipeline also carries `legislation_pipeline_run`, the run the web progress panel shows. The web gets it as a shared prop ([[legislation-pipeline-run-sourcing-concern]]), and mobile JSON holds only the action's own props, so [[app/controllers/bills_controller.rb#BillsController#mobile_bill_creator_tab_props]] adds the shared run props before it slices.
 - Summary carries `review_draft_revision`, which reads the `draft_revision_id` query parameter, so a summary request still answers the draft named in its address.
 
 [[app/controllers/bills_controller.rb#BillsController#new]] applies the same lists to a new bill. With `bill_creator_tab=<tab>` it answers that tab's keys, less any key a new bill has no builder for. With no tab, or a name the map lacks, it answers [[app/controllers/bills_controller.rb#BillsController#BILL_PICKER_PROPS]], which is what the picker reads. The props the web marks optional and never builds for mobile, such as the summary prompt and the campaign letter text, stay absent whatever the tab.
@@ -185,6 +186,12 @@ The server builds `pipeline_preview` only for a request whose address names `sel
 
 A queued run shows "Pipeline run queued." and refreshes the tab. A refusal shows the server's reason: `details.pipeline` for a 422, and the message naming the active run for a 409. The web shows a toast, plus a fixed "already running" alert whenever its `pipeline` error is set.
 
-The phone leaves out these web pieces, which need the current run (`legislation_pipeline_run`) or the stale and orphan counts that the tab does not serve yet: the in-flight state that disables the controls, the failure header with Resume and Restart, Force fail, the origin hint, the live-update banner, and the stuck-run and orphan-run buttons. The server refuses a second run with 409 meanwhile. The info popovers and the selection kept in the address are left out too.
+The phone leaves out these web pieces, which need the current run's controls or the stale and orphan counts that the tab does not serve: the in-flight state that disables the controls, the failure header with Resume and Restart, Force fail, the origin hint, the live-update banner, and the stuck-run and orphan-run buttons. The server refuses a second run with 409 meanwhile. The info popovers and the selection kept in the address are left out too.
 
 [[app/controllers/bills_controller.rb#BillsController#run_pipeline]], `resume_pipeline_run` and `restart_pipeline_run` answer through `respond_after_write` ([[bills-controller-design#enqueue_pipeline_run! and render_pipeline_duplicate_run]]). A queued run answers 200 with an empty body. A refused run (no locale, a conflicting locale, a refused resume, a bad stage) answers 422 `validation_failed` with the reason under `details.pipeline`, because the web reads the same reason from its `pipeline` Inertia error. A run started while another is active still answers 409 `duplicate_run` with the active run's id.
+
+### The pipeline progress section
+
+The Pipeline tab's progress section shows the current pipeline run, its stage and its terminal result, refetching the tab while the run is in flight.
+
+The tab's `legislation_pipeline_run` prop is the same run the web surfaces ([[legislation-pipeline-run-sourcing-concern]]): a run picked by `run_id`, else the newest active run, else the newest run of any status. Its `pipeline_run_stages` list each stage with its status and position. The bill's `bill_pipeline_last_failure` and `bill_pipeline_refresh` already arrive inside `bill`.

@@ -1454,6 +1454,24 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body.keys).not_to include("bills", "pipeline_preview", "summary_sources")
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The pipeline progress section]]
+      it "gives the pipeline tab the current run with its stages and the bill's last failure" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        run = create(:legislation_pipeline_run, :running, bill: bill, sway_locale: sway_locale)
+        create(:pipeline_run_stage, legislation_pipeline_run: run, stage_name: "fetch-bills", status: "succeeded")
+
+        get_tab_as_json(bill, user, "pipeline")
+
+        current_run = response.parsed_body.fetch("legislation_pipeline_run")
+        expect(current_run).to include("id" => run.id, "status" => "running", "kind" => "single")
+        expect(current_run.fetch("pipeline_run_stages")).to contain_exactly(
+          hash_including("stage_name" => "fetch-bills", "status" => "succeeded", "position" => 1)
+        )
+        expect(response.parsed_body.fetch("bill")).to have_key("bill_pipeline_last_failure")
+      end
+
       it "serves each tab exactly the keys its list names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)
