@@ -52,6 +52,7 @@ const PLACEHOLDER_ENTRIES: IRegistryEntry[] = [
     },
     { test: exact("/users/organization_memberships"), shape: "list", pageName: "Your organizations" },
     { test: exact("/users/passkeys"), shape: "list", pageName: "Passkeys" },
+    { test: exact("/profile"), shape: "list", pageName: "Profile" },
     {
         test: (pathname) => /^\/organizations\/[^/]+\/memberships\/[^/]+$/.test(pathname),
         shape: "detail",

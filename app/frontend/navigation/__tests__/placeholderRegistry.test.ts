@@ -25,6 +25,7 @@ const REGISTERED_ROWS: Array<{ pathname: string; shape: string; pageName: string
     { pathname: "/public/organizations/3", shape: "detail", pageName: "Organization" },
     { pathname: "/users/organization_memberships", shape: "list", pageName: "Your organizations" },
     { pathname: "/users/passkeys", shape: "list", pageName: "Passkeys" },
+    { pathname: "/profile", shape: "list", pageName: "Profile" },
     { pathname: "/organizations/5/memberships/9", shape: "detail", pageName: "Organization membership" },
     { pathname: "/organizations/5/positions/new", shape: "form", pageName: "New position" },
     {
@@ -79,6 +80,7 @@ const PAGE_CONSTANT_URLS: Array<{ constant: string; pathname: string }> = [
     { constant: "ORGANIZATION", pathname: "/public/organizations/3" },
     { constant: "ORGANIZATIONS", pathname: "/public/organizations" },
     { constant: "PASSKEY_MANAGEMENT", pathname: "/users/passkeys" },
+    { constant: "PROFILE", pathname: "/profile" },
     { constant: "REGISTRATION", pathname: "/sway_registration" },
     { constant: "VERSION", pathname: "/version" },
     { constant: "USER_ORGANIZATION_MEMBERSHIPS", pathname: "/users/organization_memberships" },
