@@ -344,6 +344,31 @@ describe("OrganizationsSection", () => {
             expect(savedRow).not.toHaveProperty("icon_signed_id");
         });
 
+        it("keeps Save disabled while an upload runs, then sends the signed id", async () => {
+            let finishUpload: (signedId: string) => void = () => {};
+            mockGetDocumentAsync.mockResolvedValue({ canceled: false, assets: [pickedIcon] });
+            mockDirectUpload.mockReturnValue(new Promise<string>((resolve) => (finishUpload = resolve)));
+            renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-icon-upload"));
+            await waitFor(() => expect(mockDirectUpload).toHaveBeenCalledTimes(1));
+
+            const save = screen.getByTestId("admin-organizations-save");
+            expect(save.props.accessibilityState?.disabled).toBe(true);
+            expect(screen.getByText("Saving...")).toBeTruthy();
+            fireEvent.press(save);
+            expect(mockApiPost).not.toHaveBeenCalled();
+
+            await act(async () => finishUpload("late-signed-id"));
+
+            await waitFor(() =>
+                expect(screen.getByTestId("admin-organizations-save").props.accessibilityState?.disabled).toBeFalsy(),
+            );
+            fireEvent.press(screen.getByTestId("admin-organizations-save"));
+            await waitFor(() => expect(mockApiPost).toHaveBeenCalledTimes(1));
+            expect(mockApiPost.mock.calls[0][1].organizations[0]).toMatchObject({ icon_signed_id: "late-signed-id" });
+        });
+
         it("sends nothing new when the admin closes the picker", async () => {
             mockGetDocumentAsync.mockResolvedValue({ canceled: true, assets: null });
             renderSection();

@@ -72,6 +72,7 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
     const [open, setOpen] = useState(false);
     const [formMessage, setFormMessage] = useState<string | null>(null);
     const [saved, setSaved] = useState(false);
+    const [uploadingCount, setUploadingCount] = useState(0);
     const nextTempId = useRef(-1);
     const { run, loading, errorMessage, fieldErrors } = useAdminMutation<unknown>(
         "post",
@@ -126,6 +127,7 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
     };
 
     const save = async () => {
+        if (uploadingCount > 0) return;
         setSaved(false);
         if (billId === null) {
             setFormMessage(UNSAVED_BILL_MESSAGE);
@@ -155,6 +157,7 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
         void refresh();
     };
 
+    const saveBusy = loading || uploadingCount > 0;
     const rowErrors = errorMessage === null ? [] : rowErrorsFrom(fieldErrors);
     const shownError = formMessage ?? (errorMessage === null ? undefined : errorMessage || REFUSAL_FALLBACK);
 
@@ -225,6 +228,7 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
                         row={row}
                         error={rowErrors[index]}
                         disabled={loading}
+                        onUploading={(uploading) => setUploadingCount((count) => count + (uploading ? 1 : -1))}
                         tabKey={tabKey}
                         positionId={positionIdOf(row.value)}
                         onChange={(change) => updateRow(index, change)}
@@ -252,12 +256,12 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
             <Pressable
                 testID="admin-organizations-save"
                 variant="default"
-                disabled={loading}
+                disabled={saveBusy}
                 accessibilityLabel="Save Supporting/Opposing Arguments"
                 onPress={() => void save()}
             >
                 <Text className="text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark">
-                    {loading ? "Saving..." : "Save Supporting/Opposing Arguments"}
+                    {saveBusy ? "Saving..." : "Save Supporting/Opposing Arguments"}
                 </Text>
             </Pressable>
         </View>
@@ -269,6 +273,7 @@ interface OrganizationRowCardProps {
     row: OrganizationRow;
     error?: OrganizationRowError;
     disabled: boolean;
+    onUploading: (uploading: boolean) => void;
     tabKey: string;
     positionId: number | undefined;
     onChange: (change: Partial<OrganizationRow>) => void;
@@ -293,6 +298,7 @@ function OrganizationRowCard({
     row,
     error,
     disabled,
+    onUploading,
     tabKey,
     positionId,
     onChange,
@@ -315,6 +321,7 @@ function OrganizationRowCard({
         if (!asset) return;
         setIconError(null);
         setUploadingIcon(true);
+        onUploading(true);
         try {
             const signedId = await directUpload({
                 uri: asset.uri,
@@ -326,6 +333,7 @@ function OrganizationRowCard({
             setIconError(e instanceof Error ? e.message : GENERIC_ERROR_MESSAGE);
         } finally {
             setUploadingIcon(false);
+            onUploading(false);
         }
     };
 
