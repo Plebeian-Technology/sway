@@ -19,6 +19,16 @@ jest.mock("../../../../src/hooks/useReachability", () => ({
     useReachability: () => ({ isOnline: true, isResolved: true }),
 }));
 
+const mockGetDocumentAsync = jest.fn();
+jest.mock("expo-document-picker", () => ({
+    getDocumentAsync: (...args: unknown[]) => mockGetDocumentAsync(...args),
+}));
+
+const mockDirectUpload = jest.fn();
+jest.mock("../../../../src/api/directUpload", () => ({
+    directUpload: (...args: unknown[]) => mockDirectUpload(...args),
+}));
+
 jest.mock("../../../../src/theme/ThemeProvider", () => ({
     useTheme: () => ({ colorScheme: "light" }),
 }));
@@ -301,6 +311,68 @@ describe("OrganizationsSection", () => {
 
             expect(screen.getByTestId("admin-organizations-row-0-rename")).toBeTruthy();
             expect(screen.queryByTestId("admin-organizations-row-1-rename")).toBeNull();
+        });
+    });
+
+    describe("a row's icon", () => {
+        const pickedIcon = { uri: "file:///cache/tenants.png", name: "tenants.png", mimeType: "image/png", size: 10 };
+
+        it("uploads the chosen file and sends its signed id with that row on save", async () => {
+            mockGetDocumentAsync.mockResolvedValue({ canceled: false, assets: [pickedIcon] });
+            mockDirectUpload.mockResolvedValue("signed-icon-id");
+            renderSection();
+            search("tenants");
+            fireEvent.press(screen.getByTestId("admin-organizations-option-8"));
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-1-icon-upload"));
+
+            await waitFor(() =>
+                expect(mockDirectUpload).toHaveBeenCalledWith({
+                    uri: "file:///cache/tenants.png",
+                    filename: "tenants.png",
+                    contentType: "image/png",
+                }),
+            );
+            expect(mockGetDocumentAsync).toHaveBeenCalledWith({ type: "image/*", copyToCacheDirectory: true });
+            expect(await screen.findByLabelText("Update icon for Baltimore Tenants Union")).toBeTruthy();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-save"));
+
+            await waitFor(() => expect(mockApiPost).toHaveBeenCalledTimes(1));
+            const [savedRow, tenantsRow] = mockApiPost.mock.calls[0][1].organizations;
+            expect(tenantsRow).toMatchObject({ value: 8, icon_signed_id: "signed-icon-id" });
+            expect(savedRow).not.toHaveProperty("icon_signed_id");
+        });
+
+        it("sends nothing new when the admin closes the picker", async () => {
+            mockGetDocumentAsync.mockResolvedValue({ canceled: true, assets: null });
+            renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-icon-upload"));
+
+            await waitFor(() => expect(mockGetDocumentAsync).toHaveBeenCalledTimes(1));
+            expect(mockDirectUpload).not.toHaveBeenCalled();
+        });
+
+        it("shows the upload's error on the row", async () => {
+            mockGetDocumentAsync.mockResolvedValue({ canceled: false, assets: [pickedIcon] });
+            mockDirectUpload.mockRejectedValue(new Error("Uploading tenants.png failed (403)."));
+            renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-icon-upload"));
+
+            expect(await screen.findByText("Uploading tenants.png failed (403).")).toBeTruthy();
+        });
+
+        it("clears the icon on save after Remove icon", async () => {
+            renderSection();
+
+            fireEvent.press(screen.getByTestId("admin-organizations-row-0-icon-remove"));
+            expect(screen.queryByTestId("admin-organizations-row-0-icon-remove")).toBeNull();
+            fireEvent.press(screen.getByTestId("admin-organizations-save"));
+
+            await waitFor(() => expect(mockApiPost).toHaveBeenCalledTimes(1));
+            expect(mockApiPost.mock.calls[0][1].organizations[0]).toMatchObject({ value: 7, icon_url: null });
         });
     });
 

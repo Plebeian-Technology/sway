@@ -1,7 +1,10 @@
 // @lat: [[mobile-bill-creator#Sections#The organizations section]]
 import React, { useMemo, useRef, useState } from "react";
-import { Alert, Switch, Text, TextInput, View } from "react-native";
+import { Alert, Image, Switch, Text, TextInput, View } from "react-native";
+import * as DocumentPicker from "expo-document-picker";
 
+import { directUpload } from "../../../api/directUpload";
+import { GENERIC_ERROR_MESSAGE } from "../../../api/errors";
 import { Routes } from "../../../api/routes";
 import { Pressable } from "../../ui/Pressable";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
@@ -27,6 +30,7 @@ interface OrganizationRow {
     support: string;
     summary: string;
     icon_url: string | null;
+    icon_signed_id?: string;
 }
 
 type OrganizationRowError = Partial<Record<keyof OrganizationRow, string | null>>;
@@ -130,12 +134,13 @@ export default function OrganizationsSection({ billId, data, refresh }: BillCrea
         setFormMessage(null);
         const response = await run({
             bill_id: billId,
-            organizations: rows.map(({ value, label, support, summary, icon_url }) => ({
+            organizations: rows.map(({ value, label, support, summary, icon_url, icon_signed_id }) => ({
                 value,
                 label,
                 support,
                 summary,
                 icon_url,
+                ...(icon_signed_id ? { icon_signed_id } : {}),
             })),
         });
         if (response !== undefined) {
@@ -300,7 +305,29 @@ function OrganizationRowCard({
     const [nameDraft, setNameDraft] = useState(row.label);
     const rename = useAdminMutation<unknown>("patch", Routes.adminOrganization(row.value));
     const removal = useAdminMutation<unknown>("delete", Routes.adminOrganizationBillPosition(positionId ?? 0, tabKey));
-    const busy = disabled || rename.loading || removal.loading;
+    const [uploadingIcon, setUploadingIcon] = useState(false);
+    const [iconError, setIconError] = useState<string | null>(null);
+    const busy = disabled || rename.loading || removal.loading || uploadingIcon;
+
+    const chooseIcon = async () => {
+        const picked = await DocumentPicker.getDocumentAsync({ type: "image/*", copyToCacheDirectory: true });
+        const asset = picked.canceled ? undefined : picked.assets[0];
+        if (!asset) return;
+        setIconError(null);
+        setUploadingIcon(true);
+        try {
+            const signedId = await directUpload({
+                uri: asset.uri,
+                filename: asset.name,
+                contentType: asset.mimeType ?? "application/octet-stream",
+            });
+            onChange({ icon_signed_id: signedId, icon_url: asset.uri });
+        } catch (e: unknown) {
+            setIconError(e instanceof Error ? e.message : GENERIC_ERROR_MESSAGE);
+        } finally {
+            setUploadingIcon(false);
+        }
+    };
 
     const startRename = () => {
         setNameDraft(row.label);
@@ -396,6 +423,51 @@ function OrganizationRowCard({
                 </View>
             )}
             <RowError testID={`${testID}-label-error`} message={error?.label} />
+
+            <Text className="mt-3 text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                Icon
+            </Text>
+            <View className="mt-1 flex-row items-center gap-3">
+                <View className="h-14 w-14 items-center justify-center overflow-hidden rounded-lg border border-border-light dark:border-border-dark">
+                    {row.icon_url ? (
+                        <Image
+                            source={{ uri: row.icon_url }}
+                            accessibilityLabel={`${row.label} icon`}
+                            resizeMode="contain"
+                            style={{ width: 56, height: 56 }}
+                        />
+                    ) : (
+                        <Text className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
+                            No icon
+                        </Text>
+                    )}
+                </View>
+                <Pressable
+                    testID={`${testID}-icon-upload`}
+                    variant="outline"
+                    disabled={busy}
+                    accessibilityLabel={`${row.icon_url ? "Update" : "Add"} icon for ${row.label}`}
+                    onPress={() => void chooseIcon()}
+                >
+                    <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                        {uploadingIcon ? "Uploading..." : row.icon_url ? "Update icon" : "Add icon"}
+                    </Text>
+                </Pressable>
+                {row.icon_url ? (
+                    <Pressable
+                        testID={`${testID}-icon-remove`}
+                        variant="ghost"
+                        disabled={busy}
+                        accessibilityLabel={`Remove icon for ${row.label}`}
+                        onPress={() => onChange({ icon_signed_id: undefined, icon_url: null })}
+                    >
+                        <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
+                            Remove
+                        </Text>
+                    </Pressable>
+                ) : null}
+            </View>
+            <RowError testID={`${testID}-icon-upload-error`} message={iconError} />
             <RowError testID={`${testID}-icon-error`} message={error?.icon_url} />
 
             <Text className="mt-3 text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">

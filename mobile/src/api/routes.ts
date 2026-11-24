@@ -57,6 +57,7 @@ export const Routes = {
     adminOrganization: (id: number) => `/organizations/${id}`,
     adminOrganizationBillPosition: (id: number, tab: string) =>
         `/organization_bill_positions/${id}?bill_creator_tab=${encodeURIComponent(tab)}`,
+    adminDirectUploads: () => "/rails/active_storage/direct_uploads",
     adminBillCreatorNew: () => "/admin/bill_creator/new",
     adminBillCreatorTab: (billId: number | null, tab: string) =>
         billId === null ? `/admin/bill_creator/new?bill_creator_tab=${tab}` : `/admin/bill_creator/${billId}/${tab}`,
