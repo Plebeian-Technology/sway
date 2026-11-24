@@ -58,6 +58,7 @@ class BillsController < ApplicationController
       bill bill_id bills pipeline_preview selected_stages download_missing_assets testimony_coverage
       testimony_campaign_drafts sending_service_domains sending_service_domains_total bill_artifact_mirrors
       fetched_bills activity_log_entries activity_log_next_cursor activity_log_has_more legislation_pipeline_run
+      recent_pipeline_runs
     ],
     "summary" => %i[
       bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
@@ -646,11 +647,10 @@ class BillsController < ApplicationController
     if run.can_mark_cancelled?
       run.error_message = nil
       run.mark_cancelled!
-      flash[:notice] = "Pipeline run cancelled"
+      respond_after_write(back_path, status: :see_other, notice: "Pipeline run cancelled")
     else
-      flash[:alert] = "Cannot cancel run in status=#{run.status}"
+      respond_after_write(back_path, status: :see_other, alert: "Cannot cancel run in status=#{run.status}")
     end
-    redirect_to back_path, status: :see_other
   end
 
   # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart]]

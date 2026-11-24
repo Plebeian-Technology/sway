@@ -1472,6 +1472,23 @@ RSpec.describe "BillsController", type: :request do
         expect(response.parsed_body.fetch("bill")).to have_key("bill_pipeline_last_failure")
       end
 
+      # @lat: [[mobile-bill-creator#Sections#The pipeline run controls section]]
+      it "gives the pipeline tab the recent runs and the run its address pins" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        older_run = create(:legislation_pipeline_run, :running, bill: bill, sway_locale: sway_locale)
+        older_run.mark_cancelled!
+        newer_run = create(:legislation_pipeline_run, :running, bill: bill, sway_locale: sway_locale)
+
+        get "/admin/bill_creator/#{bill.id}/pipeline?run_id=#{older_run.id}",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        body = response.parsed_body
+        expect(body.fetch("legislation_pipeline_run").fetch("id")).to eq(older_run.id)
+        expect(body.fetch("recent_pipeline_runs").pluck("id")).to eq([newer_run.id, older_run.id])
+      end
+
       it "serves each tab exactly the keys its list names" do
         sway_locale, user = setup
         bill, _params = build_bill_params.call(sway_locale)
@@ -2144,6 +2161,35 @@ RSpec.describe "BillsController", type: :request do
       run.mark_completed!
       delete cancel_pipeline_run_bill_path(run.id)
       expect(flash[:alert]).to be_present
+    end
+  end
+
+  describe "DELETE /bills/legislation_pipeline_runs/:id for a bearer request" do
+    # @lat: [[mobile-bill-creator#Sections#The pipeline run controls section]]
+    it "cancels the run and answers 200 JSON" do
+      _sway_locale, user = setup
+      run = create(:legislation_pipeline_run, :running)
+
+      delete cancel_pipeline_run_bill_path(run.id), headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({})
+      expect(run.reload.status).to eq("cancelled")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline run controls section]]
+    it "answers a run that cannot be cancelled with 422 and the alert as the message" do
+      _sway_locale, user = setup
+      run = create(:legislation_pipeline_run)
+      run.start_running!
+      run.mark_completed!
+
+      delete cancel_pipeline_run_bill_path(run.id), headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+      expect(response.parsed_body.dig("error", "message")).to eq("Cannot cancel run in status=completed")
+      expect(run.reload.status).to eq("completed")
     end
   end
 
