@@ -52,6 +52,56 @@ RSpec.describe Organizations::MembershipInvitesController, type: :request do
       end
     end
 
+    # @lat: [[membership-invite-accept-flow#MembershipInviteConfirm.tsx, the frontend confirm page]]
+    context "when the mobile app asks with a bearer token" do
+      let(:confirm_path) { "/organizations/#{organization.id}/membership_invites/#{signed_token(invite)}/confirm_accept" }
+
+      def bearer_headers_for(bearer)
+        raw_token = "test-bearer-#{SecureRandom.hex(8)}"
+        ApiKey.create!(bearer:, token: raw_token)
+        {"Authorization" => "Bearer #{raw_token}", "Accept" => "application/json"}
+      end
+
+      it "returns the confirm props as JSON for a valid pending invite" do
+        get confirm_path, headers: bearer_headers_for(invitee_user)
+
+        expect(response).to have_http_status(:ok)
+        body = response.parsed_body
+        expect(body.keys).to match_array(%w[signed_token organization inviter_name expires_at])
+        expect(body["signed_token"]).to eq(signed_token(invite))
+        expect(body["organization"]).to include("id" => organization.id, "name" => organization.name)
+        expect(body["inviter_name"]).to eq(admin_user.full_name)
+      end
+
+      it "returns 403 with errors when the user's email does not match" do
+        other_user = create(:user, email: "other@example.com").tap { |u| complete_registration_with_active_link(u) }
+
+        get confirm_path, headers: bearer_headers_for(other_user)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body).to eq({"errors" => ["Forbidden"]})
+      end
+
+      it "returns 410 with errors when the invite is expired" do
+        invite.update_columns(expires_at: 1.day.ago)
+
+        get confirm_path, headers: bearer_headers_for(invitee_user)
+
+        expect(response).to have_http_status(:gone)
+        expect(response.parsed_body).to eq({"errors" => ["Invitation expired."]})
+      end
+
+      it "returns 404 with errors when the token is for a different organization" do
+        other_org = create(:organization)
+
+        get "/organizations/#{other_org.id}/membership_invites/#{signed_token(invite)}/confirm_accept",
+          headers: bearer_headers_for(invitee_user)
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.parsed_body).to eq({"errors" => ["Invitation not found."]})
+      end
+    end
+
     context "(b) when current_user does NOT match invitee_email" do
       let(:other_user) do
         create(:user, email: "other@example.com").tap do |u|

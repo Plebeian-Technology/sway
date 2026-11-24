@@ -47,7 +47,7 @@ Its submit handler nests the payload under `invite` to match `params.require(:in
 
 `app/frontend/pages/organizations/MembershipInviteConfirm.tsx` asks someone to confirm they are accepting an invitation to join an organization.
 
-`Organizations::MembershipInvitesController#confirm_accept` renders it on a GET. Accepting POSTs to that controller's `#accept` action through `useForm` — never a raw `fetch`. Rails names this page `Pages::ORGANIZATION_INVITE_CONFIRM = "organizations/MembershipInviteConfirm"`.
+`Organizations::MembershipInvitesController#confirm_accept` renders it on a GET. Accepting POSTs to that controller's `#accept` action through `useForm` — never a raw `fetch`. Rails names this page `Pages::ORGANIZATION_INVITE_CONFIRM = "organizations/MembershipInviteConfirm"`. A bearer or JSON request receives the same four props as JSON instead of the page, which is what the mobile app's confirm screen reads.
 
 ## Why members_tab_path pins to the members tab
 

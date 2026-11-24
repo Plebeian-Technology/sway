@@ -67,13 +67,15 @@ class Organizations::MembershipInvitesController < Organizations::BaseController
       )
     end
 
-    render inertia: Pages::ORGANIZATION_INVITE_CONFIRM,
+    render_inertia_or_json(
+      page: Pages::ORGANIZATION_INVITE_CONFIRM,
       props: {
         signed_token: params[:id],
         organization: invite.organization.to_simple_builder.attributes!,
         inviter_name: invite.inviter&.full_name,
         expires_at: invite.expires_at
       }
+    )
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     # @lat: [[organization-invite-authorization#Invite acceptance is bound to token, organization, and email]]
     respond_invite_failure("Invitation expired.", status: :gone)
