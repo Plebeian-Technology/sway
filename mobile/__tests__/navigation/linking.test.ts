@@ -128,3 +128,23 @@ describe("bill share links", () => {
         );
     });
 });
+
+// @lat: [[membership-invite-accept-flow#Mobile: MembershipInviteConfirmScreen, the confirm step for an emailed link]]
+describe("membership invite email links", () => {
+    const profileRoute = (path: string) => {
+        const state = linking.getStateFromPath!(path, linking.config as never);
+        return state?.routes[0].state?.routes[0];
+    };
+
+    it("resolve to the confirm screen with a numeric orgId and the token unchanged", () => {
+        const token = "signed-token--abc123";
+
+        expect(profileRoute(`organizations/5/membership_invites/${token}/confirm_accept`)).toEqual(
+            expect.objectContaining({ name: "MembershipInviteConfirm", params: { orgId: 5, token } }),
+        );
+    });
+
+    it("leave an organization link on the organization's detail screen", () => {
+        expect(profileRoute("organizations/5")).toEqual(expect.objectContaining({ name: "OrgDetail" }));
+    });
+});

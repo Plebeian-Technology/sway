@@ -53,16 +53,22 @@ function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
         // @lat: [[bill-detail-error-recovery#When a bill will not load on the phone]]
         const errors = (
             parsed as {
-                errors?: {
-                    code?: string;
-                    title?: string;
-                    detail?: string;
-                    source?: unknown;
-                }[];
+                errors?: (
+                    | string
+                    | {
+                          code?: string;
+                          title?: string;
+                          detail?: string;
+                          source?: unknown;
+                      }
+                )[];
             }
         ).errors;
         if (Array.isArray(errors) && errors.length > 0) {
             const first = errors[0] ?? {};
+            if (typeof first === "string") {
+                return { code: `http_${fallbackStatus}`, message: first || GENERIC_ERROR_MESSAGE };
+            }
             return {
                 code: first.code ?? `http_${fallbackStatus}`,
                 message: first.title ?? first.detail ?? GENERIC_ERROR_MESSAGE,

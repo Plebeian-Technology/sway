@@ -84,6 +84,18 @@ When the user arrives through a universal link and the membership is still "pend
 
 On success the refresh redraws the screen with `status="active"`. On failure a banner appears with a Retry button.
 
+## Mobile: MembershipInviteConfirmScreen, the confirm step for an emailed link
+
+The link in an invitation email opens [[mobile/src/screens/MembershipInviteConfirmScreen.tsx#MembershipInviteConfirmScreen]] when the app is installed, so the invitee confirms in the app as they would on the web page.
+
+The email link carries a signed token, not a membership id, so [[mobile/src/screens/MembershipDetailScreen.tsx]] and its automatic accept cannot answer it: that screen needs the membership the person does not hold yet. The confirm screen asks the server for the same four props the web page receives, shows the organization and the inviter, and waits for a press. Accepting stays a deliberate act on both surfaces, because opening an email link is not consent to join.
+
+Accept posts to the same `accept` address the web form uses, with the token in the place of the id, and then replaces the screen with the memberships list, which loads fresh and shows the new membership. The token is percent-encoded once, where the screen reads it, before it goes into either request path.
+
+Every failure is shown in the server's own words. A link that cannot be confirmed, such as an expired one, shows the message with a button to the memberships list. A failed accept shows the message above the button and leaves the button usable. A link with no usable organization id or token shows "Invitation not found." and asks the server nothing.
+
+A signed-out invitee reaches this screen after signing in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]). No new claimed pattern is needed: `/organizations/*` already covers the email link on both platforms.
+
 ## Why UserOrganizationMembershipInvite derives status from timestamps instead of storing a state column
 
 [[app/models/user_organization_membership_invite.rb#UserOrganizationMembershipInvite#status]] computes `:accepted`, `:revoked`, `:expired`, or `:pending` directly from `accepted_at`, `revoked_at`, and `expires_at` rather than persisting a state column.

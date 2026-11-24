@@ -68,6 +68,7 @@ export type ProfileStackParamList = {
     DeleteAccount: undefined;
     MembershipsList: undefined;
     MembershipDetail: { orgId: number; id: number; tab?: string };
+    MembershipInviteConfirm: { orgId: number; token: string };
 };
 
 // @lat: [[mobile-admin-area#The admin stack]]

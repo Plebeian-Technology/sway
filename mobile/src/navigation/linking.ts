@@ -68,6 +68,10 @@ export const linking: LinkingOptions<RootParamList> = {
                     ProfileHub: "profile",
                     MembershipsList: "users/organization_memberships",
                     MembershipDetail: "organizations/:orgId/memberships/:id",
+                    MembershipInviteConfirm: {
+                        path: "organizations/:orgId/membership_invites/:token/confirm_accept",
+                        parse: { orgId: Number },
+                    },
                 },
             },
         },

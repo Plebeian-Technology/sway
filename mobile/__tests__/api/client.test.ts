@@ -289,6 +289,17 @@ describe("apiClient", () => {
             expect(e.message).toBe(GENERIC_ERROR_MESSAGE);
         });
 
+        test("a JSON errors entry that is plain text becomes the message", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse({ errors: ["Invitation expired."] }, { status: 410 }),
+            );
+
+            await expect(apiClient.get("/x")).rejects.toMatchObject({
+                code: "http_410",
+                message: "Invitation expired.",
+            });
+        });
+
         test("a JSON errors entry with nothing in it gets the http_<status> code and the message", async () => {
             (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse({ errors: [{}] }, { status: 500 }));
             const e = await rejection();

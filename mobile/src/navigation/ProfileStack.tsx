@@ -9,6 +9,7 @@ import PasskeyManagementScreen from "../screens/PasskeyManagementScreen";
 import DeleteAccountScreen from "../screens/DeleteAccountScreen";
 import MembershipsListScreen from "../screens/MembershipsListScreen";
 import MembershipDetailScreen from "../screens/MembershipDetailScreen";
+import MembershipInviteConfirmScreen from "../screens/MembershipInviteConfirmScreen";
 import { useTheme } from "../theme/ThemeProvider";
 import { navigatorScreenOptions, pushedScreenOptions } from "./headerOptions";
 import type { ProfileStackParamList } from "./types";
@@ -29,6 +30,11 @@ export default function ProfileStack() {
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} options={fromProfile} />
             <Stack.Screen name="MembershipsList" component={MembershipsListScreen} options={fromProfile} />
             <Stack.Screen name="MembershipDetail" component={MembershipDetailScreen} options={fromMemberships} />
+            <Stack.Screen
+                name="MembershipInviteConfirm"
+                component={MembershipInviteConfirmScreen}
+                options={fromMemberships}
+            />
         </Stack.Navigator>
     );
 }

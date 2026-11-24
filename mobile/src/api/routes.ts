@@ -138,7 +138,8 @@ export const Routes = {
     pendingChange: (orgId: number, id: number) => `/organizations/${orgId}/position_changes/${id}`,
     membershipInvites: (orgId: number) => `/organizations/${orgId}/membership_invites`,
 
-    acceptInvite: (orgId: number, id: number) => `/organizations/${orgId}/membership_invites/${id}/accept`,
+    confirmInvite: (orgId: number, id: string) => `/organizations/${orgId}/membership_invites/${id}/confirm_accept`,
+    acceptInvite: (orgId: number, id: number | string) => `/organizations/${orgId}/membership_invites/${id}/accept`,
     declineInvite: (orgId: number, id: number) => `/organizations/${orgId}/memberships/${id}`,
 
     organizationFollows: () => "/organization_follows",

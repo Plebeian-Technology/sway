@@ -62,6 +62,7 @@ RSpec.describe "Mobile API routes contract" do
     "orgPositions" => %i[post],
     "pendingChange" => %i[patch delete],
     "membershipInvites" => %i[post],
+    "confirmInvite" => %i[get],
     "acceptInvite" => %i[post],
     "declineInvite" => %i[delete],
     "organizationFollows" => %i[post],
