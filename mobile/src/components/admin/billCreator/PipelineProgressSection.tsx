@@ -68,7 +68,7 @@ const STATUS_LABELS: Record<string, string> = {
     ...STAGE_STATUS_LABELS,
 };
 
-const isInFlight = (status: string | null | undefined) =>
+export const isInFlight = (status: string | null | undefined) =>
     typeof status === "string" && IN_FLIGHT_STATUSES.includes(status);
 
 const statusLabel = (run: PipelineRun) => {

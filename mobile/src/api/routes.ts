@@ -69,6 +69,9 @@ export const Routes = {
     adminPipelineRunResume: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/resume`,
     adminPipelineRunRestart: (runId: number) => `/bills/legislation_pipeline_runs/${runId}/restart`,
     adminPipelineRunCancel: (runId: number) => `/bills/legislation_pipeline_runs/${runId}`,
+    adminPipelineRunForceFail: (runId: number) => `/pipeline_runs/${runId}/force_fail`,
+    adminSweepStalePipelineRuns: () => "/bills/sweep_stale_pipeline_runs",
+    adminDeleteOrphanPipelineRuns: () => "/pipeline_runs/orphans",
     adminBillCreatorPipelinePreview: (billId: number | null, stages: string[], downloadMissingAssets: boolean) =>
         (billId === null
             ? "/admin/bill_creator/new?bill_creator_tab=pipeline&"

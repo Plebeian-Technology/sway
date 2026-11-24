@@ -1,6 +1,7 @@
 // @lat: [[mobile-bill-creator#The tabs]]
 import React, { useEffect, useState } from "react";
 
+import PipelineCleanupSection from "../../../../components/admin/billCreator/PipelineCleanupSection";
 import PipelineProgressSection from "../../../../components/admin/billCreator/PipelineProgressSection";
 import PipelineRunActionsSection from "../../../../components/admin/billCreator/PipelineRunActionsSection";
 import PipelineStagesSection from "../../../../components/admin/billCreator/PipelineStagesSection";
@@ -30,6 +31,11 @@ export default function PipelineTab({ billId, data, refresh }: BillCreatorTabPro
         await refresh();
     };
 
+    const refreshAfterCleanup = async () => {
+        await refresh();
+        if (pinnedRunId !== null) await pinnedRun.refresh();
+    };
+
     return (
         <>
             <PipelineStagesSection key={billId} billId={billId} data={data} refresh={refresh} />
@@ -41,6 +47,7 @@ export default function PipelineTab({ billId, data, refresh }: BillCreatorTabPro
             />
             <PipelineRunActionsSection billId={billId} data={shownData} refresh={startedNewRun} />
             <PipelineProgressSection billId={billId} data={shownData} refresh={shownRefresh} />
+            <PipelineCleanupSection billId={billId} data={shownData} refresh={refreshAfterCleanup} />
         </>
     );
 }

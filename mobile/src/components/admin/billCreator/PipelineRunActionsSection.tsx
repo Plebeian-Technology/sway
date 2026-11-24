@@ -26,7 +26,7 @@ const failedStageNumber = (run: FailedRun) => {
     return index >= 0 ? index + 1 : null;
 };
 
-const reasonFor = (fieldErrors: Record<string, unknown> | null, errorMessage: string | null) =>
+export const reasonFor = (fieldErrors: Record<string, unknown> | null, errorMessage: string | null) =>
     typeof fieldErrors?.pipeline === "string" ? fieldErrors.pipeline : errorMessage;
 
 interface FailedRunActionsProps {

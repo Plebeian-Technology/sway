@@ -92,10 +92,34 @@ describe("PipelineTab", () => {
 
         fireEvent.press(screen.getByTestId("admin-pipeline-resume"));
 
-        await waitFor(() =>
-            expect(mockApiPost).toHaveBeenCalledWith("/bills/legislation_pipeline_runs/11/resume", {}),
-        );
+        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/legislation_pipeline_runs/11/resume", {}));
         await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
         expect(screen.getByTestId("admin-run-selector-current")).toHaveTextContent("Latest run (auto)");
+    });
+
+    // @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+    it("keeps the cleanup counts while a run is picked and refetches the picked run after a sweep", async () => {
+        const refresh = jest.fn(async () => {});
+        mockApiPost.mockResolvedValue({ count: 2 });
+        render(
+            <PipelineTab
+                billId={42}
+                data={{ ...tabData(run(12, "cancelled")), stale_pipeline_run_count: 2 }}
+                refresh={refresh}
+            />,
+        );
+        fireEvent.press(screen.getByTestId("admin-run-selector-toggle"));
+        fireEvent.press(screen.getByTestId("admin-run-selector-option-11"));
+        await waitFor(() => expect(screen.getByTestId("admin-pipeline-status")).toHaveTextContent("Failed"));
+        mockApiGet.mockClear();
+
+        fireEvent.press(screen.getByTestId("admin-pipeline-sweep-stale"));
+        fireEvent.press(screen.getByTestId("admin-pipeline-sweep-stale"));
+
+        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/sweep_stale_pipeline_runs", {}));
+        await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+        await waitFor(() =>
+            expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/pipeline?run_id=11", expect.anything()),
+        );
     });
 });
