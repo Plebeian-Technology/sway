@@ -261,7 +261,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       user_score_keys = %w[count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
       percent_keys = %w[agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent]
-      group_score_keys = user_score_keys + percent_keys + %w[comparison_suppressed]
+      group_score_keys = percent_keys + %w[comparison_suppressed]
       expect(term_entry["district_score"].keys).to match_array(group_score_keys)
       expect(term_entry["locale_score"].keys).to match_array(group_score_keys)
       expect(term_entry["user_score"].keys).to match_array(user_score_keys)
@@ -389,8 +389,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(row["user_legislator_score"].keys).to match_array(expected_keys)
       expect(row["lifetime_score"].keys).to match_array(expected_keys)
       group_score_keys = %w[
-        legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
-        comparison_suppressed agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent
+        legislator_id comparison_suppressed
+        agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent
       ]
       %w[user_legislator_score lifetime_score].each do |scope|
         expect(row[scope]["legislator_district_score"].keys).to match_array(group_score_keys)
@@ -409,14 +409,12 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(lifetime["count_legislator_abstained"]).to eq(0)
       # @lat: [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]
       expect(lifetime["legislator_district_score"]).to eq(
-        "legislator_id" => legislator.id, "count_agreed" => 15, "count_disagreed" => 3,
-        "count_no_legislator_vote" => 0, "count_legislator_abstained" => 1,
+        "legislator_id" => legislator.id,
         "comparison_suppressed" => true, "agreed_percent" => nil, "disagreed_percent" => nil,
         "no_legislator_vote_percent" => nil, "legislator_abstained_percent" => nil
       )
       expect(lifetime["legislator_locale_score"]).to eq(
-        "legislator_id" => legislator.id, "count_agreed" => 28, "count_disagreed" => 3,
-        "count_no_legislator_vote" => 1, "count_legislator_abstained" => 0,
+        "legislator_id" => legislator.id,
         "comparison_suppressed" => false, "agreed_percent" => 88, "disagreed_percent" => 9,
         "no_legislator_vote_percent" => 3, "legislator_abstained_percent" => 0
       )

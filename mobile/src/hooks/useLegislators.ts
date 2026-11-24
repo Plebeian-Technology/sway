@@ -13,7 +13,7 @@ export type LegislatorAgreeableScore = {
     count_legislator_abstained?: number | string;
 };
 
-export type LegislatorGroupScore = LegislatorAgreeableScore & {
+export type LegislatorGroupScore = {
     comparison_suppressed?: boolean | null;
     agreed_percent?: number | null;
     disagreed_percent?: number | null;

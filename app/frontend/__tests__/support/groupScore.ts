@@ -2,8 +2,7 @@ import type { sway } from "sway";
 
 const percentOf = (count: number, total: number) => Math.round((count / total) * 100);
 
-export const suppressedGroupScore = (counters: sway.scoring.IAgreeable): sway.scoring.IGroupAgreeable => ({
-    ...counters,
+export const suppressedGroupScore = (): sway.scoring.IGroupAgreeable => ({
     comparison_suppressed: true,
     agreed_percent: null,
     disagreed_percent: null,
@@ -17,10 +16,9 @@ export const groupScore = (counters: sway.scoring.IAgreeable): sway.scoring.IGro
         counters.count_disagreed +
         counters.count_no_legislator_vote +
         counters.count_legislator_abstained;
-    if (total === 0) return suppressedGroupScore(counters);
+    if (total === 0) return suppressedGroupScore();
 
     return {
-        ...counters,
         comparison_suppressed: false,
         agreed_percent: percentOf(counters.count_agreed, total),
         disagreed_percent: percentOf(counters.count_disagreed, total),

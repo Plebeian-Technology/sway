@@ -71,8 +71,7 @@ class UserLegislatorTermScoreResource < ApplicationResource
     def group_score(rows)
       totals = counters(rows)
       suppressed = comparison_suppressed?(rows, totals)
-      totals
-        .merge(comparison_suppressed: suppressed)
+      {comparison_suppressed: suppressed}
         .merge(suppressed ? PERCENT_KEY_BY_COUNTER.values.index_with { nil } : percentages(totals))
     end
 

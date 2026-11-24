@@ -571,7 +571,7 @@ declare module "sway" {
             }
 
             // @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
-            interface IGroupAgreeable extends IAgreeable {
+            interface IGroupAgreeable {
                 comparison_suppressed: boolean;
                 agreed_percent: number | null;
                 disagreed_percent: number | null;

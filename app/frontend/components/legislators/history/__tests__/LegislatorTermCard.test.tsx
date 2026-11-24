@@ -53,7 +53,7 @@ describe("LegislatorTermCard at the ten-voter minimum", () => {
             <LegislatorTermCard
                 legislator={legislator}
                 term={term({
-                    district_score: suppressedGroupScore(bigCounters),
+                    district_score: { ...bigCounters, ...suppressedGroupScore() },
                     locale_score: groupScore(bigCounters),
                 })}
             />,
@@ -69,7 +69,7 @@ describe("LegislatorTermCard at the ten-voter minimum", () => {
             <LegislatorTermCard
                 legislator={legislator}
                 term={term({
-                    district_score: suppressedGroupScore(bigCounters),
+                    district_score: { ...bigCounters, ...suppressedGroupScore() },
                     locale_score: groupScore(bigCounters),
                 })}
             />,
@@ -99,7 +99,7 @@ describe("LegislatorTermCard at the ten-voter minimum", () => {
             <LegislatorTermCard
                 legislator={legislator}
                 term={term({
-                    district_score: suppressedGroupScore(bigCounters),
+                    district_score: { ...bigCounters, ...suppressedGroupScore() },
                     locale_score: groupScore(bigCounters),
                 })}
             />,

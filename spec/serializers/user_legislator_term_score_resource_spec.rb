@@ -32,6 +32,7 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         expect(score["comparison_suppressed"]).to be(true)
         expect(score.values_at(*percent_keys)).to all(be_nil)
         expect(score).not_to have_key("voters_needed")
+        expect(score.keys).to match_array(percent_keys + %w[legislator_id comparison_suppressed])
       end
 
       it "sends whole-number percentages that sum to 100 when ten distinct users stand behind the score" do
@@ -45,6 +46,7 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         expect(score.values_at(*percent_keys).sum).to eq(100)
         expect(score["legislator_abstained_percent"]).to eq(0)
         expect(score).not_to have_key("voters_needed")
+        expect(score.keys).to match_array(percent_keys + %w[legislator_id comparison_suppressed])
       end
 
       it "suppresses the lifetime figure when any summed term is under the minimum" do
@@ -55,6 +57,7 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
 
         expect(score["comparison_suppressed"]).to be(true)
         expect(score.values_at(*percent_keys)).to all(be_nil)
+        expect(score.keys).to match_array(percent_keys + %w[legislator_id comparison_suppressed])
       end
 
       it "sends lifetime percentages when every summed term reaches the minimum" do

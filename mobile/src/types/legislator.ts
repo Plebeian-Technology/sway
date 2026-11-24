@@ -16,7 +16,7 @@ export interface IAgreeableScore {
 }
 
 // @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
-export interface IGroupAgreeableScore extends IAgreeableScore {
+export interface IGroupAgreeableScore {
     comparison_suppressed?: boolean | null;
     agreed_percent?: number | null;
     disagreed_percent?: number | null;

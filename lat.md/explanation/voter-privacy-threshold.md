@@ -32,6 +32,8 @@ A district row carries its two percentages and never a count. Its `comparison_su
 
 The feed's count of how many users voted on a bill stays. It says how many, not how.
 
+Legislator scores follow the same rule. `group_score` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] builds every district, locale and lifetime score that leaves the server, for the legislator page, the legislators list, the legislator history and the `legislator_votes` endpoint. It sends the flag and the four percentages and none of the four counters. The counters stay in the database, where the percentages are computed from them, and in the reader's own score.
+
 ## Legislator scores count only bills that reached the minimum
 
 A legislator's locale score counts a bill only when the bill's own total has ten voters, and a district score counts it only when that district's tally for the bill has ten.
@@ -44,7 +46,7 @@ A user's own agreement with a legislator is one user's record, so `tally_agreeme
 
 ## Legislator scores are sent as percentages
 
-A district or locale agreement score carries `comparison_suppressed` and one whole-number percentage per counter. With fewer than ten distinct voters behind it the flag is true and every percentage is nil.
+A district or locale agreement score carries `comparison_suppressed` and one whole-number percentage per counter, and no counter. With fewer than ten distinct voters behind it the flag is true and every percentage is nil.
 
 Percentages replace counts for the reason districts use them: one count can be subtracted from another. `percentages` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] floors each share and hands the leftover points to the largest remainders, so the four always sum to 100.
 

@@ -1097,4 +1097,76 @@ RSpec.describe "LegislatorsController", type: :request do
       end
     end
   end
+
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+  describe "legislator agreement counters" do
+    counter_keys = %w[count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
+    percent_keys = %w[agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent]
+
+    let(:sway_locale_and_user) { setup }
+    let(:sway_locale) { sway_locale_and_user.first }
+    let(:user) { sway_locale_and_user.last }
+    let(:legislator) { sway_locale.legislators.first }
+    let(:term) { legislator.active_term }
+    let(:json_headers) { {"Accept" => "application/json"} }
+
+    before do
+      create(:legislator_district_score, legislator_term: term, count_agreed: 6, count_disagreed: 3, distinct_voter_count: 9)
+      create(:legislator_locale_score, legislator_term: term, count_agreed: 9, count_disagreed: 3, distinct_voter_count: 10)
+      create(:user_legislator_term_score, user_legislator: user.user_legislators.find_by(legislator:),
+        legislator_term: term, count_agreed: 2, count_disagreed: 1)
+    end
+
+    def expect_no_counters(district_score, locale_score, counter_keys, percent_keys)
+      expect(district_score.keys & counter_keys).to be_empty
+      expect(locale_score.keys & counter_keys).to be_empty
+      expect(district_score["comparison_suppressed"]).to be(true)
+      expect(district_score.values_at(*percent_keys)).to all(be_nil)
+      expect(locale_score["comparison_suppressed"]).to be(false)
+      expect(locale_score.values_at(*percent_keys)).to eq([75, 25, 0, 0])
+    end
+
+    it "GET /legislators/:id sends no raw counter on a district or locale score and keeps the user's own" do
+      get "/legislators/#{legislator.id}", headers: json_headers
+
+      payload = response.parsed_body["legislator"]
+      term_entry = payload["terms"].find { |entry| entry["id"] == term.id }
+      expect_no_counters(term_entry["district_score"], term_entry["locale_score"], counter_keys, percent_keys)
+      expect(term_entry["user_score"]).to eq(
+        "count_agreed" => 2, "count_disagreed" => 1, "count_no_legislator_vote" => 0, "count_legislator_abstained" => 0
+      )
+      %w[user_legislator_score lifetime_score].each do |scope|
+        expect_no_counters(
+          payload[scope]["legislator_district_score"], payload[scope]["legislator_locale_score"], counter_keys, percent_keys
+        )
+        expect(payload[scope]["count_agreed"]).to eq(2)
+      end
+    end
+
+    it "GET /legislators sends no raw counter on a district or locale score" do
+      get "/legislators", headers: json_headers
+
+      row = response.parsed_body["legislators"].find { |entry| entry["id"] == legislator.id }
+      term_entry = row["terms"].find { |entry| entry["id"] == term.id }
+      expect_no_counters(term_entry["district_score"], term_entry["locale_score"], counter_keys, percent_keys)
+      %w[user_legislator_score lifetime_score].each do |scope|
+        expect_no_counters(
+          row[scope]["legislator_district_score"], row[scope]["legislator_locale_score"], counter_keys, percent_keys
+        )
+        expect(row[scope]["count_agreed"]).to eq(2)
+      end
+    end
+
+    it "GET /api/legislator_votes sends no raw counter on a district or locale score" do
+      api_token = SecureRandom.hex(32)
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/api/legislator_votes", headers: {"Authorization" => "Bearer #{api_token}"}
+
+      expect(response).to have_http_status(:ok), response.body.to_s.first(300)
+      row = response.parsed_body.find { |entry| entry["id"] == legislator.id }
+      term_entry = row["terms"].find { |entry| entry["id"] == term.id }
+      expect_no_counters(term_entry["district_score"], term_entry["locale_score"], counter_keys, percent_keys)
+    end
+  end
 end
