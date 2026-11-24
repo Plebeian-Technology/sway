@@ -155,7 +155,7 @@ Lifecycle routes reach `BillsController` through custom route definitions rather
 
 `enqueue_pipeline_run!` and `render_pipeline_duplicate_run` encapsulate concurrency locking and error translation during run initialization.
 
-[[docs/explanation/pipeline-run-request-transaction-lock.md|The request-level active-run check and its transaction lock]] details shared transaction locks between concurrency gates and record creation. ActiveJob enqueue errors transition rows to failed status to preserve audit history before returning 409 responses. Pre-creation validation errors surface directly as Inertia errors.
+[[docs/explanation/pipeline-run-request-transaction-lock.md|The request-level active-run check and its transaction lock]] details shared transaction locks between concurrency gates and record creation. ActiveJob enqueue errors transition rows to failed status to preserve audit history before returning 409 responses. Pre-creation validation errors and the queued notice go through [[app/controllers/concerns/mobile_format_negotiation.rb#MobileFormatNegotiation#respond_after_write]]: the web gets the same redirect with its `pipeline` Inertia error or flash notice, and a mobile request gets 200 JSON or a 422 whose details carry `pipeline`. A duplicate run keeps its own 409 answer.
 
 ## render_paste_summary_errors
 

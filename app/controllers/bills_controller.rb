@@ -699,17 +699,17 @@ class BillsController < ApplicationController
     if params[:sway_locale_id].present?
       sway_locale = SwayLocale.find_by(id: params[:sway_locale_id].to_i)
       if sway_locale.nil?
-        return redirect_to(back_path, inertia: {errors: {pipeline: "Selected SwayLocale not found."}})
+        return respond_after_write(back_path, errors: {pipeline: "Selected SwayLocale not found."})
       end
     end
 
     if target_bill
       if sway_locale && target_bill.sway_locale_id.present? && sway_locale.id != target_bill.sway_locale_id
-        return redirect_to(back_path, inertia: {errors: {pipeline: "Single-bill pipeline run cannot override bill jurisdiction with a conflicting locale."}})
+        return respond_after_write(back_path, errors: {pipeline: "Single-bill pipeline run cannot override bill jurisdiction with a conflicting locale."})
       end
       sway_locale ||= target_bill.sway_locale
     elsif sway_locale.nil?
-      return redirect_to(back_path, inertia: {errors: {pipeline: "A SwayLocale is required for all-bills pipeline runs."}})
+      return respond_after_write(back_path, errors: {pipeline: "A SwayLocale is required for all-bills pipeline runs."})
     end
 
     enqueue_pipeline_run!(
@@ -1013,7 +1013,7 @@ class BillsController < ApplicationController
     rescue LegislationPipelineRunService::ResumeNotAllowed,
       LegislationPipelineRunService::StageAllowlistError,
       LegislationPipelineRunService::LocaleError => e
-      return redirect_to(back_path, inertia: {errors: {pipeline: e.message}})
+      return respond_after_write(back_path, errors: {pipeline: e.message})
     end
 
     return render_pipeline_duplicate_run(existing, back_path) if existing
@@ -1024,8 +1024,7 @@ class BillsController < ApplicationController
 
     begin
       RunLegislationPipelineJob.perform_later(created_run.id, origin: origin)
-      flash[:notice] = notice.call(created_run)
-      redirect_to back_path
+      respond_after_write(back_path, notice: notice.call(created_run))
     rescue ActiveJob::EnqueueError => e
       if created_run.persisted?
         created_run.update!(error_message: "enqueue failed: #{e.message[0, 200]}")

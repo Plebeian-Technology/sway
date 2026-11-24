@@ -166,3 +166,9 @@ The phone leaves out these web pieces:
 - The info popovers beside each heading.
 - The server's list order: the phone sorts upcoming bills earliest first and past bills latest first, so the month headings read in order.
 - The page-number control of the past and unscheduled lists, replaced by a Show more button.
+
+### The pipeline stages section
+
+The Pipeline tab's stage section lets an admin choose which pipeline stages to run and start a run with `POST /bills/run_pipeline`.
+
+[[app/controllers/bills_controller.rb#BillsController#run_pipeline]], `resume_pipeline_run` and `restart_pipeline_run` answer through `respond_after_write` ([[bills-controller-design#enqueue_pipeline_run! and render_pipeline_duplicate_run]]). A queued run answers 200 with an empty body. A refused run (no locale, a conflicting locale, a refused resume, a bad stage) answers 422 `validation_failed` with the reason under `details.pipeline`, because the web reads the same reason from its `pipeline` Inertia error. A run started while another is active still answers 409 `duplicate_run` with the active run's id.
