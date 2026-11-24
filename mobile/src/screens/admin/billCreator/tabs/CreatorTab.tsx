@@ -9,6 +9,9 @@ import LegislatorVotesSection, {
     type CreatorVoteLegislator,
 } from "../../../../components/admin/billCreator/LegislatorVotesSection";
 import OrganizationsSection from "../../../../components/admin/billCreator/OrganizationsSection";
+import SummaryAudioSection, {
+    type CreatorBillAudio,
+} from "../../../../components/admin/billCreator/SummaryAudioSection";
 import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
 import type { AdminStackParamList } from "../../../../navigation/types";
 
@@ -31,6 +34,7 @@ export default function CreatorTab({ billId, data, refresh }: BillCreatorTabProp
                     }
                 }}
             />
+            <SummaryAudioSection billId={billId} bill={data.bill as CreatorBillAudio | undefined} />
             <LegislatorVotesSection
                 billId={billId}
                 legislators={legislators}

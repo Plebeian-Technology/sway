@@ -120,3 +120,24 @@ Active Storage wants the checksum as the base64 of the raw MD5 digest. The file 
 An upload changes nothing on the server until Save. The row keeps the `signed_id` as `icon_signed_id` and shows the picked file; Save stays disabled, showing "Saving...", while any row's upload runs, so a save never leaves a new icon behind. Save sends `icon_signed_id` with that row only, and [[app/controllers/organizations_controller.rb#OrganizationsController#create]] attaches the blob. Remove clears the row's `icon_url` and any `icon_signed_id`, as the web's Remove does, and Save sends the blank address. A closed picker sends nothing, and a failed upload shows its message on the row.
 
 The file picker and file system are native modules, so a phone needs a development build made after they were added (`eas build --local`); an older build cannot open the picker.
+
+### The summary audio section
+
+[[mobile/src/components/admin/billCreator/SummaryAudioSection.tsx#SummaryAudioSection]] ports the audio controls of the web's [[app/frontend/components/admin/creator/BillCreatorSummaryAudio.tsx#BillCreatorSummaryAudio]]. The Creator tab renders it below the bill fields.
+
+The web draws these controls inside the summary field of the Creator form, not on the Summary tab, so the phone places them on the Creator tab too. The audio is two bill fields: `audio_bucket_path`, which holds either an uploaded file's signed id or a link ([[bill-creator-summary-audio#Why this is a rebuild, and why audio_bucket_path holds either an upload or a link]]), and `audio_by_line`. The fields start from the tab's `bill`.
+
+Upload Audio Summary (New once the field has a value) opens the system file picker for audio. [[mobile/src/api/directUpload.ts#directUpload]] uploads the chosen file and the field then shows the returned signed id, as on the web. Pasting a link into the same field is the other way to set it. A closed picker changes nothing, and a failed upload shows its message and keeps the old value.
+
+Save Audio sends `PATCH /bills/:id` with both fields alone, each trimmed. [[app/controllers/bills_controller.rb#BillsController#update]] needs no other field. Success shows "Audio saved."; a refusal shows the server's message and each field's own error. The controller removes the previous stored file when the path changes, on the phone as on the web. An upload changes nothing on the server until Save, and Save, the upload button and both fields stay disabled while an upload or a save runs, so a save cannot send a path the upload has not yet returned.
+
+A new bill has no id to patch, so the section shows "Save the bill before adding audio." in place of its controls. The web lets an admin set audio on a new bill, because its single form posts every field together; the phone saves the bill fields and the audio separately.
+
+The phone leaves out four web pieces:
+
+- The audio player and its "Audio sourced from" line, because the app has no audio playback module; the By field already shows the line.
+- The upload dialog's progress bar, because [[mobile/src/api/directUpload.ts#directUpload]] reports no progress; the button reads "Uploading..." instead.
+- The dialog's "For bill" and "Current file" lines, because the two fields below the button show the same values.
+- The blur handler the web form passes down, which has no counterpart without a shared form.
+
+The web's info popover for the audio field becomes a line of help text above the button.

@@ -28,6 +28,15 @@ jest.mock("../../../../src/components/admin/billCreator/LegislatorVotesSection",
     };
 });
 
+const mockSummaryAudioSection = jest.fn();
+jest.mock("../../../../src/components/admin/billCreator/SummaryAudioSection", () => ({
+    __esModule: true,
+    default: (props: Record<string, unknown>) => {
+        mockSummaryAudioSection(props);
+        return null;
+    },
+}));
+
 const mockOrganizationsSection = jest.fn();
 jest.mock("../../../../src/components/admin/billCreator/OrganizationsSection", () => ({
     __esModule: true,
@@ -97,5 +106,19 @@ describe("CreatorTab", () => {
         render(<CreatorTab billId={42} data={data} refresh={refresh} />);
 
         expect(mockOrganizationsSection).toHaveBeenCalledWith({ billId: 42, data, refresh });
+    });
+
+    // @lat: [[mobile-bill-creator#Sections#The summary audio section]]
+    it("gives the summary audio section the bill id and the loaded bill", () => {
+        const bill = {
+            id: 42,
+            external_id: "26-0001",
+            title: "A bill",
+            audio_bucket_path: "https://example.com/a.mp3",
+            audio_by_line: "Sway Staff",
+        };
+        render(<CreatorTab billId={42} data={{ bill }} refresh={jest.fn()} />);
+
+        expect(mockSummaryAudioSection).toHaveBeenCalledWith({ billId: 42, bill });
     });
 });
