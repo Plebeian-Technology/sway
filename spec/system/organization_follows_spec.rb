@@ -9,7 +9,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
       create(:sway_locale, city: "baltimore", state: "MD", country: "United States")
   end
 
-  it "follows an org from the list: Follow → first-follow picker → save → Following, with no follower count" do
+  it "tracks an org from the list: Track → first-track picker → save → Stop tracking, with no follower count" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Followable Org")
@@ -20,6 +20,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
 
     card = find("[data-testid='public-organization-card']", text: "Followable Org", wait: 10)
 
+    expect(card).to have_css("[data-testid='follow-btn-#{organization.id}']", exact_text: "Track")
     card.find("[data-testid='follow-btn-#{organization.id}']").click
 
     # The preferences picker opens only AFTER the redirect and reload hand back
@@ -27,17 +28,20 @@ RSpec.describe "Organization follows", type: :system, js: true do
     expect(page).to have_text("Notification preferences", wait: 10)
     click_button "Save preferences"
 
-    # What you can see: the Following button appears, no follower count is
+    # What you can see: the Stop tracking button appears, no follower count is
     # shown, and the row is in the database.
-    expect(page).to have_css("[data-testid='following-btn-#{organization.id}']", wait: 10)
+    expect(page).to have_css("[data-testid='following-btn-#{organization.id}']",
+      exact_text: "Stop tracking", wait: 10)
+    expect(page).to have_css("[data-testid='following-btn-#{organization.id}'][aria-label='Stop tracking Followable Org']")
     within("[data-testid='public-organization-card']", text: "Followable Org") do
+      expect(page).to have_no_css("[data-testid='org-card-follower-count-#{organization.id}']")
       expect(page).to have_no_text(/\d+ followers?/)
     end
     follow = OrganizationFollow.find_by(user_id: user.id, organization_id: organization.id)
     expect(follow).to be_present
   end
 
-  it "renders Following from server truth for an existing follow (persistence across sessions)" do
+  it "renders Stop tracking from server truth for an existing track (persistence across sessions)" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Already Followed Org")
@@ -47,10 +51,12 @@ RSpec.describe "Organization follows", type: :system, js: true do
     visit public_organizations_path(sway_locale_id: sway_locale.id)
     wait_until_loaded
 
-    expect(page).to have_css("[data-testid='following-btn-#{organization.id}']", wait: 10)
+    expect(page).to have_css("[data-testid='following-btn-#{organization.id}']",
+      exact_text: "Stop tracking", wait: 10)
+    expect(page).to have_css("[data-testid='following-btn-#{organization.id}'][aria-label='Stop tracking Already Followed Org']")
   end
 
-  it "unfollows from the detail page: Following → Follow + row destroyed" do
+  it "stops tracking from the detail page: Stop tracking → Track + row destroyed" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Unfollowable Org")
@@ -61,16 +67,19 @@ RSpec.describe "Organization follows", type: :system, js: true do
     wait_until_loaded
 
     detail = find("[data-testid='public-organization-detail']", wait: 10)
+    stop_tracking = detail.find("[data-testid='following-btn-#{organization.id}']", exact_text: "Stop tracking")
+    expect(stop_tracking["aria-label"]).to eq("Stop tracking Unfollowable Org")
+    expect(detail).to have_no_css("[data-testid='org-detail-follower-count']")
     expect(detail).to have_no_text(/\d+ followers?/)
 
-    detail.find("[data-testid='following-btn-#{organization.id}']").click
+    stop_tracking.click
 
-    # The redirect and reload flip the button back to Follow.
-    expect(page).to have_css("[data-testid='follow-btn-#{organization.id}']", wait: 10)
+    # The redirect and reload flip the button back to Track.
+    expect(page).to have_css("[data-testid='follow-btn-#{organization.id}']", exact_text: "Track", wait: 10)
     expect(OrganizationFollow.find_by(user_id: user.id, organization_id: organization.id)).to be_nil
   end
 
-  it "renders no follow control for a guest while the pages stay browseable" do
+  it "renders no track control for a guest while the pages stay browseable" do
     organization = create(:organization, sway_locale: sway_locale, name: "Guest Visible Org")
 
     visit public_organizations_path(sway_locale_id: sway_locale.id)
@@ -117,7 +126,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
     expect(page).to have_css("[data-testid='org-notifications-saved-state']", text: "Enabled", wait: 10)
   end
 
-  it "cascades a default event-type OFF to every existing follow (R6, asymmetric)" do
+  it "cascades a default event-type OFF to every existing track (R6, asymmetric)" do
     user = create(:user)
     complete_registration_with_active_link(user)
     org_a = create(:organization, sway_locale: sway_locale, name: "Cascade Org A")
@@ -137,16 +146,16 @@ RSpec.describe "Organization follows", type: :system, js: true do
 
     # @lat: [[capybara-wait-semantics#Waiting on the side effect instead]]
     expect(page).to have_text("Organization notification defaults updated.", wait: 10)
-    # Switching a default OFF switches it off on every follow. The default that
+    # Switching a default OFF switches it off on every track. The default that
     # was not touched stays on. This only works one way: switching a default
-    # back ON never re-enables the individual follows.
+    # back ON never re-enables the individual tracks.
     expect(follow_a.reload.notify_on_new_position).to be(false)
     expect(follow_b.reload.notify_on_new_position).to be(false)
     expect(follow_a.notify_on_support_change).to be(true)
     expect(follow_b.notify_on_support_change).to be(true)
   end
 
-  it "edits an existing follow's preferences through the picker (R7)" do
+  it "edits an existing track's preferences through the picker (R7)" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Tunable Org")
@@ -164,7 +173,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
 
     # The redirect and reload close the modal, and the follow row keeps the
     # change. `following-btn` is already on the page before this save (the
-    # user already follows), so it gates nothing here — the real gate is the
+    # user already tracks), so it gates nothing here — the real gate is the
     # modal closing, which is the Inertia patch's onSuccess.
     expect(page).to have_no_text("Notification preferences")
     expect(follow.reload.notify_on_new_position).to be(false)
@@ -172,7 +181,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
   end
 
   # @lat: [[org-notification-cascade-and-defaults#Why the skipped-picker test separates user defaults from column defaults]]
-  it "keeps the seeded defaults when the first-follow picker is skipped (R7)" do
+  it "keeps the seeded defaults when the first-track picker is skipped (R7)" do
     user = create(:user)
     user.update!(
       notify_on_new_position_default: false, org_position_cadence_default: :daily
@@ -192,7 +201,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
 
     # The picker's own close (`onClick={onClose}`) is client-side and races
     # nothing server-side worth gating on — the follow row was already
-    # written by the earlier follow-btn POST, before the picker opened.
+    # written by the earlier Track button POST, before the picker opened.
     expect(page).to have_no_text("Notification preferences")
     follow = OrganizationFollow.find_by(user_id: user.id, organization_id: organization.id)
     expect(follow).to be_present
@@ -200,7 +209,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
     expect(follow.notification_cadence).to eq("daily")
   end
 
-  it "shows the muted member badge with Preferences and no Unfollow" do
+  it "shows the muted member badge with Preferences and no Stop tracking" do
     user = create(:user)
     complete_registration_with_active_link(user)
     organization = create(:organization, sway_locale: sway_locale, name: "Member Org")
@@ -214,7 +223,7 @@ RSpec.describe "Organization follows", type: :system, js: true do
     badge = find("[data-testid='member-badge-#{organization.id}']", wait: 10)
     expect(badge).to have_text("Muted · member")
     expect(page).to have_css("[data-testid='member-preferences-btn-#{organization.id}']")
-    # Members never see an Unfollow button.
+    # Members never see a Stop tracking button.
     expect(page).to have_no_css("[data-testid='following-btn-#{organization.id}']")
   end
 end
