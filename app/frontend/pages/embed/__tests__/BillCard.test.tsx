@@ -70,9 +70,15 @@ describe("embed/BillCard", () => {
         expect(placeholder.textContent).toContain("Visual comparisons will be shown when 1 more user has voted.");
         expect(placeholder.textContent).not.toContain("%");
         const signUp = screen.getByRole("link", { name: "Sign up" });
-        expect(signUp.getAttribute("href")).toBe("/");
+        expect(signUp.getAttribute("href")).toBe("/?partner=the-banner&ref=art-99");
         expect(signUp.getAttribute("target")).toBe("_blank");
         expect(signUp.getAttribute("rel")).toBe("noopener noreferrer");
+    });
+
+    it("sends a plain sign-in link when the embed carries no partner", () => {
+        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true, voters_needed: 1, cta_url: "" }} />);
+
+        expect(screen.getByRole("link", { name: "Sign up" }).getAttribute("href")).toBe("/");
     });
 
     it("keeps counts hidden when a payload says suppressed but still carries them", () => {

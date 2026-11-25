@@ -71,6 +71,16 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         }
         return defaultVoteUrl;
     })();
+    const signUpHref = (() => {
+        const referral = new URLSearchParams();
+        const { searchParams } = new URL(ctaUrl, window.location.origin);
+        ["partner", "ref"].forEach((key) => {
+            const value = searchParams.get(key);
+            if (value) referral.set(key, value);
+        });
+        const query = referral.toString();
+        return query ? `${ROUTES.signin}?${query}` : ROUTES.signin;
+    })();
     // @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
     const comparisonSuppressed = bill.comparison_suppressed !== false;
     const proCount = bill.pro_count ?? 0;
@@ -228,7 +238,7 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
                         <p>
                             {PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}{" "}
                             <a
-                                href={ROUTES.signin}
+                                href={signUpHref}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="font-black text-foreground underline"
