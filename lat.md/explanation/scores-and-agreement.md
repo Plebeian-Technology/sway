@@ -120,12 +120,6 @@ resolves which term a bill falls into, using the bill's anchor date rather than
 the current date, so re-running a recomputation years later produces the same
 answer.
 
-[[app/models/legislator.rb#Legislator#current_district_score]] reads the active
-term's district score. It returns nil when no term is current or no score row
-exists. The helper remains available to the model regression in
-[[spec/models/legislator_spec.rb]] even without a production caller, so the
-person-level read cannot substitute a departed term's score.
-
 Legislators with no current term — such as a former representative whose
 service has ended — are skipped rather than scored against an empty term.
 

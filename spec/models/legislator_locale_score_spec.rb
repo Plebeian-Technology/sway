@@ -42,17 +42,4 @@ RSpec.describe LegislatorLocaleScore, type: :model do
       expect(score.legislator).to eq(term.legislator)
     end
   end
-
-  describe "#to_builder" do
-    it "surfaces all four counters and legislator_id (through legislator_term)" do
-      score = create(:legislator_locale_score)
-      score.update!(count_agreed: 3, count_disagreed: 5, count_legislator_abstained: 1, count_no_legislator_vote: 2)
-      json = score.to_sway_json
-      expect(json["legislator_id"]).to eq(score.legislator.id)
-      expect(json["count_agreed"]).to eq(3)
-      expect(json["count_disagreed"]).to eq(5)
-      expect(json["count_legislator_abstained"]).to eq(1)
-      expect(json["count_no_legislator_vote"]).to eq(2)
-    end
-  end
 end

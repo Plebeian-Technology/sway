@@ -102,11 +102,6 @@ class Legislator < ApplicationRecord
     active_term.present?
   end
 
-  # @lat: [[scores-and-agreement#Scores and agreement#Every score is bound to a term]]
-  def current_district_score
-    active_term&.legislator_district_scores&.first
-  end
-
   def at_large?
     return false if district.nil?
 
