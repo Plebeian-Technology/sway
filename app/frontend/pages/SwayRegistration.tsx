@@ -108,24 +108,29 @@ const SwayRegistration: React.FC<IProps> = ({
         return false;
     }, []);
 
+    // @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
     useEffect(() => {
-        trackFunnelStepOnce("address_form_viewed");
-    }, []);
+        if (!change_address) {
+            trackFunnelStepOnce("address_form_viewed");
+        }
+    }, [change_address]);
 
     useEffect(() => {
-        if (user?.is_registration_complete) {
+        if (!change_address && user?.is_registration_complete) {
             trackFunnelStepOnce("registration_completed");
         }
-    }, [user?.is_registration_complete]);
+    }, [change_address, user?.is_registration_complete]);
 
     // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
     const submitRegistration = useCallback(
         (extraData: Partial<IRegistrationFormData> = {}) => {
-            trackFunnelStep("address_submitted", {
-                voter_confirmed: form.data.is_voter_registration_address_confirmed,
-                city: form.data.city,
-                region_code: form.data.region_code,
-            });
+            if (!change_address) {
+                trackFunnelStep("address_submitted", {
+                    voter_confirmed: form.data.is_voter_registration_address_confirmed,
+                    city: form.data.city,
+                    region_code: form.data.region_code,
+                });
+            }
             handleStart();
             form.transform(({ typed_address, ...data }) => ({
                 ...data,
@@ -138,7 +143,7 @@ const SwayRegistration: React.FC<IProps> = ({
                 onFinish: handleFinish,
             });
         },
-        [form, handleStart, handleRequestFailed, handleFinish],
+        [change_address, form, handleStart, handleRequestFailed, handleFinish],
     );
 
     const handleSubmit = useCallback(

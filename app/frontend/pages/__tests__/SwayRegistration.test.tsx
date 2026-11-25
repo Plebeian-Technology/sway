@@ -44,6 +44,12 @@ vi.mock("@inertiajs/react", () => ({
 
 vi.mock("app/frontend/hooks/users/useLogout", () => ({ useLogout: () => () => Promise.resolve() }));
 
+const { trackFunnelStep, trackFunnelStepOnce } = vi.hoisted(() => ({
+    trackFunnelStep: vi.fn<(step: string, metadata?: Record<string, unknown>) => void>(),
+    trackFunnelStepOnce: vi.fn<(step: string, metadata?: Record<string, unknown>) => void>(),
+}));
+vi.mock("app/frontend/sway_utils/funnelTracker", () => ({ trackFunnelStep, trackFunnelStepOnce }));
+
 const ROAD_ONLY_PLACE = {
     place_id: 300,
     lat: "39.29",
@@ -144,6 +150,8 @@ beforeEach(() => {
     post.mockReset();
     transform.mockReset();
     postedBody = undefined;
+    trackFunnelStep.mockReset();
+    trackFunnelStepOnce.mockReset();
 });
 
 describe("SwayRegistration — a failed lookup is not a dead end", () => {
@@ -502,5 +510,29 @@ describe("SwayRegistration — change-address mode for a registered user", () =>
 
         expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
         expect(postedBody).toMatchObject({ confirm_deactivate_legislators: true });
+    });
+
+    it("records no registration funnel step when viewing or submitting the address change", () => {
+        renderChangeAddress();
+
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(trackFunnelStepOnce).not.toHaveBeenCalled();
+        expect(trackFunnelStep).not.toHaveBeenCalled();
+    });
+});
+
+describe("SwayRegistration — first-time registration funnel", () => {
+    it("records the address form being viewed and submitted", () => {
+        render(<SwayRegistration user={failedUser} />);
+
+        fireEvent.click(screen.getByTestId("pick-suggestion"));
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(trackFunnelStepOnce).toHaveBeenCalledWith("address_form_viewed");
+        expect(trackFunnelStep).toHaveBeenCalledWith("address_submitted", expect.any(Object));
     });
 });
