@@ -3,7 +3,7 @@
 # @lat: [[organization-bill-position-ai-summary-flag#Why OrganizationBillPositionResource mirrors PUBLIC_FIELDS]]
 class OrganizationBillPositionResource < ApplicationResource
   attributes :id, :organization_id, :bill_id, :support, :active,
-    :created_at
+    :created_at, :source_kind, :source_url
 
   # @lat: [[organization-position-removal#A Neutral position carries no testimony]]
   attribute :summary do |position|
