@@ -6,6 +6,7 @@ import { apiClient } from "../../../api/client";
 import { Routes } from "../../../api/routes";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
 import type { BillCreatorTabProps } from "../../../hooks/admin/useBillCreator";
+import { approvalBlockers, type ApprovalBlockers } from "./approvalBlockers";
 import { Pressable } from "../../ui/Pressable";
 import CampaignOrganizationLink, {
     type LinkableCampaign,
@@ -49,12 +50,6 @@ interface LettersResponse {
 
 interface WriteResponse {
     notice?: string;
-}
-
-interface ApprovalGuards {
-    testimonyMissing: boolean;
-    runInFlight: boolean;
-    testimonyLeftOutUnacknowledged: boolean;
 }
 
 type LettersState = "idle" | "loading" | "failed" | "loaded";
@@ -185,7 +180,7 @@ interface CampaignDraftCardProps {
     letters: CampaignLetter[] | undefined;
     lettersState: LettersState;
     onRequestLetters: () => void;
-    guards: ApprovalGuards;
+    guards: ApprovalBlockers;
     refresh: () => Promise<void>;
 }
 
@@ -475,22 +470,7 @@ const CampaignDraftsSection: React.FC<BillCreatorTabProps> = ({ billId, data, re
         string,
         OrganizationCandidate[] | undefined
     >;
-    const bill = (data.bill ?? {}) as {
-        bill_llm_provisioning?: { generation_status?: string | null; has_testimony?: boolean } | null;
-    };
-    const generationStatus = bill.bill_llm_provisioning?.generation_status ?? null;
-    const activeRun = (data.active_legislation_pipeline_run ?? null) as {
-        status?: string | null;
-        bill_id?: number | null;
-    } | null;
-    const cleanTestimonyRunning =
-        activeRun?.status === "cleaning_testimony" && (activeRun.bill_id === null || activeRun.bill_id === billId);
-    const coverage = (data.testimony_coverage ?? null) as { coverage_gap?: boolean; acknowledged?: boolean } | null;
-    const guards: ApprovalGuards = {
-        testimonyMissing: !bill.bill_llm_provisioning?.has_testimony,
-        runInFlight: generationStatus === "pending" || generationStatus === "generating" || !!cleanTestimonyRunning,
-        testimonyLeftOutUnacknowledged: !!coverage && !!coverage.coverage_gap && !coverage.acknowledged,
-    };
+    const guards = approvalBlockers(data, billId);
 
     // @lat: [[campaign-letter-disclosure#Why the list asks for its own letters]]
     const requestLetters = async () => {

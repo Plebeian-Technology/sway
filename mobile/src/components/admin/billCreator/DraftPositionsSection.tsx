@@ -8,6 +8,7 @@ import type { BillCreatorTabProps } from "../../../hooks/admin/useBillCreator";
 import { usePolling } from "../../../hooks/admin/usePolling";
 import { isSafeCitationUrl } from "../../../utils/safeUrl";
 import { Pressable } from "../../ui/Pressable";
+import { approvalBlockers } from "./approvalBlockers";
 
 type Stance = "support" | "oppose" | "neutral";
 
@@ -39,16 +40,6 @@ interface PositionsBill {
         draft_org_positions?: DraftPosition[] | null;
     } | null;
     bill_pipeline_refresh?: { status?: string | null } | null;
-}
-
-interface ActiveRun {
-    status?: string | null;
-    bill_id?: number | null;
-}
-
-interface Coverage {
-    coverage_gap?: boolean;
-    acknowledged?: boolean;
 }
 
 const POLL_INTERVAL_MS = 5000;
@@ -414,10 +405,10 @@ const DraftPositionCard: React.FC<DraftPositionCardProps> = ({
 const DraftPositionsSection: React.FC<BillCreatorTabProps> = ({ billId, data, refresh }) => {
     const bill = (data.bill ?? {}) as PositionsBill;
     const provisioning = bill.bill_llm_provisioning ?? null;
-    const generationStatus = provisioning?.generation_status ?? null;
     const pipelineStatus = bill.bill_pipeline_refresh?.status ?? null;
     const pipelineBusy = pipelineStatus !== null && !TERMINAL_RUN_STATUSES.includes(pipelineStatus);
-    const summaryRunInFlight = generationStatus === "pending" || generationStatus === "generating";
+    const { summaryRunInFlight, cleanTestimonyRunning, runInFlight, testimonyMissing, testimonyLeftOutUnacknowledged } =
+        approvalBlockers(data, billId);
 
     // @lat: [[mobile-bill-creator#Sections#The draft positions section#Polling while a run is in flight]]
     usePolling(refresh, billId !== null && (summaryRunInFlight || pipelineBusy), POLL_INTERVAL_MS);
@@ -433,17 +424,9 @@ const DraftPositionsSection: React.FC<BillCreatorTabProps> = ({ billId, data, re
 
     if (billId === null) return null;
 
-    const activeRun = (data.active_legislation_pipeline_run ?? null) as ActiveRun | null;
-    const cleanTestimonyRunning =
-        activeRun?.status === "cleaning_testimony" && (activeRun.bill_id === null || activeRun.bill_id === billId);
-    const runInFlight = summaryRunInFlight || !!cleanTestimonyRunning;
-
-    const noTestimony = !provisioning?.has_testimony;
     const hasDrafts = drafts.length > 0;
     const allDraftsRetracted = hasDrafts && drafts.every(({ draft }) => !!draft.evidence_retracted_at);
     const allNewsSourced = hasDrafts && drafts.every(({ draft }) => isNewsSourced(draft));
-    const coverage = (data.testimony_coverage ?? null) as Coverage | null;
-    const testimonyLeftOutUnacknowledged = !!coverage && !!coverage.coverage_gap && !coverage.acknowledged;
 
     return (
         <View testID="admin-draft-positions" className="px-4 mt-6 gap-3">
@@ -452,16 +435,16 @@ const DraftPositionsSection: React.FC<BillCreatorTabProps> = ({ billId, data, re
             </Text>
             <RunInFlightNotice
                 summaryRunInFlight={summaryRunInFlight}
-                cleanTestimonyRunning={!!cleanTestimonyRunning}
+                cleanTestimonyRunning={cleanTestimonyRunning}
                 draftCount={drafts.length}
                 abandoned={!!provisioning?.reclaimable}
             />
-            {noTestimony && !allNewsSourced ? (
+            {testimonyMissing && !allNewsSourced ? (
                 <Text testID="admin-draft-positions-no-testimony" className={hasDrafts ? bodyText : mutedText}>
                     {hasDrafts ? (allDraftsRetracted ? DRAFTS_RETRACTED : DRAFTS_UNAPPROVABLE) : NOTHING_GENERATED}
                 </Text>
             ) : null}
-            {!hasDrafts && !noTestimony ? (
+            {!hasDrafts && !testimonyMissing ? (
                 <Text testID="admin-draft-positions-empty" className={mutedText}>
                     No draft positions generated.
                 </Text>
@@ -472,7 +455,7 @@ const DraftPositionsSection: React.FC<BillCreatorTabProps> = ({ billId, data, re
                     billId={billId}
                     index={rawIndex}
                     draft={draft}
-                    testimonyMissing={noTestimony}
+                    testimonyMissing={testimonyMissing}
                     runInFlight={runInFlight}
                     testimonyLeftOutUnacknowledged={testimonyLeftOutUnacknowledged}
                     refresh={refresh}

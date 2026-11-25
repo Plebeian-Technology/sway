@@ -581,6 +581,12 @@ Approve stays off while the draft's evidence is retracted, while a summary run o
 
 A refused approval or reject shows its reason on the card: `details.org_position` when present, else the server's message. A refusal flagged `private_individual_refusal` instead opens a panel on the card, "Approve anyway?", with the reason and the web's warning that approving publishes the name as a followable organization. Approve anyway resends with `override_private_individual: true`; Cancel closes the panel and leaves the reason on the card. A refusal that survives the override is shown, not offered again ([[private-individual-guard-override]]). The panel stands in for the web's confirmation dialog, as other sections on the phone use panels for dialogs.
 
+#### Approval blockers shared by the Positions tab sections
+
+The draft, campaign and claimed affiliation cards turn Approve off by the same three tab-level checks, so [[mobile/src/components/admin/billCreator/approvalBlockers.ts#approvalBlockers]] computes them once from the tab data and the bill id.
+
+It returns `testimonyMissing`, `summaryRunInFlight`, `cleanTestimonyRunning`, `runInFlight` (either run) and `testimonyLeftOutUnacknowledged`. Each section keeps its own rules beside the shared ones: the draft cards exempt news-sourced drafts from the testimony checks and add the retracted-evidence check, and the campaign and claimed affiliation cards add the blank-summary check.
+
 #### Polling while a run is in flight
 
 The section refetches the tab every five seconds with [[mobile/src/hooks/admin/usePolling.ts#usePolling]] while a summary run is queued or generating, or the bill's pipeline refresh is busy, as the web tab polls ([[bill-creator-positions-tab#What the positions tab polls for]]).
@@ -620,7 +626,7 @@ A card shows the name line, the APPROVED and CAMPAIGN stamps, the evidence line 
 The buttons follow the web card:
 
 - The Edit button opens fields for the name, a Support, Oppose or Neutral choice and the summary; Cancel closes them and keeps what was typed.
-- Approve as this campaign, or Update this campaign once approved, posts `name`, `support`, `summary` and `content_hash` to `/bills/:id/campaigns`. It stays off while the summary is blank, the bill has no testimony, a summary run or a clean-testimony run is in flight, or left-out testimony is unacknowledged: the claimed affiliation card's checks ([[mobile-bill-creator#Sections#The claimed affiliations section]]).
+- Approve as this campaign, or Update this campaign once approved, posts `name`, `support`, `summary` and `content_hash` to `/bills/:id/campaigns`. It stays off while the summary is blank, the bill has no testimony, a summary run or a clean-testimony run is in flight, or left-out testimony is unacknowledged: the shared checks ([[mobile-bill-creator#Sections#The draft positions section#Approval blockers shared by the Positions tab sections]]).
 - Reject and, before approval, Mark as Individual Letters post `content_hash` to `reject_draft` and `mark_individual_draft`.
 - A rejected draft, or one marked individual and not approved, collapses to a stamped row (REJECTED or INDIVIDUAL LETTERS) whose Restore posts to `restore_draft`.
 
@@ -681,7 +687,7 @@ A card shows "Maybe: <name>", the stamp "CLAIMED, NOT VERIFIED", the evidence un
 Approve, Reject and Edit follow the web card:
 
 - The Edit button opens fields for the name, a Support, Oppose or Neutral choice and the summary, and pressing it again closes them. Cancel closes them too and keeps what was typed.
-- Approve posts `org_name`, `support`, `summary` and `claimed_affiliation_position` to `/bills/:id/approve_org_position`, then reloads the tab. It stays off while the summary is blank, the bill has no testimony, a summary run or a clean-testimony run is in flight, or testimony the run left out is unacknowledged. The summary and run checks are the draft cards' checks ([[mobile-bill-creator#Sections#The draft positions section]]).
+- Approve posts `org_name`, `support`, `summary` and `claimed_affiliation_position` to `/bills/:id/approve_org_position`, then reloads the tab. It stays off while the summary is blank, the bill has no testimony, a summary run or a clean-testimony run is in flight, or testimony the run left out is unacknowledged. The run, testimony and acknowledgement checks are the shared ones ([[mobile-bill-creator#Sections#The draft positions section#Approval blockers shared by the Positions tab sections]]).
 - Reject hides the card until the tab remounts and sends nothing, as on the web. The claim stays in the list the server sends.
 
 A refused approval shows its reason on the card, `details.org_position` first, else the server's message. A refusal flagged `private_individual_refusal` opens the "Approve anyway?" panel instead, and Approve anyway resends with `override_private_individual: true`. A refusal that survives the override is shown, not offered again ([[private-individual-guard-override]]). The panel stands in for the web's confirmation dialog.

@@ -5,6 +5,7 @@ import { Text, TextInput, View } from "react-native";
 import { Routes } from "../../../api/routes";
 import { useAdminMutation } from "../../../hooks/admin/useAdminMutation";
 import type { BillCreatorTabProps } from "../../../hooks/admin/useBillCreator";
+import { approvalBlockers, type ApprovalBlockers } from "./approvalBlockers";
 import { Pressable } from "../../ui/Pressable";
 
 type Stance = "support" | "oppose" | "neutral";
@@ -15,12 +16,6 @@ interface ClaimedAffiliation {
     role: string | null;
     sender: string | null;
     org_name: string | null;
-}
-
-interface ApprovalGuards {
-    testimonyMissing: boolean;
-    runInFlight: boolean;
-    testimonyLeftOutUnacknowledged: boolean;
 }
 
 const STANCE_LABELS: Record<Stance, string> = { support: "Support", oppose: "Oppose", neutral: "Neutral" };
@@ -91,7 +86,7 @@ const Evidence: React.FC<{ claim: ClaimedAffiliation }> = ({ claim: { phrase, ro
 interface ClaimedAffiliationCardProps {
     billId: number;
     claim: ClaimedAffiliation;
-    guards: ApprovalGuards;
+    guards: ApprovalBlockers;
     refresh: () => Promise<void>;
 }
 
@@ -274,22 +269,7 @@ const ClaimedAffiliationsSection: React.FC<BillCreatorTabProps> = ({ billId, dat
     const claims = (data.testimony_claimed_affiliations ?? []) as ClaimedAffiliation[];
     if (claims.length === 0) return null;
 
-    const bill = (data.bill ?? {}) as {
-        bill_llm_provisioning?: { generation_status?: string | null; has_testimony?: boolean } | null;
-    };
-    const generationStatus = bill.bill_llm_provisioning?.generation_status ?? null;
-    const activeRun = (data.active_legislation_pipeline_run ?? null) as {
-        status?: string | null;
-        bill_id?: number | null;
-    } | null;
-    const cleanTestimonyRunning =
-        activeRun?.status === "cleaning_testimony" && (activeRun.bill_id === null || activeRun.bill_id === billId);
-    const coverage = (data.testimony_coverage ?? null) as { coverage_gap?: boolean; acknowledged?: boolean } | null;
-    const guards: ApprovalGuards = {
-        testimonyMissing: !bill.bill_llm_provisioning?.has_testimony,
-        runInFlight: generationStatus === "pending" || generationStatus === "generating" || !!cleanTestimonyRunning,
-        testimonyLeftOutUnacknowledged: !!coverage && !!coverage.coverage_gap && !coverage.acknowledged,
-    };
+    const guards = approvalBlockers(data, billId);
 
     return (
         <View testID="admin-claimed-affiliations" className="px-4 mt-6 gap-3">
