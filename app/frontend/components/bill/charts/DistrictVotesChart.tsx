@@ -24,13 +24,22 @@ const districtLabel = (district: sway.IDistrict) => `District ${district.number}
 const DistrictVotesChart: React.FC<IProps> = ({ score, title }) => {
     const { user, districts: readerDistricts } = usePage<IPageProps>().props;
     const requested = useRef(false);
+    const declined = useRef(false);
 
     // @lat: [[bill-vote-charts-design#The reader's own district is asked for when the chart is drawn]]
     useEffect(() => {
-        if (!user || readerDistricts !== undefined || requested.current) return;
+        if (!user || readerDistricts !== undefined || requested.current || declined.current) return;
 
         requested.current = true;
-        router.reload({ only: ["districts"] });
+        router.reload({
+            only: ["districts"],
+            onSuccess: (page) => {
+                declined.current = page.props.districts === undefined;
+            },
+            onFinish: () => {
+                requested.current = false;
+            },
+        });
     }, [user, readerDistricts]);
 
     const rows = selectDistrictVoteSplits(score);

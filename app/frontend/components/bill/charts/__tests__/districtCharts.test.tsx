@@ -102,7 +102,49 @@ describe("district charts at the ten-voter minimum", () => {
         render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
 
         expect(reloadMock).toHaveBeenCalledTimes(1);
-        expect(reloadMock).toHaveBeenCalledWith({ only: ["districts"] });
+        expect(reloadMock).toHaveBeenCalledWith(expect.objectContaining({ only: ["districts"] }));
+    });
+
+    it("asks again and redraws the reader's row after the page props are replaced without districts", () => {
+        const { rerender } = render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(screen.getByTestId("district-votes-chart-reader-district-7")).toBeInTheDocument();
+        expect(reloadMock).not.toHaveBeenCalled();
+
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(screen.queryByTestId("district-votes-chart-reader-district-7")).toBeNull();
+        expect(reloadMock).toHaveBeenCalledTimes(1);
+
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [district(7)] };
+        const options = reloadMock.mock.calls[0][0] as {
+            onSuccess?: (page: { props: Record<string, unknown> }) => void;
+            onFinish?: () => void;
+        };
+        options.onSuccess?.({ props: mockPageProps });
+        options.onFinish?.();
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(screen.getByTestId("district-votes-chart-reader-district-7")).toHaveTextContent("Not enough votes yet");
+
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(reloadMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not ask again when the server answers without the districts prop", () => {
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        const { rerender } = render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(reloadMock).toHaveBeenCalledTimes(1);
+
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        const options = reloadMock.mock.calls[0][0] as {
+            onSuccess?: (page: { props: Record<string, unknown> }) => void;
+            onFinish?: () => void;
+        };
+        options.onSuccess?.({ props: mockPageProps });
+        options.onFinish?.();
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(reloadMock).toHaveBeenCalledTimes(1);
     });
 
     it("draws the affinity chart from percentages, without the hidden or at-large districts", () => {
