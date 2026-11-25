@@ -37,7 +37,8 @@ export const linking: LinkingOptions<RootParamList> = {
     // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]
     async getInitialURL() {
         const url = await launchUrl();
-        if (url === null || isInviteLink(url)) return url;
+        if (!url) return null;
+        if (isInviteLink(url)) return url;
         return keepLaunchLink(url);
     },
     subscribe: subscribeToLinks,
