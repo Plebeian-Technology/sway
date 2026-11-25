@@ -171,8 +171,10 @@ RSpec.describe "DELETE /users/:id", type: :request do
 
       expect(response).to have_http_status(:conflict)
       expect(response.parsed_body).to eq(
-        "error" => "account_not_deletable",
-        "message" => UsersController::ACCOUNT_NOT_DELETABLE_MESSAGE
+        "error" => {
+          "code" => "account_not_deletable",
+          "message" => UsersController::ACCOUNT_NOT_DELETABLE_MESSAGE
+        }
       )
       expect(User.exists?(user.id)).to be(true)
       expect(device.reload.revoked_at).to be_nil

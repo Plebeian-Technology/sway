@@ -38,10 +38,7 @@ class UsersController < ApplicationController
 
   def render_not_deletable
     if mobile_api_request?
-      render(
-        json: {error: "account_not_deletable", message: ACCOUNT_NOT_DELETABLE_MESSAGE},
-        status: :conflict
-      )
+      render_error(code: "account_not_deletable", message: ACCOUNT_NOT_DELETABLE_MESSAGE, status: :conflict)
     else
       redirect_to(profile_path, alert: ACCOUNT_NOT_DELETABLE_MESSAGE)
     end
