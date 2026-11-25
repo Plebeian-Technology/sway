@@ -200,9 +200,15 @@ RSpec.describe "DELETE /users/:id", type: :request do
     end
 
     it "signs the browser out, so the next signed-in page redirects" do
+      user_id = user.id
+      create(:refresh_token, user: user)
       sign_in(user)
 
-      delete "/users/#{user.id}", headers: {"X-Inertia" => "true"}
+      delete "/users/#{user_id}", headers: {"X-Inertia" => "true"}
+
+      expect(session_hash).not_to have_key(:user_id)
+      expect(RefreshToken.where(user_id: user_id)).to be_empty
+
       get "/profile"
 
       expect(response).to redirect_to(root_url)
