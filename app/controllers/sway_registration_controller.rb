@@ -154,7 +154,11 @@ class SwayRegistrationController < ApplicationController
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
   def render_onboarding_unavailable
     u = current_user
-    return super unless u&.user_legislators&.where(active: true)&.exists?
+    return super if u.nil?
+    if address_switch_return_path(u) == edit_users_address_path
+      return redirect_to(edit_users_address_path, alert: ONBOARDING_UNAVAILABLE_MESSAGE)
+    end
+    return super unless u.user_legislators.where(active: true).exists?
 
     u.complete_registration!
     respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: feed_path)

@@ -118,6 +118,19 @@ RSpec.describe "Changing a registered user's address on the web", type: :request
       )
     end
 
+    it "shows the retry message on the change-address page when an unexpected error is raised before the switch" do
+      allow(UserAddressSwitchService).to receive(:cooldown_active_for?).and_raise(RuntimeError, "boom")
+
+      submit_new_address(confirm_deactivate_legislators: true)
+
+      expect(response).to redirect_to(edit_users_address_path)
+      expect(flash[:alert]).to eq(OnboardingSafetyNet::ONBOARDING_UNAVAILABLE_MESSAGE)
+      expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError), any_args).once
+      expect(user.reload.address).to eq(current_address)
+      expect(UserLegislator.find_by!(user: user, legislator: legislator).active).to be(true)
+      expect(UserAddressChange.count).to eq(0)
+    end
+
     it "shows that no representatives were found on the change-address page" do
       allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_return([]) # rubocop:disable RSpec/AnyInstance
 
