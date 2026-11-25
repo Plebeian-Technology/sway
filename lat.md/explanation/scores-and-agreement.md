@@ -150,4 +150,6 @@ which drops the district number, and the jurisdiction title carries
 
 Bill totals, district splits and legislator agreement scores stay hidden until ten distinct users stand behind each number. [[voter-privacy-threshold]] owns the rule, its reasons and the threat it answers.
 
+A unanimous split stays hidden at any size, and bill totals and district splits are sent as rounded percentages.
+
 A lifetime score is a sum across terms, and [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]] says when that sum may be shown.

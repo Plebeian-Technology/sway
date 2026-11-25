@@ -282,7 +282,7 @@ declare module "sway" {
             correction_explanation: IHistoricalScoreExplanation | null;
         }
 
-        // @lat: [[voter-privacy-threshold#Bill totals show exact counts at ten voters]]
+        // @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
         interface IBaseScore {
             for: number | null;
             against: number | null;

@@ -54,6 +54,69 @@ RSpec.describe BillScore, type: :model do
     end
   end
 
+  # @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
+  describe "#comparison_suppressed?, #for_percent and #against_percent" do
+    def score_with(bill_for, bill_against)
+      build(:bill_score, for: bill_for, against: bill_against)
+    end
+
+    {
+      [7, 3] => [70, 30],
+      [13, 6] => [70, 30],
+      [39, 1] => [95, 5]
+    }.each do |(bill_for, bill_against), (for_percent, against_percent)|
+      it "send #{for_percent} and #{against_percent} for #{bill_for} For and #{bill_against} Against" do
+        score = score_with(bill_for, bill_against)
+
+        expect(score.comparison_suppressed?).to be(false)
+        expect([score.for_percent, score.against_percent]).to eq([for_percent, against_percent])
+        expect([score.visible_for, score.visible_against]).to eq([bill_for, bill_against])
+      end
+    end
+
+    it "withhold a unanimous split of ten voters" do
+      score = score_with(10, 0)
+
+      expect(score.comparison_suppressed?).to be(true)
+      expect([score.for_percent, score.against_percent, score.visible_for, score.visible_against]).to eq([nil, nil, nil, nil])
+    end
+
+    it "withhold a unanimous Against split" do
+      score = score_with(0, 12)
+
+      expect(score.comparison_suppressed?).to be(true)
+      expect([score.for_percent, score.against_percent]).to eq([nil, nil])
+    end
+
+    it "withhold nine voters" do
+      score = score_with(6, 3)
+
+      expect(score.comparison_suppressed?).to be(true)
+      expect([score.for_percent, score.against_percent, score.visible_for, score.visible_against]).to eq([nil, nil, nil, nil])
+    end
+
+    it "keep voters_needed at the number of voters under ten" do
+      expect(score_with(6, 3).voters_needed).to eq(1)
+      expect(score_with(10, 0).voters_needed).to eq(0)
+    end
+
+    it "send the percentages from both builders" do
+      score = create(:bill_score, for: 7, against: 3)
+      user = create(:user)
+
+      expect(score.to_builder.attributes!).to include("for_percent" => 70, "against_percent" => 30)
+      expect(score.to_builder_with_user(user).attributes!).to include("for_percent" => 70, "against_percent" => 30)
+    end
+
+    it "send nil percentages from both builders for a unanimous split" do
+      score = create(:bill_score, for: 10, against: 0)
+      user = create(:user)
+
+      expect(score.to_builder.attributes!).to include("for_percent" => nil, "against_percent" => nil, "comparison_suppressed" => true)
+      expect(score.to_builder_with_user(user).attributes!).to include("for_percent" => nil, "against_percent" => nil)
+    end
+  end
+
   # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   describe "#publishable_districts" do
     minimum = VoteComparisonPrivacy::MINIMUM_VOTERS
@@ -107,6 +170,12 @@ RSpec.describe BillScore, type: :model do
 
       expect(published_names).to eq([])
     end
+
+    it "leaves out a unanimous district with ten voters" do
+      tally(bill_for: 20, bill_against: 3, rows: {district_four => [7, 3], district_seven => [10, 0], at_large => [20, 3]})
+
+      expect(published_names).to eq([district_four.name])
+    end
   end
 
   # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
@@ -142,11 +211,11 @@ RSpec.describe BillScore, type: :model do
     end
 
     it "counts an at-large tally only when the voters outside it number zero or the minimum" do
-      tally(bill_for: 12, bill_against: 0, rows: {at_large => [10, 0], other_at_large => [2, 0]})
+      tally(bill_for: 12, bill_against: 1, rows: {at_large => [10, 1], other_at_large => [2, 0]})
       expect(score.countable_district_ids).to eq([])
 
-      score.bill_score_districts.find_by!(district: other_at_large).update!(for: minimum)
-      score.update!(for: 10 + minimum)
+      score.bill_score_districts.find_by!(district: other_at_large).update!(for: minimum, against: 1)
+      score.update!(for: 10 + minimum, against: 2)
       expect(score.reload.countable_district_ids).to contain_exactly(at_large.id, other_at_large.id)
     end
 
@@ -154,6 +223,12 @@ RSpec.describe BillScore, type: :model do
       tally(bill_for: 7, bill_against: 3, rows: {at_large => [7, 3]})
 
       expect(score.countable_district_ids).to eq([at_large.id])
+    end
+
+    it "never counts a unanimous district tally" do
+      tally(bill_for: 20, bill_against: 3, rows: {district_four => [7, 3], district_seven => [10, 0]})
+
+      expect(score.countable_district_ids).to eq([district_four.id])
     end
 
     it "never counts an at-large tally under the minimum" do

@@ -6,4 +6,8 @@ class BillScoreDistrict < ApplicationRecord
     def publishable?: -> bool
     def for_percent: -> Integer?
     def against_percent: -> Integer?
+
+    private
+
+    def rounded_percentages: -> Hash[Symbol, Integer]?
 end

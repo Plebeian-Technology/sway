@@ -30,12 +30,20 @@ class EmbedBillResource < ApplicationResource
   # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
   attribute :pro_count do |bill|
     for_count, against_count = EmbedBillResource.tally(bill)
-    VoteComparisonPrivacy.suppressed?(for_count, against_count) ? nil : for_count
+    VoteComparisonPrivacy.withheld?(for_count, against_count) ? nil : for_count
   end
 
   attribute :con_count do |bill|
     for_count, against_count = EmbedBillResource.tally(bill)
-    VoteComparisonPrivacy.suppressed?(for_count, against_count) ? nil : against_count
+    VoteComparisonPrivacy.withheld?(for_count, against_count) ? nil : against_count
+  end
+
+  attribute :pro_percent do |bill|
+    EmbedBillResource.percentages(bill)&.fetch(:for)
+  end
+
+  attribute :con_percent do |bill|
+    EmbedBillResource.percentages(bill)&.fetch(:against)
   end
 
   attribute :total_votes do |bill|
@@ -43,7 +51,7 @@ class EmbedBillResource < ApplicationResource
   end
 
   attribute :comparison_suppressed do |bill|
-    VoteComparisonPrivacy.suppressed?(*EmbedBillResource.tally(bill))
+    VoteComparisonPrivacy.withheld?(*EmbedBillResource.tally(bill))
   end
 
   attribute :voters_needed do |bill|
@@ -77,5 +85,12 @@ class EmbedBillResource < ApplicationResource
   def self.tally(bill)
     score = bill.bill_score
     [score&.for || 0, score&.against || 0]
+  end
+
+  def self.percentages(bill)
+    for_count, against_count = tally(bill)
+    return nil if VoteComparisonPrivacy.withheld?(for_count, against_count)
+
+    VoteComparisonPrivacy.rounded_percentages({for: for_count, against: against_count}, voters: for_count + against_count)
   end
 end

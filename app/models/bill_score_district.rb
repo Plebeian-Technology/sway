@@ -40,7 +40,7 @@ class BillScoreDistrict < ApplicationRecord
   end
 
   def comparison_suppressed?
-    VoteComparisonPrivacy.suppressed?(self.for, against)
+    VoteComparisonPrivacy.withheld?(self.for, against)
   end
 
   # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
@@ -55,13 +55,18 @@ class BillScoreDistrict < ApplicationRecord
 
   # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   def for_percent
-    return nil if comparison_suppressed?
-
-    ((self.for.to_f / (self.for + against)) * 100).round
+    rounded_percentages&.fetch(:for)
   end
 
   def against_percent
-    percent = for_percent
-    percent && (100 - percent)
+    rounded_percentages&.fetch(:against)
+  end
+
+  private
+
+  def rounded_percentages
+    return nil if comparison_suppressed?
+
+    VoteComparisonPrivacy.rounded_percentages({for: self.for, against: against}, voters: self.for + against)
   end
 end

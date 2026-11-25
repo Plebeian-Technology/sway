@@ -11,8 +11,12 @@ class BillScore < ApplicationRecord
     def voters_needed: -> Integer
     def visible_for: -> Integer?
     def visible_against: -> Integer?
+    def for_percent: -> Integer?
+    def against_percent: -> Integer?
 
     private
+
+    def rounded_percentages: -> Hash[Symbol, Integer]?
 
     def voters_outside_publishable?: (Array[BillScoreDistrict] rows) -> bool
 end

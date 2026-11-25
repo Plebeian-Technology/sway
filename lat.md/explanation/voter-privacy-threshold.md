@@ -29,15 +29,19 @@ Worked examples, as counts, voters and the result:
 - Agreed 6, disagreed 3, no legislator vote 1, abstained 0, 10 voters: 60, 30, 10, 0.
 - Four keys at 97, 1, 1, 1 with 100 voters: 85, 5, 5, 5.
 
-## Bill totals show exact counts at ten voters
+## Bill totals are sent as rounded percentages
 
-A bill's For and Against counts are exact once ten users have voted on it. Below ten both are sent as nil, and the reader gets `comparison_suppressed` and `voters_needed`, the number of further voters that would reveal the total.
+A bill's total reaches a reader as a For and an Against percentage, rounded by [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#rounded_percentages]] with the bill's voters as the voter count, once ten users have voted and the split is not unanimous.
 
-The count of voters still needed is safe to send for a bill, because the feed already publishes how many users voted on it.
+[[app/models/bill_score.rb#BillScore#comparison_suppressed?]] asks [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#withheld?]], so a bill with nine voters and a bill whose voters all took one side look the same to the reader: `for_percent`, `against_percent` and the counts are nil, and `comparison_suppressed` is true. `voters_needed` stays the number of further voters that would reach ten, so it is zero for a unanimous bill of ten or more. It is safe to send for a bill, because the feed already publishes how many users voted on it.
+
+The counts `for` and `against` still travel beside the percentages, in the same builders and under the same rule, until web and mobile read the percentages only. A later change removes them. [[voter-privacy-threshold#Percentages are rounded to steps and a unanimous split is withheld]] gives the reason for rounding.
 
 ## Districts are sent as percentages only
 
-A district with ten voters shows its split as two whole-number percentages, with no counts and no voter total. [[app/models/bill_score_district.rb#BillScoreDistrict#for_percent]] rounds the For share and the Against share is the remainder, so the pair sums to 100.
+A district with ten voters shows its split as two rounded percentages, with no counts and no voter total. [[app/models/bill_score_district.rb#BillScoreDistrict#for_percent]] and its Against twin round with the district's own voters as the voter count, so the pair sums to 100.
+
+A unanimous district is withheld like one under ten, through [[app/models/bill_score_district.rb#BillScoreDistrict#comparison_suppressed?]].
 
 With district counts on the page, a hidden district's exact tally would equal the bill total minus the visible districts. Hiding each district's size does not remove that subtraction on its own. A small district's whole-number split usually fits one pair of counts only: measured, every ten-voter split did, 88% at eleven voters and 66% at fifteen. Counts read back that way, taken from the exact bill total, give the tally of the voters outside every shown district. With eleven voters, eight For, and district 4 holding ten at 70% and 30%, only 7 and 3 fit, so the eleventh voter voted For.
 
@@ -61,7 +65,7 @@ Legislator scores follow the same rule. `group_score` in [[app/serializers/user_
 
 ## Legislator scores count only bills that reached the minimum
 
-A locale score counts a bill only when the bill's own total has ten voters. A district score counts it only when that district's split for the bill could itself be published.
+A locale score counts a bill only when the bill's own total has ten voters and is not unanimous. A district score counts it only when that district's split for the bill could itself be published, which also rules out a unanimous district.
 
 Every legislator in a locale is scored over the same users. Were two of them to vote alike on every bill but one, the gap between their agreement percentages would be that bill's For minus Against over a total that published bill tallies give away. Leaving hidden bills out of every score closes that gap. District scores leak the same way where several legislators share one district's users, such as a state senator and the district's delegates.
 
@@ -71,7 +75,7 @@ A district score is a district split under another name. With eleven voters on a
 
 Both tests read a total that can include users the score never reads. A score reads only the users linked to its own legislator, so a bill that passes either test can still rest on fewer than ten of them. Maryland subdistricts 44A and 44B fold into one district row, yet a 44A resident links only to the 44A delegate. With nine 44B voters and one 44A voter on a bill, the district passes, and the 44A delegate's score on that bill is the one voter's position. A locale total of ten can likewise include eight users who have no representative in the locale. A score therefore also counts a bill only when ten distinct users from its own legislator's users voted on it. The district and locale tests stay, because the first protects the published split and the second protects the published total.
 
-`tally_group_agreement` in [[app/services/score_recompute_service.rb#ScoreRecomputeService]] applies the rule from the stored `BillScore` and `BillScoreDistrict` rows, then drops each bill with fewer than ten of the legislator's own voters. Because a district's admission hangs on voters outside it, a vote recomputes the district score of every legislator serving a district with a tally on the bill. It recomputes each legislator's active term only ([[score-updater-service-design#Why each score family uses a different scope and a different term]]), so a bill enters an active-term score when its own tally becomes visible, and enters an earlier term's score only at the next full recompute (`sway:scores:recompute_all`). It stores `distinct_voter_count` beside the counters: the number of users with at least one counted bill, which is the figure the minimum is checked against. The counters themselves count user and bill pairs, so one user who voted on twelve bills adds twelve.
+`tally_group_agreement` in [[app/services/score_recompute_service.rb#ScoreRecomputeService]] applies the rule from the stored `BillScore` and `BillScoreDistrict` rows (`bill_ids_with_minimum_voters` leaves out a bill whose total is withheld), then drops each bill with fewer than ten of the legislator's own voters. Because a district's admission hangs on voters outside it, a vote recomputes the district score of every legislator serving a district with a tally on the bill. It recomputes each legislator's active term only ([[score-updater-service-design#Why each score family uses a different scope and a different term]]), so a bill enters an active-term score when its own tally becomes visible, and enters an earlier term's score only at the next full recompute (`sway:scores:recompute_all`). It stores `distinct_voter_count` beside the counters: the number of users with at least one counted bill, which is the figure the minimum is checked against. The counters themselves count user and bill pairs, so one user who voted on twelve bills adds twelve.
 
 A user's own agreement with a legislator is one user's record, so `tally_agreement` keeps counting every bill for it.
 
@@ -135,7 +139,7 @@ The reader's own chart and tile keep their counts: [[app/frontend/components/leg
 
 The partner embed at `/embed/bills/:id` is public and a CDN keeps each response for up to fifteen minutes, so a count hidden only by the card would still be published.
 
-[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count` and `con_count` as nil below the minimum, with `comparison_suppressed` and `voters_needed`. `total_votes` stays, because it says how many voted and not how. The card shows the placeholder sentences and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed.
+[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count`, `con_count`, `pro_percent` and `con_percent` as nil whenever the split is withheld (under ten voters or unanimous), with `comparison_suppressed` and `voters_needed`. The percentages follow the same rounding as the bill page. `total_votes` stays, because it says how many voted and not how. The card shows the placeholder sentences and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed.
 
 The response's ETag includes [[app/controllers/embed/bills_controller.rb#BillsController#PAYLOAD_VERSION]], so a deploy that changes the payload's shape or privacy rules, and bumps that constant, makes every ETag cached before it stale. A CDN or browser holding the old body revalidates, gets a full response instead of a 304, and drops the old counts. Without the bump the ETag follows only the bill and its score row, and a response cached before the rule would keep revalidating as 304 until someone voted on that bill. A response still inside its freshness window is served without revalidation until it expires, up to fifteen minutes.
 
@@ -171,4 +175,4 @@ A vote already does: `ScoreUpdaterService` recomputes the bill and then the scor
 
 A spec about term windows, score refreshes or page layout has one or two voters, and the minimum would hide everything it asserts.
 
-The shared context in [[spec/support/shared_contexts/voter_minimum_of_one.rb]] lowers the minimum to one for such a spec. Specs that pin the rule itself leave the constant alone and build nine and ten voters.
+The shared context in [[spec/support/shared_contexts/voter_minimum_of_one.rb]] lowers the minimum to one for such a spec. The context also stubs `VoteComparisonPrivacy.unanimous?` to false, because such a spec builds one-voter, one-sided bills that the unanimous rule would otherwise withhold. Specs that pin the rule itself leave the constant alone and build nine and ten voters, and mixed splits.

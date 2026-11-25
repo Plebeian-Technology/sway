@@ -776,8 +776,8 @@ RSpec.describe "BillsController", type: :request do
               "bill_score_id" => score_district.bill_score_id,
               "district" => {"name" => "D-1", "number" => 1, "region_code" => "D"},
               "comparison_suppressed" => false,
-              "for_percent" => 67,
-              "against_percent" => 33,
+              "for_percent" => 70,
+              "against_percent" => 30,
               "at_large" => false
             }
           ]

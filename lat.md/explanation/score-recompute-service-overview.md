@@ -47,7 +47,9 @@ Whether a bill falls inside the term is decided by `LegislatorTerm.covering` rat
 
 ## Group scores carry a distinct voter count
 
-District and locale scores go through `tally_group_agreement`, which drops bills under the ten-voter minimum and stores how many distinct users remain. [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]] gives the reason.
+District and locale scores go through `tally_group_agreement`, which drops bills the privacy rule withholds and stores how many distinct users remain. [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]] gives the reason.
+
+Withheld bills are those under ten voters and those with a unanimous split, in the total or in the district.
 
 The column defaults to zero, so a row written before the column existed reads as hidden: alone it shows the placeholder, and in a lifetime sum it adds none of its counters ([[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]). The deploy that adds the column therefore includes one run of `sway:scores:recompute_all`, which rewrites every term's row with its real count.
 

@@ -8,6 +8,7 @@ end
 
 class EmbedBillResource < ApplicationResource
   def self.tally: (Bill bill) -> [Integer, Integer]
+  def self.percentages: (Bill bill) -> Hash[Symbol, Integer]?
 end
 
 class UserVoteResource < ApplicationResource

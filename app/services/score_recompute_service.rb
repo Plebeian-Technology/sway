@@ -173,9 +173,9 @@ class ScoreRecomputeService
       BillScore
         .joins(:bill)
         .where(bills: {sway_locale_id: sway_locale.id})
-        .where('bill_scores."for" + bill_scores."against" >= ?', VoteComparisonPrivacy::MINIMUM_VOTERS)
-        .pluck(:bill_id)
-        .to_set
+        .pluck(:bill_id, :for, :against)
+        .reject { |_bill_id, for_count, against_count| VoteComparisonPrivacy.withheld?(for_count, against_count) }
+        .to_set(&:first)
     end
 
     # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]

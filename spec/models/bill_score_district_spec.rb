@@ -69,6 +69,7 @@ RSpec.describe BillScoreDistrict, type: :model do
     end
   end
 
+  # @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
   describe "#for_percent and #against_percent" do
     it "are nil below ten voters" do
       district_score = build(:bill_score_district, for: 5, against: 4)
@@ -77,11 +78,32 @@ RSpec.describe BillScoreDistrict, type: :model do
       expect(district_score.against_percent).to be_nil
     end
 
-    it "are whole numbers that sum to 100 at ten voters" do
+    it "are nil for a unanimous split, which is not publishable" do
+      district_score = build(:bill_score_district, for: 10, against: 0)
+
+      expect(district_score.comparison_suppressed?).to be(true)
+      expect(district_score.publishable?).to be(false)
+      expect(district_score.for_percent).to be_nil
+      expect(district_score.against_percent).to be_nil
+    end
+
+    {
+      [7, 3] => [70, 30],
+      [13, 6] => [70, 30],
+      [39, 1] => [95, 5]
+    }.each do |(district_for, district_against), (for_percent, against_percent)|
+      it "are #{for_percent} and #{against_percent} for #{district_for} For and #{district_against} Against" do
+        district_score = build(:bill_score_district, for: district_for, against: district_against)
+
+        expect([district_score.for_percent, district_score.against_percent]).to eq([for_percent, against_percent])
+      end
+    end
+
+    it "round to tens under 20 voters and sum to 100" do
       district_score = build(:bill_score_district, for: 2, against: 14)
 
-      expect(district_score.for_percent).to eq(13)
-      expect(district_score.against_percent).to eq(87)
+      expect(district_score.for_percent).to eq(10)
+      expect(district_score.against_percent).to eq(90)
     end
   end
 end

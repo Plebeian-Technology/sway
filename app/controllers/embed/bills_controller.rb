@@ -3,7 +3,7 @@
 # @lat: [[embeddable-bill-widget#Embeddable bill widget#Controller implementation]]
 module Embed
   class BillsController < BaseController
-    PAYLOAD_VERSION = "2"
+    PAYLOAD_VERSION = "3"
 
     def show
       @bill = Bill.find(params[:id])

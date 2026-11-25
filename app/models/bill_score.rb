@@ -34,6 +34,8 @@ class BillScore < ApplicationRecord
       bs.bill_id bill_id
       bs.for visible_for
       bs.against visible_against
+      bs.for_percent for_percent
+      bs.against_percent against_percent
       bs.comparison_suppressed comparison_suppressed?
       bs.voters_needed voters_needed
 
@@ -58,8 +60,17 @@ class BillScore < ApplicationRecord
     (publishable_districts + at_large_rows).map(&:district_id)
   end
 
+  # @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
   def comparison_suppressed?
-    VoteComparisonPrivacy.suppressed?(self.for, against)
+    VoteComparisonPrivacy.withheld?(self.for, against)
+  end
+
+  def for_percent
+    rounded_percentages&.fetch(:for)
+  end
+
+  def against_percent
+    rounded_percentages&.fetch(:against)
   end
 
   def voters_needed
@@ -101,6 +112,8 @@ class BillScore < ApplicationRecord
       bs.bill_id bill_id
       bs.for visible_for
       bs.against visible_against
+      bs.for_percent for_percent
+      bs.against_percent against_percent
       bs.comparison_suppressed comparison_suppressed?
       bs.voters_needed voters_needed
       bs.districts bill_districts.map(&:to_sway_json)
@@ -108,6 +121,12 @@ class BillScore < ApplicationRecord
   end
 
   private
+
+  def rounded_percentages
+    return nil if comparison_suppressed?
+
+    VoteComparisonPrivacy.rounded_percentages({for: self.for, against: against}, voters: self.for + against)
+  end
 
   def voters_outside_publishable?(rows)
     outside = (self.for + against) - rows.sum { |row| row.for + row.against }

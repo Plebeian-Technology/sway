@@ -513,13 +513,15 @@ RSpec.describe ScoreRecomputeService do
       first_bill = bill_voted_for_by(legislator, sway_locale)
       second_bill = bill_voted_for_by(legislator, sway_locale)
       voters = constituents_vote(10, legislator:, bill: first_bill)
+      dissenter = constituents_vote(1, legislator:, bill: first_bill, support: LegislatorVote::Support::AGAINST).first
       voters.each { |user| create(:user_vote, user:, bill: second_bill, support: LegislatorVote::Support::AGAINST) }
+      create(:user_vote, user: dissenter, bill: second_bill, support: LegislatorVote::Support::FOR)
 
       recompute([first_bill, second_bill], [term])
 
       [LegislatorDistrictScore.find_by!(legislator_term: term), LegislatorLocaleScore.find_by!(legislator_term: term)].each do |score|
-        expect(score.distinct_voter_count).to eq(10)
-        expect([score.count_agreed, score.count_disagreed]).to eq([10, 10])
+        expect(score.distinct_voter_count).to eq(11)
+        expect([score.count_agreed, score.count_disagreed]).to eq([11, 11])
       end
     end
 
@@ -527,7 +529,8 @@ RSpec.describe ScoreRecomputeService do
       sway_locale = create(:sway_locale)
       legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
       bill = bill_voted_for_by(legislator, sway_locale)
-      constituents_vote(9, legislator:, bill:)
+      constituents_vote(8, legislator:, bill:)
+      constituents_vote(1, legislator:, bill:, support: LegislatorVote::Support::AGAINST)
 
       recompute([bill], [term])
 
@@ -539,8 +542,29 @@ RSpec.describe ScoreRecomputeService do
       recompute([bill], [term])
 
       locale_score.reload
-      expect(locale_score.count_agreed).to eq(10)
+      expect([locale_score.count_agreed, locale_score.count_disagreed]).to eq([9, 1])
       expect(locale_score.distinct_voter_count).to eq(10)
+    end
+
+    # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+    it "leaves a bill whose total split is unanimous out of a locale score until one user votes the other way" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      bill = bill_voted_for_by(legislator, sway_locale)
+      constituents_vote(10, legislator:, bill:)
+
+      recompute([bill], [term])
+
+      locale_score = LegislatorLocaleScore.find_by!(legislator_term: term)
+      expect(pairs(locale_score)).to eq(0)
+      expect(locale_score.distinct_voter_count).to eq(0)
+
+      constituents_vote(1, legislator:, bill:, support: LegislatorVote::Support::AGAINST)
+      recompute([bill], [term])
+
+      locale_score.reload
+      expect([locale_score.count_agreed, locale_score.count_disagreed]).to eq([10, 1])
+      expect(locale_score.distinct_voter_count).to eq(11)
     end
 
     it "leaves a bill out of a district score when that district has fewer than ten of its voters" do
@@ -550,7 +574,8 @@ RSpec.describe ScoreRecomputeService do
       other_small_legislator, = seat(sway_locale, "#{sway_locale.region_code}3")
       bill = bill_voted_for_by(large_legislator, sway_locale)
       create(:legislator_vote, bill:, legislator: small_legislator, support: LegislatorVote::Support::FOR)
-      constituents_vote(10, legislator: large_legislator, bill:)
+      constituents_vote(9, legislator: large_legislator, bill:)
+      constituents_vote(1, legislator: large_legislator, bill:, support: LegislatorVote::Support::AGAINST)
       constituents_vote(4, legislator: small_legislator, bill:)
       constituents_vote(6, legislator: other_small_legislator, bill:)
 
@@ -561,12 +586,12 @@ RSpec.describe ScoreRecomputeService do
       expect(small_district_score.distinct_voter_count).to eq(0)
 
       large_district_score = LegislatorDistrictScore.find_by!(legislator_term: large_term)
-      expect(large_district_score.count_agreed).to eq(10)
+      expect([large_district_score.count_agreed, large_district_score.count_disagreed]).to eq([9, 1])
       expect(large_district_score.distinct_voter_count).to eq(10)
 
       [large_term, small_term].each do |term|
         locale_score = LegislatorLocaleScore.find_by!(legislator_term: term)
-        expect(locale_score.count_agreed).to eq(20)
+        expect([locale_score.count_agreed, locale_score.count_disagreed]).to eq([19, 1])
         expect(locale_score.distinct_voter_count).to eq(20)
       end
     end
@@ -615,7 +640,8 @@ RSpec.describe ScoreRecomputeService do
         bill = bill_voted_for_by(legislator, sway_locale)
         create(:legislator_vote, bill:, legislator: neighbour, support: LegislatorVote::Support::FOR)
         constituents_vote(1, legislator:, bill:)
-        constituents_vote(9, legislator: neighbour, bill:)
+        constituents_vote(8, legislator: neighbour, bill:)
+        constituents_vote(1, legislator: neighbour, bill:, support: LegislatorVote::Support::AGAINST)
 
         recompute([bill], [term, neighbour_term])
 
@@ -631,13 +657,14 @@ RSpec.describe ScoreRecomputeService do
         neighbour, neighbour_term = seat_beside(legislator)
         bill = bill_voted_for_by(legislator, sway_locale)
         create(:legislator_vote, bill:, legislator: neighbour, support: LegislatorVote::Support::FOR)
-        constituents_vote(10, legislator:, bill:)
+        constituents_vote(9, legislator:, bill:)
+        constituents_vote(1, legislator:, bill:, support: LegislatorVote::Support::AGAINST)
         constituents_vote(1, legislator: neighbour, bill:)
 
         recompute([bill], [term, neighbour_term])
 
         own_score = LegislatorDistrictScore.find_by!(legislator_term: term)
-        expect(own_score.count_agreed).to eq(10)
+        expect([own_score.count_agreed, own_score.count_disagreed]).to eq([9, 1])
         expect(own_score.distinct_voter_count).to eq(10)
         expect(LegislatorDistrictScore.find_by!(legislator_term: neighbour_term).distinct_voter_count).to eq(0)
       end
@@ -648,7 +675,8 @@ RSpec.describe ScoreRecomputeService do
       legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
       bill = bill_voted_for_by(legislator, sway_locale)
       constituents_vote(2, legislator:, bill:)
-      Array.new(8) { create(:user_vote, user: create(:user), bill:, support: LegislatorVote::Support::FOR) }
+      Array.new(7) { create(:user_vote, user: create(:user), bill:, support: LegislatorVote::Support::FOR) }
+      create(:user_vote, user: create(:user), bill:, support: LegislatorVote::Support::AGAINST)
 
       recompute([bill], [term])
 
@@ -663,7 +691,8 @@ RSpec.describe ScoreRecomputeService do
         senator, term = seat(sway_locale, "MD0")
         other_senator, = seat(sway_locale, "VA0")
         bill = bill_voted_for_by(senator, sway_locale)
-        constituents_vote(home_voters, legislator: senator, bill:)
+        constituents_vote(home_voters - 1, legislator: senator, bill:)
+        constituents_vote(1, legislator: senator, bill:, support: LegislatorVote::Support::AGAINST)
         constituents_vote(other_voters, legislator: other_senator, bill:)
         recompute([bill], [term])
         LegislatorDistrictScore.find_by!(legislator_term: term)
@@ -682,7 +711,7 @@ RSpec.describe ScoreRecomputeService do
         [0, 10].each do |other_voters|
           district_score = at_large_tallies(home_voters: 10, other_voters:)
 
-          expect(district_score.count_agreed).to eq(10)
+          expect([district_score.count_agreed, district_score.count_disagreed]).to eq([9, 1])
           expect(district_score.distinct_voter_count).to eq(10)
         end
       end
@@ -693,7 +722,8 @@ RSpec.describe ScoreRecomputeService do
       legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
       counted_bill = bill_voted_for_by(legislator, sway_locale)
       small_bill = bill_voted_for_by(legislator, sway_locale)
-      constituents_vote(10, legislator:, bill: counted_bill)
+      constituents_vote(9, legislator:, bill: counted_bill)
+      constituents_vote(1, legislator:, bill: counted_bill, support: LegislatorVote::Support::AGAINST)
       constituents_vote(1, legislator:, bill: small_bill)
 
       recompute([counted_bill, small_bill], [term])
@@ -708,7 +738,8 @@ RSpec.describe ScoreRecomputeService do
       sway_locale = create(:sway_locale)
       legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
       bill = bill_voted_for_by(legislator, sway_locale)
-      voters = constituents_vote(11, legislator:, bill:)
+      voters = constituents_vote(10, legislator:, bill:)
+      constituents_vote(1, legislator:, bill:, support: LegislatorVote::Support::AGAINST)
       recompute([bill], [term])
       expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(11)
 

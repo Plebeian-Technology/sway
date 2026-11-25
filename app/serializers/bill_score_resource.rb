@@ -13,6 +13,8 @@ class BillScoreResource < ApplicationResource
     score.visible_against
   end
 
+  attributes :for_percent, :against_percent
+
   attribute :comparison_suppressed do |score|
     score.comparison_suppressed?
   end

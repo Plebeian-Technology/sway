@@ -44,6 +44,8 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(inertia.props[:bill]).to include(
         pro_count: nil,
         con_count: nil,
+        pro_percent: nil,
+        con_percent: nil,
         comparison_suppressed: true,
         voters_needed: 1,
         total_votes: 9
@@ -59,10 +61,55 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(inertia.props[:bill]).to include(
         pro_count: 7,
         con_count: 3,
+        pro_percent: 70,
+        con_percent: 30,
         comparison_suppressed: false,
         voters_needed: 0,
         total_votes: 10
       )
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    {
+      "nineteen votes, thirteen For" => [13, 6, 70, 30],
+      "forty votes, thirty-nine For" => [39, 1, 95, 5]
+    }.each do |description, (pro, con, pro_percent, con_percent)|
+      it "sends #{pro_percent} and #{con_percent} for #{description}" do
+        bill_score.update!(for: pro, against: con)
+
+        get "/embed/bills/#{bill.id}"
+
+        expect(inertia.props[:bill]).to include(pro_percent:, con_percent:, comparison_suppressed: false)
+      end
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "withholds a unanimous split of ten votes like one under ten" do
+      bill_score.update!(for: 10, against: 0)
+
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill]).to include(
+        pro_count: nil,
+        con_count: nil,
+        pro_percent: nil,
+        con_percent: nil,
+        comparison_suppressed: true,
+        voters_needed: 0
+      )
+      expect(response.body).not_to match(/"pro_count":\s*10/)
+    end
+
+    it "answers a conditional GET holding the previous payload version's ETag with a full body" do
+      current_version = Embed::BillsController::PAYLOAD_VERSION
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "2")
+      get "/embed/bills/#{bill.id}"
+      old_etag = response.headers["ETag"]
+
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", current_version)
+      get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => old_etag}
+
+      expect(response).to have_http_status(:ok)
     end
 
     it "sets public CDN caching headers with s-maxage and stale-while-revalidate" do

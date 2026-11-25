@@ -75,7 +75,8 @@ RSpec.describe "Vote comparison privacy", type: :request do
         score = send(reader)
 
         expect(score).to include(
-          "for" => nil, "against" => nil, "comparison_suppressed" => true, "voters_needed" => 1
+          "for" => nil, "against" => nil, "for_percent" => nil, "against_percent" => nil,
+          "comparison_suppressed" => true, "voters_needed" => 1
         )
         expect(score["districts"]).to eq([])
       end
@@ -94,13 +95,14 @@ RSpec.describe "Vote comparison privacy", type: :request do
         score = send(reader)
 
         expect(score).to include(
-          "for" => 18, "against" => 12, "comparison_suppressed" => false, "voters_needed" => 0
+          "for" => 18, "against" => 12, "for_percent" => 60, "against_percent" => 40,
+          "comparison_suppressed" => false, "voters_needed" => 0
         )
         expect(score["districts"].map { |row| row["district"]["name"] }).to eq([reader_district.name])
         row = score["districts"].first
         expect(row.keys - %w[legislator_names]).to match_array(district_row_keys)
         expect(row).to include(
-          "comparison_suppressed" => false, "for_percent" => 75, "against_percent" => 25, "at_large" => false
+          "comparison_suppressed" => false, "for_percent" => 80, "against_percent" => 20, "at_large" => false
         )
       end
     end
@@ -130,6 +132,79 @@ RSpec.describe "Vote comparison privacy", type: :request do
       rows = inertia.props[:bill_score]["districts"]
       expect(rows.map { |row| row["district"]["name"] }).to eq([reader_district.name])
       expect(rows.first.keys).to match_array(district_row_keys)
+    end
+  end
+
+  # @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
+  {
+    "ten voters, seven For and three Against" => [[7, 3], 70, 30],
+    "nineteen voters, thirteen For and six Against" => [[13, 6], 70, 30],
+    "forty voters, thirty-nine For and one Against" => [[39, 1], 95, 5]
+  }.each do |description, ((split_for, split_against), for_percent, against_percent)|
+    context "when the bill has #{description}" do
+      before do
+        tally(bill_for: split_for, bill_against: split_against, reader: [split_for, split_against], small: [0, 0], at_large: [split_for, split_against])
+      end
+
+      score_readers.each do |endpoint, reader|
+        it "#{endpoint} sends #{for_percent} and #{against_percent} for the bill and its district" do
+          score = send(reader)
+
+          expect(score).to include("for_percent" => for_percent, "against_percent" => against_percent, "comparison_suppressed" => false)
+          expect(score["districts"].pluck("for_percent", "against_percent")).to eq([[for_percent, against_percent]])
+        end
+      end
+
+      it "sends a bearer request the same percentages" do
+        api_token = SecureRandom.hex(32)
+        ApiKey.create!(bearer: user, token: api_token)
+
+        get "/bills/#{bill.id}", headers: {"Authorization" => "Bearer #{api_token}"}
+
+        score = response.parsed_body["bill_score"]
+        expect(score).to include("for_percent" => for_percent, "against_percent" => against_percent)
+        expect(score["districts"].pluck("for_percent", "against_percent")).to eq([[for_percent, against_percent]])
+      end
+
+      it "sends the web bill page the same percentages" do
+        get "/bills/#{bill.id}"
+
+        expect(inertia).to render_component Pages::BILL
+        expect(inertia.props[:bill_score]).to include("for_percent" => for_percent, "against_percent" => against_percent)
+      end
+
+      it "GET /bill_score_districts/:id sends the district's percentages" do
+        expect(district_rows.pluck("for_percent", "against_percent")).to eq([[for_percent, against_percent]])
+      end
+    end
+  end
+
+  context "when the bill has ten voters who all voted For" do
+    before { tally(bill_for: 10, bill_against: 0, reader: [10, 0], small: [0, 0], at_large: [10, 0]) }
+
+    score_readers.each do |endpoint, reader|
+      it "#{endpoint} withholds the split exactly as it does under ten voters" do
+        score = send(reader)
+
+        expect(score).to include(
+          "for" => nil, "against" => nil, "for_percent" => nil, "against_percent" => nil,
+          "comparison_suppressed" => true
+        )
+        expect(score["districts"]).to eq([])
+      end
+    end
+
+    it "GET /bill_score_districts/:id sends no row" do
+      expect(district_rows).to eq([])
+    end
+  end
+
+  context "when a district's ten voters are unanimous inside a bill that is not" do
+    before { tally(bill_for: 17, bill_against: 3, reader: [10, 0], small: [0, 0], at_large: [17, 3]) }
+
+    it "sends no row for that district" do
+      expect(bill_show_score).to include("for_percent" => 85, "against_percent" => 15)
+      expect(bill_show_score["districts"]).to eq([])
     end
   end
 
