@@ -373,7 +373,9 @@ Web sessions live in Rails' cookie store, so the server holds no session row to 
 
 A session with no generation reads as 0. Authentication never fills the missing value in, the way it backfills a missing `auth_identity`, because filling it with the current value would undo a revocation. Sessions written before the column existed keep working until the account's first sign-out everywhere.
 
-`POST /users/sign_out_all_devices` ([[app/controllers/users_controller.rb#UsersController#sign_out_all_devices]]) acts only on the signed-in account and carries Rails' CSRF check. [[app/models/user.rb#User#sign_out_all_devices!]] raises the generation and revokes every mobile device; the action then signs the calling browser out and redirects to the public home page. The ordinary sign-out it calls deletes all of the account's refresh tokens, so a revoked browser holding a refresh-token cookie cannot sign itself back in.
+`POST /users/sign_out_all_devices` ([[app/controllers/users_controller.rb#UsersController#sign_out_all_devices]]) acts only on the signed-in account and carries Rails' CSRF check. [[app/models/user.rb#User#sign_out_all_devices!]] first deletes all of the account's refresh tokens and raises the generation in one transaction, then revokes every mobile device; the action then signs the calling browser out and redirects to the public home page.
+
+The tokens go in the same transaction as the generation, not later in the ordinary sign-out. Otherwise another browser arriving in between is judged stale, finds its refresh-token cookie still valid, and is stamped with the new generation, so it stays signed in.
 
 ### A refused CSRF write leaves a fresh retry path
 

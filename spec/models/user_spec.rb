@@ -747,6 +747,29 @@ RSpec.describe User, type: :model do
     end
   end
 
+  # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
+  describe "#sign_out_all_devices!" do
+    let(:user) { create(:user) }
+
+    it "deletes the user's refresh tokens and raises the generation before revoking devices" do
+      create(:refresh_token, user: user)
+      someone_elses = create(:refresh_token, user: create(:user))
+      seen_when_revoking = nil
+      allow(user).to receive(:revoke_all_devices!) do
+        seen_when_revoking = {
+          tokens: RefreshToken.where(user_id: user.id).count,
+          generation: user.reload.session_generation
+        }
+      end
+
+      user.sign_out_all_devices!
+
+      expect(seen_when_revoking).to eq(tokens: 0, generation: 1)
+      expect(RefreshToken.where(user_id: user.id)).to be_empty
+      expect(RefreshToken.exists?(someone_elses.id)).to be(true)
+    end
+  end
+
   describe "account deletion foreign-key guard" do
     it "fails when a foreign key to users is neither handled nor allowlisted" do
       admin_actor_foreign_keys = [

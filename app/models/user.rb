@@ -201,13 +201,16 @@ class User < ApplicationRecord
 
   attr_accessor :transient_funnel_metadata
 
-  # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every device is atomic]]
   # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
   def sign_out_all_devices!
-    increment!(:session_generation)
+    transaction do
+      RefreshToken.where(user_id: id).delete_all
+      increment!(:session_generation)
+    end
     revoke_all_devices!
   end
 
+  # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every device is atomic]]
   def revoke_all_devices!
     transaction do
       user_devices.active.find_each(&:revoke!)
