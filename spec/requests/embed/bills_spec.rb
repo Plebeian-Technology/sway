@@ -48,7 +48,7 @@ RSpec.describe "Embed::Bills", type: :request do
         voters_needed: 1,
         total_votes: 9
       )
-      expect(response.body).not_to match(/pro_count&quot;:\s*6|con_count&quot;:\s*3/)
+      expect(response.body).not_to match(/"pro_count":\s*6|"con_count":\s*3/)
     end
 
     it "sends the counts and the two flags once the bill has ten votes" do

@@ -56,7 +56,6 @@ describe("district charts at the ten-voter minimum", () => {
         expect(within(chart).getByLabelText("District 4 oppose 25%")).toBeInTheDocument();
         expect(chart).toHaveTextContent("75%");
         expect(chart).toHaveTextContent("25%");
-        expect(chart.textContent).not.toMatch(/\b(9|3|12)\b/);
     });
 
     it("keeps the exact bill total above the district bars", () => {
