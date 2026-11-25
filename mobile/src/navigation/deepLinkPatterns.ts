@@ -16,7 +16,7 @@ export const DEEP_LINK_PATTERNS = [
     "/bill_shares/*",
     "/feed",
     "/users/organization_memberships",
-    "/users/profile",
+    "/profile",
 ];
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]

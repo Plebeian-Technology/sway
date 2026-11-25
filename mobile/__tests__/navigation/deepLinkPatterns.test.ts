@@ -46,7 +46,7 @@ describe("androidPathData", () => {
     });
 
     // @lat: [[well-known-controller-notes#Mobile: linking.ts#Signed-in pages are claimed too]]
-    it.each(["/feed", "/users/organization_memberships", "/users/profile"])("claims the signed-in page %s", (path) => {
+    it.each(["/feed", "/users/organization_memberships", "/profile"])("claims the signed-in page %s", (path) => {
         expect(DEEP_LINK_PATTERNS).toContain(path);
         expect(androidPathData(path)).toEqual({ path });
     });

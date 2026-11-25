@@ -79,7 +79,7 @@ RSpec.describe "WellKnown", type: :request do
           "/bill_shares/*",
           "/feed",
           "/users/organization_memberships",
-          "/users/profile"
+          "/profile"
         )
       end
     end

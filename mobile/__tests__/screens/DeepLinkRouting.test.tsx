@@ -80,9 +80,9 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
         expect(orgs.OrgDetail).toBe("organizations/:id");
     });
 
-    test("ProfileStack registers the Profile path and the web profile path", () => {
+    test("ProfileStack registers the web profile path", () => {
         const profile = (linking.config as any).screens.Profile.screens;
-        expect(profile.ProfileHub).toEqual({ path: "profile", alias: ["users/profile"] });
+        expect(profile.ProfileHub).toBe("profile");
     });
 
     test("AuthStack registers sign-in path on Auth screen", () => {

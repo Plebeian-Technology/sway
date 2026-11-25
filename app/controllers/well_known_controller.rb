@@ -84,7 +84,7 @@ class WellKnownController < ApplicationController
               "/bill_shares/*",
               "/feed",
               "/users/organization_memberships",
-              "/users/profile"
+              "/profile"
             ]
           }
         ]

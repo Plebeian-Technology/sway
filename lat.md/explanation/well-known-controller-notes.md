@@ -85,12 +85,12 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 - `organizations` — the organizations list
 - `feed` — the feed
 - `users/organization_memberships` — the memberships list
-- `users/profile` — the profile screen, which also answers the app-only path `profile`
+- `profile` — the profile screen, at the same path as the web Profile page ([[web-profile-page#Web profile page]])
 - `s/:key`, `invite/:userId/:inviteUuid` and `invites/:userId/:inviteUuid` — a user invite link, which opens no screen ([[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]])
 
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
-The bare `profile` and `sign-in` paths are the only ones left unclaimed, and only because neither is a web address: the web profile page is `users/profile`. Those two answer `sway://` links from inside the app only.
+The `sign-in` path is the only one left unclaimed, and only because it is not a web address. It answers `sway://` links from inside the app only.
 
 ### Signed-in pages are claimed too
 
