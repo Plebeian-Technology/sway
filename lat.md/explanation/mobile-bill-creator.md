@@ -597,7 +597,7 @@ The section seeds its rows from `bill.organizations` once, at mount. An approval
 
 The section ports the draft cards only; the rest of the web's testimony panel belongs to later sections.
 
-- The testimony coverage notice with its acknowledgement and the positions error notice. The supplemental testimony field and the public testimony letters are [[mobile-bill-creator#Sections#The testimony section]].
+- The positions error notice. The testimony coverage notice and its acknowledgement are [[mobile-bill-creator#Sections#The testimony coverage section]]; the supplemental testimony field and the public testimony letters are [[mobile-bill-creator#Sections#The testimony section]].
 - The success toasts. The card leaving the list on the reload is the confirmation.
 - The info popovers beside the heading, the stance stamp, Approve and Edit, and the stamp colours.
 - The screen-reader link from a disabled Approve to the notice that explains it. The notices sit above the cards in reading order instead.
@@ -744,6 +744,37 @@ A saved or cleared supplemental text answers 200 with an empty body, and so does
 ### The testimony coverage section
 
 The Positions tab states how much testimony reached the summary model and lets the admin acknowledge what the run left out, as the web's coverage notice does ([[campaign-letter-disclosure#Testimony coverage states and acknowledgement gate]]).
+
+[[mobile/src/components/admin/billCreator/TestimonyCoverageSection.tsx#TestimonyCoverageSection]] ports [[app/frontend/components/admin/creator/llm-summary/LlmSummaryTestimonyCoverageNotice.tsx#LlmSummaryTestimonyCoverageNotice]] and [[app/frontend/components/admin/creator/testimony-report/TestimonyAcknowledgeButton.tsx#TestimonyAcknowledgeButton]]. The tab renders it between the supplemental testimony and the draft positions, keyed on the bill id, since the web shows the notice above its draft cards. It reads `testimony_coverage`, `bill.bill_llm_provisioning` and `active_legislation_pipeline_run`, all already in the Positions tab's prop list.
+
+#### The coverage notice
+
+The section draws nothing without a coverage report or when the report's state is `no_testimony`. Every other state gets the web's title and sentence, in a warning panel or a plain one as the web picks.
+
+- A running stage: "The clean-testimony stage is running", and the numbers come from the last run.
+- A stage that never ran, or a stale cleaning: the characters the model read out of the raw total, and for a stale one the call to re-run the stage.
+- A failed stage: the left-out letters out of the total when an earlier cleaning counted them, else the characters read.
+- A cleaned report: all letters reached the model only when no letter and no character was left out. Otherwise the panel says which, and that approval is blocked until acknowledged.
+
+Counts use the web's [[app/frontend/sway_utils/countNoun.ts#countNoun]], so one letter reads "1 letter".
+
+#### Acknowledging the left-out testimony
+
+The draft, campaign and claimed-affiliation cards keep Approve off while `coverage_gap` is true and `acknowledged` is false ([[org-position-approval-guard-chain#Acknowledging testimony coverage gaps]]). This section is the explanation for that, and on the phone the only place to lift it.
+
+While a gap exists the panel carries "Acknowledge the missing testimony". The button posts the report's `digest` to `POST /bills/:id/testimony_coverage_acknowledgement`, so the server refuses numbers that moved since the tab loaded. It stays off while the request is in flight and while a summary run or a clean-testimony run for this bill is in flight, the draft cards' run check. A success reloads the tab. The reloaded report carries `acknowledged`, so the cards turn Approve back on and the button gives way to the web's stamp: "ACKNOWLEDGED", then who acknowledged and when, the date left out when none was recorded.
+
+A refusal shows below the button: `details.testimony_coverage` when present, else the server's or the client's message.
+
+#### What the phone leaves out
+
+The section keeps the notice's rules and the acknowledgement and drops the web-only parts.
+
+- The info popovers beside the title and the button.
+- The success toast. The stamp replacing the button is the confirmation.
+- The web's "Acknowledgement failed." fallback. The phone shows the server's or the client's message, which always exists.
+- The notice's element id, which the web's disabled Approve buttons name for screen readers. The panel sits above the cards in reading order instead.
+- The tabular figures in the sentence.
 
 #### Answering the acknowledgement in JSON
 

@@ -110,6 +110,7 @@ export const Routes = {
     billApproveOrgPosition: (billId: number) => `/bills/${billId}/approve_org_position`,
     billSupplementalTestimony: (billId: number) => `/bills/${billId}/supplemental_testimony`,
     billTestimonyLetterStance: (billId: number) => `/bills/${billId}/testimony_letter_stance`,
+    billTestimonyCoverageAcknowledgement: (billId: number) => `/bills/${billId}/testimony_coverage_acknowledgement`,
     billCampaigns: (billId: number) => `/bills/${billId}/campaigns`,
     billCampaignLinkOrganization: (billId: number, campaignId: number) =>
         `/bills/${billId}/campaigns/${campaignId}/link_organization`,

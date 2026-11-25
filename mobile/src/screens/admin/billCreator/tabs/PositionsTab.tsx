@@ -7,6 +7,7 @@ import ClaimedAffiliationsSection from "../../../../components/admin/billCreator
 import DraftPositionsSection from "../../../../components/admin/billCreator/DraftPositionsSection";
 import OrganizationsSection from "../../../../components/admin/billCreator/OrganizationsSection";
 import SupplementalTestimonySection from "../../../../components/admin/billCreator/SupplementalTestimonySection";
+import TestimonyCoverageSection from "../../../../components/admin/billCreator/TestimonyCoverageSection";
 import TestimonyLettersSection from "../../../../components/admin/billCreator/TestimonyLettersSection";
 import { EmptyState } from "../../../../components/ui/EmptyState";
 import type { BillCreatorTabProps } from "../../../../hooks/admin/useBillCreator";
@@ -36,6 +37,7 @@ export default function PositionsTab({ billId, data, refresh }: BillCreatorTabPr
                 data={data}
                 refresh={refresh}
             />
+            <TestimonyCoverageSection key={`coverage-${billId}`} billId={billId} data={data} refresh={refresh} />
             <DraftPositionsSection key={`drafts-${billId}`} billId={billId} data={data} refresh={refresh} />
             <CampaignDraftsSection key={`campaigns-${billId}`} billId={billId} data={data} refresh={refresh} />
             <ClaimedAffiliationsSection key={`claimed-${billId}`} billId={billId} data={data} refresh={refresh} />
