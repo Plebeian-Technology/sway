@@ -69,8 +69,10 @@ RSpec.describe Organizations::MembershipInvitesController, type: :request do
         body = response.parsed_body
         expect(body.keys).to match_array(%w[signed_token organization inviter_name expires_at])
         expect(body["signed_token"]).to eq(signed_token(invite))
+        expect(body["organization"].keys).to match_array(%w[id sway_locale_id name icon_url])
         expect(body["organization"]).to include("id" => organization.id, "name" => organization.name)
         expect(body["inviter_name"]).to eq(admin_user.full_name)
+        expect(body["expires_at"]).to be_a(String)
       end
 
       it "returns 403 with errors when the user's email does not match" do
