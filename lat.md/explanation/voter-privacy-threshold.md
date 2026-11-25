@@ -8,6 +8,27 @@ With two voters on a bill, each one reads the other's position off the tally. Th
 
 Two things sit outside the threat by decision. A reader who watches an exact total refresh sees each new vote's direction. District sizes can be worked out from percentages over time or from public records. Neither identifies a voter inside a small group, so neither is defended.
 
+## Percentages are rounded to steps and a unanimous split is withheld
+
+A published vote percentage is a multiple of ten under 20 voters and a multiple of five from 20 voters up, and a split where one side holds every vote is withheld like a split under ten voters.
+
+[[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#unanimous?]] is true when the two counts sum to more than zero and one of them is zero. [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#withheld?]] is the minimum test or the unanimous test, and every caller that publishes a two-sided split asks it.
+
+Two figures that each stand on ten voters can differ by one person: a figure before and after one vote, or two overlapping scores. Exact numbers turn that difference into one person's vote, and a rounded step hides most of those differences from 20 voters up. Below 20 it hides fewer, and the operator accepted that. A unanimous split is withheld because knowing that a voter took part then reveals the vote.
+
+[[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#rounded_percentages]] takes a hash of counts and the number of distinct voters and returns a hash of percentages with the same keys, summing to exactly 100, or nil when every count is zero. It floors each share to a step, gives the leftover steps to the largest remainders with ties going to the key that comes first, and compares integers only, so ties are exact. A key with a non-zero count never rounds to zero: each such key takes one step from the key with the largest value at that moment, so a split that is not unanimous never shows 100 and 0.
+
+Worked examples, as counts, voters and the result:
+
+- For 7, Against 3, 10 voters: 70 and 30.
+- For 13, Against 6, 19 voters: 70 and 30.
+- For 9, Against 1, 10 voters: 90 and 10.
+- For 19, Against 1, 20 voters: 95 and 5.
+- For 39, Against 1, 40 voters: 95 and 5, not 100 and 0.
+- For 21, Against 19, 40 voters: 55 and 45, the tie going to For.
+- Agreed 6, disagreed 3, no legislator vote 1, abstained 0, 10 voters: 60, 30, 10, 0.
+- Four keys at 97, 1, 1, 1 with 100 voters: 85, 5, 5, 5.
+
 ## Bill totals show exact counts at ten voters
 
 A bill's For and Against counts are exact once ten users have voted on it. Below ten both are sent as nil, and the reader gets `comparison_suppressed` and `voters_needed`, the number of further voters that would reveal the total.

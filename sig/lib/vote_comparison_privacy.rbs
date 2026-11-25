@@ -1,7 +1,20 @@
 module VoteComparisonPrivacy
     MINIMUM_VOTERS: Integer
+    FINE_STEP_VOTERS: Integer
+    COARSE_STEP: Integer
+    FINE_STEP: Integer
 
     def self.suppressed?: (Integer for_count, Integer against_count) -> bool
 
     def self.voters_needed: (Integer for_count, Integer against_count) -> Integer
+
+    def self.unanimous?: (Integer first_count, Integer second_count) -> bool
+
+    def self.withheld?: (Integer first_count, Integer second_count) -> bool
+
+    def self.rounded_percentages: [K] (Hash[K, Integer] counts_by_key, voters: Integer) -> Hash[K, Integer]?
+
+    def self.largest_remainder_steps: [K] (Hash[K, Integer] counts_by_key, Integer total, Integer step) -> Hash[K, Integer]
+
+    def self.give_empty_keys_a_step: [K] (Hash[K, Integer] counts_by_key, Hash[K, Integer] steps_by_key) -> void
 end
