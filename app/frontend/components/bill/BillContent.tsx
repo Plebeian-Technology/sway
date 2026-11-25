@@ -68,7 +68,7 @@ const BillContent: React.FC<IProps> = ({
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {comparisonSuppressed ? (
-                        <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                        <VoteComparisonPlaceholder showInvite />
                     ) : (
                         <div className="grid gap-3 sm:grid-cols-2">
                             <div className="rounded-xl bg-surface-3 px-4 py-4 shadow-neo">

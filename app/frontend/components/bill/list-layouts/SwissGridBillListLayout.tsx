@@ -190,7 +190,7 @@ const SwissGridBillListLayout: React.FC<BillListLayoutProps> = ({
                                         <div className="sgl-foot">
                                             <span className="sgl-tally">
                                                 {isVoteComparisonSuppressed(entry.bill_score)
-                                                    ? suppressedVoteComparisonLine(entry.bill_score)
+                                                    ? suppressedVoteComparisonLine()
                                                     : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                             </span>
                                             {releaseDate && (

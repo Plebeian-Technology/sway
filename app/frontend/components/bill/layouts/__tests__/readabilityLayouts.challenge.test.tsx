@@ -13,6 +13,8 @@ import DefaultBillLayout from "app/frontend/components/bill/layouts/DefaultBillL
 import { billLayoutFor } from "app/frontend/components/bill/layouts/index";
 import MonochromeBillLayout from "app/frontend/components/bill/layouts/MonochromeBillLayout";
 
+const pageState = vi.hoisted(() => ({ user: null as { id: number; invite_url: string } | null }));
+
 vi.mock("@inertiajs/react", () => ({
     router: {
         on: vi.fn<() => void>(),
@@ -20,7 +22,7 @@ vi.mock("@inertiajs/react", () => ({
     },
     usePage: () => ({
         props: {
-            user: null,
+            user: pageState.user,
             pending_vote: null,
             errors: {},
         },
@@ -252,9 +254,7 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
 
             expect(document.body.textContent).not.toContain("NaN");
-            expect(
-                screen.getByText("Visual comparisons will be shown when 10 more users have voted."),
-            ).toBeInTheDocument();
+            expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         });
 
         it("Stress: Extreme vote tallies handle large numbers with comma formatting", async () => {
@@ -349,9 +349,10 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             it("replaces every tally, chart and majority statement with one placeholder", async () => {
                 await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
 
-                expect(
-                    screen.getAllByText("Visual comparisons will be shown when 4 more users have voted."),
-                ).toHaveLength(1);
+                expect(screen.getAllByText("Not enough votes yet")).toHaveLength(1);
+                expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+                const placeholder = screen.getByText("Not enough votes yet").parentElement;
+                expect(placeholder?.textContent).not.toMatch(/\d/);
                 const text = document.body.textContent ?? "";
                 expect(text).not.toMatch(/7,?777/);
                 expect(text).not.toMatch(/3,?333/);
@@ -366,6 +367,25 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
                     "bill-affinity-panel",
                 ]) {
                     expect(screen.queryByTestId(testId)).toBeNull();
+                }
+            });
+
+            it("links an anonymous reader to sign-up from the placeholder", async () => {
+                await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
+
+                expect(screen.getByRole("link", { name: "Sign up" })).toBeInTheDocument();
+                expect(screen.queryByRole("button", { name: "Copy invite link" })).toBeNull();
+            });
+
+            it("offers a signed-in reader a button to copy their invite link from the placeholder", async () => {
+                pageState.user = { id: 7, invite_url: "https://app.example.test/invite/7/abc" };
+                try {
+                    await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
+
+                    expect(screen.getByRole("button", { name: "Copy invite link" })).toBeInTheDocument();
+                    expect(screen.queryByRole("link", { name: "Sign up" })).toBeNull();
+                } finally {
+                    pageState.user = null;
                 }
             });
 

@@ -108,7 +108,7 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
             <section className="bal-section">
                 <h2 className="bal-sectionlabel">The count</h2>
                 {comparisonSuppressed ? (
-                    <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                    <VoteComparisonPlaceholder showInvite />
                 ) : (
                     <div className="bal-count">
                         <div className="bal-count__cell">

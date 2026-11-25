@@ -67,8 +67,8 @@ describe("embed/BillCard", () => {
 
         expect(screen.queryByTestId("vote-meter")).toBeNull();
         const placeholder = screen.getByTestId("vote-meter-suppressed");
-        expect(placeholder.textContent).toContain("Visual comparisons will be shown when 1 more user has voted.");
-        expect(placeholder.textContent).not.toContain("%");
+        expect(placeholder.textContent).toContain("Not enough votes yet");
+        expect(placeholder.textContent).not.toMatch(/\d|%/);
         const signUp = screen.getByRole("link", { name: "Sign up" });
         expect(signUp.getAttribute("href")).toBe("/?partner=the-banner&ref=art-99");
         expect(signUp.getAttribute("target")).toBe("_blank");

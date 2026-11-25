@@ -145,7 +145,7 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                         <VotePanel bill={bill} user_vote={user_vote} />
                         <div data-testid="score-panel">
                             {comparisonSuppressed ? (
-                                <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                                <VoteComparisonPlaceholder showInvite />
                             ) : (
                                 <div className="smb-tally">
                                     <div className="smb-tally__cell">

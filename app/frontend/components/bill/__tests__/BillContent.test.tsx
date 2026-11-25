@@ -275,7 +275,7 @@ describe("BillContent — How others voted below the ten-voter minimum", () => {
         ...overrides,
     });
 
-    it("shows the placeholder with the voters still needed and no count", () => {
+    it("shows the placeholder with the invite prompt and no count or voters-needed number", () => {
         render(
             <BillContent
                 bill={BASE_BILL}
@@ -285,7 +285,9 @@ describe("BillContent — How others voted below the ten-voter minimum", () => {
         );
 
         const panel = screen.getByTestId("score-panel");
-        expect(panel).toHaveTextContent("Visual comparisons will be shown when 4 more users have voted.");
+        expect(panel).toHaveTextContent("Not enough votes yet");
+        expect(panel).toHaveTextContent("Invite others by sharing Sway");
+        expect(panel.textContent).not.toMatch(/\d/);
         expect(panel).not.toHaveTextContent("7777");
         expect(panel).not.toHaveTextContent("3333");
     });

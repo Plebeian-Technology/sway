@@ -143,7 +143,7 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                     {verdict && <div className="bn-verdict">{verdict}</div>}
 
                     {comparisonSuppressed ? (
-                        <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                        <VoteComparisonPlaceholder showInvite />
                     ) : (
                         <div className="bn-tallies">
                             <div className="bn-tally">

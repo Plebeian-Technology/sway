@@ -42,14 +42,7 @@ export const isVoteComparisonSuppressed = (
 ): boolean => billScore?.comparison_suppressed !== false;
 
 // @lat: [[voter-privacy-threshold#Bill lists print one line for a hidden tally]]
-export const suppressedVoteComparisonLine = (
-    billScore: Pick<sway.IBaseScore, "voters_needed"> | null | undefined,
-): string => {
-    const votersNeeded = billScore?.voters_needed;
-    return typeof votersNeeded === "number" && votersNeeded > 0
-        ? PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(votersNeeded)
-        : PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes;
-};
+export const suppressedVoteComparisonLine = (): string => PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes;
 
 export interface DistrictVoteSplit {
     district: sway.IDistrict;

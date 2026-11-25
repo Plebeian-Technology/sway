@@ -8,16 +8,16 @@ import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { notify } from "app/frontend/sway_utils";
 
 interface IProps {
-    votersNeeded?: number | null;
+    showInvite?: boolean;
     className?: string;
 }
 
 // @lat: [[voter-privacy-threshold#The placeholder shown in place of a hidden comparison]]
-const VoteComparisonPlaceholder: React.FC<IProps> = ({ votersNeeded, className }) => {
+const VoteComparisonPlaceholder: React.FC<IProps> = ({ showInvite, className }) => {
     const user = useUser();
     const inviteUrl = user?.invite_url;
 
-    if (votersNeeded === undefined || votersNeeded === null) {
+    if (!showInvite) {
         return (
             <p className={className ?? "text-sm text-muted-foreground"}>
                 {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
@@ -33,7 +33,7 @@ const VoteComparisonPlaceholder: React.FC<IProps> = ({ votersNeeded, className }
 
     return (
         <div className={className ?? "space-y-3 text-sm text-muted-foreground"}>
-            <p>{PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(votersNeeded)}</p>
+            <p>{PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}</p>
             <p>{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>
             {inviteUrl && (
                 <Button

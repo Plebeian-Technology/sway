@@ -183,7 +183,7 @@ const ServiceManualBillListLayout: React.FC<BillListLayoutProps> = ({
                             <div className="sml-entry__foot">
                                 <span className="sml-tally">
                                     {isVoteComparisonSuppressed(entry.bill_score)
-                                        ? suppressedVoteComparisonLine(entry.bill_score)
+                                        ? suppressedVoteComparisonLine()
                                         : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="sml-voted">Vote recorded</span>}

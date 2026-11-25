@@ -105,9 +105,9 @@ A term whose row has no distinct voters is left out of both the sum and the chec
 
 A reader who meets a hidden number sees a placeholder that says why, so an empty space never reads as a broken page. [[app/frontend/components/bill/VoteComparisonPlaceholder.tsx]] draws it on the web.
 
-Given the number of voters still needed, it says how many more users must vote and asks the reader to invite others. A signed-in reader gets a button that copies their own invite link, which the shared `user` prop already carries as `invite_url`. A signed-out visitor gets a sign-up link instead, and a signed-in reader with no invite link gets the message alone.
+With `showInvite` it says that there are not enough votes yet and asks the reader to invite others. A signed-in reader gets a button that copies their own invite link, which the shared `user` prop already carries as `invite_url`. A signed-out visitor gets a sign-up link instead, and a signed-in reader with no invite link gets the message alone.
 
-Without that number it says only that there are not enough votes yet. Districts and legislator scores take this form, because their voter counts are never sent.
+Without `showInvite` it says only that there are not enough votes yet. Districts and legislator scores take this form. The bill page passes `showInvite` and never a number of voters needed: a bill under ten voters and a unanimous bill must look the same, and only the first has voters still needed.
 
 The strings live in `PARITY_COPY.bill.voteComparisonPlaceholder`, so the mobile app shows the same words.
 
@@ -115,7 +115,7 @@ The strings live in `PARITY_COPY.bill.voteComparisonPlaceholder`, so the mobile 
 
 Seven bill layouts draw the tally, and each asks [[app/frontend/components/bill/sway_utils/billPositions.ts#isVoteComparisonSuppressed]] rather than reading the flag itself.
 
-When it answers yes, the layout draws one placeholder with the bill's `voters_needed` where its tally stood. The chart panels, the affinity panel and any sentence about the majority draw nothing, so the page says it once. A score with no flag counts as suppressed: a payload the page does not understand is hidden, never shown.
+When it answers yes, the layout draws one placeholder with the invite prompt where its tally stood. The chart panels, the affinity panel and any sentence about the majority draw nothing, so the page says it once. A score with no flag counts as suppressed: a payload the page does not understand is hidden, never shown.
 
 Once the bill passes the minimum the total shows exact counts again, and the district charts follow [[bill-vote-charts-design]].
 
@@ -125,7 +125,7 @@ The reader's own vote and the comparison with their legislators stay on the page
 
 A row in a bill list has room for a line, not a panel, so a hidden tally becomes the placeholder's first sentence alone, with no invite button.
 
-[[app/frontend/components/bill/sway_utils/billPositions.ts#suppressedVoteComparisonLine]] picks the sentence: the count of voters still needed when the row carries one, and "Not enough votes yet" otherwise. The six themed list layouts and `BillCard` print it where "n for · n against" stood. A row at or above the minimum is unchanged.
+[[app/frontend/components/bill/sway_utils/billPositions.ts#suppressedVoteComparisonLine]] returns the sentence "Not enough votes yet", whatever the row carries. The six themed list layouts and `BillCard` print it where "n for · n against" stood. A row at or above the minimum is unchanged.
 
 ## Legislator charts draw percentages or the placeholder
 

@@ -180,7 +180,7 @@ const MonochromeBillListLayout: React.FC<BillListLayoutProps> = ({
                             <div className="mcl-entry__foot">
                                 <span className="mcl-tally">
                                     {isVoteComparisonSuppressed(entry.bill_score)
-                                        ? suppressedVoteComparisonLine(entry.bill_score)
+                                        ? suppressedVoteComparisonLine()
                                         : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="mcl-voted">Vote recorded</span>}

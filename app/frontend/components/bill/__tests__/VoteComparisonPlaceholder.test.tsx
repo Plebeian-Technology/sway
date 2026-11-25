@@ -43,28 +43,25 @@ describe("VoteComparisonPlaceholder", () => {
         cleanup();
     });
 
-    it("says how many more users are needed, then asks the reader to invite others", () => {
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+    it("says 'Not enough votes yet', then asks the reader to invite others, with no digit", () => {
+        const { container } = render(<VoteComparisonPlaceholder showInvite />);
 
-        expect(screen.getByText("Visual comparisons will be shown when 3 more users have voted.")).toBeInTheDocument();
+        expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+        expect(container.textContent).not.toMatch(/\d/);
     });
 
-    it("uses the singular when one more user is needed", () => {
-        render(<VoteComparisonPlaceholder votersNeeded={1} />);
-
-        expect(screen.getByText("Visual comparisons will be shown when 1 more user has voted.")).toBeInTheDocument();
-    });
-
-    it("says only 'Not enough votes yet' when the number of voters needed is not sent", () => {
+    it("says only 'Not enough votes yet' without showInvite", () => {
         render(<VoteComparisonPlaceholder />);
 
         expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
-        expect(screen.queryByText(/Visual comparisons will be shown/)).not.toBeInTheDocument();
+        expect(screen.queryByText("Invite others by sharing Sway")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button")).not.toBeInTheDocument();
+        expect(screen.queryByRole("link")).not.toBeInTheDocument();
     });
 
     it("copies a signed-in user's invite link and confirms it", async () => {
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+        render(<VoteComparisonPlaceholder showInvite />);
 
         fireEvent.click(screen.getByRole("button", { name: "Copy invite link" }));
 
@@ -77,7 +74,7 @@ describe("VoteComparisonPlaceholder", () => {
     it("links a signed-out visitor to sign-up", () => {
         useUserMock.mockReturnValue(null);
 
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+        render(<VoteComparisonPlaceholder showInvite />);
 
         expect(screen.getByRole("link", { name: "Sign up" })).toHaveAttribute("href", ROUTES.signin);
         expect(screen.queryByRole("button")).not.toBeInTheDocument();
@@ -86,9 +83,9 @@ describe("VoteComparisonPlaceholder", () => {
     it("shows the message without a button when a signed-in user has no invite link", () => {
         useUserMock.mockReturnValue(signedInUser(null));
 
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+        render(<VoteComparisonPlaceholder showInvite />);
 
-        expect(screen.getByText("Visual comparisons will be shown when 3 more users have voted.")).toBeInTheDocument();
+        expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         expect(screen.queryByRole("button")).not.toBeInTheDocument();
         expect(screen.queryByRole("link")).not.toBeInTheDocument();
     });

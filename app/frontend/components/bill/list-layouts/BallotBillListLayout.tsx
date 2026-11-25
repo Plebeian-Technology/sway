@@ -181,7 +181,7 @@ const BallotBillListLayout: React.FC<BillListLayoutProps> = ({
                             <div className="ball-contest__foot">
                                 <span className="ball-tally">
                                     {isVoteComparisonSuppressed(entry.bill_score)
-                                        ? suppressedVoteComparisonLine(entry.bill_score)
+                                        ? suppressedVoteComparisonLine()
                                         : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="ball-voted">Vote recorded</span>}

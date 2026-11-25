@@ -58,9 +58,7 @@ const BillCard: React.FC<IProps> = ({ bill, listMode }) => {
                 </p>
 
                 {isVoteComparisonSuppressed(bill.bill_score) ? (
-                    <p className="text-sm font-semibold text-muted-foreground">
-                        {suppressedVoteComparisonLine(bill.bill_score)}
-                    </p>
+                    <p className="text-sm font-semibold text-muted-foreground">{suppressedVoteComparisonLine()}</p>
                 ) : (
                     <div className="grid gap-3 sm:grid-cols-2">
                         <div className="rounded-xl border-neo border-border bg-surface-3 px-4 py-4 shadow-neo">

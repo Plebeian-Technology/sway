@@ -107,7 +107,7 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
                     <div className="cs-card">
                         <h2 className="cs-card__title">The count</h2>
                         {comparisonSuppressed ? (
-                            <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                            <VoteComparisonPlaceholder showInvite />
                         ) : (
                             <>
                                 <div className="cs-tally">

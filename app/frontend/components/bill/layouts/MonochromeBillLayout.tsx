@@ -79,7 +79,7 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
                 <VotePanel bill={bill} user_vote={user_vote} />
                 <div data-testid="score-panel">
                     {comparisonSuppressed ? (
-                        <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                        <VoteComparisonPlaceholder showInvite />
                     ) : (
                         <div className="mcb-tally">
                             <div className="mcb-tally__row">

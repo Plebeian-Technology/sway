@@ -327,9 +327,9 @@ describe("Empirical Challenge: Readability Bill List Layouts (Add Monochrome, Se
 
                 const { container } = render(<Layout {...createProps({ bills })} />);
 
-                expect(
-                    screen.getAllByText("Visual comparisons will be shown when 4 more users have voted."),
-                ).toHaveLength(1);
+                const line = screen.getAllByText("Not enough votes yet");
+                expect(line).toHaveLength(1);
+                expect(line[0].textContent).not.toMatch(/\d/);
                 const text = container.textContent ?? "";
                 expect(text).not.toMatch(/7,?777/);
                 expect(text).not.toMatch(/3,?333/);

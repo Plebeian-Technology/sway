@@ -174,7 +174,7 @@ const CornerstoreBillListLayout: React.FC<BillListLayoutProps> = ({
                             <div className="csl-poster__foot">
                                 <span className="csl-tally">
                                     {isVoteComparisonSuppressed(entry.bill_score)
-                                        ? suppressedVoteComparisonLine(entry.bill_score)
+                                        ? suppressedVoteComparisonLine()
                                         : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="csl-voted">Vote recorded</span>}

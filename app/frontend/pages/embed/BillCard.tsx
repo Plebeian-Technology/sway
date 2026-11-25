@@ -230,11 +230,7 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
                         data-testid="vote-meter-suppressed"
                         className="space-y-1 rounded-lg border-neo border-border bg-surface-3 px-3 py-2 text-center text-xs font-semibold text-muted-foreground shadow-neo"
                     >
-                        <p>
-                            {bill.voters_needed > 0
-                                ? PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(bill.voters_needed)
-                                : PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
-                        </p>
+                        <p>{PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}</p>
                         <p>
                             {PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}{" "}
                             <a

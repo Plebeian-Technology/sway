@@ -142,7 +142,7 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                     <div className="sgb-content">
                         <div data-testid="score-panel">
                             {comparisonSuppressed ? (
-                                <VoteComparisonPlaceholder votersNeeded={bill_score?.voters_needed} />
+                                <VoteComparisonPlaceholder showInvite />
                             ) : (
                                 <div className="sgb-tally">
                                     <div className="sgb-tally__cell">
