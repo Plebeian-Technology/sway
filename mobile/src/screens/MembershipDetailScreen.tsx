@@ -189,6 +189,7 @@ export default function MembershipDetailScreen() {
                         <PositionsList
                             positions={membership?.positions ?? []}
                             isAdmin={isAdmin && !membersOnlyAdminLayout}
+                            organizationName={organization?.name}
                             onProposeNew={() => setShowNewPositionModal(true)}
                         />
                         <NewPositionModal

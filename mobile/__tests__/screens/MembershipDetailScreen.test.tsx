@@ -47,6 +47,7 @@ import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import MembershipDetailScreen from "../../src/screens/MembershipDetailScreen";
 import { useMembership } from "../../src/hooks/useMembership";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
+import { organizationPositionTag } from "../../../app/frontend/sway_utils/organizationPositionLabels";
 
 const mockUseMembership = useMembership as jest.Mock;
 
@@ -96,6 +97,32 @@ describe("MembershipDetailScreen — non-admin role", () => {
         });
         const { getByTestId } = wrap(<MembershipDetailScreen />);
         expect(getByTestId("membership-detail-screen")).toBeTruthy();
+    });
+});
+
+describe("MembershipDetailScreen — position tags", () => {
+    beforeEach(() => {
+        mockUseMembership.mockReset();
+    });
+
+    test("tags each position with who posted it, naming the organization shown", () => {
+        const data = makeMembership("standard", "Baltimore Climate Action");
+        mockUseMembership.mockReturnValue({
+            data: {
+                membership: {
+                    ...data.membership,
+                    positions: [{ id: 7, support: "FOR", summary: "We support it.", source_kind: "organization" }],
+                },
+            },
+            loading: false,
+            error: null,
+            refresh: jest.fn(),
+        });
+
+        const { getByTestId } = wrap(<MembershipDetailScreen />);
+        expect(getByTestId("org-position-source-tag").props.children).toBe(
+            organizationPositionTag("Baltimore Climate Action", "organization"),
+        );
     });
 });
 
