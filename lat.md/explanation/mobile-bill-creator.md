@@ -740,3 +740,13 @@ The section ports the testimony writes and drops the panel's chrome and the web-
 [[app/controllers/bills_controller.rb#BillsController#supplemental_testimony]] and [[app/controllers/bills_controller.rb#BillsController#testimony_letter_stance]] answer every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
 
 A saved or cleared supplemental text answers 200 with an empty body, and so does a stance change or a removed letter. A bill with no cleaned letters, and a position the letters lack, answer 422 with the web's reason under `details.testimony_letter_stance`, the key the web reads from its Inertia errors. An invalid position or stance was already JSON, `{error}`, and the phone's client reads that string as the message. The web keeps its redirects, the stance notice, the return to the referring page and the Inertia errors.
+
+### The testimony coverage section
+
+The Positions tab states how much testimony reached the summary model and lets the admin acknowledge what the run left out, as the web's coverage notice does ([[campaign-letter-disclosure#Testimony coverage states and acknowledgement gate]]).
+
+#### Answering the acknowledgement in JSON
+
+[[app/controllers/testimony_coverage_acknowledgements_controller.rb#TestimonyCoverageAcknowledgementsController#create]] answers every redirect branch through `respond_after_write` ([[surfaces#Dual-rendered JSON]]).
+
+A recorded acknowledgement answers 200 with an empty body. A clean-testimony run in progress, a report with nothing left out, and a digest that no longer matches the numbers each answer 422 with the web's reason under `details.testimony_coverage`, the key the web reads from its Inertia errors, and the generic "Validation failed." as the message. The web keeps its redirect to the Positions tab, its notice naming the bill and its Inertia errors ([[bill-creator-positions-tab#The acknowledgement returns to the only tab that offers it]]).
