@@ -597,7 +597,7 @@ The section seeds its rows from `bill.organizations` once, at mount. An approval
 
 The section ports the draft cards only; the rest of the web's testimony panel belongs to later sections.
 
-- The testimony coverage notice with its acknowledgement, the supplemental testimony field, the positions error notice and the public testimony letters.
+- The testimony coverage notice with its acknowledgement and the positions error notice. The supplemental testimony field and the public testimony letters are [[mobile-bill-creator#Sections#The testimony section]].
 - The success toasts. The card leaving the list on the reload is the confirmation.
 - The info popovers beside the heading, the stance stamp, Approve and Edit, and the stamp colours.
 - The screen-reader link from a disabled Approve to the notice that explains it. The notices sit above the cards in reading order instead.
@@ -697,6 +697,43 @@ The card keeps the web card's rules and drops its chrome.
 ### The testimony section
 
 The Positions tab edits the bill's testimony: the supplemental text an admin pastes, and the stance of each cleaned constituent letter, as the web's testimony panel does ([[bill-creator-positions-tab]]).
+
+Two components port [[app/frontend/components/admin/creator/BillCreatorTestimonyPositions.tsx#BillCreatorTestimonyPositions]], and the tab places each where the web does. [[mobile/src/components/admin/billCreator/SupplementalTestimonySection.tsx#SupplementalTestimonySection]] sits first, above the draft positions, under the web's heading "Testimony and positions" and its two notes: testimony never reaches the summary model, and news opinion stances belong to the Summary tab. [[mobile/src/components/admin/billCreator/TestimonyLettersSection.tsx#TestimonyLettersSection]] follows the claimed affiliations, above the arguments. Each is keyed on the bill id.
+
+#### Saving and clearing the supplemental testimony
+
+The section holds a text box seeded from `bill.bill_llm_provisioning.supplemental_testimony` and two writes, Save testimony and Clear saved testimony, as [[app/frontend/components/admin/creator/llm-summary/SupplementalTestimonyField.tsx#SupplementalTestimonyField]] does.
+
+Save shows only while the box differs from the stored text, and sends `supplemental_testimony` with the box's text. Clear shows only while text is stored, and sends `clear_supplemental_testimony: true`, because a blank value never clears ([[bill-creator-summary-tab#Supplemental testimony is replaced, never appended]]). Both are `PATCH /bills/:id/supplemental_testimony`, and a success reloads the tab. A run reads only what Save has written ([[bill-creator-positions-tab#Saving testimony is what commits it to a run]]).
+
+Either write can retract the evidence under the drafts written from testimony, so the section asks first, as the web does. Clear asks whenever such a draft exists. Save asks only when the new text also drops the stored text, since a save that keeps it retracts nothing. A draft counts when it is not rejected and came from no news article, text version or excerpt. A panel stands in for the web's dialog and carries its title, its sentence with the count of drafts, its confirm label and a Cancel.
+
+The box keeps the web's sync rule: it takes a newer server value only while it still holds the last one ([[bill-creator-positions-tab#Saving testimony is what commits it to a run#The box takes a newer server value only when nothing is unsaved in it]]). The draft section's five-second poll therefore never overwrites typed text. A failed write keeps the text and shows the web's failure sentence followed by the server's or the client's message.
+
+#### Overriding a letter's stance
+
+The letters section opens the cleaned constituent letters in [[mobile/src/components/BrowseTestimonySheet.tsx#BrowseTestimonySheet]] with letter editing on, so the admin can change a letter's stance or remove it ([[testimony-letters#How CleanAndGroupService orders and threads the cleaning steps#Manual stance overrides]]).
+
+The tab JSON carries only `public_testimony_counts`: [[app/controllers/bills_controller.rb#BillsController#public_testimony_letters_prop]] sends the letters to the web alone. The section draws nothing when the count is zero, as the web's card does. Otherwise it shows the heading, the count and Browse constituent testimony. The first open loads the letters from `GET /bills/:id/public_testimony_letters` through [[mobile/src/hooks/usePublicTestimony.ts#usePublicTestimonyLetters]], the hook the public bill page uses.
+
+Letter editing is an optional prop of the sheet, [[mobile/src/components/BrowseTestimonySheet.tsx#LetterEditing]]. Without it the sheet is the public page's sheet, unchanged. With it each letter card gains a Support, Oppose or Neutral choice, the current stance selected, and a Remove button.
+
+- Choosing another stance sends `position` and `stance`; choosing the current one sends nothing, as the web's dropdown fires only on a change.
+- The Remove button sends `position` and `excluded: true` with no confirmation, as on the web.
+- Both are `PATCH /bills/:id/testimony_letter_stance`. A success reloads the letters and the tab, so the cards and the tab counts move together.
+- Every choice and Remove stay off while a write is in flight.
+
+A refusal shows above the list: `details.testimony_letter_stance` when present, else the server's message ([[mobile-bill-creator#Sections#The testimony section#Answering testimony writes in JSON]]).
+
+#### What the phone leaves out
+
+The section ports the testimony writes and drops the panel's chrome and the web-only checks.
+
+- The info popovers beside the supplemental heading, Save and Clear.
+- The web's check that a save landed back on the bill creator, and its page-expired notice. Both catch an Inertia redirect to another page; a bearer request answers 403 or 422 instead, and the phone shows that message.
+- The stance pills on the testimony card. The sheet's own tabs filter by stance.
+- The success toast for a stance change or a removal. The letter's new stance, or its absence, is the confirmation.
+- The testimony attachment warnings above the field. They belong to the attachment report, not to the writes.
 
 #### Answering testimony writes in JSON
 

@@ -14,6 +14,14 @@ import { Pressable } from "./ui/Pressable";
 
 export type TStanceFilter = "all" | PublicTestimonyStance;
 
+// @lat: [[mobile-bill-creator#Sections#The testimony section#Overriding a letter's stance]]
+export interface LetterEditing {
+    onSetStance: (position: number, stance: PublicTestimonyStance) => void;
+    onRemove: (position: number) => void;
+    busy: boolean;
+    error: string | null;
+}
+
 export interface BrowseTestimonySheetProps {
     visible: boolean;
     onClose: () => void;
@@ -24,6 +32,7 @@ export interface BrowseTestimonySheetProps {
     initialFilter?: TStanceFilter;
     billTitle?: string;
     testID?: string;
+    letterEditing?: LetterEditing;
 }
 
 const PAGE_SIZE = 10;
@@ -42,6 +51,8 @@ const STANCE_BADGE_LABEL: Record<PublicTestimonyStance, string> = {
     neutral: COPY.neutralBadge,
 };
 
+const STANCES: PublicTestimonyStance[] = ["support", "oppose", "neutral"];
+
 export function BrowseTestimonySheet(props: BrowseTestimonySheetProps) {
     if (!props.visible) return null;
     return <BrowseTestimonyModal {...props} />;
@@ -56,6 +67,7 @@ function BrowseTestimonyModal({
     initialFilter = "all",
     billTitle,
     testID,
+    letterEditing,
 }: BrowseTestimonySheetProps) {
     const { colorScheme } = useTheme();
     const t = swayTokens[colorScheme];
@@ -132,6 +144,46 @@ function BrowseTestimonyModal({
                                 testID={`testimony-letter-${letter.position}-stance`}
                             />
                         </View>
+                        {letterEditing ? (
+                            <View className="flex-row flex-wrap items-center gap-2">
+                                {STANCES.map((stance) => (
+                                    <Pressable
+                                        key={stance}
+                                        testID={`testimony-letter-${letter.position}-set-${stance}`}
+                                        variant={letter.stance === stance ? "default" : "outline"}
+                                        disabled={letterEditing.busy}
+                                        accessibilityRole="radio"
+                                        accessibilityState={{ selected: letter.stance === stance }}
+                                        accessibilityLabel={`Stance for ${letter.label}: ${STANCE_BADGE_LABEL[stance]}`}
+                                        onPress={() => {
+                                            if (letter.stance !== stance)
+                                                letterEditing.onSetStance(letter.position, stance);
+                                        }}
+                                    >
+                                        <Text
+                                            className={
+                                                letter.stance === stance
+                                                    ? "text-sm font-open-sans-semibold text-primary-foreground-light dark:text-primary-foreground-dark"
+                                                    : "text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark"
+                                            }
+                                        >
+                                            {STANCE_BADGE_LABEL[stance]}
+                                        </Text>
+                                    </Pressable>
+                                ))}
+                                <Pressable
+                                    testID={`testimony-letter-${letter.position}-remove`}
+                                    variant="ghost"
+                                    disabled={letterEditing.busy}
+                                    accessibilityLabel={`Remove ${letter.label}`}
+                                    onPress={() => letterEditing.onRemove(letter.position)}
+                                >
+                                    <Text className="text-sm font-open-sans-semibold text-destructive-light dark:text-destructive-dark">
+                                        Remove
+                                    </Text>
+                                </Pressable>
+                            </View>
+                        ) : null}
                         <Text
                             selectable
                             className="text-base font-open-sans text-foreground-light dark:text-foreground-dark"
@@ -242,6 +294,15 @@ function BrowseTestimonyModal({
                     testID={`${rootTestID}-list`}
                     contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 32 }}
                 >
+                    {letterEditing?.error ? (
+                        <Text
+                            testID={`${rootTestID}-edit-error`}
+                            accessibilityRole="alert"
+                            className="text-sm font-open-sans text-destructive-light dark:text-destructive-dark"
+                        >
+                            {letterEditing.error}
+                        </Text>
+                    ) : null}
                     {renderBody()}
                 </ScrollView>
             </SafeAreaView>

@@ -270,4 +270,26 @@ describe("BrowseTestimonySheet", () => {
         });
         expect(letterIds()).toHaveLength(8);
     });
+
+    test("offers no stance or Remove controls without letter editing", () => {
+        renderSheet();
+
+        expect(screen.queryByTestId("testimony-letter-1-set-oppose")).toBeNull();
+        expect(screen.queryByTestId("testimony-letter-1-remove")).toBeNull();
+    });
+
+    test("letter editing offers each stance and Remove, and reports which letter was pressed", () => {
+        const onSetStance = jest.fn();
+        const onRemove = jest.fn();
+        renderSheet({ letterEditing: { onSetStance, onRemove, busy: false, error: null } });
+
+        expect(screen.getByTestId("testimony-letter-1-set-support").props.accessibilityState).toEqual(
+            expect.objectContaining({ selected: true }),
+        );
+        fireEvent.press(screen.getByTestId("testimony-letter-1-set-oppose"));
+        fireEvent.press(screen.getByTestId("testimony-letter-2-remove"));
+
+        expect(onSetStance).toHaveBeenCalledWith(1, "oppose");
+        expect(onRemove).toHaveBeenCalledWith(2);
+    });
 });

@@ -108,6 +108,8 @@ export const Routes = {
     billRestoreSummaryRevision: (billId: number) => `/bills/${billId}/restore_summary_revision`,
     billRegenerateSummary: (billId: number) => `/bills/${billId}/regenerate_summary`,
     billApproveOrgPosition: (billId: number) => `/bills/${billId}/approve_org_position`,
+    billSupplementalTestimony: (billId: number) => `/bills/${billId}/supplemental_testimony`,
+    billTestimonyLetterStance: (billId: number) => `/bills/${billId}/testimony_letter_stance`,
     billCampaigns: (billId: number) => `/bills/${billId}/campaigns`,
     billCampaignLinkOrganization: (billId: number, campaignId: number) =>
         `/bills/${billId}/campaigns/${campaignId}/link_organization`,
