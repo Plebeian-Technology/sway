@@ -1,7 +1,3 @@
-/**
- // @lat: [[mobile-navigation-test-guards#Why linking.test.ts checks the path pattern string instead of calling getStateFromPath]]
- */
-
 import { getStateFromPath } from "@react-navigation/native";
 
 import { linking } from "../../src/navigation/linking";
@@ -14,6 +10,7 @@ describe("linking config", () => {
         }
     ).Profile.screens;
 
+    // @lat: [[mobile-navigation-test-guards#How linking.test.ts checks where a path lands]]
     test("Profile.MembershipDetail is mapped to organizations/:orgId/memberships/:id", () => {
         expect(profileScreens.MembershipDetail).toBe("organizations/:orgId/memberships/:id");
     });
@@ -63,9 +60,6 @@ describe("linking config", () => {
         expect(linking.prefixes).toContain("https://app.sway.vote");
     });
 
-    /**
-     // @lat: [[mobile-navigation-test-guards#Why linking.test.ts checks the path pattern string instead of calling getStateFromPath]]
-     */
     test("MembershipDetail path pattern captures :orgId and :id segments", () => {
         const pattern = profileScreens.MembershipDetail;
         expect(pattern).toContain(":orgId");
