@@ -55,9 +55,7 @@ describe("PipelineRunActionsSection", () => {
 
         fireEvent.press(screen.getByTestId("admin-pipeline-restart"));
 
-        await waitFor(() =>
-            expect(mockApiPost).toHaveBeenCalledWith("/bills/legislation_pipeline_runs/9/restart", {}),
-        );
+        await waitFor(() => expect(mockApiPost).toHaveBeenCalledWith("/bills/legislation_pipeline_runs/9/restart", {}));
         await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
         expect(screen.getByText("Restart entire run")).toBeTruthy();
     });
@@ -94,12 +92,7 @@ describe("PipelineRunActionsSection", () => {
 
     it("shows the server's reason for a refusal and does not refresh", async () => {
         mockApiPost.mockRejectedValue(
-            new ApiRequestError(
-                "validation_failed",
-                "Validation failed.",
-                { pipeline: "Run cannot be resumed." },
-                422,
-            ),
+            new ApiRequestError("validation_failed", "Validation failed.", { pipeline: "Run cannot be resumed." }, 422),
         );
         const { refresh } = renderSection(failedRun());
 
