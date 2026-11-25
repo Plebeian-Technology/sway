@@ -217,7 +217,7 @@ class SwayRegistrationController < ApplicationController
     (request.inertia? && u.registered?) ? edit_users_address_path : sway_registration_index_path
   end
 
-  def render_geocoding_unavailable(u, address_instance, exception, redirect: sway_registration_index_path)
+  def render_geocoding_unavailable(u, address_instance, exception, redirect:)
     SwayLogging.log_exception(
       "sway_registration.geocoding_unavailable",
       exception: exception,
@@ -233,7 +233,7 @@ class SwayRegistrationController < ApplicationController
   end
 
   # @lat: [[registration-dead-ends#A failed address switch changes nothing]]
-  def render_address_switch_unavailable(u, address_instance, exception, redirect: sway_registration_index_path)
+  def render_address_switch_unavailable(u, address_instance, exception, redirect:)
     SwayLogging.log_exception(
       "sway_registration.address_switch_failed",
       exception: exception,
@@ -283,7 +283,7 @@ class SwayRegistrationController < ApplicationController
     u.add_pending_representative_locale(congress) if congress
   end
 
-  def render_no_representatives(redirect: sway_registration_index_path)
+  def render_no_representatives(redirect:)
     error = RegistrationErrorResource.new(
       {
         code: "no_representatives",

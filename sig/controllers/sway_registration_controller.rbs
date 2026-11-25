@@ -35,15 +35,15 @@ class SwayRegistrationController < ApplicationController
 
     def address_switch_return_path: (User u) -> String
 
-    def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception, ?redirect: String) -> untyped
+    def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception, redirect: String) -> untyped
 
-    def render_address_switch_unavailable: (User u, Address address_instance, StandardError exception, ?redirect: String) -> untyped
+    def render_address_switch_unavailable: (User u, Address address_instance, StandardError exception, redirect: String) -> untyped
 
     def report_skipped_locale: (User u, Address address_instance, SwayLocale sway_locale, StandardError exception) -> void
 
     def wait_for_congress_representatives: (User u, Address address_instance) -> void
 
-    def render_no_representatives: (?redirect: String) -> untyped
+    def render_no_representatives: (redirect: String) -> untyped
 
     def record_voter_registration_address_confirmation: (User u) -> void
 
