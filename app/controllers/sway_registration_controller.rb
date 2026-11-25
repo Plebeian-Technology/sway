@@ -203,9 +203,8 @@ class SwayRegistrationController < ApplicationController
         return render_address_switch_unavailable(u, new_address, e, redirect: return_path)
       end
 
-    @address_switch_committed = true if change
-
     if change
+      @address_switch_committed = true
       record_voter_registration_address_confirmation(u)
       new_address.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) } unless new_address.located?
       u.reload

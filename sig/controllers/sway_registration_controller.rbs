@@ -16,6 +16,8 @@ class SwayRegistrationController < ApplicationController
 
     @submitted_coordinates: { latitude: Float?, longitude: Float? }
 
+    @address_switch_committed: bool?
+
     def index: -> untyped
 
     # Finds representatives for the submitted address and reports completion only for active pairings.
