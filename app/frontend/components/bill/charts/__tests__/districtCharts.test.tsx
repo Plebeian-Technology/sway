@@ -87,6 +87,28 @@ describe("district charts at the ten-voter minimum", () => {
         expect(screen.getByTestId("district-votes-chart-reader-district-9")).toHaveTextContent("Not enough votes yet");
     });
 
+    it("matches the reader's district on region as well as number", () => {
+        const regional = (number: number, region_code: string) =>
+            ({ name: `${region_code}-${number}`, number, region_code }) as sway.IDistrict;
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [regional(4, "MD")] };
+        const score = {
+            ...SCORE,
+            districts: [
+                {
+                    district: regional(4, "VA"),
+                    comparison_suppressed: false,
+                    for_percent: 75,
+                    against_percent: 25,
+                    at_large: false,
+                },
+            ],
+        } as sway.IBillScore;
+
+        render(<BillChartsPanel bill={BILL} bill_score={score} />);
+
+        expect(screen.getByTestId("district-votes-chart-reader-district-4")).toHaveTextContent("Not enough votes yet");
+    });
+
     it("draws no other district that is under the minimum", () => {
         mockPageProps = { user: { id: 1 }, legislators: [], districts: [district(4)] };
 

@@ -20,6 +20,9 @@ interface IPageProps {
 
 const districtLabel = (district: sway.IDistrict) => `District ${district.number}`;
 
+const sameDistrict = (a: sway.IDistrict, b: sway.IDistrict) =>
+    a.number === b.number && (a.region_code ?? "") === (b.region_code ?? "");
+
 // @lat: [[bill-vote-charts-design#DistrictVotesChart.tsx]]
 const DistrictVotesChart: React.FC<IProps> = ({ score, title }) => {
     const { user, districts: readerDistricts } = usePage<IPageProps>().props;
@@ -43,9 +46,8 @@ const DistrictVotesChart: React.FC<IProps> = ({ score, title }) => {
     }, [user, readerDistricts]);
 
     const rows = selectDistrictVoteSplits(score);
-    const drawnNumbers = new Set(rows.map((row) => row.district.number));
     const hiddenReaderDistricts = (readerDistricts ?? []).filter(
-        (district) => district.number !== 0 && !drawnNumbers.has(district.number),
+        (district) => district.number !== 0 && !rows.some((row) => sameDistrict(row.district, district)),
     );
 
     if (rows.length === 0 && hiddenReaderDistricts.length === 0) {
