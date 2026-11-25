@@ -21,7 +21,7 @@ RSpec.describe "Bill score charts", type: :system, js: true do
 
     [1, 2].each do |number|
       district = create(:district, sway_locale:, name: "District #{number}")
-      create(:bill_score_district, bill_score: score, district:, for: number + 2, against: 1)
+      create(:bill_score_district, bill_score: score, district:, for: number + 9, against: 1)
     end
   end
 
@@ -30,10 +30,10 @@ RSpec.describe "Bill score charts", type: :system, js: true do
     expect(page).to have_css("[data-testid='district-votes-chart']")
     expect(page).to have_css("[data-testid='affinity-district-chart']")
     expect(page).to have_css("[data-testid='total-votes-chart'] [aria-label='7 support, 3 oppose']")
-    expect(page).to have_css("[aria-label='District 1 support 3']")
-    expect(page).to have_css("[aria-label='District 2 support 4']")
-    expect(page).to have_text("D-1 (+2)")
-    expect(page).to have_text("D-2 (+3)")
+    expect(page).to have_css("[aria-label='District 1 support 10']")
+    expect(page).to have_css("[aria-label='District 2 support 11']")
+    expect(page).to have_text("D-1 (+9)")
+    expect(page).to have_text("D-2 (+10)")
   end
 
   it "renders populated score charts on the bill page" do
