@@ -36,7 +36,7 @@ RSpec.describe "Changing a registered user's address on the web", type: :request
 
   def submit_new_address(**overrides)
     post "/sway_registration",
-      params: {sway_registration: new_address_params.merge(overrides)},
+      params: {sway_registration: new_address_params.merge(change_address: true).merge(overrides)},
       headers: inertia_headers
   end
 
@@ -180,6 +180,33 @@ RSpec.describe "Changing a registered user's address on the web", type: :request
     post "/sway_registration",
       params: {sway_registration: {street: "123 Main St", city: "", region_code: "", postal_code: "", country: ""}},
       headers: inertia_headers
+
+    expect(response).to redirect_to(sway_registration_index_path)
+  end
+
+  it "keeps a first-time user's second unlocated save on the registration page" do
+    first_timer = create(:user)
+    sign_in(first_timer)
+    allow(Geocoder).to receive(:search).and_return([])
+    unlocated_params = {sway_registration: {street: "123 Main St", city: "", region_code: "", postal_code: "", country: ""}}
+
+    post "/sway_registration", params: unlocated_params, headers: inertia_headers
+    expect(response).to redirect_to(sway_registration_index_path)
+    expect(first_timer.reload.registered?).to be(true)
+
+    post "/sway_registration",
+      params: {sway_registration: unlocated_params[:sway_registration].merge(street: "456 Oak Ave")},
+      headers: inertia_headers
+
+    expect(response).to redirect_to(sway_registration_index_path)
+  end
+
+  it "keeps a registered user's save without the change-address marker on the registration page" do
+    allow(Geocoder).to receive(:search).and_return([])
+    allow_any_instance_of(UserAddressSwitchService).to receive(:call).and_return(true) # rubocop:disable RSpec/AnyInstance
+
+    submit_new_address(street: "123 Main St", city: "", region_code: "", postal_code: "", country: "",
+      latitude: nil, longitude: nil, confirm_deactivate_legislators: true, change_address: nil)
 
     expect(response).to redirect_to(sway_registration_index_path)
   end

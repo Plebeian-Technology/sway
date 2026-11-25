@@ -537,6 +537,15 @@ describe("SwayRegistration — change-address mode for a registered user", () =>
         expect(trackFunnelStepOnce).not.toHaveBeenCalled();
         expect(trackFunnelStep).not.toHaveBeenCalled();
     });
+
+    it("marks the post as an address change", () => {
+        renderChangeAddress();
+
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+
+        expect(postedBody).toMatchObject({ change_address: true, confirm_deactivate_legislators: true });
+    });
 });
 
 describe("SwayRegistration — first-time registration funnel", () => {
@@ -549,5 +558,15 @@ describe("SwayRegistration — first-time registration funnel", () => {
         expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
         expect(trackFunnelStepOnce).toHaveBeenCalledWith("address_form_viewed");
         expect(trackFunnelStep).toHaveBeenCalledWith("address_submitted", expect.any(Object));
+    });
+
+    it("does not mark a first-time post as an address change", () => {
+        render(<SwayRegistration user={failedUser} />);
+
+        fireEvent.click(screen.getByTestId("pick-suggestion"));
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(postedBody).not.toHaveProperty("change_address");
     });
 });
