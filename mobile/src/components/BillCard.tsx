@@ -25,6 +25,8 @@ export interface BillCardBill {
     bill_score?: {
         for?: number | null;
         against?: number | null;
+        for_percent?: number | null;
+        against_percent?: number | null;
         comparison_suppressed?: boolean | null;
         voters_needed?: number | null;
     };
@@ -50,9 +52,8 @@ export function BillCard({ bill, onPress, testID }: BillCardProps) {
 
     // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
     const comparisonSuppressed = isVoteComparisonSuppressed(bill.bill_score);
-    const votersNeeded = bill.bill_score?.voters_needed;
-    const forCount = bill.bill_score?.for ?? 0;
-    const againstCount = bill.bill_score?.against ?? 0;
+    const forPercent = bill.bill_score?.for_percent ?? 0;
+    const againstPercent = bill.bill_score?.against_percent ?? 0;
     const titleizedCategory = bill.category ? bill.category.charAt(0).toUpperCase() + bill.category.slice(1) : null;
 
     const support = bill.user_vote?.support ? String(bill.user_vote.support).toLowerCase() : null;
@@ -120,9 +121,7 @@ export function BillCard({ bill, onPress, testID }: BillCardProps) {
                         testID={`bill-card-${bill.id}-comparison-suppressed`}
                         className="flex-1 text-xs font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
                     >
-                        {typeof votersNeeded === "number" && votersNeeded > 0
-                            ? PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(votersNeeded)
-                            : PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
+                        {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
                     </Text>
                 ) : (
                     <>
@@ -136,9 +135,9 @@ export function BillCard({ bill, onPress, testID }: BillCardProps) {
                             <Text
                                 className="text-lg font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark"
                                 style={{ fontVariant: ["tabular-nums"] }}
-                                testID={`bill-card-${bill.id}-for-count`}
+                                testID={`bill-card-${bill.id}-for-percent`}
                             >
-                                {forCount}
+                                {`${forPercent}%`}
                             </Text>
                         </View>
                         <View className="flex-row items-baseline gap-1.5 bg-surface-3-light dark:bg-surface-3-dark rounded-lg px-3 py-1.5">
@@ -151,9 +150,9 @@ export function BillCard({ bill, onPress, testID }: BillCardProps) {
                             <Text
                                 className="text-lg font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark"
                                 style={{ fontVariant: ["tabular-nums"] }}
-                                testID={`bill-card-${bill.id}-against-count`}
+                                testID={`bill-card-${bill.id}-against-percent`}
                             >
-                                {againstCount}
+                                {`${againstPercent}%`}
                             </Text>
                         </View>
                     </>

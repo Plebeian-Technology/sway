@@ -8,7 +8,7 @@ import { useBootstrap } from "../hooks/useBootstrap";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
 export interface VoteComparisonPlaceholderProps {
-    votersNeeded?: number | null;
+    showInvite?: boolean;
     isSignedIn?: boolean;
     testID?: string;
 }
@@ -16,16 +16,12 @@ export interface VoteComparisonPlaceholderProps {
 const MESSAGE_CLASS = "text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark";
 const BUTTON_TEXT_CLASS = "text-sm font-open-sans-semibold text-accent-light dark:text-accent-dark";
 
-export function VoteComparisonPlaceholder({
-    votersNeeded,
-    isSignedIn = false,
-    testID,
-}: VoteComparisonPlaceholderProps) {
+export function VoteComparisonPlaceholder({ showInvite, isSignedIn = false, testID }: VoteComparisonPlaceholderProps) {
     const { bootstrap } = useBootstrap();
     const [inviteLinkCopied, setInviteLinkCopied] = useState(false);
     const inviteUrl = isSignedIn ? bootstrap?.current_user?.invite_url : null;
 
-    if (votersNeeded === undefined || votersNeeded === null) {
+    if (!showInvite) {
         return (
             <Text testID={testID ?? "vote-comparison-placeholder"} className={MESSAGE_CLASS}>
                 {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
@@ -35,9 +31,7 @@ export function VoteComparisonPlaceholder({
 
     return (
         <View testID={testID ?? "vote-comparison-placeholder"} className="gap-2">
-            <Text className={MESSAGE_CLASS}>
-                {PARITY_COPY.bill.voteComparisonPlaceholder.votersNeeded(votersNeeded)}
-            </Text>
+            <Text className={MESSAGE_CLASS}>{PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}</Text>
             <Text className={MESSAGE_CLASS}>{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</Text>
             {inviteUrl ? (
                 <Pressable

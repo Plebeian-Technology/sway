@@ -24,29 +24,24 @@ describe("VoteComparisonPlaceholder", () => {
         jest.mocked(Clipboard.setStringAsync).mockReset().mockResolvedValue(true);
     });
 
-    test("says how many more users are needed and asks the reader to invite others", () => {
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
-
-        expect(screen.getByText("Visual comparisons will be shown when 3 more users have voted.")).toBeTruthy();
-        expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
-    });
-
-    test("uses the singular when one more user is needed", () => {
-        wrap(<VoteComparisonPlaceholder votersNeeded={1} />);
-
-        expect(screen.getByText("Visual comparisons will be shown when 1 more user has voted.")).toBeTruthy();
-    });
-
-    test("says only 'Not enough votes yet' when no number is given", () => {
-        wrap(<VoteComparisonPlaceholder />);
+    test("says 'Not enough votes yet', then asks the reader to invite others, with no digit", () => {
+        wrap(<VoteComparisonPlaceholder showInvite isSignedIn />);
 
         expect(screen.getByText("Not enough votes yet")).toBeTruthy();
-        expect(screen.queryByText(/Visual comparisons will be shown/)).toBeNull();
+        expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
+        expect(screen.getByTestId("vote-comparison-placeholder")).not.toHaveTextContent(/\d/);
+    });
+
+    test("says only 'Not enough votes yet' without showInvite, even for a signed-in reader", () => {
+        wrap(<VoteComparisonPlaceholder isSignedIn />);
+
+        expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+        expect(screen.queryByText("Invite others by sharing Sway")).toBeNull();
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
     });
 
     test("copies a signed-in reader's invite link and says it was copied", async () => {
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
+        wrap(<VoteComparisonPlaceholder showInvite isSignedIn />);
 
         expect(screen.getByText("Copy invite link")).toBeTruthy();
         expect(screen.queryByText("Invite link copied to clipboard.")).toBeNull();
@@ -59,7 +54,7 @@ describe("VoteComparisonPlaceholder", () => {
 
     test("says nothing was copied when the clipboard refuses", async () => {
         jest.mocked(Clipboard.setStringAsync).mockResolvedValue(false);
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
+        wrap(<VoteComparisonPlaceholder showInvite isSignedIn />);
 
         fireEvent.press(screen.getByTestId("vote-comparison-invite"));
 
@@ -71,7 +66,7 @@ describe("VoteComparisonPlaceholder", () => {
     test("shows no button for a signed-in reader with no invite link", () => {
         mockCurrentUser = { id: 7, invite_url: null };
 
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
+        wrap(<VoteComparisonPlaceholder showInvite isSignedIn />);
 
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
     });
@@ -79,14 +74,14 @@ describe("VoteComparisonPlaceholder", () => {
     test("shows no button for a signed-in reader whose bootstrap has not loaded", () => {
         mockCurrentUser = null;
 
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
+        wrap(<VoteComparisonPlaceholder showInvite isSignedIn />);
 
         expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
     });
 
     test("offers no invite link to a reader who is not signed in", () => {
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn={false} />);
+        wrap(<VoteComparisonPlaceholder showInvite isSignedIn={false} />);
 
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
     });

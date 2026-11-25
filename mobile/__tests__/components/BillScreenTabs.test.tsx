@@ -58,10 +58,9 @@ const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabs
     sponsor: { full_name: "Alice Q. Sponsor" },
     userVote: null,
     billScore: {
-        for: 10,
-        against: 5,
+        for_percent: 70,
+        against_percent: 30,
         comparison_suppressed: false,
-        voters_needed: 0,
         districts: [scoreDistrict(1, 6, 2), scoreDistrict(2, 4, 3)],
     },
     organizations: [
@@ -252,7 +251,8 @@ describe("BillScreenTabs", () => {
             renderTabs({ billScore: hiddenScore, readerDistricts: [{ name: "MD1", number: 1, region_code: "MD" }] });
             openVotes();
 
-            expect(screen.getByText("Visual comparisons will be shown when 1 more user has voted.")).toBeTruthy();
+            expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+            expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
             expect(screen.queryByTestId("bill-score-bar")).toBeNull();
             expect(screen.queryByTestId("district-votes-panel")).toBeNull();
             expect(screen.queryByText(/For: |Against: |%/)).toBeNull();
@@ -291,6 +291,25 @@ describe("BillScreenTabs", () => {
     });
 
     describe("the Votes tab", () => {
+        // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+        test("shows the split as percentages and prints no count from the score", () => {
+            renderTabs({
+                billScore: {
+                    for_percent: 70,
+                    against_percent: 30,
+                    for: 7777,
+                    against: 4321,
+                    comparison_suppressed: false,
+                    districts: [],
+                },
+            });
+            openVotes();
+
+            expect(screen.getByText("For: 70%")).toBeTruthy();
+            expect(screen.getByText("Against: 30%")).toBeTruthy();
+            expect(screen.queryByText(/7,?777|4,?321/)).toBeNull();
+        });
+
         test("stacks the vote panel, the tally, the districts and the next step in that order", () => {
             renderTabs();
             openVotes();
@@ -307,7 +326,7 @@ describe("BillScreenTabs", () => {
 
         test("draws no district section, and no empty slot for one, when the score has no districts", () => {
             renderTabs({
-                billScore: { for: 10, against: 5, comparison_suppressed: false, voters_needed: 0, districts: [] },
+                billScore: { for_percent: 70, against_percent: 30, comparison_suppressed: false, districts: [] },
             });
             openVotes();
 

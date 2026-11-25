@@ -89,10 +89,9 @@ const BOTM_PAGE = {
     bill_score: {
         id: 3,
         bill_id: 1,
-        for: 42,
-        against: 18,
+        for_percent: 70,
+        against_percent: 30,
         comparison_suppressed: false,
-        voters_needed: 0,
         districts: [
             {
                 bill_score_id: 3,
@@ -188,8 +187,8 @@ describe("BillOfTheMonthScreen", () => {
         wrap(<BillOfTheMonthScreen navigation={makeNav()} />);
 
         fireEvent.press(screen.getByTestId("tab-votes"));
-        expect(screen.getByText(/For: 42/)).toBeTruthy();
-        expect(screen.getByText(/Against: 18/)).toBeTruthy();
+        expect(screen.getByText(/For: 70%/)).toBeTruthy();
+        expect(screen.getByText(/Against: 30%/)).toBeTruthy();
 
         fireEvent.press(screen.getByTestId("tab-summaries"));
         expect(screen.getByText("Supporters Org")).toBeTruthy();
@@ -261,7 +260,7 @@ describe("BillOfTheMonthScreen", () => {
         fireEvent.press(screen.getByTestId("tab-votes"));
         expect(screen.queryByTestId("votes-skeleton")).toBeNull();
         expect(screen.queryByTestId("votes-detail-error")).toBeNull();
-        expect(screen.getByText(/For: 42/)).toBeTruthy();
+        expect(screen.getByText(/For: 70%/)).toBeTruthy();
     });
 
     test("the Votes tab marks the reader's own district from the detail response", () => {

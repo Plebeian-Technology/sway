@@ -149,15 +149,17 @@ The response sends no `Last-Modified`. A date cannot carry the version, so a cac
 
 ## The mobile bill screen hides what the web hides
 
-The phone's Votes tab shows the placeholder in place of the score bar and the district panel while a bill is under ten voters, and a bill card in a list prints the one-line form.
+The phone's Votes tab shows the placeholder in place of the score bar and the district panel while a bill's split is withheld, and a bill card prints the one-line form. Neither shows a count, a voter total or a number of voters needed.
 
 [[mobile/src/utils/districtVotes.ts#isVoteComparisonSuppressed]] answers for the whole screen. It treats a score with no flag as suppressed, because a bill cached before the flag existed still carries exact district counts and the phone would otherwise draw them.
 
 Above the minimum, [[mobile/src/utils/districtVotes.ts#selectDistrictVotes]] keeps only districts that carry percentages and are neither hidden nor at-large. A reader district with no row becomes a suppressed row, which the panel draws as "Not enough votes yet" with no sentence about the majority.
 
-[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] takes whether the reader is signed in from the `isSignedIn` prop of [[mobile/src/components/BillScreenTabs.tsx#BillScreenTabs]], which each bill screen reads from the session, and the invite link from the bootstrap response's current user. The button copies the link with `expo-clipboard`, as the web button copies it, and prints "Invite link copied to clipboard." under itself once the copy succeeds.
+[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] takes a `showInvite` prop, as the web component does, and only [[mobile/src/components/BillScreenTabs.tsx#BillScreenTabs]] passes it. Without `showInvite` it draws "Not enough votes yet" alone, which the legislator screens rely on. With it the placeholder adds the invite prompt below that line. It never says how many voters a bill needs, so a bill under ten voters and a unanimous bill look the same.
 
-The phone placeholder has no sign-up button. The app mounts the bill screens only for a signed-in reader, and the sign-in screens only for a signed-out one, so a bill screen has no sign-in route to reach. A signed-in reader whose bootstrap is still loading, or failed, has no invite link yet and sees no button, as the web does for a signed-in reader without one.
+The placeholder takes whether the reader is signed in from the `isSignedIn` prop of `BillScreenTabs`, which each bill screen reads from the session, and the invite link from the bootstrap response's current user. The button copies the link with `expo-clipboard`, as the web button copies it, and prints "Invite link copied to clipboard." under itself once the copy succeeds.
+
+The phone placeholder has no sign-up button, so a signed-out reader sees the prompt alone. The app mounts the bill screens only for a signed-in reader, and the sign-in screens only for a signed-out one, so a bill screen has no sign-in route to reach. A signed-in reader whose bootstrap is still loading, or failed, has no invite link yet and sees no button, as the web does for a signed-in reader without one.
 
 ## The mobile legislator screens draw percentages or the placeholder
 

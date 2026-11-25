@@ -73,10 +73,9 @@ const firstBillDetail = {
     bill_score: {
         id: 3,
         bill_id: 1,
-        for: 42,
-        against: 18,
+        for_percent: 70,
+        against_percent: 30,
         comparison_suppressed: false,
-        voters_needed: 0,
         districts: [],
     },
     districts: [],
@@ -117,7 +116,7 @@ describe("BillOfTheMonthScreen when the featured bill changes", () => {
 
         await waitFor(() => expect(screen.getByText(/Sponsored by Sen\. Firstbill/)).toBeTruthy());
         fireEvent.press(screen.getByTestId("tab-votes"));
-        await waitFor(() => expect(screen.getByText(/For: 42/)).toBeTruthy());
+        await waitFor(() => expect(screen.getByText(/For: 70%/)).toBeTruthy());
 
         mockUseBootstrap.mockReturnValue(bootstrapFeaturing(featuredBill(2, "Clean Air Act")));
         rerender(screenElement());
@@ -125,7 +124,7 @@ describe("BillOfTheMonthScreen when the featured bill changes", () => {
         expect(mockGet).toHaveBeenCalledWith("/bills/2?with=legislator", expect.anything());
         expect(screen.getByText("Clean Air Act")).toBeTruthy();
         expect(screen.queryByText(/Firstbill/)).toBeNull();
-        expect(screen.queryByText(/For: 42/)).toBeNull();
+        expect(screen.queryByText(/For: 70%/)).toBeNull();
         expect(screen.getByTestId("tab-bill").props.accessibilityState).toEqual(
             expect.objectContaining({ selected: true }),
         );

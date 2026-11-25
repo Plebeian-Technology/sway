@@ -64,6 +64,8 @@ type UserVote = { support?: "for" | "against" | "FOR" | "AGAINST" | null } | nul
 export interface BillScreenTabsBillScore {
     for?: number | null;
     against?: number | null;
+    for_percent?: number | null;
+    against_percent?: number | null;
     comparison_suppressed?: boolean | null;
     voters_needed?: number | null;
     districts?: BillScoreDistrict[] | null;
@@ -247,7 +249,7 @@ export function BillScreenTabs({
             detailPlaceholder("votes") ?? (
                 <Card>
                     {comparisonSuppressed ? (
-                        <VoteComparisonPlaceholder votersNeeded={billScore?.voters_needed} isSignedIn={isSignedIn} />
+                        <VoteComparisonPlaceholder showInvite isSignedIn={isSignedIn} />
                     ) : (
                         <BillScoreBar bill_score={billScore} />
                     )}

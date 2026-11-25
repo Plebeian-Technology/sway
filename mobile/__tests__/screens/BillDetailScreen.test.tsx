@@ -110,10 +110,9 @@ const fullBillPayload = {
     bill_score: {
         id: 7,
         bill_id: 42,
-        for: 100,
-        against: 50,
+        for_percent: 65,
+        against_percent: 35,
         comparison_suppressed: false,
-        voters_needed: 0,
         districts: [
             {
                 bill_score_id: 7,

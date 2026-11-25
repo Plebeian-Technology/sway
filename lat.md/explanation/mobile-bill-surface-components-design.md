@@ -29,7 +29,7 @@ What it looks like:
 - A row of pills: the bill's external id (solid blue), its category (pale blue tint), and, only when the user has voted, their own vote in the vote colour.
 - The bill headline, lg semibold, clipped to three lines.
 - A summary excerpt: the first 160 characters, with the NEWLINE and ENDING markers taken out, or stand-in text when there is no summary, clipped to two lines.
-- One row holding the For and Against scores in fixed-width digits, followed by the "Open bill" button.
+- One row holding the For and Against percentages in fixed-width digits, followed by the "Open bill" button. A withheld split replaces them with the line "Not enough votes yet" and no number.
 - The card tells screen readers "Open bill {bill.title}".
 
 The layout is shortened on purpose: see [[mobile-chrome-and-scroll-layout#Cards carry a coloured edge]].
@@ -70,15 +70,15 @@ Both sizes come from the sway.css type scale; leaving this false keeps the norma
 
 How the whole locale voted, as one horizontal bar split between for and against, under the "How others voted" title.
 
-The Votes tab supplies the card around it; the component draws its own title, an empty track behind the two segments, and the counts below.
+The Votes tab supplies the card around it; the component draws its own title, an empty track behind the two segments, and the percentages below.
 
-- Counts and percentages sit in fixed-width digits, so a count going from 9 to 10 does not shove the layout sideways, and counts carry thousands separators from [[mobile/src/utils/districtVotes.ts#formatVoteCount]].
+- The percentages sit in fixed-width digits, so a figure going from 9 to 10 does not shove the layout sideways. The bar reads `for_percent` and `against_percent` and prints no count or voter total.
 - The segments use the vote-for and vote-against colours, the same colours the website uses.
 - The empty track is the muted colour in light mode and the border colour in dark mode, where the muted colour equals the card colour and the track would vanish. [[mobile-bill-surface-components-design#DistrictVotesPanel]] draws its tracks the same way.
 - A bill under ten voters draws no bar: the Votes tab shows the placeholder in its place ([[voter-privacy-threshold#The mobile bill screen hides what the web hides]]).
 - Until the detail response has arrived the Votes tab shows a skeleton instead of this bar ([[mobile-bill-surface-components-design#BillScreenTabs#Why the Votes and Summaries tabs wait for the detail response]]).
 
-Accessibility: a screen reader hears one sentence with the percentages and the total, or the title followed by "No votes recorded yet." when the tally is empty; a suppressed bar renders nothing, so nothing is read — splitting the bar in two is a visual device and means nothing out loud.
+Accessibility: a screen reader hears one sentence with the two percentages, or the title followed by "No votes recorded yet." when there are no percentages; a suppressed bar renders nothing, so nothing is read — splitting the bar in two is a visual device and means nothing out loud.
 
 ### Animated width
 
