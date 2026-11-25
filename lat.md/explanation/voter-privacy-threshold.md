@@ -116,6 +116,8 @@ The partner embed at `/embed/bills/:id` is public and a CDN keeps each response 
 
 The response's ETag includes [[app/controllers/embed/bills_controller.rb#BillsController#PAYLOAD_VERSION]], so a deploy that changes the payload's shape or privacy rules, and bumps that constant, makes every ETag cached before it stale. A CDN or browser holding the old body revalidates, gets a full response instead of a 304, and drops the old counts. Without the bump the ETag follows only the bill and its score row, and a response cached before the rule would keep revalidating as 304 until someone voted on that bill. A response still inside its freshness window is served without revalidation until it expires, up to fifteen minutes.
 
+The response sends no `Last-Modified`. A date cannot carry the version, so a cache that revalidates with `If-Modified-Since` alone would get a 304 across a version bump; with no date sent, the ETag is the only validator.
+
 ## The mobile bill screen hides what the web hides
 
 The phone's Votes tab shows the placeholder in place of the score bar and the district panel while a bill is under ten voters, and a bill card in a list prints the one-line form.

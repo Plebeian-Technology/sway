@@ -14,7 +14,6 @@ module Embed
 
       fresh_when(
         etag: [PAYLOAD_VERSION, @bill, @bill.bill_score, referral_params, request.headers["X-Inertia"].present?],
-        last_modified: [@bill.updated_at, @bill.bill_score&.updated_at].compact.max,
         public: true
       )
       return if performed?

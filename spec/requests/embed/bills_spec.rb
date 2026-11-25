@@ -189,17 +189,13 @@ RSpec.describe "Embed::Bills", type: :request do
       get "/embed/bills/#{bill.id}"
       expect(response).to have_http_status(:ok)
       original_etag = response.headers["ETag"]
-      original_last_modified = response.headers["Last-Modified"]
 
       original_bill_updated_at = bill.updated_at
       travel_to(1.hour.from_now) do
         bill_score.update_columns(for: 100, against: 20, updated_at: Time.current)
         expect(bill.reload.updated_at).to eq(original_bill_updated_at)
 
-        get "/embed/bills/#{bill.id}", headers: {
-          "If-None-Match" => original_etag,
-          "If-Modified-Since" => original_last_modified
-        }
+        get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => original_etag}
 
         expect(response).to have_http_status(:ok)
         expect(response.headers["ETag"]).not_to eq(original_etag)
@@ -209,37 +205,25 @@ RSpec.describe "Embed::Bills", type: :request do
       end
     end
 
-    it "returns 304 Not Modified when both ETag and Last-Modified match" do
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "answers an If-Modified-Since-only conditional GET after a payload version change with a full body" do
+      bill_score.update!(for: 6, against: 3)
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "before")
       get "/embed/bills/#{bill.id}"
       expect(response).to have_http_status(:ok)
-      etag = response.headers["ETag"]
-      last_modified = response.headers["Last-Modified"]
 
-      expect(etag).to be_present
-      expect(last_modified).to be_present
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "after")
+      get "/embed/bills/#{bill.id}", headers: {"If-Modified-Since" => 1.hour.from_now.httpdate}
 
-      get "/embed/bills/#{bill.id}", headers: {
-        "If-None-Match" => etag,
-        "If-Modified-Since" => last_modified
-      }
-
-      expect(response).to have_http_status(:not_modified)
-      expect(response.body).to be_empty
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props[:bill]).to include(pro_count: nil, con_count: nil, comparison_suppressed: true)
     end
 
-    it "returns 200 OK on If-Modified-Since if bill_score has updated" do
-      original_bill_updated_at = bill.updated_at
+    it "sends no Last-Modified header, so only the ETag can answer 304" do
       get "/embed/bills/#{bill.id}"
-      last_modified = response.headers["Last-Modified"]
 
-      travel_to(1.hour.from_now) do
-        bill_score.update_columns(for: 50, updated_at: Time.current)
-        expect(bill.reload.updated_at).to eq(original_bill_updated_at)
-
-        get "/embed/bills/#{bill.id}", headers: {"If-Modified-Since" => last_modified}
-        expect(response).to have_http_status(:ok)
-        expect(inertia.props[:bill][:pro_count]).to eq(50)
-      end
+      expect(response.headers["ETag"]).to be_present
+      expect(response.headers["Last-Modified"]).to be_nil
     end
 
     it "returns 404 Not Found for nonexistent bill" do
