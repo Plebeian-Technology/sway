@@ -6,6 +6,8 @@ require "rails_helper"
 # after ScoreUpdaterService#call recomputes: agreed, disagreed,
 # no_legislator_vote, legislator_abstained.
 RSpec.describe ScoreUpdaterService do
+  include ActiveJob::TestHelper
+
   include_context "with a voter minimum of one"
 
   describe "#call — the score-write case matrix" do
@@ -33,6 +35,7 @@ RSpec.describe ScoreUpdaterService do
       uls = UserLegislatorTermScore.find_by!(user_legislator:, legislator_term:)
       expect([uls.count_agreed, uls.count_disagreed, uls.count_no_legislator_vote, uls.count_legislator_abstained]).to eql([1, 0, 0, 0])
 
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
       lds = LegislatorDistrictScore.find_by!(legislator_term:)
       expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([1, 0, 0, 0])
 
@@ -64,6 +67,7 @@ RSpec.describe ScoreUpdaterService do
       uls = UserLegislatorTermScore.find_by!(user_legislator:, legislator_term:)
       expect([uls.count_agreed, uls.count_disagreed, uls.count_no_legislator_vote, uls.count_legislator_abstained]).to eql([0, 1, 0, 0])
 
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
       lds = LegislatorDistrictScore.find_by!(legislator_term:)
       expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([0, 1, 0, 0])
 
@@ -93,6 +97,7 @@ RSpec.describe ScoreUpdaterService do
       uls = UserLegislatorTermScore.find_by!(user_legislator:, legislator_term:)
       expect([uls.count_agreed, uls.count_disagreed, uls.count_no_legislator_vote, uls.count_legislator_abstained]).to eql([0, 0, 1, 0])
 
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
       lds = LegislatorDistrictScore.find_by!(legislator_term:)
       expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([0, 0, 1, 0])
 
@@ -119,6 +124,7 @@ RSpec.describe ScoreUpdaterService do
       uls = UserLegislatorTermScore.find_by!(user_legislator:, legislator_term:)
       expect([uls.count_agreed, uls.count_disagreed, uls.count_no_legislator_vote, uls.count_legislator_abstained]).to eql([0, 0, 0, 1])
 
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
       lds = LegislatorDistrictScore.find_by!(legislator_term:)
       expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([0, 0, 0, 1])
 
@@ -157,6 +163,7 @@ RSpec.describe ScoreUpdaterService do
       uls2 = UserLegislatorTermScore.find_by!(user_legislator: user_legislator2, legislator_term:)
       expect([uls2.count_agreed, uls2.count_disagreed, uls2.count_no_legislator_vote, uls2.count_legislator_abstained]).to eql([0, 1, 0, 0])
 
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
       lds = LegislatorDistrictScore.find_by!(legislator_term:)
       expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([1, 1, 0, 0])
 
@@ -188,6 +195,8 @@ RSpec.describe ScoreUpdaterService do
       # with G2's FOR.
       lls_g2 = LegislatorLocaleScore.find_by!(legislator_term: g2_term)
       expect([lls_g2.count_agreed, lls_g2.count_disagreed, lls_g2.count_no_legislator_vote, lls_g2.count_legislator_abstained]).to eql([1, 0, 0, 0])
+
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
 
       # But a user vote never recomputes G2's DISTRICT score: the user is not
       # G2's constituent, so that path never touches it, and since rows are no
@@ -245,6 +254,7 @@ RSpec.describe ScoreUpdaterService do
       uls = UserLegislatorTermScore.find_by!(user_legislator:, legislator_term:)
       expect([uls.count_agreed, uls.count_disagreed, uls.count_no_legislator_vote, uls.count_legislator_abstained]).to eql([1, 0, 0, 0])
 
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
       lds = LegislatorDistrictScore.find_by!(legislator_term:)
       expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([1, 0, 0, 0])
     end
@@ -269,6 +279,39 @@ RSpec.describe ScoreUpdaterService do
       expect { ScoreUpdaterService.new(user_vote).call }.to raise_error(RuntimeError, "boom")
 
       expect(BillScore.find_by!(bill:).for).to eql(99)
+    end
+  end
+
+  # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
+  describe "the district score recompute" do
+    it "enqueues the job with the bill id and the voter's legislator ids, and leaves the district score for the job" do
+      sway_locale = create(:sway_locale)
+      district = create(:district, sway_locale:)
+      legislator = create(:legislator, district:)
+      legislator_term = create(:legislator_term, legislator:, district:)
+      user = create(:user)
+      create(:user_legislator, user:, legislator:)
+      bill = create(:bill, sway_locale:, legislator:)
+      create(:legislator_vote, bill:, legislator:, support: LegislatorVote::Support::FOR)
+      user_vote = create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
+
+      expect { ScoreUpdaterService.new(user_vote).call }
+        .to have_enqueued_job(RecomputeDistrictScoresJob).with([bill.id], [legislator.id])
+
+      expect(LegislatorDistrictScore.find_by(legislator_term:)).to be_nil
+      expect(UserLegislatorTermScore.find_by(legislator_term:)).to be_present
+
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
+
+      lds = LegislatorDistrictScore.find_by!(legislator_term:)
+      expect([lds.count_agreed, lds.count_disagreed, lds.count_no_legislator_vote, lds.count_legislator_abstained]).to eql([1, 0, 0, 0])
+    end
+
+    it "enqueues no job when the vote's bill no longer exists" do
+      user_vote = create(:user_vote, bill: create(:bill))
+      allow(Bill).to receive(:exists?).with(user_vote.bill_id).and_return(false)
+
+      expect { ScoreUpdaterService.new(user_vote).call }.not_to have_enqueued_job(RecomputeDistrictScoresJob)
     end
   end
 
@@ -299,6 +342,9 @@ RSpec.describe ScoreUpdaterService do
       create(:user_legislator, user: outsider, legislator: neighbour)
       user_vote = create(:user_vote, user: outsider, bill:, support: LegislatorVote::Support::FOR)
       ScoreUpdaterService.new(user_vote).call
+      expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(10)
+
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
 
       expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(0)
     end

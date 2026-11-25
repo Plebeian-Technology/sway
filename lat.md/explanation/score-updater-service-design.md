@@ -9,9 +9,9 @@ lat:
 
 ## Why every recompute happens inside one requires_new transaction
 
-All the recalculating happens inside a single database transaction, and every total is rebuilt from scratch out of the source tables (see [[docs/explanation/score-recompute-service-overview.md|the ScoreRecomputeService overview]]) instead of being nudged up or down.
+The bill, user-legislator and locale recalculating happens inside a single database transaction, and every total is rebuilt from scratch out of the source tables (see [[docs/explanation/score-recompute-service-overview.md|the ScoreRecomputeService overview]]) instead of being nudged up or down.
 
-That combination means running the whole service twice cannot double-count anything, and a failure partway through undoes every table it had touched. `requires_new:` asks for an explicit savepoint, which behaves correctly both when this service is called from inside another transaction, and inside a spec that wraps each example in one.
+That combination means running the whole service twice cannot double-count anything, and a failure partway through undoes every table it had touched. `requires_new:` asks for an explicit savepoint, which behaves correctly both when this service is called from inside another transaction, and inside a spec that wraps each example in one. The district scores are the exception: they run in a queued job after the transaction commits, so a failure in the job leaves the transaction's writes in place.
 
 ## Why broadcast_score_refresh is a public class method
 
@@ -52,12 +52,17 @@ The three `ScoreRecomputeService` calls in `#call` each pick their term and thei
   legislator in the locale, the price the locale scores already pay. It
   always uses the legislator's CURRENT term: a single user vote never
   rewrites a legislator's score for a term that has already ended. The
-  address-change and registration paths run it for the bills the user
-  voted on, through [[app/jobs/recompute_district_scores_job.rb#RecomputeDistrictScoresJob]],
-  because the method visits every legislator with a tally on those bills
-  and a web request should not wait for that. The job receives bill and
-  legislator ids, not records. The reconcile service already runs inside
-  a job and calls the method inline.
+  vote, address-change and registration paths run it through
+  [[app/jobs/recompute_district_scores_job.rb#RecomputeDistrictScoresJob]],
+  because the method visits every legislator with a tally on the bill and
+  holds SQLite's single write lock while it does. The vote path enqueues
+  the job after its own transaction commits, so one vote on a Congress
+  bill never keeps that lock for a few hundred district scores; the
+  address-change and registration paths enqueue it for the bills the user
+  voted on. The district scores therefore trail the vote by one queued
+  job. The job receives bill and legislator ids, not records. The
+  reconcile service already runs inside a job and calls the method
+  inline.
 - **`recompute_legislator_locale!`** counts EVERY user in the legislator's
   locale, not only their own constituents, because this vote gets
   compared against how EVERY legislator in the locale voted on the same
