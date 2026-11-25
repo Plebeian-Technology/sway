@@ -11,5 +11,5 @@ class FeedController < ApplicationController
   def first_page_query: (user: User, query: String?) -> FeedQuery
   def page_feed_query: (user: User, query: String?, cursor: String?) -> FeedQuery
   def serialized_items: (Array[FeedQuery::Item] items) -> Alba::serialized
-  def bill_count_params: (Array[FeedQuery::Item] items) -> { vote_counts_by_bill_id: Hash[Integer, Integer], view_counts_by_bill_id: Hash[Integer, Integer], share_counts_by_bill_id: Hash[Integer, Integer] }
+  def bill_count_params: (Array[FeedQuery::Item] items) -> { view_counts_by_bill_id: Hash[Integer, Integer], share_counts_by_bill_id: Hash[Integer, Integer] }
 end

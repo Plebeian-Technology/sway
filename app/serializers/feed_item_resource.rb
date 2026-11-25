@@ -27,7 +27,6 @@ class FeedItemResource < ApplicationResource
     bill = item.bill
     next nil unless bill
 
-    vote_counts = params[:vote_counts_by_bill_id] || {}
     view_counts = params[:view_counts_by_bill_id] || {}
     share_counts = params[:share_counts_by_bill_id] || {}
     # @lat: [[home-feed#Serving the feed]]
@@ -39,7 +38,6 @@ class FeedItemResource < ApplicationResource
       title: bill.title,
       summary: shows_summary ? bill.summary : nil,
       summary_ai_unreviewed: shows_summary && bill.summary_ai_unreviewed?,
-      vote_count: vote_counts.fetch(bill.id, 0),
       view_count: view_counts.fetch(bill.id, 0),
       share_count: share_counts.fetch(bill.id, 0)
     }

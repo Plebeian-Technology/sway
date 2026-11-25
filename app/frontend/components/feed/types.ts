@@ -20,7 +20,6 @@ export interface IFeedBill {
     title: string;
     summary: string | null;
     summary_ai_unreviewed: boolean;
-    vote_count: number;
     view_count: number;
     share_count: number;
 }

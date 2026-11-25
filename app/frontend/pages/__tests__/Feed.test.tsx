@@ -155,7 +155,6 @@ describe("Feed page", () => {
                     external_id: "Council Bill 26-0141",
                     title: "Expanding vacant building receivership",
                     summary: "Lets the city hand more long-vacant houses to court-appointed receivers.",
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -171,7 +170,6 @@ describe("Feed page", () => {
                     external_id: "SB 203",
                     title: "Statewide right to counsel",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -196,7 +194,6 @@ describe("Feed page", () => {
                     external_id: "SB 88",
                     title: "Lead paint inspections",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -265,7 +262,6 @@ describe("Feed page", () => {
                     title: "Urban Tree Canopy - Street Planting FOR the purpose of requiring tree planting along arterial streets; and generally relating to urban forestry.",
                     summary:
                         "## OverviewNEWLINERequires **Baltimore** to plant [street trees](https://example.com/trees) on *arterial* corridors.ENDING",
-                    vote_count: 3,
                     view_count: 11,
                     share_count: 1,
                     summary_ai_unreviewed: false,
@@ -281,7 +277,6 @@ describe("Feed page", () => {
                     external_id: "HB 602",
                     title: "Pending Summary Bill",
                     summary: "Summary pending",
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -312,7 +307,6 @@ describe("Feed page", () => {
                     external_id: `CB ${id}`,
                     title: `Bill ${id}`,
                     summary: "Funds new bus shelters.",
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: unreviewed,
@@ -343,7 +337,6 @@ describe("Feed page", () => {
                     external_id: "SB 88",
                     title: "Lead paint",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -360,7 +353,6 @@ describe("Feed page", () => {
                     external_id: "CB 1",
                     title: "Nov Bill",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -376,7 +368,6 @@ describe("Feed page", () => {
                     external_id: "HB 1",
                     title: "Oct Bill",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -404,7 +395,6 @@ describe("Feed page", () => {
                     external_id: "HB 412",
                     title: "Fare cap",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -430,7 +420,6 @@ describe("Feed page", () => {
                     external_id: "S. 1820",
                     title: "Rural broadband",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -467,7 +456,6 @@ describe("Feed page", () => {
                     external_id: "CB 1",
                     title: "Unvoted Bill",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -484,7 +472,6 @@ describe("Feed page", () => {
                     external_id: "HB 2",
                     title: "Voted Bill",
                     summary: null,
-                    vote_count: 0,
                     view_count: 0,
                     share_count: 0,
                     summary_ai_unreviewed: false,
@@ -575,7 +562,6 @@ describe("Feed page", () => {
                 external_id: "CB 101",
                 title: "Housing stability",
                 summary: null,
-                vote_count: 0,
                 view_count: 0,
                 share_count: 0,
                 summary_ai_unreviewed: false,
@@ -622,7 +608,6 @@ describe("Feed page", () => {
                             external_id: "CB 1",
                             title: "Fare cap",
                             summary: null,
-                            vote_count: 0,
                             view_count: 0,
                             share_count: 0,
                             summary_ai_unreviewed: false,
@@ -638,7 +623,6 @@ describe("Feed page", () => {
                             external_id: "HB 2",
                             title: "Fare equity",
                             summary: null,
-                            vote_count: 0,
                             view_count: 0,
                             share_count: 0,
                             summary_ai_unreviewed: false,
@@ -779,7 +763,7 @@ describe("Feed page", () => {
         scrollToSpy.mockRestore();
     });
 
-    it("renders vote_count, view_count, and share_count with tabular-nums only on items that have a bill", () => {
+    it("renders view_count and share_count with tabular-nums, and no voted text, only on items that have a bill", () => {
         render(
             <Feed
                 feed_match_count={0}
@@ -794,7 +778,6 @@ describe("Feed page", () => {
                             external_id: "CB 501",
                             title: "Transit Funding",
                             summary: null,
-                            vote_count: 42,
                             view_count: 108,
                             share_count: 9,
                             summary_ai_unreviewed: false,
@@ -809,16 +792,13 @@ describe("Feed page", () => {
             />,
         );
 
-        const votedText = screen.getByText("42 voted");
         const viewedText = screen.getByText("108 viewed");
         const sharedText = screen.getByText("9 shared");
-        expect(votedText).toBeTruthy();
         expect(viewedText).toBeTruthy();
         expect(sharedText).toBeTruthy();
-        expect(votedText.closest(".tabular-nums")).not.toBeNull();
         expect(viewedText.closest(".tabular-nums")).not.toBeNull();
         expect(sharedText.closest(".tabular-nums")).not.toBeNull();
-        expect(screen.getAllByText(/voted$/)).toHaveLength(1);
+        expect(screen.queryByText(/voted/)).toBeNull();
         expect(screen.getAllByText(/viewed$/)).toHaveLength(1);
         expect(screen.getAllByText(/shared$/)).toHaveLength(1);
     });

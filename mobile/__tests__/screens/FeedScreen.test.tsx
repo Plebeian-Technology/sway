@@ -93,7 +93,6 @@ const ALL_KIND_ITEMS: IFeedItem[] = [
             external_id: "CB-26-0101",
             title: "Clean Harbor Act",
             summary: "Requires stormwater capture on new waterfront developments.",
-            vote_count: 14,
             view_count: 82,
             share_count: 5,
             summary_ai_unreviewed: false,
@@ -115,7 +114,6 @@ const ALL_KIND_ITEMS: IFeedItem[] = [
             external_id: "HB-204",
             title: "Transit Funding Expansion",
             summary: null,
-            vote_count: 23,
             view_count: 110,
             share_count: 9,
             summary_ai_unreviewed: false,
@@ -143,7 +141,6 @@ const ALL_KIND_ITEMS: IFeedItem[] = [
             external_id: "SB-88",
             title: "Grid Modernization Bill",
             summary: null,
-            vote_count: 8,
             view_count: 41,
             share_count: 2,
             summary_ai_unreviewed: false,
@@ -171,7 +168,6 @@ const ALL_KIND_ITEMS: IFeedItem[] = [
             external_id: "HB-512",
             title: "Tenant Right to Counsel",
             summary: null,
-            vote_count: 19,
             view_count: 64,
             share_count: 7,
             summary_ai_unreviewed: false,
@@ -263,7 +259,7 @@ describe("FeedScreen", () => {
         expect(screen.getByText(/released the April Bill of the Month/)).toBeTruthy();
         expect(screen.getByText("CB-26-0101")).toBeTruthy();
         expect(screen.getByText("Requires stormwater capture on new waterfront developments.")).toBeTruthy();
-        expect(screen.getByText(PARITY_COPY.feed.votedCount(14))).toBeTruthy();
+        expect(screen.queryByText(/^\d+ voted$/)).toBeNull();
         expect(screen.getByText(PARITY_COPY.feed.viewedCount(82))).toBeTruthy();
         expect(screen.getByText(PARITY_COPY.feed.sharedCount(5))).toBeTruthy();
 
@@ -295,7 +291,6 @@ describe("FeedScreen", () => {
                         title: "Urban Tree Canopy - Street Planting FOR the purpose of requiring tree planting along arterial streets.",
                         summary:
                             "## OverviewNEWLINERequires **Baltimore** to plant [street trees](https://example.com/trees) on *arterial* corridors.ENDING",
-                        vote_count: 3,
                         view_count: 11,
                         share_count: 1,
                         summary_ai_unreviewed: false,
@@ -309,7 +304,6 @@ describe("FeedScreen", () => {
                         external_id: "HB-602",
                         title: "Pending Summary Bill",
                         summary: "Summary pending",
-                        vote_count: 0,
                         view_count: 0,
                         share_count: 0,
                         summary_ai_unreviewed: false,

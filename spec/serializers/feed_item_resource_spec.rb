@@ -107,7 +107,6 @@ RSpec.describe FeedItemResource, type: :model do
         title: "Transit Bill",
         summary: "Expands bus service.",
         summary_ai_unreviewed: false,
-        vote_count: 0,
         view_count: 0,
         share_count: 0
       )
@@ -135,7 +134,7 @@ RSpec.describe FeedItemResource, type: :model do
       expect(vote_hash["bill"].keys).to match_array(botm_hash["bill"].keys)
     end
 
-    it "includes vote_count, view_count, and share_count from params and defaults missing bills to zero" do
+    it "includes view_count and share_count from params, defaults missing bills to zero and sends no vote_count" do
       sway_locale = create(:sway_locale, city: "baltimore", state: "maryland", country: "united_states")
       counted_bill = create(:bill, sway_locale:, external_id: "25-0011", title: "Counted Bill", summary: "Has counts.")
       uncounted_bill = create(:bill, sway_locale:, external_id: "25-0012", title: "Uncounted Bill", summary: "No counts.")
@@ -161,14 +160,14 @@ RSpec.describe FeedItemResource, type: :model do
       serialized = described_class.new(
         items,
         params: {
-          vote_counts_by_bill_id: {counted_bill.id => 14},
           view_counts_by_bill_id: {counted_bill.id => 27},
           share_counts_by_bill_id: {counted_bill.id => 3}
         }
       ).serializable_hash.map { |entry| entry.transform_keys(&:to_s) }
 
-      expect(serialized[0]["bill"]).to include(vote_count: 14, view_count: 27, share_count: 3)
-      expect(serialized[1]["bill"]).to include(vote_count: 0, view_count: 0, share_count: 0)
+      expect(serialized[0]["bill"]).to include(view_count: 27, share_count: 3)
+      expect(serialized[1]["bill"]).to include(view_count: 0, share_count: 0)
+      expect(serialized[0]["bill"]).not_to have_key(:vote_count)
     end
 
     it "serializes legislator_voted items and computes agreement" do

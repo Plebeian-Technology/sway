@@ -59,7 +59,7 @@ Every bill score leaves through one of two doors, and both ask the model. [[app/
 
 A district row carries its two percentages and never a count. Its `comparison_suppressed` and `at_large` keys stay, always false, because the phone treats a row without the flag as hidden.
 
-The feed's count of how many users voted on a bill stays. It says how many, not how.
+The feed sends no count of how many users voted on a bill. An exact voter total beside a bill's percentages gives the exact For and Against counts back, and it would tell a bill under ten voters from a unanimous bill, which must look the same. The feed keeps each bill's view and share counts, which say nothing about votes.
 
 Legislator scores follow the same rule. `group_score` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] builds every district, locale and lifetime score that leaves the server, for the legislator page, the legislators list, the legislator history and the `legislator_votes` endpoint. It sends the flag and the four percentages and none of the four counters. The counters stay in the database, where the percentages are computed from them, and in the reader's own score.
 
