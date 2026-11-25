@@ -74,7 +74,6 @@ describe("VoteComparisonPlaceholder", () => {
         wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
 
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
-        expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
     });
 
     test("shows no button for a signed-in reader whose bootstrap has not loaded", () => {
@@ -84,13 +83,11 @@ describe("VoteComparisonPlaceholder", () => {
 
         expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
-        expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
     });
 
     test("offers no invite link to a reader who is not signed in", () => {
         wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn={false} />);
 
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
-        expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
     });
 });

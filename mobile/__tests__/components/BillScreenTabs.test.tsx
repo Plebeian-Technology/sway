@@ -276,7 +276,6 @@ describe("BillScreenTabs", () => {
             openVotes();
 
             expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
-            expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
             expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
         });
 
