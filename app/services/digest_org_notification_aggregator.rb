@@ -67,7 +67,7 @@ class DigestOrgNotificationAggregator
         next if org_names.empty?
 
         period_label = (cadence_str == "weekly") ? "this week" : "today"
-        title, body = build_digest_copy(org_names, rows.size, period_label)
+        title, body = build_digest_copy(org_names, rows.map(&:change_types), period_label)
         url = "/organizations"
 
         OrgNotificationFanout.deliver(user: user, title: title, body: body, url: url)
@@ -76,17 +76,31 @@ class DigestOrgNotificationAggregator
   end
 
   # @lat: [[organization-notification-delivery#Notification wording names Sway as the recorder]]
-  def self.build_digest_copy(org_names, _change_count, period_label)
+  def self.build_digest_copy(org_names, row_change_types, period_label)
     title = NotifyOrganizationFollowersService::NOTIFICATION_TITLE
+    what = digest_subject(row_change_types)
     if org_names.size == 1
-      body = "Sway recorded new positions from #{org_names.first} #{period_label}."
+      body = "Sway recorded #{what} from #{org_names.first} #{period_label}."
     else
       first = org_names.first
       others = [org_names.size - 1, 0].max
-      body = "Sway recorded new positions from #{first} and #{others} other " \
+      body = "Sway recorded #{what} from #{first} and #{others} other " \
         "#{"organization".pluralize(others)} #{period_label}."
     end
     [title, body]
   end
   private_class_method :build_digest_copy
+
+  # row_change_types: each row's comma-joined change types, as stored.
+  def self.digest_subject(row_change_types)
+    new_rows = row_change_types.map { |types| types.to_s.split(",").include?("new_position") }
+    if new_rows.all?
+      "new positions"
+    elsif new_rows.none?
+      "position updates"
+    else
+      "new positions and updates"
+    end
+  end
+  private_class_method :digest_subject
 end

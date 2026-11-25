@@ -302,23 +302,66 @@ RSpec.describe DigestOrgNotificationAggregator do
     end
   end
 
+  describe "digest wording follows the change types of the rows it sends" do
+    {daily: "today", weekly: "this week"}.each do |cadence, period|
+      context "for a #{cadence} digest" do
+        let(:user) { setup_notifiable_user(create(:user, is_registration_complete: true)) }
+        let(:org) { create(:organization, name: "Clean Water Action") }
+        let(:bill) { create(:bill) }
+
+        def digest_body_for(cadence, change_type_sets)
+          change_type_sets.each do |types|
+            described_class.enqueue(user_id: user.id, cadence: cadence, org_id: org.id, bill_id: bill.id, change_types: types)
+          end
+          body = nil
+          allow(OrgNotificationFanout).to receive(:deliver) { |args| body = args[:body] }
+          described_class.dispatch_period(cadence)
+          body
+        end
+
+        it "says new positions when every row is a new position" do
+          expect(digest_body_for(cadence, [[:new_position], %i[new_position summary_change]]))
+            .to eq("Sway recorded new positions from Clean Water Action #{period}.")
+        end
+
+        it "says position updates when every row is a change" do
+          expect(digest_body_for(cadence, [[:support_change], [:summary_change], %i[support_change summary_change]]))
+            .to eq("Sway recorded position updates from Clean Water Action #{period}.")
+        end
+
+        it "says new positions and updates when the rows are mixed" do
+          expect(digest_body_for(cadence, [[:new_position], [:summary_change]]))
+            .to eq("Sway recorded new positions and updates from Clean Water Action #{period}.")
+        end
+      end
+    end
+  end
+
   describe ".build_digest_copy" do
     it "formats copy for a single organization" do
-      title, body = described_class.send(:build_digest_copy, ["Sway Advocacy"], 1, "today")
+      title, body = described_class.send(:build_digest_copy, ["Sway Advocacy"], ["new_position"], "today")
       expect(title).to eq("Organization update")
       expect(body).to eq("Sway recorded new positions from Sway Advocacy today.")
     end
 
     it "formats copy for two organizations" do
-      title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Clean Water Action"], 2, "this week")
+      title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Clean Water Action"],
+        ["new_position", "new_position"], "this week")
       expect(title).to eq("Organization update")
       expect(body).to eq("Sway recorded new positions from Sway Advocacy and 1 other organization this week.")
     end
 
     it "formats copy for three or more organizations" do
-      title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Clean Water Action", "Bike MD"], 3, "today")
+      title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Clean Water Action", "Bike MD"],
+        ["support_change", "summary_change", "new_position"], "today")
       expect(title).to eq("Organization update")
-      expect(body).to eq("Sway recorded new positions from Sway Advocacy and 2 other organizations today.")
+      expect(body).to eq("Sway recorded new positions and updates from Sway Advocacy and 2 other organizations today.")
+    end
+
+    it "says position updates across several organizations when no row is a new position" do
+      _title, body = described_class.send(:build_digest_copy, ["Sway Advocacy", "Bike MD"],
+        ["support_change", "summary_change"], "this week")
+      expect(body).to eq("Sway recorded position updates from Sway Advocacy and 1 other organization this week.")
     end
   end
 end

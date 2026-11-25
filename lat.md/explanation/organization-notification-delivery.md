@@ -53,4 +53,4 @@ Most organizations shown on Sway never joined it, so copy such as "{Org} publish
 
 A summary change reads "Sway recorded a change to {Org}'s position summary on {bill}." rather than "Sway updated its summary", because an approved member edit means the organization's members wrote the summary, not Sway. The mobile preference sheets use the same phrase.
 
-The organization's name moved out of the title and into the body, and a text message reads "Organization update: " followed by the body. The daily and weekly digests use the same title and say "Sway recorded new positions from {Org} {period}."
+The organization's name moved out of the title and into the body, and a text message reads "Organization update: " followed by the body. The daily and weekly digests use the same title, and their body names what the digested rows hold, read from each row's stored change types: "Sway recorded new positions from {Org} {period}." when every row is a new position, "position updates" when no row is, and "new positions and updates" when the rows are mixed. Calling support or summary changes "new positions" would overstate what Sway recorded.
