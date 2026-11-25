@@ -8,7 +8,7 @@ class NotifyOrganizationFollowersService
   CHANGE_TYPE_COPY = {
     new_position: "Sway recorded %<org>s's position on %<bill>s.",
     support_change: "Sway recorded a change in %<org>s's position on %<bill>s.",
-    summary_change: "Sway updated its summary of %<org>s's position on %<bill>s."
+    summary_change: "Sway recorded a change to %<org>s's position summary on %<bill>s."
   }.freeze #: Hash[NotifyOrganizationFollowersService::change_type, String]
 
   def initialize(position, change_types:, delivery_token: nil)

@@ -387,6 +387,34 @@ RSpec.describe "NotifyOrganizationFollowersService", type: :service do
     expect(web_pushed).to eq(expected)
   end
 
+  it "a summary change reads the same on web push, native push and text message" do
+    _sway_locale, user = setup
+    setup_notifiable_user(user)
+    org = create(:organization, name: "Baltimore Renters United")
+    bill = create(:bill, title: "Sale of Property")
+    create(:organization_follow, user: user, organization: org,
+      notification_cadence: :every_change, notify_on_summary_change: true)
+    create(:push_notification_subscription, user: user, subscribed: true)
+    create(:user_device, user: user)
+    position = create(:organization_bill_position, organization: org, bill: bill,
+      active: true, support: "FOR", summary: "Supports this bill")
+
+    expected = "Sway recorded a change to Baltimore Renters United's position summary on Sale of Property."
+
+    web_pushed = nil
+    allow(SwayPushNotificationService).to receive(:new) do |_sub, **kwargs|
+      web_pushed = kwargs[:body]
+      instance_double(SwayPushNotificationService, send_push_notification: true)
+    end
+
+    expect {
+      NotifyOrganizationFollowersService.new(position, change_types: [:summary_change]).call
+    }.to have_enqueued_job(SendNativePushJob).with(anything, hash_including(body: expected))
+      .and have_enqueued_job(SmsDeliveryJob).with(to: user.phone, body: "Organization update: #{expected}")
+
+    expect(web_pushed).to eq(expected)
+  end
+
   describe "wording: Sway is the one recording the position" do
     let(:organization) { create(:organization, name: "Baltimore Renters United") }
     let(:bill) { create(:bill, title: "Sale of Property") }
@@ -412,9 +440,13 @@ RSpec.describe "NotifyOrganizationFollowersService", type: :service do
         .to eq("Sway recorded a change in Baltimore Renters United's position on Sale of Property.")
     end
 
-    it "says Sway updated its summary of the position" do
+    it "says Sway recorded a change to the position summary" do
       expect(copy_for([:summary_change]).last)
-        .to eq("Sway updated its summary of Baltimore Renters United's position on Sale of Property.")
+        .to eq("Sway recorded a change to Baltimore Renters United's position summary on Sale of Property.")
+    end
+
+    it "never says Sway wrote the summary" do
+      expect(copy_for([:summary_change]).last).not_to match(/Sway updated its summary/)
     end
 
     it "says Sway recorded a change when several things changed at once" do

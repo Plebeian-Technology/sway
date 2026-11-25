@@ -51,4 +51,6 @@ Every organization notification is titled "Organization update", and every body 
 
 Most organizations shown on Sway never joined it, so copy such as "{Org} published a new position" would claim the organization acted on Sway. "Sway recorded {Org}'s position on {bill}" stays true whether the position came from testimony, a news article, a Sway admin or the organization's own members, so one wording serves every position origin ([[news-org-position-persistence#Position origin and affiliation]]).
 
+A summary change reads "Sway recorded a change to {Org}'s position summary on {bill}." rather than "Sway updated its summary", because an approved member edit means the organization's members wrote the summary, not Sway. The mobile preference sheets use the same phrase.
+
 The organization's name moved out of the title and into the body, and a text message reads "Organization update: " followed by the body. The daily and weekly digests use the same title and say "Sway recorded new positions from {Org} {period}."
