@@ -113,7 +113,10 @@ The column defaults to false. A row that predates the question, or a
 registration that left the box unticked, reads as unconfirmed, so silence is
 never mistaken for a yes — the checkbox is a recorded answer, not a gate on
 completing registration. `SwayRegistrationController#create` sets it from the
-web form; the mobile address screen is the
+web form, but only on a path that goes on to save the address: an address
+switch refused for a missing confirmation, the cooldown or a failed lookup
+leaves the stored answer as it was, since that answer belongs to the address
+still on file. The mobile address screen is the
 remaining writer. Both read the shared wording at
 `PARITY_COPY.address.helper.registeredVoterConfirmation`.
 

@@ -45,6 +45,8 @@ class SwayRegistrationController < ApplicationController
 
     def render_no_representatives: (?redirect: String) -> untyped
 
+    def record_voter_registration_address_confirmation: (User u) -> void
+
     def registered_voter_address_confirmed: -> bool
 
     def confirm_deactivate_legislators?: -> bool

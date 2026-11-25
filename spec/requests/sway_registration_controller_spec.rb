@@ -563,6 +563,49 @@ RSpec.describe "/registration", type: :request do
         expect(user.reload.registration_status).to eq("completed")
       end
     end
+
+    context "when a registered user switches to a different address" do
+      let!(:current_address) { create(:address, street: "1 E Pratt St", latitude: 39.2866, longitude: -76.6131) }
+
+      before do
+        user.update_columns(registration_status: "completed", is_registration_complete: true)
+        create(:user_address, user: user, address: current_address)
+      end
+
+      def post_switch(**overrides)
+        post "/sway_registration",
+          params: {sway_registration: address_params.merge(overrides)},
+          headers: {"Accept" => "application/json"}
+      end
+
+      it "leaves the flag unchanged when the switch is refused for a missing confirmation" do
+        user.update_column(:is_voter_registration_address_confirmed, true)
+
+        post_switch
+
+        expect(response.parsed_body.dig("error", "code")).to eq("confirmation_required")
+        expect(user.reload.is_voter_registration_address_confirmed).to be(true)
+      end
+
+      it "leaves the flag unchanged when the switch is refused for the cooldown" do
+        create(:user_address_change, user: user, previous_address: create(:address, street: "200 W Lombard St"),
+          new_address: current_address, created_at: 2.days.ago)
+
+        post_switch(is_voter_registration_address_confirmed: true, confirm_deactivate_legislators: true)
+
+        expect(response.parsed_body.dig("error", "code")).to eq("address_switch_cooldown")
+        expect(user.reload.is_voter_registration_address_confirmed).to be(false)
+      end
+
+      it "stores the flag when the switch goes through" do
+        allow_any_instance_of(UserAddressSwitchService).to receive(:call).and_return(true) # rubocop:disable RSpec/AnyInstance
+
+        post_switch(is_voter_registration_address_confirmed: true, confirm_deactivate_legislators: true)
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.is_voter_registration_address_confirmed).to be(true)
+      end
+    end
   end
 
   # @lat: [[address-place-classification#Why an empty list is not a rejection]]

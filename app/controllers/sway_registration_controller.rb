@@ -46,10 +46,6 @@ class SwayRegistrationController < ApplicationController
     end
     return_path = address_switch_return_path(u)
 
-    # @lat: [[identity-and-access#Two voter-registration flags mean different things]]
-    # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
-    u.update_column(:is_voter_registration_address_confirmed, registered_voter_address_confirmed)
-
     # @lat: [[identity-and-access#A user holds one address]]
     existing_link = u.user_address
     previous_address = existing_link&.address
@@ -59,6 +55,7 @@ class SwayRegistrationController < ApplicationController
       return handle_address_switch(u, existing_link.address, address_instance, return_path)
     end
 
+    record_voter_registration_address_confirmation(u)
     if existing_link
       existing_link.update!(address: address_instance)
     else
@@ -203,6 +200,7 @@ class SwayRegistrationController < ApplicationController
       end
 
     if change
+      record_voter_registration_address_confirmation(u)
       new_address.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) } unless new_address.located?
       u.reload
       u.complete_registration!
@@ -351,6 +349,12 @@ class SwayRegistrationController < ApplicationController
       ).serializable_hash
     end
     props
+  end
+
+  # @lat: [[identity-and-access#Two voter-registration flags mean different things]]
+  # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
+  def record_voter_registration_address_confirmation(u)
+    u.update_column(:is_voter_registration_address_confirmed, registered_voter_address_confirmed)
   end
 
   def registered_voter_address_confirmed
