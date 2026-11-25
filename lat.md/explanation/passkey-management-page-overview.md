@@ -25,7 +25,7 @@ A reader may remove one of their own passkeys on the web, as long as at least on
 
 An earlier design had no remove action at all, on the grounds that one phone ties to one passkey. The operator reversed that so a reader can clean up a lost or retired device without support.
 
-[[app/controllers/users/passkeys_controller.rb#PasskeysController#destroy]] asks for the same evidence as adding one. It runs only inside the phone-confirmed window that `confirm_phone` opens, and it closes that window after a removal, so one SMS check buys one change. A reader who could remove passkeys from an unattended session could otherwise strip a device the owner still uses.
+[[app/controllers/users/passkeys_controller.rb#PasskeysController#destroy]] asks for the same evidence as adding one. It runs only inside the phone-confirmed window that `confirm_phone` opens for the same account ([[discoverable-passkey-design#Why an already-signed-in user still needs a fresh SMS token to add a passkey]]), and it closes that window after a removal, so one SMS check buys one change. A reader who could remove passkeys from an unattended session could otherwise strip a device the owner still uses.
 
 The last passkey stays. The action counts the reader's passkeys and destroys the chosen one inside a single immediate SQLite transaction, so two removals sent at once cannot both see two passkeys and leave none. [[app/models/user.rb#User#MIN_PASSKEY_COUNT]] sets the floor. Refusals answer 200 with `success: false` and a message, the same shape the add flow uses, and the lookup goes through `current_user.passkeys`, so another reader's passkey id answers not found whether or not it exists.
 

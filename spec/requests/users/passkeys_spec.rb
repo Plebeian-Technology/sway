@@ -208,6 +208,36 @@ RSpec.describe "Users::Passkeys", type: :request do
       expect(session_hash[:add_passkey_registration]).to be_nil
     end
 
+    it "add_options refuses another user's bearer token inside a window this browser's user opened" do
+      setup
+      other = create(:user, :registered)
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+
+      post add_options_users_passkeys_path, headers: authenticate_as(other)
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => "Confirm your phone number first."}
+      )
+      expect(session_hash[:add_passkey_registration]).to be_nil
+    end
+
+    it "add_callback refuses another user's bearer token inside a window this browser's user opened" do
+      setup
+      other = create(:user, :registered)
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}
+      session_hash[:add_passkey_registration] = {"challenge" => fake_challenge}
+
+      expect {
+        post add_callback_users_passkeys_path,
+          params: {publicKeyCredential: {id: fake_credential_id}, passkey_label: "iPad"},
+          headers: authenticate_as(other)
+      }.not_to change { other.passkeys.count }
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => "Add-a-passkey session expired. Please try again."}
+      )
+    end
+
     it "add_options issues discoverable registration options after confirmation" do
       setup
       post confirm_phone_users_passkeys_path, params: {code: "123456"}
@@ -461,6 +491,35 @@ RSpec.describe "Users::Passkeys", type: :request do
       expect(response).to have_http_status(:not_found)
       expect(Passkey.exists?(theirs.id)).to be(true)
       expect(user.passkeys.count).to eq(2)
+    end
+
+    it "refuses another user's bearer token inside a window this browser's user opened" do
+      _, user = setup
+      create(:passkey, user: user)
+      other = create(:user, :registered)
+      theirs = create(:passkey, user: other)
+      create(:passkey, user: other)
+
+      confirm_phone
+      delete users_passkey_path(theirs), headers: authenticate_as(other)
+
+      expect(response.parsed_body).to eq(
+        {"success" => false, "message" => Users::PasskeysController::REMOVE_PASSKEY_CONFIRM_FIRST_MESSAGE}
+      )
+      expect(other.passkeys.count).to eq(2)
+    end
+
+    it "removes a passkey for a bearer caller who opened the window with the same token" do
+      _, user = setup
+      chosen = create(:passkey, user: user)
+      create(:passkey, user: user)
+      headers = authenticate_as(user)
+
+      post confirm_phone_users_passkeys_path, params: {code: "123456"}, headers: headers
+      delete users_passkey_path(chosen), headers: headers
+
+      expect(response.parsed_body).to eq({"success" => true})
+      expect(Passkey.exists?(chosen.id)).to be(false)
     end
   end
 end

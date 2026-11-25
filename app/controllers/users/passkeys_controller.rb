@@ -78,7 +78,10 @@ module Users
         Sway::Settings.dev_login.skip_phone_verification ||
         add_passkey_code_approved?
 
-      session[:add_passkey_verified_at] = Time.current.to_i if approved
+      if approved
+        session[:add_passkey_verified_at] = Time.current.to_i
+        session[:add_passkey_verified_user_id] = current_user.id
+      end
       render json: {success: approved}, status: :ok
     end
 
@@ -192,11 +195,16 @@ module Users
 
     def add_passkey_verified?
       verified_at = session[:add_passkey_verified_at]
-      verified_at.present? && Time.zone.at(verified_at.to_i) > ADD_PASSKEY_VERIFY_WINDOW.ago
+      verified_user_id = session[:add_passkey_verified_user_id]
+      verified_at.present? &&
+        verified_user_id.present? &&
+        verified_user_id.to_i == current_user.id &&
+        Time.zone.at(verified_at.to_i) > ADD_PASSKEY_VERIFY_WINDOW.ago
     end
 
     def clear_add_passkey_session
       session.delete(:add_passkey_verified_at)
+      session.delete(:add_passkey_verified_user_id)
       session.delete(:add_passkey_registration)
     end
 
