@@ -21,14 +21,12 @@ describe("BillScoreBar", () => {
     });
 
     // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
-    test("prints no count in its text or its accessibility label, even when the score carries counts", () => {
-        const { toJSON } = wrap(<BillScoreBar bill_score={{ ...SPLIT, for: 7777, against: 4321 }} />);
+    test("prints only the two percentages, with no total", () => {
+        wrap(<BillScoreBar bill_score={SPLIT} />);
 
-        const rendered = JSON.stringify(toJSON());
-        for (const count of ["7777", "7,777", "4321", "4,321"]) {
-            expect(rendered).not.toContain(count);
-        }
-        expect(screen.queryByText(/total votes/)).toBeNull();
+        const bar = screen.getByTestId("bill-score-bar");
+        expect(bar).toHaveTextContent("How others votedFor: 70%Against: 30%");
+        expect(bar.props.accessibilityLabel).not.toMatch(/total/);
     });
 
     test("reads as one sentence to a screen reader, on an element iOS will not skip", () => {

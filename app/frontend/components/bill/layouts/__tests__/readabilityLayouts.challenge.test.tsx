@@ -243,10 +243,7 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
 
         it("Stress: Zero-score edge case shows the placeholder without NaN rendering", async () => {
             const zeroScore = {
-                for: null,
-                against: null,
                 comparison_suppressed: true,
-                voters_needed: 10,
                 districts: [],
             } as unknown as sway.IBillScore;
 
@@ -259,12 +256,9 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
 
         it("Stress: Extreme vote tallies show percentages and never the counts", async () => {
             const extremeScore = {
-                for: 1250000,
-                against: 850000,
                 for_percent: 60,
                 against_percent: 40,
                 comparison_suppressed: false,
-                voters_needed: 0,
                 districts: [],
             } as unknown as sway.IBillScore;
 
@@ -273,7 +267,6 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
 
             expect(document.body.textContent).toContain("60%");
             expect(document.body.textContent).toContain("40%");
-            expect(document.body.textContent).not.toMatch(/1,?250,?000|850,?000/);
         });
 
         it("Stress: Inactive bill with user vote suppresses EmailLegislatorsModal", async () => {
@@ -315,12 +308,9 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
         ({ themeId }) => {
             const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
                 bill_id: SAMPLE_BILL.id,
-                for: 7777,
-                against: 4321,
                 for_percent: 70,
                 against_percent: 30,
                 comparison_suppressed: false,
-                voters_needed: 0,
                 districts: [
                     {
                         district: { name: "D-4", number: 4, region_code: "D" } as sway.IDistrict,
@@ -352,15 +342,13 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             };
 
             it("replaces every tally, chart and majority statement with one placeholder", async () => {
-                await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
+                await renderWithScore(score({ comparison_suppressed: true }));
 
                 expect(screen.getAllByText("Not enough votes yet")).toHaveLength(1);
                 expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
                 const placeholder = screen.getByText("Not enough votes yet").parentElement;
                 expect(placeholder?.textContent).not.toMatch(/\d/);
                 const text = document.body.textContent ?? "";
-                expect(text).not.toMatch(/7,?777/);
-                expect(text).not.toMatch(/4,?321/);
                 expect(text).not.toContain("%");
                 expect(text).not.toMatch(/majority|leading|evenly split|no votes yet/i);
                 for (const testId of [
@@ -376,7 +364,7 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             });
 
             it("links an anonymous reader to sign-up from the placeholder", async () => {
-                await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
+                await renderWithScore(score({ comparison_suppressed: true }));
 
                 expect(screen.getByRole("link", { name: "Sign up" })).toBeInTheDocument();
                 expect(screen.queryByRole("button", { name: "Copy invite link" })).toBeNull();
@@ -385,7 +373,7 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             it("offers a signed-in reader a button to copy their invite link from the placeholder", async () => {
                 pageState.user = { id: 7, invite_url: "https://app.example.test/invite/7/abc" };
                 try {
-                    await renderWithScore(score({ comparison_suppressed: true, voters_needed: 4 }));
+                    await renderWithScore(score({ comparison_suppressed: true }));
 
                     expect(screen.getByRole("button", { name: "Copy invite link" })).toBeInTheDocument();
                     expect(screen.queryByRole("link", { name: "Sign up" })).toBeNull();

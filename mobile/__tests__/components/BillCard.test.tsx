@@ -97,15 +97,12 @@ describe("BillCard (D-12 refactor)", () => {
     });
 
     // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
-    test("prints no count, even when the score carries counts", () => {
-        const withCounts = { ...baseBill, bill_score: { ...baseBill.bill_score, for: 7777, against: 4321 } };
+    test("prints only the two percentages", () => {
+        wrap(<BillCard bill={baseBill} onPress={() => {}} />);
 
-        const { toJSON } = wrap(<BillCard bill={withCounts} onPress={() => {}} />);
-
-        const rendered = JSON.stringify(toJSON());
-        for (const count of ["7777", "7,777", "4321", "4,321"]) {
-            expect(rendered).not.toContain(count);
-        }
+        expect(screen.getByTestId("bill-card-42-for-percent")).toHaveTextContent("70%");
+        expect(screen.getByTestId("bill-card-42-against-percent")).toHaveTextContent("30%");
+        expect(screen.queryByText(/\b(7777|4321)\b|voted|total/)).toBeNull();
     });
 
     test("renders 'Open bill' CTA with accessibilityRole=button", () => {
@@ -134,7 +131,7 @@ describe("BillCard (D-12 refactor)", () => {
     test("shows one line and no digits for a withheld split", () => {
         const hidden = {
             ...baseBill,
-            bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: true, for: 7777, against: 4321 },
+            bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: true },
         };
 
         wrap(<BillCard bill={hidden} onPress={() => {}} />);

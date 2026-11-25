@@ -64,10 +64,6 @@ export const PARITY_COPY = {
         noVotesYet: "No votes recorded yet.",
         // @lat: [[voter-privacy-threshold#The placeholder shown in place of a hidden comparison]]
         voteComparisonPlaceholder: {
-            votersNeeded: (votersNeeded: number) =>
-                votersNeeded === 1
-                    ? "Visual comparisons will be shown when 1 more user has voted."
-                    : `Visual comparisons will be shown when ${votersNeeded} more users have voted.`,
             invitePrompt: "Invite others by sharing Sway",
             copyInviteLink: "Copy invite link",
             inviteLinkCopied: "Invite link copied to clipboard.",

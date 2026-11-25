@@ -71,13 +71,10 @@ RSpec.describe "Vote comparison privacy", type: :request do
     before { tally(bill_for: 6, bill_against: 3, reader: [6, 3], small: [0, 0], at_large: [6, 3]) }
 
     score_readers.each do |endpoint, reader|
-      it "#{endpoint} sends nil For and Against and no district row" do
+      it "#{endpoint} sends no percentages and no district row" do
         score = send(reader)
 
-        expect(score).to include(
-          "for" => nil, "against" => nil, "for_percent" => nil, "against_percent" => nil,
-          "comparison_suppressed" => true, "voters_needed" => 1
-        )
+        expect(score).to include("for_percent" => nil, "against_percent" => nil, "comparison_suppressed" => true)
         expect(score["districts"]).to eq([])
       end
     end
@@ -87,17 +84,60 @@ RSpec.describe "Vote comparison privacy", type: :request do
     end
   end
 
+  count_keys = %w[for against voters_needed pro_count con_count total_votes]
+
+  def keys_in(node)
+    case node
+    when Hash then node.flat_map { |key, value| [key.to_s] + keys_in(value) }
+    when Array then node.flat_map { |value| keys_in(value) }
+    else []
+    end
+  end
+
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+  context "when the bill has thirty voters" do
+    before { tally(bill_for: 18, bill_against: 12, reader: [9, 3], small: [3, 1], at_large: [18, 12]) }
+
+    score_readers.each do |endpoint, reader|
+      it "#{endpoint} sends no vote count and no voters-needed number" do
+        expect(keys_in(send(reader)) & count_keys).to eq([])
+      end
+    end
+
+    it "GET /bills/:id sends the web page no vote count and no voters-needed number" do
+      get "/bills/#{bill.id}"
+
+      expect(keys_in(inertia.props[:bill_score]) & count_keys).to eq([])
+    end
+
+    it "sends a bearer request no vote count and no voters-needed number" do
+      api_token = SecureRandom.hex(32)
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/bills/#{bill.id}", headers: {"Authorization" => "Bearer #{api_token}"}
+
+      expect(keys_in(response.parsed_body["bill_score"]) & count_keys).to eq([])
+    end
+
+    it "GET /bill_score_districts/:id sends no vote count and no voters-needed number" do
+      expect(keys_in(district_rows) & count_keys).to eq([])
+    end
+
+    it "GET /embed/bills/:id sends no vote count and no voters-needed number" do
+      get "/embed/bills/#{bill.id}"
+
+      expect(keys_in(inertia.props[:bill]) & count_keys).to eq([])
+    end
+  end
+
   context "when the bill has thirty votes" do
     before { tally(bill_for: 18, bill_against: 12, reader: [9, 3], small: [3, 1], at_large: [18, 12]) }
 
     score_readers.each do |endpoint, reader|
-      it "#{endpoint} sends exact bill totals and only the district with ten voters, as percentages" do
+      it "#{endpoint} sends the bill total and only the district with ten voters, as percentages" do
         score = send(reader)
 
-        expect(score).to include(
-          "for" => 18, "against" => 12, "for_percent" => 60, "against_percent" => 40,
-          "comparison_suppressed" => false, "voters_needed" => 0
-        )
+        expect(score).to include("for_percent" => 60, "against_percent" => 40, "comparison_suppressed" => false)
         expect(score["districts"].map { |row| row["district"]["name"] }).to eq([reader_district.name])
         row = score["districts"].first
         expect(row.keys - %w[legislator_names]).to match_array(district_row_keys)
@@ -186,10 +226,7 @@ RSpec.describe "Vote comparison privacy", type: :request do
       it "#{endpoint} withholds the split exactly as it does under ten voters" do
         score = send(reader)
 
-        expect(score).to include(
-          "for" => nil, "against" => nil, "for_percent" => nil, "against_percent" => nil,
-          "comparison_suppressed" => true
-        )
+        expect(score).to include("for_percent" => nil, "against_percent" => nil, "comparison_suppressed" => true)
         expect(score["districts"]).to eq([])
       end
     end
@@ -212,10 +249,10 @@ RSpec.describe "Vote comparison privacy", type: :request do
     before { tally(bill_for: 8, bill_against: 3, reader: [7, 3], small: [1, 0], at_large: [8, 3]) }
 
     score_readers.each do |endpoint, reader|
-      it "#{endpoint} sends the exact bill totals and no district row" do
+      it "#{endpoint} sends the bill total as percentages and no district row" do
         score = send(reader)
 
-        expect(score).to include("for" => 8, "against" => 3, "comparison_suppressed" => false)
+        expect(score).to include("for_percent" => 70, "against_percent" => 30, "comparison_suppressed" => false)
         expect(score["districts"]).to eq([])
       end
     end

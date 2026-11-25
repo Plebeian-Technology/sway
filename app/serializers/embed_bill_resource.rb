@@ -28,16 +28,6 @@ class EmbedBillResource < ApplicationResource
   end
 
   # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
-  attribute :pro_count do |bill|
-    for_count, against_count = EmbedBillResource.tally(bill)
-    VoteComparisonPrivacy.withheld?(for_count, against_count) ? nil : for_count
-  end
-
-  attribute :con_count do |bill|
-    for_count, against_count = EmbedBillResource.tally(bill)
-    VoteComparisonPrivacy.withheld?(for_count, against_count) ? nil : against_count
-  end
-
   attribute :pro_percent do |bill|
     EmbedBillResource.percentages(bill)&.fetch(:for)
   end
@@ -46,16 +36,8 @@ class EmbedBillResource < ApplicationResource
     EmbedBillResource.percentages(bill)&.fetch(:against)
   end
 
-  attribute :total_votes do |bill|
-    EmbedBillResource.tally(bill).sum
-  end
-
   attribute :comparison_suppressed do |bill|
     VoteComparisonPrivacy.withheld?(*EmbedBillResource.tally(bill))
-  end
-
-  attribute :voters_needed do |bill|
-    VoteComparisonPrivacy.voters_needed(*EmbedBillResource.tally(bill))
   end
 
   attribute :cta_url do |bill|

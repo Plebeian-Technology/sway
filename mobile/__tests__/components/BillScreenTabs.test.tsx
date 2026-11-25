@@ -240,10 +240,9 @@ describe("BillScreenTabs", () => {
     // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
     describe("the Votes tab below the ten-voter minimum", () => {
         const hiddenScore = {
-            for: 6,
-            against: 3,
+            for_percent: null,
+            against_percent: null,
             comparison_suppressed: true,
-            voters_needed: 1,
             districts: [scoreDistrict(1, 6, 2)],
         };
 
@@ -280,7 +279,7 @@ describe("BillScreenTabs", () => {
         });
 
         test("treats a cached payload with no flag as suppressed", () => {
-            renderTabs({ billScore: { for: 40, against: 20, districts: [scoreDistrict(1, 30, 10)] } });
+            renderTabs({ billScore: { for_percent: 70, against_percent: 30, districts: [scoreDistrict(1, 30, 10)] } });
             openVotes();
 
             expect(screen.getByText("Not enough votes yet")).toBeTruthy();
@@ -292,13 +291,11 @@ describe("BillScreenTabs", () => {
 
     describe("the Votes tab", () => {
         // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
-        test("shows the split as percentages and prints no count from the score", () => {
+        test("shows the split as percentages", () => {
             renderTabs({
                 billScore: {
                     for_percent: 70,
                     against_percent: 30,
-                    for: 7777,
-                    against: 4321,
                     comparison_suppressed: false,
                     districts: [],
                 },
@@ -307,7 +304,6 @@ describe("BillScreenTabs", () => {
 
             expect(screen.getByText("For: 70%")).toBeTruthy();
             expect(screen.getByText("Against: 30%")).toBeTruthy();
-            expect(screen.queryByText(/7,?777|4,?321/)).toBeNull();
         });
 
         test("stacks the vote panel, the tally, the districts and the next step in that order", () => {

@@ -62,12 +62,9 @@ export interface BillScreenTabsBill {
 type UserVote = { support?: "for" | "against" | "FOR" | "AGAINST" | null } | null;
 
 export interface BillScreenTabsBillScore {
-    for?: number | null;
-    against?: number | null;
     for_percent?: number | null;
     against_percent?: number | null;
     comparison_suppressed?: boolean | null;
-    voters_needed?: number | null;
     districts?: BillScoreDistrict[] | null;
 }
 

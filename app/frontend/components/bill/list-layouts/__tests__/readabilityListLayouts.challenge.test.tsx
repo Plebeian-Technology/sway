@@ -83,12 +83,9 @@ const SAMPLE_BILLS: sway.IBill[] = [
         scheduled_release_date_utc: "2026-09-08",
         active: true,
         bill_score: {
-            for: 7777,
-            against: 4321,
             for_percent: 70,
             against_percent: 30,
             comparison_suppressed: false,
-            voters_needed: 0,
         } as unknown as sway.IBillScore,
         user_vote: {
             support: Support.For,
@@ -105,12 +102,9 @@ const SAMPLE_BILLS: sway.IBill[] = [
         introduced_date_time_utc: "2026-04-01T14:30:00Z",
         active: true,
         bill_score: {
-            for: 85,
-            against: 92,
             for_percent: 40,
             against_percent: 60,
             comparison_suppressed: false,
-            voters_needed: 0,
         } as unknown as sway.IBillScore,
     } as unknown as sway.IBill,
 ];
@@ -322,12 +316,9 @@ describe("Empirical Challenge: Readability Bill List Layouts (Add Monochrome, Se
             it("prints one line and no count for a bill under ten voters, and leaves other rows as they were", () => {
                 deferredResolved = true;
                 const hiddenScore = {
-                    for: 7777,
-                    against: 4321,
                     for_percent: null,
                     against_percent: null,
                     comparison_suppressed: true,
-                    voters_needed: 4,
                 } as unknown as sway.IBillScore;
                 const bills = [{ ...SAMPLE_BILLS[0], bill_score: hiddenScore }, SAMPLE_BILLS[1]];
 
@@ -337,8 +328,6 @@ describe("Empirical Challenge: Readability Bill List Layouts (Add Monochrome, Se
                 expect(line).toHaveLength(1);
                 expect(line[0].textContent).not.toMatch(/\d/);
                 const text = container.textContent ?? "";
-                expect(text).not.toMatch(/7,?777/);
-                expect(text).not.toMatch(/4,?321/);
                 expect(text).toContain("40%");
                 expect(text).toContain("60%");
                 expect(text).not.toContain("Invite others by sharing Sway");
@@ -349,18 +338,13 @@ describe("Empirical Challenge: Readability Bill List Layouts (Add Monochrome, Se
             it("says 'Not enough votes yet' for a row whose score carries no flag", () => {
                 deferredResolved = true;
                 const unflaggedScore = {
-                    for: 7777,
-                    against: 4321,
                     for_percent: 70,
                     against_percent: 30,
                 } as unknown as sway.IBillScore;
 
-                const { container } = render(
-                    <Layout {...createProps({ bills: [{ ...SAMPLE_BILLS[0], bill_score: unflaggedScore }] })} />,
-                );
+                render(<Layout {...createProps({ bills: [{ ...SAMPLE_BILLS[0], bill_score: unflaggedScore }] })} />);
 
                 expect(screen.getAllByText("Not enough votes yet")).toHaveLength(1);
-                expect(container.textContent ?? "").not.toMatch(/7,?777/);
             });
 
             it("renders the Bill of the Month featured date on each card in past_bills_of_the_month mode and omits it in all_bills mode", () => {

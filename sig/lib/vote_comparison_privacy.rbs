@@ -6,7 +6,6 @@ module VoteComparisonPrivacy
 
     def self.suppressed?: (Integer for_count, Integer against_count) -> bool
 
-    def self.voters_needed: (Integer for_count, Integer against_count) -> Integer
 
     def self.unanimous?: (Integer first_count, Integer second_count) -> bool
 

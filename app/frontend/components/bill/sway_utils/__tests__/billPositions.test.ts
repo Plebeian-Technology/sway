@@ -142,12 +142,9 @@ const district = (number: number): sway.IDistrict =>
 
 const billScore = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
     bill_id: 1,
-    for: 18,
-    against: 12,
     for_percent: 60,
     against_percent: 40,
     comparison_suppressed: false,
-    voters_needed: 0,
     districts: [],
     ...overrides,
 });
@@ -155,7 +152,7 @@ const billScore = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
 // @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
 describe("isVoteComparisonSuppressed", () => {
     it("is true when the server says the tally is suppressed", () => {
-        expect(isVoteComparisonSuppressed(billScore({ comparison_suppressed: true, voters_needed: 4 }))).toBe(true);
+        expect(isVoteComparisonSuppressed(billScore({ comparison_suppressed: true }))).toBe(true);
     });
 
     it("is false only when the server says the tally may be shown", () => {

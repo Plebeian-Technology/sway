@@ -11,10 +11,6 @@ module VoteComparisonPrivacy
     (for_count + against_count) < MINIMUM_VOTERS
   end
 
-  def self.voters_needed(for_count, against_count)
-    [0, MINIMUM_VOTERS - (for_count + against_count)].max
-  end
-
   def self.unanimous?(first_count, second_count)
     (first_count + second_count).positive? && (first_count.zero? || second_count.zero?)
   end

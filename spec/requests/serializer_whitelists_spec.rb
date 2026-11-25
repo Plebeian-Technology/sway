@@ -1057,18 +1057,14 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       expect(hash.keys).to match_array(
         %w[
-          id identifier title brief_summary sway_locale current_status pro_count con_count pro_percent con_percent
-          total_votes cta_url comparison_suppressed voters_needed
+          id identifier title brief_summary sway_locale current_status pro_percent con_percent
+          cta_url comparison_suppressed
         ]
       )
       expect(hash["sway_locale"].keys.map(&:to_s)).to match_array(%w[name jurisdiction state])
-      expect(hash["pro_count"]).to eq(42)
-      expect(hash["con_count"]).to eq(13)
       expect(hash["pro_percent"]).to eq(75)
       expect(hash["con_percent"]).to eq(25)
-      expect(hash["total_votes"]).to eq(55)
       expect(hash["comparison_suppressed"]).to be(false)
-      expect(hash["voters_needed"]).to eq(0)
       expect(hash["cta_url"]).to include("/bills/#{bill.id}")
       expect(hash["cta_url"]).to include("partner=the-banner")
       expect(hash["cta_url"]).to include("ref=banner-123")
@@ -1547,7 +1543,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
-      score_keys = %w[id bill_id for against for_percent against_percent comparison_suppressed voters_needed districts]
+      score_keys = %w[id bill_id for_percent against_percent comparison_suppressed districts]
       score_district_keys = %w[
         bill_score_id district legislator_names comparison_suppressed for_percent against_percent at_large
       ]

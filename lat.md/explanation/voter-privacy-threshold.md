@@ -33,9 +33,9 @@ Worked examples, as counts, voters and the result:
 
 A bill's total reaches a reader as a For and an Against percentage, rounded by [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#rounded_percentages]] with the bill's voters as the voter count, once ten users have voted and the split is not unanimous.
 
-[[app/models/bill_score.rb#BillScore#comparison_suppressed?]] asks [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#withheld?]], so a bill with nine voters and a bill whose voters all took one side look the same to the reader: `for_percent`, `against_percent` and the counts are nil, and `comparison_suppressed` is true. `voters_needed` stays the number of further voters that would reach ten, so it is zero for a unanimous bill of ten or more. It is safe to send for a bill, because the feed already publishes how many users voted on it.
+[[app/models/bill_score.rb#BillScore#comparison_suppressed?]] asks [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#withheld?]], so a bill with nine voters and a bill whose voters all took one side look the same to the reader: `for_percent` and `against_percent` are nil, and `comparison_suppressed` is true. No payload says how many further voters would reach ten: that number would tell a bill under ten voters from a unanimous bill, and with a voter total it would give the counts back.
 
-The counts `for` and `against` still travel beside the percentages, in the same builders and under the same rule, until web and mobile read the percentages only. A later change removes them. [[voter-privacy-threshold#Percentages are rounded to steps and a unanimous split is withheld]] gives the reason for rounding.
+A bill score carries the two percentages and the flag, and no `for` or `against` count. [[voter-privacy-threshold#Percentages are rounded to steps and a unanimous split is withheld]] gives the reason for rounding.
 
 ## Districts are sent as percentages only
 
@@ -49,13 +49,13 @@ With district counts on the page, a hidden district's exact tally would equal th
 
 The at-large row stays out of the sum. It is never shown, and it counts every voter of its area, so adding it would count each voter twice. The sum also relies on each voter sitting in one numbered district per locale, which holds because a district's name keeps only its number: Maryland's delegate subdistricts 1A and 1B fold into district 1 with its senator. A voter counted in two shown rows would leave the districts holding more voters than the bill, so a negative remainder sends no row.
 
-A district under ten has no `voters_needed`, because that number would give its size away, and its row is not sent at all. A row exists only once someone in that district has voted, so even an empty-looking row would say that someone there did. The at-large district is left out as well: it covers every voter, so it repeats the bill total.
+A district under ten sends no row, and no row carries a number of voters needed, because that number would give the district's size away. A row exists only once someone in that district has voted, so even an empty-looking row would say that someone there did. The at-large district is left out as well: it covers every voter, so it repeats the bill total.
 
 ## No endpoint sends a count that could identify a voter
 
 Hiding a number on the page is not the guarantee, because anyone can read the JSON behind it. The guarantee is that the server never sends the number.
 
-Every bill score leaves through one of two doors, and both ask the model. [[app/models/bill_score.rb#BillScore#visible_for]] and its Against twin answer nil below the minimum, and [[app/models/bill_score.rb#BillScore#publishable_districts]] decides which district rows leave at all, asking [[app/models/bill_score_district.rb#BillScoreDistrict#publishable?]] of each row first. [[app/serializers/bill_score_resource.rb#BillScoreResource]] serves the bill page and Bill of the Month to the web and the phone. The two `to_builder` methods serve the bills index, past Bills of the Month and the `bill_scores` and `bill_score_districts` endpoints.
+Every bill score leaves through one of two doors, and both ask the model. [[app/models/bill_score.rb#BillScore#comparison_suppressed?]] decides whether the percentages are nil, and [[app/models/bill_score.rb#BillScore#publishable_districts]] decides which district rows leave at all, asking [[app/models/bill_score_district.rb#BillScoreDistrict#publishable?]] of each row first. [[app/serializers/bill_score_resource.rb#BillScoreResource]] serves the bill page and Bill of the Month to the web and the phone. The two `to_builder` methods serve the bills index, past Bills of the Month and the `bill_scores` and `bill_score_districts` endpoints.
 
 A district row carries its two percentages and never a count. Its `comparison_suppressed` and `at_large` keys stay, always false, because the phone treats a row without the flag as hidden.
 
@@ -141,7 +141,7 @@ The reader's own chart and tile keep their counts: [[app/frontend/components/leg
 
 The partner embed at `/embed/bills/:id` is public and a CDN keeps each response for up to fifteen minutes, so a count hidden only by the card would still be published.
 
-[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count`, `con_count`, `pro_percent` and `con_percent` as nil whenever the split is withheld (under ten voters or unanimous), with `comparison_suppressed` and `voters_needed`. The percentages follow the same rounding as the bill page. `total_votes` stays, because it says how many voted and not how. The card shows "Not enough votes yet", the invite prompt and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed. When the split is published the card draws `pro_percent` and `con_percent` in its text and `aria-label` and never reads a count.
+[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_percent` and `con_percent` as nil whenever the split is withheld (under ten voters or unanimous), with `comparison_suppressed`. The percentages follow the same rounding as the bill page. The payload carries no count, no voter total and no number of voters needed. The card shows "Not enough votes yet", the invite prompt and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed. When the split is published the card draws `pro_percent` and `con_percent` in its text and `aria-label` and reads no count.
 
 The response's ETag includes [[app/controllers/embed/bills_controller.rb#BillsController#PAYLOAD_VERSION]], so a deploy that changes the payload's shape or privacy rules, and bumps that constant, makes every ETag cached before it stale. A CDN or browser holding the old body revalidates, gets a full response instead of a 304, and drops the old counts. Without the bump the ETag follows only the bill and its score row, and a response cached before the rule would keep revalidating as 304 until someone voted on that bill. A response still inside its freshness window is served without revalidation until it expires, up to fifteen minutes.
 

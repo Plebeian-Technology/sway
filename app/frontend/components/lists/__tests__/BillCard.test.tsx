@@ -20,12 +20,9 @@ const bill = (bill_score: Partial<sway.IBillScore>): sway.IBill =>
         summary: "Cleans the air.",
         categories: [],
         bill_score: {
-            for: 7777,
-            against: 4321,
             for_percent: 70,
             against_percent: 30,
             comparison_suppressed: false,
-            voters_needed: 0,
             ...bill_score,
         },
     }) as unknown as sway.IBill;

@@ -8,9 +8,6 @@ class BillScore < ApplicationRecord
     def publishable_districts: -> Array[BillScoreDistrict]
     def countable_district_ids: -> Array[Integer]
     def comparison_suppressed?: -> bool
-    def voters_needed: -> Integer
-    def visible_for: -> Integer?
-    def visible_against: -> Integer?
     def for_percent: -> Integer?
     def against_percent: -> Integer?
 

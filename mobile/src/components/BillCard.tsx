@@ -23,12 +23,9 @@ export interface BillCardBill {
     summary?: string | null;
     user_vote?: { support?: string | null };
     bill_score?: {
-        for?: number | null;
-        against?: number | null;
         for_percent?: number | null;
         against_percent?: number | null;
         comparison_suppressed?: boolean | null;
-        voters_needed?: number | null;
     };
     link?: string;
 }

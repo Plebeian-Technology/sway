@@ -5,21 +5,11 @@ class BillScoreResource < ApplicationResource
   attributes :id, :bill_id
 
   # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
-  attribute :for do |score|
-    score.visible_for
-  end
-
-  attribute :against do |score|
-    score.visible_against
-  end
-
   attributes :for_percent, :against_percent
 
   attribute :comparison_suppressed do |score|
     score.comparison_suppressed?
   end
-
-  attributes :voters_needed
 
   attribute :districts do |score|
     district_scores = score.publishable_districts

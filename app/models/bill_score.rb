@@ -32,12 +32,9 @@ class BillScore < ApplicationRecord
     Jbuilder.new do |bs|
       bs.id id
       bs.bill_id bill_id
-      bs.for visible_for
-      bs.against visible_against
       bs.for_percent for_percent
       bs.against_percent against_percent
       bs.comparison_suppressed comparison_suppressed?
-      bs.voters_needed voters_needed
 
       bs.districts publishable_districts.map(&:to_sway_json)
     end
@@ -73,19 +70,6 @@ class BillScore < ApplicationRecord
     rounded_percentages&.fetch(:against)
   end
 
-  def voters_needed
-    VoteComparisonPrivacy.voters_needed(self.for, against)
-  end
-
-  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
-  def visible_for
-    comparison_suppressed? ? nil : self.for
-  end
-
-  def visible_against
-    comparison_suppressed? ? nil : against
-  end
-
   def to_builder_with_user(user, user_districts: nil)
     # @lat: [[bill-score-builder-variants#Why BillsController.index preloads bill_score_districts]]
     user_districts ||=
@@ -110,12 +94,9 @@ class BillScore < ApplicationRecord
     Jbuilder.new do |bs|
       bs.id id
       bs.bill_id bill_id
-      bs.for visible_for
-      bs.against visible_against
       bs.for_percent for_percent
       bs.against_percent against_percent
       bs.comparison_suppressed comparison_suppressed?
-      bs.voters_needed voters_needed
       bs.districts bill_districts.map(&:to_sway_json)
     end
   end

@@ -22,12 +22,9 @@ const BILL = { id: 42, title: "Street Trees Act" } as unknown as sway.IBill;
 // 30 voters: 12 in district 4, 4 in district 7, and the at-large row repeating the total.
 const SCORE: sway.IBillScore = {
     bill_id: 42,
-    for: 18,
-    against: 12,
     for_percent: 60,
     against_percent: 40,
     comparison_suppressed: false,
-    voters_needed: 0,
     districts: [
         { district: district(0), comparison_suppressed: false, for_percent: 60, against_percent: 40, at_large: true },
         { district: district(4), comparison_suppressed: false, for_percent: 75, against_percent: 25, at_large: false },
@@ -180,7 +177,7 @@ describe("district charts at the ten-voter minimum", () => {
     });
 
     it("draws neither panel while the bill tally is suppressed", () => {
-        const suppressed = { ...SCORE, for: null, against: null, comparison_suppressed: true, voters_needed: 3 };
+        const suppressed = { ...SCORE, comparison_suppressed: true };
 
         const { container } = render(
             <>

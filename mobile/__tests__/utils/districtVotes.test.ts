@@ -182,7 +182,7 @@ describe("ten-voter minimum", () => {
 
     test("a bill score with no flag, or a suppressed one, is suppressed", () => {
         expect(isVoteComparisonSuppressed({ for: 40, against: 2 })).toBe(true);
-        expect(isVoteComparisonSuppressed({ comparison_suppressed: true, voters_needed: 3 })).toBe(true);
+        expect(isVoteComparisonSuppressed({ comparison_suppressed: true })).toBe(true);
         expect(isVoteComparisonSuppressed(null)).toBe(true);
         expect(isVoteComparisonSuppressed({ for: 7, against: 3, comparison_suppressed: false })).toBe(false);
     });

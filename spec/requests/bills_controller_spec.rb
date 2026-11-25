@@ -156,9 +156,7 @@ RSpec.describe "BillsController", type: :request do
 
       bill_payload = inertia.props[:bills].find { |entry| entry["id"] == bill.id }
 
-      expect(bill_payload["bill_score"]).to include(
-        "for" => nil, "against" => nil, "comparison_suppressed" => true, "voters_needed" => 9
-      )
+      expect(bill_payload["bill_score"]).to include("for_percent" => nil, "against_percent" => nil, "comparison_suppressed" => true)
     end
 
     it "passes the filters prop" do

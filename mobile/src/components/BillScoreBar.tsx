@@ -8,8 +8,6 @@ import { isVoteComparisonSuppressed } from "../utils/districtVotes";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
 interface BillScore {
-    for?: number | null;
-    against?: number | null;
     for_percent?: number | null;
     against_percent?: number | null;
     comparison_suppressed?: boolean | null;

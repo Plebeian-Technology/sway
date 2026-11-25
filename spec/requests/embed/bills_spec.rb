@@ -29,44 +29,37 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(inertia.props[:bill][:id]).to eq(bill.id)
       expect(inertia.props[:bill][:identifier]).to eq("SB-123")
       expect(inertia.props[:bill][:title]).to eq("Clean Water and Community Health Act")
-      expect(inertia.props[:bill][:pro_count]).to eq(25)
-      expect(inertia.props[:bill][:con_count]).to eq(5)
-      expect(inertia.props[:bill][:total_votes]).to eq(30)
+      expect(inertia.props[:bill]).to include(pro_percent: 85, con_percent: 15)
       expect(inertia.props[:cta_url]).to eq("/bills/#{bill.id}")
     end
 
     # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
-    it "withholds the For and Against counts while the bill has nine votes" do
+    it "withholds the percentages while the bill has nine votes" do
       bill_score.update!(for: 6, against: 3)
 
       get "/embed/bills/#{bill.id}"
 
-      expect(inertia.props[:bill]).to include(
-        pro_count: nil,
-        con_count: nil,
-        pro_percent: nil,
-        con_percent: nil,
-        comparison_suppressed: true,
-        voters_needed: 1,
-        total_votes: 9
-      )
-      expect(response.body).not_to match(/"pro_count":\s*6|"con_count":\s*3/)
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
     end
 
-    it "sends the counts and the two flags once the bill has ten votes" do
+    it "sends the percentages and the flag once the bill has ten votes" do
       bill_score.update!(for: 7, against: 3)
 
       get "/embed/bills/#{bill.id}"
 
-      expect(inertia.props[:bill]).to include(
-        pro_count: 7,
-        con_count: 3,
-        pro_percent: 70,
-        con_percent: 30,
-        comparison_suppressed: false,
-        voters_needed: 0,
-        total_votes: 10
-      )
+      expect(inertia.props[:bill]).to include(pro_percent: 70, con_percent: 30, comparison_suppressed: false)
+    end
+
+    # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+    it "sends no vote count, voter total or voters-needed number for a bill with thirty voters" do
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill].keys).not_to include(:pro_count, :con_count, :total_votes, :voters_needed)
+      expect(response.body).not_to match(/pro_count|con_count|total_votes|voters_needed/)
+    end
+
+    it "carries payload version 4 in its cache tag" do
+      expect(Embed::BillsController::PAYLOAD_VERSION).to eq("4")
     end
 
     # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
@@ -89,15 +82,7 @@ RSpec.describe "Embed::Bills", type: :request do
 
       get "/embed/bills/#{bill.id}"
 
-      expect(inertia.props[:bill]).to include(
-        pro_count: nil,
-        con_count: nil,
-        pro_percent: nil,
-        con_percent: nil,
-        comparison_suppressed: true,
-        voters_needed: 0
-      )
-      expect(response.body).not_to match(/"pro_count":\s*10/)
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
     end
 
     it "answers a conditional GET holding the previous payload version's ETag with a full body" do
@@ -202,7 +187,7 @@ RSpec.describe "Embed::Bills", type: :request do
       get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => old_etag}
 
       expect(response).to have_http_status(:ok)
-      expect(inertia.props[:bill]).to include(pro_count: nil, con_count: nil, comparison_suppressed: true)
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
     end
 
     it "generates different ETags when utm_* parameters differ" do
@@ -246,9 +231,7 @@ RSpec.describe "Embed::Bills", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(response.headers["ETag"]).not_to eq(original_etag)
-        expect(inertia.props[:bill][:pro_count]).to eq(100)
-        expect(inertia.props[:bill][:con_count]).to eq(20)
-        expect(inertia.props[:bill][:total_votes]).to eq(120)
+        expect(inertia.props[:bill]).to include(pro_percent: 85, con_percent: 15)
       end
     end
 
@@ -263,7 +246,7 @@ RSpec.describe "Embed::Bills", type: :request do
       get "/embed/bills/#{bill.id}", headers: {"If-Modified-Since" => 1.hour.from_now.httpdate}
 
       expect(response).to have_http_status(:ok)
-      expect(inertia.props[:bill]).to include(pro_count: nil, con_count: nil, comparison_suppressed: true)
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
     end
 
     it "sends no Last-Modified header, so only the ETag can answer 304" do

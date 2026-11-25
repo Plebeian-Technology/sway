@@ -284,12 +284,9 @@ declare module "sway" {
 
         // @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
         interface IBaseScore {
-            for: number | null;
-            against: number | null;
             for_percent: number | null;
             against_percent: number | null;
             comparison_suppressed: boolean;
-            voters_needed: number;
         }
 
         // @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
@@ -552,19 +549,6 @@ declare module "sway" {
         }
 
         namespace scoring {
-            interface ISupportable {
-                for: number;
-                against: number;
-            }
-            interface IBillScoreDistrctSupport extends ISupportable {
-                district: IDistrict;
-            }
-
-            interface IBillScoreSupport extends ISupportable {
-                bill_id: number;
-                districts: IBillScoreDistrct[];
-            }
-
             interface IAgreeable {
                 count_agreed: number;
                 count_disagreed: number;

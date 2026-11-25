@@ -14,13 +14,9 @@ const mockBill: IEmbedBill = {
         state: "maryland",
     },
     current_status: "In Committee",
-    pro_count: 7777,
-    con_count: 4321,
     pro_percent: 70,
     con_percent: 30,
-    total_votes: 12098,
     comparison_suppressed: false,
-    voters_needed: 0,
     cta_url: "/bills/42?partner=the-banner&ref=art-99",
 };
 
@@ -55,10 +51,9 @@ describe("embed/BillCard", () => {
     });
 
     it("shows the percentages and no count in text, aria-label or title", () => {
-        const { container } = render(<BillCard bill={mockBill} />);
+        render(<BillCard bill={mockBill} />);
 
-        expect(screen.getByTestId("vote-meter").textContent).not.toMatch(/7,?777|4,?321/);
-        expect(container.innerHTML).not.toMatch(/7,?777|4,?321/);
+        expect(screen.getByTestId("vote-meter").textContent).not.toMatch(/votes|total/i);
         expect(screen.getByTestId("vote-meter").querySelector("[aria-label]")?.getAttribute("aria-label")).toBe(
             "Support 70%, Oppose 30%",
         );
@@ -70,13 +65,9 @@ describe("embed/BillCard", () => {
     it("shows the placeholder with a sign-up link and no percentage below the ten-voter minimum", () => {
         const nineVotesBill: IEmbedBill = {
             ...mockBill,
-            pro_count: null,
-            con_count: null,
             pro_percent: null,
             con_percent: null,
-            total_votes: 9,
             comparison_suppressed: true,
-            voters_needed: 1,
         };
 
         render(<BillCard bill={nineVotesBill} />);
@@ -92,30 +83,20 @@ describe("embed/BillCard", () => {
     });
 
     it("sends a plain sign-in link when the embed carries no partner", () => {
-        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true, voters_needed: 1, cta_url: "" }} />);
+        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true, cta_url: "" }} />);
 
         expect(screen.getByRole("link", { name: "Sign up" }).getAttribute("href")).toBe("/");
     });
 
-    it("keeps counts hidden when a payload says suppressed but still carries them", () => {
-        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true, voters_needed: 3 }} />);
+    it("keeps percentages hidden when a payload says suppressed but still carries them", () => {
+        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true }} />);
 
         expect(screen.queryByTestId("vote-meter")).toBeNull();
         expect(screen.getByTestId("vote-meter-suppressed").textContent).not.toMatch(/70|30|%/);
     });
 
     it("treats top-level props with no flag as suppressed", () => {
-        render(
-            <BillCard
-                id={mockBill.id}
-                title={mockBill.title}
-                pro_count={7777}
-                con_count={4321}
-                pro_percent={70}
-                con_percent={30}
-                total_votes={12098}
-            />,
-        );
+        render(<BillCard id={mockBill.id} title={mockBill.title} pro_percent={70} con_percent={30} />);
 
         expect(screen.queryByTestId("vote-meter")).toBeNull();
         expect(screen.getByTestId("vote-meter-suppressed").textContent).toContain("Not enough votes yet");

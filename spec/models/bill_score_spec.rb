@@ -70,7 +70,6 @@ RSpec.describe BillScore, type: :model do
 
         expect(score.comparison_suppressed?).to be(false)
         expect([score.for_percent, score.against_percent]).to eq([for_percent, against_percent])
-        expect([score.visible_for, score.visible_against]).to eq([bill_for, bill_against])
       end
     end
 
@@ -78,7 +77,7 @@ RSpec.describe BillScore, type: :model do
       score = score_with(10, 0)
 
       expect(score.comparison_suppressed?).to be(true)
-      expect([score.for_percent, score.against_percent, score.visible_for, score.visible_against]).to eq([nil, nil, nil, nil])
+      expect([score.for_percent, score.against_percent]).to eq([nil, nil])
     end
 
     it "withhold a unanimous Against split" do
@@ -92,12 +91,16 @@ RSpec.describe BillScore, type: :model do
       score = score_with(6, 3)
 
       expect(score.comparison_suppressed?).to be(true)
-      expect([score.for_percent, score.against_percent, score.visible_for, score.visible_against]).to eq([nil, nil, nil, nil])
+      expect([score.for_percent, score.against_percent]).to eq([nil, nil])
     end
 
-    it "keep voters_needed at the number of voters under ten" do
-      expect(score_with(6, 3).voters_needed).to eq(1)
-      expect(score_with(10, 0).voters_needed).to eq(0)
+    # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+    it "send no count and no voters-needed number from either builder" do
+      score = create(:bill_score, for: 18, against: 12)
+      user = create(:user)
+
+      expect(score.to_builder.attributes!.keys).to match_array(%w[id bill_id for_percent against_percent comparison_suppressed districts])
+      expect(score.to_builder_with_user(user).attributes!.keys).to match_array(%w[id bill_id for_percent against_percent comparison_suppressed districts])
     end
 
     it "send the percentages from both builders" do

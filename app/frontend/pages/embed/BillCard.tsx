@@ -14,13 +14,9 @@ export interface IEmbedBill {
         state: string;
     };
     current_status: string;
-    pro_count: number | null;
-    con_count: number | null;
     pro_percent: number | null;
     con_percent: number | null;
-    total_votes: number;
     comparison_suppressed: boolean;
-    voters_needed: number;
     cta_url: string;
 }
 
@@ -36,13 +32,9 @@ export interface IProps {
         state: string;
     };
     current_status?: string;
-    pro_count?: number | null;
-    con_count?: number | null;
     pro_percent?: number | null;
     con_percent?: number | null;
-    total_votes?: number;
     comparison_suppressed?: boolean;
-    voters_needed?: number;
     cta_url?: string;
 }
 
@@ -54,13 +46,9 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         brief_summary: props.brief_summary ?? "",
         sway_locale: props.sway_locale ?? { name: "", jurisdiction: "", state: "" },
         current_status: props.current_status ?? "Introduced",
-        pro_count: props.pro_count ?? 0,
-        con_count: props.con_count ?? 0,
         pro_percent: props.pro_percent ?? 0,
         con_percent: props.con_percent ?? 0,
-        total_votes: props.total_votes ?? 0,
         comparison_suppressed: props.comparison_suppressed ?? true,
-        voters_needed: props.voters_needed ?? 0,
         cta_url: props.cta_url ?? "",
     };
 

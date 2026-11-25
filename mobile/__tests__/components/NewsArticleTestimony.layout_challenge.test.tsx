@@ -95,7 +95,7 @@ const baseBillPayload = {
     },
     sponsor: { full_name: "Del. Jordan Taylor" },
     user_vote: { support: "for" },
-    bill_score: { for: 150, against: 75, comparison_suppressed: false, voters_needed: 0 },
+    bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: false },
     organizations: [
         {
             id: 1,
@@ -146,10 +146,9 @@ const baseBotmDetail = {
     bill_score: {
         id: 5,
         bill_id: 99,
-        for: 85,
-        against: 45,
+        for_percent: 65,
+        against_percent: 35,
         comparison_suppressed: false,
-        voters_needed: 0,
         districts: [
             {
                 bill_score_id: 5,

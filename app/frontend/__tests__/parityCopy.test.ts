@@ -62,10 +62,8 @@ describe("PARITY_COPY — keys (nested paths)", () => {
         expect(PARITY_COPY.bill.shareCopied).toBe("Bill link copied to clipboard.");
     });
 
-    it("bill.voteComparisonPlaceholder counts the users still needed, singular at one", () => {
-        const copy = PARITY_COPY.bill.voteComparisonPlaceholder;
-        expect(copy.votersNeeded(3)).toBe("Visual comparisons will be shown when 3 more users have voted.");
-        expect(copy.votersNeeded(1)).toBe("Visual comparisons will be shown when 1 more user has voted.");
+    it("bill.voteComparisonPlaceholder has no copy that counts the users still needed", () => {
+        expect(PARITY_COPY.bill.voteComparisonPlaceholder).not.toHaveProperty("votersNeeded");
     });
 
     it("bill.voteComparisonPlaceholder carries the invite, sign-up and no-number strings", () => {

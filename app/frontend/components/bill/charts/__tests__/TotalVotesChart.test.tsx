@@ -6,12 +6,9 @@ import TotalVotesChart from "app/frontend/components/bill/charts/TotalVotesChart
 
 const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
     bill_id: 42,
-    for: 7777,
-    against: 4321,
     for_percent: 70,
     against_percent: 30,
     comparison_suppressed: false,
-    voters_needed: 0,
     districts: [],
     ...overrides,
 });
