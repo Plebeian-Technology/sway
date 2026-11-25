@@ -133,7 +133,6 @@ const BillOfTheMonthBody: React.FC<BodyProps> = ({
                 onVoted={handleVoted}
                 onNavigateToLegislators={() => nav.getParent()?.navigate("Legislators" as never)}
                 onNavigateToBills={() => nav.getParent()?.navigate("Bills" as never)}
-                onNavigateToSignIn={() => nav.navigate("Auth" as never)}
                 onSponsorPress={
                     sponsorId != null
                         ? () =>

@@ -81,7 +81,6 @@ const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabs
     onVoted: jest.fn(),
     onNavigateToLegislators: jest.fn(),
     onNavigateToBills: jest.fn(),
-    onNavigateToSignIn: jest.fn(),
     heroTestID: "hero",
     summariesTestID: "summaries",
     ...overrides,
@@ -262,7 +261,7 @@ describe("BillScreenTabs", () => {
 
         test("copies the signed-in reader's invite link", async () => {
             jest.mocked(Clipboard.setStringAsync).mockResolvedValue(true);
-            renderTabs({ billScore: hiddenScore });
+            renderTabs({ billScore: hiddenScore, isSignedIn: true });
             openVotes();
 
             fireEvent.press(screen.getByTestId("vote-comparison-invite"));
@@ -271,18 +270,14 @@ describe("BillScreenTabs", () => {
             expect(await screen.findByText("Invite link copied to clipboard.")).toBeTruthy();
         });
 
-        test("sends a signed-out reader to sign in from the placeholder's prompt", () => {
+        test("offers a signed-in reader whose bootstrap has not loaded no sign-up button", () => {
             mockBootstrapUser = null;
-            const onNavigateToSignIn = jest.fn();
-            renderTabs({ billScore: hiddenScore, onNavigateToSignIn });
+            renderTabs({ billScore: hiddenScore, isSignedIn: true });
             openVotes();
 
-            fireEvent.press(screen.getByTestId("vote-comparison-sign-up"));
-            fireEvent.press(
-                within(screen.getByTestId("vote-comparison-auth-prompt")).getByTestId("btn-auth-prompt-sign-in"),
-            );
-
-            expect(onNavigateToSignIn).toHaveBeenCalledTimes(1);
+            expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
+            expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
+            expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
         });
 
         test("treats a cached payload with no flag as suppressed", () => {

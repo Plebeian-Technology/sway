@@ -1,7 +1,7 @@
 // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
 import React from "react";
 import * as Clipboard from "expo-clipboard";
-import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { VoteComparisonPlaceholder } from "../../src/components/VoteComparisonPlaceholder";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
@@ -25,7 +25,7 @@ describe("VoteComparisonPlaceholder", () => {
     });
 
     test("says how many more users are needed and asks the reader to invite others", () => {
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
 
         expect(screen.getByText("Visual comparisons will be shown when 3 more users have voted.")).toBeTruthy();
         expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
@@ -46,7 +46,7 @@ describe("VoteComparisonPlaceholder", () => {
     });
 
     test("copies a signed-in reader's invite link and says it was copied", async () => {
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
 
         expect(screen.getByText("Copy invite link")).toBeTruthy();
         expect(screen.queryByText("Invite link copied to clipboard.")).toBeNull();
@@ -59,7 +59,7 @@ describe("VoteComparisonPlaceholder", () => {
 
     test("says nothing was copied when the clipboard refuses", async () => {
         jest.mocked(Clipboard.setStringAsync).mockResolvedValue(false);
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
 
         fireEvent.press(screen.getByTestId("vote-comparison-invite"));
 
@@ -71,34 +71,26 @@ describe("VoteComparisonPlaceholder", () => {
     test("shows no button for a signed-in reader with no invite link", () => {
         mockCurrentUser = { id: 7, invite_url: null };
 
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
 
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
         expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
     });
 
-    test("offers a signed-out reader the sign-in prompt", () => {
+    test("shows no button for a signed-in reader whose bootstrap has not loaded", () => {
         mockCurrentUser = null;
 
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn />);
 
+        expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
-        fireEvent.press(screen.getByTestId("vote-comparison-sign-up"));
-        expect(screen.getByTestId("vote-comparison-auth-prompt").props.visible).toBe(true);
+        expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
     });
 
-    test("sends a signed-out reader to sign in from the prompt", () => {
-        mockCurrentUser = null;
-        const onSignInRequested = jest.fn();
+    test("offers no invite link to a reader who is not signed in", () => {
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} isSignedIn={false} />);
 
-        wrap(<VoteComparisonPlaceholder votersNeeded={3} onSignInRequested={onSignInRequested} />);
-
-        fireEvent.press(screen.getByTestId("vote-comparison-sign-up"));
-        fireEvent.press(
-            within(screen.getByTestId("vote-comparison-auth-prompt")).getByTestId("btn-auth-prompt-sign-in"),
-        );
-
-        expect(onSignInRequested).toHaveBeenCalledTimes(1);
-        expect(screen.queryByTestId("vote-comparison-auth-prompt")?.props.visible ?? false).toBe(false);
+        expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
+        expect(screen.queryByTestId("vote-comparison-sign-up")).toBeNull();
     });
 });

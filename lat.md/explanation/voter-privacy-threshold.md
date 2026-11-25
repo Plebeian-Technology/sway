@@ -118,7 +118,9 @@ The phone's Votes tab shows the placeholder in place of the score bar and the di
 
 Above the minimum, [[mobile/src/utils/districtVotes.ts#selectDistrictVotes]] keeps only districts that carry percentages and are neither hidden nor at-large. A reader district with no row becomes a suppressed row, which the panel draws as "Not enough votes yet" with no sentence about the majority.
 
-[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] reads the invite link from the bootstrap response's current user. The button copies the link with `expo-clipboard`, as the web button copies it, and prints "Invite link copied to clipboard." under itself once the copy succeeds. A signed-out reader gets the sign-in prompt the vote buttons use, and its sign-in button closes the prompt and calls the placeholder's sign-in callback. On the bill screens that callback is the `onNavigateToSignIn` prop of [[mobile/src/components/BillScreenTabs.tsx#BillScreenTabs]], which each screen wires to the `Auth` route the way the organizations list does.
+[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] takes whether the reader is signed in from the `isSignedIn` prop of [[mobile/src/components/BillScreenTabs.tsx#BillScreenTabs]], which each bill screen reads from the session, and the invite link from the bootstrap response's current user. The button copies the link with `expo-clipboard`, as the web button copies it, and prints "Invite link copied to clipboard." under itself once the copy succeeds.
+
+The phone placeholder has no sign-up button. The app mounts the bill screens only for a signed-in reader, and the sign-in screens only for a signed-out one, so a bill screen has no sign-in route to reach. A signed-in reader whose bootstrap is still loading, or failed, has no invite link yet and sees no button, as the web does for a signed-in reader without one.
 
 ## The mobile legislator screens draw percentages or the placeholder
 
