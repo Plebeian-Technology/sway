@@ -149,6 +149,29 @@ RSpec.describe "Changing a registered user's address on the web", type: :request
     )
   end
 
+  it "keeps a registered user with an unlocated address on the change-address page when the new address is still unlocated" do
+    unlocated_user = create(:user)
+    unlocated = create(:address, street: "123 Main St", city: "", region_code: "", postal_code: "", country: "",
+      latitude: nil, longitude: nil)
+    UserAddress.create!(user: unlocated_user, address: unlocated)
+    unlocated_user.add_pending_representative_locale(sway_locale)
+    unlocated_user.complete_registration!
+    sign_in(unlocated_user)
+    allow(Geocoder).to receive(:search).and_return([])
+    allow_any_instance_of(SwayRegistrationService).to receive(:call) # rubocop:disable RSpec/AnyInstance
+
+    submit_new_address(street: "456 Oak Ave", city: "", region_code: "", postal_code: "", country: "",
+      latitude: nil, longitude: nil)
+
+    expect(response).to redirect_to(edit_users_address_path)
+    follow_redirect!
+    expect(inertia).to render_component(Pages::REGISTRATION)
+    expect(inertia).to have_props(
+      change_address: true,
+      registration_outcome: {"reason" => "address_not_located", "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE}
+    )
+  end
+
   it "keeps first-time registration outcomes on the registration page" do
     first_timer = create(:user)
     sign_in(first_timer)

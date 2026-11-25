@@ -44,6 +44,7 @@ class SwayRegistrationController < ApplicationController
     if u.nil?
       return respond_json_or_redirect(status: :unauthorized, json: {error: {code: "unauthorized"}}, redirect: root_path)
     end
+    return_path = address_switch_return_path(u)
 
     # @lat: [[identity-and-access#Two voter-registration flags mean different things]]
     # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
@@ -55,7 +56,7 @@ class SwayRegistrationController < ApplicationController
     previously_unlocated = previous_address.present? && !previous_address.located?
     address_instance = address
     if holds_representatives?(u, previous_address) && existing_link.present? && existing_link.address_id != address_instance.id
-      return handle_address_switch(u, existing_link.address, address_instance)
+      return handle_address_switch(u, existing_link.address, address_instance, return_path)
     end
 
     if existing_link
@@ -109,7 +110,7 @@ class SwayRegistrationController < ApplicationController
     u.reload
     wait_for_congress_representatives(u, address_instance) unless u.registered?
     u.complete_registration!
-    return render_address_not_located(u, address_instance) unless address_instance.located?
+    return render_address_not_located(u, address_instance, redirect: return_path) unless address_instance.located?
 
     redirect_after_registration_completion(u)
   end
@@ -163,8 +164,7 @@ class SwayRegistrationController < ApplicationController
   end
 
   # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
-  def handle_address_switch(u, previous_address, new_address)
-    return_path = address_switch_return_path(u)
+  def handle_address_switch(u, previous_address, new_address, return_path)
     unless confirm_deactivate_legislators?
       error = RegistrationErrorResource.new(
         {

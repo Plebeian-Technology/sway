@@ -31,7 +31,7 @@ class SwayRegistrationController < ApplicationController
 
     def render_onboarding_unavailable: () -> void
 
-    def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
+    def handle_address_switch: (User u, Address previous_address, Address new_address, String return_path) -> untyped
 
     def address_switch_return_path: (User u) -> String
 
