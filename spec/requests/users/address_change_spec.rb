@@ -55,7 +55,18 @@ RSpec.describe "Changing a registered user's address on the web", type: :request
       get edit_users_address_path
 
       expect(inertia).to render_component(Pages::REGISTRATION)
-      expect(inertia).to have_props(change_address: true, current_address: current_address.full_address)
+      expect(inertia).to have_props(change_address: true,
+        current_address: "100 N Holliday St, Baltimore, MD, 21202, US")
+    end
+
+    it "shows a street-only current address without empty parts" do
+      street_only = create(:address, street: "123 Main St", city: "", region_code: "", postal_code: "", country: "",
+        latitude: nil, longitude: nil)
+      UserAddress.find_by!(user: user).update!(address: street_only)
+
+      get edit_users_address_path
+
+      expect(inertia).to have_props(current_address: "123 Main St")
     end
 
     it "sends a user who has not registered yet to first-time registration" do

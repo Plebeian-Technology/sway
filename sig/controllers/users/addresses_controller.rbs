@@ -4,6 +4,8 @@ module Users
 
     private
 
+    def current_address: -> String?
+
     def registration_outcome: -> Hash[String, untyped]?
   end
 end

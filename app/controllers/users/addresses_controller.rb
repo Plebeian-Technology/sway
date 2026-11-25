@@ -6,12 +6,20 @@ module Users
     def edit
       render inertia: Pages::REGISTRATION, props: {
         change_address: true,
-        current_address: current_user.address&.full_address,
+        current_address: current_address,
         registration_outcome: registration_outcome
       }.compact
     end
 
     private
+
+    def current_address
+      address = current_user.address
+      return nil if address.nil?
+
+      [address.street, address.city, address.region_code, address.postal_code, address.country]
+        .filter_map(&:presence).join(", ")
+    end
 
     def registration_outcome
       outcome = flash[:registration_outcome]
