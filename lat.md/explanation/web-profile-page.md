@@ -28,7 +28,7 @@ The Delete Account button asks for confirmation in the shared confirm dialog, na
 
 The Sign Out All Devices button asks in the shared confirm dialog, with the mobile sheet's title and body from the parity copy, then posts to the endpoint described in [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]].
 
-The endpoint redirects to the public home page signed out, and the page runs the same cache purge as account deletion on success. The endpoint takes no account id, so the button can only ever end the reader's own sessions.
+The endpoint redirects to the public home page signed out, and the page runs the same cache purge as account deletion, under the same guard: a refusal, such as a failed CSRF check or a rate limit, redirects back with the reader still signed in, so the page purges only when the returned page no longer names the same user. The endpoint takes no account id, so the button can only ever end the reader's own sessions.
 
 ## Changing the address from the web
 

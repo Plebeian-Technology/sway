@@ -63,8 +63,17 @@ const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
         if (!confirmed) return;
 
         // @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
-        router.post(ROUTES.users.signOutAllDevices, {}, { onSuccess: clearIdentityCaches });
-    }, [confirm]);
+        router.post(
+            ROUTES.users.signOutAllDevices,
+            {},
+            {
+                onSuccess: (page) => {
+                    const signedInUser = page.props.user as sway.IUser | null | undefined;
+                    if (signedInUser?.id !== user.id) clearIdentityCaches();
+                },
+            },
+        );
+    }, [confirm, user.id]);
 
     return (
         <div className="mx-auto w-full max-w-2xl space-y-6 px-4 py-6">

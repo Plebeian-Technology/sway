@@ -171,5 +171,30 @@ describe("Profile", () => {
             await vi.waitFor(() => expect(inertia.router.post).toHaveBeenCalledTimes(1));
             expect(inertia.router.post.mock.calls[0][0]).toBe("/users/sign_out_all_devices");
         });
+
+        const confirmAndSignOut = async () => {
+            render(<Profile can_manage_api_keys={false} />);
+            fireEvent.click(screen.getByRole("button", { name: "Sign Out All Devices" }));
+            const dialog = screen.getByRole("dialog", { name: "Sign out all devices" });
+            fireEvent.click(within(dialog).getByRole("button", { name: "Sign Out All Devices" }));
+            await vi.waitFor(() => expect(inertia.router.post).toHaveBeenCalledTimes(1));
+            return inertia.router.post.mock.calls[0][2] as { onSuccess: (page: unknown) => void };
+        };
+
+        it("clears the browser's identity caches once the user is signed out", async () => {
+            const { onSuccess } = await confirmAndSignOut();
+
+            onSuccess({ props: { user: null } });
+
+            expect(identity.clearIdentityCaches).toHaveBeenCalledTimes(1);
+        });
+
+        it("keeps the identity caches when the server refuses and the same user is still signed in", async () => {
+            const { onSuccess } = await confirmAndSignOut();
+
+            onSuccess({ props: { user: { id: 7 } } });
+
+            expect(identity.clearIdentityCaches).not.toHaveBeenCalled();
+        });
     });
 });
