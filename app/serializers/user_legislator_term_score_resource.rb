@@ -74,6 +74,15 @@ class UserLegislatorTermScoreResource < ApplicationResource
       suppressed = comparison_suppressed?(counted_rows, totals)
       {comparison_suppressed: suppressed}
         .merge(suppressed ? PERCENT_KEY_BY_COUNTER.values.index_with { nil } : percentages(totals))
+        .merge(voter_agreement_percent: suppressed ? nil : voter_agreement_percent(totals))
+    end
+
+    # Whole-number agreed share of agreed plus disagreed; nil when neither was counted.
+    def voter_agreement_percent(totals)
+      decided = totals[:count_agreed] + totals[:count_disagreed]
+      return nil if decided.zero?
+
+      (totals[:count_agreed] * 100.0 / decided).round
     end
 
     # @lat: [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]

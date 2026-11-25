@@ -30,6 +30,7 @@ const shown: sway.scoring.ILegislatorDistrictScore = {
     disagreed_percent: 30,
     no_legislator_vote_percent: 8,
     legislator_abstained_percent: 0,
+    voter_agreement_percent: 67,
 };
 
 const hidden: sway.scoring.ILegislatorDistrictScore = {
@@ -40,6 +41,7 @@ const hidden: sway.scoring.ILegislatorDistrictScore = {
     disagreed_percent: null,
     no_legislator_vote_percent: null,
     legislator_abstained_percent: null,
+    voter_agreement_percent: null,
 };
 
 const ownScore = { count_agreed: 5, count_disagreed: 2, count_no_legislator_vote: 1, count_legislator_abstained: 0 };

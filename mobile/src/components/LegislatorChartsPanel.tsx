@@ -18,6 +18,7 @@ export interface LegislatorScore {
     disagreed_percent?: number | null;
     no_legislator_vote_percent?: number | null;
     legislator_abstained_percent?: number | null;
+    voter_agreement_percent?: number | null;
 }
 
 export interface LegislatorChartsPanelProps {

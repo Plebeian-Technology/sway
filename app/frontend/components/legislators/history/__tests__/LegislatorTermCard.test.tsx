@@ -81,6 +81,37 @@ describe("LegislatorTermCard at the ten-voter minimum", () => {
         expect(localeTile.textContent).not.toMatch(/4,?321|1,?234/);
     });
 
+    it("headlines each tile with the server's agreed share of agreed and disagreed pairs", () => {
+        render(
+            <LegislatorTermCard
+                legislator={legislator}
+                term={term({
+                    district_score: {
+                        comparison_suppressed: false,
+                        agreed_percent: 1,
+                        disagreed_percent: 0,
+                        no_legislator_vote_percent: 99,
+                        legislator_abstained_percent: 0,
+                        voter_agreement_percent: 60,
+                    },
+                    locale_score: {
+                        comparison_suppressed: false,
+                        agreed_percent: 0,
+                        disagreed_percent: 0,
+                        no_legislator_vote_percent: 100,
+                        legislator_abstained_percent: 0,
+                        voter_agreement_percent: 50,
+                    },
+                })}
+            />,
+        );
+
+        expect(screen.getByTestId("term-district-score-tile")).toHaveTextContent("60%");
+        expect(screen.getByTestId("term-district-score-tile")).not.toHaveTextContent("100%");
+        expect(screen.getByTestId("term-locale-score-tile")).toHaveTextContent("50%");
+        expect(screen.getByTestId("term-locale-score-tile")).not.toHaveTextContent("--%");
+    });
+
     it("says 'Not enough votes yet' on a tile whose score was not sent", () => {
         render(<LegislatorTermCard legislator={legislator} term={term({})} />);
 

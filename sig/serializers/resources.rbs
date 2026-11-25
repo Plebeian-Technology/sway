@@ -117,6 +117,8 @@ class UserLegislatorTermScoreResource < ApplicationResource
   def self.comparison_suppressed?: (Array[untyped] counted_rows, Hash[Symbol, Integer] totals) -> bool
 
   def self.percentages: (Hash[Symbol, Integer] totals) -> Hash[Symbol, Integer]
+
+  def self.voter_agreement_percent: (Hash[Symbol, Integer] totals) -> Integer?
 end
 
 # Phase 65 (D-27/D-26): the grouping implementation — every method here is a

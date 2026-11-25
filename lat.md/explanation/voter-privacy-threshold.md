@@ -56,6 +56,8 @@ A user's own agreement with a legislator is one user's record, so `tally_agreeme
 
 A district or locale agreement score carries `comparison_suppressed` and one whole-number percentage per counter, and no counter. With fewer than ten distinct voters behind it the flag is true and every percentage is nil.
 
+It also carries `voter_agreement_percent`, the term tile headline, worked out from the counters ([[voter-privacy-threshold#Legislator charts draw percentages or the placeholder]]).
+
 Percentages replace counts for the reason districts use them: one count can be subtracted from another. `percentages` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] floors each share and hands the leftover points to the largest remainders, so the four always sum to 100.
 
 No `voters_needed` is sent. The number of users behind a district score would show how few people in a small district take part, so every hidden legislator score reads the same.
@@ -102,7 +104,7 @@ The web draws a district, locale or lifetime agreement score in two places: the 
 
 Each asks the same helper the bill page asks. A suppressed score draws the no-number placeholder under its title, since a legislator score never carries `voters_needed`. A visible score draws its bars and labels from the percentage fields and reads no counter.
 
-A term tile's headline is agreement among the bills the legislator voted on, so it divides the Agreed percentage by Agreed plus Disagreed. The line below it gives the shares as sent.
+A term tile's headline is agreement among the bills the legislator voted on: `voter_agreement_percent`, the Agreed share of Agreed plus Disagreed. The server works it out from the counters, because the rounded shares of all pairs lose it when most pairs have no legislator vote (3 agreed and 2 disagreed among 500 pairs send 1% and 0%, yet the headline is 60%). It is nil when the score is suppressed or when no pair was agreed or disagreed, and the tile then reads `--%`. The line below it gives the shares as sent.
 
 The reader's own chart and tile keep their counts: [[app/frontend/components/legislators/charts/VoterAgreementChart.tsx#VoterAgreementChart]] is untouched.
 

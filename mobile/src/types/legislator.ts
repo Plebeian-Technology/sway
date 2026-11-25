@@ -22,6 +22,7 @@ export interface IGroupAgreeableScore {
     disagreed_percent?: number | null;
     no_legislator_vote_percent?: number | null;
     legislator_abstained_percent?: number | null;
+    voter_agreement_percent?: number | null;
 }
 
 // @lat: [[legislator-history-serialization#Read-only historical term agreement serialization]]
@@ -136,14 +137,12 @@ export interface IGroupAgreementCalc {
 
 // @lat: [[voter-privacy-threshold#The mobile legislator screens draw percentages or the placeholder]]
 export function calculateGroupAgreement(score: IGroupAgreeableScore | null | undefined): IGroupAgreementCalc {
-    const agreedPct = score?.agreed_percent ?? 0;
-    const disagreedPct = score?.disagreed_percent ?? 0;
-    const decided = agreedPct + disagreedPct;
+    const headline = score?.voter_agreement_percent;
     return {
         suppressed: score?.comparison_suppressed !== false,
-        displayPct: decided > 0 ? `${Math.round((agreedPct / decided) * 100)}%` : "--%",
-        agreedPct,
-        disagreedPct,
+        displayPct: headline === null || headline === undefined ? "--%" : `${headline}%`,
+        agreedPct: score?.agreed_percent ?? 0,
+        disagreedPct: score?.disagreed_percent ?? 0,
         noVotePct: score?.no_legislator_vote_percent ?? 0,
     };
 }

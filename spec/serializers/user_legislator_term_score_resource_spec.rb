@@ -31,8 +31,9 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
 
         expect(score["comparison_suppressed"]).to be(true)
         expect(score.values_at(*percent_keys)).to all(be_nil)
+        expect(score["voter_agreement_percent"]).to be_nil
         expect(score).not_to have_key("voters_needed")
-        expect(score.keys).to match_array(percent_keys + %w[legislator_id comparison_suppressed])
+        expect(score.keys).to match_array(percent_keys + %w[voter_agreement_percent legislator_id comparison_suppressed])
       end
 
       it "sends whole-number percentages that sum to 100 when ten distinct users stand behind the score" do
@@ -46,7 +47,33 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         expect(score.values_at(*percent_keys).sum).to eq(100)
         expect(score["legislator_abstained_percent"]).to eq(0)
         expect(score).not_to have_key("voters_needed")
-        expect(score.keys).to match_array(percent_keys + %w[legislator_id comparison_suppressed])
+        expect(score.keys).to match_array(percent_keys + %w[voter_agreement_percent legislator_id comparison_suppressed])
+      end
+
+      it "sends the agreed share of agreed and disagreed pairs, computed from the counters" do
+        create(family, legislator_term: term, distinct_voter_count: 10,
+          count_agreed: 3, count_disagreed: 2, count_no_legislator_vote: 495)
+
+        score = current_term_score[family.to_s]
+
+        expect(score.values_at("agreed_percent", "disagreed_percent")).to eq([1, 0])
+        expect(score["voter_agreement_percent"]).to eq(60)
+      end
+
+      it "sends the agreed share even when both rounded shares of all pairs are zero" do
+        create(family, legislator_term: term, distinct_voter_count: 10,
+          count_agreed: 2, count_disagreed: 2, count_no_legislator_vote: 996)
+
+        expect(current_term_score[family.to_s]["voter_agreement_percent"]).to eq(50)
+      end
+
+      it "sends no agreed share when no pair was agreed or disagreed" do
+        create(family, legislator_term: term, distinct_voter_count: 10, count_no_legislator_vote: 5)
+
+        score = current_term_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(false)
+        expect(score["voter_agreement_percent"]).to be_nil
       end
 
       it "suppresses the lifetime figure when any summed term is under the minimum" do
@@ -57,7 +84,8 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
 
         expect(score["comparison_suppressed"]).to be(true)
         expect(score.values_at(*percent_keys)).to all(be_nil)
-        expect(score.keys).to match_array(percent_keys + %w[legislator_id comparison_suppressed])
+        expect(score["voter_agreement_percent"]).to be_nil
+        expect(score.keys).to match_array(percent_keys + %w[voter_agreement_percent legislator_id comparison_suppressed])
       end
 
       it "sends lifetime percentages when every summed term reaches the minimum" do
@@ -69,6 +97,7 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         expect(score["comparison_suppressed"]).to be(false)
         expect(score["agreed_percent"]).to eq(75)
         expect(score["disagreed_percent"]).to eq(25)
+        expect(score["voter_agreement_percent"]).to eq(75)
       end
 
       it "leaves a term with no counted votes out of the lifetime check" do
@@ -110,7 +139,7 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
     own_score = current_term_score
 
     expect(own_score["count_agreed"]).to eq(2)
-    expect(own_score.keys & (percent_keys + %w[comparison_suppressed])).to be_empty
-    expect(lifetime_score.keys & (percent_keys + %w[comparison_suppressed])).to be_empty
+    expect(own_score.keys & (percent_keys + %w[voter_agreement_percent comparison_suppressed])).to be_empty
+    expect(lifetime_score.keys & (percent_keys + %w[voter_agreement_percent comparison_suppressed])).to be_empty
   end
 end

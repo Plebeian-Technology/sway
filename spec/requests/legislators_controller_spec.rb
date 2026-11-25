@@ -1121,9 +1121,9 @@ RSpec.describe "LegislatorsController", type: :request do
       expect(district_score.keys & counter_keys).to be_empty
       expect(locale_score.keys & counter_keys).to be_empty
       expect(district_score["comparison_suppressed"]).to be(true)
-      expect(district_score.values_at(*percent_keys)).to all(be_nil)
+      expect(district_score.values_at(*percent_keys, "voter_agreement_percent")).to all(be_nil)
       expect(locale_score["comparison_suppressed"]).to be(false)
-      expect(locale_score.values_at(*percent_keys)).to eq([75, 25, 0, 0])
+      expect(locale_score.values_at(*percent_keys, "voter_agreement_percent")).to eq([75, 25, 0, 0, 75])
     end
 
     it "GET /legislators/:id sends no raw counter on a district or locale score and keeps the user's own" do

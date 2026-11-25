@@ -577,6 +577,8 @@ declare module "sway" {
                 disagreed_percent: number | null;
                 no_legislator_vote_percent: number | null;
                 legislator_abstained_percent: number | null;
+                // Agreed share of agreed plus disagreed pairs.
+                voter_agreement_percent: number | null;
             }
 
             interface ILegislatorDistrictScore extends IGroupAgreeable {

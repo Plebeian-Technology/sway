@@ -71,7 +71,7 @@ const GroupAgreementTile: React.FC<IGroupAgreementTileProps> = ({ testId, title,
     const agreed = score?.agreed_percent ?? 0;
     const disagreed = score?.disagreed_percent ?? 0;
     const noVote = score?.no_legislator_vote_percent ?? 0;
-    const decided = agreed + disagreed;
+    const headline = score?.voter_agreement_percent;
 
     return (
         <div
@@ -83,7 +83,7 @@ const GroupAgreementTile: React.FC<IGroupAgreementTileProps> = ({ testId, title,
                 <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">{title}</span>
                 {!suppressed && (
                     <span className="text-xl font-black tabular-nums text-foreground">
-                        {decided > 0 ? `${Math.round((agreed / decided) * 100)}%` : "--%"}
+                        {headline === null || headline === undefined ? "--%" : `${headline}%`}
                     </span>
                 )}
             </div>

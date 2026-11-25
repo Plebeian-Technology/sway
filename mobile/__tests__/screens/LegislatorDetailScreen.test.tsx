@@ -117,6 +117,7 @@ const sampleDistrictScore = {
     disagreed_percent: 18,
     no_legislator_vote_percent: 9,
     legislator_abstained_percent: 0,
+    voter_agreement_percent: 80,
 };
 
 const sampleLocaleScore = {
@@ -129,6 +130,7 @@ const sampleLocaleScore = {
     disagreed_percent: 23,
     no_legislator_vote_percent: 8,
     legislator_abstained_percent: 0,
+    voter_agreement_percent: 75,
 };
 
 const sampleUserScore = {
@@ -710,6 +712,35 @@ describe("LegislatorDetailScreen (Phase 35 PARITY-09 mobile-canonical)", () => {
         expect(localeTile).toHaveTextContent(/Locale Agreement/);
     });
 
+    test("headlines each tile with the server's agreed share of agreed and disagreed pairs", () => {
+        const sparseTerm = {
+            ...sampleTerm2025,
+            district_score: {
+                comparison_suppressed: false,
+                agreed_percent: 1,
+                disagreed_percent: 0,
+                no_legislator_vote_percent: 99,
+                legislator_abstained_percent: 0,
+                voter_agreement_percent: 60,
+            },
+            locale_score: {
+                comparison_suppressed: false,
+                agreed_percent: 0,
+                disagreed_percent: 0,
+                no_legislator_vote_percent: 100,
+                legislator_abstained_percent: 0,
+                voter_agreement_percent: 50,
+            },
+        };
+        mockLegislators([{ ...LEG_FULL, terms: [sparseTerm] }]);
+        render(<LegislatorDetailScreen route={makeRoute(99)} />);
+        fireEvent.press(screen.getByRole("tab", { name: "Term History" }));
+        expect(screen.getByTestId("term-district-score-tile")).toHaveTextContent(/60%/);
+        expect(screen.getByTestId("term-district-score-tile")).not.toHaveTextContent(/100%/);
+        expect(screen.getByTestId("term-locale-score-tile")).toHaveTextContent(/50%/);
+        expect(screen.getByTestId("term-locale-score-tile")).not.toHaveTextContent(/--%/);
+    });
+
     // @lat: [[voter-privacy-threshold#The mobile legislator screens draw percentages or the placeholder]]
     test("says 'Not enough votes yet' on a suppressed tile and on a cached score with no flag", () => {
         const zeroScoreTerm = {
@@ -724,6 +755,7 @@ describe("LegislatorDetailScreen (Phase 35 PARITY-09 mobile-canonical)", () => {
                 disagreed_percent: null,
                 no_legislator_vote_percent: null,
                 legislator_abstained_percent: null,
+                voter_agreement_percent: null,
             },
             locale_score: {
                 count_agreed: 4321,
