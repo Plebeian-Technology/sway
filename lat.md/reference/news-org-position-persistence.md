@@ -13,7 +13,7 @@ Each organization position records who wrote it in `source_kind` and where it ca
 
 ### Values and write paths
 
-Every write path sets both columns for what it wrote, so the latest write decides the origin.
+Every write path sets both columns for what it wrote, so the latest write decides the origin. The two admin save paths set `sway_admin` only on a new position or one whose support or summary changed; an unchanged re-save keeps its origin.
 
 | `source_kind` | Who wrote the position | Write paths | `source_url` |
 | --- | --- | --- | --- |

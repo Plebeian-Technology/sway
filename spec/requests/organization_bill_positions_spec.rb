@@ -165,6 +165,39 @@ RSpec.describe "OrganizationBillPositionsController#create authoritative active 
     expect(positions.pluck(:source_kind)).to all(eq("sway_admin"))
     expect(positions.pluck(:source_url)).to all(be_nil)
   end
+
+  it "keeps the origin of positions a re-save leaves unchanged and marks a changed one as a Sway admin entry" do
+    news_position = OrganizationBillPosition.create!(
+      bill: bill, organization: organization, support: "FOR", summary: "Reported in the news.",
+      active: true, source_kind: "news_article", source_url: "https://news.example.com/story"
+    )
+    member_position = OrganizationBillPosition.create!(
+      bill: bill, organization: other_organization, support: "AGAINST", summary: "Written by the members.",
+      active: true, source_kind: "organization"
+    )
+    edited_organization = create(:organization, name: "Tamale Org", sway_locale: sway_locale)
+    edited_position = OrganizationBillPosition.create!(
+      bill: bill, organization: edited_organization, support: "FOR", summary: "Before the edit.",
+      active: true, source_kind: "news_article", source_url: "https://news.example.com/other"
+    )
+
+    post organization_bill_positions_path,
+      params: {
+        organization_bill_position: {
+          positions: [
+            {bill_id: bill.id, organization_id: organization.id, support: "support", summary: "Reported in the news."},
+            {bill_id: bill.id, organization_id: other_organization.id, support: "oppose", summary: "Written by the members."},
+            {bill_id: bill.id, organization_id: edited_organization.id, support: "support", summary: "After the edit."}
+          ]
+        }
+      }
+
+    expect(news_position.reload.slice(:source_kind, :source_url))
+      .to eq("source_kind" => "news_article", "source_url" => "https://news.example.com/story")
+    expect(member_position.reload.source_kind).to eq("organization")
+    expect(edited_position.reload.slice(:source_kind, :source_url))
+      .to eq("source_kind" => "sway_admin", "source_url" => nil)
+  end
 end
 
 # @lat: [[replace-bill-org-positions-service-design#Why the write upserts by (bill, organization) instead of deleting and re-inserting]]

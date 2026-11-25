@@ -116,8 +116,11 @@ class ReplaceBillOrgPositionsService
           )
           position.support = pos["support"]
           position.summary = summary_for(pos)
-          position.source_kind = OrganizationBillPosition::SourceKind::SWAY_ADMIN
-          position.source_url = nil
+          # @lat: [[news-org-position-persistence#Position origin and affiliation#Values and write paths]]
+          if position.new_record? || position.support_changed? || position.summary_changed?
+            position.source_kind = OrganizationBillPosition::SourceKind::SWAY_ADMIN
+            position.source_url = nil
+          end
           position.active = true
           position.save!
           position

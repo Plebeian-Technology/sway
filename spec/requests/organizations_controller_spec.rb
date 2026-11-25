@@ -94,6 +94,42 @@ RSpec.describe "OrganizationsController", type: :request do
       expect(positions.pluck(:source_url)).to all(be_nil)
     end
 
+    # @lat: [[news-org-position-persistence#Position origin and affiliation#Values and write paths]]
+    it "keeps the origin of positions a re-save leaves unchanged and marks a changed one as a Sway admin entry" do
+      sway_locale, = setup
+      bill = create(:bill, sway_locale:)
+      news_org = create(:organization, name: "News Org", sway_locale:)
+      member_org = create(:organization, name: "Member Org", sway_locale:)
+      edited_org = create(:organization, name: "Edited Org", sway_locale:)
+      news_position = OrganizationBillPosition.create!(
+        bill:, organization: news_org, support: "FOR", summary: "Reported in the news.",
+        active: true, source_kind: "news_article", source_url: "https://news.example.com/story"
+      )
+      member_position = OrganizationBillPosition.create!(
+        bill:, organization: member_org, support: "AGAINST", summary: "Written by the members.",
+        active: true, source_kind: "organization"
+      )
+      edited_position = OrganizationBillPosition.create!(
+        bill:, organization: edited_org, support: "FOR", summary: "Before the edit.",
+        active: true, source_kind: "news_article", source_url: "https://news.example.com/other"
+      )
+
+      post organizations_path, params: {
+        bill_id: bill.id,
+        organizations: [
+          {label: news_org.name, value: news_org.id, support: "FOR", summary: "Reported in the news."},
+          {label: member_org.name, value: member_org.id, support: "AGAINST", summary: "Written by the members."},
+          {label: edited_org.name, value: edited_org.id, support: "FOR", summary: "After the edit."}
+        ]
+      }
+
+      expect(news_position.reload.slice(:source_kind, :source_url))
+        .to eq("source_kind" => "news_article", "source_url" => "https://news.example.com/story")
+      expect(member_position.reload.source_kind).to eq("organization")
+      expect(edited_position.reload.slice(:source_kind, :source_url))
+        .to eq("source_kind" => "sway_admin", "source_url" => nil)
+    end
+
     # @lat: [[organizations-controller#Icon addresses keep their source meaning]]
     describe "the icon_url column" do
       it "stays empty when an admin uploads an icon" do
