@@ -1,5 +1,7 @@
 module Embed
   class BillsController < BaseController
+    PAYLOAD_VERSION: String
+
     @bill: Bill
 
     def show: -> untyped
