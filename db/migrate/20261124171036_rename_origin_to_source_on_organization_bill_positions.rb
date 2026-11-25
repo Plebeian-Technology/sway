@@ -23,7 +23,7 @@ class RenameOriginToSourceOnOrganizationBillPositions < ActiveRecord::Migration[
   def backfill_organization_source_kind
     execute <<~SQL.squish
       UPDATE organization_bill_positions
-      SET source_kind = 'organization'
+      SET source_kind = 'organization', ai_summary = NULL
       WHERE EXISTS (
         SELECT 1 FROM organization_bill_position_changes changes
         WHERE changes.organization_bill_position_id = organization_bill_positions.id

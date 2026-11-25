@@ -30,6 +30,25 @@ RSpec.describe "RenameOriginToSourceOnOrganizationBillPositions migration", type
     expect(position.reload.source_kind).to eq("organization")
   end
 
+  it "clears ai_summary on a position it marks as written by the organization" do
+    approved_at = 2.days.ago
+    position = position_with_approved_change(position_written_at: approved_at + 0.01, change_approved_at: approved_at)
+    position.update_columns(ai_summary: position.summary)
+
+    backfill
+
+    expect(position.reload.ai_summary).to be_nil
+  end
+
+  it "keeps ai_summary on a position it does not mark as written by the organization" do
+    position = create(:organization_bill_position)
+    position.update_columns(ai_summary: position.summary)
+
+    backfill
+
+    expect(position.reload.ai_summary).to eq(position.summary)
+  end
+
   it "leaves a position alone when a later write replaced the approved change" do
     approved_at = 2.days.ago
     position = position_with_approved_change(position_written_at: 1.day.ago, change_approved_at: approved_at)

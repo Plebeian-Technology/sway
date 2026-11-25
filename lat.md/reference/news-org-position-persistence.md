@@ -25,7 +25,7 @@ The latest write decides the origin. The two admin save paths set `sway_admin` o
 
 ### Existing positions
 
-A nil `source_kind` reads as compiled by Sway. The backfill sets `organization` only where an approved member change was the latest write: updated no earlier than five seconds before the position.
+A nil `source_kind` reads as compiled by Sway. The backfill sets `organization` only where an approved member change was the latest write (within five seconds), and clears `ai_summary` there, as [[lat.md/explanation/organization-bill-position-ai-summary-flag#A member's approved change clears ai_summary]] does for new approvals.
 
 ### Payloads
 
