@@ -23,6 +23,8 @@ interface InviteConfirmation {
     inviter_name: string | null;
 }
 
+const NOT_FOUND_MESSAGE = "Invitation not found.";
+
 const messageFrom = (error: unknown): string => (error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE);
 
 const MembershipInviteConfirmScreen: React.FC<IProps> = ({ route }) => {
@@ -32,11 +34,15 @@ const MembershipInviteConfirmScreen: React.FC<IProps> = ({ route }) => {
     const isInviteLink = Number.isInteger(orgId) && orgId > 0 && token !== "";
 
     const [confirmation, setConfirmation] = useState<InviteConfirmation | null>(null);
-    const [loadError, setLoadError] = useState<string | null>(isInviteLink ? null : "Invitation not found.");
+    const [loadError, setLoadError] = useState<string | null>(isInviteLink ? null : NOT_FOUND_MESSAGE);
     const [acceptError, setAcceptError] = useState<string | null>(null);
     const [accepting, setAccepting] = useState(false);
 
     useEffect(() => {
+        setConfirmation(null);
+        setLoadError(isInviteLink ? null : NOT_FOUND_MESSAGE);
+        setAcceptError(null);
+        setAccepting(false);
         if (!isInviteLink) return undefined;
 
         let stillShowing = true;

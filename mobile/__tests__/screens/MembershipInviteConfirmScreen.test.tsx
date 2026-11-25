@@ -39,12 +39,15 @@ const confirmation = {
     expires_at: "2026-12-01T00:00:00Z",
 };
 
-const open = (params: { orgId?: number; token?: string } = { orgId: 5, token: TOKEN }) =>
-    render(
-        <ThemeProvider initialMode="light">
-            <MembershipInviteConfirmScreen route={{ params }} />
-        </ThemeProvider>,
-    );
+type LinkParams = { orgId?: number; token?: string };
+
+const screenFor = (params: LinkParams) => (
+    <ThemeProvider initialMode="light">
+        <MembershipInviteConfirmScreen route={{ params }} />
+    </ThemeProvider>
+);
+
+const open = (params: LinkParams = { orgId: 5, token: TOKEN }) => render(screenFor(params));
 
 const pressAccept = () =>
     act(async () => {
@@ -89,6 +92,55 @@ describe("MembershipInviteConfirmScreen", () => {
 
         expect(await screen.findByText("Invitation expired.")).toBeTruthy();
         expect(screen.queryByTestId("invite-confirm-accept")).toBeNull();
+    });
+
+    it("shows the new invitation when a second link opens the screen already showing an error", async () => {
+        mockGet.mockRejectedValueOnce(new ApiRequestError("http_410", "Invitation expired.", undefined, 410));
+        mockGet.mockResolvedValueOnce(confirmation);
+        const { rerender } = open({ orgId: 5, token: "expired" });
+        await screen.findByText("Invitation expired.");
+
+        rerender(screenFor({ orgId: 5, token: TOKEN }));
+
+        expect(await screen.findByText("Accept invitation to Baltimore Bike Coalition")).toBeTruthy();
+        expect(screen.queryByText("Invitation expired.")).toBeNull();
+    });
+
+    it("shows the new invitation when a second link opens the screen after an unusable link", async () => {
+        mockGet.mockResolvedValue(confirmation);
+        const { rerender } = open({ orgId: 5 });
+        expect(screen.getByText("Invitation not found.")).toBeTruthy();
+
+        rerender(screenFor({ orgId: 5, token: TOKEN }));
+
+        expect(await screen.findByText("Accept invitation to Baltimore Bike Coalition")).toBeTruthy();
+    });
+
+    it("shows 'Invitation not found.' when an unusable link replaces a loaded invitation", async () => {
+        mockGet.mockResolvedValue(confirmation);
+        const { rerender } = open();
+        await screen.findByTestId("invite-confirm-accept");
+
+        rerender(screenFor({ orgId: 5 }));
+
+        expect(screen.getByText("Invitation not found.")).toBeTruthy();
+        expect(screen.queryByTestId("invite-confirm-accept")).toBeNull();
+    });
+
+    it("clears the accept error when a second link opens the screen", async () => {
+        mockGet.mockResolvedValue(confirmation);
+        mockPost.mockRejectedValueOnce(
+            new ApiRequestError("http_422", "This invitation is no longer valid.", undefined, 422),
+        );
+        const { rerender } = open({ orgId: 5, token: "first" });
+        await screen.findByTestId("invite-confirm-accept");
+        await pressAccept();
+        expect(screen.getByText("This invitation is no longer valid.")).toBeTruthy();
+
+        rerender(screenFor({ orgId: 5, token: TOKEN }));
+
+        await screen.findByTestId("invite-confirm-accept");
+        expect(screen.queryByText("This invitation is no longer valid.")).toBeNull();
     });
 
     it("shows the server's message and keeps the button usable when accepting fails", async () => {

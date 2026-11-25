@@ -94,6 +94,8 @@ Accept posts to the same `accept` address the web form uses, with the token in t
 
 Every failure is shown in the server's own words. A link that cannot be confirmed, such as an expired one, shows the message with a button to the memberships list. A failed accept shows the message above the button and leaves the button usable. A link with no usable organization id or token shows "Invitation not found." and asks the server nothing.
 
+A second invite link can open the screen while it is already showing, because React Navigation updates the open screen's link values in place. The screen then drops what it showed for the first link, its errors included, and loads the new invitation.
+
 A signed-out invitee reaches this screen after signing in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]). No new claimed pattern is needed: `/organizations/*` already covers the email link on both platforms.
 
 ## Why UserOrganizationMembershipInvite derives status from timestamps instead of storing a state column
