@@ -142,6 +142,18 @@ RSpec.describe "Changing a registered user's address on the web", type: :request
       expect(UserAddressChange.count).to eq(0)
     end
 
+    it "answers completed on the feed when an error is raised after the switch committed" do
+      allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_return([legislator]) # rubocop:disable RSpec/AnyInstance
+      allow(PendingVoteReconciliationService).to receive(:call).and_raise(RuntimeError, "boom after commit")
+
+      submit_new_address(confirm_deactivate_legislators: true)
+
+      expect(response).to redirect_to(feed_path)
+      expect(flash[:alert]).to be_nil
+      expect(user.reload.address.street).to eq("100 Light St")
+      expect(UserAddressChange.count).to eq(1)
+    end
+
     it "shows that no representatives were found on the change-address page" do
       allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_return([]) # rubocop:disable RSpec/AnyInstance
 

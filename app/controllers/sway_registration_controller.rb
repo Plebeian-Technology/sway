@@ -155,7 +155,7 @@ class SwayRegistrationController < ApplicationController
   def render_onboarding_unavailable
     u = current_user
     return super if u.nil?
-    if address_switch_return_path(u) == edit_users_address_path
+    if !@address_switch_committed && address_switch_return_path(u) == edit_users_address_path
       return redirect_to(edit_users_address_path, alert: ONBOARDING_UNAVAILABLE_MESSAGE)
     end
     return super unless u.user_legislators.where(active: true).exists?
@@ -202,6 +202,8 @@ class SwayRegistrationController < ApplicationController
       rescue => e
         return render_address_switch_unavailable(u, new_address, e, redirect: return_path)
       end
+
+    @address_switch_committed = true if change
 
     if change
       record_voter_registration_address_confirmation(u)
