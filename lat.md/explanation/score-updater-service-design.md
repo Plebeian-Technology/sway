@@ -52,8 +52,12 @@ The three `ScoreRecomputeService` calls in `#call` each pick their term and thei
   legislator in the locale, the price the locale scores already pay. It
   always uses the legislator's CURRENT term: a single user vote never
   rewrites a legislator's score for a term that has already ended. The
-  address-change and registration paths call the same method for the
-  bills the user voted on.
+  address-change and registration paths run it for the bills the user
+  voted on, through [[app/jobs/recompute_district_scores_job.rb#RecomputeDistrictScoresJob]],
+  because the method visits every legislator with a tally on those bills
+  and a web request should not wait for that. The job receives bill and
+  legislator ids, not records. The reconcile service already runs inside
+  a job and calls the method inline.
 - **`recompute_legislator_locale!`** counts EVERY user in the legislator's
   locale, not only their own constituents, because this vote gets
   compared against how EVERY legislator in the locale voted on the same

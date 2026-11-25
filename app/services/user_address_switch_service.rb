@@ -172,6 +172,6 @@ class UserAddressSwitchService
       term = legislator.active_term
       ScoreRecomputeService.recompute_legislator_locale!(term) if term
     end
-    ScoreRecomputeService.recompute_district_scores!(bill_ids, legislators: moved_legislators)
+    RecomputeDistrictScoresJob.perform_later(bill_ids, moved_legislators.map(&:id))
   end
 end

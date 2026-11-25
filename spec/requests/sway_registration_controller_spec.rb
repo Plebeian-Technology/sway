@@ -1817,6 +1817,11 @@ RSpec.describe "/registration", type: :request do
         post_address(richmond_address)
 
         expect(response).to have_http_status(:ok)
+        expect(RecomputeDistrictScoresJob).to have_been_enqueued.with([bill.id], include(senator.id))
+        expect(LegislatorDistrictScore.find_by!(legislator_term: senator_term).count_agreed).to eq(1)
+
+        perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
+
         expect(LegislatorDistrictScore.find_by!(legislator_term: senator_term).count_agreed).to eq(0)
       end
 

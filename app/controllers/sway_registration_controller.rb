@@ -160,7 +160,7 @@ class SwayRegistrationController < ApplicationController
       term = legislator.active_term
       ScoreRecomputeService.recompute_legislator_locale!(term) if term
     end
-    ScoreRecomputeService.recompute_district_scores!(bill_ids, legislators: stale_legislators)
+    RecomputeDistrictScoresJob.perform_later(bill_ids, stale_legislators.map(&:id))
   end
 
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
