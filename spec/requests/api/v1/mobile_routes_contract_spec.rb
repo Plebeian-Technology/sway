@@ -9,7 +9,6 @@ RSpec.describe "Mobile API routes contract" do
   sample_values = {"key" => "botm_announcement"}
 
   route_keys = routes_object.scan(/^\s+(\w+):/).flatten
-  key_count = route_keys.size
 
   # A sample path for each builder that computes its path.
   computed_paths = {
@@ -23,7 +22,7 @@ RSpec.describe "Mobile API routes contract" do
 
   mobile_paths = routes_object.scan(/^\s+(\w+): \([^)]*\) =>\s*["`]([^"`]+)["`],$/)
     .to_h { |key, path| [key, path.to_s.gsub(/\$\{(?:encodeURIComponent\()?(\w+)\)?\}/) { sample_values.fetch($1, "1") }] }
-    .merge(computed_paths.slice(*route_keys))
+    .merge(computed_paths)
 
   verbs_by_key = {
     "bootstrap" => %i[get],
@@ -43,9 +42,9 @@ RSpec.describe "Mobile API routes contract" do
     "notificationPreference" => %i[patch],
     "testPush" => %i[post],
     "feed" => %i[get],
-    "bills" => %i[get],
+    "bills" => %i[get post],
     "pastBillsOfTheMonth" => %i[get],
-    "bill" => %i[get],
+    "bill" => %i[get patch],
     "billPublicTestimonyLetters" => %i[get],
     "billSummaryReports" => %i[post],
     "legislators" => %i[get],
@@ -134,8 +133,8 @@ RSpec.describe "Mobile API routes contract" do
   }
 
   it "parses every key of the mobile Routes object" do
-    expect(key_count).to be > 0
-    expect(mobile_paths.size).to eq(key_count)
+    expect(route_keys).not_to be_empty
+    expect(mobile_paths.keys).to match_array(route_keys)
   end
 
   it "names a verb for every mobile route and no route the app lacks" do
