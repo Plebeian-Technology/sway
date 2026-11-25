@@ -27,7 +27,7 @@ A link tapped while the person is signed out or still onboarding opens its scree
 
 The sign-in and onboarding stacks hold none of the screens a link names, so React Navigation finds nowhere to go and lets the link fall. [[mobile/src/navigation/pendingDeepLink.ts#subscribeToLinks]] is the link subscription the navigation container uses: it passes every link on as before, and remembers the most recent one that came in while the drawer was not showing. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]], called by `RootNavigator`, hands the remembered link back to React Navigation's own link handler when the drawer mounts, so a kept link takes the same path as a fresh one.
 
-The link that launched the app needs none of this. The navigation container already holds a launch link until a navigator that knows its screen mounts.
+The link that launched the app is not kept this way. It reaches its screen only because React Navigation leaves the container's initial state, built from the launch link, unused until the first navigation action; the drawer then mounts and takes it. That has two limits. Signing out does not forget a launch link, so it can open for the next person to sign in. And any navigation inside the sign-in stack first, such as `AuthScreen` moving to `DeviceUnsupported` and back, uses up the initial state and loses the launch link.
 
 Signing out forgets the kept link. Otherwise a link tapped by one person would open for the next person to sign in on the same phone.
 
