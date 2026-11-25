@@ -83,7 +83,7 @@ to fail rather than about what it returns when everything works.
 
 A server redirect cannot empty browser storage. The web sign-out control still purges the worker caches and unregisters the worker before requesting logout, then flushes Inertia and web storage when the request settles.
 
-The sign-out redirect clears encrypted page history. Account deletion supplies the same history signal; the current deletion caller is the native app, which owns its own client state. Static assets can be downloaded and cached again after a worker purge.
+The sign-out redirect clears encrypted page history. Account deletion supplies the same history signal; deletion has two callers, the native app, which owns its own client state, and the web Profile page, which also runs the identity-change cache purge once the account is gone ([[web-profile-page#Web profile page#Deleting the account from the web]]). Static assets can be downloaded and cached again after a worker purge.
 
 ## The rule this generalises
 
