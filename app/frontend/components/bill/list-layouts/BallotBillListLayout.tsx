@@ -156,7 +156,7 @@ const BallotBillListLayout: React.FC<BillListLayoutProps> = ({
                 {bills.map((bill) => {
                     const entry = bill as sway.IBill & { user_vote?: sway.IApiUserVote };
                     const summary = briefSummary(entry.summary, 200);
-                    const { forCount, againstCount } = selectVoteTally(entry.bill_score);
+                    const { forPercent, againstPercent } = selectVoteTally(entry.bill_score);
                     const releaseDate =
                         listMode === "past_bills_of_the_month"
                             ? formatCalendarDay(entry.scheduled_release_date_utc)
@@ -182,7 +182,7 @@ const BallotBillListLayout: React.FC<BillListLayoutProps> = ({
                                 <span className="ball-tally">
                                     {isVoteComparisonSuppressed(entry.bill_score)
                                         ? suppressedVoteComparisonLine()
-                                        : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
+                                        : `${forPercent}% for · ${againstPercent}% against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="ball-voted">Vote recorded</span>}
                                 <BillEditLink

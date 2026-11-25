@@ -24,6 +24,8 @@ const SCORE: sway.IBillScore = {
     bill_id: 42,
     for: 18,
     against: 12,
+    for_percent: 60,
+    against_percent: 40,
     comparison_suppressed: false,
     voters_needed: 0,
     districts: [
@@ -58,10 +60,10 @@ describe("district charts at the ten-voter minimum", () => {
         expect(chart).toHaveTextContent("25%");
     });
 
-    it("keeps the exact bill total above the district bars", () => {
+    it("keeps the bill total, as percentages, above the district bars", () => {
         render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
 
-        expect(screen.getByLabelText("18 support, 12 oppose")).toBeInTheDocument();
+        expect(screen.getByLabelText("60% support, 40% oppose")).toBeInTheDocument();
     });
 
     it("does not draw the at-large row", () => {

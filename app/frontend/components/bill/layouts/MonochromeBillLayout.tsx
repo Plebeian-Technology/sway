@@ -43,8 +43,7 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
     const { user, sway_locale, public_testimony_counts, public_testimony_letters } = usePage<sway.IPageProps>().props;
     const swayLocaleSlug = useSwayLocaleSlug();
     const { supporting, opposing } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount, total, forPct } = selectVoteTally(bill_score);
-    const againstPct = total > 0 ? 100 - forPct : 0;
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
     const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
@@ -84,25 +83,21 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
                         <div className="mcb-tally">
                             <div className="mcb-tally__row">
                                 <div className="mcb-tally__meta">
-                                    <span className="mcb-tally__label">
-                                        {PARITY_COPY.votePanel.forLabel} ({forCount.toLocaleString()})
-                                    </span>
-                                    <span className="mcb-tally__pct">{Math.round(forPct)}%</span>
+                                    <span className="mcb-tally__label">{PARITY_COPY.votePanel.forLabel}</span>
+                                    <span className="mcb-tally__pct">{forPercent}%</span>
                                 </div>
                                 <div className="mcb-tally__track">
-                                    <div className="mcb-tally__bar--for" style={{ width: `${forPct}%` }} />
+                                    <div className="mcb-tally__bar--for" style={{ width: `${forPercent}%` }} />
                                 </div>
                             </div>
 
                             <div className="mcb-tally__row">
                                 <div className="mcb-tally__meta">
-                                    <span className="mcb-tally__label">
-                                        {PARITY_COPY.votePanel.againstLabel} ({againstCount.toLocaleString()})
-                                    </span>
-                                    <span className="mcb-tally__pct">{Math.round(againstPct)}%</span>
+                                    <span className="mcb-tally__label">{PARITY_COPY.votePanel.againstLabel}</span>
+                                    <span className="mcb-tally__pct">{againstPercent}%</span>
                                 </div>
                                 <div className="mcb-tally__track">
-                                    <div className="mcb-tally__bar--against" style={{ width: `${againstPct}%` }} />
+                                    <div className="mcb-tally__bar--against" style={{ width: `${againstPercent}%` }} />
                                 </div>
                             </div>
                         </div>

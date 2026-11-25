@@ -46,14 +46,10 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
     const dek = briefSummary(bill.summary, 220);
 
     const { all: positions } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount, total, forPct } = selectVoteTally(bill_score);
+    const tally = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = tally;
 
-    const { userVoted, userSupports, majorityStatus, withMajority } = selectVoteMajority(user_vote, {
-        forCount,
-        againstCount,
-        total,
-        forPct,
-    });
+    const { userVoted, userSupports, majorityStatus, withMajority } = selectVoteMajority(user_vote, tally);
 
     const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
 
@@ -149,16 +145,16 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                             <div className="bn-tally">
                                 <div className="bn-tl">In support</div>
                                 <div className="bn-tn">
-                                    {forCount.toLocaleString()} <span className="bn-u">residents</span>
+                                    {forPercent}% <span className="bn-u">of voters</span>
                                 </div>
                                 <div className="bn-bar" aria-hidden="true">
-                                    <span style={{ width: `${forPct}%` }} />
+                                    <span style={{ width: `${forPercent}%` }} />
                                 </div>
                             </div>
                             <div className="bn-tally">
                                 <div className="bn-tl">Opposed</div>
                                 <div className="bn-tn">
-                                    {againstCount.toLocaleString()} <span className="bn-u">residents</span>
+                                    {againstPercent}% <span className="bn-u">of voters</span>
                                 </div>
                             </div>
                         </div>

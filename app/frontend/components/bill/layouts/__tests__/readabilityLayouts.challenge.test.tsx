@@ -257,10 +257,12 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         });
 
-        it("Stress: Extreme vote tallies handle large numbers with comma formatting", async () => {
+        it("Stress: Extreme vote tallies show percentages and never the counts", async () => {
             const extremeScore = {
                 for: 1250000,
                 against: 850000,
+                for_percent: 60,
+                against_percent: 40,
                 comparison_suppressed: false,
                 voters_needed: 0,
                 districts: [],
@@ -269,8 +271,9 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             renderTestLayout({ bill_score: extremeScore });
             await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
 
-            expect(document.body.textContent).toContain("1,250,000");
-            expect(document.body.textContent).toContain("850,000");
+            expect(document.body.textContent).toContain("60%");
+            expect(document.body.textContent).toContain("40%");
+            expect(document.body.textContent).not.toMatch(/1,?250,?000|850,?000/);
         });
 
         it("Stress: Inactive bill with user vote suppresses EmailLegislatorsModal", async () => {
@@ -313,7 +316,9 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
                 bill_id: SAMPLE_BILL.id,
                 for: 7777,
-                against: 3333,
+                against: 4321,
+                for_percent: 70,
+                against_percent: 30,
                 comparison_suppressed: false,
                 voters_needed: 0,
                 districts: [
@@ -355,7 +360,7 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
                 expect(placeholder?.textContent).not.toMatch(/\d/);
                 const text = document.body.textContent ?? "";
                 expect(text).not.toMatch(/7,?777/);
-                expect(text).not.toMatch(/3,?333/);
+                expect(text).not.toMatch(/4,?321/);
                 expect(text).not.toContain("%");
                 expect(text).not.toMatch(/majority|leading|evenly split|no votes yet/i);
                 for (const testId of [
@@ -389,13 +394,14 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
                 }
             });
 
-            it("shows the exact bill total once ten users have voted", async () => {
+            it("shows the bill total as percentages and never the counts once ten users have voted", async () => {
                 await renderWithScore(score({}));
 
                 const text = document.body.textContent ?? "";
-                expect(text).toMatch(/7,?777/);
-                expect(text).toMatch(/3,?333/);
-                expect(text).not.toContain("Visual comparisons will be shown");
+                expect(text).toContain("70%");
+                expect(text).toContain("30%");
+                expect(text).not.toContain("Not enough votes yet");
+                expect(document.body.innerHTML).not.toMatch(/7,?777|4,?321/);
             });
         },
     );

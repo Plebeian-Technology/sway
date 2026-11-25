@@ -43,7 +43,7 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
     const { user, sway_locale, public_testimony_counts, public_testimony_letters } = usePage<sway.IPageProps>().props;
     const swayLocaleSlug = useSwayLocaleSlug();
     const { supporting, opposing } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
     const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
@@ -149,11 +149,11 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                             ) : (
                                 <div className="smb-tally">
                                     <div className="smb-tally__cell">
-                                        <div className="smb-tally__num">{forCount.toLocaleString()}</div>
+                                        <div className="smb-tally__num">{forPercent}%</div>
                                         <div className="smb-tally__label">{PARITY_COPY.votePanel.forLabel}</div>
                                     </div>
                                     <div className="smb-tally__cell">
-                                        <div className="smb-tally__num">{againstCount.toLocaleString()}</div>
+                                        <div className="smb-tally__num">{againstPercent}%</div>
                                         <div className="smb-tally__label">{PARITY_COPY.votePanel.againstLabel}</div>
                                     </div>
                                 </div>

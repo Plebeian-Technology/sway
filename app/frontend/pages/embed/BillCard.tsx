@@ -16,6 +16,8 @@ export interface IEmbedBill {
     current_status: string;
     pro_count: number | null;
     con_count: number | null;
+    pro_percent: number | null;
+    con_percent: number | null;
     total_votes: number;
     comparison_suppressed: boolean;
     voters_needed: number;
@@ -36,6 +38,8 @@ export interface IProps {
     current_status?: string;
     pro_count?: number | null;
     con_count?: number | null;
+    pro_percent?: number | null;
+    con_percent?: number | null;
     total_votes?: number;
     comparison_suppressed?: boolean;
     voters_needed?: number;
@@ -52,6 +56,8 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         current_status: props.current_status ?? "Introduced",
         pro_count: props.pro_count ?? 0,
         con_count: props.con_count ?? 0,
+        pro_percent: props.pro_percent ?? 0,
+        con_percent: props.con_percent ?? 0,
         total_votes: props.total_votes ?? 0,
         comparison_suppressed: props.comparison_suppressed ?? true,
         voters_needed: props.voters_needed ?? 0,
@@ -83,11 +89,8 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
     })();
     // @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
     const comparisonSuppressed = bill.comparison_suppressed !== false;
-    const proCount = bill.pro_count ?? 0;
-    const conCount = bill.con_count ?? 0;
-    const totalVotes = proCount + conCount;
-    const proPct = totalVotes > 0 ? Math.round((proCount / totalVotes) * 100) : 0;
-    const conPct = totalVotes > 0 ? 100 - proPct : 0;
+    const proPct = bill.pro_percent ?? 0;
+    const conPct = bill.con_percent ?? 0;
 
     useEffect(() => {
         if (typeof window !== "undefined" && window.parent && window.parent !== window) {
@@ -188,7 +191,7 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
                     <div data-testid="vote-meter" className="space-y-1.5">
                         <div
                             className="flex h-6 w-full overflow-hidden rounded-lg border-neo border-border bg-muted shadow-neo"
-                            aria-label={`Support ${proCount}, Oppose ${conCount}`}
+                            aria-label={`Support ${proPct}%, Oppose ${conPct}%`}
                         >
                             {proPct > 0 && (
                                 <div
@@ -213,14 +216,10 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
                         <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
                             <span className="flex items-center gap-1.5 text-vote-for">
                                 <span className="inline-block size-2.5 rounded-full bg-vote-for" />
-                                <span>
-                                    Support {proCount} ({proPct}%)
-                                </span>
+                                <span>Support {proPct}%</span>
                             </span>
                             <span className="flex items-center gap-1.5 text-vote-against">
-                                <span>
-                                    Oppose {conCount} ({conPct}%)
-                                </span>
+                                <span>Oppose {conPct}%</span>
                                 <span className="inline-block size-2.5 rounded-full bg-vote-against" />
                             </span>
                         </div>

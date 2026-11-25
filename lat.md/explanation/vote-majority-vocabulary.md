@@ -53,26 +53,28 @@ The property `majorityStatus` replaces `standing`. The property `userSupports` p
 
 ### selectVoteMajority helper
 
-The helper function computes the majority outcome from a user's cast vote and a vote tally:
+The helper function computes the majority outcome from a user's cast vote and the bill's rounded For and Against percentages:
 
 ```typescript
 export const selectVoteMajority = (
     userVote: sway.IUserVote | null | undefined,
     tally: VoteTally,
 ): VoteMajorityResult => {
-    const { forCount, againstCount, total } = tally;
+    const { forPercent, againstPercent } = tally;
     const userVoted = Boolean(userVote);
     const userSupports = userVote?.support === Support.For;
     const majorityStatus: VoteMajorityStatus =
-        total === 0
+        forPercent + againstPercent === 0
             ? "No votes yet"
-            : forCount === againstCount
+            : forPercent === againstPercent
               ? "Evenly split"
-              : forCount > againstCount
+              : forPercent > againstPercent
                 ? "For leading"
                 : "Against leading";
     const withMajority =
-        userVoted && total > 0 && forCount !== againstCount ? userSupports === forCount > againstCount : null;
+        userVoted && forPercent + againstPercent > 0 && forPercent !== againstPercent
+            ? userSupports === forPercent > againstPercent
+            : null;
     return { userVoted, userSupports, majorityStatus, withMajority };
 };
 ```

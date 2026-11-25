@@ -37,7 +37,7 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
         : "Legislators have not yet voted on a final version.";
 
     const { all: positions } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
     const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
@@ -112,11 +112,11 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                 ) : (
                     <div className="bal-count">
                         <div className="bal-count__cell">
-                            <span className="bal-count__n">{forCount.toLocaleString()}</span>
+                            <span className="bal-count__n">{forPercent}%</span>
                             <span className="bal-count__l">voted for</span>
                         </div>
                         <div className="bal-count__cell">
-                            <span className="bal-count__n">{againstCount.toLocaleString()}</span>
+                            <span className="bal-count__n">{againstPercent}%</span>
                             <span className="bal-count__l">voted against</span>
                         </div>
                     </div>

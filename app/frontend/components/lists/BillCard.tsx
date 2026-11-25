@@ -1,5 +1,6 @@
 import {
     isVoteComparisonSuppressed,
+    selectVoteTally,
     suppressedVoteComparisonLine,
 } from "app/frontend/components/bill/sway_utils/billPositions";
 import { isArchivedHistoricalBill } from "app/frontend/components/bill/sway_utils/billArchiving";
@@ -20,6 +21,7 @@ interface IProps {
 
 // @lat: [[bill-list-layouts-design#Featured release dates on Past Bills of the Month]]
 const BillCard: React.FC<IProps> = ({ bill, listMode }) => {
+    const { forPercent, againstPercent } = selectVoteTally(bill.bill_score);
     const releaseDate =
         listMode === "past_bills_of_the_month" ? formatCalendarDay(bill.scheduled_release_date_utc) : null;
 
@@ -65,15 +67,13 @@ const BillCard: React.FC<IProps> = ({ bill, listMode }) => {
                             <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                 For
                             </div>
-                            <div className="mt-2 text-3xl font-black text-vote-for">{bill.bill_score?.for ?? 0}</div>
+                            <div className="mt-2 text-3xl font-black text-vote-for">{forPercent}%</div>
                         </div>
                         <div className="rounded-xl border-neo border-border bg-surface-3 px-4 py-4 shadow-neo">
                             <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                 Against
                             </div>
-                            <div className="mt-2 text-3xl font-black text-vote-against">
-                                {bill.bill_score?.against ?? 0}
-                            </div>
+                            <div className="mt-2 text-3xl font-black text-vote-against">{againstPercent}%</div>
                         </div>
                     </div>
                 )}

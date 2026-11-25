@@ -70,69 +70,67 @@ describe("selectBillPositions", () => {
 });
 
 describe("selectVoteTally", () => {
-    it("computes counts, total, and rounded support percentage", () => {
-        expect(selectVoteTally({ for: 30, against: 10 })).toEqual({
-            forCount: 30,
-            againstCount: 10,
-            total: 40,
-            forPct: 75,
+    it("reads the published For and Against percentages", () => {
+        expect(selectVoteTally({ for_percent: 70, against_percent: 30 })).toEqual({
+            forPercent: 70,
+            againstPercent: 30,
         });
     });
 
-    it("rounds the support percentage to the nearest whole number", () => {
-        expect(selectVoteTally({ for: 1, against: 2 }).forPct).toBe(33);
+    it("returns zeros for a null score", () => {
+        expect(selectVoteTally(null)).toEqual({ forPercent: 0, againstPercent: 0 });
     });
 
-    it("returns all zeros for a null score", () => {
-        expect(selectVoteTally(null)).toEqual({ forCount: 0, againstCount: 0, total: 0, forPct: 0 });
+    it("returns zeros for an undefined score", () => {
+        expect(selectVoteTally(undefined)).toEqual({ forPercent: 0, againstPercent: 0 });
     });
 
-    it("returns all zeros for an undefined score", () => {
-        expect(selectVoteTally(undefined)).toEqual({ forCount: 0, againstCount: 0, total: 0, forPct: 0 });
-    });
-
-    it("yields a 0 percentage when no votes are cast, without dividing by zero", () => {
-        expect(selectVoteTally({ for: 0, against: 0 }).forPct).toBe(0);
+    it("returns zeros for a withheld score whose percentages are null", () => {
+        expect(selectVoteTally({ for_percent: null, against_percent: null })).toEqual({
+            forPercent: 0,
+            againstPercent: 0,
+        });
     });
 });
 
 describe("selectVoteMajority", () => {
     const vote = (support: string): sway.IUserVote => ({ support }) as sway.IUserVote;
+    const tally = (for_percent: number, against_percent: number) => selectVoteTally({ for_percent, against_percent });
 
     it("reports 'No votes yet' with no verdict when the tally is empty", () => {
-        const r = selectVoteMajority(vote(Support.For), selectVoteTally({ for: 0, against: 0 }));
+        const r = selectVoteMajority(vote(Support.For), tally(0, 0));
         expect(r.majorityStatus).toBe("No votes yet");
         expect(r.withMajority).toBeNull();
         expect(r.userVoted).toBe(true);
     });
 
-    it("reports 'Evenly split' with no verdict on a tie", () => {
-        const r = selectVoteMajority(vote(Support.For), selectVoteTally({ for: 10, against: 10 }));
+    it("reports 'Evenly split' with no verdict on equal rounded percentages", () => {
+        const r = selectVoteMajority(vote(Support.For), tally(50, 50));
         expect(r.majorityStatus).toBe("Evenly split");
         expect(r.withMajority).toBeNull();
     });
 
     it("sets withMajority true when the user voted with the leading side", () => {
-        const r = selectVoteMajority(vote(Support.For), selectVoteTally({ for: 30, against: 10 }));
+        const r = selectVoteMajority(vote(Support.For), tally(70, 30));
         expect(r.majorityStatus).toBe("For leading");
         expect(r.userSupports).toBe(true);
         expect(r.withMajority).toBe(true);
     });
 
     it("sets withMajority false when the user voted against the leading side", () => {
-        const r = selectVoteMajority(vote(Support.For), selectVoteTally({ for: 10, against: 30 }));
+        const r = selectVoteMajority(vote(Support.For), tally(30, 70));
         expect(r.majorityStatus).toBe("Against leading");
         expect(r.withMajority).toBe(false);
     });
 
     it("sets withMajority true when Against votes lead", () => {
-        const r = selectVoteMajority(vote(Support.Against), selectVoteTally({ for: 10, against: 30 }));
+        const r = selectVoteMajority(vote(Support.Against), tally(30, 70));
         expect(r.userSupports).toBe(false);
         expect(r.withMajority).toBe(true);
     });
 
     it("reports no verdict and userVoted false when the user has not voted", () => {
-        const r = selectVoteMajority(undefined, selectVoteTally({ for: 30, against: 10 }));
+        const r = selectVoteMajority(undefined, tally(70, 30));
         expect(r.userVoted).toBe(false);
         expect(r.userSupports).toBe(false);
         expect(r.withMajority).toBeNull();
@@ -146,6 +144,8 @@ const billScore = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
     bill_id: 1,
     for: 18,
     against: 12,
+    for_percent: 60,
+    against_percent: 40,
     comparison_suppressed: false,
     voters_needed: 0,
     districts: [],

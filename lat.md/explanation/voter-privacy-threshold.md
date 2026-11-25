@@ -117,7 +117,7 @@ Seven bill layouts draw the tally, and each asks [[app/frontend/components/bill/
 
 When it answers yes, the layout draws one placeholder with the invite prompt where its tally stood. The chart panels, the affinity panel and any sentence about the majority draw nothing, so the page says it once. A score with no flag counts as suppressed: a payload the page does not understand is hidden, never shown.
 
-Once the bill passes the minimum the total shows exact counts again, and the district charts follow [[bill-vote-charts-design]].
+Once the bill passes the minimum the total shows its For and Against percentages again, never counts, and the district charts follow [[bill-vote-charts-design]]. [[app/frontend/components/bill/sway_utils/billPositions.ts#selectVoteTally]] reads the percentages, so "Evenly split" means equal rounded percentages: 11 For and 10 Against shows 50 and 50 and reads as even.
 
 The reader's own vote and the comparison with their legislators stay on the page throughout. Each compares one user with one official, not users with each other.
 
@@ -141,7 +141,7 @@ The reader's own chart and tile keep their counts: [[app/frontend/components/leg
 
 The partner embed at `/embed/bills/:id` is public and a CDN keeps each response for up to fifteen minutes, so a count hidden only by the card would still be published.
 
-[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count`, `con_count`, `pro_percent` and `con_percent` as nil whenever the split is withheld (under ten voters or unanimous), with `comparison_suppressed` and `voters_needed`. The percentages follow the same rounding as the bill page. `total_votes` stays, because it says how many voted and not how. The card shows the placeholder sentences and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed.
+[[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count`, `con_count`, `pro_percent` and `con_percent` as nil whenever the split is withheld (under ten voters or unanimous), with `comparison_suppressed` and `voters_needed`. The percentages follow the same rounding as the bill page. `total_votes` stays, because it says how many voted and not how. The card shows "Not enough votes yet", the invite prompt and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed. When the split is published the card draws `pro_percent` and `con_percent` in its text and `aria-label` and never reads a count.
 
 The response's ETag includes [[app/controllers/embed/bills_controller.rb#BillsController#PAYLOAD_VERSION]], so a deploy that changes the payload's shape or privacy rules, and bumps that constant, makes every ETag cached before it stale. A CDN or browser holding the old body revalidates, gets a full response instead of a 304, and drops the old counts. Without the bump the ETag follows only the bill and its score row, and a response cached before the rule would keep revalidating as 304 until someone voted on that bill. A response still inside its freshness window is served without revalidation until it expires, up to fifteen minutes.
 

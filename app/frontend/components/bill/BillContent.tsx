@@ -58,7 +58,7 @@ const BillContent: React.FC<IProps> = ({
         () => selectBillPositions(organizations, bill.id),
         [bill.id, organizations],
     );
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
     const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     return (
         <div className="grid gap-6">
@@ -75,13 +75,13 @@ const BillContent: React.FC<IProps> = ({
                                 <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                     For
                                 </div>
-                                <div className="mt-2 text-3xl font-black text-vote-for">{forCount}</div>
+                                <div className="mt-2 text-3xl font-black text-vote-for">{forPercent}%</div>
                             </div>
                             <div className="rounded-xl bg-surface-3 px-4 py-4 shadow-neo">
                                 <div className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                     Against
                                 </div>
-                                <div className="mt-2 text-3xl font-black text-vote-against">{againstCount}</div>
+                                <div className="mt-2 text-3xl font-black text-vote-against">{againstPercent}%</div>
                             </div>
                         </div>
                     )}

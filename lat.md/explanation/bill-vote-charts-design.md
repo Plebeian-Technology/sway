@@ -5,7 +5,7 @@ lat:
 
 # Bill vote chart components (app/frontend/components/bill/charts/)
 
-Why the total chart shows exact counts while the two district charts show percentages, all drawn as hand-built bars with no charting library.
+Why all three bill vote charts show percentages and never a count, all drawn as hand-built bars with no charting library.
 
 ## AffinityDistrictChart.tsx
 
@@ -38,12 +38,6 @@ A vote or a pull to refresh replaces every prop and drops `districts` again, so 
 
 ## TotalVotesChart.tsx
 
-One horizontal bar split between Support and Oppose.
+One horizontal bar split between Support and Oppose, each side sized and labelled by the rounded percentage the server publishes.
 
-The numbers match the older version of this chart exactly:
-
-```
-Support = Number(score.for || 0)
-Oppose  = Number(score.against || 0)
-max     = Math.max(Support, Oppose)
-```
+[[app/frontend/components/bill/sway_utils/billPositions.ts#selectVoteTally]] reads `for_percent` and `against_percent` from the score ([[voter-privacy-threshold#Bill totals are sent as rounded percentages]]). The bar's `aria-label` and the legend carry the percentages and no count. When neither percentage is published the chart says no votes are recorded.

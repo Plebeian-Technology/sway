@@ -286,6 +286,8 @@ declare module "sway" {
         interface IBaseScore {
             for: number | null;
             against: number | null;
+            for_percent: number | null;
+            against_percent: number | null;
             comparison_suppressed: boolean;
             voters_needed: number;
         }

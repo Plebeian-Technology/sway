@@ -268,7 +268,9 @@ describe("BillContent — How others voted below the ten-voter minimum", () => {
     const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
         bill_id: BASE_BILL.id,
         for: 7777,
-        against: 3333,
+        against: 4321,
+        for_percent: 70,
+        against_percent: 30,
         comparison_suppressed: false,
         voters_needed: 0,
         districts: [],
@@ -289,15 +291,16 @@ describe("BillContent — How others voted below the ten-voter minimum", () => {
         expect(panel).toHaveTextContent("Invite others by sharing Sway");
         expect(panel.textContent).not.toMatch(/\d/);
         expect(panel).not.toHaveTextContent("7777");
-        expect(panel).not.toHaveTextContent("3333");
+        expect(panel).not.toHaveTextContent("4321");
     });
 
-    it("shows exact counts once the tally is no longer suppressed", () => {
+    it("shows percentages and no count once the tally is no longer suppressed", () => {
         render(<BillContent bill={BASE_BILL} organizations={[]} bill_score={score({})} />);
 
         const panel = screen.getByTestId("score-panel");
-        expect(panel).toHaveTextContent("7777");
-        expect(panel).toHaveTextContent("3333");
+        expect(panel).toHaveTextContent("70%");
+        expect(panel).toHaveTextContent("30%");
+        expect(panel.innerHTML).not.toMatch(/7,?777|4,?321/);
         expect(panel).not.toHaveTextContent("Visual comparisons will be shown");
     });
 });

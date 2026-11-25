@@ -43,7 +43,7 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
     const { user, sway_locale, public_testimony_counts, public_testimony_letters } = usePage<sway.IPageProps>().props;
     const swayLocaleSlug = useSwayLocaleSlug();
     const { supporting, opposing } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
     const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
@@ -146,11 +146,11 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                             ) : (
                                 <div className="sgb-tally">
                                     <div className="sgb-tally__cell">
-                                        <div className="sgb-tally__num">{forCount.toLocaleString()}</div>
+                                        <div className="sgb-tally__num">{forPercent}%</div>
                                         <div className="sgb-tally__label">{PARITY_COPY.votePanel.forLabel}</div>
                                     </div>
                                     <div className="sgb-tally__cell">
-                                        <div className="sgb-tally__num">{againstCount.toLocaleString()}</div>
+                                        <div className="sgb-tally__num">{againstPercent}%</div>
                                         <div className="sgb-tally__label">{PARITY_COPY.votePanel.againstLabel}</div>
                                     </div>
                                 </div>

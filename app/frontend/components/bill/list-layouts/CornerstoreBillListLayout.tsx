@@ -151,7 +151,7 @@ const CornerstoreBillListLayout: React.FC<BillListLayoutProps> = ({
                 {bills.map((bill) => {
                     const entry = bill as sway.IBill & { user_vote?: sway.IApiUserVote };
                     const summary = briefSummary(entry.summary, 160);
-                    const { forCount, againstCount } = selectVoteTally(entry.bill_score);
+                    const { forPercent, againstPercent } = selectVoteTally(entry.bill_score);
                     const releaseDate =
                         listMode === "past_bills_of_the_month"
                             ? formatCalendarDay(entry.scheduled_release_date_utc)
@@ -175,7 +175,7 @@ const CornerstoreBillListLayout: React.FC<BillListLayoutProps> = ({
                                 <span className="csl-tally">
                                     {isVoteComparisonSuppressed(entry.bill_score)
                                         ? suppressedVoteComparisonLine()
-                                        : `${forCount.toLocaleString()} for · ${againstCount.toLocaleString()} against`}
+                                        : `${forPercent}% for · ${againstPercent}% against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="csl-voted">Vote recorded</span>}
                                 <BillEditLink

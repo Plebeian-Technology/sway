@@ -38,7 +38,7 @@ The widget serialization provides a strictly reader-agnostic payload containing 
 
 [[app/serializers/embed_bill_resource.rb#EmbedBillResource]] serializes bill identifiers, titles, summaries, locale data, vote counts, and deep links without exposing user identity, user votes, session cookies, or personally identifiable information.
 
-Below ten voters the For and Against counts are withheld: [[voter-privacy-threshold#The embed widget withholds counts on the server]].
+The card draws the For and Against percentages and never a count. Below ten voters, or for a unanimous split, the server withholds them: [[voter-privacy-threshold#The embed widget withholds counts on the server]].
 
 ## Controller implementation
 
