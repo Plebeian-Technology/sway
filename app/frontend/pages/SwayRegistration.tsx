@@ -251,6 +251,9 @@ const SwayRegistration: React.FC<IProps> = ({
                                 <p className="text-sm text-muted-foreground">
                                     {PARITY_COPY.address.switchConfirm.body}
                                 </p>
+                                <p className="text-sm text-muted-foreground">
+                                    {PARITY_COPY.address.switchConfirm.votesKept}
+                                </p>
                                 <div className="flex flex-row items-center justify-end gap-3">
                                     <Button
                                         type="button"

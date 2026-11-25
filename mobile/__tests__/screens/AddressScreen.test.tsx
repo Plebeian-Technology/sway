@@ -249,6 +249,11 @@ describe("AddressScreen", () => {
             expect(screen.getByTestId("address-switch-confirm")).toBeTruthy();
             expect(screen.getAllByText(PARITY_COPY.address.switchConfirm.title)).toHaveLength(2);
             expect(screen.getByText(PARITY_COPY.address.switchConfirm.body)).toBeTruthy();
+            expect(
+                screen.getByText(
+                    "Your past votes stay on your account and will count toward your new district and representatives.",
+                ),
+            ).toBeTruthy();
             expect(screen.getAllByText(PARITY_COPY.address.switchConfirm.confirmCta)).toHaveLength(2);
             expect(screen.getByText(PARITY_COPY.address.switchConfirm.cancelCta)).toBeTruthy();
             expect(apiClient.post).not.toHaveBeenCalled();

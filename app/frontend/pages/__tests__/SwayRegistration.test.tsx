@@ -1,6 +1,6 @@
 // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { sway } from "sway";
@@ -260,6 +260,11 @@ describe("SwayRegistration — address switching confirmation", () => {
         expect(dialog).toBeInTheDocument();
         expect(dialog.querySelector("p")?.textContent).toBe(PARITY_COPY.address.switchConfirm.title);
         expect(screen.getByText(PARITY_COPY.address.switchConfirm.body)).toBeInTheDocument();
+        expect(
+            within(dialog).getByText(
+                "Your past votes stay on your account and will count toward your new district and representatives.",
+            ),
+        ).toBeInTheDocument();
         expect(screen.getByTestId("btn-confirm-address-switch").textContent).toBe(
             PARITY_COPY.address.switchConfirm.confirmCta,
         );
@@ -505,6 +510,11 @@ describe("SwayRegistration — change-address mode for a registered user", () =>
 
         expect(post).not.toHaveBeenCalled();
         expect(screen.getByText(PARITY_COPY.address.switchConfirm.body)).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                "Your past votes stay on your account and will count toward your new district and representatives.",
+            ),
+        ).toBeInTheDocument();
 
         fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
 

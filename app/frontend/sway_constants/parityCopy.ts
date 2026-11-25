@@ -432,6 +432,8 @@ export const PARITY_COPY = {
                 "Updating your address re-checks your district and legislators. Switching to a new address deactivates your current representative links, updates district scores, and records the change for audit.",
             title: "Confirm address change",
             body: "Switching your address will deactivate your current representative links, match you with the representatives for your new address, and record this switch so accounts cannot vote across multiple districts or locales.",
+            votesKept:
+                "Your past votes stay on your account and will count toward your new district and representatives.",
             confirmCta: "Confirm address change",
             cancelCta: "Keep current address",
         },

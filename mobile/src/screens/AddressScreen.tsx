@@ -410,6 +410,9 @@ export default function AddressScreen() {
                         <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
                             {PARITY_COPY.address.switchConfirm.body}
                         </Text>
+                        <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                            {PARITY_COPY.address.switchConfirm.votesKept}
+                        </Text>
                         <View className="flex-row gap-3">
                             <Pressable
                                 testID="address-confirm-deactivate-cta"
