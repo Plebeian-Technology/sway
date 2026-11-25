@@ -490,6 +490,18 @@ describe("AddressScreen", () => {
 
                 expect(inviteAttribution.get()).toBe("s:abc123");
             });
+
+            it("clears the key when the person continues with an address that was not located", async () => {
+                inviteAttribution.set("s:abc123");
+                (apiClient.post as jest.Mock).mockResolvedValueOnce({ address_located: false, message: "Not found" });
+
+                await submitTypedAddress();
+                await act(async () => {
+                    fireEvent.press(screen.getByTestId("address-not-located-continue-cta"));
+                });
+
+                expect(inviteAttribution.get()).toBeNull();
+            });
         });
 
         it("enables the submit button once the typed fields are filled and posts them with null coordinates", async () => {

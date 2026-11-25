@@ -161,4 +161,34 @@ describe("a link received before the main screens", () => {
         await waitFor(() => expect(navRef.current?.getCurrentRoute()).toBeDefined());
         expect(inviteAttribution.get()).toBeNull();
     });
+
+    // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#Signing out forgets the stored invite]]
+    describe("the stored invite key", () => {
+        afterEach(() => {
+            inviteAttribution.clear();
+        });
+
+        it("is forgotten when the person signs out, so the next person to register is not credited to that inviter", async () => {
+            signedIn(true);
+            const { rerender } = render(app());
+            await waitFor(() => expect(navRef.current?.getCurrentRoute()).toBeDefined());
+            receiveLink("https://sway.vote/s/abc123");
+            expect(inviteAttribution.get()).toBe("s:abc123");
+
+            signedOut();
+            rerender(app());
+            await screen.findByTestId("auth-screen");
+
+            expect(inviteAttribution.get()).toBeNull();
+        });
+
+        it("is kept when the app starts signed out, so a launch invite link still credits its inviter", async () => {
+            inviteAttribution.set("s:abc123");
+
+            render(app());
+            await screen.findByTestId("auth-screen");
+
+            expect(inviteAttribution.get()).toBe("s:abc123");
+        });
+    });
 });

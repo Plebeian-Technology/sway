@@ -31,6 +31,14 @@ The link that launched the app needs none of this. The navigation container alre
 
 Signing out forgets the kept link. Otherwise a link tapped by one person would open for the next person to sign in on the same phone.
 
+### Signing out forgets the stored invite
+
+A signed-in person who signs out loses the invite key a link stored, so the next person to register on the phone is not credited to that inviter.
+
+The key from [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]] lives in memory, and only registration would otherwise clear it. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]] clears it when the session changes from signed in to signed out, whatever caused the change.
+
+The app starting signed out does not clear it. An invite link that launches the app stores its key before `RootNavigator` first renders, and that key belongs to the person about to sign up.
+
 ## AuthStack
 
 `AuthStack` (`mobile/src/navigation/AuthStack.tsx`) is the sign-in flow, which is only two screens:
@@ -185,7 +193,7 @@ The key that [[well-known-controller-notes#Mobile: linking.ts#Invite links store
 
 Only onboarding sends it. A registered person who changes their address is not being invited by anyone, so the key stays out of that request and stays stored.
 
-The key is cleared once the address is saved and located. A failed request, or an address the server could not locate, leaves it in place, because the person submits again and that later request is the one that completes registration.
+The key is cleared once the address is saved and located, or once the person chooses to continue with an address the server could not locate. A failed request, or an unlocated address the person has not yet accepted, leaves it in place, because the person may submit again and that later request is the one that completes registration.
 
 ## Why isOnboarding only changes wording
 

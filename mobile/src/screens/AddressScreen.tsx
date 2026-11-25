@@ -117,6 +117,7 @@ export default function AddressScreen() {
 
     const finishAddressSave = async () => {
         setNotLocatedMessage(null);
+        if (isOnboarding) inviteAttribution.clear();
         const loaded = await clearCachesAndRefresh();
         if (loaded === false && isOnboarding) {
             setSavedButNotLoaded(true);
@@ -154,7 +155,6 @@ export default function AddressScreen() {
                 setShowManual(true);
                 return;
             }
-            if (inviteKey !== null) inviteAttribution.clear();
             await finishAddressSave();
         } catch (e) {
             // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Why an onboarding failure that may have saved the address reloads the account first]]
