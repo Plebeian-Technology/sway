@@ -22,6 +22,7 @@ Controllers including [[app/controllers/concerns/mobile_format_negotiation.rb#Mo
 
 - `render_inertia_or_json(page:, props:)` — resolves the props and renders JSON for a mobile request, Inertia otherwise
 - `redirect_or_json(path, flash_message:)` — returns `{redirect:, flash:}` for a mobile request, a real redirect otherwise
+- [[app/controllers/concerns/mobile_format_negotiation.rb#MobileFormatNegotiation#respond_after_write]]`(path, back:, status:, json:, notice:, alert:, errors:)` — answers an admin write: for a mobile request, `json` with 200, or the 422 `validation_failed` error envelope when `errors` or `alert` is present; otherwise a redirect (or redirect back) carrying the status, flash and Inertia errors
 - Read paths (`scope "api"`) — `bills`, `bill_of_the_month`, `bill_scores`, `bill_score_districts`, `districts`, `influence`, `legislators`, `legislator_votes`, `organizations`, `organization_bill_positions`, `sway_locales`
 - Top-level `/feed` — [[app/controllers/feed_controller.rb#FeedController#index]] branches on `mobile_api_request?` to serve mobile JSON via `render_inertia_or_json` (without `newest_keys`) and Inertia scroll props otherwise, with no `scope "api"` duplicate
 - Admin write paths — `bills`, `bill_of_the_month_schedule`, `legislator_votes`, `organizations`, `organization_bill_positions`, under `scope "api"` then `scope "admin"`

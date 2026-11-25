@@ -10,6 +10,60 @@ RSpec.describe "Admin::Index", type: :request do
     verb: :get,
     path: "/admin"
 
+  context "with a bearer token and Accept: application/json" do
+    let(:api_token) { SecureRandom.hex(32) }
+    let(:headers) { {"Authorization" => "Bearer #{api_token}", "Accept" => "application/json"} }
+
+    # @lat: [[admin-hub-index#JSON shape for the mobile app]]
+    it "serves the tools list and database health as JSON to a sway admin" do
+      ApiKey.create!(bearer: create(:user, :sway_admin), token: api_token)
+
+      get "/admin", headers: headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      body = response.parsed_body
+      tools = body.fetch("tools")
+      expect(tools.map { |tool| tool.fetch("id") }).to include("bill_creator", "partner_reports")
+      expect(tools.map(&:keys).flatten.uniq).to include("id", "label", "description", "path", "group", "external")
+      expect(body.fetch("database_health")).to include("databases", "solid_queue_ready", "solid_queue_failed")
+    end
+
+    # @lat: [[admin-hub-index#JSON shape for the mobile app]]
+    it "keeps the extra title and icon keys on the partner_reports tool" do
+      ApiKey.create!(bearer: create(:user, :sway_admin), token: api_token)
+
+      get "/admin", headers: headers
+
+      partner_reports = response.parsed_body.fetch("tools").find { |tool| tool["id"] == "partner_reports" }
+      expect(partner_reports).to include("title" => "Partner Reports", "icon" => "TrendingUp")
+    end
+
+    # @lat: [[admin-hub-index#JSON shape for the mobile app]]
+    it "marks the beszel tool external for a sway admin on a listed monitoring domain" do
+      ApiKey.create!(bearer: create(:user, :sway_admin, email: "admin@ops.example.org"), token: api_token)
+
+      with_app_config(:ops, beszel_admin_email_domains: ["ops.example.org"]) do
+        get "/admin", headers: headers
+      end
+
+      beszel = response.parsed_body.fetch("tools").find { |tool| tool["id"] == "beszel" }
+      expect(beszel).to include("external" => true, "group" => "Operations")
+    end
+
+    it "refuses a non-admin with a forbidden JSON error" do
+      user = create(:user)
+      create(:user_legislator, user: user)
+      user.complete!
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/admin", headers: headers
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+    end
+  end
+
   context "as a sway admin" do
     let(:admin) { create(:user, :sway_admin) }
 

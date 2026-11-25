@@ -59,10 +59,22 @@ describe("VoteComparisonPlaceholder", () => {
         });
     });
 
-    it("renders no button when signed-in with null invite_url", () => {
+    it("renders the invite prompt above the button for signed-out and signed-in users", () => {
+        (usePage as any).mockReturnValue({ props: { user: undefined } });
+        const signedOut = render(<VoteComparisonPlaceholder votersNeeded={3} />);
+        expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+        signedOut.unmount();
+
+        (usePage as any).mockReturnValue({ props: { user: { invite_url: "https://sway.vote/invite/123" } } });
+        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+        expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+    });
+
+    it("renders no button or invite prompt when signed-in with null invite_url", () => {
         (usePage as any).mockReturnValue({ props: { user: { invite_url: null } } });
         render(<VoteComparisonPlaceholder votersNeeded={3} />);
         expect(screen.queryByRole("button")).not.toBeInTheDocument();
         expect(screen.queryByRole("link")).not.toBeInTheDocument();
+        expect(screen.queryByText("Invite others by sharing Sway")).not.toBeInTheDocument();
     });
 });

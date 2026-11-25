@@ -51,4 +51,18 @@ RSpec.describe District, type: :model do
       expect(district.region_code).to eq("MD")
     end
   end
+
+  describe "#at_large?" do
+    it "is true when the district number is zero" do
+      expect(build(:district, name: "MD0")).to be_at_large
+    end
+
+    it "is true when the name has no digits" do
+      expect(build(:district, name: "Baltimore")).to be_at_large
+    end
+
+    it "is false when the district number is positive" do
+      expect(build(:district, name: "MD7")).not_to be_at_large
+    end
+  end
 end

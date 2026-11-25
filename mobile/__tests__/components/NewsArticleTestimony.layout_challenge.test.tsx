@@ -540,8 +540,20 @@ describe("NewsArticleTestimony Layout & Volumetric Challenge Suite", () => {
             const { toJSON } = wrap(
                 <OrgPositionsSection
                     positions={[
-                        { id: 1, support: "FOR", organization: { name: "Supporters Org" }, summary: "Org Support" },
-                        { id: 2, support: "AGAINST", organization: { name: "Opponents Org" }, summary: "Org Oppose" },
+                        {
+                            id: 1,
+                            support: "FOR",
+                            organization: { name: "Supporters Org" },
+                            summary: "Org Support",
+                            origin: "Sway-compiled",
+                        },
+                        {
+                            id: 2,
+                            support: "AGAINST",
+                            organization: { name: "Opponents Org" },
+                            summary: "Org Oppose",
+                            origin: "Sway-compiled",
+                        },
                     ]}
                     newsTestimonies={mixedTestimonies}
                 />,

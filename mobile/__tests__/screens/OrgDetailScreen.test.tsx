@@ -44,7 +44,6 @@ const ORG_PAYLOAD = {
         id: 42,
         name: "Civic Alliance",
         sway_locale_slug: "baltimore-maryland-united_states",
-        follower_count: 17,
     },
     organization_bill_positions: [{ id: 1, bill_id: 10, support: "Supports", summary: "Good policy" }],
     // A signed-in user gets current_user_follow_id; if it is missing, the user is signed out
@@ -57,7 +56,6 @@ const ORG_PAYLOAD_SIGNED_OUT = {
         id: 42,
         name: "Civic Alliance",
         sway_locale_slug: "baltimore-maryland-united_states",
-        follower_count: 17,
     },
     organization_bill_positions: [],
     // Neither current_user_follow_id nor is_member_of_org_ids, so this user is signed out
@@ -94,12 +92,13 @@ describe("OrgDetailScreen (Phase 35 parity rebuild + Phase 61 follow restore)", 
         expect(screen.getByTestId("org-detail-following-btn")).toBeTruthy();
     });
 
-    test("renders follower count (REQ-9)", async () => {
+    test("renders no follower count", async () => {
         render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
         await waitFor(() => {
-            expect(screen.getByTestId("org-detail-follower-count")).toBeTruthy();
+            expect(screen.getByTestId("org-detail-header")).toBeTruthy();
         });
-        expect(screen.getByText("17 followers")).toBeTruthy();
+        expect(screen.queryByTestId("org-detail-follower-count")).toBeNull();
+        expect(screen.queryByText(/follower/)).toBeNull();
     });
 
     // Signed out: no follow section renders here (deliberately unlike OrgCard, which shows a Follow

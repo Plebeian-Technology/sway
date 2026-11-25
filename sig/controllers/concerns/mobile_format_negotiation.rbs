@@ -3,6 +3,7 @@ module MobileFormatNegotiation
 
   def render_inertia_or_json: (page: untyped, props: untyped) -> untyped
   def redirect_or_json: (String path, ?flash_message: String?, ?status: Symbol) -> untyped
+  def respond_after_write: (String path, ?back: bool, ?status: Symbol, ?json: untyped, ?notice: String?, ?alert: String?, ?errors: untyped) -> untyped
   def mobile_api_request?: () -> bool
   def bearer_authorization_header?: () -> bool
   def resolve_inertia_props: (untyped props) -> untyped
@@ -18,6 +19,8 @@ module MobileFormatNegotiation
   # signature for redirect_to is private and rejects flash kwargs).
   def render: (*untyped args, **untyped kwargs) -> untyped
   def redirect_to: (*untyped args, **untyped kwargs) -> untyped
+  def redirect_back_or_to: (*untyped args, **untyped kwargs) -> untyped
+  def render_error: (code: String, message: String, status: Symbol, ?details: untyped) -> untyped
   def request: -> untyped
   def response: -> untyped
   def params: -> untyped

@@ -69,19 +69,16 @@ class BillDraftOrgPositionsController < ApplicationController
     case outcome[:status]
     when :already_removed
       if rejecting
-        return redirect_to(
-          positions_bill_creator_path(id: bill.id),
-          notice: "Draft already removed."
-        )
+        return respond_after_write(positions_bill_creator_path(id: bill.id), notice: "Draft already removed.")
       end
       return render(
         json: {error: "draft_not_found", message: "No draft org position at index #{index.inspect}"},
         status: :not_found
       )
     when :identity_mismatch
-      return redirect_to(
+      return respond_after_write(
         positions_bill_creator_path(id: bill.id),
-        inertia: {errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}}
+        errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}
       )
     when :identity_required
       # @lat: [[bill-draft-org-positions-controller#Why :identity_required is its own outcome, not :identity_mismatch]]
@@ -120,7 +117,7 @@ class BillDraftOrgPositionsController < ApplicationController
       else
         "Draft updated"
       end
-    redirect_to positions_bill_creator_path(id: bill.id), notice: notice
+    respond_after_write positions_bill_creator_path(id: bill.id), notice: notice
   end
 
   private

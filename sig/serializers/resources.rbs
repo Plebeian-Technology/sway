@@ -219,3 +219,7 @@ class UserAddressChangeResource < ApplicationResource
 
   def locale_names_for: (Array[Integer] locale_ids) -> Array[String]
 end
+
+class AdminLocaleSampleAddressResource < ApplicationResource
+  def serializable_hash: () -> Hash[Symbol, untyped]
+end

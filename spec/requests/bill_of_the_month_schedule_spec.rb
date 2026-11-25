@@ -365,4 +365,79 @@ RSpec.describe "BillOfTheMonthSchedules", type: :request do
       end
     end
   end
+
+  describe "PATCH /update" do
+    let(:bearer_json_headers) do
+      lambda do |user|
+        authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+      end
+    end
+
+    def patch_schedule(bill, date, user)
+      patch "/bill_of_the_month_schedule/#{bill.id}",
+        params: {bill_id: bill.id, scheduled_release_date_utc: date}.to_json,
+        headers: bearer_json_headers.call(user)
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+    it "schedules the bill for a bearer client and answers 200 JSON with no redirect" do
+      sway_locale, user = setup
+      bill = build_bill_for_schedule.call(sway_locale)
+
+      patch_schedule(bill, "2026-09-08", user)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      expect(bill.reload.scheduled_release_date_utc).to eq(Date.new(2026, 9, 8))
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+    it "unschedules the bill when the date is blank" do
+      sway_locale, user = setup
+      bill = build_bill_for_schedule.call(sway_locale)
+      bill.update_column(:scheduled_release_date_utc, Date.new(2026, 9, 8))
+
+      patch_schedule(bill, "", user)
+
+      expect(response).to have_http_status(:ok)
+      expect(bill.reload.scheduled_release_date_utc).to be_nil
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+    it "answers 422 JSON naming the date when another bill already holds it" do
+      sway_locale, user = setup
+      bill = build_bill_for_schedule.call(sway_locale)
+      bill.update_column(:scheduled_release_date_utc, nil)
+      other = build_bill_for_schedule.call(sway_locale)
+      other.update_column(:scheduled_release_date_utc, Date.new(2026, 9, 8))
+
+      patch_schedule(bill, "2026-09-08", user)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json_body.dig(:error, :code)).to eq("validation_failed")
+      expect(json_body.dig(:error, :message)).to eq("Another bill is already scheduled for that date.")
+      expect(json_body.dig(:error, :details, :scheduled_release_date_utc)).to be_present
+      expect(bill.reload.scheduled_release_date_utc).to be_nil
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+    it "redirects the web with the error when another bill already holds the date" do
+      sway_locale, _user = setup
+      bill = build_bill_for_schedule.call(sway_locale)
+      bill.update_column(:scheduled_release_date_utc, nil)
+      other = build_bill_for_schedule.call(sway_locale)
+      other.update_column(:scheduled_release_date_utc, Date.new(2026, 9, 8))
+
+      put "/bill_of_the_month_schedule/#{bill.id}",
+        params: {bill_of_the_month_schedule: {bill_id: bill.id, scheduled_release_date_utc: "2026-09-08"}}
+
+      expect(response).to redirect_to(schedule_bill_creator_path(id: bill.id))
+      expect(flash[:alert]).to eq("Another bill is already scheduled for that date.")
+
+      follow_redirect!
+
+      expect(inertia.props[:errors][:scheduled_release_date_utc]).to be_present
+      expect(bill.reload.scheduled_release_date_utc).to be_nil
+    end
+  end
 end

@@ -16,6 +16,7 @@ const LegislativeTermBeganItem: React.FC<IProps> = ({ item }) => {
     return (
         <FeedItemShell
             item={item}
+            subject="locale"
             avatar={<FeedAvatar kind="locale" localeName={localeName} />}
             whoLine={
                 <Text style={{ fontFamily: "OpenSans-SemiBold" }}>

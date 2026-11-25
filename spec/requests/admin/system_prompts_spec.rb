@@ -19,6 +19,42 @@ RSpec.describe "Admin::SystemPrompts", type: :request do
     inertia.props[:prompts].filter_map { |entry| entry[:system_prompt] }.join("\n")
   end
 
+  context "with a bearer token and Accept: application/json" do
+    let(:api_token) { SecureRandom.hex(32) }
+    let(:headers) { {"Authorization" => "Bearer #{api_token}", "Accept" => "application/json"} }
+
+    # @lat: [[mobile-admin-area#The system prompts screen]]
+    it "serves the system prompts as JSON to a sway admin" do
+      SeedSwayLocale.run
+      create(:category, name: "Housing", active: true)
+      SeedLlmBillSummarizationInstruction.run
+      ApiKey.create!(bearer: create(:user, :sway_admin), token: api_token)
+
+      get "/admin/system_prompts", headers: headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      body = response.parsed_body
+      expect(body.keys).to match_array(%w[models active_category_count llm_settings_path prompts])
+      expect(body["active_category_count"]).to eq(1)
+      expect(body["prompts"].length).to eq(7)
+      expect(body["prompts"].first.keys).to include("id", "label", "purpose", "model", "model_setting_label", "system_prompt", "character_count", "unavailable_reason", "sway_locale_name")
+      expect(body["prompts"].first["system_prompt"]).to be_present
+    end
+
+    it "refuses a non-admin with a forbidden JSON error" do
+      user = create(:user)
+      create(:user_legislator, user: user)
+      user.complete!
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/admin/system_prompts", headers: headers
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+    end
+  end
+
   context "as a sway admin" do
     let(:admin) { create(:user, :sway_admin) }
 

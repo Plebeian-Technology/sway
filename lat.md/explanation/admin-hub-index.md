@@ -11,7 +11,7 @@ It exists so no admin tool ships without a discoverable link — the LLM Setting
 
 It follows the `Admin::*` convention: it inherits from `ApplicationController` directly (no `Admin::BaseController`), and — like every `Admin::*` controller — must declare its own `before_action :verify_is_sway_admin` and add its path to `lib/tasks/sway_lint.rake`; lint fails CI if either is missing.
 
-This controller renders pure Inertia — no JSON shape today. A future mobile admin client would re-add `render_inertia_or_json` here.
+The controller renders through `render_inertia_or_json`, so a bearer or `Accept: application/json` request receives the Inertia props as JSON (see [[admin-hub-index#JSON shape for the mobile app]]).
 
 ## Why the tools list is built server-side
 
@@ -36,6 +36,12 @@ Each tool ships to the frontend with `id`, `label`, `description`, `path`, `grou
 Each tool ships to the frontend with: `id` (for React keys), `label`, `description` (the one-liner under the label), `path` (Inertia link target or external URL), `group` (sub-heading on the page), and `external` (true means render a plain anchor that opens in a new tab, used by the Beszel monitoring dashboard link).
 
 Adding a new admin tool: append a Hash to the `tools` array. `verify_is_sway_admin` gates the controller, while the Beszel monitoring tool is additionally gated on [[app/models/user.rb#User#beszel_url]] ([[app/models/user.rb#User#monitoring_admin?]], see [[admin-hub-index#Who sees the monitoring link]]) and mirrored in [[app/frontend/components/layouts/AuthLayout.tsx#AuthLayout]] when `user.beszel_url` is present.
+
+## JSON shape for the mobile app
+
+A mobile request receives the same `tools` and `database_health` props the web page gets, with no separate serializer, so the JSON never drifts from the page.
+
+Two tools differ in shape, and a client type must tolerate both. The `beszel` tool has `external` true and a `path` that is an absolute URL. The `partner_reports` tool carries two extra keys, `title` and `icon`, that no other tool has.
 
 ## Who sees the monitoring link
 

@@ -1,0 +1,174 @@
+import React from "react";
+import { RefreshControl } from "react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+
+import { ApiRequestError } from "../../../../src/api/errors";
+
+const mockApiGet = jest.fn();
+jest.mock("../../../../src/api/client", () => ({
+    apiClient: { get: (...args: unknown[]) => mockApiGet(...args) },
+}));
+
+jest.mock("../../../../src/theme/ThemeProvider", () => ({
+    useTheme: () => ({ colorScheme: "light" }),
+}));
+
+jest.mock("@react-navigation/native", () => ({
+    useNavigation: () => ({ setParams: jest.fn() }),
+    useFocusEffect: jest.fn(),
+}));
+
+jest.mock("../../../../src/screens/admin/billCreator/tabs/CreatorTab", () => {
+    const { Pressable, Text } = jest.requireActual("react-native");
+    return {
+        __esModule: true,
+        default: ({ refresh }: { refresh: () => Promise<void> }) => (
+            <>
+                <Text>Bill fields</Text>
+                <Pressable testID="background-refresh" onPress={() => void refresh()} />
+            </>
+        ),
+    };
+});
+
+jest.mock("../../../../src/state/BootstrapContext", () => ({
+    useBootstrap: () => ({ bootstrap: { locale: null } }),
+}));
+
+import BillCreatorScreen from "../../../../src/screens/admin/billCreator/BillCreatorScreen";
+
+const routeFor = (billId: number | null) => ({
+    key: "AdminBillCreator-1",
+    name: "AdminBillCreator" as const,
+    params: { billId },
+});
+
+const page = { bill: { id: 42, external_id: "25-0042", title: "Rent Stabilization" } };
+
+// @lat: [[mobile-bill-creator#The bill creator screen]]
+describe("BillCreatorScreen", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockApiGet.mockResolvedValue(page);
+    });
+
+    it("opens a bill on the Creator tab", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+
+        expect(await screen.findByText("Bill fields")).toBeTruthy();
+        expect(screen.getByText("25-0042")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/42/creator", expect.anything());
+    });
+
+    it("switches to the Positions tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-4"));
+
+        expect(await screen.findByTestId("admin-draft-positions")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/positions", expect.anything());
+    });
+
+    it("switches to the Schedule tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-1"));
+
+        expect(await screen.findByTestId("admin-schedule-selected")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/schedule", expect.anything());
+    });
+
+    it("switches to the Pipeline tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-2"));
+
+        expect(await screen.findByTestId("admin-pipeline-stages")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/pipeline", expect.anything());
+    });
+
+    it("switches to the Summary tab and requests its path", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-3"));
+
+        expect(await screen.findByTestId("admin-summary-generation")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenLastCalledWith("/admin/bill_creator/42/summary", expect.anything());
+    });
+
+    // @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+    it("asks for the draft revision the Summary tab opens and keeps the tab on screen while it loads", async () => {
+        const draft = {
+            id: 3,
+            bill_id: 42,
+            summary_markdown: "Draft summary",
+            origin: "restoration",
+            publication_role: "draft",
+            review_state: "reviewed",
+            created_at: "2026-11-01T15:30:00Z",
+        };
+        mockApiGet.mockImplementation(async (path: string) =>
+            path.includes("summary_revisions=1") ? { summary_revisions: [draft] } : page,
+        );
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+        fireEvent.press(screen.getByTestId("admin-bill-creator-tabs-segment-3"));
+        fireEvent.press(await screen.findByTestId("admin-summary-revisions-toggle"));
+
+        fireEvent.press(await screen.findByTestId("admin-summary-revision-review-draft-3"));
+
+        await waitFor(() =>
+            expect(mockApiGet).toHaveBeenLastCalledWith(
+                "/admin/bill_creator/42/summary?draft_revision_id=3",
+                expect.anything(),
+            ),
+        );
+        expect(screen.getByTestId("admin-summary-revisions-list")).toBeTruthy();
+    });
+
+    it("opens a new bill on the Creator tab", async () => {
+        render(<BillCreatorScreen route={routeFor(null)} />);
+
+        expect(await screen.findByText("Bill fields")).toBeTruthy();
+        expect(screen.getByText("New bill")).toBeTruthy();
+        expect(mockApiGet).toHaveBeenCalledWith("/admin/bill_creator/new?bill_creator_tab=creator", expect.anything());
+    });
+
+    it("shows the server's message when the request fails", async () => {
+        mockApiGet.mockRejectedValue(new ApiRequestError("not_found", "Bill not found.", undefined, 404));
+        render(<BillCreatorScreen route={routeFor(42)} />);
+
+        expect(await screen.findByText("Bill not found.")).toBeTruthy();
+        await waitFor(() => expect(screen.queryByText("Bill fields")).toBeNull());
+    });
+
+    it("keeps the pull spinner off and the data shown during a background refresh", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+        mockApiGet.mockReturnValue(new Promise(() => {}));
+
+        fireEvent.press(screen.getByTestId("background-refresh"));
+
+        expect(screen.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(false);
+        expect(screen.getByText("Bill fields")).toBeTruthy();
+    });
+
+    it("shows the pull spinner while a pull refreshes", async () => {
+        render(<BillCreatorScreen route={routeFor(42)} />);
+        await screen.findByText("Bill fields");
+        let finish: (value: typeof page) => void = () => {};
+        mockApiGet.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+
+        act(() => {
+            screen.UNSAFE_getByType(RefreshControl).props.onRefresh();
+        });
+        expect(screen.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(true);
+
+        await act(async () => finish(page));
+        expect(screen.UNSAFE_getByType(RefreshControl).props.refreshing).toBe(false);
+    });
+});

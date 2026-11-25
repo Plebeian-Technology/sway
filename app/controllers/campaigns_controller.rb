@@ -14,34 +14,25 @@ class CampaignsController < ApplicationController
       content_hash: permitted[:content_hash]
     ).call
     when :summary_required
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "A summary is required"}}
+      refuse_campaign_write("A summary is required")
     when :invalid_stance
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "Invalid stance (expected support|oppose|neutral)"}}
+      refuse_campaign_write("Invalid stance (expected support|oppose|neutral)")
     when :identity_required
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "A campaign was named with no draft identity to check it against"}}
+      refuse_campaign_write("A campaign was named with no draft identity to check it against")
     when :draft_not_found
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "This campaign draft has changed since the page loaded — reload and try again"}}
+      refuse_campaign_write("This campaign draft has changed since the page loaded — reload and try again")
     when :run_in_flight
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "A clean-testimony run is in progress on this bill — wait for it to finish"}}
+      refuse_campaign_write("A clean-testimony run is in progress on this bill — wait for it to finish")
     when :no_testimony
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "This bill's testimony is no longer present — nothing to approve a campaign position from"}}
+      refuse_campaign_write("This bill's testimony is no longer present — nothing to approve a campaign position from")
     when :coverage_not_acknowledged
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "Acknowledge the missing testimony before approving a campaign position"}}
+      refuse_campaign_write("Acknowledge the missing testimony before approving a campaign position")
     when :approved
-      flash[:notice] = "Approved a campaign position on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Approved a campaign position on #{@bill.external_id}.")
     when :approved_replacing_draft
       # @lat: [[campaign-letter-disclosure#Campaign letter disclosure#Why replacing an earlier decision is reported as success]]
-      flash[:notice] = "Approved a campaign position on #{@bill.external_id}, replacing an earlier decision " \
-        "approved for this campaign name from a different draft."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Approved a campaign position on #{@bill.external_id}, replacing an earlier decision " \
+        "approved for this campaign name from a different draft.")
     end
   end
 
@@ -65,10 +56,7 @@ class CampaignsController < ApplicationController
     permitted = params.permit(:id, :decision, :organization_id, :organization_name)
     campaign = Campaign.find_by(id: permitted[:id])
 
-    if campaign.nil?
-      return redirect_to(positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That campaign no longer exists — reload and try again"}})
-    end
+    return refuse_organization_link("That campaign no longer exists — reload and try again") if campaign.nil?
 
     case LinkCampaignOrganizationService.new(
       bill: @bill, campaign: campaign, actor: current_user,
@@ -77,32 +65,23 @@ class CampaignsController < ApplicationController
       organization_name: permitted[:organization_name]
     ).call
     when :campaign_not_on_bill
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That campaign belongs to a different bill"}}
+      refuse_organization_link("That campaign belongs to a different bill")
     when :invalid_decision
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "Invalid decision (expected linked|none|undetermined)"}}
+      refuse_organization_link("Invalid decision (expected linked|none|undetermined)")
     when :organization_required
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "Choose an organization, or record that there is none"}}
+      refuse_organization_link("Choose an organization, or record that there is none")
     when :organization_name_too_long
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "Organization name must be #{Campaign::MAX_NAME_CHARS} characters or fewer"}}
+      refuse_organization_link("Organization name must be #{Campaign::MAX_NAME_CHARS} characters or fewer")
     when :organization_not_found
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That organization no longer exists — reload and try again"}}
+      refuse_organization_link("That organization no longer exists — reload and try again")
     when :organization_wrong_locale
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_organization: "That organization belongs to a different locale than this bill"}}
+      refuse_organization_link("That organization belongs to a different locale than this bill")
     when :linked
-      flash[:notice] = "Recorded the organization behind this campaign on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Recorded the organization behind this campaign on #{@bill.external_id}.")
     when :recorded_no_organization
-      flash[:notice] = "Recorded that no organization is behind this campaign on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Recorded that no organization is behind this campaign on #{@bill.external_id}.")
     when :recorded_undetermined
-      flash[:notice] = "Recorded this campaign's organization as not determinable yet on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      answer_campaign_write("Recorded this campaign's organization as not determinable yet on #{@bill.external_id}.")
     end
   end
 
@@ -113,14 +92,10 @@ class CampaignsController < ApplicationController
     content_hash = params.permit(:content_hash)[:content_hash].to_s.strip
     provisioning = @bill.bill_llm_provisioning
 
-    if content_hash.empty?
-      return redirect_to(positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "A campaign draft was named with no identity to check it against"}})
-    end
+    return refuse_campaign_write("A campaign draft was named with no identity to check it against") if content_hash.empty?
 
     if provisioning.nil?
-      return redirect_to(positions_bill_creator_path(@bill),
-        inertia: {errors: {campaign_position: "This campaign draft has changed since the page loaded — reload and try again"}})
+      return refuse_campaign_write("This campaign draft has changed since the page loaded — reload and try again")
     end
 
     changed =
@@ -135,7 +110,7 @@ class CampaignsController < ApplicationController
 
     log_draft_decision(decision, content_hash) if changed
 
-    flash[:notice] =
+    answer_campaign_write(
       case decision
       when :rejected
         "Rejected a campaign draft on #{@bill.external_id}."
@@ -144,7 +119,20 @@ class CampaignsController < ApplicationController
       else
         "Restored a campaign draft on #{@bill.external_id}."
       end
-    redirect_to positions_bill_creator_path(@bill)
+    )
+  end
+
+  # @lat: [[mobile-bill-creator#Sections#The campaign drafts section#Answering campaign writes in JSON]]
+  def answer_campaign_write(notice)
+    respond_after_write(positions_bill_creator_path(@bill), notice: notice, json: {notice: notice})
+  end
+
+  def refuse_campaign_write(reason)
+    respond_after_write(positions_bill_creator_path(@bill), errors: {campaign_position: reason})
+  end
+
+  def refuse_organization_link(reason)
+    respond_after_write(positions_bill_creator_path(@bill), errors: {campaign_organization: reason})
   end
 
   # @lat: [[campaign-draft-rejection#The activity log]]

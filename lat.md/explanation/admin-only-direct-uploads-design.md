@@ -9,7 +9,19 @@ Active Storage brings its own controllers, and they descend from `ActionControll
 
 Its upload endpoint hands the caller a database row and a signed URL that writes into the assets bucket, and everything in that bucket can be read by anyone. Forgery protection is no help here: a caller can fetch any page to get a session and a CSRF token, which is all an unauthenticated uploader needs.
 
-The gate is session-only, on purpose: API keys belong to outside readers, there is no mobile screen that uploads, and every upload screen the site has is an admin one.
+The gate admits a Sway admin in one of two ways: a signed-in browser session, or a bearer token from the mobile app. Every upload screen on either client is an admin one, so both paths ask the same question.
+
+## Why a bearer token decides identity on its own
+
+A request that carries an `Authorization` header is judged on its token alone; the session cookie is never read.
+
+A fallback to the cookie would let a junk or non-admin token ride an admin's browser session. [[identity-and-access#Sessions, cookies and bearer tokens]] sets the same rule for `ApplicationController`.
+
+The token counts only when [[app/models/api_key.rb#ApiKey]] resolves it to an active key whose bearer is a `User` who is a Sway admin. An API key's bearer is polymorphic, so a key held by any other kind of record is refused.
+
+Forgery protection is skipped only for such an admin token. A browser never attaches a bearer token on its own, and a cross-site page cannot read one, so the token itself proves the request came from its holder. Any other request, a non-admin token included, still needs a CSRF token; a cookie request with no `Authorization` header behaves exactly as before.
+
+This controller inherits `ActionController::Base`, not `ApplicationController`, so the concern brings in [[app/controllers/concerns/api_key_authenticatable.rb#ApiKeyAuthenticatable]] and declares the forgery skip itself.
 
 ## Why the request spec checks blob count, not just status
 

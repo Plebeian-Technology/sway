@@ -6,6 +6,7 @@ class TestimonyCoverageAcknowledgementsController < ApplicationController
   before_action :set_bill
 
   # @lat: [[bill-creator-positions-tab#The acknowledgement returns to the only tab that offers it]]
+  # @lat: [[mobile-bill-creator#Sections#The testimony coverage section#Answering the acknowledgement in JSON]]
   def create
     target = positions_bill_creator_path(@bill)
 
@@ -13,19 +14,18 @@ class TestimonyCoverageAcknowledgementsController < ApplicationController
       bill: @bill, actor: current_user, digest: params[:digest]
     ).call
     when :run_in_flight
-      redirect_to target,
-        inertia: {errors: {testimony_coverage: "A clean-testimony run is in progress on this bill — wait for " \
-          "it to finish, then acknowledge the new numbers."}}
+      respond_after_write(target,
+        errors: {testimony_coverage: "A clean-testimony run is in progress on this bill — wait for " \
+          "it to finish, then acknowledge the new numbers."})
     when :nothing_left_out
-      redirect_to target,
-        inertia: {errors: {testimony_coverage: "There is nothing to acknowledge — every letter reached the model."}}
+      respond_after_write(target,
+        errors: {testimony_coverage: "There is nothing to acknowledge — every letter reached the model."})
     when :digest_mismatch
-      redirect_to target,
-        inertia: {errors: {testimony_coverage: "The testimony coverage numbers changed since this page loaded " \
-          "— reload and try again."}}
+      respond_after_write(target,
+        errors: {testimony_coverage: "The testimony coverage numbers changed since this page loaded " \
+          "— reload and try again."})
     when :acknowledged
-      flash[:notice] = "Acknowledged the missing testimony on #{@bill.external_id}."
-      redirect_to target
+      respond_after_write(target, notice: "Acknowledged the missing testimony on #{@bill.external_id}.")
     end
   end
 

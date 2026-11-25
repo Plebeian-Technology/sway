@@ -27,25 +27,22 @@ class PipelineRunsController < ApplicationController
     end
 
     unless run.can_force_fail?
-      return redirect_to(
+      return respond_after_write(
         back_path,
-        inertia: {errors: {pipeline: "Run ##{run.id} is not in-flight (status: #{run.status})"}}
+        errors: {pipeline: "Run ##{run.id} is not in-flight (status: #{run.status})"}
       )
     end
 
     confirm = params[:confirm_phrase].to_s.strip
     unless confirm == "force fail"
-      return redirect_to(
-        back_path,
-        inertia: {errors: {pipeline: "Confirmation phrase mismatch"}}
-      )
+      return respond_after_write(back_path, errors: {pipeline: "Confirmation phrase mismatch"})
     end
 
     # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart#The admin surface is index-only#Force-fail records its reason before transition]]
     run.update!(error_message: "Force-failed by admin user #{current_user.id}")
     run.force_fail!
     PipelineActivityLogger.log_force_fail_triggered!(run: run, actor: current_user)
-    redirect_to back_path, notice: "Run ##{run.id} force-failed"
+    respond_after_write(back_path, notice: "Run ##{run.id} force-failed", json: force_failed_run_json(run))
   end
 
   # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart#The admin surface is index-only]]
@@ -75,6 +72,13 @@ class PipelineRunsController < ApplicationController
   end
 
   private
+
+  # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+  def force_failed_run_json(run)
+    return {} unless mobile_api_request?
+
+    {run: PipelineRuns::RunSummarySerializer.serialize(run)}
+  end
 
   # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart#The admin surface is index-only#The orphan lookup wrapper remains test-visible]]
   def solid_queue_job_exists_for?(run)

@@ -85,9 +85,9 @@ The test suites evaluate components against finished implementations. Test rende
 
 ## OrgCard.test.tsx / OrgDetailScreen.test.tsx
 
-Organization card and detail test suites assert follow action controls remain interactive following feature restoration.
+Organization card and detail test suites assert the track controls stay interactive and that no follower count renders.
 
-`OrgCard.test.tsx` was written prior to rebuilding the component with the shared `Card` building block. Following an organization was temporarily removed from the application and subsequently restored; tests that previously verified the absence of follow controls now verify that organization following functions properly. `OrgDetailScreen.test.tsx` similarly verifies the presence and action of follow controls.
+`OrgCard.test.tsx` was written prior to rebuilding the component with the shared `Card` building block. Tracking an organization was temporarily removed from the application and subsequently restored; tests that previously verified the absence of the control now verify that it works. Both suites also assert that no follower count appears, because the organization follower count was removed. `OrgDetailScreen.test.tsx` similarly verifies the presence and action of the track controls.
 
 ## StampedBadge.test.tsx
 

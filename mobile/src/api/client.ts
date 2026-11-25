@@ -45,7 +45,7 @@ function withLocaleOverride(url: string): string {
 interface D29Error {
     code: string;
     message: string;
-    details?: Record<string, string[]>;
+    details?: Record<string, unknown>;
 }
 
 function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
@@ -71,7 +71,12 @@ function envelopeFrom(parsed: unknown, fallbackStatus: number): D29Error {
             };
         }
         if ("error" in parsed) {
-            const err = (parsed as { error?: Partial<D29Error> }).error;
+            const err = (parsed as { error?: Partial<D29Error> | string }).error;
+            if (typeof err === "string" && err) {
+                const message = (parsed as { message?: unknown }).message;
+                if (typeof message === "string" && message) return { code: err, message };
+                return { code: `http_${fallbackStatus}`, message: err };
+            }
             if (err && typeof err === "object") {
                 return {
                     code: err.code ?? `http_${fallbackStatus}`,
@@ -162,7 +167,7 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
             Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
         );
     }
-    throw new ApiRequestError(envelope.code, envelope.message, envelope.details, res.status);
+    throw new ApiRequestError(envelope.code, envelope.message, envelope.details, res.status, parsed);
 }
 
 export const apiClient = {
@@ -178,6 +183,6 @@ export const apiClient = {
     patch: <T>(path: string, body: unknown, opts?: { signal?: AbortSignal; timeoutMs?: number }) =>
         request<T>(path, { method: "PATCH", body, ...opts }),
 
-    delete: (path: string, opts?: { signal?: AbortSignal; timeoutMs?: number }) =>
-        request<void>(path, { method: "DELETE", ...opts }),
+    delete: <T = void>(path: string, opts?: { signal?: AbortSignal; timeoutMs?: number }) =>
+        request<T>(path, { method: "DELETE", ...opts }),
 };

@@ -314,6 +314,62 @@ describe("apiClient", () => {
         });
     });
 
+    describe("string error bodies and the parsed body", () => {
+        beforeEach(() => {
+            (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+        });
+
+        const rejection = async () => {
+            try {
+                await apiClient.patch("/x", {});
+            } catch (e) {
+                return e as ApiRequestError;
+            }
+            throw new Error("expected apiClient.patch to reject");
+        };
+
+        test("a string error becomes the message and the code stays http_<status>", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse({ error: "Bad model" }, { status: 422 }),
+            );
+            const e = await rejection();
+            expect(e).toBeInstanceOf(ApiRequestError);
+            expect(e.message).toBe("Bad model");
+            expect(e.code).toBe("http_422");
+        });
+
+        test("a string error with a top-level message uses the message and takes the string as the code", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse({ error: "no_change", message: "Send rejected" }, { status: 422 }),
+            );
+            const e = await rejection();
+            expect(e.message).toBe("Send rejected");
+            expect(e.code).toBe("no_change");
+        });
+
+        test("the error carries the parsed body", async () => {
+            const body = { error: "no_change", message: "Send rejected", receipt_status: "stale" };
+            (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse(body, { status: 422 }));
+            const e = await rejection();
+            expect(e.body).toEqual(body);
+        });
+
+        test("details keep non-array values as they are", async () => {
+            const details = { name: { first: ["is blank"] }, base: "Bad" };
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                mockFetchResponse({ error: { code: "invalid", message: "Invalid", details } }, { status: 422 }),
+            );
+            const e = await rejection();
+            expect(e.details).toEqual(details);
+        });
+
+        test("delete resolves to the response body", async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(mockFetchResponse({ removed: 3 }));
+            const out = await apiClient.delete<{ removed: number }>("/x");
+            expect(out).toEqual({ removed: 3 });
+        });
+    });
+
     describe("timeout and caller abort", () => {
         const fetchThatRejectsOnAbort = () =>
             (global.fetch as jest.Mock).mockImplementation(
@@ -423,9 +479,9 @@ describe("apiClient", () => {
         expect(withoutErrorKey.code).toBe("http_500");
         expect(withoutErrorKey.message).toBe(GENERIC_ERROR_MESSAGE);
 
-        const scalarError = await rejectWith({ error: "unexpected string" }, 500);
-        expect(scalarError.code).toBe("http_500");
-        expect(scalarError.message).toBe(GENERIC_ERROR_MESSAGE);
+        const emptyStringError = await rejectWith({ error: "" }, 500);
+        expect(emptyStringError.code).toBe("http_500");
+        expect(emptyStringError.message).toBe(GENERIC_ERROR_MESSAGE);
 
         const noCode = await rejectWith({ error: { message: "Oops" } }, 422);
         expect(noCode.code).toBe("http_422");

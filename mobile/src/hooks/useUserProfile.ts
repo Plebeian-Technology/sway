@@ -8,6 +8,7 @@ export interface UserProfile {
     phone?: string | null;
     is_registration_complete?: boolean;
     is_registered_to_vote?: boolean;
+    is_sway_admin?: boolean;
     sms_notifications_enabled?: boolean;
     theme_mode?: "auto" | "light" | "dark" | null;
     address?: {

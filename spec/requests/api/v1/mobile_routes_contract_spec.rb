@@ -8,9 +8,21 @@ RSpec.describe "Mobile API routes contract" do
 
   sample_values = {"key" => "botm_announcement"}
 
-  key_count = routes_object.scan(/^\s+(\w+):/).size
-  mobile_paths = routes_object.scan(/^\s+(\w+): \([^)]*\) => ["`]([^"`]+)["`],$/)
-    .to_h { |key, path| [key, path.to_s.gsub(/\$\{(\w+)\}/) { sample_values.fetch($1, "1") }] }
+  route_keys = routes_object.scan(/^\s+(\w+):/).flatten
+
+  # A sample path for each builder that computes its path.
+  computed_paths = {
+    "adminRegistrationFunnel" => "/admin/registration_funnel?time_range=30d",
+    "adminBillSummaryReports" => "/admin/bill_summary_reports?status=open",
+    "adminBillCreatorTab" => "/admin/bill_creator/1/summary",
+    "adminBillCreatorPipelineRun" => "/admin/bill_creator/1/pipeline?run_id=1",
+    "adminBillCreatorActivityLog" => "/admin/bill_creator/1/pipeline?cursor=1",
+    "adminBillCreatorPipelinePreview" => "/admin/bill_creator/1/pipeline?selected_stages=fetch&download_missing_assets=0"
+  }
+
+  mobile_paths = routes_object.scan(/^\s+(\w+): \([^)]*\) =>\s*["`]([^"`]+)["`],$/)
+    .to_h { |key, path| [key, path.to_s.gsub(/\$\{(?:encodeURIComponent\()?(\w+)\)?\}/) { sample_values.fetch($1, "1") }] }
+    .merge(computed_paths)
 
   verbs_by_key = {
     "bootstrap" => %i[get],
@@ -30,9 +42,9 @@ RSpec.describe "Mobile API routes contract" do
     "notificationPreference" => %i[patch],
     "testPush" => %i[post],
     "feed" => %i[get],
-    "bills" => %i[get],
+    "bills" => %i[get post],
     "pastBillsOfTheMonth" => %i[get],
-    "bill" => %i[get],
+    "bill" => %i[get patch],
     "billPublicTestimonyLetters" => %i[get],
     "billSummaryReports" => %i[post],
     "legislators" => %i[get],
@@ -54,7 +66,66 @@ RSpec.describe "Mobile API routes contract" do
     "organizationFollows" => %i[post],
     "organizationFollow" => %i[delete],
     "organizationFollowPreferences" => %i[patch],
-    "orgNotificationDefaults" => %i[get patch]
+    "orgNotificationDefaults" => %i[get patch],
+    "admin" => %i[get],
+    "adminSharedAddresses" => %i[get],
+    "adminUserAddressChanges" => %i[get],
+    "adminSystemPrompts" => %i[get],
+    "adminLocales" => %i[get],
+    "adminLocale" => %i[patch],
+    "adminCategories" => %i[get post],
+    "adminCategory" => %i[patch delete],
+    "adminLlmSettings" => %i[get patch],
+    "adminLlmRefreshModels" => %i[post],
+    "adminLlmAddModel" => %i[post],
+    "adminLlmRemoveModel" => %i[delete],
+    "adminRegistrationFunnel" => %i[get],
+    "adminPipelineRuns" => %i[get],
+    "adminPartnerReports" => %i[get],
+    "adminPartnerReport" => %i[get],
+    "adminBillSummaryReport" => %i[get patch],
+    "adminBillSummaryReports" => %i[get],
+    "adminLegislatorVotes" => %i[post],
+    "adminOrganizations" => %i[post],
+    "adminOrganization" => %i[patch],
+    "adminOrganizationBillPosition" => %i[delete],
+    "adminDirectUploads" => %i[post],
+    "adminBillOfTheMonthSchedule" => %i[patch],
+    "adminBillCreatorNew" => %i[get],
+    "adminBillCreatorTab" => %i[get],
+    "adminBillCreatorPipelineRun" => %i[get],
+    "adminBillCreatorActivityLog" => %i[get],
+    "adminBillCreatorSummaryRevisions" => %i[get],
+    "adminBillCreatorSummarySourceDocuments" => %i[get],
+    "adminBillCreatorSummaryPrompt" => %i[get],
+    "adminBillCreatorCampaignLetters" => %i[get],
+    "adminBillNewsArticles" => %i[post],
+    "adminBillNewsArticle" => %i[patch],
+    "adminPipelineRunResume" => %i[post],
+    "adminPipelineRunRestart" => %i[post],
+    "adminPipelineRunCancel" => %i[delete],
+    "adminPipelineRunForceFail" => %i[post],
+    "adminSweepStalePipelineRuns" => %i[post],
+    "adminDeleteOrphanPipelineRuns" => %i[delete],
+    "adminSendingServiceDomain" => %i[patch],
+    "adminBillCreatorPipelinePreview" => %i[get],
+    "adminRunPipeline" => %i[post],
+    "billCategories" => %i[post],
+    "billCategory" => %i[delete],
+    "billPasteSummary" => %i[post],
+    "billGenerateSummary" => %i[post],
+    "billRestoreSummaryRevision" => %i[post],
+    "billRegenerateSummary" => %i[post],
+    "billApproveOrgPosition" => %i[post],
+    "billSupplementalTestimony" => %i[patch],
+    "billTestimonyLetterStance" => %i[patch],
+    "billTestimonyCoverageAcknowledgement" => %i[post],
+    "billCampaigns" => %i[post],
+    "billCampaignLinkOrganization" => %i[post],
+    "billRejectCampaignDraft" => %i[post],
+    "billRestoreCampaignDraft" => %i[post],
+    "billMarkIndividualCampaignDraft" => %i[post],
+    "adminBillDraftOrgPosition" => %i[patch]
   }
 
   inline_onboarding_paths = {
@@ -62,8 +133,8 @@ RSpec.describe "Mobile API routes contract" do
   }
 
   it "parses every key of the mobile Routes object" do
-    expect(key_count).to be > 0
-    expect(mobile_paths.size).to eq(key_count)
+    expect(route_keys).not_to be_empty
+    expect(mobile_paths.keys).to match_array(route_keys)
   end
 
   it "names a verb for every mobile route and no route the app lacks" do

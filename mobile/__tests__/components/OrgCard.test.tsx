@@ -33,7 +33,6 @@ const BASE_ORG = {
     id: 7,
     name: "Civic Alliance",
     sway_locale_slug: "baltimore-maryland-united_states",
-    follower_count: 12,
 };
 
 describe("OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow restore)", () => {
@@ -47,22 +46,23 @@ describe("OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow resto
         expect(screen.getByText("baltimore-maryland-united_states")).toBeTruthy();
     });
 
-    test("renders follower count ('N followers') — REQ-9", () => {
+    test("renders no follower count", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={() => {}} />);
-        expect(screen.getByText("12 followers")).toBeTruthy();
+        expect(screen.queryByTestId(`org-card-follower-count-${BASE_ORG.id}`)).toBeNull();
+        expect(screen.queryByText(/follower/)).toBeNull();
     });
 
-    test("shows 'Follow' CTA for signed-in not-following user (REQ-8)", () => {
+    test("shows 'Track' CTA for signed-in not-tracking user (REQ-8)", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={() => {}} isSignedIn={true} initialFollowId={null} />);
         expect(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeTruthy();
-        expect(screen.getByText("Follow")).toBeTruthy();
+        expect(screen.getByText("Track")).toBeTruthy();
     });
 
-    test("member (isMember=true) shows Member label + Preferences, NO follow/unfollow (D-04)", () => {
+    test("member (isMember=true) shows Member label + Preferences, NO track/untrack (D-04)", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={() => {}} isSignedIn={true} isMember={true} initialFollowId={null} />);
         expect(screen.getByText("Member")).toBeTruthy();
-        expect(screen.queryByText("Follow")).toBeNull();
-        expect(screen.queryByText("Following")).toBeNull();
+        expect(screen.queryByText("Track")).toBeNull();
+        expect(screen.queryByText("Tracking")).toBeNull();
     });
 
     test("snapshot matches (signed-out view)", () => {
