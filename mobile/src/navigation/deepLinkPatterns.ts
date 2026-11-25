@@ -19,6 +19,9 @@ export const DEEP_LINK_PATTERNS = [
     "/profile",
 ];
 
+// @lat: [[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]]
+export const IOS_UNCLAIMED_PATTERNS = ["/organizations/*/positions/*"];
+
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
 export const androidPathData = (pattern: string): Record<string, string> => {
     const withoutTrailingStar = pattern.endsWith("*") ? pattern.slice(0, -1) : null;

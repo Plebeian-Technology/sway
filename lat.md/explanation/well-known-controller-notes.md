@@ -81,7 +81,7 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
   redirects there so old links still open the app. Underscored, because that is the Rails route;
   a hyphen here matched no address at all.
 - `organizations/:orgId/memberships/:id` — one membership
-- `organizations/:id` — an organization's detail
+- `organizations/:id` — an organization's detail. On iOS the claim leaves out `organizations/:id/positions/…`, the admin's web form for adding a position ([[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]])
 - `organizations` — the organizations list
 - `feed` — the feed
 - `users/organization_memberships` — the memberships list
@@ -99,6 +99,14 @@ The feed, the memberships list and the profile page open the app like any public
 They were once left unclaimed. A public page reads the same for everyone, so opening it in the app was simply better; a personal page opened the app on a sign-in wall, and the link was lost by the time the person had signed in, which was worse than a browser page that showed the reader why.
 
 That objection is gone. A link that arrives before the main screens is now kept and opened after sign-in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]), so the person lands where the link pointed either way. With it gone, the rule is the simple one: every Sway web address the app has a screen for opens the app when the app is installed.
+
+### The organization position form stays on the web
+
+An organization admin's web form for a new position, `GET /organizations/:id/positions/new`, has no app screen, so a tap on it must open the browser.
+
+On iOS, Rails puts `NOT /organizations/*/positions/*` at the top of the ownership file's path list. Apple reads that list in order and stops at the first entry that matches, so the exclusion has to come before `/organizations/*`, whose star matches any rest of the path, slashes included. The excluded pattern lives in `IOS_UNCLAIMED_PATTERNS` in [[mobile/src/navigation/deepLinkPatterns.ts]] beside the claimed list, and the request spec checks that Rails serves it first.
+
+Android still opens the app for that address, which shows nothing there. Its link rules cannot leave one path out of a claim: a `pathPrefix` or `pathPattern` rule has no negation and no character class, so `/organizations/` cannot be narrowed to one segment after it. `pathAdvancedPattern` could say that, but only Android 12 and later read it, and the app supports Android 9, where the organization links would stop opening the app at all. Android 15's exclusion groups are not something the Expo config can write. An admin on Android with the app installed reaches the form through the web app's own navigation or by opening the link in a browser.
 
 ### A bill share link opens the shared bill
 

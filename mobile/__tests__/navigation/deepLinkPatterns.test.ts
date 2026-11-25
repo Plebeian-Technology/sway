@@ -1,4 +1,4 @@
-import { DEEP_LINK_PATTERNS, androidPathData } from "../../src/navigation/deepLinkPatterns";
+import { DEEP_LINK_PATTERNS, IOS_UNCLAIMED_PATTERNS, androidPathData } from "../../src/navigation/deepLinkPatterns";
 import { linking } from "../../src/navigation/linking";
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
@@ -114,6 +114,17 @@ describe("every claimed address has a screen that answers it", () => {
         );
 
         expect(unanswered).toEqual([]);
+    });
+
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]]
+    it("leaves the organization position form to the web on iOS, and no screen answers it", () => {
+        const paths = routePaths();
+
+        expect(IOS_UNCLAIMED_PATTERNS).toEqual(["/organizations/*/positions/*"]);
+        for (const pattern of IOS_UNCLAIMED_PATTERNS) {
+            expect(DEEP_LINK_PATTERNS).not.toContain(pattern);
+            expect(paths.some((route) => answers(pattern, route))).toBe(false);
+        }
     });
 
     it("exempts only patterns that are claimed and have no screen", () => {

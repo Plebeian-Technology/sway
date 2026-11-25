@@ -68,6 +68,8 @@ class WellKnownController < ApplicationController
             appID: app_id,
             # @lat: [[well-known-controller-notes#Why the AASA paths list is tested against the real route table]]
             paths: [
+              # @lat: [[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]]
+              "NOT /organizations/*/positions/*",
               "/bills/*",
               "/bills",
               "/past_bills_of_the_month",
