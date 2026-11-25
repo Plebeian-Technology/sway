@@ -18,7 +18,11 @@ The count of voters still needed is safe to send for a bill, because the feed al
 
 A district with ten voters shows its split as two whole-number percentages, with no counts and no voter total. [[app/models/bill_score_district.rb#BillScoreDistrict#for_percent]] rounds the For share and the Against share is the remainder, so the pair sums to 100.
 
-With district counts on the page, a hidden district's exact tally would equal the bill total minus the visible districts. Hiding every district's size removes that subtraction, and it lets each district appear as soon as it reaches ten rather than waiting for its neighbours.
+With district counts on the page, a hidden district's exact tally would equal the bill total minus the visible districts. Hiding each district's size does not remove that subtraction on its own. A small district's whole-number split usually fits one pair of counts only: measured, every ten-voter split did, 88% at eleven voters and 66% at fifteen. Counts read back that way, taken from the exact bill total, give the tally of the voters outside every shown district. With eleven voters, eight For, and district 4 holding ten at 70% and 30%, only 7 and 3 fit, so the eleventh voter voted For.
+
+[[app/models/bill_score.rb#BillScore#publishable_districts]] closes that gap. It subtracts the voters of every publishable district from the bill's voters and sends the rows only when the remainder is zero or at least the minimum. A remainder of one to nine sends no row for the bill, and each reader sees the placeholder a district under ten gets. A remainder of zero leaks nothing, because nobody stands outside the rows.
+
+The at-large row stays out of the sum. It is never shown, and it counts every voter of its area, so adding it would count each voter twice. The sum also relies on each voter sitting in one numbered district per locale, which holds because a district's name keeps only its number: Maryland's delegate subdistricts 1A and 1B fold into district 1 with its senator. A voter counted in two shown rows would leave the districts holding more voters than the bill, so a negative remainder sends no row.
 
 A district under ten has no `voters_needed`, because that number would give its size away, and its row is not sent at all. A row exists only once someone in that district has voted, so even an empty-looking row would say that someone there did. The at-large district is left out as well: it covers every voter, so it repeats the bill total.
 
@@ -26,7 +30,7 @@ A district under ten has no `voters_needed`, because that number would give its 
 
 Hiding a number on the page is not the guarantee, because anyone can read the JSON behind it. The guarantee is that the server never sends the number.
 
-Every bill score leaves through one of two doors, and both ask the model. [[app/models/bill_score.rb#BillScore#visible_for]] and its Against twin answer nil below the minimum, and [[app/models/bill_score_district.rb#BillScoreDistrict#publishable?]] decides whether a district row leaves at all. [[app/serializers/bill_score_resource.rb#BillScoreResource]] serves the bill page and Bill of the Month to the web and the phone. The two `to_builder` methods serve the bills index, past Bills of the Month and the `bill_scores` and `bill_score_districts` endpoints.
+Every bill score leaves through one of two doors, and both ask the model. [[app/models/bill_score.rb#BillScore#visible_for]] and its Against twin answer nil below the minimum, and [[app/models/bill_score.rb#BillScore#publishable_districts]] decides which district rows leave at all, asking [[app/models/bill_score_district.rb#BillScoreDistrict#publishable?]] of each row first. [[app/serializers/bill_score_resource.rb#BillScoreResource]] serves the bill page and Bill of the Month to the web and the phone. The two `to_builder` methods serve the bills index, past Bills of the Month and the `bill_scores` and `bill_score_districts` endpoints.
 
 A district row carries its two percentages and never a count. Its `comparison_suppressed` and `at_large` keys stay, always false, because the phone treats a row without the flag as hidden.
 

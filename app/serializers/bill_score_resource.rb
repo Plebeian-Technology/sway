@@ -20,7 +20,7 @@ class BillScoreResource < ApplicationResource
   attributes :voters_needed
 
   attribute :districts do |score|
-    district_scores = score.bill_score_districts.select(&:publishable?)
+    district_scores = score.publishable_districts
     # @lat: [[district-chart-tooltip#The mobile bill JSON carries the names, the web page does not]]
     if params[:district_legislator_names]
       names_by_district_id = legislator_names_by_district_id(district_scores)

@@ -6,7 +6,7 @@ class BillScoresController < ApplicationController
   def show
     render json:
              BillScore
-               .includes(:bill_score_districts, bill: {sway_locale: :districts})
+               .includes({bill_score_districts: :district}, bill: {sway_locale: :districts})
                .find_by(bill_id: params[:id])
                &.to_builder_with_user(current_user)
                &.attributes!,

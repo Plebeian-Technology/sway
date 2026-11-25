@@ -740,6 +740,7 @@ RSpec.describe "BillsController", type: :request do
         [shared_district, vacant_district, former_district].each do |district|
           create(:bill_score_district, bill_score: bill.bill_score, district:, for: 8, against: 4)
         end
+        bill.bill_score.update!(for: 24, against: 12)
         api_token = SecureRandom.hex(32)
         ApiKey.create!(bearer: user, token: api_token)
 
@@ -763,6 +764,7 @@ RSpec.describe "BillsController", type: :request do
         district = create(:district, sway_locale:, name: "D-1")
         BillsControllerSpecHelpers.seat_legislator(district, "Amy", "Adams")
         score_district = create(:bill_score_district, bill_score: bill.bill_score, district:, for: 8, against: 4)
+        bill.bill_score.update!(for: 8, against: 4)
         sign_in(user)
 
         get "/bills/#{bill.id}"
@@ -805,6 +807,8 @@ RSpec.describe "BillsController", type: :request do
             BillsControllerSpecHelpers.seat_legislator(district, "First#{offset + index}", "Last#{offset + index}")
             create(:bill_score_district, bill_score: bill.bill_score, district:, for: 8, against: 4)
           end
+          scored = bill.bill_score.bill_score_districts.count
+          bill.bill_score.update!(for: 8 * scored, against: 4 * scored)
         end #: ^(Integer, Integer) -> void
 
         add_scored_districts.call(2, 10)

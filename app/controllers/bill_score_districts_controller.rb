@@ -2,11 +2,9 @@
 
 class BillScoreDistrictsController < ApplicationController
   def show
-    render json:
-             BillScoreDistrict.includes(:district).where(
-               bill_score_id: bill_score_district_params[:bill_score_id]
-             ).select(&:publishable?).map(&:to_sway_json),
-      status: :ok
+    bill_score =
+      BillScore.includes(bill_score_districts: :district).find_by(id: bill_score_district_params[:bill_score_id])
+    render json: (bill_score&.publishable_districts || []).map(&:to_sway_json), status: :ok
   end
 
   private

@@ -61,6 +61,8 @@ RSpec.describe "Reading response payloads and stored copies", type: :request do
       district = create(:district, sway_locale:, name: "Score District #{from + index + 1}")
       create(:bill_score_district, bill_score:, district:, for: 8, against: 4)
     end
+    scored = bill_score.bill_score_districts.count
+    bill_score.update!(for: 8 * scored, against: 4 * scored)
   end
 
   def add_correlated_bill_votes(count:, from:, sway_locale:, bill:)

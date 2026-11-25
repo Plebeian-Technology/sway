@@ -37,8 +37,16 @@ class BillScore < ApplicationRecord
       bs.comparison_suppressed comparison_suppressed?
       bs.voters_needed voters_needed
 
-      bs.districts bill_score_districts.select(&:publishable?).map(&:to_sway_json)
+      bs.districts publishable_districts.map(&:to_sway_json)
     end
+  end
+
+  # Returns the district rows any reader may see for this bill.
+  # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
+  def publishable_districts
+    rows = bill_score_districts.select(&:publishable?)
+    outside = (self.for + against) - rows.sum { |row| row.for + row.against }
+    (outside.zero? || outside >= VoteComparisonPrivacy::MINIMUM_VOTERS) ? rows : []
   end
 
   def comparison_suppressed?
@@ -65,7 +73,7 @@ class BillScore < ApplicationRecord
     user_districts_by_id = user_districts.select(&:id).index_by(&:id)
 
     bill_districts =
-      bill_score_districts.filter do |bsd|
+      publishable_districts.filter do |bsd|
         if bsd.district_id && user_districts_by_id.any?
           matched_district = user_districts_by_id[bsd.district_id]
           if matched_district
@@ -86,7 +94,7 @@ class BillScore < ApplicationRecord
       bs.against visible_against
       bs.comparison_suppressed comparison_suppressed?
       bs.voters_needed voters_needed
-      bs.districts bill_districts.select(&:publishable?).map(&:to_sway_json)
+      bs.districts bill_districts.map(&:to_sway_json)
     end
   end
 end

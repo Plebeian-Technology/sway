@@ -1509,7 +1509,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       create(:organization_bill_position, bill:, organization: create(:organization, sway_locale:))
       current_term.district.update!(name: "#{sway_locale.region_code}3")
       score = bill.bill_score
-      score.update!(for: 12, against: 6)
+      score.update!(for: 16, against: 6)
       create(:bill_score_district, bill_score: score, district: current_term.district, for: 9, against: 3)
 
       other_locale = create(:sway_locale, (sway_locale.city == "congress") ? :maryland : :congress)

@@ -133,6 +133,32 @@ RSpec.describe "Vote comparison privacy", type: :request do
     end
   end
 
+  context "when one of eleven voters sits outside the only district with ten voters" do
+    before { tally(bill_for: 8, bill_against: 3, reader: [7, 3], small: [1, 0], at_large: [8, 3]) }
+
+    score_readers.each do |endpoint, reader|
+      it "#{endpoint} sends the exact bill totals and no district row" do
+        score = send(reader)
+
+        expect(score).to include("for" => 8, "against" => 3, "comparison_suppressed" => false)
+        expect(score["districts"]).to eq([])
+      end
+    end
+
+    it "GET /bill_score_districts/:id sends no row" do
+      expect(district_rows).to eq([])
+    end
+
+    it "sends a bearer request no district row" do
+      api_token = SecureRandom.hex(32)
+      ApiKey.create!(bearer: user, token: api_token)
+
+      get "/bills/#{bill.id}", headers: {"Authorization" => "Bearer #{api_token}"}
+
+      expect(response.parsed_body.dig("bill_score", "districts")).to eq([])
+    end
+  end
+
   it "shows a district exactly when its tenth voter arrives" do
     tally(bill_for: 18, bill_against: 12, reader: [6, 3], small: [0, 0], at_large: [18, 12])
     expect(bill_show_score["districts"]).to eq([])
