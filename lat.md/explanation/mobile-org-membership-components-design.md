@@ -13,13 +13,13 @@ One organization on a card, with the control for following it.
 
 What the card offers:
 
-- a follow control with three states: Follow, Following, and Member
+- a follow control with three states: Track, Tracking, and Member
 - the managed label when the organization manages its positions on Sway, and no follower count
-- tapping Follow while signed out opens AuthPromptSheet, headed "Sign in to
-  follow", rather than calling the server
+- tapping Track while signed out opens AuthPromptSheet, headed "Sign in to
+  track", rather than calling the server
 - a Preferences button that opens OrgPreferenceSheet
 
-Membership comes ONLY from is_member_of_org_ids, never from whether a follow row exists. A member sees the "Member" label and the "Preferences" button and no way to unfollow, even when they have no follow row at all.
+Membership comes ONLY from is_member_of_org_ids, never from whether a follow row exists. A member sees the "Member" label and the "Preferences" button and no way to stop tracking, even when they have no follow row at all.
 
 How it looks:
 
@@ -86,19 +86,19 @@ Hierarchical resolution rules prioritizing organization-specific alert settings 
 
 Visual and interactive states rendered by the follow button across unfollowed, active, pending, and member-restricted conditions.
 
-- Follower count sits under the locale slug.
-- The follow control. Signed-out users see the Follow button too; tapping it opens
+- No follower count; the managed label, when present, sits under the locale slug.
+- The follow control. Signed-out users see the Track button too; tapping it opens
   AuthPromptSheet instead of calling the server.
 - The member case, decided by isMember alone and never by followId. A member with no
-  follow row still reads as Member. There is no unfollow here, only the Preferences
+  follow row still reads as Member. There is no Stop tracking here, only the Preferences
   button.
-- Following but not a member: the button reads "Tracking", and tapping it stops tracking.
-- Not following, or signed out: the accent-coloured Follow button. A signed-out tap
+- Following but not a member: the button reads "Tracking", screen readers hear "Stop tracking {name}", and tapping it stops tracking.
+- Not following, or signed out: the accent-coloured Track button. A signed-out tap
   opens AuthPromptSheet, not the API.
 
 ### AuthPromptSheet wiring
 
-Shown when a signed-out user taps Follow.
+Shown when a signed-out user taps Track.
 
 onSignIn and onDismiss do different things: onSignIn closes the sheet AND sends the user to the sign-in screens, through the onRequestSignIn callback that OrgsListScreen passes down. onDismiss only closes it, so the user carries on browsing.
 
