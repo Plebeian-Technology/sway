@@ -130,6 +130,26 @@ RSpec.describe "OrganizationsController", type: :request do
         .to eq("source_kind" => "sway_admin", "source_url" => nil)
     end
 
+    it "marks a withdrawn position an admin turns back on as a Sway admin entry" do
+      sway_locale, = setup
+      bill = create(:bill, sway_locale:)
+      member_org = create(:organization, name: "Member Org", sway_locale:)
+      withdrawn = OrganizationBillPosition.create!(
+        bill:, organization: member_org, support: "FOR", summary: "Written by the members.",
+        active: false, source_kind: "organization"
+      )
+
+      post organizations_path, params: {
+        bill_id: bill.id,
+        organizations: [
+          {label: member_org.name, value: member_org.id, support: "FOR", summary: "Written by the members."}
+        ]
+      }
+
+      expect(withdrawn.reload.slice(:active, :source_kind, :source_url))
+        .to eq("active" => true, "source_kind" => "sway_admin", "source_url" => nil)
+    end
+
     # @lat: [[organizations-controller#Icon addresses keep their source meaning]]
     describe "the icon_url column" do
       it "stays empty when an admin uploads an icon" do

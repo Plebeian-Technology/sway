@@ -198,6 +198,25 @@ RSpec.describe "OrganizationBillPositionsController#create authoritative active 
     expect(edited_position.reload.slice(:source_kind, :source_url))
       .to eq("source_kind" => "sway_admin", "source_url" => nil)
   end
+
+  it "marks a withdrawn position an admin turns back on as a Sway admin entry" do
+    withdrawn = OrganizationBillPosition.create!(
+      bill: bill, organization: organization, support: "FOR", summary: "Written by the members.",
+      active: false, source_kind: "organization"
+    )
+
+    post organization_bill_positions_path,
+      params: {
+        organization_bill_position: {
+          positions: [
+            {bill_id: bill.id, organization_id: organization.id, support: "support", summary: "Written by the members."}
+          ]
+        }
+      }
+
+    expect(withdrawn.reload.slice(:active, :source_kind, :source_url))
+      .to eq("active" => true, "source_kind" => "sway_admin", "source_url" => nil)
+  end
 end
 
 # @lat: [[replace-bill-org-positions-service-design#Why the write upserts by (bill, organization) instead of deleting and re-inserting]]
