@@ -43,6 +43,17 @@ RSpec.describe BillScore, type: :model do
   # create_or_find_by! safe, so two people voting at once land on the same row
   # instead of splitting the tally. Bill#create_default_bill_score already makes
   # one BillScore for every bill as it is created.
+  describe "bill_id uniqueness" do
+    it "rejects a second BillScore for the same bill" do
+      bill = create(:bill)
+      expect(BillScore.where(bill_id: bill.id).count).to eq(1)
+
+      expect {
+        BillScore.create!(bill: bill)
+      }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+  end
+
   # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   describe "#publishable_districts" do
     minimum = VoteComparisonPrivacy::MINIMUM_VOTERS
@@ -149,17 +160,6 @@ RSpec.describe BillScore, type: :model do
       tally(bill_for: 7, bill_against: 2, rows: {at_large => [7, 2]})
 
       expect(score.countable_district_ids).to eq([])
-    end
-  end
-
-  describe "bill_id uniqueness" do
-    it "rejects a second BillScore for the same bill" do
-      bill = create(:bill)
-      expect(BillScore.where(bill_id: bill.id).count).to eq(1)
-
-      expect {
-        BillScore.create!(bill: bill)
-      }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 end
