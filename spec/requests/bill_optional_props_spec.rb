@@ -30,6 +30,49 @@ RSpec.describe "Bill page optional props", type: :request do
     end
   end
 
+  describe "GET /bills/:id districts partial reload" do
+    let(:partial_headers) do
+      {
+        "X-Inertia" => "true",
+        "X-Inertia-Version" => InertiaRails.configuration.version.to_s,
+        "X-Inertia-Partial-Component" => Pages::BILL,
+        "X-Inertia-Partial-Data" => "districts"
+      }
+    end
+
+    # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
+    it "returns the reader's districts in the bill's locale when the locale cookie names another" do
+      cookie_locale, user = setup
+      bill_locale = create(:sway_locale, city: "annapolis", state: "maryland", country: "united_states")
+      bill_district = create(:district, sway_locale: bill_locale, name: "#{bill_locale.region_code}7")
+      bill_legislator = create(:legislator, district: bill_district)
+      create(:legislator_term, legislator: bill_legislator, district: bill_district)
+      create(:user_legislator, user:, legislator: bill_legislator)
+      bill = create(:bill, sway_locale: bill_locale)
+      expect(cookie_locale).not_to eq(bill_locale)
+
+      get bill_path(bill), headers: partial_headers
+
+      districts = response.parsed_body.fetch("props").fetch("districts")
+      expect(districts.map { |district| district.fetch("name") }).to eq([bill_district.name])
+    end
+
+    # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
+    it "falls back to the bill locale's at-large district for a signed-out reader" do
+      cookie_locale, = setup
+      bill_locale = create(:sway_locale, :congress)
+      bill_at_large = create(:district, sway_locale: bill_locale, name: "US0")
+      bill = create(:bill, sway_locale: bill_locale)
+      expect(cookie_locale).not_to eq(bill_locale)
+      session_hash.delete(:user_id)
+
+      get bill_path(bill), headers: partial_headers
+
+      districts = response.parsed_body.fetch("props").fetch("districts")
+      expect(districts.map { |district| district.fetch("name") }).to eq([bill_at_large.name])
+    end
+  end
+
   describe "GET /bill_of_the_month" do
     # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
     it "omits unread props from the initial Inertia page and keeps them in default bearer JSON" do

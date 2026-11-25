@@ -32,7 +32,7 @@ It draws the rows [[app/frontend/components/bill/sway_utils/billPositions.ts#sel
 
 A reader whose own district is missing from the chart would wonder whether the page forgot them, so the chart adds a row for it that says there are not enough votes yet.
 
-The page does not carry the reader's districts on first load: `districts` is an optional prop. [[app/frontend/components/bill/charts/DistrictVotesChart.tsx#DistrictVotesChart]] asks for it with a partial reload when a signed-in reader's chart is drawn, the same way the district tooltip asks for the roster ([[district-chart-tooltip]]).
+The page does not carry the reader's districts on first load: `districts` is an optional prop. [[app/frontend/components/bill/charts/DistrictVotesChart.tsx#DistrictVotesChart]] asks for it with a partial reload when a signed-in reader's chart is drawn, the same way the district tooltip asks for the roster ([[district-chart-tooltip]]). The list is built from the bill's own locale, not the locale cookie, because the bill page serves a bill from any locale and a reader's district in another locale would otherwise draw a row on a bill that has no such district.
 
 A vote or a pull to refresh replaces every prop and drops `districts` again, so the chart asks again each time that happens: the request latch clears when the request finishes. If the server answers without `districts`, the chart stops asking for the component's life, so an answer that never carries the prop cannot start a request loop.
 

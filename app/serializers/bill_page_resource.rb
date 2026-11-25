@@ -60,12 +60,12 @@ class BillPageResource < ApplicationResource
 
   attribute :districts do |bill|
     current_user = params[:current_user]
-    current_sway_locale = params[:current_sway_locale]
+    bill_sway_locale = bill.sway_locale
     InertiaRails.optional {
-      districts = current_user&.districts(current_sway_locale)
+      districts = current_user&.districts(bill_sway_locale)
       selected_districts = districts&.map { |district| BillPageDistrictResource.new(district).serializable_hash }
       selected_districts ||
-        [current_sway_locale&.at_large_district]
+        [bill_sway_locale&.at_large_district]
           .compact
           .map { |district| BillPageDistrictResource.new(district).serializable_hash }
     }
