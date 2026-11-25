@@ -142,6 +142,24 @@ describe("TestimonyLettersSection", () => {
         expect(refresh).not.toHaveBeenCalled();
     });
 
+    it("closes the letter list when the letter count drops to zero, so it stays closed when letters return", async () => {
+        const refresh = jest.fn(async () => {});
+        const { rerender } = render(<TestimonyLettersSection billId={42} data={tabData()} refresh={refresh} />);
+        await openLetters();
+
+        rerender(
+            <TestimonyLettersSection
+                billId={42}
+                data={tabData({ total: 0, support: 0, oppose: 0, neutral: 0 })}
+                refresh={refresh}
+            />,
+        );
+        rerender(<TestimonyLettersSection billId={42} data={tabData()} refresh={refresh} />);
+
+        expect(screen.getByTestId("admin-testimony-letters")).toBeTruthy();
+        expect(screen.queryByTestId("browse-testimony-sheet")).toBeNull();
+    });
+
     it("sits on the Positions tab", () => {
         render(<PositionsTab billId={42} data={tabData()} refresh={jest.fn(async () => {})} />);
 

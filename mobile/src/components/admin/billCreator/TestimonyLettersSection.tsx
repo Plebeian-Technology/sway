@@ -32,6 +32,7 @@ const TestimonyLettersSection: React.FC<BillCreatorTabProps> = ({ billId, data, 
     });
     const stanceWrite = useAdminMutation<unknown>("patch", Routes.billTestimonyLetterStance(billId ?? 0));
 
+    if (!shown && open) setOpen(false);
     if (!shown || counts === null) return null;
 
     const write = async (body: { position: number; stance?: PublicTestimonyStance; excluded?: boolean }) => {
