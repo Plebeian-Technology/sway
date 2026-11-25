@@ -159,10 +159,9 @@ const SwayRegistration: React.FC<IProps> = ({
     );
 
     const handleConfirmAddressSwitch = useCallback(() => {
-        form.setData("confirm_deactivate_legislators", true);
         setShowSwitchConfirm(false);
         submitRegistration({ confirm_deactivate_legislators: true });
-    }, [form, submitRegistration]);
+    }, [submitRegistration]);
 
     const handleOpenUrl = useCallback((url: string) => {
         window.open(url, "_blank", "noopener,noreferrer");

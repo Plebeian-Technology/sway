@@ -512,6 +512,21 @@ describe("SwayRegistration — change-address mode for a registered user", () =>
         expect(postedBody).toMatchObject({ confirm_deactivate_legislators: true });
     });
 
+    it("asks again on the next Save after a confirmed switch the server refused", () => {
+        renderChangeAddress();
+        const form = screen.getByTestId("btn-submit-registration").closest("form")!;
+
+        fireEvent.submit(form);
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+        expect(postedBody).toMatchObject({ confirm_deactivate_legislators: true });
+
+        post.mockClear();
+        fireEvent.submit(form);
+
+        expect(post).not.toHaveBeenCalled();
+        expect(screen.getByTestId("confirm-address-switch-dialog")).toBeInTheDocument();
+    });
+
     it("records no registration funnel step when viewing or submitting the address change", () => {
         renderChangeAddress();
 
