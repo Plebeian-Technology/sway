@@ -162,6 +162,10 @@ class ScoreRecomputeService
       pairs =
         counted_pairs(user_ids, legislator_term, sway_locale)
           .select { |_user_id, _user_support, _legislator_support, bill_id| bill_ids_with_minimum_voters.include?(bill_id) }
+          .group_by(&:last)
+          .select { |_bill_id, bill_pairs| bill_pairs.map(&:first).uniq.size >= VoteComparisonPrivacy::MINIMUM_VOTERS }
+          .values
+          .flatten(1)
       count_by_class(pairs).merge(distinct_voter_count: pairs.map(&:first).uniq.size)
     end
 

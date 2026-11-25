@@ -602,6 +602,61 @@ RSpec.describe ScoreRecomputeService do
       expect(district_score.distinct_voter_count).to eq(10)
     end
 
+    describe "legislators who share one district's voters" do
+      def seat_beside(legislator)
+        neighbour = create(:legislator, district: legislator.district)
+        [neighbour, create(:legislator_term, legislator: neighbour, district: legislator.district)]
+      end
+
+      it "leaves a bill out of a district score when fewer than ten of that legislator's own users voted on it" do
+        sway_locale = create(:sway_locale)
+        legislator, term = seat(sway_locale, "#{sway_locale.region_code}44")
+        neighbour, neighbour_term = seat_beside(legislator)
+        bill = bill_voted_for_by(legislator, sway_locale)
+        create(:legislator_vote, bill:, legislator: neighbour, support: LegislatorVote::Support::FOR)
+        constituents_vote(1, legislator:, bill:)
+        constituents_vote(9, legislator: neighbour, bill:)
+
+        recompute([bill], [term, neighbour_term])
+
+        own_score = LegislatorDistrictScore.find_by!(legislator_term: term)
+        expect(pairs(own_score)).to eq(0)
+        expect(own_score.distinct_voter_count).to eq(0)
+        expect(LegislatorDistrictScore.find_by!(legislator_term: neighbour_term).distinct_voter_count).to eq(0)
+      end
+
+      it "counts a bill in a district score once ten of that legislator's own users voted on it" do
+        sway_locale = create(:sway_locale)
+        legislator, term = seat(sway_locale, "#{sway_locale.region_code}44")
+        neighbour, neighbour_term = seat_beside(legislator)
+        bill = bill_voted_for_by(legislator, sway_locale)
+        create(:legislator_vote, bill:, legislator: neighbour, support: LegislatorVote::Support::FOR)
+        constituents_vote(10, legislator:, bill:)
+        constituents_vote(1, legislator: neighbour, bill:)
+
+        recompute([bill], [term, neighbour_term])
+
+        own_score = LegislatorDistrictScore.find_by!(legislator_term: term)
+        expect(own_score.count_agreed).to eq(10)
+        expect(own_score.distinct_voter_count).to eq(10)
+        expect(LegislatorDistrictScore.find_by!(legislator_term: neighbour_term).distinct_voter_count).to eq(0)
+      end
+    end
+
+    it "leaves a bill out of a locale score when fewer than ten of its voters have a representative in that locale" do
+      sway_locale = create(:sway_locale)
+      legislator, term = seat(sway_locale, "#{sway_locale.region_code}1")
+      bill = bill_voted_for_by(legislator, sway_locale)
+      constituents_vote(2, legislator:, bill:)
+      Array.new(8) { create(:user_vote, user: create(:user), bill:, support: LegislatorVote::Support::FOR) }
+
+      recompute([bill], [term])
+
+      locale_score = LegislatorLocaleScore.find_by!(legislator_term: term)
+      expect(pairs(locale_score)).to eq(0)
+      expect(locale_score.distinct_voter_count).to eq(0)
+    end
+
     describe "an at-large district score" do
       def at_large_tallies(home_voters:, other_voters:)
         sway_locale = create(:sway_locale)
