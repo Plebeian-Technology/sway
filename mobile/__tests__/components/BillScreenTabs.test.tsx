@@ -1,12 +1,14 @@
 // @lat: [[mobile-bill-surface-components-design#BillScreenTabs]]
 const mockUseSession = jest.fn();
+const SIGNED_IN_BOOTSTRAP_USER = { id: 7, invite_url: "https://app.example.test/invite/7/abc" };
+let mockBootstrapUser: typeof SIGNED_IN_BOOTSTRAP_USER | null = SIGNED_IN_BOOTSTRAP_USER;
 
 jest.mock("../../src/hooks/useSession", () => ({
     useSession: () => mockUseSession(),
 }));
 jest.mock("../../src/hooks/useBootstrap", () => ({
     useBootstrap: () => ({
-        bootstrap: { current_user: { id: 7, invite_url: "https://app.example.test/invite/7/abc" } },
+        bootstrap: { current_user: mockBootstrapUser },
     }),
 }));
 jest.mock("../../src/hooks/useCastUserVote", () => ({
@@ -79,6 +81,7 @@ const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabs
     onVoted: jest.fn(),
     onNavigateToLegislators: jest.fn(),
     onNavigateToBills: jest.fn(),
+    onNavigateToSignIn: jest.fn(),
     heroTestID: "hero",
     summariesTestID: "summaries",
     ...overrides,
@@ -105,6 +108,7 @@ const openSummaries = () => fireEvent.press(screen.getByTestId("tab-summaries"))
 describe("BillScreenTabs", () => {
     beforeEach(() => {
         mockUseSession.mockReturnValue({ isAuthenticated: false, loading: false });
+        mockBootstrapUser = SIGNED_IN_BOOTSTRAP_USER;
         mockPost.mockReset();
     });
 
@@ -265,6 +269,20 @@ describe("BillScreenTabs", () => {
 
             expect(Clipboard.setStringAsync).toHaveBeenCalledWith("https://app.example.test/invite/7/abc");
             expect(await screen.findByText("Invite link copied to clipboard.")).toBeTruthy();
+        });
+
+        test("sends a signed-out reader to sign in from the placeholder's prompt", () => {
+            mockBootstrapUser = null;
+            const onNavigateToSignIn = jest.fn();
+            renderTabs({ billScore: hiddenScore, onNavigateToSignIn });
+            openVotes();
+
+            fireEvent.press(screen.getByTestId("vote-comparison-sign-up"));
+            fireEvent.press(
+                within(screen.getByTestId("vote-comparison-auth-prompt")).getByTestId("btn-auth-prompt-sign-in"),
+            );
+
+            expect(onNavigateToSignIn).toHaveBeenCalledTimes(1);
         });
 
         test("treats a cached payload with no flag as suppressed", () => {

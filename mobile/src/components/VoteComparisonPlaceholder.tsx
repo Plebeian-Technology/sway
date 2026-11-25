@@ -10,13 +10,14 @@ import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
 export interface VoteComparisonPlaceholderProps {
     votersNeeded?: number | null;
+    onSignInRequested?: () => void;
     testID?: string;
 }
 
 const MESSAGE_CLASS = "text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark";
 const BUTTON_TEXT_CLASS = "text-sm font-open-sans-semibold text-accent-light dark:text-accent-dark";
 
-export function VoteComparisonPlaceholder({ votersNeeded, testID }: VoteComparisonPlaceholderProps) {
+export function VoteComparisonPlaceholder({ votersNeeded, onSignInRequested, testID }: VoteComparisonPlaceholderProps) {
     const { bootstrap } = useBootstrap();
     const [authPromptVisible, setAuthPromptVisible] = useState(false);
     const [inviteLinkCopied, setInviteLinkCopied] = useState(false);
@@ -72,7 +73,10 @@ export function VoteComparisonPlaceholder({ votersNeeded, testID }: VoteComparis
                         visible={authPromptVisible}
                         heading={PARITY_COPY.bill.voteComparisonPlaceholder.signUp}
                         body={PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}
-                        onSignIn={() => setAuthPromptVisible(false)}
+                        onSignIn={() => {
+                            setAuthPromptVisible(false);
+                            onSignInRequested?.();
+                        }}
                         onDismiss={() => setAuthPromptVisible(false)}
                         testID="vote-comparison-auth-prompt"
                     />

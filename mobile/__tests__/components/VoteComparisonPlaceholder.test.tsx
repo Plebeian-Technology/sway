@@ -1,7 +1,7 @@
 // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
 import React from "react";
 import * as Clipboard from "expo-clipboard";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen, within } from "@testing-library/react-native";
 
 import { VoteComparisonPlaceholder } from "../../src/components/VoteComparisonPlaceholder";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
@@ -85,5 +85,20 @@ describe("VoteComparisonPlaceholder", () => {
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
         fireEvent.press(screen.getByTestId("vote-comparison-sign-up"));
         expect(screen.getByTestId("vote-comparison-auth-prompt").props.visible).toBe(true);
+    });
+
+    test("sends a signed-out reader to sign in from the prompt", () => {
+        mockCurrentUser = null;
+        const onSignInRequested = jest.fn();
+
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} onSignInRequested={onSignInRequested} />);
+
+        fireEvent.press(screen.getByTestId("vote-comparison-sign-up"));
+        fireEvent.press(
+            within(screen.getByTestId("vote-comparison-auth-prompt")).getByTestId("btn-auth-prompt-sign-in"),
+        );
+
+        expect(onSignInRequested).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId("vote-comparison-auth-prompt")?.props.visible ?? false).toBe(false);
     });
 });

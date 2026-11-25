@@ -86,6 +86,7 @@ export interface BillScreenTabsProps {
     onVoted: () => void;
     onNavigateToLegislators: () => void;
     onNavigateToBills: () => void;
+    onNavigateToSignIn: () => void;
     onSponsorPress?: () => void;
     hero?: boolean;
     heroTestID: string;
@@ -182,6 +183,7 @@ export function BillScreenTabs({
     onVoted,
     onNavigateToLegislators,
     onNavigateToBills,
+    onNavigateToSignIn,
     onSponsorPress,
     hero = false,
     heroTestID,
@@ -247,7 +249,10 @@ export function BillScreenTabs({
             detailPlaceholder("votes") ?? (
                 <Card>
                     {comparisonSuppressed ? (
-                        <VoteComparisonPlaceholder votersNeeded={billScore?.voters_needed} />
+                        <VoteComparisonPlaceholder
+                            votersNeeded={billScore?.voters_needed}
+                            onSignInRequested={onNavigateToSignIn}
+                        />
                     ) : (
                         <BillScoreBar bill_score={billScore} />
                     )}

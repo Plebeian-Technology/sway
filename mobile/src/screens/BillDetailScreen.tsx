@@ -166,6 +166,7 @@ function BillDetailLoaded({ id }: BillDetailLoadedProps) {
                         ?.navigate("Legislators", { screen: "LegislatorsList", pop: true })
                 }
                 onNavigateToBills={() => nav.getParent()?.navigate("Bills" as never)}
+                onNavigateToSignIn={() => nav.navigate("Auth" as never)}
                 onSponsorPress={
                     sponsorId != null
                         ? () =>
