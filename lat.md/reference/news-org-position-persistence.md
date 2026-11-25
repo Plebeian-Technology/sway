@@ -17,7 +17,7 @@ The latest write decides the origin. The two admin save paths set `sway_admin` o
 
 | `source_kind` | Who wrote the position | Write paths | `source_url` |
 | --- | --- | --- | --- |
-| `hearing_testimony` | Sway, from hearing testimony | [[app/services/approve_org_position_service.rb#ApproveOrgPositionService]] approving a testimony draft or a claimed affiliation | Always nil: testimony attachment entries carry no public URL for a letter |
+| `hearing_testimony` | Sway, from hearing testimony | [[app/services/approve_org_position_service.rb#ApproveOrgPositionService]] approving a testimony draft or a claimed affiliation | Always nil: a split testimony letter records no source attachment, so its Legistar link is unreachable |
 | `news_article` | Sway, from a news article | [[app/services/approve_org_position_service.rb#ApproveOrgPositionService]] approving a news-sourced draft | The draft's `source_url` |
 | `sway_admin` | A Sway admin, by hand | [[app/controllers/organizations_controller.rb#OrganizationsController]] `#create`, [[app/services/replace_bill_org_positions_service.rb#ReplaceBillOrgPositionsService]], and an approval that names no draft | Nil |
 | `organization` | The organization's own members | [[app/services/approve_position_change_service.rb#ApprovePositionChangeService]] approving a member's change; the development seeds | Nil |
