@@ -214,7 +214,8 @@ class SwayRegistrationController < ApplicationController
 
   # @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
   def address_switch_return_path(u)
-    (request.inertia? && u.registered?) ? edit_users_address_path : sway_registration_index_path
+    change_address = ActiveModel::Type::Boolean.new.cast(sway_registration_params[:change_address]) == true
+    (request.inertia? && change_address && u.registered?) ? edit_users_address_path : sway_registration_index_path
   end
 
   def render_geocoding_unavailable(u, address_instance, exception, redirect:)
@@ -499,6 +500,7 @@ class SwayRegistrationController < ApplicationController
       :country,
       :is_voter_registration_address_confirmed,
       :confirm_deactivate_legislators,
+      :change_address,
       place_types: []
     )
   end

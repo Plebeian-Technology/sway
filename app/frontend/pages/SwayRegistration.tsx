@@ -136,6 +136,7 @@ const SwayRegistration: React.FC<IProps> = ({
                 ...data,
                 ...(data.street?.trim() || !typed_address?.trim() ? {} : { street: typed_address.trim() }),
                 ...extraData,
+                ...(change_address ? { change_address: true } : {}),
             }));
             form.post("/sway_registration", {
                 onHttpException: handleRequestFailed,
