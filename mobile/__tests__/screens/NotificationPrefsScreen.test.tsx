@@ -302,6 +302,21 @@ describe("NotificationPrefsScreen", () => {
             expect(screen.getByTestId("org-defaults-cadence-picker")).toBeTruthy();
         });
 
+        test("describes every default event as Sway recording it, never the organization acting", async () => {
+            wrap(<NotificationPrefsScreen />);
+            expect(
+                await screen.findByText(
+                    "Notify by default when Sway records a change in this organization's for/against position.",
+                ),
+            ).toBeTruthy();
+            expect(
+                screen.getByText(
+                    "Notify by default when Sway records a change to this organization's position summary.",
+                ),
+            ).toBeTruthy();
+            expect(screen.queryByText(/this org (changes|updates)/)).toBeNull();
+        });
+
         test("fetches GET /api/v1/notification_preferences/org_defaults on mount", async () => {
             wrap(<NotificationPrefsScreen />);
             await waitFor(() =>

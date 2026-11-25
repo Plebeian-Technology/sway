@@ -65,6 +65,15 @@ describe("OrgPreferenceSheet", () => {
         expect(screen.getByTestId("pref-toggle-summary-change")).toBeTruthy();
     });
 
+    test("describes every event as Sway recording it, never the organization acting", () => {
+        wrap(<OrgPreferenceSheet visible={true} orgName="Civic Alliance" onSave={jest.fn()} onClose={jest.fn()} />);
+        expect(
+            screen.getByText("When Sway records a change in this organization's for/against position."),
+        ).toBeTruthy();
+        expect(screen.getByText("When Sway records a change to this organization's position summary.")).toBeTruthy();
+        expect(screen.queryByText(/this org (changes|updates)/)).toBeNull();
+    });
+
     test("renders cadence picker with all 3 options", () => {
         wrap(<OrgPreferenceSheet visible={true} orgName="Civic Alliance" onSave={jest.fn()} onClose={jest.fn()} />);
         expect(screen.getByTestId("cadence-picker")).toBeTruthy();

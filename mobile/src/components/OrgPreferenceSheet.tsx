@@ -131,7 +131,7 @@ export function OrgPreferenceSheet({
                             <PreferenceToggle
                                 name="notify_on_support_change"
                                 label="Support change"
-                                description="When this org changes its for/against position."
+                                description="When Sway records a change in this organization's for/against position."
                                 value={notifySupportChange}
                                 onValueChange={setNotifySupportChange}
                                 testID="pref-toggle-support-change"
@@ -139,7 +139,7 @@ export function OrgPreferenceSheet({
                             <PreferenceToggle
                                 name="notify_on_summary_change"
                                 label="Summary update"
-                                description="When this org updates its position summary."
+                                description="When Sway records a change to this organization's position summary."
                                 value={notifySummaryChange}
                                 onValueChange={setNotifySummaryChange}
                                 testID="pref-toggle-summary-change"

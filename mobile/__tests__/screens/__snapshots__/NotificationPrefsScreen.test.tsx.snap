@@ -436,7 +436,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  Notify by default when this org changes its for/against position.
+                  Notify by default when Sway records a change in this organization's for/against position.
                 </Text>
               </View>
             </View>
@@ -492,7 +492,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) gran
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  Notify by default when this org updates its position summary.
+                  Notify by default when Sway records a change to this organization's position summary.
                 </Text>
               </View>
             </View>
@@ -1243,7 +1243,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  Notify by default when this org changes its for/against position.
+                  Notify by default when Sway records a change in this organization's for/against position.
                 </Text>
               </View>
             </View>
@@ -1299,7 +1299,7 @@ exports[`NotificationPrefsScreen snapshots (Phase 37 Plan 06 evidence pack) load
                 <Text
                   className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
                 >
-                  Notify by default when this org updates its position summary.
+                  Notify by default when Sway records a change to this organization's position summary.
                 </Text>
               </View>
             </View>
