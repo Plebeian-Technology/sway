@@ -19,6 +19,12 @@ Approving a position copies them into `summary`. Any later edit changes `summary
 
 `ApproveOrgPositionService` stores no `ai_summary` for a draft a person already edited before approval, so a summary that was rewritten before approval gets no notice — the same "approving is not revising" rule the `Bill` model's equivalent flag follows (see `bill-summary-ai-unreviewed-detection.md`).
 
+## A member's approved change clears ai_summary
+
+[[app/services/approve_position_change_service.rb#ApprovePositionChangeService]] sets `ai_summary` to `nil` when it approves a change.
+
+The organization's members reviewed the text, and a support-only change keeps the summary word for word, so leaving `ai_summary` in place would show "Generated using AI, not yet reviewed" beside the organization's own byline.
+
 ## Where the flag surfaces
 
 Surfaces and serializers exposing the `ai_summary` indicator to distinguish automated position drafts from verified human submissions.

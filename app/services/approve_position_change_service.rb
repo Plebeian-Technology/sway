@@ -22,6 +22,7 @@ class ApprovePositionChangeService
         position = change.organization_bill_position
         position.support = OrganizationBillPosition.normalize_support(change.new_support) || change.new_support
         position.summary = change.new_summary
+        position.ai_summary = nil
         position.source_kind = OrganizationBillPosition::SourceKind::ORGANIZATION
         position.source_url = nil
         position.active = true

@@ -38,6 +38,38 @@ RSpec.describe ApprovePositionChangeService do
     expect(position.source_url).to be_nil
   end
 
+  it "clears the AI summary when the approved change keeps the AI text, because members reviewed it" do
+    approver = create(:user)
+    position = create(:organization_bill_position,
+      organization: create(:organization), summary: "Model words", ai_summary: "Model words")
+    change = create(:organization_bill_position_change,
+      organization_bill_position: position, updated_by: approver,
+      new_support: "oppose", new_summary: "Model words", status: :pending)
+    expect(position.summary_ai_unreviewed?).to be(true)
+
+    described_class.new(change: change, approver: approver).call
+
+    position.reload
+    expect(position.ai_summary).to be_nil
+    expect(position.summary_ai_unreviewed?).to be(false)
+    expect(position.to_public_json[:summary_ai_unreviewed]).to be(false)
+  end
+
+  it "clears the AI summary when the approved change rewrites the summary" do
+    approver = create(:user)
+    position = create(:organization_bill_position,
+      organization: create(:organization), summary: "Model words", ai_summary: "Model words")
+    change = create(:organization_bill_position_change,
+      organization_bill_position: position, updated_by: approver,
+      new_support: "support", new_summary: "Member words", status: :pending)
+
+    described_class.new(change: change, approver: approver).call
+
+    position.reload
+    expect(position.summary).to eq("Member words")
+    expect(position.summary_ai_unreviewed?).to be(false)
+  end
+
   it "returns :already_finalized and mutates nothing when the change was already approved" do
     approver = create(:user)
     organization = create(:organization)
