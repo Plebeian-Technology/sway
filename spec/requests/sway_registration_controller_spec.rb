@@ -967,12 +967,14 @@ RSpec.describe "/registration", type: :request do
         .with(error, extra: {user_id: user.id, address_id: Address.order(:id).last&.id})
     end
 
-    it "redirects back to registration with the switch alert (web)" do
+    it "redirects the change-address page back to itself with the switch alert (web)" do
       allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_raise(RuntimeError, "unexpected resolution failure") # rubocop:disable RSpec/AnyInstance
 
-      post "/sway_registration", params: address_switch_params
+      post "/sway_registration",
+        params: {sway_registration: address_switch_params[:sway_registration].merge(change_address: true)},
+        headers: {"X-Inertia" => "true", "X-Inertia-Version" => InertiaRails.configuration.version.to_s}
 
-      expect(response).to redirect_to(sway_registration_index_path)
+      expect(response).to redirect_to(edit_users_address_path)
       expect(flash[:alert]).to eq(SwayRegistrationController::REGISTRATION_ADDRESS_SWITCH_UNAVAILABLE_MESSAGE)
       expect(user.reload.address).to eq(address_before_switch)
       expect(UserLegislator.find_by!(user: user, legislator: legislator).active).to be(true)
@@ -1918,17 +1920,20 @@ RSpec.describe "/registration", type: :request do
         )
       end
 
-      it "redirects a browser to /sway_registration and renders the address_not_located outcome (web)" do
+      it "redirects the change-address page back to itself and renders the address_not_located outcome (web)" do
         with_env("OPEN_STATES_API_KEY" => "test-open-states-key") do
-          post "/sway_registration", params: {sway_registration: street_only_switch}
+          post "/sway_registration",
+            params: {sway_registration: street_only_switch.merge(change_address: true)},
+            headers: {"X-Inertia" => "true", "X-Inertia-Version" => InertiaRails.configuration.version.to_s}
         end
 
-        expect(response).to redirect_to(sway_registration_index_path)
+        expect(response).to redirect_to(edit_users_address_path)
 
         follow_redirect!
 
         expect(inertia).to render_component Pages::REGISTRATION
         expect(inertia).to have_props(
+          change_address: true,
           registration_outcome: {
             "reason" => "address_not_located",
             "message" => SwayRegistrationController::ADDRESS_NOT_LOCATED_MESSAGE
