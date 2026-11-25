@@ -176,9 +176,9 @@ describe("PARITY_COPY — Organizations keys (nested)", () => {
         );
     });
 
-    it("orgs.notAffiliated names the organization and says Sway compiled its positions", () => {
+    it("orgs.notAffiliated names the organization and makes no claim about who wrote its positions", () => {
         expect(PARITY_COPY.orgs.notAffiliated("Bikemore")).toBe(
-            "Bikemore is not affiliated with Sway and is not responsible for its content. Sway compiled these positions from public testimony and news reporting.",
+            "Bikemore is not affiliated with Sway and is not responsible for its content.",
         );
     });
 

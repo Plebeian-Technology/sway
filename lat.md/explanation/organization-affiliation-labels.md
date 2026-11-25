@@ -23,7 +23,7 @@ Web and mobile both take the tag and the source label from [[app/frontend/sway_u
 
 The organizations list carries one notice under its title: Sway compiles positions from public testimony and news reporting, and an organization is affiliated only when its page says it manages its positions on Sway.
 
-An organization's own page then says one of two things. With an active member it reads "{Org} manages its positions on Sway."; without one it says the organization is not affiliated with Sway, is not responsible for the content, and that Sway compiled the positions. A card in the list shows only the managed label, since the list notice already covers every other organization.
+An organization's own page then says one of two things. With an active member it reads "{Org} manages its positions on Sway."; without one it says the organization is not affiliated with Sway and is not responsible for the content. The notice makes no claim about who wrote the positions, because an organization whose members have all left keeps the positions they posted, still tagged "Posted by {Org}". A card in the list shows only the managed label, since the list notice already covers every other organization.
 
 The member's own organization page (the membership page) receives `source_kind` on each position so its cards can tag positions the same way.
 
