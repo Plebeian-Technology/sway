@@ -93,6 +93,7 @@ class Organizations::BaseController < ApplicationController
               summary_ai_unreviewed: p.summary_ai_unreviewed?,
               # @lat: [[news-org-position-persistence#Position origin and affiliation]]
               source_kind: p.source_kind,
+              source_url: p.source_url,
               bill: p.bill.to_sway_json
             }
           end

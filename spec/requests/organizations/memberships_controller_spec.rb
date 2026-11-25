@@ -101,6 +101,21 @@ RSpec.describe "Organizations::MembershipsController", type: :request do
       }
     end
 
+    it "sends each position's source URL so the page can link to its source" do
+      _, user = setup
+      membership = create(:user_organization_membership, user: user, organization: organization)
+      create(:organization_bill_position,
+        organization: organization,
+        source_kind: OrganizationBillPosition::SourceKind::NEWS_ARTICLE,
+        source_url: "https://news.example.com/story")
+
+      get organization_membership_path(organization, membership)
+
+      expect(inertia).to have_props { |p|
+        p[:membership][:positions].pluck(:source_url) == ["https://news.example.com/story"]
+      }
+    end
+
     it "permits a pending member to view their own membership without member PII or pending changes" do
       _, user = setup
       other_admin = create(:user, full_name: "Secret Admin", email: "secret-admin@example.com")

@@ -25,7 +25,7 @@ The organizations list carries one notice under its title: Sway compiles positio
 
 An organization's own page then says one of two things. With an active member it reads "{Org} manages its positions on Sway."; without one it says the organization is not affiliated with Sway and is not responsible for the content. The notice makes no claim about who wrote the positions, because an organization whose members have all left keeps the positions they posted, still tagged "Posted by {Org}". A card in the list shows only the managed label, since the list notice already covers every other organization.
 
-The member's own organization page (the membership page) receives `source_kind` on each position so its cards can tag positions the same way.
+The member's own organization page (the membership page) receives `source_kind` and `source_url` on each position so its cards can tag positions and link their sources the same way.
 
 ## A compiled position names its source
 
