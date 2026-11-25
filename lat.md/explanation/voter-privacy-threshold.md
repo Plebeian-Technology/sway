@@ -81,11 +81,11 @@ A user's own agreement with a legislator is one user's record, so `tally_agreeme
 
 ## Legislator scores are sent as percentages
 
-A district or locale agreement score carries `comparison_suppressed` and one whole-number percentage per counter, and no counter. With fewer than ten distinct voters behind it the flag is true and every percentage is nil.
+A district or locale agreement score carries `comparison_suppressed` and one rounded percentage per counter, and no counter. With fewer than ten distinct voters behind it, or a unanimous split, the flag is true and every percentage is nil.
 
-It also carries `voter_agreement_percent`, the term tile headline, worked out from the counters ([[voter-privacy-threshold#Legislator charts draw percentages or the placeholder]]).
+It also carries `voter_agreement_percent`, the term tile headline, worked out from the counters ([[voter-privacy-threshold#Legislator charts draw percentages or the placeholder]]). A score is unanimous when its agreed and disagreed counters are unanimous ([[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#unanimous?]]): agreed against disagreed is the split it publishes. A score with neither counted, only pairs without a legislator vote, is not unanimous and stays published.
 
-Percentages replace counts for the reason districts use them: one count can be subtracted from another. `percentages` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] floors each share and hands the leftover points to the largest remainders, so the four always sum to 100.
+Percentages replace counts for the reason districts use them: one count can be subtracted from another. `percentages` in [[app/serializers/user_legislator_term_score_resource.rb#UserLegislatorTermScoreResource]] and `voter_agreement_percent` take their figures from [[app/lib/vote_comparison_privacy.rb#VoteComparisonPrivacy#rounded_percentages]], so the four always sum to 100 and the headline is rounded to the same step. The voter count that picks the step is the smallest distinct voter count among the rows behind the score, because the figure stands on its thinnest term. Six agreed, three disagreed and one without a legislator vote among ten voters send 60, 30, 10 and 0, and a headline of 70.
 
 No `voters_needed` is sent. The number of users behind a district score would show how few people in a small district take part, so every hidden legislator score reads the same.
 
@@ -96,6 +96,8 @@ A reader's own agreement with a legislator is their own record, so it keeps its 
 The lifetime score adds a legislator's terms together, and it is hidden unless every term in the sum has ten distinct voters.
 
 Distinct voters cannot be added across terms, because the same user may stand behind several. Ten voters in one term and four in another are somewhere between ten and fourteen people, and the four-voter term's share of the sum is the small group the minimum protects.
+
+The unanimous test runs on the summed counters, so a lifetime figure whose terms all agreed, or all disagreed, is hidden like a single-term score.
 
 A term whose row has no distinct voters is left out of both the sum and the check. Such a row is either empty or was written before a full recompute, when its counters still covered bills under the minimum. `group_score` therefore builds the published figure from the same rows the minimum is checked against, so stale counters never reach a percentage, and one empty early term cannot hide a legislator's lifetime figure for good. When every row is of that kind the figure is hidden.
 
@@ -131,7 +133,7 @@ The web draws a district, locale or lifetime agreement score in two places: the 
 
 Each asks the same helper the bill page asks. A suppressed score draws the no-number placeholder under its title, since a legislator score never carries `voters_needed`. A visible score draws its bars and labels from the percentage fields and reads no counter.
 
-A term tile's headline is agreement among the bills the legislator voted on: `voter_agreement_percent`, the Agreed share of Agreed plus Disagreed. The server works it out from the counters, because the rounded shares of all pairs lose it when most pairs have no legislator vote (3 agreed and 2 disagreed among 500 pairs send 1% and 0%, yet the headline is 60%). It is nil when the score is suppressed or when no pair was agreed or disagreed, and the tile then reads `--%`. The line below it gives the shares as sent.
+A term tile's headline is agreement among the bills the legislator voted on: `voter_agreement_percent`, the Agreed share of Agreed plus Disagreed. The server works it out from the counters, because the rounded shares of all pairs lose it when most pairs have no legislator vote (3 agreed and 2 disagreed among 500 pairs and ten voters send 10% and 10%, yet the headline is 60%). It is nil when the score is suppressed or when no pair was agreed or disagreed, and the tile then reads `--%`. The line below it gives the shares as sent.
 
 The reader's own chart and tile keep their counts: [[app/frontend/components/legislators/charts/VoterAgreementChart.tsx#VoterAgreementChart]] is untouched.
 

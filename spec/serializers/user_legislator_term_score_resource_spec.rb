@@ -36,6 +36,51 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         expect(score.keys).to match_array(percent_keys + %w[voter_agreement_percent legislator_id comparison_suppressed])
       end
 
+      # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+      it "withholds a score where every agreed or disagreed pair is on one side" do
+        create(family, legislator_term: term, distinct_voter_count: 10, count_agreed: 8, count_disagreed: 0)
+
+        score = current_term_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(true)
+        expect(score.values_at(*percent_keys)).to all(be_nil)
+        expect(score["voter_agreement_percent"]).to be_nil
+      end
+
+      # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+      it "sends percentages rounded to tens under 20 voters" do
+        create(family, legislator_term: term, distinct_voter_count: 10,
+          count_agreed: 6, count_disagreed: 3, count_no_legislator_vote: 1, count_legislator_abstained: 0)
+
+        score = current_term_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(false)
+        expect(score.values_at(*percent_keys)).to eq([60, 30, 10, 0])
+        expect(score["voter_agreement_percent"]).to eq(70)
+      end
+
+      # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+      it "sends percentages rounded to fives from 20 voters up" do
+        create(family, legislator_term: term, distinct_voter_count: 20,
+          count_agreed: 19, count_disagreed: 1)
+
+        score = current_term_score[family.to_s]
+
+        expect(score.values_at(*percent_keys)).to eq([95, 5, 0, 0])
+        expect(score["voter_agreement_percent"]).to eq(95)
+      end
+
+      # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+      it "keeps a score published when no pair was agreed or disagreed" do
+        create(family, legislator_term: term, distinct_voter_count: 10, count_no_legislator_vote: 10)
+
+        score = current_term_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(false)
+        expect(score.values_at(*percent_keys)).to eq([0, 0, 100, 0])
+        expect(score["voter_agreement_percent"]).to be_nil
+      end
+
       it "sends whole-number percentages that sum to 100 when ten distinct users stand behind the score" do
         create(family, legislator_term: term, distinct_voter_count: 10,
           count_agreed: 1, count_disagreed: 1, count_no_legislator_vote: 1, count_legislator_abstained: 0)
@@ -56,11 +101,11 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
 
         score = current_term_score[family.to_s]
 
-        expect(score.values_at("agreed_percent", "disagreed_percent")).to eq([1, 0])
+        expect(score.values_at("agreed_percent", "disagreed_percent")).to eq([10, 10])
         expect(score["voter_agreement_percent"]).to eq(60)
       end
 
-      it "sends the agreed share even when both rounded shares of all pairs are zero" do
+      it "sends the agreed share even when most pairs have no legislator vote" do
         create(family, legislator_term: term, distinct_voter_count: 10,
           count_agreed: 2, count_disagreed: 2, count_no_legislator_vote: 996)
 
@@ -95,30 +140,40 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         score = lifetime_score[family.to_s]
 
         expect(score["comparison_suppressed"]).to be(false)
-        expect(score["agreed_percent"]).to eq(75)
-        expect(score["disagreed_percent"]).to eq(25)
-        expect(score["voter_agreement_percent"]).to eq(75)
+        expect(score["agreed_percent"]).to eq(80)
+        expect(score["disagreed_percent"]).to eq(20)
+        expect(score["voter_agreement_percent"]).to eq(80)
+      end
+
+      it "withholds a lifetime figure that is unanimous" do
+        create(family, legislator_term: term, count_agreed: 30, distinct_voter_count: 10)
+        create(family, legislator_term: prior_term, count_agreed: 5, distinct_voter_count: 12)
+
+        score = lifetime_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(true)
+        expect(score.values_at(*percent_keys)).to all(be_nil)
       end
 
       it "leaves a term with no counted votes out of the lifetime check" do
-        create(family, legislator_term: term, count_agreed: 30, distinct_voter_count: 10)
+        create(family, legislator_term: term, count_agreed: 30, count_disagreed: 10, distinct_voter_count: 10)
         create(family, legislator_term: prior_term, distinct_voter_count: 0)
 
         score = lifetime_score[family.to_s]
 
         expect(score["comparison_suppressed"]).to be(false)
-        expect(score["agreed_percent"]).to eq(100)
+        expect(score["agreed_percent"]).to eq(80)
       end
 
       it "leaves a stale term's counters out of the published lifetime figure" do
-        create(family, legislator_term: term, count_agreed: 30, distinct_voter_count: 12)
+        create(family, legislator_term: term, count_agreed: 30, count_disagreed: 10, distinct_voter_count: 12)
         create(family, legislator_term: prior_term, count_disagreed: 8, distinct_voter_count: 0)
 
         score = lifetime_score[family.to_s]
 
         expect(score["comparison_suppressed"]).to be(false)
-        expect(score["agreed_percent"]).to eq(100)
-        expect(score["disagreed_percent"]).to eq(0)
+        expect(score["agreed_percent"]).to eq(80)
+        expect(score["disagreed_percent"]).to eq(20)
       end
 
       it "suppresses the lifetime figure when every term is stale" do

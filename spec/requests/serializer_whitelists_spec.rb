@@ -270,7 +270,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(term_entry["district_score"]["comparison_suppressed"]).to be(true)
       expect(term_entry["district_score"].values_at(*percent_keys, "voter_agreement_percent")).to all(be_nil)
       expect(term_entry["locale_score"]["comparison_suppressed"]).to be(false)
-      expect(term_entry["locale_score"].values_at(*percent_keys, "voter_agreement_percent")).to eq([75, 25, 0, 0, 75])
+      expect(term_entry["locale_score"].values_at(*percent_keys, "voter_agreement_percent")).to eq([80, 20, 0, 0, 80])
 
       expect(term_entry["correction_explanation"].keys).to match_array(
         %w[title body delta score_type]
@@ -416,8 +416,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       )
       expect(lifetime["legislator_locale_score"]).to eq(
         "legislator_id" => legislator.id,
-        "comparison_suppressed" => false, "agreed_percent" => 88, "disagreed_percent" => 9,
-        "no_legislator_vote_percent" => 3, "legislator_abstained_percent" => 0,
+        "comparison_suppressed" => false, "agreed_percent" => 80, "disagreed_percent" => 10,
+        "no_legislator_vote_percent" => 10, "legislator_abstained_percent" => 0,
         "voter_agreement_percent" => 90
       )
     end
@@ -470,8 +470,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       history_term = entry["legislator"]["terms"].find { |term_entry| term_entry["id"] == term.id }
       expect(history_term["district_score"]).to include("comparison_suppressed" => true, "agreed_percent" => nil)
       expect(history_term["locale_score"]).to include(
-        "comparison_suppressed" => false, "agreed_percent" => 75, "disagreed_percent" => 25,
-        "voter_agreement_percent" => 75
+        "comparison_suppressed" => false, "agreed_percent" => 80, "disagreed_percent" => 20,
+        "voter_agreement_percent" => 80
       )
     end
 

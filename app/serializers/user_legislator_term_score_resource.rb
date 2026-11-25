@@ -72,34 +72,30 @@ class UserLegislatorTermScoreResource < ApplicationResource
       counted_rows = rows.select { |row| row.distinct_voter_count.positive? }
       totals = counters(counted_rows)
       suppressed = comparison_suppressed?(counted_rows, totals)
+      voters = counted_rows.map(&:distinct_voter_count).min || 0
       {comparison_suppressed: suppressed}
-        .merge(suppressed ? PERCENT_KEY_BY_COUNTER.values.index_with { nil } : percentages(totals))
-        .merge(voter_agreement_percent: suppressed ? nil : voter_agreement_percent(totals))
+        .merge(suppressed ? PERCENT_KEY_BY_COUNTER.values.index_with { nil } : percentages(totals, voters))
+        .merge(voter_agreement_percent: suppressed ? nil : voter_agreement_percent(totals, voters))
     end
 
-    # Whole-number agreed share of agreed plus disagreed; nil when neither was counted.
-    def voter_agreement_percent(totals)
-      decided = totals[:count_agreed] + totals[:count_disagreed]
-      return nil if decided.zero?
-
-      (totals[:count_agreed] * 100.0 / decided).round
+    # Rounded agreed share of agreed plus disagreed; nil when neither was counted.
+    def voter_agreement_percent(totals, voters)
+      VoteComparisonPrivacy
+        .rounded_percentages({agreed: totals[:count_agreed], disagreed: totals[:count_disagreed]}, voters:)
+        &.fetch(:agreed)
     end
 
     # @lat: [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]
     def comparison_suppressed?(counted_rows, totals)
       totals.values.sum.zero? ||
-        counted_rows.any? { |row| row.distinct_voter_count < VoteComparisonPrivacy::MINIMUM_VOTERS }
+        counted_rows.any? { |row| row.distinct_voter_count < VoteComparisonPrivacy::MINIMUM_VOTERS } ||
+        VoteComparisonPrivacy.unanimous?(totals[:count_agreed], totals[:count_disagreed])
     end
 
-    # Whole numbers that sum to 100; the largest remainders take the leftover points.
-    def percentages(totals)
-      total = totals.values.sum
-      exact = totals.transform_values { |count| count * 100.0 / total }
-      floors = exact.transform_values(&:floor)
-      rounded_up = exact.keys.max_by(100 - floors.values.sum) { |counter| exact[counter] - floors[counter] }
-      PERCENT_KEY_BY_COUNTER.to_h do |counter, percent_key|
-        [percent_key, floors[counter] + (rounded_up.include?(counter) ? 1 : 0)]
-      end
+    # Percentages in steps of five or ten that sum to 100.
+    def percentages(totals, voters)
+      rounded = VoteComparisonPrivacy.rounded_percentages(totals, voters:) || {}
+      PERCENT_KEY_BY_COUNTER.to_h { |counter, percent_key| [percent_key, rounded.fetch(counter)] }
     end
   end
 end
