@@ -16,6 +16,7 @@ jest.mock("expo-haptics", () => ({
     impactAsync: jest.fn(async () => {}),
     ImpactFeedbackStyle: { Light: "Light" },
 }));
+jest.mock("expo-clipboard", () => ({ setStringAsync: jest.fn() }));
 jest.mock("expo-web-browser", () => ({
     openBrowserAsync: jest.fn(async () => ({ type: "dismiss" })),
 }));
@@ -25,8 +26,9 @@ jest.mock("../../src/api/client", () => ({
 }));
 
 import React from "react";
-import { Share, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import * as Clipboard from "expo-clipboard";
 import * as WebBrowser from "expo-web-browser";
 
 import { BillScreenTabs, type BillScreenTabsProps } from "../../src/components/BillScreenTabs";
@@ -254,18 +256,15 @@ describe("BillScreenTabs", () => {
             expect(screen.getByTestId("vote-panel")).toBeTruthy();
         });
 
-        test("hands the signed-in reader's invite link to the share sheet", () => {
-            const share = jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction" } as never);
+        test("copies the signed-in reader's invite link", async () => {
+            jest.mocked(Clipboard.setStringAsync).mockResolvedValue(true);
             renderTabs({ billScore: hiddenScore });
             openVotes();
 
             fireEvent.press(screen.getByTestId("vote-comparison-invite"));
 
-            expect(share).toHaveBeenCalledWith({
-                message: "https://app.example.test/invite/7/abc",
-                url: "https://app.example.test/invite/7/abc",
-            });
-            share.mockRestore();
+            expect(Clipboard.setStringAsync).toHaveBeenCalledWith("https://app.example.test/invite/7/abc");
+            expect(await screen.findByText("Invite link copied to clipboard.")).toBeTruthy();
         });
 
         test("treats a cached payload with no flag as suppressed", () => {

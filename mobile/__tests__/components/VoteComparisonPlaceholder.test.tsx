@@ -1,12 +1,14 @@
 // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
 import React from "react";
-import { Share } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { VoteComparisonPlaceholder } from "../../src/components/VoteComparisonPlaceholder";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 
 let mockCurrentUser: { id?: number; invite_url?: string | null } | null = null;
+
+jest.mock("expo-clipboard", () => ({ setStringAsync: jest.fn() }));
 
 jest.mock("../../src/hooks/useBootstrap", () => ({
     useBootstrap: () => ({ bootstrap: { current_user: mockCurrentUser } }),
@@ -19,10 +21,8 @@ const wrap = (ui: React.ReactElement) => render(<ThemeProvider initialMode="ligh
 describe("VoteComparisonPlaceholder", () => {
     beforeEach(() => {
         mockCurrentUser = { id: 7, invite_url: INVITE_URL };
-        jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction" } as never);
+        jest.mocked(Clipboard.setStringAsync).mockReset().mockResolvedValue(true);
     });
-
-    afterEach(() => jest.restoreAllMocks());
 
     test("says how many more users are needed and asks the reader to invite others", () => {
         wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
@@ -45,12 +45,27 @@ describe("VoteComparisonPlaceholder", () => {
         expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
     });
 
-    test("hands a signed-in reader's invite link to the share sheet", () => {
+    test("copies a signed-in reader's invite link and says it was copied", async () => {
+        wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
+
+        expect(screen.getByText("Copy invite link")).toBeTruthy();
+        expect(screen.queryByText("Invite link copied to clipboard.")).toBeNull();
+
+        fireEvent.press(screen.getByTestId("vote-comparison-invite"));
+
+        expect(Clipboard.setStringAsync).toHaveBeenCalledWith(INVITE_URL);
+        expect(await screen.findByText("Invite link copied to clipboard.")).toBeTruthy();
+    });
+
+    test("says nothing was copied when the clipboard refuses", async () => {
+        jest.mocked(Clipboard.setStringAsync).mockResolvedValue(false);
         wrap(<VoteComparisonPlaceholder votersNeeded={3} />);
 
         fireEvent.press(screen.getByTestId("vote-comparison-invite"));
 
-        expect(Share.share).toHaveBeenCalledWith({ message: INVITE_URL, url: INVITE_URL });
+        await screen.findByTestId("vote-comparison-invite");
+        expect(Clipboard.setStringAsync).toHaveBeenCalledWith(INVITE_URL);
+        expect(screen.queryByText("Invite link copied to clipboard.")).toBeNull();
     });
 
     test("shows no button for a signed-in reader with no invite link", () => {

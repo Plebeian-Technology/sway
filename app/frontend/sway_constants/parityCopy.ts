@@ -70,7 +70,6 @@ export const PARITY_COPY = {
                     : `Visual comparisons will be shown when ${votersNeeded} more users have voted.`,
             invitePrompt: "Invite others by sharing Sway",
             copyInviteLink: "Copy invite link",
-            shareInviteLink: "Share invite link",
             inviteLinkCopied: "Invite link copied to clipboard.",
             signUp: "Sign up",
             notEnoughVotes: "Not enough votes yet",

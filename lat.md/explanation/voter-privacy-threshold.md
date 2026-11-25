@@ -114,7 +114,7 @@ The phone's Votes tab shows the placeholder in place of the score bar and the di
 
 Above the minimum, [[mobile/src/utils/districtVotes.ts#selectDistrictVotes]] keeps only districts that carry percentages and are neither hidden nor at-large. A reader district with no row becomes a suppressed row, which the panel draws as "Not enough votes yet" with no sentence about the majority.
 
-[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] reads the invite link from the bootstrap response's current user. The phone has no clipboard module, so the button hands the link to the system share sheet, which offers Copy among its actions. A signed-out reader gets the sign-in prompt the vote buttons use.
+[[mobile/src/components/VoteComparisonPlaceholder.tsx#VoteComparisonPlaceholder]] reads the invite link from the bootstrap response's current user. The button copies the link with `expo-clipboard`, as the web button copies it, and prints "Invite link copied to clipboard." under itself once the copy succeeds. A signed-out reader gets the sign-in prompt the vote buttons use.
 
 ## The mobile legislator screens draw percentages or the placeholder
 

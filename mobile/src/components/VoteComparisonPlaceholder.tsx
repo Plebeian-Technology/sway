@@ -1,6 +1,7 @@
 // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
 import React, { useState } from "react";
-import { Share, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import * as Clipboard from "expo-clipboard";
 
 import { AuthPromptSheet } from "./AuthPromptSheet";
 import { Pressable } from "./ui/Pressable";
@@ -18,6 +19,7 @@ const BUTTON_TEXT_CLASS = "text-sm font-open-sans-semibold text-accent-light dar
 export function VoteComparisonPlaceholder({ votersNeeded, testID }: VoteComparisonPlaceholderProps) {
     const { bootstrap } = useBootstrap();
     const [authPromptVisible, setAuthPromptVisible] = useState(false);
+    const [inviteLinkCopied, setInviteLinkCopied] = useState(false);
     const currentUser = bootstrap?.current_user ?? null;
     const inviteUrl = currentUser?.invite_url;
 
@@ -39,15 +41,22 @@ export function VoteComparisonPlaceholder({ votersNeeded, testID }: VoteComparis
                 <Pressable
                     testID="vote-comparison-invite"
                     variant="ghost"
-                    accessibilityLabel={PARITY_COPY.bill.voteComparisonPlaceholder.shareInviteLink}
+                    accessibilityLabel={PARITY_COPY.bill.voteComparisonPlaceholder.copyInviteLink}
                     onPress={() => {
-                        Share.share({ message: inviteUrl, url: inviteUrl }).catch(() => {});
+                        Clipboard.setStringAsync(inviteUrl)
+                            .then(setInviteLinkCopied)
+                            .catch(() => {});
                     }}
                 >
                     <Text className={BUTTON_TEXT_CLASS}>
-                        {PARITY_COPY.bill.voteComparisonPlaceholder.shareInviteLink}
+                        {PARITY_COPY.bill.voteComparisonPlaceholder.copyInviteLink}
                     </Text>
                 </Pressable>
+            ) : null}
+            {inviteLinkCopied ? (
+                <Text accessibilityLiveRegion="polite" className={MESSAGE_CLASS}>
+                    {PARITY_COPY.bill.voteComparisonPlaceholder.inviteLinkCopied}
+                </Text>
             ) : null}
             {currentUser ? null : (
                 <>
