@@ -50,11 +50,12 @@ class ScoreUpdaterService
       # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
       ScoreRecomputeService.recompute_district_scores!([bill.id], legislators: user.legislators(sway_locale))
       # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
+      eligible_bill_ids = ScoreRecomputeService.bill_ids_with_minimum_voters(sway_locale)
       sway_locale.legislators.each do |legislator|
         legislator_term = legislator.active_term
         next if legislator_term.nil?
 
-        ScoreRecomputeService.recompute_legislator_locale!(legislator_term)
+        ScoreRecomputeService.recompute_legislator_locale!(legislator_term, eligible_bill_ids:)
       end
     end
 

@@ -61,7 +61,7 @@ class ScoreRecomputeService
     end
 
     # @lat: [[score-recompute-service-overview#Why recompute_legislator_locale! reads the locale off the legislator, not through districts]]
-    def recompute_legislator_locale!(legislator_term)
+    def recompute_legislator_locale!(legislator_term, eligible_bill_ids: nil)
       legislator = legislator_term.legislator
       sway_locale = legislator.sway_locale
       locale_user_ids =
@@ -77,7 +77,7 @@ class ScoreRecomputeService
             locale_user_ids,
             legislator_term,
             sway_locale,
-            bill_ids_with_minimum_voters(sway_locale)
+            eligible_bill_ids || bill_ids_with_minimum_voters(sway_locale)
           )
         )
     end
@@ -111,6 +111,15 @@ class ScoreRecomputeService
       return :legislator_abstained if legislator_support == LegislatorVote::Support::ABSTAIN
 
       (user_support == legislator_support) ? :agreed : :disagreed
+    end
+
+    def bill_ids_with_minimum_voters(sway_locale)
+      BillScore
+        .joins(:bill)
+        .where(bills: {sway_locale_id: sway_locale.id})
+        .pluck(:bill_id, :for, :against)
+        .reject { |_bill_id, for_count, against_count| VoteComparisonPrivacy.withheld?(for_count, against_count) }
+        .to_set(&:first)
     end
 
     private
@@ -167,15 +176,6 @@ class ScoreRecomputeService
           .values
           .flatten(1)
       count_by_class(pairs).merge(distinct_voter_count: pairs.map(&:first).uniq.size)
-    end
-
-    def bill_ids_with_minimum_voters(sway_locale)
-      BillScore
-        .joins(:bill)
-        .where(bills: {sway_locale_id: sway_locale.id})
-        .pluck(:bill_id, :for, :against)
-        .reject { |_bill_id, for_count, against_count| VoteComparisonPrivacy.withheld?(for_count, against_count) }
-        .to_set(&:first)
     end
 
     # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]

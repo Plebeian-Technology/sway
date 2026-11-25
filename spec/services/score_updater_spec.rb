@@ -201,6 +201,27 @@ RSpec.describe ScoreUpdaterService do
       expect([lds_g1.count_agreed, lds_g1.count_disagreed, lds_g1.count_no_legislator_vote, lds_g1.count_legislator_abstained]).to eql([1, 0, 0, 0])
     end
 
+    it "M-U-ELIGIBLE: a vote computes the locale's eligible bill ids once, however many legislators the locale has" do
+      sway_locale = create(:sway_locale)
+      district = create(:district, sway_locale:)
+      legislators = create_list(:legislator, 3, district:)
+      terms = legislators.map { |legislator| create(:legislator_term, legislator:, district:) }
+      user = create(:user)
+      create(:user_legislator, user:, legislator: legislators.first)
+      bill = create(:bill, sway_locale:, legislator: legislators.first)
+      legislators.each { |legislator| create(:legislator_vote, bill:, legislator:, support: LegislatorVote::Support::FOR) }
+      user_vote = create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
+      allow(ScoreRecomputeService).to receive(:bill_ids_with_minimum_voters).and_call_original
+
+      ScoreUpdaterService.new(user_vote).call
+
+      expect(ScoreRecomputeService).to have_received(:bill_ids_with_minimum_voters).once
+      terms.each do |term|
+        score = LegislatorLocaleScore.find_by!(legislator_term: term)
+        expect([score.count_agreed, score.count_disagreed, score.count_no_legislator_vote, score.count_legislator_abstained]).to eql([1, 0, 0, 0])
+      end
+    end
+
     # The recompute starts from scratch every time, so running the service again
     # for the same vote — a Solid Queue retry, for example — gives identical
     # rows and counts nothing twice.
