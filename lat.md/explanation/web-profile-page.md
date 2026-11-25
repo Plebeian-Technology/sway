@@ -22,7 +22,7 @@ The flag travels as the page's own `can_manage_api_keys` prop rather than a fiel
 
 The Delete Account button asks for confirmation in the shared confirm dialog, naming what is lost, then sends `DELETE /users/:id` with Inertia for the reader's own id.
 
-[[identity-and-access#Why UsersController#destroy revokes devices before cascading account deletion|The destroy action]] refuses any other id, revokes mobile devices, signs the browser out and redirects to the public home page with history cleared. On success the page also runs [[app/frontend/hooks/authentication/prepareIdentityChange.ts#clearIdentityCaches]], the same cache purge an identity change uses, so no page data from the deleted account stays in the tab. The dialog copy matches the mobile delete sheet ([[mobile-profile-and-delete-account-screens#DeleteAccountScreen]]).
+[[identity-and-access#Why UsersController#destroy revokes devices before cascading account deletion|The destroy action]] refuses any other id, revokes mobile devices, signs the browser out and redirects to the public home page with history cleared. When the account is gone the page also runs [[app/frontend/hooks/authentication/prepareIdentityChange.ts#clearIdentityCaches]], the same cache purge an identity change uses, so no page data from the deleted account stays in the tab. A refused delete also lands as a successful Inertia visit, back on the Profile page with an alert, so the page purges only when the returned page no longer names the same signed-in user; a refusal keeps the reader's caches and local drafts. The dialog copy matches the mobile delete sheet ([[mobile-profile-and-delete-account-screens#DeleteAccountScreen]]).
 
 ## Signing out every device from the web
 

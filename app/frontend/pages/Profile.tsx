@@ -9,6 +9,7 @@ import { formatPhone } from "app/frontend/sway_utils/phone";
 import { Link, router } from "@inertiajs/react";
 import { Bell, ChevronRight, KeyRound, KeySquare, MapPin, Trash, UserRound, Users, UserX } from "lucide-react";
 import { useCallback } from "react";
+import { sway } from "sway";
 
 interface IAccountLink {
     href: string;
@@ -44,7 +45,12 @@ const Profile: React.FC<IProps> = ({ can_manage_api_keys }) => {
         if (!confirmed) return;
 
         // @lat: [[web-profile-page#Web profile page#Deleting the account from the web]]
-        router.delete(ROUTES.user(user.id), { onSuccess: clearIdentityCaches });
+        router.delete(ROUTES.user(user.id), {
+            onSuccess: (page) => {
+                const signedInUser = page.props.user as sway.IUser | null | undefined;
+                if (signedInUser?.id !== user.id) clearIdentityCaches();
+            },
+        });
     }, [confirm, user.id]);
 
     const handleSignOutAllDevices = useCallback(async () => {

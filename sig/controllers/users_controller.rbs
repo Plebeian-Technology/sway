@@ -1,11 +1,14 @@
 class UsersController < ApplicationController
   SIGNED_OUT_ALL_DEVICES_NOTICE: String
+  ACCOUNT_NOT_DELETABLE_MESSAGE: String
 
   def destroy: -> untyped
 
   def sign_out_all_devices: -> untyped
 
   private
+
+  def render_not_deletable: -> untyped
 
   def render_forbidden_or_redirect: -> untyped
 end

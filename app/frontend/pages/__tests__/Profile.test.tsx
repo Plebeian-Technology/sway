@@ -9,6 +9,10 @@ const inertia = vi.hoisted(() => ({
     },
 }));
 
+const identity = vi.hoisted(() => ({ clearIdentityCaches: vi.fn<() => void>() }));
+
+vi.mock("app/frontend/hooks/authentication/prepareIdentityChange", () => identity);
+
 vi.mock("@inertiajs/react", () => ({
     usePage: inertia.usePage,
     router: inertia.router,
@@ -23,6 +27,7 @@ const render = (ui: React.ReactElement) => rtlRender(<ConfirmProvider>{ui}</Conf
 describe("Profile", () => {
     beforeEach(() => {
         inertia.router.delete.mockReset();
+        identity.clearIdentityCaches.mockReset();
         inertia.router.post.mockReset();
         inertia.usePage.mockReturnValue({
             props: { user: { id: 7, full_name: "Ada Lovelace", phone: "4105550123" } },
@@ -107,6 +112,31 @@ describe("Profile", () => {
 
             await vi.waitFor(() => expect(inertia.router.delete).toHaveBeenCalledTimes(1));
             expect(inertia.router.delete.mock.calls[0][0]).toBe("/users/7");
+        });
+
+        const confirmAndDelete = async () => {
+            render(<Profile can_manage_api_keys={false} />);
+            fireEvent.click(screen.getByRole("button", { name: "Delete Account" }));
+            const dialog = screen.getByRole("dialog", { name: "Delete account" });
+            fireEvent.click(within(dialog).getByRole("button", { name: "Delete Account" }));
+            await vi.waitFor(() => expect(inertia.router.delete).toHaveBeenCalledTimes(1));
+            return inertia.router.delete.mock.calls[0][1] as { onSuccess: (page: unknown) => void };
+        };
+
+        it("clears the browser's identity caches once the account is gone", async () => {
+            const { onSuccess } = await confirmAndDelete();
+
+            onSuccess({ props: { user: null } });
+
+            expect(identity.clearIdentityCaches).toHaveBeenCalledTimes(1);
+        });
+
+        it("keeps the identity caches when the server refuses and the same user is still signed in", async () => {
+            const { onSuccess } = await confirmAndDelete();
+
+            onSuccess({ props: { user: { id: 7 } } });
+
+            expect(identity.clearIdentityCaches).not.toHaveBeenCalled();
         });
     });
 
