@@ -84,6 +84,20 @@ RSpec.describe "Public::OrganizationsController", type: :request do
         expect(org_names_for(org_search: "a_b")).to contain_exactly("a_b Group")
       end
 
+      it "ignores org_search sent as an array or a hash instead of failing" do
+        create(:organization, name: "Alpha", sway_locale: sway_locale)
+        create(:organization, name: "Beta", sway_locale: sway_locale)
+
+        ["org_search[]=a", "org_search[name]=a"].each do |query|
+          get "/public/organizations?#{query}", headers: {"Accept" => "application/json"}
+          body = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to have_http_status(:ok)
+          expect(body[:organizations].pluck(:name)).to contain_exactly("Alpha", "Beta")
+          expect(body[:applied_filters][:org_search]).to be_nil
+        end
+      end
+
       it "echoes the search text in applied_filters, nil when absent" do
         get "/public/organizations", params: {org_search: "hous"}, headers: {"Accept" => "application/json"}
         expect(JSON.parse(response.body, symbolize_names: true)[:applied_filters][:org_search]).to eq("hous")

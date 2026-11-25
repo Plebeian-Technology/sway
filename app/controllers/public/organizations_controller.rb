@@ -15,7 +15,7 @@ module Public
       scope = scope.where(sway_locale_id: filter_locale_id) if filter_locale_id.present?
 
       # @lat: [[public-organizations-endpoint#Why the name search escapes its own wildcards]]
-      org_search = params[:org_search].presence
+      org_search = params[:org_search].presence if params[:org_search].is_a?(String)
       if org_search
         pattern = "%#{Organization.sanitize_sql_like(org_search)}%"
         scope = scope.where(Organization.arel_table[:name].matches(pattern, "\\"))
