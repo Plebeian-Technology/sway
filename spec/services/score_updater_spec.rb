@@ -251,6 +251,38 @@ RSpec.describe ScoreUpdaterService do
     end
   end
 
+  # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
+  describe "a vote outside a district" do
+    before { stub_const("VoteComparisonPrivacy::MINIMUM_VOTERS", 10) }
+
+    it "recomputes the district score of every district with a tally on the bill" do
+      sway_locale = create(:sway_locale)
+      district_four = create(:district, sway_locale:, name: "#{sway_locale.region_code}4")
+      district_five = create(:district, sway_locale:, name: "#{sway_locale.region_code}5")
+      member = create(:legislator, district: district_four)
+      term = create(:legislator_term, legislator: member, district: district_four)
+      neighbour = create(:legislator, district: district_five)
+      create(:legislator_term, legislator: neighbour, district: district_five)
+      bill = create(:bill, sway_locale:, legislator: member)
+      create(:legislator_vote, bill:, legislator: member, support: LegislatorVote::Support::FOR)
+      10.times do
+        user = create(:user)
+        create(:user_legislator, user:, legislator: member)
+        create(:user_vote, user:, bill:, support: LegislatorVote::Support::FOR)
+      end
+      ScoreRecomputeService.recompute_bill!(bill)
+      ScoreRecomputeService.recompute_legislator_district!(term)
+      expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(10)
+
+      outsider = create(:user)
+      create(:user_legislator, user: outsider, legislator: neighbour)
+      user_vote = create(:user_vote, user: outsider, bill:, support: LegislatorVote::Support::FOR)
+      ScoreUpdaterService.new(user_vote).call
+
+      expect(LegislatorDistrictScore.find_by!(legislator_term: term).distinct_voter_count).to eq(0)
+    end
+  end
+
   describe "ActionCable broadcast" do
     include_context "Setup"
 

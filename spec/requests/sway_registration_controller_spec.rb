@@ -1826,13 +1826,15 @@ RSpec.describe "/registration", type: :request do
         end
         senator = senator_link.legislator
         senator.active_term.destroy!
-        allow(ScoreRecomputeService).to receive(:recompute_legislator!)
+        allow(ScoreRecomputeService).to receive(:recompute_legislator_locale!)
+        allow(ScoreRecomputeService).to receive(:recompute_legislator_district!)
 
         stub_census(status: 200, body: census_district_body("04"))
         post_address(richmond_address)
 
         expect(response).to have_http_status(:ok)
-        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator!).with(nil)
+        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator_locale!).with(nil)
+        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator_district!).with(nil)
       end
     end
 

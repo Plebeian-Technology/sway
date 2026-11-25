@@ -40,11 +40,20 @@ The three `ScoreRecomputeService` calls in `#call` each pick their term and thei
   `legislator_term.nil?` specifically means this person held no office on
   the day of the bill's vote — before their first term or after their
   last one ended — so it is not theirs to be scored on.
-- **`recompute_legislator_district!`** only counts the voter's own
-  constituents, so this vote moves the score for the voter's own
-  legislators and nobody else's. It always uses the legislator's CURRENT
-  term (`legislator.active_term`) — a single user vote never rewrites a
-  legislator's score for a term that has already ended.
+- **`recompute_legislator_district!`** counts only a legislator's own
+  constituents, but whether it may count a bill depends on the voters
+  outside that district too
+  ([[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]).
+  One vote can therefore admit or drop the bill for a district the voter
+  does not live in, so `recompute_district_scores!` in
+  [[app/services/score_recompute_service.rb#ScoreRecomputeService]]
+  recomputes the voter's own legislators and every legislator serving a
+  district with a tally row on the bill. That is at most one tally per
+  legislator in the locale, the price the locale scores already pay. It
+  always uses the legislator's CURRENT term: a single user vote never
+  rewrites a legislator's score for a term that has already ended. The
+  address-change and registration paths call the same method for the
+  bills the user voted on.
 - **`recompute_legislator_locale!`** counts EVERY user in the legislator's
   locale, not only their own constituents, because this vote gets
   compared against how EVERY legislator in the locale voted on the same

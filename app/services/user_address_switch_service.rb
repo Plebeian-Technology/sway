@@ -162,13 +162,16 @@ class UserAddressSwitchService
     new_legislators = resolved_legislators.select { |l| new_legislator_ids.include?(l.id) }
 
     # @lat: [[voter-privacy-threshold#Bill tallies are recomputed before the legislator scores that read them]]
-    Bill.where(id: @user.user_votes.select(:bill_id)).find_each do |bill|
+    bill_ids = @user.user_votes.pluck(:bill_id)
+    Bill.where(id: bill_ids).find_each do |bill|
       ScoreRecomputeService.recompute_bill!(bill)
     end
 
-    (stale_legislators + new_legislators).uniq(&:id).each do |legislator|
+    moved_legislators = (stale_legislators + new_legislators).uniq(&:id)
+    moved_legislators.each do |legislator|
       term = legislator.active_term
-      ScoreRecomputeService.recompute_legislator!(term) if term
+      ScoreRecomputeService.recompute_legislator_locale!(term) if term
     end
+    ScoreRecomputeService.recompute_district_scores!(bill_ids, legislators: moved_legislators)
   end
 end

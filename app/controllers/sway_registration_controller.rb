@@ -152,13 +152,15 @@ class SwayRegistrationController < ApplicationController
     return if stale_legislators.empty?
 
     # @lat: [[voter-privacy-threshold#Bill tallies are recomputed before the legislator scores that read them]]
-    Bill.where(id: u.user_votes.select(:bill_id)).find_each do |bill|
+    bill_ids = u.user_votes.pluck(:bill_id)
+    Bill.where(id: bill_ids).find_each do |bill|
       ScoreRecomputeService.recompute_bill!(bill)
     end
     stale_legislators.each do |legislator|
       term = legislator.active_term
-      ScoreRecomputeService.recompute_legislator!(term) if term
+      ScoreRecomputeService.recompute_legislator_locale!(term) if term
     end
+    ScoreRecomputeService.recompute_district_scores!(bill_ids, legislators: stale_legislators)
   end
 
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
