@@ -37,6 +37,16 @@ describe("public/Terms", () => {
         expect(screen.getByText(/new Bill of the Month alerts/)).toBeTruthy();
     });
 
+    it("says readers track organizations and that Sway records their positions", () => {
+        render(<Terms />);
+        expect(screen.getByText(/and track organizations and representatives you care about/)).toBeTruthy();
+        expect(screen.getByText(/or for tracking organizations and representatives/)).toBeTruthy();
+        expect(
+            screen.getByText(/notices when Sway records a position on a bill from an organization you track/),
+        ).toBeTruthy();
+        expect(screen.queryByText(/follow/)).toBeNull();
+    });
+
     it("carries no draft marker", () => {
         render(<Terms />);
         expect(screen.queryByText(/Draft/)).toBeNull();

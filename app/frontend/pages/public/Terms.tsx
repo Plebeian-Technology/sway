@@ -15,14 +15,14 @@ const Terms: React.FC = () => {
 
                 <h2 className="mt-8 text-lg font-black text-foreground">Acceptable use</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                    Use Sway to inform yourself about legislation, cast your own votes, and follow organizations and
+                    Use Sway to inform yourself about legislation, cast your own votes, and track organizations and
                     representatives you care about. Do not use Sway to impersonate someone else, submit votes on another
                     person&apos;s behalf, or interfere with the platform&apos;s operation.
                 </p>
 
                 <h2 className="mt-8 text-lg font-black text-foreground">Sway is free</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                    Sway is free to use. We do not charge for an account, for voting, or for following organizations and
+                    Sway is free to use. We do not charge for an account, for voting, or for tracking organizations and
                     representatives.
                 </p>
 
@@ -36,7 +36,7 @@ const Terms: React.FC = () => {
                 <h2 className="mt-8 text-lg font-black text-foreground">Messaging terms</h2>
                 <p className="mt-3 text-sm text-muted-foreground">
                     If you opt in to text alerts, Sway sends about 1-3 messages per week: new Bill of the Month alerts,
-                    voting reminders, and notices when an organization you follow takes a position on a bill.
+                    voting reminders, and notices when Sway records a position on a bill from an organization you track.
                     Msg&amp;data rates may apply. Reply STOP to cancel, or HELP for help. Opting into SMS is optional
                     and never required to use Sway. Full detail:{" "}
                     <Link href="/sms" className="underline">
