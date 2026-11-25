@@ -63,7 +63,24 @@ describe("a link received before the main screens", () => {
         });
     };
 
+    const sessionLoading = () => {
+        mockUseSession.mockReturnValue({ isAuthenticated: false, loading: true });
+        mockUseUserProfile.mockReturnValue({ user: null, loading: false });
+    };
+
+    const profileLoading = () => {
+        mockUseSession.mockReturnValue({ isAuthenticated: true, loading: false });
+        mockUseUserProfile.mockReturnValue({ user: null, loading: true });
+    };
+
     const receiveLink = (url: string) => act(() => urlListeners.forEach((listener) => listener({ url })));
+
+    type NavState = { routes: { name: string; state?: NavState }[] };
+    const countRoutes = (state: NavState | undefined, name: string): number =>
+        (state?.routes ?? []).reduce(
+            (count, route) => count + (route.name === name ? 1 : 0) + countRoutes(route.state, name),
+            0,
+        );
 
     const expectBillDetail = () =>
         waitFor(() =>
@@ -90,6 +107,82 @@ describe("a link received before the main screens", () => {
         jest.spyOn(Linking, "getInitialURL").mockResolvedValue(BILL_LINK);
         const { rerender } = render(app());
         await screen.findByTestId("auth-screen");
+
+        signedIn(true);
+        rerender(app());
+
+        await expectBillDetail();
+    });
+
+    it("opens the link that launched the app after the session loads and the person signs in", async () => {
+        jest.spyOn(Linking, "getInitialURL").mockResolvedValue(BILL_LINK);
+        sessionLoading();
+        const { rerender } = render(app());
+        await screen.findByTestId("root-navigator-loading");
+
+        signedOut();
+        rerender(app());
+        await screen.findByTestId("auth-screen");
+
+        signedIn(true);
+        rerender(app());
+
+        await expectBillDetail();
+    });
+
+    it("opens the link that launched the app after sign-in while the profile loads", async () => {
+        jest.spyOn(Linking, "getInitialURL").mockResolvedValue(BILL_LINK);
+        const { rerender } = render(app());
+        await screen.findByTestId("auth-screen");
+
+        profileLoading();
+        rerender(app());
+        await screen.findByTestId("root-navigator-loading");
+
+        signedIn(true);
+        rerender(app());
+
+        await expectBillDetail();
+    });
+
+    it("opens the link that launched the app once when the person is already signed in", async () => {
+        jest.spyOn(Linking, "getInitialURL").mockResolvedValue(BILL_LINK);
+        sessionLoading();
+        const { rerender } = render(app());
+        await screen.findByTestId("root-navigator-loading");
+
+        signedIn(true);
+        rerender(app());
+
+        await expectBillDetail();
+        expect(countRoutes(navRef.current?.getRootState() as NavState, "BillDetail")).toBe(1);
+    });
+
+    it("forgets the link that launched the app when the person signs out before finishing", async () => {
+        jest.spyOn(Linking, "getInitialURL").mockResolvedValue(BILL_LINK);
+        signedIn(false);
+        const { rerender } = render(app());
+        await screen.findByTestId("address-screen");
+
+        signedOut();
+        rerender(app());
+        await screen.findByTestId("auth-screen");
+
+        signedIn(true);
+        rerender(app());
+
+        await waitFor(() => expect(navRef.current?.getCurrentRoute()).toBeDefined());
+        expect(navRef.current?.getCurrentRoute()?.name).not.toBe("BillDetail");
+    });
+
+    it("opens a link received while signed out after sign-in while the profile loads", async () => {
+        const { rerender } = render(app());
+        await screen.findByTestId("auth-screen");
+        receiveLink(BILL_LINK);
+
+        profileLoading();
+        rerender(app());
+        await screen.findByTestId("root-navigator-loading");
 
         signedIn(true);
         rerender(app());
@@ -180,6 +273,15 @@ describe("a link received before the main screens", () => {
             await screen.findByTestId("auth-screen");
 
             expect(inviteAttribution.get()).toBeNull();
+        });
+
+        it("is stored from the link that launched the app while signed out", async () => {
+            jest.spyOn(Linking, "getInitialURL").mockResolvedValue("https://sway.vote/s/abc123");
+
+            render(app());
+            await screen.findByTestId("auth-screen");
+
+            expect(inviteAttribution.get()).toBe("s:abc123");
         });
 
         it("is kept when the app starts signed out, so a launch invite link still credits its inviter", async () => {

@@ -22,6 +22,13 @@ export const subscribeToLinks = (listener: OpenLink): (() => void) => {
     };
 };
 
+// @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]
+export const keepLaunchLink = (url: string): string | null => {
+    if (mainScreensShowing) return url;
+    pendingUrl = url;
+    return null;
+};
+
 export const discardPendingDeepLink = (): void => {
     pendingUrl = null;
 };
@@ -31,18 +38,23 @@ export function usePendingDeepLink(mainScreensReady: boolean, isAuthenticated: b
     const wasAuthenticated = useRef(isAuthenticated);
 
     useEffect(() => {
-        if (!isAuthenticated) pendingUrl = null;
-        // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#Signing out forgets the stored invite]]
-        if (wasAuthenticated.current && !isAuthenticated) inviteAttribution.clear();
+        if (wasAuthenticated.current && !isAuthenticated) {
+            pendingUrl = null;
+            // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#Signing out forgets the stored invite]]
+            inviteAttribution.clear();
+        }
         wasAuthenticated.current = isAuthenticated;
     }, [isAuthenticated]);
 
     useEffect(() => {
         mainScreensShowing = mainScreensReady;
-        if (!mainScreensReady || pendingUrl === null) return;
-
-        const url = pendingUrl;
-        pendingUrl = null;
-        openLink?.(url);
+        if (mainScreensReady && pendingUrl !== null) {
+            const url = pendingUrl;
+            pendingUrl = null;
+            openLink?.(url);
+        }
+        return () => {
+            mainScreensShowing = false;
+        };
     }, [mainScreensReady]);
 }

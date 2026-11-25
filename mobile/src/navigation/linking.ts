@@ -1,9 +1,13 @@
 import { getStateFromPath, type LinkingOptions } from "@react-navigation/native";
-import { discardPendingDeepLink, subscribeToLinks } from "./pendingDeepLink";
+import { Linking } from "react-native";
+import { discardPendingDeepLink, keepLaunchLink, subscribeToLinks } from "./pendingDeepLink";
 import type { RootParamList } from "./types";
 import { inviteAttribution } from "../state/inviteAttribution";
 
 const LINK_SAFE = /^[A-Za-z0-9_-]+$/;
+const PREFIXES = ["https://sway.vote", "https://app.sway.vote", "sway://"];
+// ms
+const LAUNCH_LINK_TIMEOUT_MS = 150;
 
 // @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
 const inviteAttributionKeyFor = (path: string): string | null => {
@@ -16,9 +20,26 @@ const inviteAttributionKeyFor = (path: string): string | null => {
     return null;
 };
 
+const isInviteLink = (url: string): boolean => {
+    const prefix = PREFIXES.find((candidate) => url.startsWith(candidate));
+    return prefix !== undefined && inviteAttributionKeyFor(url.slice(prefix.length)) !== null;
+};
+
+const launchUrl = (): Promise<string | null> =>
+    Promise.race([
+        Linking.getInitialURL(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), LAUNCH_LINK_TIMEOUT_MS)),
+    ]);
+
 // @lat: [[well-known-controller-notes#Mobile: linking.ts]]
 export const linking: LinkingOptions<RootParamList> = {
-    prefixes: ["https://sway.vote", "https://app.sway.vote", "sway://"],
+    prefixes: PREFIXES,
+    // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]
+    async getInitialURL() {
+        const url = await launchUrl();
+        if (url === null || isInviteLink(url)) return url;
+        return keepLaunchLink(url);
+    },
     subscribe: subscribeToLinks,
     // @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
     getStateFromPath(path, options) {
