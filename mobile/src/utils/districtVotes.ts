@@ -39,10 +39,6 @@ export type DistrictMajority = "for" | "against" | "tie";
 export const isVoteComparisonSuppressed = (score: object | null | undefined): boolean =>
     (score as { comparison_suppressed?: boolean | null } | null | undefined)?.comparison_suppressed !== false;
 
-const countFormatter = new Intl.NumberFormat("en-US");
-
-export const formatVoteCount = (count: number): string => countFormatter.format(count);
-
 const toNames = (value: unknown): string[] =>
     Array.isArray(value)
         ? value.flatMap((name) => (typeof name === "string" && name.trim() !== "" ? [name.trim()] : []))

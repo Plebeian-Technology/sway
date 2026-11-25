@@ -1,7 +1,6 @@
 // @lat: [[mobile-bill-surface-components-design#DistrictVotesPanel]]
 import {
     districtMajority,
-    formatVoteCount,
     isVoteComparisonSuppressed,
     representativesText,
     selectDistrictVotes,
@@ -112,13 +111,6 @@ describe("selectDistrictVotes", () => {
                 expect(result.rows.some((r) => r.isReaderDistrict)).toBe(false);
             }
         });
-    });
-});
-
-describe("formatVoteCount", () => {
-    test("groups thousands", () => {
-        expect(formatVoteCount(1234)).toBe("1,234");
-        expect(formatVoteCount(42)).toBe("42");
     });
 });
 

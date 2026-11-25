@@ -6,7 +6,7 @@ A number about how other users voted reaches a reader only when at least ten dis
 
 With two voters on a bill, each one reads the other's position off the tally. The minimum exists to stop that inference in small groupings.
 
-Two things sit outside the threat by decision. A reader who watches an exact total refresh sees each new vote's direction. District sizes can be worked out from percentages over time or from public records. Neither identifies a voter inside a small group, so neither is defended.
+Two things sit outside the threat by decision. A reader who watches a percentage under 20 voters refresh can still see some single votes move it, because rounding to 10 points hides few of them there ([[voter-privacy-threshold#Percentages are rounded to steps and a unanimous split is withheld]]). District sizes can be worked out from percentages over time or from public records. Neither identifies a voter inside a small group, so neither is defended.
 
 ## Percentages are rounded to steps and a unanimous split is withheld
 
