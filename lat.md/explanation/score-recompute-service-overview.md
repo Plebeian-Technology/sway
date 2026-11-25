@@ -49,7 +49,7 @@ Whether a bill falls inside the term is decided by `LegislatorTerm.covering` rat
 
 District and locale scores go through `tally_group_agreement`, which drops bills under the ten-voter minimum and stores how many distinct users remain. [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]] gives the reason.
 
-The column defaults to zero, so a row written before the column existed reads as hidden. The deploy that adds the column therefore includes one run of `sway:scores:recompute_all`, which rewrites every term's row with its real count.
+The column defaults to zero, so a row written before the column existed reads as hidden: alone it shows the placeholder, and in a lifetime sum it adds none of its counters ([[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]). The deploy that adds the column therefore includes one run of `sway:scores:recompute_all`, which rewrites every term's row with its real count.
 
 ## Why recompute_legislator_locale! reads the locale off the legislator, not through districts
 

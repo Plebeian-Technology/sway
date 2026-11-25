@@ -114,7 +114,7 @@ class UserLegislatorTermScoreResource < ApplicationResource
 
   def self.group_score: (Array[untyped] rows) -> Hash[Symbol, untyped]
 
-  def self.comparison_suppressed?: (Array[untyped] rows, Hash[Symbol, Integer] totals) -> bool
+  def self.comparison_suppressed?: (Array[untyped] counted_rows, Hash[Symbol, Integer] totals) -> bool
 
   def self.percentages: (Hash[Symbol, Integer] totals) -> Hash[Symbol, Integer]
 end

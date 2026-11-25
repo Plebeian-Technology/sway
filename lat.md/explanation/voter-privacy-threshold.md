@@ -60,7 +60,7 @@ The lifetime score adds a legislator's terms together, and it is hidden unless e
 
 Distinct voters cannot be added across terms, because the same user may stand behind several. Ten voters in one term and four in another are somewhere between ten and fourteen people, and the four-voter term's share of the sum is the small group the minimum protects.
 
-A term with no counted votes adds nothing to the sum and so reveals nothing. `comparison_suppressed?` leaves such a term out of the check, which keeps one empty early term from hiding a legislator's lifetime figure for good.
+A term whose row has no distinct voters is left out of both the sum and the check. Such a row is either empty or was written before a full recompute, when its counters still covered bills under the minimum. `group_score` therefore builds the published figure from the same rows the minimum is checked against, so stale counters never reach a percentage, and one empty early term cannot hide a legislator's lifetime figure for good. When every row is of that kind the figure is hidden.
 
 ## The placeholder shown in place of a hidden comparison
 

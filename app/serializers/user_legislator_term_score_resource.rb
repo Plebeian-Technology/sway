@@ -69,16 +69,16 @@ class UserLegislatorTermScoreResource < ApplicationResource
 
     # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
     def group_score(rows)
-      totals = counters(rows)
-      suppressed = comparison_suppressed?(rows, totals)
+      counted_rows = rows.select { |row| row.distinct_voter_count.positive? }
+      totals = counters(counted_rows)
+      suppressed = comparison_suppressed?(counted_rows, totals)
       {comparison_suppressed: suppressed}
         .merge(suppressed ? PERCENT_KEY_BY_COUNTER.values.index_with { nil } : percentages(totals))
     end
 
     # @lat: [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]
-    def comparison_suppressed?(rows, totals)
-      counted_rows = rows.select { |row| row.distinct_voter_count.positive? }
-      totals.values.sum.zero? || counted_rows.empty? ||
+    def comparison_suppressed?(counted_rows, totals)
+      totals.values.sum.zero? ||
         counted_rows.any? { |row| row.distinct_voter_count < VoteComparisonPrivacy::MINIMUM_VOTERS }
     end
 

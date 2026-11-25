@@ -80,6 +80,27 @@ RSpec.describe UserLegislatorTermScoreResource, type: :serializer do
         expect(score["comparison_suppressed"]).to be(false)
         expect(score["agreed_percent"]).to eq(100)
       end
+
+      it "leaves a stale term's counters out of the published lifetime figure" do
+        create(family, legislator_term: term, count_agreed: 30, distinct_voter_count: 12)
+        create(family, legislator_term: prior_term, count_disagreed: 8, distinct_voter_count: 0)
+
+        score = lifetime_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(false)
+        expect(score["agreed_percent"]).to eq(100)
+        expect(score["disagreed_percent"]).to eq(0)
+      end
+
+      it "suppresses the lifetime figure when every term is stale" do
+        create(family, legislator_term: term, count_agreed: 30, distinct_voter_count: 0)
+        create(family, legislator_term: prior_term, count_disagreed: 8, distinct_voter_count: 0)
+
+        score = lifetime_score[family.to_s]
+
+        expect(score["comparison_suppressed"]).to be(true)
+        expect(score.values_at(*percent_keys)).to all(be_nil)
+      end
     end
   end
 
