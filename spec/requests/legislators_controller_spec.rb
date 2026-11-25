@@ -1169,4 +1169,37 @@ RSpec.describe "LegislatorsController", type: :request do
       expect_no_counters(term_entry["district_score"], term_entry["locale_score"], counter_keys, percent_keys)
     end
   end
+
+  # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+  describe "a district score over a bill whose district split is withheld" do
+    it "GET /legislators/:id hides the score while one voter sits outside the only district with ten" do
+      sway_locale, _user = setup
+      district_four = create(:district, sway_locale:, name: "#{sway_locale.region_code}4")
+      district_five = create(:district, sway_locale:, name: "#{sway_locale.region_code}5")
+      member = create(:legislator, district: district_four)
+      term = create(:legislator_term, legislator: member, district: district_four)
+      neighbour = create(:legislator, district: district_five)
+      create(:legislator_term, legislator: neighbour, district: district_five)
+      bill = create(:bill, sway_locale:, legislator: member)
+      create(:legislator_vote, bill:, legislator: member, support: LegislatorVote::Support::FOR)
+      votes = [[member, "FOR"]] * 7 + [[member, "AGAINST"]] * 3 + [[neighbour, "FOR"]]
+      votes.each do |legislator, support|
+        voter = create(:user)
+        create(:user_legislator, user: voter, legislator:)
+        create(:user_vote, user: voter, bill:, support:)
+      end
+      ScoreRecomputeService.recompute_bill!(bill)
+      ScoreRecomputeService.recompute_legislator!(term)
+
+      expect(BillScore.find_by!(bill:).publishable_districts).to eq([])
+
+      get "/legislators/#{member.id}", headers: {"Accept" => "application/json"}
+
+      term_entry = response.parsed_body["legislator"]["terms"].find { |entry| entry["id"] == term.id }
+      expect(term_entry["district_score"]).to include(
+        "comparison_suppressed" => true, "agreed_percent" => nil, "disagreed_percent" => nil
+      )
+      expect(term_entry["locale_score"]).to include("comparison_suppressed" => false)
+    end
+  end
 end

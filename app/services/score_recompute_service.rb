@@ -50,6 +50,16 @@ class ScoreRecomputeService
         )
     end
 
+    # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
+    def recompute_district_scores!(bill_ids, legislators: [])
+      tallied_district_ids =
+        BillScoreDistrict.joins(:bill_score).where(bill_scores: {bill_id: bill_ids}).select(:district_id)
+      terms = LegislatorTerm.current.where(district_id: tallied_district_ids).includes(:legislator).to_a
+      (legislators.filter_map(&:active_term) + terms).uniq(&:id).each do |legislator_term|
+        recompute_legislator_district!(legislator_term)
+      end
+    end
+
     # @lat: [[score-recompute-service-overview#Why recompute_legislator_locale! reads the locale off the legislator, not through districts]]
     def recompute_legislator_locale!(legislator_term)
       legislator = legislator_term.legislator
@@ -164,13 +174,18 @@ class ScoreRecomputeService
         .to_set
     end
 
+    # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
     def bill_ids_with_minimum_district_voters(district_id)
-      BillScoreDistrict
-        .joins(:bill_score)
-        .where(district_id: district_id)
-        .where('bill_score_districts."for" + bill_score_districts."against" >= ?', VoteComparisonPrivacy::MINIMUM_VOTERS)
-        .pluck("bill_scores.bill_id")
-        .to_set
+      tallied =
+        BillScoreDistrict
+          .where(district_id: district_id)
+          .where('bill_score_districts."for" + bill_score_districts."against" >= ?', VoteComparisonPrivacy::MINIMUM_VOTERS)
+          .select(:bill_score_id)
+      BillScore
+        .where(id: tallied)
+        .includes(bill_score_districts: :district)
+        .select { |bill_score| bill_score.countable_district_ids.include?(district_id) }
+        .to_set(&:bill_id)
     end
 
     def count_by_class(pairs)

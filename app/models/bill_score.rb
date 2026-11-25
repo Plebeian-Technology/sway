@@ -45,8 +45,17 @@ class BillScore < ApplicationRecord
   # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   def publishable_districts
     rows = bill_score_districts.select(&:publishable?)
-    outside = (self.for + against) - rows.sum { |row| row.for + row.against }
-    (outside.zero? || outside >= VoteComparisonPrivacy::MINIMUM_VOTERS) ? rows : []
+    voters_outside_publishable?(rows) ? rows : []
+  end
+
+  # Returns the ids of the districts whose district agreement scores may count this bill.
+  # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+  def countable_district_ids
+    at_large_rows =
+      bill_score_districts.select do |row|
+        row.at_large? && !row.comparison_suppressed? && voters_outside_publishable?([row])
+      end
+    (publishable_districts + at_large_rows).map(&:district_id)
   end
 
   def comparison_suppressed?
@@ -96,5 +105,12 @@ class BillScore < ApplicationRecord
       bs.voters_needed voters_needed
       bs.districts bill_districts.map(&:to_sway_json)
     end
+  end
+
+  private
+
+  def voters_outside_publishable?(rows)
+    outside = (self.for + against) - rows.sum { |row| row.for + row.against }
+    outside.zero? || outside >= VoteComparisonPrivacy::MINIMUM_VOTERS
   end
 end

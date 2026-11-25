@@ -98,6 +98,60 @@ RSpec.describe BillScore, type: :model do
     end
   end
 
+  # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+  describe "#countable_district_ids" do
+    minimum = VoteComparisonPrivacy::MINIMUM_VOTERS
+
+    let(:bill) { create(:bill) }
+    let(:sway_locale) { bill.sway_locale }
+    let(:score) { bill.bill_score }
+    let(:district_four) { create(:district, sway_locale:, name: "#{sway_locale.region_code}4") }
+    let(:district_seven) { create(:district, sway_locale:, name: "#{sway_locale.region_code}7") }
+    let(:at_large) { create(:district, sway_locale:, name: "MD0") }
+    let(:other_at_large) { create(:district, sway_locale:, name: "VA0") }
+
+    def tally(bill_for:, bill_against:, rows:)
+      score.update!(for: bill_for, against: bill_against)
+      rows.each do |district, (district_for, district_against)|
+        create(:bill_score_district, bill_score: score, district:, for: district_for, against: district_against)
+      end
+      score.reload
+    end
+
+    it "counts nothing for a district with ten voters while one voter sits outside the shown districts" do
+      tally(bill_for: 8, bill_against: 3, rows: {district_four => [7, 3], district_seven => [1, 0]})
+
+      expect(score.countable_district_ids).to eq([])
+    end
+
+    it "counts the shown districts when the voters outside them number zero or the minimum" do
+      tally(bill_for: 7 + minimum, bill_against: 3, rows: {district_four => [7, 3], district_seven => [minimum - 1, 0]})
+
+      expect(score.countable_district_ids).to eq([district_four.id])
+    end
+
+    it "counts an at-large tally only when the voters outside it number zero or the minimum" do
+      tally(bill_for: 12, bill_against: 0, rows: {at_large => [10, 0], other_at_large => [2, 0]})
+      expect(score.countable_district_ids).to eq([])
+
+      score.bill_score_districts.find_by!(district: other_at_large).update!(for: minimum)
+      score.update!(for: 10 + minimum)
+      expect(score.reload.countable_district_ids).to contain_exactly(at_large.id, other_at_large.id)
+    end
+
+    it "counts an at-large tally that holds every voter of the bill" do
+      tally(bill_for: 7, bill_against: 3, rows: {at_large => [7, 3]})
+
+      expect(score.countable_district_ids).to eq([at_large.id])
+    end
+
+    it "never counts an at-large tally under the minimum" do
+      tally(bill_for: 7, bill_against: 2, rows: {at_large => [7, 2]})
+
+      expect(score.countable_district_ids).to eq([])
+    end
+  end
+
   describe "bill_id uniqueness" do
     it "rejects a second BillScore for the same bill" do
       bill = create(:bill)
