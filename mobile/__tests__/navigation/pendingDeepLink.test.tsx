@@ -32,6 +32,7 @@ jest.mock("../../src/screens/DeleteAccountScreen", () => mockScreen("delete-acco
 jest.mock("../../src/screens/MembershipsListScreen", () => mockScreen("memberships-list-screen"));
 jest.mock("../../src/screens/MembershipDetailScreen", () => mockScreen("membership-detail-screen"));
 
+import { authEvents } from "../../src/auth/authEvents";
 import RootNavigator from "../../src/navigation/RootNavigator";
 import { linking } from "../../src/navigation/linking";
 import type { RootParamList } from "../../src/navigation/types";
@@ -61,6 +62,16 @@ describe("a link received before the main screens", () => {
             user: { id: 1, is_registration_complete: isRegistrationComplete },
             loading: false,
         });
+    };
+
+    const signOut = () => {
+        signedOut();
+        act(() => authEvents.emit("signed_out"));
+    };
+
+    const sessionExpires = () => {
+        signedOut();
+        act(() => authEvents.emit("unauthenticated", "session_expired"));
     };
 
     const sessionLoading = () => {
@@ -164,7 +175,7 @@ describe("a link received before the main screens", () => {
         const { rerender } = render(app());
         await screen.findByTestId("address-screen");
 
-        signedOut();
+        signOut();
         rerender(app());
         await screen.findByTestId("auth-screen");
 
@@ -173,6 +184,23 @@ describe("a link received before the main screens", () => {
 
         await waitFor(() => expect(navRef.current?.getCurrentRoute()).toBeDefined());
         expect(navRef.current?.getCurrentRoute()?.name).not.toBe("BillDetail");
+    });
+
+    // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#An expired session keeps the kept link and invite]]
+    it("opens the link that launched the app when the stored session has expired and the person signs in again", async () => {
+        jest.spyOn(Linking, "getInitialURL").mockResolvedValue(BILL_LINK);
+        profileLoading();
+        const { rerender } = render(app());
+        await screen.findByTestId("root-navigator-loading");
+
+        sessionExpires();
+        rerender(app());
+        await screen.findByTestId("auth-screen");
+
+        signedIn(true);
+        rerender(app());
+
+        await expectBillDetail();
     });
 
     it("opens a link received while signed out after sign-in while the profile loads", async () => {
@@ -229,7 +257,7 @@ describe("a link received before the main screens", () => {
         await screen.findByTestId("address-screen");
         receiveLink(BILL_LINK);
 
-        signedOut();
+        signOut();
         rerender(app());
         await screen.findByTestId("auth-screen");
 
@@ -268,11 +296,30 @@ describe("a link received before the main screens", () => {
             receiveLink("https://sway.vote/s/abc123");
             expect(inviteAttribution.get()).toBe("s:abc123");
 
-            signedOut();
+            signOut();
             rerender(app());
             await screen.findByTestId("auth-screen");
 
             expect(inviteAttribution.get()).toBeNull();
+        });
+
+        // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#An expired session keeps the kept link and invite]]
+        it("survives an expired stored session until the person signs in and registers", async () => {
+            jest.spyOn(Linking, "getInitialURL").mockResolvedValue("https://sway.vote/s/abc123");
+            signedIn(false);
+            const { rerender } = render(app());
+            await screen.findByTestId("address-screen");
+            expect(inviteAttribution.get()).toBe("s:abc123");
+
+            sessionExpires();
+            rerender(app());
+            await screen.findByTestId("auth-screen");
+
+            signedIn(false);
+            rerender(app());
+            await screen.findByTestId("address-screen");
+
+            expect(inviteAttribution.get()).toBe("s:abc123");
         });
 
         it("is stored from the link that launched the app while signed out", async () => {

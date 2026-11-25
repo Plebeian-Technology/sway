@@ -15,7 +15,7 @@ export default function RootNavigator() {
     const { isAuthenticated, loading: sessionLoading } = useSession();
     const { user, loading: userLoading, refresh } = useUserProfile();
     const mainScreensReady = !sessionLoading && isAuthenticated && user?.is_registration_complete === true;
-    usePendingDeepLink(mainScreensReady, isAuthenticated);
+    usePendingDeepLink(mainScreensReady);
 
     if (sessionLoading || (isAuthenticated && userLoading && user === null)) {
         return <LoadingScreen testID="root-navigator-loading" />;

@@ -29,15 +29,21 @@ The sign-in and onboarding stacks hold none of the screens a link names, so Reac
 
 The link that launched the app is kept the same way. React Navigation would build the container's initial state from it, but the first navigator to mount takes that state. At launch that navigator is the sign-in or onboarding stack, which follows the loading screen and writes its own state over the launch state; the loading screen shown while the profile loads after sign-in then unmounts that stack and clears it. So the linking config's `getInitialURL` hands the launch link to [[mobile/src/navigation/pendingDeepLink.ts#keepLaunchLink]], which remembers it and gives React Navigation no initial link. The drawer then opens it on mount like any kept link, so a person already signed in reaches the linked screen once, not twice. An invite link is the exception: it still goes to React Navigation at launch, because its key must be stored before registration, and it opens no screen.
 
-Signing out, meaning the session changing from signed in to signed out, forgets the kept link, the launch link included. Otherwise a link tapped by one person would open for the next person to sign in on the same phone. The app starting signed out forgets nothing, because the launch link is kept before `RootNavigator` first renders.
+Signing out forgets the kept link, the launch link included. Otherwise a link tapped by one person would open for the next person to sign in on the same phone. Only an explicit sign-out counts: the `signed_out` announcement that [[mobile-session-hook#The announcements it listens for]] describes. Any other way of ending up signed out forgets nothing, as [[mobile-auth-and-onboarding-flow#RootNavigator#An expired session keeps the kept link and invite]] explains.
+
+### An expired session keeps the kept link and invite
+
+A session that the server rejects ends the person's sign-in without forgetting the kept link or the stored invite key.
+
+The phone keeps its bearer token across launches, and the session hook reads it as signed in without asking the server. When the token has expired or been revoked, the first account load comes back with no user, or a request comes back unauthorised. Either one announces `unauthenticated`, and the app drops to the sign-in screen. If that change counted as a sign-out, a link that launched the app would be lost before the person could act on it: they would sign in and land on the default screen, and an invite key would be wiped so the inviter is never credited. The person who signs in next is almost always the one who tapped the link, so [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]] clears both only on the explicit `signed_out` announcement. The app starting signed out forgets nothing either, because the launch link and invite key are stored before `RootNavigator` first renders.
 
 ### Signing out forgets the stored invite
 
 A signed-in person who signs out loses the invite key a link stored, so the next person to register on the phone is not credited to that inviter.
 
-The key from [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]] lives in memory, and only registration would otherwise clear it. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]] clears it when the session changes from signed in to signed out, whatever caused the change.
+The key from [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]] lives in memory, and only registration would otherwise clear it. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]] clears it on an explicit sign-out only.
 
-The app starting signed out does not clear it. An invite link that launches the app stores its key before `RootNavigator` first renders, and that key belongs to the person about to sign up.
+An expired session and the app starting signed out do not clear it. An invite link that launches the app stores its key before `RootNavigator` first renders, and that key belongs to the person about to sign up.
 
 ## AuthStack
 

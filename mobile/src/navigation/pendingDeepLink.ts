@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Linking } from "react-native";
 
+import { authEvents } from "../auth/authEvents";
 import { inviteAttribution } from "../state/inviteAttribution";
 
 type OpenLink = (url: string) => void;
@@ -34,17 +35,18 @@ export const discardPendingDeepLink = (): void => {
 };
 
 // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]
-export function usePendingDeepLink(mainScreensReady: boolean, isAuthenticated: boolean): void {
-    const wasAuthenticated = useRef(isAuthenticated);
-
-    useEffect(() => {
-        if (wasAuthenticated.current && !isAuthenticated) {
-            pendingUrl = null;
-            // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#Signing out forgets the stored invite]]
-            inviteAttribution.clear();
-        }
-        wasAuthenticated.current = isAuthenticated;
-    }, [isAuthenticated]);
+export function usePendingDeepLink(mainScreensReady: boolean): void {
+    // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#An expired session keeps the kept link and invite]]
+    useEffect(
+        () =>
+            authEvents.on((event) => {
+                if (event !== "signed_out") return;
+                pendingUrl = null;
+                // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#Signing out forgets the stored invite]]
+                inviteAttribution.clear();
+            }),
+        [],
+    );
 
     useEffect(() => {
         mainScreensShowing = mainScreensReady;
