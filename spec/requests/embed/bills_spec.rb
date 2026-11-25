@@ -133,6 +133,31 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(response.body).to be_empty
     end
 
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "changes the ETag when the payload version changes" do
+      get "/embed/bills/#{bill.id}"
+      etag = response.headers["ETag"]
+
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "next")
+      get "/embed/bills/#{bill.id}"
+
+      expect(response.headers["ETag"]).not_to eq(etag)
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "answers a conditional GET holding a pre-change ETag with the suppressed body" do
+      bill_score.update!(for: 6, against: 3)
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "before")
+      get "/embed/bills/#{bill.id}"
+      old_etag = response.headers["ETag"]
+
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "after")
+      get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => old_etag}
+
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props[:bill]).to include(pro_count: nil, con_count: nil, comparison_suppressed: true)
+    end
+
     it "generates different ETags when utm_* parameters differ" do
       get "/embed/bills/#{bill.id}?partner=the-banner&utm_source=twitter"
       expect(response).to have_http_status(:ok)

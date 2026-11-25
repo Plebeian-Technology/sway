@@ -112,7 +112,7 @@ The partner embed at `/embed/bills/:id` is public and a CDN keeps each response 
 
 [[app/serializers/embed_bill_resource.rb#EmbedBillResource]] therefore sends `pro_count` and `con_count` as nil below the minimum, with `comparison_suppressed` and `voters_needed`. `total_votes` stays, because it says how many voted and not how. The card shows the placeholder sentences and a sign-up link that opens outside the frame: nobody is signed in to Sway inside a partner's page, so there is no invite link to copy. A payload with no flag is drawn as suppressed.
 
-A deploy that adds this leaves older responses in the CDN until they expire. The first check after such a deploy waits out the fifteen minutes or follows a purge of the embed path.
+The response's ETag includes [[app/controllers/embed/bills_controller.rb#BillsController#PAYLOAD_VERSION]], so a deploy that changes the payload's shape or privacy rules, and bumps that constant, makes every ETag cached before it stale. A CDN or browser holding the old body revalidates, gets a full response instead of a 304, and drops the old counts. Without the bump the ETag follows only the bill and its score row, and a response cached before the rule would keep revalidating as 304 until someone voted on that bill. A response still inside its freshness window is served without revalidation until it expires, up to fifteen minutes.
 
 ## The mobile bill screen hides what the web hides
 

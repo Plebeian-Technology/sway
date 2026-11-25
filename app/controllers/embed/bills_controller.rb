@@ -3,6 +3,8 @@
 # @lat: [[embeddable-bill-widget#Embeddable bill widget#Controller implementation]]
 module Embed
   class BillsController < BaseController
+    PAYLOAD_VERSION = "2"
+
     def show
       @bill = Bill.find(params[:id])
 
@@ -11,7 +13,7 @@ module Embed
       response.headers.delete("X-Frame-Options")
 
       fresh_when(
-        etag: [@bill, @bill.bill_score, referral_params, request.headers["X-Inertia"].present?],
+        etag: [PAYLOAD_VERSION, @bill, @bill.bill_score, referral_params, request.headers["X-Inertia"].present?],
         last_modified: [@bill.updated_at, @bill.bill_score&.updated_at].compact.max,
         public: true
       )
