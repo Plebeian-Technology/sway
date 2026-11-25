@@ -1,4 +1,5 @@
 import { useConfirm } from "app/frontend/components/ui/confirm-dialog";
+import { handleThrottledError } from "app/frontend/hooks/authentication/handleThrottledError";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { logDev, notify } from "app/frontend/sway_utils";
 import { router, useHttp } from "@inertiajs/react";
@@ -39,6 +40,10 @@ export const useRemovePasskey = () => {
                     return;
                 }
             } catch (e) {
+                if (handleThrottledError(e, "phone")) {
+                    reset();
+                    return;
+                }
                 logDev("useRemovePasskey.begin failed", e);
             }
             notify({ level: "error", title: PARITY_COPY.passkey.removeError });

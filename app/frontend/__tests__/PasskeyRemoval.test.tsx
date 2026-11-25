@@ -145,6 +145,23 @@ describe("pages/PasskeyManagement (remove a passkey)", () => {
         expect(screen.getByTestId("passkey-row-1")).toBeTruthy();
     });
 
+    it("shows the throttle copy, not the remove error, when the code text is throttled, and returns to idle", async () => {
+        inertia.http.post.mockRejectedValue({ response: { status: 429, headers: { "retry-after": "90" } } });
+        renderPage(PASSKEYS);
+
+        fireEvent.click(within(screen.getByTestId("passkey-row-1")).getByRole("button", { name: "Remove" }));
+
+        await waitFor(() =>
+            expect(notified).toHaveBeenCalledWith({
+                level: "error",
+                title: "Too many verification attempts. Please wait 2 minutes before trying again.",
+            }),
+        );
+        expect(notified).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId("remove-passkey-code")).toBeNull();
+        expect(within(screen.getByTestId("passkey-row-1")).getByRole("button", { name: "Remove" })).toBeTruthy();
+    });
+
     it("stops at the code step when the code is wrong", async () => {
         inertia.http.post.mockImplementation(async (url) =>
             url.endsWith("confirm_phone") ? { success: false } : { success: true },
