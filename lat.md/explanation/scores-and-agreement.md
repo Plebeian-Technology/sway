@@ -75,6 +75,10 @@ A mayor, a council president and the like carry a district number of zero or
 none, and their screens draw the reader's own chart and the locale chart
 without a district one.
 
+[[app/models/district.rb#District#at_large?]] defines the rule: a district is
+at large when its number is zero, which includes a name with no digits. The
+district rows of a bill score carry it as `at_large`.
+
 They stand for the whole jurisdiction, so their district totals are the locale
 totals. Drawing both would put the same numbers on the page twice under two
 different labels, which reads as a coincidence rather than as the identity it

@@ -5,13 +5,13 @@ lat:
 
 # Mobile drawer navigation architecture
 
-Why the mobile app's six drawer items each own a native stack, why some screens are registered in more than one stack, and the header/SafeArea conventions shared across them.
+Why the mobile app's drawer items each own a native stack, why some screens are registered in more than one stack, and the header/SafeArea conventions shared across them.
 
 ## AppDrawer
 
-`AppDrawer` ([[mobile/src/navigation/AppDrawer.tsx]]) is a left drawer with six items. Each one holds its own set of screens: Feed, Home, Bills, Legislators, Organizations and Profile.
+`AppDrawer` ([[mobile/src/navigation/AppDrawer.tsx]]) is a left drawer with six items for every user, and a seventh, Admin, for Sway admins ([[mobile-admin-area#The drawer entry]]). Each one holds its own set of screens: Feed, Home, Bills, Legislators, Organizations, Profile and, for admins, the admin hub.
 
-Six labelled items fit in a drawer at any screen size, where a bottom bar on a small phone such as the iPhone SE clips its labels against the bottom of the screen.
+Up to seven labelled items fit in a drawer at any screen size, where a bottom bar on a small phone such as the iPhone SE clips its labels against the bottom of the screen.
 
 Deep links and calls such as `navigate("Legislators")` address the items by their route names: `Feed`, `Home`, `Bills`, `Legislators`, `Orgs` and `Profile`. The `Home` route keeps its name for those links, but its drawer label is "Bill of the Month", the same label and bookmark icon the web navigation uses.
 

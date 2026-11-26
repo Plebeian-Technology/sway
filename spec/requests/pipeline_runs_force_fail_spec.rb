@@ -37,6 +37,46 @@ RSpec.describe "PipelineRunsForceFail", type: :request do
       expect(PipelineActivityLogEntry.where(event_type: "force_fail_triggered").count).to eq(0)
     end
 
+    it "redirects a wrong phrase back with the pipeline error for the web" do
+      post "/pipeline_runs/#{run.id}/force_fail", params: {confirm_phrase: "wrong"}
+      expect(response).to redirect_to(pipeline_runs_path)
+    end
+
+    context "for a bearer client" do
+      let(:bearer_headers) { authenticate_as(admin).merge("Accept" => "application/json") }
+
+      # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+      it "force fails the run and answers 200 with the failed run's summary" do
+        post "/pipeline_runs/#{run.id}/force_fail", params: {confirm_phrase: "force fail"}, headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.fetch("run")).to include("id" => run.id, "status" => "failed")
+        expect(run.reload.status).to eq("failed")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+      it "answers a wrong phrase with 422 and the pipeline error under details" do
+        post "/pipeline_runs/#{run.id}/force_fail", params: {confirm_phrase: "wrong"}, headers: bearer_headers
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+        expect(response.parsed_body.dig("error", "details", "pipeline")).to eq("Confirmation phrase mismatch")
+        expect(run.reload.status).to eq("running")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+      it "answers a run that is not in flight with 422" do
+        run.update_column(:status, "completed")
+
+        post "/pipeline_runs/#{run.id}/force_fail", params: {confirm_phrase: "force fail"}, headers: bearer_headers
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "details", "pipeline")).to eq(
+          "Run ##{run.id} is not in-flight (status: completed)"
+        )
+      end
+    end
+
     # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart#The admin surface is index-only#Force-fail returns to the working surface]]
     context "with back_to=bill_creator" do
       it "redirects to new_bill_creator_path(bill_creator_tab: :pipeline) for a global run (bill_id nil)" do

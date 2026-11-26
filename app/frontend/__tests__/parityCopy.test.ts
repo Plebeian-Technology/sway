@@ -45,7 +45,7 @@ describe("PARITY_COPY — keys (nested paths)", () => {
     it("notifications.botmAnnouncement has monthly label and description", () => {
         expect(PARITY_COPY.notifications.botmAnnouncement.label).toBe("Bill of the Month announcements");
         expect(PARITY_COPY.notifications.botmAnnouncement.description).toBe(
-            "We'll let you know when a new Bill of the Month is published.",
+            "We'll let you know when a new Bill of the Month is released.",
         );
     });
 
@@ -125,7 +125,7 @@ describe("PARITY_COPY — Organizations keys (nested)", () => {
     });
 
     it("orgs.noPositions is the public organization page's positions empty state", () => {
-        expect(PARITY_COPY.orgs.noPositions).toBe("This organization hasn't published any positions yet.");
+        expect(PARITY_COPY.orgs.noPositions).toBe("This organization hasn't added any positions yet.");
     });
 });
 

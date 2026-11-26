@@ -35,6 +35,11 @@ class District < ApplicationRecord
     name.remove_non_digits.to_i
   end
 
+  # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
+  def at_large?
+    number.zero?
+  end
+
   def region_code
     name.remove_non_alpha.upcase
   end

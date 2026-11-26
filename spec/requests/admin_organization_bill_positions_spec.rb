@@ -366,6 +366,41 @@ RSpec.describe "Admin organization bill positions", type: :request do
     end
   end
 
+  describe "DELETE /organization_bill_positions/:id for a bearer request" do
+    let!(:position) do
+      create(:organization_bill_position,
+        bill: bill, organization: organization, active: true,
+        support: "FOR", summary: "We support this bill.")
+    end
+    let(:bearer_json_headers) do
+      lambda do |user|
+        authenticate_as(user).merge("Accept" => "application/json")
+      end
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The organizations section]]
+    it "deactivates the position and answers 200 JSON with no redirect" do
+      delete organization_bill_position_path(position), headers: bearer_json_headers.call(admin)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      expect(response.headers["Location"]).to be_nil
+      expect(position.reload.active).to be(false)
+    end
+
+    it "refuses a non-admin with a forbidden JSON error" do
+      non_admin = create(:user)
+      create(:user_legislator, user: non_admin)
+      non_admin.complete!
+
+      delete organization_bill_position_path(position), headers: bearer_json_headers.call(non_admin)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+      expect(position.reload.active).to be(true)
+    end
+  end
+
   include_examples "requires sway admin",
     verb: :post,
     path: "/organization_bill_positions",

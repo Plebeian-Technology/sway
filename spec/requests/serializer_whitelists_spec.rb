@@ -907,8 +907,9 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       get "/admin/bill_summary_reports.json"
 
       body = response.parsed_body
-      expect(body.length).to eq(1)
-      expect(body.first.keys).to match_array(
+      expect(body.keys).to match_array(%w[reports status_counts locales filter_status filter_locale_id])
+      expect(body["reports"].length).to eq(1)
+      expect(body["reports"].first.keys).to match_array(
         %w[
           id bill_id user_id reason details status summary_snapshot summary_ai_unreviewed
           resolved_at admin_notes created_at updated_at reporter_display reason_label
@@ -1518,7 +1519,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
-      score_keys = %w[id bill_id for against districts]
+      score_keys = %w[id bill_id for against comparison_suppressed voters_needed districts]
       score_district_keys = %w[
         bill_score_id district for against legislator_names comparison_suppressed for_percent against_percent at_large
       ]
@@ -1989,6 +1990,17 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(hash["user_switch_count"]).to eq(1)
       expect(hash["previous_sway_locale_names"]).to eq([locale.name])
       expect(hash["new_sway_locale_names"]).to eq([locale.name])
+    end
+  end
+
+  describe "AdminLocaleSampleAddressResource" do
+    # @lat: [[mobile-admin-area#The locales screen]]
+    it "ships the exact sample address key set" do
+      locale = create(:sway_locale, :baltimore)
+
+      hash = AdminLocaleSampleAddressResource.new(locale).serializable_hash.transform_keys(&:to_s)
+
+      expect(hash.keys).to match_array(%w[id sample_street sample_postal_code sample_latitude sample_longitude])
     end
   end
 

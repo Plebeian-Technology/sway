@@ -37,7 +37,6 @@ const BASE_ORG = {
     id: 7,
     name: "Civic Alliance",
     sway_locale_slug: "baltimore-maryland-united_states",
-    follower_count: 42,
 };
 
 describe("OrgPreferenceSheet", () => {
@@ -173,7 +172,7 @@ describe("OrgCard follow control", () => {
     });
 
     // The member state is driven by isMember alone, never by followId.
-    test("member (isMember=true) renders 'Member' label and Preferences CTA — no Follow/Unfollow", () => {
+    test("member (isMember=true) renders 'Member' label and Preferences CTA — no Track/Untrack", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={true} isMember={true} initialFollowId={123} />);
         expect(screen.getByTestId(`org-card-member-label-${BASE_ORG.id}`)).toBeTruthy();
         expect(screen.getByText("Member")).toBeTruthy();
@@ -182,7 +181,7 @@ describe("OrgCard follow control", () => {
         expect(screen.queryByTestId(`org-card-following-btn-${BASE_ORG.id}`)).toBeNull();
     });
 
-    test("member with no followId (D-05) still renders 'Member' state — no Unfollow", () => {
+    test("member with no followId (D-05) still renders 'Member' state — no Untrack", () => {
         wrap(
             <OrgCard
                 org={BASE_ORG}
@@ -198,55 +197,45 @@ describe("OrgCard follow control", () => {
         expect(screen.queryByTestId(`org-card-following-btn-${BASE_ORG.id}`)).toBeNull();
     });
 
-    test("signed-out follow tap shows AuthPromptSheet with 'Sign in to follow' heading", async () => {
+    test("signed-out track tap shows AuthPromptSheet with 'Sign in to track' heading", async () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} isMember={false} initialFollowId={null} />);
         // @lat: [[mobile-organization-follow-test-notes#OrgPreferenceSheet.test.tsx and OrgCard]]
         expect(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeTruthy();
         await act(async () => {
             fireEvent.press(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`));
         });
-        expect(screen.getByText("Sign in to follow")).toBeTruthy();
+        expect(screen.getByText("Sign in to track")).toBeTruthy();
     });
 
-    test("following non-member shows 'Following' button (not Member)", () => {
+    test("tracking non-member shows 'Tracking' button (not Member)", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={true} isMember={false} initialFollowId={456} />);
         expect(screen.getByTestId(`org-card-following-btn-${BASE_ORG.id}`)).toBeTruthy();
-        expect(screen.getByText("Following")).toBeTruthy();
+        expect(screen.getByText("Tracking")).toBeTruthy();
         expect(screen.queryByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeNull();
     });
 
-    test("not-following signed-in shows 'Follow' CTA", () => {
+    test("not-tracking signed-in shows 'Track' CTA", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={true} isMember={false} initialFollowId={null} />);
         expect(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeTruthy();
-        expect(screen.getByText("Follow")).toBeTruthy();
+        expect(screen.getByText("Track")).toBeTruthy();
     });
 
-    test("renders follower count (REQ-9)", () => {
+    test("renders no follower count", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} />);
-        expect(screen.getByTestId(`org-card-follower-count-${BASE_ORG.id}`)).toBeTruthy();
-        expect(screen.getByText("42 followers")).toBeTruthy();
+        expect(screen.queryByTestId(`org-card-follower-count-${BASE_ORG.id}`)).toBeNull();
+        expect(screen.queryByText(/follower/)).toBeNull();
     });
 
-    test("renders '1 follower' (singular) when count is 1", () => {
-        wrap(<OrgCard org={{ ...BASE_ORG, follower_count: 1 }} onPress={jest.fn()} isSignedIn={false} />);
-        expect(screen.getByText("1 follower")).toBeTruthy();
-    });
-
-    test("renders '0 followers' when count is 0", () => {
-        wrap(<OrgCard org={{ ...BASE_ORG, follower_count: 0 }} onPress={jest.fn()} isSignedIn={false} />);
-        expect(screen.getByText("0 followers")).toBeTruthy();
-    });
-
-    // The prompt sheet gets follow-specific wording here, not its usual voting wording.
-    test("AuthPromptSheet receives heading='Sign in to follow' and correct body (D-11)", async () => {
+    // The prompt sheet gets track-specific wording here, not its usual voting wording.
+    test("AuthPromptSheet receives heading='Sign in to track' and correct body (D-11)", async () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} />);
         await act(async () => {
             fireEvent.press(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`));
         });
-        // Heading is replaced: "Sign in to follow", not the usual "Sign in to vote"
-        expect(screen.getByText("Sign in to follow")).toBeTruthy();
+        // Heading is replaced: "Sign in to track", not the usual "Sign in to vote"
+        expect(screen.getByText("Sign in to track")).toBeTruthy();
         expect(
-            screen.getByText("Follow civic organizations and get notified when they take a position on legislation."),
+            screen.getByText("Track civic organizations and get notified when they take a position on legislation."),
         ).toBeTruthy();
     });
 
@@ -256,7 +245,7 @@ describe("OrgCard follow control", () => {
         await act(async () => {
             fireEvent.press(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`));
         });
-        expect(screen.getByText("Sign in to follow")).toBeTruthy();
+        expect(screen.getByText("Sign in to track")).toBeTruthy();
 
         await act(async () => {
             fireEvent.press(screen.getByTestId("btn-auth-prompt-sign-in"));

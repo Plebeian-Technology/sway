@@ -6,8 +6,12 @@ import { PARITY_COPY } from "../../../../app/frontend/sway_constants/parityCopy"
 import { useTheme } from "../../theme/ThemeProvider";
 import { swayTokens } from "../../theme/tokens";
 import { shortBillTitle } from "../../utils/billTitle";
+import { Markdown, markdownExceedsLimit } from "../Markdown";
 import { Pressable } from "../ui/Pressable";
 import type { IFeedBill } from "./types";
+
+// @lat: [[home-feed#Mobile summary excerpt]]
+const SUMMARY_PREVIEW_CHARS = 280;
 
 interface IProps {
     bill: IFeedBill;
@@ -19,7 +23,7 @@ const FeedBillBlock: React.FC<IProps> = ({ bill, showSummary = false, onPressBil
     const { colorScheme } = useTheme();
     const t = swayTokens[colorScheme];
     const displayTitle = shortBillTitle(bill.title);
-    const cleanedSummary = showSummary ? cleanFeedSummary(bill.summary) : null;
+    const hasSummary = showSummary && cleanFeedSummary(bill.summary) !== null;
 
     return (
         <View>
@@ -51,20 +55,26 @@ const FeedBillBlock: React.FC<IProps> = ({ bill, showSummary = false, onPressBil
                 >
                     {displayTitle}
                 </Text>
-                {cleanedSummary ? (
-                    <Text
-                        style={{
-                            marginTop: 8,
-                            fontFamily: "OpenSans-Light",
-                            fontSize: 14,
-                            lineHeight: 20,
-                            color: t.mutedForeground,
-                        }}
-                    >
-                        {cleanedSummary}
-                    </Text>
+                {hasSummary ? (
+                    <View style={{ marginTop: 8 }}>
+                        <Markdown
+                            testID={`feed-bill-summary-${bill.id}`}
+                            content={bill.summary}
+                            maxChars={SUMMARY_PREVIEW_CHARS}
+                            className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+                        />
+                        {markdownExceedsLimit(bill.summary, SUMMARY_PREVIEW_CHARS) ? (
+                            <Text
+                                accessibilityRole="link"
+                                onPress={() => onPressBill(bill.id)}
+                                style={{ marginTop: 4, fontFamily: "OpenSans-SemiBold", fontSize: 14, color: t.accent }}
+                            >
+                                {PARITY_COPY.bill.showMore}
+                            </Text>
+                        ) : null}
+                    </View>
                 ) : null}
-                {cleanedSummary && bill.summary_ai_unreviewed ? (
+                {hasSummary && bill.summary_ai_unreviewed ? (
                     <Text
                         testID="ai-unreviewed-notice"
                         style={{

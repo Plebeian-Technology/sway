@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList } from "react-native";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 
 const mockApiGet = jest.fn();
 jest.mock("../../src/api/client", () => ({
@@ -283,7 +283,32 @@ describe("FeedScreen", () => {
         expect(screen.getByText(PARITY_COPY.feed.userJoinedSummary)).toBeTruthy();
     });
 
-    it("strips 'FOR the purpose of' clauses from bill titles and cleans or omits pending/Markdown summaries", async () => {
+    it.each([
+        ["botm-1", "lucide-landmark"],
+        ["leg-vote-1", "lucide-user"],
+        ["org-pos-1", "lucide-building2"],
+        ["term-1", "lucide-landmark"],
+        ["reps-1", null],
+        ["joined-1", null],
+    ])("shows the subject icon in the header of feed item %s", async (itemKey, iconTestId) => {
+        mockApiGet.mockResolvedValueOnce({
+            items: ALL_KIND_ITEMS,
+            feed_cursor: null,
+            feed_search: null,
+        });
+
+        render(<FeedScreen navigation={makeNav()} />);
+
+        const row = await screen.findByTestId(`feed-item-${itemKey}`);
+        const subjectIconTestIds = ["lucide-landmark", "lucide-user", "lucide-building2"];
+
+        subjectIconTestIds.forEach((testId) => {
+            const expectedCount = testId === iconTestId ? 1 : 0;
+            expect(within(row).queryAllByTestId(testId)).toHaveLength(expectedCount);
+        });
+    });
+
+    it("strips 'FOR the purpose of' clauses from bill titles and omits a pending summary", async () => {
         mockApiGet.mockResolvedValueOnce({
             items: [
                 {
@@ -293,8 +318,7 @@ describe("FeedScreen", () => {
                         id: 601,
                         external_id: "CB-26-0601",
                         title: "Urban Tree Canopy - Street Planting FOR the purpose of requiring tree planting along arterial streets.",
-                        summary:
-                            "## OverviewNEWLINERequires **Baltimore** to plant [street trees](https://example.com/trees) on *arterial* corridors.ENDING",
+                        summary: "Requires Baltimore to plant street trees.",
                         vote_count: 3,
                         view_count: 11,
                         share_count: 1,
@@ -324,11 +348,100 @@ describe("FeedScreen", () => {
 
         await screen.findByText("Urban Tree Canopy — Street Planting");
         expect(screen.queryByText(/FOR the purpose of/i)).toBeNull();
-        expect(
-            screen.getByText("Overview Requires Baltimore to plant street trees on arterial corridors."),
-        ).toBeTruthy();
-        expect(screen.queryByText(/NEWLINE|ENDING/)).toBeNull();
+        expect(screen.getByTestId("feed-bill-summary-601")).toBeTruthy();
+        expect(screen.queryByTestId("feed-bill-summary-602")).toBeNull();
         expect(screen.queryByText("Summary pending")).toBeNull();
+    });
+
+    it("renders a Bill of the Month summary as Markdown blocks", async () => {
+        mockApiGet.mockResolvedValueOnce({
+            items: [
+                {
+                    ...ALL_KIND_ITEMS[0],
+                    key: "botm-markdown",
+                    bill: {
+                        ...(ALL_KIND_ITEMS[0].bill as IFeedBill),
+                        id: 603,
+                        summary:
+                            "## Overview\n\nRequires **Baltimore** to plant trees.\n\n- Street trees\n- Park trees",
+                    },
+                },
+            ],
+            feed_cursor: null,
+            feed_search: null,
+        });
+
+        render(<FeedScreen navigation={makeNav()} />);
+
+        await screen.findByTestId("feed-bill-summary-603");
+        expect(screen.getByText("Overview")).toBeTruthy();
+        expect(screen.getByText("Requires Baltimore to plant trees.")).toBeTruthy();
+        expect(screen.getByText("Street trees")).toBeTruthy();
+        expect(screen.getByText("Park trees")).toBeTruthy();
+        expect(screen.queryByText(/\*\*|##/)).toBeNull();
+        expect(screen.queryByText(PARITY_COPY.bill.showMore)).toBeNull();
+    });
+
+    it("cuts a long summary with an ellipsis and opens the bill from the more link", async () => {
+        const nav = makeNav();
+        mockApiGet.mockResolvedValueOnce({
+            items: [
+                {
+                    ...ALL_KIND_ITEMS[0],
+                    key: "botm-long",
+                    bill: {
+                        ...(ALL_KIND_ITEMS[0].bill as IFeedBill),
+                        id: 604,
+                        summary: `${"Requires stormwater capture. ".repeat(20)}Final sentence.`,
+                    },
+                },
+            ],
+            feed_cursor: null,
+            feed_search: null,
+        });
+
+        render(<FeedScreen navigation={nav} />);
+
+        await screen.findByTestId("feed-bill-summary-604");
+        expect(screen.queryByText(/Final sentence/)).toBeNull();
+        expect(screen.getByText("…")).toBeTruthy();
+        fireEvent.press(screen.getByText(PARITY_COPY.bill.showMore));
+
+        expect(nav.navigate).toHaveBeenCalledWith("BillDetail", { id: 604 });
+    });
+
+    it("shows no more link under a short summary", async () => {
+        mockApiGet.mockResolvedValueOnce({
+            items: [ALL_KIND_ITEMS[0]],
+            feed_cursor: null,
+            feed_search: null,
+        });
+
+        render(<FeedScreen navigation={makeNav()} />);
+
+        await screen.findByTestId("feed-bill-summary-101");
+        expect(screen.queryByText(PARITY_COPY.bill.showMore)).toBeNull();
+        expect(screen.queryByText("…")).toBeNull();
+    });
+
+    it("renders no summary for a null summary", async () => {
+        mockApiGet.mockResolvedValueOnce({
+            items: [
+                {
+                    ...ALL_KIND_ITEMS[0],
+                    key: "botm-null",
+                    bill: { ...(ALL_KIND_ITEMS[0].bill as IFeedBill), id: 605, summary: null },
+                },
+            ],
+            feed_cursor: null,
+            feed_search: null,
+        });
+
+        render(<FeedScreen navigation={makeNav()} />);
+
+        await screen.findByTestId("feed-bill-card-605");
+        expect(screen.queryByTestId("feed-bill-summary-605")).toBeNull();
+        expect(screen.queryByText(PARITY_COPY.bill.showMore)).toBeNull();
     });
 
     it("shows the AI unreviewed notice under a Bill of the Month summary only when summary_ai_unreviewed is true", async () => {

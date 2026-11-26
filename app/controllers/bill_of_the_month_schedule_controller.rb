@@ -7,13 +7,9 @@ class BillOfTheMonthScheduleController < ApplicationController
 
   include BillCreatorTabRedirects
 
-  def update
-    redirect_target = bill_creator_tab_path(
-      bill_creator_tab_param(schedule_params),
-      bill_id: @bill.id,
-      default: :schedule_bill_creator_path
-    )
+  DATE_TAKEN_MESSAGE = "Another bill is already scheduled for that date."
 
+  def update
     if @bill.update(
          scheduled_release_date_utc:
            schedule_params[:scheduled_release_date_utc]
@@ -26,14 +22,28 @@ class BillOfTheMonthScheduleController < ApplicationController
         else
           "Added bill - #{@bill.title} - to schedule."
         end
-      redirect_to redirect_target, notice: notice
+      respond_after_write(redirect_target, notice: notice)
     else
-      flash[:alert] = "Failed to update bill schedule."
-      redirect_to redirect_target, inertia: {errors: @bill.errors}
+      respond_after_write(redirect_target, alert: "Failed to update bill schedule.", errors: @bill.errors)
     end
+  rescue ActiveRecord::RecordNotUnique
+    # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+    respond_after_write(
+      redirect_target,
+      alert: DATE_TAKEN_MESSAGE,
+      errors: {scheduled_release_date_utc: ["is already taken"]}
+    )
   end
 
   private
+
+  def redirect_target
+    bill_creator_tab_path(
+      bill_creator_tab_param(schedule_params),
+      bill_id: @bill.id,
+      default: :schedule_bill_creator_path
+    )
+  end
 
   def schedule_params
     raw = if params.key?(:bill_of_the_month_schedule)

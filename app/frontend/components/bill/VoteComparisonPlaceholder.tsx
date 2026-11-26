@@ -30,14 +30,20 @@ const VoteComparisonPlaceholder: React.FC<IProps> = ({ votersNeeded }) => {
             <p className="text-sm text-muted">{PARITY_COPY.bill.voteComparisonPlaceholder.message(votersNeeded)}</p>
             {user ? (
                 user.invite_url ? (
-                    <button onClick={copyInviteLink} className="text-sm font-semibold text-primary underline">
-                        {PARITY_COPY.bill.voteComparisonPlaceholder.inviteButton}
-                    </button>
+                    <>
+                        <p className="text-sm text-muted">{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>
+                        <button onClick={copyInviteLink} className="text-sm font-semibold text-primary underline">
+                            {PARITY_COPY.bill.voteComparisonPlaceholder.inviteButton}
+                        </button>
+                    </>
                 ) : null
             ) : (
-                <Link href="/sign_up" className="text-sm font-semibold text-primary underline">
-                    {PARITY_COPY.bill.voteComparisonPlaceholder.inviteButton}
-                </Link>
+                <>
+                    <p className="text-sm text-muted">{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>
+                    <Link href="/sign_up" className="text-sm font-semibold text-primary underline">
+                        {PARITY_COPY.bill.voteComparisonPlaceholder.inviteButton}
+                    </Link>
+                </>
             )}
         </div>
     );

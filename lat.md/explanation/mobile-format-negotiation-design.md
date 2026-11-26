@@ -27,6 +27,12 @@ If `mobile_api_request?` ever got stricter — say it started demanding a bearer
 
 `flash_message` is compacted out when `nil`, so the wire format is `{ redirect: "/path" }`, never `{ flash: null }` — keeping the shape minimal for clients that treat a present key as meaningful.
 
+## Why respond_after_write answers a failed write with 422
+
+`respond_after_write` replaces the hand-written split between a redirect for the website and JSON for the mobile app on admin writes, and it gives a failed write a status that `redirect_or_json` cannot.
+
+`redirect_or_json` always answers 200 with a `{ redirect, flash }` body, so a mobile client cannot tell a rejected write from a saved one. When `errors` or `alert` is present, the helper instead calls `render_error` with status 422, code `validation_failed`, the alert (or "Validation failed.") as the message and `errors.to_hash` as details, so an `ActiveModel::Errors` object serializes without a caller conversion. The web branch passes `inertia: { errors: }` only when errors are present, so a plain redirect never writes an empty error hash into the session. `back` selects `redirect_back_or_to(path)` over `redirect_to(path)`, and `status` (for example `:see_other`) reaches either redirect unchanged.
+
 ## Why resolve_inertia_props doesn't honor defer/lazy semantics for mobile
 
 `resolve_inertia_props` walks the props hash and replaces any `InertiaRails::BaseProp` (`Defer`, `Always`, `Lazy`, `Merge`) with the value its block produces inside the controller.
