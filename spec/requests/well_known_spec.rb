@@ -72,7 +72,14 @@ RSpec.describe "WellKnown", type: :request do
           "/legislators/*",
           "/bill_of_the_week",
           "/bill_of_the_month",
-          "/organizations/*/memberships/*"
+          "/organizations/*/memberships/*",
+          "/s/*",
+          "/invite/*/*",
+          "/invites/*/*",
+          "/bill_shares/*",
+          "/feed",
+          "/users/organization_memberships",
+          "/profile"
         )
       end
     end
@@ -83,13 +90,28 @@ RSpec.describe "WellKnown", type: :request do
       get "/.well-known/apple-app-site-association"
 
       served = JSON.parse(response.body).dig("applinks", "details", 0, "paths")
-      source = Rails.root.join("mobile", "src", "navigation", "deepLinkPatterns.ts")
-      declared = source.read[/DEEP_LINK_PATTERNS\s*=\s*\[(.*?)\]/m, 1].to_s.scan(/"([^"]+)"/).flatten
+      source = Rails.root.join("mobile", "src", "navigation", "deepLinkPatterns.ts").read
+      declared = source[/DEEP_LINK_PATTERNS\s*=\s*\[(.*?)\]/m, 1].to_s.scan(/"([^"]+)"/).flatten
+      unclaimed = source[/IOS_UNCLAIMED_PATTERNS\s*=\s*\[(.*?)\]/m, 1].to_s.scan(/"([^"]+)"/).flatten
 
       # An empty list would make this pass while comparing nothing, which reads
       # exactly like agreement.
       expect(declared).not_to be_empty
-      expect(served).to match_array(declared | ["/bill_of_the_month"])
+      expect(unclaimed).not_to be_empty
+      expect(served.take(unclaimed.size)).to eq(unclaimed.map { |pattern| "NOT #{pattern}" })
+      expect(served.drop(unclaimed.size)).to match_array(declared | ["/bill_of_the_month"])
+    end
+
+    # @lat: [[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]]
+    it "leaves the organization position form to the web, ahead of the organization claim" do
+      host! "example.test"
+      get "/.well-known/apple-app-site-association"
+
+      paths = JSON.parse(response.body).dig("applinks", "details", 0, "paths")
+      expect(paths).to include("NOT /organizations/*/positions/*")
+      expect(paths.index("NOT /organizations/*/positions/*")).to be < paths.index("/organizations/*")
+      expect(Rails.application.routes.recognize_path("/organizations/1/positions/new", method: :get))
+        .to include(controller: "organizations/positions", action: "new")
     end
 
     it "advertises only paths that are real Sway routes" do
@@ -101,7 +123,8 @@ RSpec.describe "WellKnown", type: :request do
 
       redirect_only_paths = ["/bill_of_the_week"]
 
-      unroutable = (paths - redirect_only_paths).reject do |pattern|
+      claimed = paths.reject { |pattern| pattern.start_with?("NOT ") }
+      unroutable = (claimed - redirect_only_paths).reject do |pattern|
         # A '*' stands for whatever a real link carries in that position; an id
         # is the only shape any of these patterns takes.
         Rails.application.routes.recognize_path(pattern.tr("*", "1"), method: :get)

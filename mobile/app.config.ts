@@ -90,6 +90,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             associatedDomains: [
                 "webcredentials:app.sway.vote",
                 "applinks:sway.vote",
+                // @lat: [[mobile-expo-config#Deployment identifiers come from the environment#Links are claimed on both Sway hosts]]
+                "applinks:app.sway.vote",
                 ...devTunnelDomains(devTunnelHost),
             ],
             supportsTablet: false,
@@ -121,6 +123,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
                     action: "VIEW",
                     autoVerify: true,
                     data: androidLinkData("sway.vote"),
+                    category: ["BROWSABLE", "DEFAULT"],
+                },
+                {
+                    action: "VIEW",
+                    autoVerify: true,
+                    data: androidLinkData("app.sway.vote"),
                     category: ["BROWSABLE", "DEFAULT"],
                 },
                 // Dev tunnel parity with iOS associatedDomains. autoVerify still requires

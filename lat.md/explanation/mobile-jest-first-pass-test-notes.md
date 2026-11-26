@@ -171,7 +171,7 @@ Deep link route configurations are validated directly without mounting native na
 
 Tests inspect linking configurations directly to avoid loading `react-native-screens` native libraries unmocked by `jest-expo`. Deprecation of the `PreviousBills` route is verified via an intentional `@ts-expect-error` directive against `BillsStackParamList`.
 
-The bill detail cases resolve the link through `getStateFromPath`, one stack at a time. The full config registers `bills/:id` under both Home and Bills, and `getStateFromPath` throws on a config with a duplicate pattern, so it throws for every path, `legislators` included, while the duplicate stands. Each stack is resolved alone until one of the two registrations is removed.
+The bill detail cases resolve the link through `getStateFromPath` against the whole link table. That works because every pattern in the table maps to one screen ([[well-known-controller-notes#Mobile: linking.ts#Why each path maps to one screen]]); `getStateFromPath` throws for every path when one pattern is registered twice.
 
 ## LegislatorDetailScreen.test.tsx / MembershipDetailScreen.test.tsx
 

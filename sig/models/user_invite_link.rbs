@@ -4,6 +4,7 @@ class UserInviteLink < ApplicationRecord
     INVITED_BY_SESSION_KEY: Symbol
 
     def self.from: (user: User) -> UserInviteLink
+    def self.inviter_id_for: (untyped attribution_key) -> Integer?
     def short_url: -> String
 
     private

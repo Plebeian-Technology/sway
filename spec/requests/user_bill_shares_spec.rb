@@ -244,5 +244,66 @@ RSpec.describe "UserBillShares", type: :request do
       expect(flash[:alert]).to eq("Bill not found.")
       expect(share.reload.redeemed_at).to be_nil
     end
+
+    context "when requested as JSON (mobile / API)" do
+      let!(:share) { create(:user_bill_share, user:, bill:) }
+      let(:other_user) { create(:user, is_registration_complete: true, registration_status: "completed") }
+      let(:not_found_body) { {"error" => {"code" => "not_found", "message" => "Bill not found."}} }
+
+      def bearer_headers_for(bearer)
+        raw_token = "test-bearer-token-#{SecureRandom.hex(8)}"
+        ApiKey.create!(bearer:, token: raw_token)
+        {"Authorization" => "Bearer #{raw_token}", "Accept" => "application/json"}
+      end
+
+      before { session_hash.clear }
+
+      it "returns the share resource and redeems when a different user opens it" do
+        get "/bill_shares/#{share.share_uuid}", headers: bearer_headers_for(other_user)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq(
+          "id" => share.id,
+          "bill_id" => bill.id,
+          "share_uuid" => share.share_uuid,
+          "share_path" => "/bill_shares/#{share.share_uuid}"
+        )
+        expect(share.reload.redeemed_at).to be_present
+      end
+
+      it "returns the share resource and does not redeem when the sharer opens it" do
+        get "/bill_shares/#{share.share_uuid}", headers: bearer_headers_for(user)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["bill_id"]).to eq(bill.id)
+        expect(share.reload.redeemed_at).to be_nil
+      end
+
+      it "returns the share resource and redeems for an anonymous JSON request" do
+        get "/bill_shares/#{share.share_uuid}", headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["bill_id"]).to eq(bill.id)
+        expect(share.reload.redeemed_at).to be_present
+      end
+
+      it "returns 404 not_found and redeems nothing for an unknown share_uuid" do
+        get "/bill_shares/non-existent-uuid", headers: bearer_headers_for(other_user)
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.parsed_body).to eq(not_found_body)
+        expect(share.reload.redeemed_at).to be_nil
+      end
+
+      it "returns 404 not_found without redeeming when the bill is archived" do
+        bill.update_column(:archived_at, Time.current)
+
+        get "/bill_shares/#{share.share_uuid}", headers: bearer_headers_for(other_user)
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.parsed_body).to eq(not_found_body)
+        expect(share.reload.redeemed_at).to be_nil
+      end
+    end
   end
 end

@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import BillsListScreen from "../screens/BillsListScreen";
 import BillDetailScreen from "../screens/BillDetailScreen";
+import BillShareScreen from "../screens/BillShareScreen";
 import { useTheme } from "../theme/ThemeProvider";
 import { navigatorScreenOptions, pushedScreenOptions } from "./headerOptions";
 import type { BillsStackParamList } from "./types";
@@ -23,6 +24,11 @@ export default function BillsStack() {
             <Stack.Screen
                 name="BillDetail"
                 component={BillDetailScreen}
+                options={pushedScreenOptions(colorScheme, "Bills")}
+            />
+            <Stack.Screen
+                name="BillShare"
+                component={BillShareScreen}
                 options={pushedScreenOptions(colorScheme, "Bills")}
             />
         </Stack.Navigator>

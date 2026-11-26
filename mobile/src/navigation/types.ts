@@ -45,6 +45,7 @@ export type BillsStackParamList = {
     BillsList: { mode?: "all_bills" | "past_bills_of_the_month" } | undefined;
     PastBillsOfTheMonth?: { mode?: "all_bills" | "past_bills_of_the_month" } | undefined;
     BillDetail: { id: number };
+    BillShare: { shareUuid: string };
 };
 
 export type LegislatorsStackParamList = {
@@ -67,6 +68,7 @@ export type ProfileStackParamList = {
     DeleteAccount: undefined;
     MembershipsList: undefined;
     MembershipDetail: { orgId: number; id: number; tab?: string };
+    MembershipInviteConfirm: { orgId: number; token: string };
 };
 
 // @lat: [[mobile-admin-area#The admin stack]]

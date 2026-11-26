@@ -37,10 +37,12 @@ Feed, Home, Bills, Legislators, Organizations, Profile, Admin.
 
 It stops a later edit to `AppDrawer.tsx` from quietly bringing the short "Orgs" label back, or from dropping a `drawerLabel` and letting the item fall back to whatever the screen's `name=` prop happens to say.
 
-## Why linking.test.ts checks the path pattern string instead of calling getStateFromPath
+## How linking.test.ts checks where a path lands
 
-React Navigation's `getStateFromPath` turns a path into the values a screen receives. Through the `Profile.MembershipDetail` entry, `/organizations/42/memberships/100` should come out as `orgId="42"` and `id="100"`.
+`mobile/__tests__/navigation/linking.test.ts` resolves real paths through `linking.getStateFromPath` and checks the screen and values each one produces.
 
-Running `getStateFromPath` for real needs the whole navigator tree, so this test checks the path pattern string on its own instead. Opening a real link and watching where it lands is verified by hand.
+That call needs only the link table in [[mobile/src/navigation/linking.ts]], not a mounted navigator tree, so the test runs without rendering. It is also the entry point the app uses, so invite links, which store a key and open no screen, go through the same code in the test as on the phone.
 
-The `Profile.MembershipDetail` and `Profile.MembershipsList` route mappings were written before `linking.ts` covered those screens, so at first they failed on purpose.
+The `Profile.MembershipDetail` and `Profile.MembershipsList` mappings are also pinned as exact pattern strings. Those tests were written before `linking.ts` covered the two screens, so at first they failed on purpose, and they still catch a pattern renamed by mistake.
+
+The step before this one, the phone's operating system handing a tapped address to the app, is not covered here. It depends on the published app-link files and is verified by hand on a device.

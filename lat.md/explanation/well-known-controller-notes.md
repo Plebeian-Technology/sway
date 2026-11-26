@@ -71,9 +71,8 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
 
 `DEEP_LINK_PATTERNS` is the claimed list. Rails serves it in the ownership file, and a web link to anything else here opens the browser however well the app could answer it. The claimed paths are:
 
-- `bills/:id` — a bill's detail. It is registered in both the Home and
-  Bills stacks, so the link opens inside whichever section the reader was
-  already in.
+- `bills/:id` — a bill's detail, in the Bills section
+- `bill_shares/:shareUuid` — a bill share link, which opens the shared bill ([[well-known-controller-notes#Mobile: linking.ts#A bill share link opens the shared bill]])
 - `bills` — the All Bills list
 - `past_bills_of_the_month` — the Past Bills of the Month list
 - `legislators/:id` — a legislator's detail
@@ -82,12 +81,62 @@ The list of prefixes must contain both `https://sway.vote` and `https://app.sway
   redirects there so old links still open the app. Underscored, because that is the Rails route;
   a hyphen here matched no address at all.
 - `organizations/:orgId/memberships/:id` — one membership
-- `organizations/:id` — an organization's detail
+- `organizations/:id` — an organization's detail. On iOS the claim leaves out `organizations/:id/positions/…`, the admin's web form for adding a position ([[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]])
 - `organizations` — the organizations list
+- `feed` — the feed
+- `users/organization_memberships` — the memberships list
+- `profile` — the profile screen, at the same path as the web Profile page ([[web-profile-page#Web profile page]])
+- `s/:key`, `invite/:userId/:inviteUuid` and `invites/:userId/:inviteUuid` — a user invite link, which opens no screen ([[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]])
 
 The `bills/:id` entry parses its id with `Number`, so a link's id reaches the bill screen as a number. A value that is not a positive integer, such as `..%2Fsomething`, shows the bill screen's empty state and never requests a path under `/bills/`. See [[mobile-bill-detail-and-bill-of-the-month-screens#BillDetailScreen and BillOfTheMonthScreen#Loading and error states]].
 
-`feed`, `profile`, `sign-in`, and `users/organization_memberships` (the memberships list) stay unclaimed on purpose: each shows something that differs by who is signed in. A public page reads the same for everyone, so opening it in the app is simply better; a personal page does not — a web link that opens the app on a sign-in wall is worse than a browser page that shows the reader why. Those four answer `sway://` links from inside the app only.
+The `sign-in` path is the only one left unclaimed, and only because it is not a web address. It answers `sway://` links from inside the app only.
+
+### Signed-in pages are claimed too
+
+The feed, the memberships list and the profile page open the app like any public page, although each shows something that differs by who is signed in.
+
+They were once left unclaimed. A public page reads the same for everyone, so opening it in the app was simply better; a personal page opened the app on a sign-in wall, and the link was lost by the time the person had signed in, which was worse than a browser page that showed the reader why.
+
+That objection is gone. A link that arrives before the main screens is now kept and opened after sign-in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]), so the person lands where the link pointed either way. With it gone, the rule is the simple one: every Sway web address the app has a screen for opens the app when the app is installed.
+
+### The organization position form stays on the web
+
+An organization admin's web form for a new position, `GET /organizations/:id/positions/new`, has no app screen, so a tap on it must open the browser.
+
+On iOS, Rails puts `NOT /organizations/*/positions/*` at the top of the ownership file's path list. Apple reads that list in order and stops at the first entry that matches, so the exclusion has to come before `/organizations/*`, whose star matches any rest of the path, slashes included. The excluded pattern lives in `IOS_UNCLAIMED_PATTERNS` in [[mobile/src/navigation/deepLinkPatterns.ts]] beside the claimed list, and the request spec checks that Rails serves it first.
+
+Android still opens the app for that address, which shows nothing there. Its link rules cannot leave one path out of a claim: a `pathPrefix` or `pathPattern` rule has no negation and no character class, so `/organizations/` cannot be narrowed to one segment after it. `pathAdvancedPattern` could say that, but only Android 12 and later read it, and the app supports Android 9, where the organization links would stop opening the app at all. Android 15's exclusion groups are not something the Expo config can write. An admin on Android with the app installed reaches the form through the web app's own navigation or by opening the link in a browser.
+
+### A bill share link opens the shared bill
+
+A share link names a share, not a bill, so the app asks the server which bill it is before it can show anything.
+
+[[mobile/src/screens/BillShareScreen.tsx#BillShareScreen]] sits in the Bills section. It requests the same `GET /bill_shares/:share_uuid` address the link points at and receives the share as JSON, which is also what redeems the share, so a tap counts for the sharer exactly as it does on the web. It then replaces itself with the bill's detail screen, so Back does not return to a spent loading screen.
+
+A share uuid that is not hex digits and hyphens never reaches the server, the same guard `bills/:id` has. That case, an unknown share and a failed request all show "Bill not found." with a button to the bills list, the words the web uses for the same link.
+
+### Invite links store a key and open no screen
+
+A user invite link gives the app nothing to show, so the app remembers who invited the person and stays where it is.
+
+The paths are `s/<key>`, the short link, and `invite/<user id>/<invite uuid>` with its twin `invites/…`. `linking.getStateFromPath` in [[mobile/src/navigation/linking.ts]] recognises them before React Navigation looks for a screen, stores `s:<key>` or `invite:<invite uuid>` in [[mobile/src/state/inviteAttribution.ts#inviteAttribution]], and answers that there is no screen. Those are the two forms the web writes into its own funnel cookie, so the server reads one format from both.
+
+The key lives in memory for the life of the app process, and a newer invite link replaces an older one. Only letters, digits, hyphens and underscores are accepted, so a crafted link cannot place other text in a request.
+
+Because they open no screen, the three invite patterns are the one named exemption in the test that every claimed address has a screen. That test also fails if an exempted pattern stops being claimed or gains a screen, so the exemption cannot outlive its reason.
+
+Claiming `/s/*` has a cost on the web side. With the app installed, a tap on a short link never reaches the server, so the shortener's click count and the web funnel cookie record nothing for it. Every shortened address today belongs to a user invite link, so the claim takes nothing else with it.
+
+An invite link is never kept for replay after sign-in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]). Replaying it would store the key a second time, after registration had already used and cleared it.
+
+### Why each path maps to one screen
+
+A path that two screens share stops every link, not only links to that path.
+
+React Navigation builds its whole path table before it matches anything, and it throws when one pattern resolves to two screens. The link handler catches the error, logs it and opens nothing. `bills/:id` was once mapped under both Home and Bills, and while it was, no web link and no `sway://` link opened any screen.
+
+The bill detail screen is still registered in several stacks for navigation inside the app. Only the link table names it once, under Bills, which is where a push notification and the feed already open a bill.
 
 ### Why androidPathData must never hand back a prefix containing a star
 

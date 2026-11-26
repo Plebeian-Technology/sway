@@ -19,6 +19,7 @@ import { Pressable } from "../components/ui/Pressable";
 import { PreferenceToggle } from "../components/PreferenceToggle";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import type { ProfileStackParamList } from "../navigation/types";
+import { inviteAttribution } from "../state/inviteAttribution";
 
 const CONNECTION_ERROR_MESSAGE = "Could not reach Sway. Check your connection and try again.";
 const UPDATE_ERROR_MESSAGE = "Could not update address.";
@@ -116,6 +117,7 @@ export default function AddressScreen() {
 
     const finishAddressSave = async () => {
         setNotLocatedMessage(null);
+        if (isOnboarding) inviteAttribution.clear();
         const loaded = await clearCachesAndRefresh();
         if (loaded === false && isOnboarding) {
             setSavedButNotLoaded(true);
@@ -128,6 +130,8 @@ export default function AddressScreen() {
         setError(null);
         setNotLocatedMessage(null);
         setSubmitting(true);
+        // @lat: [[mobile-auth-and-onboarding-flow#AddressScreen#Onboarding sends the invite the app was opened with]]
+        const inviteKey = isOnboarding ? inviteAttribution.get() : null;
         try {
             const response = (await apiClient.post("/sway_registration", {
                 sway_registration: {
@@ -142,6 +146,7 @@ export default function AddressScreen() {
                     place_types: toSubmit.place_types,
                     is_voter_registration_address_confirmed: isVoterRegistrationAddressConfirmed,
                     ...(!isOnboarding ? { confirm_deactivate_legislators: true } : {}),
+                    ...(inviteKey !== null ? { invite_attribution_key: inviteKey } : {}),
                 },
             })) as { address_located?: boolean; message?: string } | null;
             if (response?.address_located === false) {

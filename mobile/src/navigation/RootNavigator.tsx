@@ -5,6 +5,7 @@ import { View } from "react-native";
 import AppDrawer from "./AppDrawer";
 import AuthStack from "./AuthStack";
 import OnboardingStack from "./OnboardingStack";
+import { usePendingDeepLink } from "./pendingDeepLink";
 import { useSession } from "../hooks/useSession";
 import { useUserProfile } from "../hooks/useUserProfile";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -13,6 +14,8 @@ import LoadingScreen from "../screens/LoadingScreen";
 export default function RootNavigator() {
     const { isAuthenticated, loading: sessionLoading } = useSession();
     const { user, loading: userLoading, refresh } = useUserProfile();
+    const mainScreensReady = !sessionLoading && isAuthenticated && user?.is_registration_complete === true;
+    usePendingDeepLink(mainScreensReady);
 
     if (sessionLoading || (isAuthenticated && userLoading && user === null)) {
         return <LoadingScreen testID="root-navigator-loading" />;

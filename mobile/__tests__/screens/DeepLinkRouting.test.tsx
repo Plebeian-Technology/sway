@@ -45,10 +45,9 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
         expect(state?.routes[0].state?.routes.map((route) => route.name)).toEqual(["FeedList"]);
     });
 
-    test("HomeStack registers BillOfTheMonth + BillDetail paths", () => {
+    test("HomeStack registers the BillOfTheMonth path", () => {
         const home = (linking.config as any).screens.Home.screens;
         expect(home.BillOfTheMonth.path).toBe("bill_of_the_month");
-        expect(home.BillDetail.path).toBe("bills/:id");
     });
 
     test.each(["/bill_of_the_month", "/bill_of_the_week"])(
@@ -81,7 +80,7 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
         expect(orgs.OrgDetail).toBe("organizations/:id");
     });
 
-    test("ProfileStack registers Profile path", () => {
+    test("ProfileStack registers the web profile path", () => {
         const profile = (linking.config as any).screens.Profile.screens;
         expect(profile.ProfileHub).toBe("profile");
     });
@@ -91,10 +90,11 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
         expect(auth).toBe("sign-in");
     });
 
-    test("BillDetail screen is registered in BOTH HomeStack AND BillsStack (cross-tab deep-link surface)", () => {
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#Why each path maps to one screen]]
+    test("BillDetail is linked once, in BillsStack", () => {
         const home = (linking.config as any).screens.Home.screens;
         const bills = (linking.config as any).screens.Bills.screens;
-        expect(home.BillDetail.path).toBe("bills/:id");
+        expect(home.BillDetail).toBeUndefined();
         expect(bills.BillDetail.path).toBe("bills/:id");
     });
 
@@ -139,56 +139,52 @@ describe("linking config — D-42 universal links + D1 dual-host", () => {
     });
 });
 
-describe.each(["Home", "Bills"] as const)(
-    "bill deep links in the %s stack resolve the id before the bill is requested",
-    (stack) => {
-        type StateLike = { routes?: { name: string; params?: Record<string, unknown>; state?: StateLike }[] };
+describe("bill deep links resolve the id before the bill is requested", () => {
+    type StateLike = { routes?: { name: string; params?: Record<string, unknown>; state?: StateLike }[] };
 
-        const billDetailParams = (path: string): Record<string, unknown> | undefined => {
-            const screens = (linking.config as { screens: Record<string, unknown> }).screens;
-            const find = (state: StateLike | undefined): Record<string, unknown> | undefined => {
-                for (const route of state?.routes ?? []) {
-                    if (route.name === "BillDetail") return route.params;
-                    const found = find(route.state);
-                    if (found) return found;
-                }
-                return undefined;
-            };
-            const state = getStateFromPath(path, { screens: { [stack]: screens[stack] } } as typeof linking.config);
-            return find(state as StateLike);
+    const billDetailParams = (path: string): Record<string, unknown> | undefined => {
+        const find = (state: StateLike | undefined): Record<string, unknown> | undefined => {
+            for (const route of state?.routes ?? []) {
+                if (route.name === "BillDetail") return route.params;
+                const found = find(route.state);
+                if (found) return found;
+            }
+            return undefined;
         };
+        const state = getStateFromPath(path, linking.config);
+        return find(state as StateLike);
+    };
 
-        const renderBillDetail = (params: Record<string, unknown> | undefined) =>
-            render(
-                <ThemeProvider initialMode="light">
-                    <BillDetailScreen route={{ params: params as { id: number } }} />
-                </ThemeProvider>,
-            );
-
-        beforeEach(() => {
-            mockGet.mockReset();
-            mockGet.mockReturnValue(new Promise(() => {}));
-        });
-
-        test.each(["..%2Fsomething", "1.5", "Infinity", "-7"])(
-            "id %s never requests a path other than /bills/<integer>",
-            (segment) => {
-                renderBillDetail(billDetailParams(`bills/${segment}`));
-
-                const requested = mockGet.mock.calls.map(([path]) => String(path).split("?")[0]);
-                expect(requested.filter((path) => !/^\/bills\/\d+$/.test(path))).toEqual([]);
-                expect(screen.getByTestId("bill-detail-error")).toBeTruthy();
-            },
+    const renderBillDetail = (params: Record<string, unknown> | undefined) =>
+        render(
+            <ThemeProvider initialMode="light">
+                <BillDetailScreen route={{ params: params as { id: number } }} />
+            </ThemeProvider>,
         );
 
-        test("a valid integer id opens that bill as a number", () => {
-            const params = billDetailParams("bills/42");
-            expect(params).toEqual({ id: 42 });
+    beforeEach(() => {
+        mockGet.mockReset();
+        mockGet.mockReturnValue(new Promise(() => {}));
+    });
 
-            renderBillDetail(params);
+    test.each(["..%2Fsomething", "1.5", "Infinity", "-7"])(
+        "id %s never requests a path other than /bills/<integer>",
+        (segment) => {
+            renderBillDetail(billDetailParams(`bills/${segment}`));
 
-            expect(mockGet.mock.calls[0][0]).toBe("/bills/42?with=legislator");
-            expect(screen.getByTestId("bill-detail-skeleton")).toBeTruthy();
-        });
-    },
-);
+            const requested = mockGet.mock.calls.map(([path]) => String(path).split("?")[0]);
+            expect(requested.filter((path) => !/^\/bills\/\d+$/.test(path))).toEqual([]);
+            expect(screen.getByTestId("bill-detail-error")).toBeTruthy();
+        },
+    );
+
+    test("a valid integer id opens that bill as a number", () => {
+        const params = billDetailParams("bills/42");
+        expect(params).toEqual({ id: 42 });
+
+        renderBillDetail(params);
+
+        expect(mockGet.mock.calls[0][0]).toBe("/bills/42?with=legislator");
+        expect(screen.getByTestId("bill-detail-skeleton")).toBeTruthy();
+    });
+});

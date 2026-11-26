@@ -47,7 +47,7 @@ On a pushed screen such as Bill Detail, the same edge swipe is the iOS back gest
 
 `FeedStack` ([[mobile/src/navigation/FeedStack.tsx]]) is the Feed drawer item: the newest-first feed (`FeedList`) and one bill's detail (`BillDetail`). `HomeStack` (`mobile/src/navigation/HomeStack.tsx`) is the "Bill of the Month" drawer item: the Bill of the Month, and one bill's detail.
 
-The same detail screen is registered across `FeedStack`, `HomeStack`, `BillsStack`, and `LegislatorsStack`. That is what lets a link to a bill open inside whichever section the reader was already in, rather than moving them to another one.
+The same detail screen is registered across `FeedStack`, `HomeStack`, `BillsStack`, and `LegislatorsStack`. That is what lets a bill opened from inside the app stay in the section the reader was already in, rather than moving them to another one. A web link is different: it names the detail screen once, under Bills ([[well-known-controller-notes#Mobile: linking.ts#Why each path maps to one screen]]).
 
 `BillsStack` (`mobile/src/navigation/BillsStack.tsx`) is the Bills drawer item: the list of bills (`BillsList` and `PastBillsOfTheMonth`), and one bill's detail. Its initial route is `PastBillsOfTheMonth`, so opening Bills from the drawer shows Past Bills of the Month ([[mobile-bills-list-screen#BillsListScreen#Opens on Past Bills of the Month]]). The detail screen is registered under the same route name here as it is in `HomeStack`, for the same reason.
 

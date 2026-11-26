@@ -75,13 +75,15 @@ class SwayRegistrationController < ApplicationController
     previous_legislators = clear_previous_unlocated_address(u, previous_address, address_instance)
     skipped_locales = [] #: Array[SwayLocale]
     resolved_locales = [] #: Array[SwayLocale]
+    # @lat: [[identity-and-access#The app names its inviter with an attribution key]]
+    inviter_id = invited_by_id.presence || UserInviteLink.inviter_id_for(sway_registration_params[:invite_attribution_key])
     # @lat: [[sway-registration-controller-notes#Why one locale's failed lookup is skipped and reported]]
     address_instance.sway_locales.each do |sway_locale|
       service = SwayRegistrationService.new(
         u,
         address_instance,
         sway_locale,
-        invited_by_id: invited_by_id
+        invited_by_id: inviter_id
       )
       ActiveRecord::Base.transaction { service.call }
       if service.skipped_resolution_errors.any?
@@ -509,6 +511,7 @@ class SwayRegistrationController < ApplicationController
       :is_voter_registration_address_confirmed,
       :confirm_deactivate_legislators,
       :change_address,
+      :invite_attribution_key,
       place_types: []
     )
   end

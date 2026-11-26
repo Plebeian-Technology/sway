@@ -10,7 +10,17 @@ export const DEEP_LINK_PATTERNS = [
     "/organizations/*/memberships/*",
     "/organizations/*",
     "/organizations",
+    "/s/*",
+    "/invite/*/*",
+    "/invites/*/*",
+    "/bill_shares/*",
+    "/feed",
+    "/users/organization_memberships",
+    "/profile",
 ];
+
+// @lat: [[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]]
+export const IOS_UNCLAIMED_PATTERNS = ["/organizations/*/positions/*"];
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
 export const androidPathData = (pattern: string): Record<string, string> => {

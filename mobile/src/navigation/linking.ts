@@ -1,9 +1,56 @@
-import type { LinkingOptions } from "@react-navigation/native";
+import { getStateFromPath, type LinkingOptions } from "@react-navigation/native";
+import { Linking } from "react-native";
+import { discardPendingDeepLink, keepLaunchLink, subscribeToLinks } from "./pendingDeepLink";
 import type { RootParamList } from "./types";
+import { inviteAttribution } from "../state/inviteAttribution";
+
+const LINK_SAFE = /^[A-Za-z0-9_-]+$/;
+const PREFIXES = ["https://sway.vote", "https://app.sway.vote", "sway://"];
+// ms
+const LAUNCH_LINK_TIMEOUT_MS = 150;
+
+// @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
+const inviteAttributionKeyFor = (path: string): string | null => {
+    const [kind, ...rest] = path.split(/[?#]/)[0].split("/").filter(Boolean);
+    const value = rest[rest.length - 1] ?? "";
+    if (!LINK_SAFE.test(value)) return null;
+
+    if (kind === "s" && rest.length === 1) return `s:${value}`;
+    if ((kind === "invite" || kind === "invites") && rest.length === 2) return `invite:${value}`;
+    return null;
+};
+
+const isInviteLink = (url: string): boolean => {
+    const prefix = PREFIXES.find((candidate) => url.startsWith(candidate));
+    return prefix !== undefined && inviteAttributionKeyFor(url.slice(prefix.length)) !== null;
+};
+
+const launchUrl = (): Promise<string | null> =>
+    Promise.race([
+        Linking.getInitialURL(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), LAUNCH_LINK_TIMEOUT_MS)),
+    ]);
 
 // @lat: [[well-known-controller-notes#Mobile: linking.ts]]
 export const linking: LinkingOptions<RootParamList> = {
-    prefixes: ["https://sway.vote", "https://app.sway.vote", "sway://"],
+    prefixes: PREFIXES,
+    // @lat: [[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]
+    async getInitialURL() {
+        const url = await launchUrl();
+        if (!url) return null;
+        if (isInviteLink(url)) return url;
+        return keepLaunchLink(url);
+    },
+    subscribe: subscribeToLinks,
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
+    getStateFromPath(path, options) {
+        const inviteKey = inviteAttributionKeyFor(path);
+        if (inviteKey === null) return getStateFromPath(path, options);
+
+        inviteAttribution.set(inviteKey);
+        discardPendingDeepLink();
+        return undefined;
+    },
     config: {
         screens: {
             Auth: "sign-in",
@@ -15,7 +62,6 @@ export const linking: LinkingOptions<RootParamList> = {
             Home: {
                 screens: {
                     BillOfTheMonth: { path: "bill_of_the_month", alias: ["bill_of_the_week"] },
-                    BillDetail: { path: "bills/:id", parse: { id: Number } },
                 },
             },
             Bills: {
@@ -23,6 +69,7 @@ export const linking: LinkingOptions<RootParamList> = {
                     BillsList: "bills",
                     PastBillsOfTheMonth: "past_bills_of_the_month",
                     BillDetail: { path: "bills/:id", parse: { id: Number } },
+                    BillShare: "bill_shares/:shareUuid",
                 },
             },
             Legislators: {
@@ -43,6 +90,10 @@ export const linking: LinkingOptions<RootParamList> = {
                     ProfileHub: "profile",
                     MembershipsList: "users/organization_memberships",
                     MembershipDetail: "organizations/:orgId/memberships/:id",
+                    MembershipInviteConfirm: {
+                        path: "organizations/:orgId/membership_invites/:token/confirm_accept",
+                        parse: { orgId: Number },
+                    },
                 },
             },
         },

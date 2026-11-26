@@ -1,4 +1,4 @@
-import { DEEP_LINK_PATTERNS, androidPathData } from "../../src/navigation/deepLinkPatterns";
+import { DEEP_LINK_PATTERNS, IOS_UNCLAIMED_PATTERNS, androidPathData } from "../../src/navigation/deepLinkPatterns";
 import { linking } from "../../src/navigation/linking";
 
 // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
@@ -31,6 +31,24 @@ describe("androidPathData", () => {
         expect(androidPathData("/organizations/*/memberships/*")).toEqual({
             pathPattern: "/organizations/.*/memberships/.*",
         });
+    });
+
+    it("claims the user invite links", () => {
+        expect(DEEP_LINK_PATTERNS).toEqual(expect.arrayContaining(["/s/*", "/invite/*/*", "/invites/*/*"]));
+        expect(androidPathData("/s/*")).toEqual({ pathPrefix: "/s/" });
+        expect(androidPathData("/invite/*/*")).toEqual({ pathPattern: "/invite/.*/.*" });
+        expect(androidPathData("/invites/*/*")).toEqual({ pathPattern: "/invites/.*/.*" });
+    });
+
+    it("claims bill share links", () => {
+        expect(DEEP_LINK_PATTERNS).toContain("/bill_shares/*");
+        expect(androidPathData("/bill_shares/*")).toEqual({ pathPrefix: "/bill_shares/" });
+    });
+
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#Signed-in pages are claimed too]]
+    it.each(["/feed", "/users/organization_memberships", "/profile"])("claims the signed-in page %s", (path) => {
+        expect(DEEP_LINK_PATTERNS).toContain(path);
+        expect(androidPathData(path)).toEqual({ path });
     });
 
     // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
@@ -83,13 +101,38 @@ describe("every claimed address has a screen that answers it", () => {
         });
     };
 
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]]
+    const attributionOnlyPatterns = ["/s/*", "/invite/*/*", "/invites/*/*"];
+
     // @lat: [[well-known-controller-notes#Mobile: deepLinkPatterns.ts]]
     it("finds a screen for each one", () => {
         const paths = routePaths();
         expect(paths).not.toHaveLength(0);
 
-        const unanswered = DEEP_LINK_PATTERNS.filter((pattern) => !paths.some((route) => answers(pattern, route)));
+        const unanswered = DEEP_LINK_PATTERNS.filter(
+            (pattern) => !attributionOnlyPatterns.includes(pattern) && !paths.some((route) => answers(pattern, route)),
+        );
 
         expect(unanswered).toEqual([]);
+    });
+
+    // @lat: [[well-known-controller-notes#Mobile: linking.ts#The organization position form stays on the web]]
+    it("leaves the organization position form to the web on iOS, and no screen answers it", () => {
+        const paths = routePaths();
+
+        expect(IOS_UNCLAIMED_PATTERNS).toEqual(["/organizations/*/positions/*"]);
+        for (const pattern of IOS_UNCLAIMED_PATTERNS) {
+            expect(DEEP_LINK_PATTERNS).not.toContain(pattern);
+            expect(paths.some((route) => answers(pattern, route))).toBe(false);
+        }
+    });
+
+    it("exempts only patterns that are claimed and have no screen", () => {
+        const paths = routePaths();
+
+        for (const pattern of attributionOnlyPatterns) {
+            expect(DEEP_LINK_PATTERNS).toContain(pattern);
+            expect(paths.some((route) => answers(pattern, route))).toBe(false);
+        }
     });
 });

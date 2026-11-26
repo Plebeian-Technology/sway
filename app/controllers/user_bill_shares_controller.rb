@@ -24,12 +24,20 @@ class UserBillSharesController < ApplicationController
     share_uuid = params[:share_uuid]
     share = UserBillShare.find_by(share_uuid:) if share_uuid.is_a?(String) && share_uuid.present?
     if share.nil? || share.bill.nil?
-      redirect_to bills_path, alert: "Bill not found."
+      if mobile_api_request?
+        render_error(code: "not_found", message: "Bill not found.", status: :not_found)
+      else
+        redirect_to bills_path, alert: "Bill not found."
+      end
       return
     end
 
     share.redeem!(opener: current_user)
-    redirect_to bill_path(share.bill_id)
+    if mobile_api_request?
+      render json: UserBillShareResource.new(share).serializable_hash, status: :ok
+    else
+      redirect_to bill_path(share.bill_id)
+    end
   end
 
   private

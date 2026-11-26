@@ -21,6 +21,30 @@ For a signed-in person, the loading screen also shows while their first profile 
 
 Onboarding is only for a user whose profile loaded and says registration is incomplete. Without the retry screen, a person who finished sign-up long ago and signs in on a new phone during a brief outage would hold no cached profile, receive the signed-out payload with no user, and land on the address form meant for brand-new users.
 
+### A link that arrives before the main screens is kept
+
+A link tapped while the person is signed out or still onboarding opens its screen once the main drawer shows.
+
+The sign-in and onboarding stacks hold none of the screens a link names, so React Navigation finds nowhere to go and lets the link fall. [[mobile/src/navigation/pendingDeepLink.ts#subscribeToLinks]] is the link subscription the navigation container uses: it passes every link on as before, and remembers the most recent one that came in while the drawer was not showing. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]], called by `RootNavigator`, hands the remembered link back to React Navigation's own link handler when the drawer mounts, so a kept link takes the same path as a fresh one.
+
+The link that launched the app is kept the same way. React Navigation would build the container's initial state from it, but the first navigator to mount takes that state. At launch that navigator is the sign-in or onboarding stack, which follows the loading screen and writes its own state over the launch state; the loading screen shown while the profile loads after sign-in then unmounts that stack and clears it. So the linking config's `getInitialURL` hands the launch link to [[mobile/src/navigation/pendingDeepLink.ts#keepLaunchLink]], which remembers it and gives React Navigation no initial link. The drawer then opens it on mount like any kept link, so a person already signed in reaches the linked screen once, not twice. An invite link is the exception: it still goes to React Navigation at launch, because its key must be stored before registration, and it opens no screen.
+
+Signing out forgets the kept link, the launch link included. Otherwise a link tapped by one person would open for the next person to sign in on the same phone. Only an explicit sign-out counts: the `signed_out` announcement that [[mobile-session-hook#The announcements it listens for]] describes. Any other way of ending up signed out forgets nothing, as [[mobile-auth-and-onboarding-flow#RootNavigator#An expired session keeps the kept link and invite]] explains.
+
+### An expired session keeps the kept link and invite
+
+A session that the server rejects ends the person's sign-in without forgetting the kept link or the stored invite key.
+
+The phone keeps its bearer token across launches, and the session hook reads it as signed in without asking the server. When the token has expired or been revoked, the first account load comes back with no user, or a request comes back unauthorised. Either one announces `unauthenticated`, and the app drops to the sign-in screen. If that change counted as a sign-out, a link that launched the app would be lost before the person could act on it: they would sign in and land on the default screen, and an invite key would be wiped so the inviter is never credited. The person who signs in next is almost always the one who tapped the link, so [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]] clears both only on the explicit `signed_out` announcement. The app starting signed out forgets nothing either, because the launch link and invite key are stored before `RootNavigator` first renders.
+
+### Signing out forgets the stored invite
+
+A signed-in person who signs out loses the invite key a link stored, so the next person to register on the phone is not credited to that inviter.
+
+The key from [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]] lives in memory, and only registration would otherwise clear it. [[mobile/src/navigation/pendingDeepLink.ts#usePendingDeepLink]] clears it on an explicit sign-out only.
+
+An expired session and the app starting signed out do not clear it. An invite link that launches the app stores its key before `RootNavigator` first renders, and that key belongs to the person about to sign up.
+
 ## AuthStack
 
 `AuthStack` (`mobile/src/navigation/AuthStack.tsx`) is the sign-in flow, which is only two screens:
@@ -165,6 +189,17 @@ A failed reload falls back to the cached payload from before registration, which
 When `POST /sway_registration` answers with `address_located: false`, [[mobile/src/screens/AddressScreen.tsx#AddressScreen]] stays on the screen, opens the manual fields with the submitted values preserved, and shows a card with the server's message and a continue button.
 
 During onboarding, refreshing immediately would load `is_registration_complete: true` from the Congress fallback and cause `RootNavigator` to unmount the onboarding stack before the user could see the prompt or add a city or ZIP, so cache eviction, `refresh()`, and navigation wait until a corrected submission succeeds or the user presses `PARITY_COPY.address.notLocated.continueCta`. Outside onboarding, `is_registration_complete` is already `true` and the server switch has already committed, so caches clear and `refresh()` runs immediately before showing the card so tapping Cancel never leaves stale profile or SQLite cache state.
+
+
+### Onboarding sends the invite the app was opened with
+
+A new person who opened the app from an invite link is credited to their inviter when they register their address.
+
+The key that [[well-known-controller-notes#Mobile: linking.ts#Invite links store a key and open no screen]] stored goes into the registration request as `invite_attribution_key`, and the server turns it into the inviter ([[identity-and-access#The app names its inviter with an attribution key]]).
+
+Only onboarding sends it. A registered person who changes their address is not being invited by anyone, so the key stays out of that request and stays stored.
+
+The key is cleared once the address is saved and located, or once the person chooses to continue with an address the server could not locate. A failed request, or an unlocated address the person has not yet accepted, leaves it in place, because the person may submit again and that later request is the one that completes registration.
 
 ## Why isOnboarding only changes wording
 

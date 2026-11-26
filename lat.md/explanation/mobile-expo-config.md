@@ -129,6 +129,14 @@ A development run needs only the bundle id, which is not secret, so unlocking a 
 
 iOS creates or uses a passkey only for a domain whose association file it can fetch from the public internet, so against `localhost` every passkey ceremony fails with "not associated with domain". The tunnel host is the one name that works. Reading it from the file `scripts/dip/dev.sh` already loads means a single entry sets the Rails host, the passkey domain and the app's associated domain together, and two copies cannot drift. The fallback prints a warning that names the missing value, because the localhost build otherwise looks healthy until sign-in.
 
+### Links are claimed on both Sway hosts
+
+The built app claims app links on `sway.vote` and on `app.sway.vote`, on iOS through `associatedDomains` and on Android through one verified intent filter per host.
+
+Production builds every link on `app.sway.vote`: emails take their host from the Rails `APP_HOST` setting, and the Share button builds its link from the API base address. While only `sway.vote` was claimed, none of those links opened the app. `sway.vote` stays claimed for links people already hold.
+
+Both hosts carry the same path list, [[mobile/src/navigation/deepLinkPatterns.ts#DEEP_LINK_PATTERNS]], and Rails serves the ownership files on both ([[well-known-controller-notes#Why both hosts are authoritative]]).
+
 ### The dev tunnel host is claimed only when set
 
 With `EXPO_PUBLIC_DEV_TUNNEL_HOST` unset, the developer-mode associated domains and the matching Android intent filter are left out; the `sway.vote` entries stay.

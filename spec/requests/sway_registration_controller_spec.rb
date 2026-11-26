@@ -2205,4 +2205,68 @@ RSpec.describe "/registration", type: :request do
       end
     end
   end
+
+  # @lat: [[identity-and-access#The app names its inviter with an attribution key]]
+  describe "POST /sway_registration with invite_attribution_key" do
+    let!(:sway_locale) { create(:sway_locale, city: "Baltimore", state: "MD", country: "US") }
+    let!(:district) { create(:district, sway_locale: sway_locale) }
+    let!(:legislator) { create(:legislator, district: district) }
+    let!(:inviter) { create(:user) }
+    let!(:invite_link) { inviter.user_invite_link || create(:user_invite_link, user: inviter) }
+    let!(:user) { create(:user, is_registration_complete: false, registration_status: "pending") }
+    let(:address_params) do
+      {
+        street: "100 N Holliday St",
+        city: "Baltimore",
+        region_code: "MD",
+        postal_code: "21202",
+        country: "US",
+        latitude: 39.29105,
+        longitude: -76.61069
+      }
+    end
+
+    before do
+      allow(SwayLocale).to receive(:find_or_create_by_normalized!).and_return(sway_locale)
+      allow_any_instance_of(SwayRegistrationService).to receive(:district_legislators).and_return([legislator]) # rubocop:disable RSpec/AnyInstance
+    end
+
+    def register_with(invite_attribution_key)
+      post "/sway_registration",
+        params: {sway_registration: address_params.merge(invite_attribution_key:)},
+        headers: authenticate_as(user)
+    end
+
+    it "credits the link's user for an invite:<uuid> key" do
+      register_with("invite:#{invite_link.invite_uuid}")
+
+      expect(response).to have_http_status(:ok)
+      expect(Invite.where(invitee: user).pluck(:inviter_id)).to eq([inviter.id])
+    end
+
+    it "credits the link's user for an s:<short key> key" do
+      register_with("s:#{invite_link.shortened_urls.first!.unique_key}")
+
+      expect(response).to have_http_status(:ok)
+      expect(Invite.where(invitee: user).pluck(:inviter_id)).to eq([inviter.id])
+    end
+
+    it "creates no Invite and still completes registration for an unknown key" do
+      register_with("s:unknownkey")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["registration_status"]).to eq("completed")
+      expect(Invite.where(invitee: user)).to be_empty
+    end
+
+    it "credits the invited_by_id cookie's user when both are present" do
+      cookie_inviter = create(:user)
+      cookies_hash[UserInviteLink::INVITED_BY_SESSION_KEY] = cookie_inviter.id
+
+      register_with("invite:#{invite_link.invite_uuid}")
+
+      expect(response).to have_http_status(:ok)
+      expect(Invite.where(invitee: user).pluck(:inviter_id)).to eq([cookie_inviter.id])
+    end
+  end
 end

@@ -64,7 +64,7 @@ A `User` is a verified phone number with passkeys, an address, and per-locale le
 - `UserLegislator` and `UserDistrict` — the two links written at registration for each matched legislator
 - `Address` and `UserAddress` — the geocoded address registration resolves districts from
 - `Invite` and `UserInviteLink` — referral records feeding the sway count
-- [[app/models/user_bill_share.rb#UserBillShare]] — tracks per-user per-bill share link generation and redemption; unique on (user_id, bill_id) and share_uuid; feeds sway influence on redemption
+- [[app/models/user_bill_share.rb#UserBillShare]] — tracks per-user per-bill share link generation and redemption; unique on (user_id, bill_id) and share_uuid; feeds sway influence on redemption; `GET /bill_shares/:share_uuid` redeems, then redirects a browser to the bill and answers a bearer or JSON request with [[app/serializers/user_bill_share_resource.rb#UserBillShareResource]]
 - [[app/models/bill_view.rb#BillView]] — one row per `(user_id, bill_id)` recording distinct signed-in bill views, destroyed with the user
 - `NotificationPreference`, `PushNotificationSubscription`, `UserBillReminder` — notification opt-ins, web push endpoints, per-bill reminders
 

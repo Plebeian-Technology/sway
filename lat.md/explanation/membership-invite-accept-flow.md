@@ -47,7 +47,7 @@ Its submit handler nests the payload under `invite` to match `params.require(:in
 
 `app/frontend/pages/organizations/MembershipInviteConfirm.tsx` asks someone to confirm they are accepting an invitation to join an organization.
 
-`Organizations::MembershipInvitesController#confirm_accept` renders it on a GET. Accepting POSTs to that controller's `#accept` action through `useForm` — never a raw `fetch`. Rails names this page `Pages::ORGANIZATION_INVITE_CONFIRM = "organizations/MembershipInviteConfirm"`.
+`Organizations::MembershipInvitesController#confirm_accept` renders it on a GET. Accepting POSTs to that controller's `#accept` action through `useForm` — never a raw `fetch`. Rails names this page `Pages::ORGANIZATION_INVITE_CONFIRM = "organizations/MembershipInviteConfirm"`. A bearer or JSON request receives the same four props as JSON instead of the page, which is what the mobile app's confirm screen reads.
 
 ## Why members_tab_path pins to the members tab
 
@@ -83,6 +83,20 @@ Nothing is shown as done before the server says so: send the request, wait for t
 When the user arrives through a universal link and the membership is still "pending", `accept()` runs once as the screen appears, guarded by `acceptedRef` so it cannot fire twice.
 
 On success the refresh redraws the screen with `status="active"`. On failure a banner appears with a Retry button.
+
+## Mobile: MembershipInviteConfirmScreen, the confirm step for an emailed link
+
+The link in an invitation email opens [[mobile/src/screens/MembershipInviteConfirmScreen.tsx#MembershipInviteConfirmScreen]] when the app is installed, so the invitee confirms in the app as they would on the web page.
+
+The email link carries a signed token, not a membership id, so [[mobile/src/screens/MembershipDetailScreen.tsx]] and its automatic accept cannot answer it: that screen needs the membership the person does not hold yet. The confirm screen asks the server for the same four props the web page receives, shows the organization and the inviter, and waits for a press. Accepting stays a deliberate act on both surfaces, because opening an email link is not consent to join.
+
+Accept posts to the same `accept` address the web form uses, with the token in the place of the id, and then replaces the screen with the memberships list, which loads fresh and shows the new membership. The token is percent-encoded once, where the screen reads it, before it goes into either request path.
+
+Every failure is shown in the server's own words. A link that cannot be confirmed, such as an expired one, shows the message with a button to the memberships list. A failed accept shows the message above the button and leaves the button usable. A link with no usable organization id or token shows "Invitation not found." and asks the server nothing.
+
+A second invite link can open the screen while it is already showing, because React Navigation updates the open screen's link values in place. The screen then drops what it showed for the first link, its errors included, and loads the new invitation.
+
+A signed-out invitee reaches this screen after signing in ([[mobile-auth-and-onboarding-flow#RootNavigator#A link that arrives before the main screens is kept]]). No new claimed pattern is needed: `/organizations/*` already covers the email link on both platforms.
 
 ## Why UserOrganizationMembershipInvite derives status from timestamps instead of storing a state column
 
