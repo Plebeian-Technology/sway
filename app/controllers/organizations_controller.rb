@@ -94,24 +94,26 @@ class OrganizationsController < ApplicationController
     end
 
     if errored
-      flash[:alert] = "Error Saving Supporting/Opposing Arguments"
-      redirect_to bill_creator_tab_path(
-        bill_creator_tab_param,
-        bill_id: @bill.id,
-        default: :positions_bill_creator_path,
-        event_key: "organizations"
-      ),
-        inertia: {
-          errors: errors
-        }
+      respond_after_write(
+        bill_creator_tab_path(
+          bill_creator_tab_param,
+          bill_id: @bill.id,
+          default: :positions_bill_creator_path,
+          event_key: "organizations"
+        ),
+        alert: "Error Saving Supporting/Opposing Arguments",
+        errors: errors
+      )
     else
-      flash[:notice] = "Supporting/Opposing Arguments Saved"
-      redirect_to bill_creator_tab_path(
-        bill_creator_tab_param,
-        bill_id: @bill.id,
-        default: :positions_bill_creator_path,
-        saved: "Supporting/Opposing Arguments Saved",
-        event_key: "organizations"
+      respond_after_write(
+        bill_creator_tab_path(
+          bill_creator_tab_param,
+          bill_id: @bill.id,
+          default: :positions_bill_creator_path,
+          saved: "Supporting/Opposing Arguments Saved",
+          event_key: "organizations"
+        ),
+        notice: "Supporting/Opposing Arguments Saved"
       )
     end
   end
@@ -131,17 +133,16 @@ class OrganizationsController < ApplicationController
       end
 
     organization = @organization
-    if organization.nil?
-      flash[:alert] = "Organization not found."
-      return redirect_to back_path
-    end
+    return respond_after_write(back_path, alert: "Organization not found.") if organization.nil?
 
     if organization.update(organization_update_params)
-      flash[:notice] = "Organization renamed to #{organization.name}."
+      respond_after_write(back_path, notice: "Organization renamed to #{organization.name}.")
     else
-      flash[:alert] = "Could not rename organization: #{organization.errors.full_messages.join(", ")}"
+      respond_after_write(
+        back_path,
+        alert: "Could not rename organization: #{organization.errors.full_messages.join(", ")}"
+      )
     end
-    redirect_to back_path
   end
 
   private

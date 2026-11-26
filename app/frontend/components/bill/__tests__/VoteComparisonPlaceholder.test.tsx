@@ -77,10 +77,11 @@ describe("VoteComparisonPlaceholder", () => {
         render(<VoteComparisonPlaceholder showInvite />);
 
         expect(screen.getByRole("link", { name: "Sign up" })).toHaveAttribute("href", ROUTES.signin);
+        expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
         expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
-    it("shows the message without a button when a signed-in user has no invite link", () => {
+    it("shows the message without a button or invite prompt when a signed-in user has no invite link", () => {
         useUserMock.mockReturnValue(signedInUser(null));
 
         render(<VoteComparisonPlaceholder showInvite />);
@@ -88,5 +89,6 @@ describe("VoteComparisonPlaceholder", () => {
         expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         expect(screen.queryByRole("button")).not.toBeInTheDocument();
         expect(screen.queryByRole("link")).not.toBeInTheDocument();
+        expect(screen.queryByText("Invite others by sharing Sway")).not.toBeInTheDocument();
     });
 });

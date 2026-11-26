@@ -2,6 +2,12 @@ class BillsController < ApplicationController
     # Cumulative page-window size for #index
     BILLS_INDEX_PAGE_SIZE: Integer
 
+    # Bill creator tab name to the prop keys that tab reads.
+    BILL_CREATOR_TAB_PROPS: Hash[String, Array[Symbol]]
+
+    BILL_PICKER_PROPS: Array[Symbol]
+    STALE_SUMMARY_RESTORE_ALERT: String
+
     @meta_title: String
 
     @bill: Bill
@@ -129,6 +135,9 @@ class BillsController < ApplicationController
       clear_supplemental_testimony: bool,
     }
 
+    # The props unchanged for the web; for mobile, only the requested tab's keys.
+    def mobile_bill_creator_tab_props: (Hash[Symbol, untyped] props) -> Hash[Symbol, untyped]
+
     # Shared prop hash for #edit.
     def bill_creator_props: () -> Hash[Symbol, untyped]
 
@@ -140,16 +149,24 @@ class BillsController < ApplicationController
 
     # The four prompt sections behind the ledger's modals, wrapped in
     # InertiaRails.optional for the same reason summary_prompt_prop is: a
-    # recorded source text can reach the 300,000-character cap. Empty hash for
-    # JSON callers, who cannot ask for a prop by name.
+    # recorded source text can reach the 300,000-character cap. A JSON caller
+    # gets it only with summary_source_documents=1 on the address.
     def summary_source_documents_prop: () -> Hash[Symbol, untyped]
+
+    def summary_source_documents_json: () -> untyped
 
     def summary_revisions_prop: () -> Hash[Symbol, untyped]
 
+    def summary_revisions_json: () -> untyped
+
+    def restored_revision_json: (BillSummaryRevision? revision) -> Hash[Symbol, untyped]
+
     # The campaign letter bundles, wrapped in InertiaRails.optional so they are
-    # built only when a request names them. Empty hash when there is no bill,
-    # and for JSON callers, who cannot ask for a prop by name.
+    # built only when a request names them. Empty hash for a JSON caller whose
+    # address lacks testimony_campaign_letters=1.
     def testimony_campaign_letters_prop: () -> Hash[Symbol, untyped]
+
+    def testimony_campaign_letters_json: () -> untyped
 
     def public_testimony_letters_prop: () -> Hash[Symbol, untyped]
 

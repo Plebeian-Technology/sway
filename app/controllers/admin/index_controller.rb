@@ -6,11 +6,13 @@ module Admin
     before_action :verify_is_sway_admin
 
     def show
-      render inertia: Pages::ADMIN_INDEX,
+      render_inertia_or_json(
+        page: Pages::ADMIN_INDEX,
         props: {
           tools: tools,
           database_health: AdminDatabaseHealth.as_props
         }
+      )
     end
 
     private

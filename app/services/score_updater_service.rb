@@ -48,8 +48,6 @@ class ScoreUpdaterService
         end
       end
       # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
-      ScoreRecomputeService.recompute_district_scores!([bill.id], legislators: user.legislators(sway_locale))
-      # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
       eligible_bill_ids = ScoreRecomputeService.bill_ids_with_minimum_voters(sway_locale)
       sway_locale.legislators.each do |legislator|
         legislator_term = legislator.active_term
@@ -59,6 +57,8 @@ class ScoreUpdaterService
       end
     end
 
+    # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
+    RecomputeDistrictScoresJob.perform_later([bill.id], user.legislators(sway_locale).map(&:id))
     # @lat: [[score-updater-service-design#Why broadcast_score_refresh is a public class method]]
     broadcast_score_refresh
   end

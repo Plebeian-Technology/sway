@@ -9,11 +9,11 @@ Design rationale for the mobile organization and membership components.
 
 ## OrgCard
 
-One organization on a card, with the control for following it.
+One organization on a card, with the control for tracking it.
 
 What the card offers:
 
-- a follow control with three states: Track, Tracking, and Member
+- a track control with three states: Track, Tracking, and Member
 - the managed label when the organization manages its positions on Sway, and no follower count
 - tapping Track while signed out opens AuthPromptSheet, headed "Sign in to
   track", rather than calling the server
@@ -87,13 +87,13 @@ Hierarchical resolution rules prioritizing organization-specific alert settings 
 Visual and interactive states rendered by the follow button across unfollowed, active, pending, and member-restricted conditions.
 
 - No follower count; the managed label, when present, sits under the locale slug.
-- The follow control. Signed-out users see the Track button too; tapping it opens
+- The track control. Signed-out users see the Track button too; tapping it opens
   AuthPromptSheet instead of calling the server.
 - The member case, decided by isMember alone and never by followId. A member with no
   follow row still reads as Member. There is no Stop tracking here, only the Preferences
   button.
-- Following but not a member: the button reads "Tracking", screen readers hear "Stop tracking {name}", and tapping it stops tracking.
-- Not following, or signed out: the accent-coloured Track button. A signed-out tap
+- Tracking but not a member: the button reads "Tracking", screen readers hear "Stop tracking {name}", and tapping it stops tracking.
+- Not tracking, or signed out: the accent-coloured Track button. A signed-out tap
   opens AuthPromptSheet, not the API.
 
 ### AuthPromptSheet wiring

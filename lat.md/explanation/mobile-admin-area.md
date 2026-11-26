@@ -1,0 +1,178 @@
+---
+lat:
+  mode: explanation
+---
+
+# Mobile admin area
+
+How the phone app gives Sway admins an admin area: the drawer entry, the admin stack, the hub screen and the map that decides which tools open on the phone.
+
+## The gate
+
+The server decides who is an admin. The phone only decides whether to show the entry.
+
+`GET /api/v1/bootstrap` carries `is_sway_admin: true` in `current_user` for admins and omits the key for everyone else. [[mobile/src/hooks/useUserProfile.ts#UserProfile]] reads it as `is_sway_admin?: boolean`. A tampered client that shows the entry still meets `verify_is_sway_admin`, which answers a non-admin mobile request with 403 JSON code `forbidden`.
+
+## The drawer entry
+
+The seventh drawer item, labelled Admin with a `ShieldCheck` icon, exists only while `useUserProfile()` reports `is_sway_admin === true`.
+
+[[mobile/src/navigation/AppDrawer.tsx#AppDrawer]] renders the item after the six fixed ones, so their order never changes. The route is named `Admin` in `AppDrawerParamList` and `RootParamList`, and the item carries the test id `drawer-item-admin`. The stack's first route, `AdminHub`, joins the top level route names so the edge swipe opens the drawer from the hub, as on every other stack ([[mobile-tab-navigation-architecture#AppDrawer#Edge swipe opens the drawer only on top level screens]]).
+
+## The admin stack
+
+[[mobile/src/navigation/AdminStack.tsx#AdminStack]] is a native stack shaped like `ProfileStack`, typed by `AdminStackParamList` in [[mobile/src/navigation/types.ts]].
+
+Its first route is `AdminHub`, not `Admin`, because React Navigation warns when a screen sits inside another of the same name, the case [[mobile-tab-navigation-architecture#ProfileStack#Why the main profile screen is named "ProfileHub"]] describes. Admin screens live in `mobile/src/screens/admin/` and register as routes of this stack. A new admin screen adds its route to `AdminStack.tsx`, its params to `AdminStackParamList` and its tool id to the tool map.
+
+## The hub screen
+
+[[mobile/src/screens/admin/AdminHubScreen.tsx#AdminHubScreen]] shows the tools the server sends and the database and queue health numbers.
+
+It carries the brand header with the menu button, like every top level screen. [[mobile/src/hooks/admin/useAdminHub.ts#useAdminHub]] fetches `GET /admin`, which answers JSON to a mobile request ([[admin-hub-index#JSON shape for the mobile app]]). The hook follows `useBill`: state plus an abort guard, returning `data`, `loading`, `error` and `refresh`. Admin data never enters the offline cache. A failed request shows the server's message in an `EmptyState`.
+
+The screen groups tools by `group`, in the web hub's order (Content, Settings, Data) with unknown groups after. Each tool is a `ListRow`. A tool opens only when the map names its id and the tool is not external. Every other tool renders disabled with the description "Not on mobile yet", including the Beszel tool, whose `path` is an absolute URL for a browser.
+
+Database sizes appear as one row per database (database and WAL bytes), followed by the ready and failed job counts.
+
+Read hooks for admin screens live in `mobile/src/hooks/admin/`.
+
+## The tool map
+
+[[mobile/src/screens/admin/adminToolScreens.ts#adminToolScreens]] maps a tool id from `GET /admin` to the name of an admin stack route.
+
+The map starts empty, so every tool shows "Not on mobile yet" until its screen ships. Keeping the map apart from the screen lets the hub show the server's full tool list without importing any tool screen, and lets one edit per tool turn a row from disabled to tappable.
+
+## The shared addresses screen
+
+[[mobile/src/screens/admin/SharedAddressesScreen.tsx#SharedAddressesScreen]] lists the addresses that more than one registered user has given, each with its address id and user count.
+
+The tool id `shared_addresses` maps to the `AdminSharedAddresses` route. [[mobile/src/hooks/admin/useSharedAddresses.ts#useSharedAddresses]] fetches `GET /admin/shared_addresses`, which [[app/controllers/admin/shared_addresses_controller.rb]] answers as `{ shared_addresses: [{ address_ids, user_count }] }` to a mobile request. The screen is read-only and carries no street or coordinate, the same counts-only rule as the web page ([[personal-detail-encryption#Why the shared-addresses admin page reports counts only]]). An empty list shows an `EmptyState`, and a failed request shows the server's message there.
+
+## The user address changes screen
+
+[[mobile/src/screens/admin/UserAddressChangesScreen.tsx#UserAddressChangesScreen]] lists the latest 100 user address switches, one card per switch, with the same fields as the web page.
+
+The tool id `user_address_changes` maps to the `AdminUserAddressChanges` route. [[mobile/src/hooks/admin/useUserAddressChanges.ts#useUserAddressChanges]] fetches `GET /admin/user_address_changes`, which [[app/controllers/admin/user_address_changes_controller.rb]] answers as `{ user_address_changes: [...] }` to a mobile request, serialized by `UserAddressChangeResource` as on the web. Each card shows the user, the switch count, the cross-district, cross-locale and voted-before-switch flags, and the address, locale, district, legislator and prior vote lines. The screen is read-only and carries no street or coordinate. An empty list shows an `EmptyState`, and a failed request shows the server's message there.
+
+## The system prompts screen
+
+[[mobile/src/screens/admin/SystemPromptsScreen.tsx#SystemPromptsScreen]] shows the two models and one expandable row per standing instruction Sway sends the model.
+
+The tool id `system_prompts` maps to the `AdminSystemPrompts` route. [[mobile/src/hooks/admin/useSystemPrompts.ts#useSystemPrompts]] fetches `GET /admin/system_prompts`, which [[app/controllers/admin/system_prompts_controller.rb]] answers with the same props as the web page ([[admin-system-prompts-page#Reading the instructions Sway sends the model]]). A row shows the label, the locale name when the prompt is per locale, and a character count or "Not sent". Pressing the row reveals the purpose, builder, model and the full text as selectable text in a height-capped scroll area; an unavailable prompt shows its reason there instead. The screen is read-only. A failed request shows the server's message in an `EmptyState`.
+
+## The locales screen
+
+[[mobile/src/screens/admin/LocalesScreen.tsx#LocalesScreen]] lists every locale by tier with its user count and lets an admin edit a locale's sample address.
+
+The tool id `locales` maps to the `AdminLocales` route. [[mobile/src/hooks/admin/useAdminLocales.ts#useAdminLocales]] fetches `GET /admin/locales`, which [[app/controllers/admin/locales_controller.rb]] answers with the web page's props to a mobile request ([[admin-locales-registration-visibility#Why one user can count toward three locale rows]]). The screen reads only the id, label, user count and sample address of each row. The summarization and news source blocks stay on the web page.
+
+A row's button opens an inline form of four fields: street, postal code, latitude and longitude. Save sends `PATCH /admin/locales/:id` with a `sway_locale` body of the four values as text, through `useAdminMutation`. A cleared field reaches the server as an empty string, which the controller reads as absent. On success the controller answers `{ sway_locale: { id, sample_* } }`, `AdminLocaleSampleAddressResource`'s key set, and the screen closes the form and reloads the list. A rejected save answers 422 with the model errors, and the form stays open with the server's message under the fields.
+
+## The categories screen
+
+[[mobile/src/screens/admin/CategoriesScreen.tsx#CategoriesScreen]] lists every category with its bill count and lets an admin add, rename, activate, deactivate and delete categories.
+
+The tool id `categories` maps to the `AdminCategories` route. [[mobile/src/hooks/admin/useAdminCategories.ts#useAdminCategories]] fetches `GET /admin/categories`, which [[app/controllers/admin/categories_controller.rb]] answers as `{ categories: [{ id, name, slug, active, bill_count }] }` ([[admin-categories-controller-design#Categories.tsx, the frontend page]]). The controller already answered JSON, so the screen needed no backend change.
+
+The add form at the foot posts `{ category: { name } }` to `/admin/categories`. A row's Rename opens an inline field and saves `{ category: { name } }` with a PATCH. Activate and Deactivate send `{ category: { active } }` to the same path. A 422 shows the server's message under the add field or in the row, as [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]] reads it, and a successful write reloads the list.
+
+The rows follow [[app/frontend/components/admin/categories/CategoryRow.tsx]]. Deactivate and Delete each ask through a native `Alert` with the web page's wording (Deactivate says existing bill assignments are preserved; Delete names the bill count) and send the request only on confirm. Activate sends at once. Delete shows only on inactive rows, because the controller refuses to delete an active category. A 204 resolves `run` to `null` and a refusal to `undefined`, so the row reloads the list only after a successful delete.
+
+## The LLM settings screen
+
+[[mobile/src/screens/admin/LlmSettingsScreen.tsx#LlmSettingsScreen]] shows the model Sway uses for each task and lets an admin change them, with the web page's stale-save guard.
+
+The tool id `llm_settings` maps to the `AdminLlmSettings` route. [[mobile/src/hooks/admin/useAdminLlmSettings.ts#useAdminLlmSettings]] fetches `GET /admin/llm_settings`, which [[app/controllers/admin/llm_settings_controller.rb]] already answered as JSON, so the screen needed no backend change. The screen reads the model lists, the four current models, the two reasoning levels, the batch flag and the last-changed line. It also reads `available_openrouter_models` for [[mobile-admin-area#The LLM model catalog]].
+
+Each of the four models (summarization, classification, decision, extraction) is a row with its current label and a Change button that opens an inline list of the offered models. A model the server marks not selectable shows disabled, and a current model missing from its list shows its raw id. The two Claude tasks show a Low, Medium and High level control only while the chosen model supports reasoning, and choosing a model without that support clears the level. The batch switch is a `PreferenceToggle`.
+
+Save sends `PATCH /admin/llm_settings` with an `admin_setting` body holding only the changed fields plus an `expected` block of the loaded value for each, as [[admin-llm-settings-stale-write-race#Two admins, one LLM settings form#The fix: a per-field baseline and an expected guard]] describes. A null reasoning level travels as an empty string. Save stays off until a field changes.
+
+A 409 shows the mobile copy "Someone else changed these settings. Pull to refresh, then save again." in place of the server's message, which addresses API callers. The screen keys on `errorStatus` from [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]]. Every load, whether a pull to refresh or the reload after a good save, remounts the form from the fresh data, so the draft, the expected block and the error all reset together. Pull to refresh replaces the web page's polling and its changed-elsewhere banner. Any other failure shows the server's message above Save.
+
+## The LLM model catalog
+
+[[mobile/src/screens/admin/LlmModelCatalog.tsx#LlmModelCatalog]] sits below the settings form and ports the web page's Offered Models card: refresh the OpenRouter list, add a model, remove one.
+
+It lists the selectable models of `supported_models`, each with a Remove button. Remove is off for a model in use, meaning any of the four current models or any model chosen in the unsaved form, and off when only one model remains, as on the web page. Adding searches `available_openrouter_models` by label or id, shows the first eight matches, and posts the chosen `model_id` to `POST /admin/llm_settings/add_model`. Refresh posts to `refresh_models`.
+
+A removal sends `DELETE /admin/llm_settings/remove_model` with `model_id` in the query string, because `apiClient.delete` sends no body. The id passes through `encodeURIComponent` since OpenRouter ids contain slashes. Each row owns its own `useAdminMutation`, so the path carries that row's id.
+
+The three endpoints answer the model lists but not `available_openrouter_models`. After a good write the section therefore asks the screen to refetch `GET /admin/llm_settings` instead of reading the answer. The refetch replaces the data without remounting the form, so unsaved choices survive. A 422 shows the server's `error` message beside the control that failed, and nothing refetches.
+
+## The bill summary reports screen
+
+[[mobile/src/screens/admin/BillSummaryReportsScreen.tsx#BillSummaryReportsScreen]] lists the reports readers filed about bill summaries, filtered by status and locale, with a count per status.
+
+The tool id `bill_summary_reports` maps to the `AdminBillSummaryReports` route. [[mobile/src/hooks/admin/useBillSummaryReports.ts#useBillSummaryReports]] fetches `GET /admin/bill_summary_reports` with a `status` query and, when a locale is chosen, a `locale_id` query. [[app/controllers/admin/bill_summary_reports_controller.rb]] answers a mobile request with the web page's props: `reports`, `status_counts`, `locales`, `filter_status` and `filter_locale_id` ([[bill-summary-reporting#Bill summary reporting#Admin triage and remediation]]). The index answered a bare array before, which only its specs read.
+
+Five chips show All, Pending, Reviewed, Resolved and Dismissed with the server's count in brackets. A second row of chips holds All locales and one chip per locale. Choosing a chip refetches with the new query and keeps the other filter. The list stays on screen while the refetch runs. The cards show the bill, locale, reason, the first lines of the reader's details, the reporter and the filing time. The web page's keyword search and its inline Resolve and Dismiss actions are not on this screen. An empty result shows an `EmptyState`, and a failed request shows the server's message there.
+
+Pressing a card opens [[mobile/src/screens/admin/BillSummaryReportScreen.tsx#BillSummaryReportScreen]] for that report. The list listens for the stack's `focus` event and refetches, so a status saved on the detail shows when the admin goes back.
+
+## The bill summary report screen
+
+[[mobile/src/screens/admin/BillSummaryReportScreen.tsx#BillSummaryReportScreen]] shows one report and lets the admin set its status and admin notes.
+
+The route `AdminBillSummaryReport` takes `{ id }`, is pushed from the list and has no tool id, since the hub never opens it directly. [[mobile/src/hooks/admin/useBillSummaryReport.ts#useBillSummaryReport]] fetches `GET /admin/bill_summary_reports/:id`, which [[app/controllers/admin/bill_summary_reports_controller.rb]] answers with the report resource. The screen shows the bill and locale, the reason, the reader's feedback, the reporter, who resolved it and when, the summary snapshot the reader saw (marked when it was AI-written and unreviewed) and the bill's current summary.
+
+The review card holds one chip per status (Pending, Reviewed, Resolved, Dismissed, the web page's four) and a text field for the admin notes. Save sends `PATCH /admin/bill_summary_reports/:id` with `bill_summary_report: { status, admin_notes }` through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]]. The controller sets or clears the resolver from the status, so the phone sends no resolver. A good save shows "Saved." and refetches the report; a 422 shows the server's message above the button and leaves the form as typed.
+
+## The partner reports screen
+
+[[mobile/src/screens/admin/PartnerReportsScreen.tsx#PartnerReportsScreen]] shows how newsroom partners' articles drive clicks, registrations and votes, across every partner.
+
+The tool id `partner_reports` maps to the `AdminPartnerReports` route. [[mobile/src/hooks/admin/usePartnerReports.ts#usePartnerReports]] fetches `GET /admin/partner_reports`, which [[app/controllers/admin/partner_reports_controller.rb]] answers with a bare array of partner reports ([[partner-article-engagement#Administrative interface]]). The array already carries every figure the web page shows, so the backend is unchanged.
+
+[[mobile/src/screens/admin/PartnerReportSections.tsx]] holds the parts both partner screens share. Four figure cards come first: total articles with the partner count, total clicks, registrations with the click-to-register rate, and votes cast, each summed over the partners. A card per partner follows, with its name, slug, article and bill counts, clicks, registrations, votes and sentiment. The Covered Articles list ends the screen, one card per article with its partner, bill, publication date, counts and sentiment. A partner or article whose vote count is under five shows "Suppressed (k < 5)" instead of a split, as the web page does. The report's own `sentiment_suppressed` is read when present, and the vote count is the fallback because the partner resource omits it.
+
+An article title opens in the browser only when [[mobile/src/utils/safeUrl.ts#isSafeCitationUrl]] accepts its address, the same http and https check the web page applies. Any other address shows the title as plain text. The web page's table layout becomes cards, and its 15 second poll becomes a refetch on the stack's `focus` event plus pull to refresh.
+
+Pressing a partner card opens [[mobile/src/screens/admin/PartnerReportScreen.tsx#PartnerReportScreen]].
+
+## The partner report screen
+
+[[mobile/src/screens/admin/PartnerReportScreen.tsx#PartnerReportScreen]] shows one partner's engagement figures and its covered articles.
+
+The route `AdminPartnerReport` takes `{ partnerSlug }`, is pushed from the list and has no tool id. [[mobile/src/hooks/admin/usePartnerReport.ts#usePartnerReport]] fetches `GET /admin/partner_reports/:partner_slug`; the controller resolves an organization id or a partner slug, and the list sends the slug because the report carries no id. The slug passes through `encodeURIComponent`. The screen shows the partner name and slug, then the same four figure cards, with Articles & Bills giving the distinct bill count and Votes Cast giving the Pro and Con split, or the suppression label, instead of the list's generic note. The Covered Articles list follows without a partner line. The web page's "All Partners" button is the stack's back button.
+
+## The registration funnel screen
+
+[[mobile/src/screens/admin/RegistrationFunnelScreen.tsx#RegistrationFunnelScreen]] shows how visitors move from the landing page to a first vote, filtered by time range, traffic type and referral source.
+
+The tool id `registration_funnel` maps to the `AdminRegistrationFunnel` route. [[mobile/src/hooks/admin/useRegistrationFunnel.ts#useRegistrationFunnel]] fetches `GET /admin/registration_funnel` with `time_range` always, `traffic` unless it is `humans`, and `attribution_key` (through `encodeURIComponent`) when a source is chosen. [[app/controllers/admin/registration_funnel_controller.rb]] already answered the bare funnel as JSON ([[registration-funnel-telemetry#Admin registration funnel dashboard]]), so the backend is unchanged. The screen starts on `30d` and `humans`, the server defaults, and reads the range and traffic options from the response.
+
+[[mobile/src/screens/admin/RegistrationFunnelSections.tsx]] holds the sections, in the web page's order. Time ranges are chips, because the labels ("Last 24 Hours") truncate in a segmented control. Traffic is a `SegmentedControl`, followed by the bot visitor count, worded "filtered out" for humans and "in range" otherwise. A banner names the active referral source with a Clear Filter button. Four figure cards follow: landing visitors, completed registrations with their share of visitors, first votes and the overall conversion. The funnel steps show a count, the step conversion (coloured when it reaches 70%), the drop-off and a bar made of two `View`s, sized to the step's share of the landing visitors.
+
+Top Friction Points ranks the transitions by lost users or by drop-off rate, switched by a second `SegmentedControl`, with the rate coloured at 15% and 30%. Geocoding latency shows the median, 95th percentile, average with its range and the sample count, and a verdict: healthy up to a 5 second median, elevated above it, or a note when no sample exists. Each referral source is a card with its visitors, registrations, first votes and the two rates, and its Inspect button sets the source filter. The web page's table becomes cards, and its 15 second poll becomes a refetch on the stack's `focus` event plus pull to refresh. An empty list shows its web wording, and a failed request shows the server's message in an `EmptyState`.
+
+## The pipeline runs screen
+
+[[mobile/src/screens/admin/PipelineRunsScreen.tsx#PipelineRunsScreen]] lists the latest 50 legislation pipeline runs, one card per run, with every column of the web table.
+
+The tool id `pipeline_runs` maps to the `AdminPipelineRuns` route. [[mobile/src/hooks/admin/usePipelineRuns.ts#usePipelineRuns]] fetches `GET /pipeline_runs`, which [[app/controllers/pipeline_runs_controller.rb]] already answered as `{ runs: [...] }` to a mobile request, so the backend is unchanged. Each card shows the run number, the status (coloured by the web page's tone table), the kind ("single" or "all bills"), the bill's external id, the started and completed times, the succeeded, failed and total bill counts, and the failing stage; a missing value shows a dash. A time reads as relative age plus the exact ISO value, which replaces the web page's hover tooltip. The screen is read-only: force fail and orphan cleanup stay with the bill creator. The web page's ActionCable subscription and poll become pull to refresh. An empty list shows "No pipeline runs yet.", and a failed request shows the server's message in an `EmptyState`.
+
+## The bill creator
+
+The tool id `bill_creator` maps to the `AdminBillPicker` route, which opens the bill picker and then the bill creator for one bill.
+
+[[mobile-bill-creator]] describes the picker, the bill creator screen, its tabs and the section components the tabs render.
+
+## Admin writes
+
+Every admin write goes through [[mobile/src/hooks/admin/useAdminMutation.ts#useAdminMutation]], so each screen shows the server's own error message and no screen repeats the request plumbing.
+
+The call is `const { run, loading, errorMessage, fieldErrors, errorStatus, errorBody } = useAdminMutation<TResponse>("patch", path)`, where the method is `post`, `patch` or `delete`. The client has no PUT and no multipart, and a `delete` sends no body, so a DELETE that needs a parameter carries it in the query string of `path`.
+
+`run(body?)` resolves to the parsed response on success, to `null` when a successful response has no body (a 204 DELETE), and to `undefined` on failure. A screen tells success from failure with `result === undefined`. `run` never throws, so a screen reads `errorMessage` instead of wrapping each call in `try`. Each call clears the previous error first.
+
+- `loading` is true from the start of `run` until the request settles.
+- `errorMessage` is the server's message for an `ApiRequestError` (including `NetworkError`), the offline message when the device is offline, and [[mobile/src/api/errors.ts#GENERIC_ERROR_MESSAGE]] for anything else.
+- `errorStatus` is the HTTP status of a failed request, or `null`. A screen reads it to replace the server's message for one status, as the LLM settings screen does for 409.
+- `fieldErrors` is the error's `details` as the server sent it, or `null`. Its values are `unknown` because real endpoints send arrays, nested hashes, plain strings and arrays of row hashes, so the screen narrows what it reads.
+- `errorBody` is the parsed body of a failed request (`ApiRequestError.body`), or `null`. A screen that needs a key the error envelope drops reads it here: a refused news article discovery answers 422 with `receipt_status` and `articles` and no error key.
+
+The hook calls `assertOnlineForWrite` first ([[mobile-offline-cache-hook#Writes must check isOnline first]]), so an offline device sends nothing and `errorMessage` reads "You need a connection to make this change."
+
+Admin endpoints answer `{ error: "some message" }` as often as the `error` object. [[mobile-api-client-contract#Errors]] lists how the client reads each shape, so `errorMessage` carries the endpoint's own words in every case.

@@ -8,6 +8,8 @@ module Admin
 
     private
 
+    def updated_locale_json: (SwayLocale sway_locale) -> Hash[Symbol, untyped]
+
     def sample_address_present?: () -> bool
     def sample_address_params: () -> Hash[String, untyped]
   end

@@ -33,6 +33,7 @@ const OrganizationPositionTakenItem: React.FC<IProps> = ({ item, onPressBill, on
     return (
         <FeedItemShell
             item={item}
+            subject="organization"
             avatar={<FeedAvatar kind="organization" organizationName={organization.name} />}
             whoLine={
                 <>

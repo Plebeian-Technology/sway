@@ -181,7 +181,7 @@ describe("OrgCard follow control", () => {
     });
 
     // The member state is driven by isMember alone, never by followId.
-    test("member (isMember=true) renders 'Member' label and Preferences CTA — no Follow/Unfollow", () => {
+    test("member (isMember=true) renders 'Member' label and Preferences CTA — no Track/Untrack", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={true} isMember={true} initialFollowId={123} />);
         expect(screen.getByTestId(`org-card-member-label-${BASE_ORG.id}`)).toBeTruthy();
         expect(screen.getByText("Member")).toBeTruthy();
@@ -190,7 +190,7 @@ describe("OrgCard follow control", () => {
         expect(screen.queryByTestId(`org-card-following-btn-${BASE_ORG.id}`)).toBeNull();
     });
 
-    test("member with no followId (D-05) still renders 'Member' state — no Unfollow", () => {
+    test("member with no followId (D-05) still renders 'Member' state — no Untrack", () => {
         wrap(
             <OrgCard
                 org={BASE_ORG}
@@ -206,7 +206,7 @@ describe("OrgCard follow control", () => {
         expect(screen.queryByTestId(`org-card-following-btn-${BASE_ORG.id}`)).toBeNull();
     });
 
-    test("signed-out follow tap shows AuthPromptSheet with 'Sign in to track' heading", async () => {
+    test("signed-out track tap shows AuthPromptSheet with 'Sign in to track' heading", async () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} isMember={false} initialFollowId={null} />);
         // @lat: [[mobile-organization-follow-test-notes#OrgPreferenceSheet.test.tsx and OrgCard]]
         expect(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeTruthy();
@@ -216,14 +216,14 @@ describe("OrgCard follow control", () => {
         expect(screen.getByText("Sign in to track")).toBeTruthy();
     });
 
-    test("following non-member shows 'Following' button (not Member)", () => {
+    test("tracking non-member shows 'Tracking' button (not Member)", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={true} isMember={false} initialFollowId={456} />);
         expect(screen.getByTestId(`org-card-following-btn-${BASE_ORG.id}`)).toBeTruthy();
         expect(screen.getByText("Tracking")).toBeTruthy();
         expect(screen.queryByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeNull();
     });
 
-    test("not-following signed-in shows 'Follow' CTA", () => {
+    test("not-tracking signed-in shows 'Track' CTA", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={true} isMember={false} initialFollowId={null} />);
         expect(screen.getByTestId(`org-card-follow-btn-${BASE_ORG.id}`)).toBeTruthy();
         expect(screen.getByText("Track")).toBeTruthy();
@@ -232,10 +232,10 @@ describe("OrgCard follow control", () => {
     test("renders no follower count", () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} />);
         expect(screen.queryByTestId(`org-card-follower-count-${BASE_ORG.id}`)).toBeNull();
-        expect(screen.queryByText(/\d+ followers?/)).toBeNull();
+        expect(screen.queryByText(/follower/)).toBeNull();
     });
 
-    // The prompt sheet gets follow-specific wording here, not its usual voting wording.
+    // The prompt sheet gets track-specific wording here, not its usual voting wording.
     test("AuthPromptSheet receives heading='Sign in to track' and correct body (D-11)", async () => {
         wrap(<OrgCard org={BASE_ORG} onPress={jest.fn()} isSignedIn={false} />);
         await act(async () => {

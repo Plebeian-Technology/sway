@@ -4,6 +4,7 @@
 # sig/shims/model_runtime_methods.rbs monolith, WS7.28).
 class District < ApplicationRecord
     def number: -> Integer
+    def at_large?: -> bool
     def region_code: -> String?
     def seats: -> ActiveRecord::Associations::CollectionProxy
 end

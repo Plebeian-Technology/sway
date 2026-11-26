@@ -189,6 +189,7 @@ The letters are the ones the website's modal shows ([[testimony-letters#Browsing
 - **Its own tab strip.** All, Support, Oppose and Neutral each show their label above their count in a local strip, because the shared segmented control truncates labels. Each tab is at least 44pt tall and reports whether it is selected.
 - **Sheet behaviour.** On iOS it is a page sheet that can be swiped away; a Close button and the Android back action also dismiss it.
 - **Plain selectable text.** A letter is rendered as plain text the reader can select, not as markdown, so the words appear exactly as the constituent wrote them. Each card carries the letter's label and a stance badge that a screen reader announces as "Position: {stance}".
+- **Letter editing is opt-in.** The bill creator passes [[mobile/src/components/BrowseTestimonySheet.tsx#LetterEditing]] to add stance choices and Remove to each card ([[mobile-bill-creator#Sections#The testimony section#Overriding a letter's stance]]). The public bill page passes none, so its cards stay read-only.
 - **Never logs letter text.** The sheet, the section and the hook write no letter text to any console channel, and `console.error` reaches the error tracker in production ([[console-channels#Why warn and error are left alone]]); the letters are private writing.
 
 Loading shows three skeleton cards and a polite live-region sentence; a failed load with nothing in hand shows the load-error sentence with a retry button; a stance with no letters shows the empty sentence.

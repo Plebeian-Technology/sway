@@ -99,7 +99,8 @@ describe("OrgDetailScreen (Phase 35 parity rebuild + Phase 61 follow restore)", 
         await waitFor(() => {
             expect(screen.getByTestId("org-detail-header")).toBeTruthy();
         });
-        expect(screen.queryByText(/\d+ followers?/)).toBeNull();
+        expect(screen.queryByTestId("org-detail-follower-count")).toBeNull();
+        expect(screen.queryByText(/follower/)).toBeNull();
     });
 
     // Signed out: no follow section renders here (deliberately unlike OrgCard, which shows a Follow

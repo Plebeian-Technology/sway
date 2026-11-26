@@ -155,6 +155,25 @@ RSpec.describe "Admin::BillNewsArticles", type: :request do
         expect(body["receipt_status"]).to eq("failed")
       end
 
+      it "names the receipt's failure reason in the 422 answer to a bearer request" do
+        receipt = instance_double(
+          NewsArticleDiscoveryRequest,
+          status: "failed",
+          diagnostics: [{"error" => "Connection refused: provider timeout"}]
+        )
+        allow(BillNewsArticleFetchService).to receive(:call).with(bill: bill, requested_by: admin).and_return(receipt)
+
+        post "/admin/bills/#{bill.id}/news_articles",
+          headers: authenticate_as(admin).merge("Accept" => "application/json"),
+          as: :json
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body).to include(
+          "receipt_status" => "failed",
+          "error" => "Connection refused: provider timeout"
+        )
+      end
+
       it "enqueues NewsArticleTextFetchJob and acquires immutable article text for matching candidates upon discovery" do
         NewsArticleRobotsPolicy.reset_cache!
         bill.update!(external_id: "24-0012", title: "Affordable Housing Act", introduced_date_time_utc: Time.zone.parse("2026-01-15 12:00:00"))

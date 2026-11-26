@@ -9,7 +9,7 @@ lat:
 
 - What is on it:
 
-- a follow control in the header (`testID="org-detail-header"`)
+- a track control ("Track" / "Tracking") in the header (`testID="org-detail-header"`); the screen shows no follower count
 - a preferences sheet, opened by the Preferences button
 
 - There is no sign-in prompt sheet here, because `OrgDetailFollowSection` is only mounted for a signed-in user. One used to sit here that could never open, and it was removed rather than left as a trap if that signed-in check is ever loosened.
@@ -18,8 +18,7 @@ lat:
 
 - Layout:
 
-- `testID="org-detail-header"`: name, locale slug, follow control, follower
-  count
+- `testID="org-detail-header"`: name, locale slug, track control
 - `testID="org-detail-positions"`: the positions list, read only
 
 ## OrgDetailPayload's follow-preference fields

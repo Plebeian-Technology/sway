@@ -243,6 +243,95 @@ RSpec.describe "LegislatorVotesController", type: :request do
       end
     end
 
+    describe "for a bearer request" do
+      let(:bearer_json_headers) do
+        lambda do |user|
+          authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+        end
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The legislator votes section]]
+      it "saves the votes and answers 200 JSON with no redirect" do
+        sway_locale, user = setup
+        params = build_legislator_vote_params.call(sway_locale)
+
+        expect {
+          post legislator_votes_path, params: params.to_json, headers: bearer_json_headers.call(user)
+        }.to change(LegislatorVote, :count).by(1)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("application/json")
+        expect(response.headers["Location"]).to be_nil
+        expect(LegislatorVote.last!.support).to eq("FOR")
+      end
+
+      it "answers an invalid vote with 422 and the refusal under legislator_votes, saving nothing" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale:, summary: "spec bill")
+        legislator = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
+
+        expect {
+          post legislator_votes_path,
+            params: {bill_id: bill.id, legislator_votes: [{support: "GARBAGE", legislator_id: legislator.id}]}.to_json,
+            headers: bearer_json_headers.call(user)
+        }.not_to change(LegislatorVote, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.dig("details", "legislator_votes")).to include(legislator.id.to_s)
+      end
+
+      it "answers an empty vote list with 422 and the web's message" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale:, summary: "spec bill")
+
+        post legislator_votes_path, params: {bill_id: bill.id}.to_json, headers: bearer_json_headers.call(user)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "details", "legislator_votes")).to eq("No votes submitted.")
+      end
+
+      it "keeps the seated legislator's vote and answers 422 naming the skipped legislator" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale:, summary: "spec bill")
+        seated = seat_legislator_for.call(sway_locale, bill.introduced_date_time_utc)
+        unseated = create(:legislator)
+
+        expect {
+          post legislator_votes_path,
+            params: {
+              bill_id: bill.id,
+              legislator_votes: [
+                {support: "FOR", legislator_id: seated.id},
+                {support: "AGAINST", legislator_id: unseated.id}
+              ]
+            }.to_json,
+            headers: bearer_json_headers.call(user)
+        }.to change(LegislatorVote, :count).by(1)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "message")).to eq(
+          "No term covers this bill's date for #{unseated.full_name}. Fix the term and save again."
+        )
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        params = build_legislator_vote_params.call(sway_locale)
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        expect {
+          post legislator_votes_path, params: params.to_json, headers: bearer_json_headers.call(non_admin)
+        }.not_to change(LegislatorVote, :count)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+      end
+    end
+
     # @lat: [[legislator-votes-controller-admin-entry#Collecting failures instead of committing partial rows]]
     context "a legislator whose term does not cover the bill's date" do
       it "keeps the valid votes and names the skipped legislator in the flash" do

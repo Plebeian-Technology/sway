@@ -19,6 +19,12 @@ RSpec.describe "Bill Creator summary tab admin gate", type: :request do
     path: "/admin/bill_creator/1/summary"
 end
 
+RSpec.describe "Bill Creator positions tab campaign letters admin gate", type: :request do
+  include_examples "requires sway admin",
+    verb: :get,
+    path: "/admin/bill_creator/1/positions?testimony_campaign_letters=1"
+end
+
 RSpec.describe "Bills testimony_letter_stance admin gate", type: :request do
   include_examples "requires sway admin",
     verb: :patch,
@@ -284,6 +290,46 @@ RSpec.describe "Bills LLM actions", type: :request do
         expect {
           post generate_summary_bill_path(bill)
         }.not_to have_enqueued_job(GenerateBillSummaryJob)
+      end
+    end
+
+    describe "for a bearer request" do
+      let(:bill) { summarizable_bill }
+      let(:json_headers) { authenticate_as(user).merge("Accept" => "application/json") }
+
+      # @lat: [[mobile-bill-creator#Sections#The summary generation section#Answering generate and regenerate in JSON]]
+      it "queues the run and answers 200 with an empty body" do
+        create(:bill_llm_provisioning, :with_diff_content, bill: bill)
+
+        expect {
+          post generate_summary_bill_path(bill), headers: json_headers
+        }.to have_enqueued_job(GenerateBillSummaryJob).with(bill.id)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq({})
+      end
+
+      it "answers a run already in flight with 422 and the reason under generation" do
+        create(:bill_llm_provisioning, :pending, :with_diff_content, bill: bill)
+
+        expect {
+          post generate_summary_bill_path(bill), headers: json_headers
+        }.not_to have_enqueued_job(GenerateBillSummaryJob)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+        expect(response.parsed_body.dig("error", "details", "generation")).to eq("Generation already in progress")
+      end
+
+      it "still redirects a web refusal to the summary tab with the reason as an Inertia error" do
+        create(:bill_llm_provisioning, :pending, :with_diff_content, bill: bill)
+
+        post generate_summary_bill_path(bill)
+
+        expect(response).to redirect_to(summary_bill_creator_path(bill))
+        follow_redirect!
+        expect(inertia).to render_component(Pages::BILL_CREATOR)
+        expect(inertia.props[:errors][:generation]).to eq("Generation already in progress")
       end
     end
   end
@@ -685,8 +731,8 @@ RSpec.describe "Bills LLM actions", type: :request do
       expect(inertia.props).not_to have_key(:summary_prompt)
     end
 
-    # @lat: [[bill-summary-prompt-prop-delivery#Why JSON callers never receive it]]
-    it "is withheld from JSON callers, who cannot ask for it by name" do
+    # @lat: [[bill-summary-prompt-prop-delivery#Why JSON callers get it only on request]]
+    it "is withheld from JSON callers that do not ask for it" do
       bill.create_bill_llm_provisioning!(diff_content: "diff sample")
 
       get summary_bill_creator_path(bill), as: :json
@@ -804,12 +850,51 @@ RSpec.describe "Bills LLM actions", type: :request do
       expect(inertia.props).not_to have_key(:testimony_campaign_letters)
     end
 
-    it "is withheld from JSON callers, who cannot ask for it by name" do
+    it "is withheld from JSON callers that do not ask for it" do
       get summary_bill_creator_path(bill), as: :json
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("application/json")
       expect(JSON.parse(response.body)).not_to have_key("testimony_campaign_letters")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]
+    context "for the phone" do
+      let(:bearer_headers) do
+        authenticate_as(create(:user, :sway_admin)).merge("Accept" => "application/json")
+      end
+
+      it "is served on the Positions tab when the address asks for it" do
+        get positions_bill_creator_path(bill, testimony_campaign_letters: 1), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        bundles = response.parsed_body["testimony_campaign_letters"]
+        expect(bundles.pluck("content_hash")).to eq(["campaigngroup0001"])
+        expect(bundles.first["letters"].pluck("text")).to eq([campaign_letter_first_body, campaign_letter_second_body])
+      end
+
+      it "is withheld from a Positions tab request that does not ask for it" do
+        get positions_bill_creator_path(bill), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to have_key("testimony_campaign_drafts")
+        expect(response.parsed_body).not_to have_key("testimony_campaign_letters")
+      end
+
+      it "is withheld from another tab even when the address asks for it" do
+        get summary_bill_creator_path(bill, testimony_campaign_letters: 1), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).not_to have_key("testimony_campaign_letters")
+      end
+
+      it "is never part of the public bill page JSON" do
+        get bill_path(bill, testimony_campaign_letters: 1), headers: bearer_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("testimony_campaign_letters")
+        expect(response.body).not_to include(campaign_letter_first_body)
+      end
     end
   end
 

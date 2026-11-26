@@ -135,6 +135,7 @@ const LegislatorVotedItem: React.FC<IProps> = ({ item, onPressBill, onShareBill 
     return (
         <FeedItemShell
             item={item}
+            subject="legislator"
             avatar={<FeedAvatar kind="legislator" legislator={legislator} />}
             whoLine={renderWhoLine()}
             subtitle={subtitle || undefined}

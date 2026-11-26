@@ -46,6 +46,13 @@ RSpec.describe "POST /bills/:bill_id/testimony_coverage_acknowledgement", type: 
       expect(inertia).to render_component(Pages::BILL_CREATOR)
       expect(inertia.props[:errors]).to be_blank
     end
+
+    it "flashes the acknowledged notice naming the bill" do
+      post bill_testimony_coverage_acknowledgement_path(bill), params: {digest: current_digest}
+      follow_redirect!
+
+      expect(inertia).to have_flash(notice: "Acknowledged the missing testimony on #{bill.external_id}.")
+    end
   end
 
   describe "every refusal reaches the operator by name" do
@@ -100,5 +107,68 @@ RSpec.describe "POST /bills/:bill_id/testimony_coverage_acknowledgement", type: 
       expect(inertia.props[:errors][:testimony_coverage]).to match(/changed/i)
       expect(TestimonyCoverageAcknowledgement.count).to eq(0)
     end
+  end
+end
+
+# @lat: [[mobile-bill-creator#Sections#The testimony coverage section#Answering the acknowledgement in JSON]]
+RSpec.describe "POST /bills/:bill_id/testimony_coverage_acknowledgement for a bearer request", type: :request do
+  include TestimonySpecHelpers
+
+  let(:admin) { create(:user, :sway_admin) }
+  let(:bill) { create(:bill) }
+  let(:json_headers) { authenticate_as(admin).merge("Accept" => "application/json") }
+  let(:non_admin_headers) do
+    user = create(:user)
+    create(:user_legislator, user: user)
+    user.complete!
+    authenticate_as(user).merge("Accept" => "application/json")
+  end
+
+  let!(:provisioning) do
+    create(:bill_llm_provisioning, bill: bill, extracted_testimony: "R" * (max_chars + 500))
+  end
+
+  it "records the acknowledgement and answers 200 JSON" do
+    post bill_testimony_coverage_acknowledgement_path(bill), params: {digest: current_digest}, headers: json_headers
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to eq({})
+    expect(TestimonyCoverageAcknowledgement.sole.acknowledged_by).to eq(admin)
+  end
+
+  it "answers a stale digest with 422 and the web's reason under testimony_coverage" do
+    post bill_testimony_coverage_acknowledgement_path(bill), params: {digest: "a-stale-digest"}, headers: json_headers
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+    expect(response.parsed_body.dig("error", "details", "testimony_coverage")).to match(/changed/i)
+    expect(TestimonyCoverageAcknowledgement.count).to eq(0)
+  end
+
+  it "answers a clean-testimony run in progress with 422 and the web's reason" do
+    create(:legislation_pipeline_run, bill: bill, status: "cleaning_testimony")
+
+    post bill_testimony_coverage_acknowledgement_path(bill), params: {digest: current_digest}, headers: json_headers
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body.dig("error", "details", "testimony_coverage")).to match(/progress/i)
+    expect(TestimonyCoverageAcknowledgement.count).to eq(0)
+  end
+
+  it "answers nothing left out with 422 and the web's reason" do
+    provisioning.update!(extracted_testimony: nil)
+
+    post bill_testimony_coverage_acknowledgement_path(bill), params: {digest: current_digest}, headers: json_headers
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body.dig("error", "details", "testimony_coverage")).to match(/nothing to acknowledge/i)
+  end
+
+  it "answers a non-admin with 403 JSON" do
+    post bill_testimony_coverage_acknowledgement_path(bill), params: {digest: current_digest}, headers: non_admin_headers
+
+    expect(response).to have_http_status(:forbidden)
+    expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+    expect(TestimonyCoverageAcknowledgement.count).to eq(0)
   end
 end

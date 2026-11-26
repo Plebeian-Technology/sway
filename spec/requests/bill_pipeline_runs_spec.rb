@@ -328,6 +328,105 @@ RSpec.describe "Bill pipeline runs", type: :request do
     end
   end
 
+  describe "pipeline starts for a bearer request" do
+    let(:bearer_headers) { authenticate_as(admin).merge("Accept" => "application/json") }
+    let(:bill) { create(:bill, sway_locale: sway_locale) }
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline stages section]]
+    it "queues a run and answers 200 JSON with no redirect" do
+      expect {
+        post "/bills/run_pipeline",
+          params: {stages: ["fetch-bills", "extract-text"], bill_id: bill.id, download_missing_assets: false},
+          headers: bearer_headers
+      }.to change(LegislationPipelineRun, :count).by(1)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      run = LegislationPipelineRun.last!
+      expect(run.stages).to eq(["fetch-bills", "extract-text"])
+      expect(run.download_missing_assets).to eq(false)
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline stages section]]
+    it "answers a refused run with 422 JSON naming the pipeline error" do
+      expect {
+        post "/bills/run_pipeline", params: {stages: ["fetch-bills"]}, headers: bearer_headers
+      }.not_to change(LegislationPipelineRun, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json_body.dig(:error, :code)).to eq("validation_failed")
+      expect(json_body.dig(:error, :details, :pipeline)).to eq("A SwayLocale is required for all-bills pipeline runs.")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline stages section]]
+    it "answers a duplicate run with 409 duplicate_run" do
+      existing = LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "running", sway_locale: sway_locale)
+
+      post "/bills/run_pipeline", params: {stages: ["fetch-bills"], bill_id: bill.id}, headers: bearer_headers
+
+      expect(response).to have_http_status(:conflict)
+      expect(json_body.dig(:error, :code)).to eq("duplicate_run")
+      expect(json_body.dig(:error, :details, :existing_run_id)).to eq(existing.id)
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline stages section]]
+    it "resumes a failed run and answers 200 JSON" do
+      parent = LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "failed", bill: bill)
+
+      expect {
+        post "/bills/legislation_pipeline_runs/#{parent.id}/resume", headers: bearer_headers
+      }.to change(LegislationPipelineRun, :count).by(1)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline stages section]]
+    it "answers a refused resume with 422 JSON" do
+      parent = LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "succeeded", bill: bill)
+
+      post "/bills/legislation_pipeline_runs/#{parent.id}/resume", headers: bearer_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json_body.dig(:error, :details, :pipeline)).to be_present
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline stages section]]
+    it "restarts a failed run and answers 200 JSON" do
+      parent = LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "failed", bill: bill)
+
+      expect {
+        post "/bills/legislation_pipeline_runs/#{parent.id}/restart", headers: bearer_headers
+      }.to change(LegislationPipelineRun, :count).by(1)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+    end
+  end
+
+  describe "pipeline starts for a web request" do
+    let(:bill) { create(:bill, sway_locale: sway_locale) }
+
+    it "redirects a queued run to the pipeline tab with the queued notice" do
+      post "/bills/run_pipeline", params: {stages: ["fetch-bills"], bill_id: bill.id}
+
+      run = LegislationPipelineRun.last!
+      expect(response).to have_http_status(:found)
+      expect(URI.parse(response.location).path).to eq(pipeline_bill_creator_path(id: bill.id))
+      expect(flash[:notice]).to eq("Pipeline run #{run.id} queued (1 stages)")
+      expect(flash[:alert]).to be_nil
+    end
+
+    it "redirects a refused run with the pipeline error and no flash" do
+      post "/bills/run_pipeline", params: {stages: ["fetch-bills"]}
+
+      expect(response).to have_http_status(:found)
+      expect(session[:inertia_errors].to_h.symbolize_keys).to eq(pipeline: "A SwayLocale is required for all-bills pipeline runs.")
+      expect(flash[:notice]).to be_nil
+      expect(flash[:alert]).to be_nil
+    end
+  end
+
   describe "POST /bills/sweep_stale_pipeline_runs" do
     before do
       allow(LegislationPipelineRun).to receive(:solid_queue_job_exists_for?).and_return(false)
@@ -398,6 +497,18 @@ RSpec.describe "Bill pipeline runs", type: :request do
 
       expect(live.reload.status).to eq("awaiting_summary_batch")
       expect(expired.reload.status).to eq("failed")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+    it "answers a bearer client with 200 and the number of runs it failed" do
+      stuck = LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "running", updated_at: 5.hours.ago)
+      LegislationPipelineRun.create!(stages: ["fetch-bills"], status: "queued")
+
+      post sweep_stale_pipeline_runs_bills_path, headers: authenticate_as(admin).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq("count" => 1)
+      expect(stuck.reload.status).to eq("failed")
     end
 
     # The "requires sway admin" group earlier in this file covers the
