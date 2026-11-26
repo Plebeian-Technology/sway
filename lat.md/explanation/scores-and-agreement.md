@@ -124,12 +124,6 @@ resolves which term a bill falls into, using the bill's anchor date rather than
 the current date, so re-running a recomputation years later produces the same
 answer.
 
-[[app/models/legislator.rb#Legislator#current_district_score]] reads the active
-term's district score. It returns nil when no term is current or no score row
-exists. The helper remains available to the model regression in
-[[spec/models/legislator_spec.rb]] even without a production caller, so the
-person-level read cannot substitute a departed term's score.
-
 Legislators with no current term — such as a former representative whose
 service has ended — are skipped rather than scored against an empty term.
 
@@ -158,8 +152,8 @@ which drops the district number, and the jurisdiction title carries
 
 ## Privacy thresholds for aggregates
 
-To prevent voter identification in small groupings, aggregate scores (bill totals, district splits, and legislator agreement) are suppressed until a minimum of ten distinct users stand behind the number.
+Bill totals, district splits and legislator agreement scores stay hidden until ten distinct users stand behind each number. [[voter-privacy-threshold]] owns the rule, its reasons and the threat it answers.
 
-For bill totals, exact counts are replaced by a placeholder below this threshold. District and legislator scores are only shown as percentages once the ten-voter minimum is met, with both counts and percentages returned as `nil` when suppressed.
+A unanimous split stays hidden at any size, and bill totals and district splits are sent as rounded percentages.
 
-Each `LegislatorDistrictScore` and `LegislatorLocaleScore` row stores `distinct_voter_count` to track the number of users contributing to the aggregate, facilitating this privacy threshold.
+A lifetime score is a sum across terms, and [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]] says when that sum may be shown.

@@ -13,7 +13,6 @@ class Legislator < ApplicationRecord
     def full_name: -> String
     def at_large?: -> bool
     def serving?: -> bool
-    def current_district_score: -> LegislatorDistrictScore?
     def historical_score_explanations: -> untyped
     def self.with_term_history: () -> ::Legislator::ActiveRecord_Relation
     alias terms legislator_terms

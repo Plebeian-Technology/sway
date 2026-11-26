@@ -3,6 +3,10 @@
 require "rails_helper"
 
 RSpec.describe UserAddressSwitchService do
+  include ActiveJob::TestHelper
+
+  include_context "with a voter minimum of one"
+
   describe ".cooldown_active_for?" do
     it "returns true when a UserAddressChange was created within COOLDOWN_PERIOD and false otherwise" do
       user = create(:user)
@@ -108,6 +112,11 @@ RSpec.describe UserAddressSwitchService do
       expect(change.prior_voted_sway_locale_ids).to eq([old_locale.id])
 
       expect(BillScoreDistrict.find_by(bill_score: bill_score, district: old_district)&.for).to eq(0)
+      expect(RecomputeDistrictScoresJob).to have_been_enqueued.with([bill.id], contain_exactly(old_legislator.id, new_legislator.id))
+      expect(LegislatorDistrictScore.find_by(legislator_term: old_term)&.count_agreed).to eq(1)
+
+      perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
+
       expect(LegislatorDistrictScore.find_by(legislator_term: old_term)&.count_agreed).to eq(0)
       expect(LegislatorLocaleScore.find_by(legislator_term: old_term)&.count_agreed).to eq(0)
       expect(UserLegislatorTermScore.find_by(user_legislator: new_ul, legislator_term: new_term)).to be_present

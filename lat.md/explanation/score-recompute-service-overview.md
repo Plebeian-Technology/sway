@@ -45,6 +45,14 @@ Votes inferred rather than read — a sponsor is assumed to vote for their own b
 
 Whether a bill falls inside the term is decided by `LegislatorTerm.covering` rather than by redoing the start-and-end-date arithmetic in this method. A bill it answers `nil` for fell when this person held no office — before their first term or after their last ended — and counts toward none of them. The covering term is resolved once per unique bill, not once per vote row, because `LegislatorTerm.covering` hits the database per call.
 
+## Group scores carry a distinct voter count
+
+District and locale scores go through `tally_group_agreement`, which drops bills the privacy rule withholds and stores how many distinct users remain. [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]] gives the reason.
+
+Withheld bills are those under ten voters and those with a unanimous split, in the total or in the district.
+
+The column defaults to zero, so a row written before the column existed reads as hidden: alone it shows the placeholder, and in a lifetime sum it adds none of its counters ([[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]). The deploy that adds the column therefore includes one run of `sway:scores:recompute_all`, which rewrites every term's row with its real count.
+
 ## Why recompute_legislator_locale! reads the locale off the legislator, not through districts
 
 `recompute_legislator_locale!` finds who belongs to the locale from the `sway_locale_id` column on `Legislator` directly, rather than by joining through districts.

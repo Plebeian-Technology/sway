@@ -10,7 +10,12 @@ import SwayLocaleFlag from "app/frontend/components/locales/SwayLocaleFlag";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import { Support } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
-import { selectBillPositions, selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectBillPositions,
+    selectVoteTally,
+} from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 import { splitBillTitle } from "app/frontend/components/bill/sway_utils/billTitle";
 import { toFormattedLocaleName } from "app/frontend/sway_utils/locales";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
@@ -32,7 +37,8 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
         : "Legislators have not yet voted on a final version.";
 
     const { all: positions } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
+    const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
     return (
@@ -100,14 +106,20 @@ const CornerstoreBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organ
 
                     <div className="cs-card">
                         <h2 className="cs-card__title">The count</h2>
-                        <div className="cs-tally">
-                            <span className="cs-tally__n">{forCount.toLocaleString()}</span>
-                            <span className="cs-tally__l">for</span>
-                        </div>
-                        <div className="cs-tally">
-                            <span className="cs-tally__n">{againstCount.toLocaleString()}</span>
-                            <span className="cs-tally__l">against</span>
-                        </div>
+                        {comparisonSuppressed ? (
+                            <VoteComparisonPlaceholder showInvite />
+                        ) : (
+                            <>
+                                <div className="cs-tally">
+                                    <span className="cs-tally__n">{forPercent}%</span>
+                                    <span className="cs-tally__l">for</span>
+                                </div>
+                                <div className="cs-tally">
+                                    <span className="cs-tally__n">{againstPercent}%</span>
+                                    <span className="cs-tally__l">against</span>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

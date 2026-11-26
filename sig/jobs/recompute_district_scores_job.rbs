@@ -1,0 +1,3 @@
+class RecomputeDistrictScoresJob < ApplicationJob
+  def perform: (Array[Integer] bill_ids, Array[Integer] legislator_ids) -> void
+end

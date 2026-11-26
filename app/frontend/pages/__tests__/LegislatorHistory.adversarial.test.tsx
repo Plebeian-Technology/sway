@@ -57,6 +57,7 @@ vi.mock("app/frontend/components/legislators/charts/VoterDistrictAgreementChart"
 }));
 
 import Legislator from "app/frontend/pages/Legislator";
+import { groupScore } from "app/frontend/__tests__/support/groupScore";
 
 afterEach(() => {
     cleanup();
@@ -91,7 +92,6 @@ const sampleDistrictScore: sway.scoring.IAgreeable = {
     count_disagreed: 2,
     count_no_legislator_vote: 1,
     count_legislator_abstained: 0,
-    reached_ten_voter_minimum: false,
 };
 
 const sampleLocaleScore: sway.scoring.IAgreeable = {
@@ -99,7 +99,6 @@ const sampleLocaleScore: sway.scoring.IAgreeable = {
     count_disagreed: 6,
     count_no_legislator_vote: 2,
     count_legislator_abstained: 0,
-    reached_ten_voter_minimum: true,
 };
 
 const sampleUserScore: sway.scoring.IAgreeable = {
@@ -107,7 +106,6 @@ const sampleUserScore: sway.scoring.IAgreeable = {
     count_disagreed: 1,
     count_no_legislator_vote: 0,
     count_legislator_abstained: 0,
-    reached_ten_voter_minimum: false,
 };
 
 describe("Adversarial Scenario 1: Executive Office Term Agreement Scoring & Stamp Preservation", () => {
@@ -122,14 +120,13 @@ describe("Adversarial Scenario 1: Executive Office Term Agreement Scoring & Stam
             district_name: null,
             is_executive: true,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: {
                 count_agreed: 10,
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -255,14 +252,13 @@ describe("Adversarial Scenario 2: Unvoted Term vs Genuine 0% Agreement vs Zero-V
             district_name: "MD7",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: {
                 count_agreed: 0,
                 count_disagreed: 8,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -277,8 +273,8 @@ describe("Adversarial Scenario 2: Unvoted Term vs Genuine 0% Agreement vs Zero-V
             district_name: "MD7",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: null,
         };
@@ -321,14 +317,13 @@ describe("Adversarial Scenario 2: Unvoted Term vs Genuine 0% Agreement vs Zero-V
             district_name: "MD7",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: {
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 4,
                 count_legislator_abstained: 2,
-                reached_ten_voter_minimum: false,
             },
             correction_explanation: null,
         };
@@ -364,8 +359,8 @@ describe("Adversarial Scenario 2: Unvoted Term vs Genuine 0% Agreement vs Zero-V
             district_name: "MD3",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: null,
         };
@@ -413,8 +408,8 @@ describe("Adversarial Scenario 3: Unauthenticated Visitor Flow & Public Transpar
             district_name: "MD1",
             is_executive: false,
             active: true,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: {
                 title: "Roll-Call Audit Correction",
@@ -446,10 +441,10 @@ describe("Adversarial Scenario 3: Unauthenticated Visitor Flow & Public Transpar
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("80%");
-        expect(districtTile).toHaveTextContent("8 Agreed");
+        expect(districtTile).toHaveTextContent("73% Agreed");
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("75%");
-        expect(localeTile).toHaveTextContent("18 Agreed");
+        expect(localeTile).toHaveTextContent("69% Agreed");
 
         const auditBadge = screen.getByTestId("record-corrected-badge");
         expect(auditBadge).toBeInTheDocument();
@@ -474,8 +469,8 @@ describe("Adversarial Scenario 4: Repair Modal Data Integrity & Boundary Stress"
             district_name: "MD3",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: {
                 title: "Overcounted Vote Disallowance",
@@ -514,8 +509,8 @@ describe("Adversarial Scenario 4: Repair Modal Data Integrity & Boundary Stress"
             district_name: "MD3",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: {
                 title: "Typographical Metadata Correction",
@@ -553,8 +548,8 @@ describe("Adversarial Scenario 4: Repair Modal Data Integrity & Boundary Stress"
             district_name: "MD1",
             is_executive: false,
             active: true,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: {
                 title: "Audit Title Alpha",
@@ -574,8 +569,8 @@ describe("Adversarial Scenario 4: Repair Modal Data Integrity & Boundary Stress"
             district_name: "MD1",
             is_executive: false,
             active: false,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: null,
             correction_explanation: {
                 title: "Audit Title Beta",
@@ -628,8 +623,8 @@ describe("Adversarial Scenario 5: Zero-Mutation Invariant & URL Deep Linking", (
             district_name: "MD3",
             is_executive: false,
             active: true,
-            district_score: sampleDistrictScore,
-            locale_score: sampleLocaleScore,
+            district_score: groupScore(sampleDistrictScore),
+            locale_score: groupScore(sampleLocaleScore),
             user_score: sampleUserScore,
             correction_explanation: {
                 title: "Deep Link Audit",

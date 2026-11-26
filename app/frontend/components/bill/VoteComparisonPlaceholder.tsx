@@ -1,49 +1,54 @@
-import React from "react";
-import { usePage, Link } from "@inertiajs/react";
-import toast from "react-hot-toast";
-import { PARITY_COPY } from "../../sway_constants/parityCopy";
+import { Link } from "@inertiajs/react";
+import copy from "copy-to-clipboard";
+
+import { Button } from "app/frontend/components/ui/button";
+import { useUser } from "app/frontend/hooks/users/useUser";
+import { ROUTES } from "app/frontend/sway_constants";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
+import { notify } from "app/frontend/sway_utils";
 
 interface IProps {
-    votersNeeded?: number;
+    showInvite?: boolean;
+    className?: string;
 }
 
-const VoteComparisonPlaceholder: React.FC<IProps> = ({ votersNeeded }) => {
-    const { user } = usePage<any>().props;
+// @lat: [[voter-privacy-threshold#The placeholder shown in place of a hidden comparison]]
+const VoteComparisonPlaceholder: React.FC<IProps> = ({ showInvite, className }) => {
+    const user = useUser();
+    const inviteUrl = user?.invite_url;
 
-    const copyInviteLink = async () => {
-        if (user?.invite_url) {
-            await navigator.clipboard.writeText(user.invite_url);
-            toast(PARITY_COPY.bill.shareCopied);
-        }
-    };
-
-    if (votersNeeded === undefined || votersNeeded === null) {
+    if (!showInvite) {
         return (
-            <div className="text-muted text-sm mt-2">
-                {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotesYet}
-            </div>
+            <p className={className ?? "text-sm text-muted-foreground"}>
+                {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
+            </p>
         );
     }
 
+    const copyInviteLink = async (url: string) => {
+        if (await copy(url)) {
+            notify({ level: "info", title: PARITY_COPY.bill.voteComparisonPlaceholder.inviteLinkCopied });
+        }
+    };
+
     return (
-        <div className="flex flex-col gap-2 mt-2">
-            <p className="text-sm text-muted">{PARITY_COPY.bill.voteComparisonPlaceholder.message(votersNeeded)}</p>
-            {user ? (
-                user.invite_url ? (
-                    <>
-                        <p className="text-sm text-muted">{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>
-                        <button onClick={copyInviteLink} className="text-sm font-semibold text-primary underline">
-                            {PARITY_COPY.bill.voteComparisonPlaceholder.inviteButton}
-                        </button>
-                    </>
-                ) : null
-            ) : (
-                <>
-                    <p className="text-sm text-muted">{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>
-                    <Link href="/sign_up" className="text-sm font-semibold text-primary underline">
-                        {PARITY_COPY.bill.voteComparisonPlaceholder.inviteButton}
-                    </Link>
-                </>
+        <div className={className ?? "space-y-3 text-sm text-muted-foreground"}>
+            <p>{PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}</p>
+            {(inviteUrl || !user) && <p>{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>}
+            {inviteUrl && (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyInviteLink(inviteUrl).catch(() => {})}
+                >
+                    {PARITY_COPY.bill.voteComparisonPlaceholder.copyInviteLink}
+                </Button>
+            )}
+            {!user && (
+                <Button asChild variant="outline" size="sm">
+                    <Link href={ROUTES.signin}>{PARITY_COPY.bill.voteComparisonPlaceholder.signUp}</Link>
+                </Button>
             )}
         </div>
     );

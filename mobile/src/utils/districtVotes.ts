@@ -8,8 +8,10 @@ export interface DistrictRef {
 
 export interface BillScoreDistrict {
     district?: DistrictRef | null;
-    for?: number | string | null;
-    against?: number | string | null;
+    comparison_suppressed?: boolean | null;
+    for_percent?: number | null;
+    against_percent?: number | null;
+    at_large?: boolean | null;
     legislator_names?: string[] | null;
 }
 
@@ -18,11 +20,10 @@ export interface DistrictVoteRow {
     label: string;
     name: string | null;
     number: number;
-    forCount: number;
-    againstCount: number;
-    total: number;
-    net: number;
     forPct: number;
+    againstPct: number;
+    net: number;
+    suppressed: boolean;
     legislatorNames: string[];
     isReaderDistrict: boolean;
 }
@@ -30,21 +31,13 @@ export interface DistrictVoteRow {
 export interface DistrictVotes {
     rows: DistrictVoteRow[];
     readerRows: DistrictVoteRow[];
-    maxVotes: number;
-    maxAbsNet: number;
-    hasVotes: boolean;
 }
 
 export type DistrictMajority = "for" | "against" | "tie";
 
-const countFormatter = new Intl.NumberFormat("en-US");
-
-export const formatVoteCount = (count: number): string => countFormatter.format(count);
-
-const toCount = (value: number | string | null | undefined): number => {
-    const count = Number(value || 0);
-    return Number.isFinite(count) ? count : 0;
-};
+// @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+export const isVoteComparisonSuppressed = (score: object | null | undefined): boolean =>
+    (score as { comparison_suppressed?: boolean | null } | null | undefined)?.comparison_suppressed !== false;
 
 const toNames = (value: unknown): string[] =>
     Array.isArray(value)
@@ -63,37 +56,41 @@ const sameDistrict = (a: DistrictRef, b: DistrictRef): boolean => {
 
 const toRow = (
     district: DistrictRef,
-    forValue: number | string | null | undefined,
-    againstValue: number | string | null | undefined,
+    forPct: number | null,
+    againstPct: number | null,
     legislatorNames?: unknown,
-): DistrictVoteRow => {
-    const forCount = toCount(forValue);
-    const againstCount = toCount(againstValue);
-    const total = forCount + againstCount;
-    return {
-        key: keyOf(district),
-        label: `District ${district.number ?? district.name ?? "?"}`,
-        name: district.name ?? null,
-        number: district.number ?? 0,
-        forCount,
-        againstCount,
-        total,
-        net: forCount - againstCount,
-        forPct: total > 0 ? Math.round((forCount / total) * 100) : 0,
-        legislatorNames: toNames(legislatorNames),
-        isReaderDistrict: false,
-    };
-};
+): DistrictVoteRow => ({
+    key: keyOf(district),
+    label: `District ${district.number ?? district.name ?? "?"}`,
+    name: district.name ?? null,
+    number: district.number ?? 0,
+    forPct: forPct ?? 0,
+    againstPct: againstPct ?? 0,
+    net: (forPct ?? 0) - (againstPct ?? 0),
+    suppressed: forPct === null || againstPct === null,
+    legislatorNames: toNames(legislatorNames),
+    isReaderDistrict: false,
+});
+
+const isDrawn = (entry: BillScoreDistrict | null | undefined): entry is BillScoreDistrict =>
+    !!entry &&
+    entry.district?.number !== 0 &&
+    entry.at_large !== true &&
+    !isVoteComparisonSuppressed(entry) &&
+    typeof entry.for_percent === "number" &&
+    typeof entry.against_percent === "number";
 
 export const representativesText = (row: Pick<DistrictVoteRow, "legislatorNames">): string | null =>
     row.legislatorNames.length === 0
         ? null
         : `${row.legislatorNames.length === 1 ? "Representative" : "Representatives"}: ${row.legislatorNames.join(", ")}`;
 
-export const districtMajority = (row: Pick<DistrictVoteRow, "forCount" | "againstCount">): DistrictMajority | null => {
-    if (row.forCount === 0 && row.againstCount === 0) return null;
-    if (row.forCount === row.againstCount) return "tie";
-    return row.forCount > row.againstCount ? "for" : "against";
+export const districtMajority = (
+    row: Pick<DistrictVoteRow, "forPct" | "againstPct" | "suppressed">,
+): DistrictMajority | null => {
+    if (row.suppressed) return null;
+    if (row.forPct === row.againstPct) return "tie";
+    return row.forPct > row.againstPct ? "for" : "against";
 };
 
 export const selectDistrictVotes = (
@@ -108,10 +105,15 @@ export const selectDistrictVotes = (
     }
 
     const entries = (Array.isArray(scoreDistricts) ? scoreDistricts : [])
-        .filter((entry) => entry?.district?.number !== 0)
+        .filter(isDrawn)
         .map((entry) => {
-            const district = entry?.district ?? {};
-            const row = toRow(district, entry?.for, entry?.against, entry?.legislator_names);
+            const district = entry.district ?? {};
+            const row = toRow(
+                district,
+                entry.for_percent ?? null,
+                entry.against_percent ?? null,
+                entry.legislator_names,
+            );
             row.isReaderDistrict = readers.some((reader) => sameDistrict(reader, district));
             return { district, row };
         })
@@ -121,13 +123,10 @@ export const selectDistrictVotes = (
     const readerRows = readers.map(
         (reader) =>
             entries.find((entry) => sameDistrict(reader, entry.district))?.row ?? {
-                ...toRow(reader, 0, 0),
+                ...toRow(reader, null, null),
                 isReaderDistrict: true,
             },
     );
 
-    const maxVotes = rows.reduce((acc, row) => Math.max(acc, row.forCount, row.againstCount), 0);
-    const maxAbsNet = rows.reduce((acc, row) => Math.max(acc, Math.abs(row.net)), 0);
-
-    return { rows, readerRows, maxVotes, maxAbsNet, hasVotes: rows.length > 0 && maxVotes > 0 };
+    return { rows, readerRows };
 };

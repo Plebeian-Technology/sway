@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
 
+import { ROUTES } from "app/frontend/sway_constants/routes";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
+
 export interface IEmbedBill {
     id: number;
     identifier: string;
@@ -11,9 +14,9 @@ export interface IEmbedBill {
         state: string;
     };
     current_status: string;
-    pro_count: number;
-    con_count: number;
-    total_votes: number;
+    pro_percent: number | null;
+    con_percent: number | null;
+    comparison_suppressed: boolean;
     cta_url: string;
 }
 
@@ -29,9 +32,9 @@ export interface IProps {
         state: string;
     };
     current_status?: string;
-    pro_count?: number;
-    con_count?: number;
-    total_votes?: number;
+    pro_percent?: number | null;
+    con_percent?: number | null;
+    comparison_suppressed?: boolean;
     cta_url?: string;
 }
 
@@ -43,9 +46,9 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         brief_summary: props.brief_summary ?? "",
         sway_locale: props.sway_locale ?? { name: "", jurisdiction: "", state: "" },
         current_status: props.current_status ?? "Introduced",
-        pro_count: props.pro_count ?? 0,
-        con_count: props.con_count ?? 0,
-        total_votes: props.total_votes ?? 0,
+        pro_percent: props.pro_percent ?? 0,
+        con_percent: props.con_percent ?? 0,
+        comparison_suppressed: props.comparison_suppressed ?? true,
         cta_url: props.cta_url ?? "",
     };
 
@@ -62,11 +65,20 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
         }
         return defaultVoteUrl;
     })();
-    const totalVotes = bill.total_votes || bill.pro_count + bill.con_count;
-    const proCount = bill.pro_count || 0;
-    const conCount = bill.con_count || 0;
-    const proPct = totalVotes > 0 ? Math.round((proCount / totalVotes) * 100) : 0;
-    const conPct = totalVotes > 0 ? 100 - proPct : 0;
+    const signUpHref = (() => {
+        const referral = new URLSearchParams();
+        const { searchParams } = new URL(ctaUrl, window.location.origin);
+        ["partner", "ref"].forEach((key) => {
+            const value = searchParams.get(key);
+            if (value) referral.set(key, value);
+        });
+        const query = referral.toString();
+        return query ? `${ROUTES.signin}?${query}` : ROUTES.signin;
+    })();
+    // @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    const comparisonSuppressed = bill.comparison_suppressed !== false;
+    const proPct = bill.pro_percent ?? 0;
+    const conPct = bill.con_percent ?? 0;
 
     useEffect(() => {
         if (typeof window !== "undefined" && window.parent && window.parent !== window) {
@@ -163,11 +175,11 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
             </div>
 
             <div className="mt-4 space-y-3 pt-2">
-                {totalVotes > 0 ? (
+                {!comparisonSuppressed ? (
                     <div data-testid="vote-meter" className="space-y-1.5">
                         <div
                             className="flex h-6 w-full overflow-hidden rounded-lg border-neo border-border bg-muted shadow-neo"
-                            aria-label={`Support ${proCount}, Oppose ${conCount}`}
+                            aria-label={`Support ${proPct}%, Oppose ${conPct}%`}
                         >
                             {proPct > 0 && (
                                 <div
@@ -192,24 +204,31 @@ const BillCard: React.FC<IProps> & { layout?: (page: React.ReactNode) => React.R
                         <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
                             <span className="flex items-center gap-1.5 text-vote-for">
                                 <span className="inline-block size-2.5 rounded-full bg-vote-for" />
-                                <span>
-                                    Support {proCount} ({proPct}%)
-                                </span>
+                                <span>Support {proPct}%</span>
                             </span>
                             <span className="flex items-center gap-1.5 text-vote-against">
-                                <span>
-                                    Oppose {conCount} ({conPct}%)
-                                </span>
+                                <span>Oppose {conPct}%</span>
                                 <span className="inline-block size-2.5 rounded-full bg-vote-against" />
                             </span>
                         </div>
                     </div>
                 ) : (
                     <div
-                        data-testid="vote-meter-empty"
-                        className="rounded-lg border-neo border-border bg-surface-3 px-3 py-2 text-center text-xs font-semibold text-muted-foreground shadow-neo"
+                        data-testid="vote-meter-suppressed"
+                        className="space-y-1 rounded-lg border-neo border-border bg-surface-3 px-3 py-2 text-center text-xs font-semibold text-muted-foreground shadow-neo"
                     >
-                        No votes recorded yet · Be the first to vote on Sway
+                        <p>{PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}</p>
+                        <p>
+                            {PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}{" "}
+                            <a
+                                href={signUpHref}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-black text-foreground underline"
+                            >
+                                {PARITY_COPY.bill.voteComparisonPlaceholder.signUp}
+                            </a>
+                        </p>
                     </div>
                 )}
 

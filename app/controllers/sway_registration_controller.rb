@@ -151,13 +151,16 @@ class SwayRegistrationController < ApplicationController
     stale_legislators = previous_legislators.reject { |legislator| active_ids.include?(legislator.id) }.uniq(&:id)
     return if stale_legislators.empty?
 
-    stale_legislators.each do |legislator|
-      term = legislator.active_term
-      ScoreRecomputeService.recompute_legislator!(term) if term
-    end
-    Bill.where(id: u.user_votes.select(:bill_id)).find_each do |bill|
+    # @lat: [[voter-privacy-threshold#Bill tallies are recomputed before the legislator scores that read them]]
+    bill_ids = u.user_votes.pluck(:bill_id)
+    Bill.where(id: bill_ids).find_each do |bill|
       ScoreRecomputeService.recompute_bill!(bill)
     end
+    stale_legislators.each do |legislator|
+      term = legislator.active_term
+      ScoreRecomputeService.recompute_legislator_locale!(term) if term
+    end
+    RecomputeDistrictScoresJob.perform_later(bill_ids, stale_legislators.map(&:id))
   end
 
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
@@ -368,10 +371,10 @@ class SwayRegistrationController < ApplicationController
       render json: json, status: status
     else
       redirect_path = if current_user&.registered? && redirect == sway_registration_index_path
-                        edit_user_address_path
-                      else
-                        redirect
-                      end
+        edit_user_address_path
+      else
+        redirect
+      end
       redirect_to redirect_path, inertia: {errors: json[:error]}
     end
   end

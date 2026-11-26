@@ -8,7 +8,6 @@ import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import {
     districtMajority,
-    formatVoteCount,
     representativesText,
     type DistrictVoteRow,
     type DistrictVotes,
@@ -33,15 +32,14 @@ const spokenVotesName = (row: DistrictVoteRow): string => {
     return representatives ? `${spokenName(row)} (${representatives})` : spokenName(row);
 };
 
-const spokenNet = (net: number): string =>
-    net > 0 ? `plus ${formatVoteCount(net)}` : net < 0 ? `minus ${formatVoteCount(-net)}` : "even";
+const spokenNet = (net: number): string => (net > 0 ? `plus ${net} points` : net < 0 ? `minus ${-net} points` : "even");
 
-const signedNet = (net: number): string => `${net > 0 ? "+" : ""}${formatVoteCount(net)}`;
+const signedNet = (net: number): string => `${net > 0 ? "+" : ""}${net}%`;
 
 const alignmentStatement = (row: DistrictVoteRow, support: "for" | "against" | null | undefined): string | null => {
     if (!support) return null;
     const majority = districtMajority(row);
-    if (majority === null) return "Your district has no recorded votes yet.";
+    if (majority === null) return null;
     if (majority === "tie") return "Your district is evenly split.";
     return majority === support
         ? "Your vote matches your district's majority."
@@ -112,13 +110,12 @@ const BarLine: React.FC<{
     trackTestID: string;
     pct: number;
     colorClassName: string;
-    count: number;
-}> = ({ testID, trackTestID, pct, colorClassName, count }) => (
+}> = ({ testID, trackTestID, pct, colorClassName }) => (
     <View className="flex-row items-center gap-2">
         <View testID={trackTestID} className={`h-2.5 flex-1 overflow-hidden rounded-full ${TRACK_COLOR}`}>
             <View testID={testID} className={colorClassName} style={{ width: `${pct}%`, height: "100%" }} />
         </View>
-        <CountText>{formatVoteCount(count)}</CountText>
+        <CountText>{`${pct}%`}</CountText>
     </View>
 );
 
@@ -128,10 +125,9 @@ const ReaderDistrictBlock: React.FC<{
 }> = ({ row, userVoteSupport }) => {
     const { colorScheme } = useTheme();
     const statement = alignmentStatement(row, userVoteSupport);
-    const tally =
-        row.total > 0
-            ? `${formatVoteCount(row.forCount)} for, ${formatVoteCount(row.againstCount)} against`
-            : PARITY_COPY.bill.noVotesYet;
+    const tally = row.suppressed
+        ? PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes
+        : `${row.forPct} percent for, ${row.againstPct} percent against`;
 
     return (
         <View
@@ -145,7 +141,14 @@ const ReaderDistrictBlock: React.FC<{
             <Text className="text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                 {row.label}
             </Text>
-            {row.total > 0 ? (
+            {row.suppressed ? (
+                <Text
+                    testID="district-votes-reader-suppressed"
+                    className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+                >
+                    {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
+                </Text>
+            ) : (
                 <>
                     <View
                         testID="district-votes-reader-track"
@@ -157,7 +160,7 @@ const ReaderDistrictBlock: React.FC<{
                         />
                         <View
                             className="bg-vote-against-light dark:bg-vote-against-dark"
-                            style={{ width: `${100 - row.forPct}%`, height: "100%" }}
+                            style={{ width: `${row.againstPct}%`, height: "100%" }}
                         />
                     </View>
                     <View
@@ -168,22 +171,17 @@ const ReaderDistrictBlock: React.FC<{
                             className="text-sm font-open-sans-light text-foreground-light dark:text-foreground-dark"
                             style={{ fontVariant: ["tabular-nums"] }}
                         >
-                            {`For: ${formatVoteCount(row.forCount)} (${row.forPct}%)`}
+                            {`For: ${row.forPct}%`}
                         </Text>
                         <Text
                             className="text-sm font-open-sans-light text-foreground-light dark:text-foreground-dark"
                             style={{ fontVariant: ["tabular-nums"] }}
                         >
-                            {`Against: ${formatVoteCount(row.againstCount)} (${100 - row.forPct}%)`}
+                            {`Against: ${row.againstPct}%`}
                         </Text>
                     </View>
                 </>
-            ) : null}
-            {row.total === 0 && !statement ? (
-                <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
-                    {PARITY_COPY.bill.noVotesYet}
-                </Text>
-            ) : null}
+            )}
             {statement ? (
                 <Text
                     testID="district-votes-alignment"
@@ -200,9 +198,9 @@ export function DistrictVotesPanel({ votes, userVoteSupport, testID }: DistrictV
     const { colorScheme } = useTheme();
     const [expanded, setExpanded] = useState(false);
 
-    if (!votes.hasVotes) return null;
+    const { rows, readerRows } = votes;
+    if (rows.length === 0 && readerRows.length === 0) return null;
 
-    const { rows, readerRows, maxVotes, maxAbsNet } = votes;
     const highlight = swayTokens[colorScheme].surface3;
     const visibleRows = expanded ? rows : rows.filter((row, index) => index < COLLAPSED_ROWS || row.isReaderDistrict);
     const hiddenCount = rows.length - visibleRows.length;
@@ -211,12 +209,9 @@ export function DistrictVotesPanel({ votes, userVoteSupport, testID }: DistrictV
         hiddenCount > 0 ? ` ${hiddenCount} more ${hiddenCount === 1 ? "district is" : "districts are"} not shown.` : "";
 
     const votesLabel = `Votes by district. ${visibleRows
-        .map(
-            (row) =>
-                `${spokenVotesName(row)}: ${formatVoteCount(row.forCount)} for, ${formatVoteCount(row.againstCount)} against.`,
-        )
+        .map((row) => `${spokenVotesName(row)}: ${row.forPct} percent for, ${row.againstPct} percent against.`)
         .join(" ")}${hiddenSentence}`;
-    const netLabel = `Net votes by district, for minus against. ${visibleRows
+    const netLabel = `Net lean by district, percent for minus percent against. ${visibleRows
         .map((row) => `${spokenName(row)}: ${spokenNet(row.net)}.`)
         .join(" ")}${hiddenSentence}`;
 
@@ -228,47 +223,52 @@ export function DistrictVotesPanel({ votes, userVoteSupport, testID }: DistrictV
                 <ReaderDistrictBlock key={row.key} row={row} userVoteSupport={userVoteSupport} />
             ))}
 
-            <View testID="district-votes-chart" accessible accessibilityRole="image" accessibilityLabel={votesLabel}>
-                <View className="gap-2">
-                    <SectionLabel>Votes by district</SectionLabel>
-                    {visibleRows.map((row) => (
-                        <View
-                            key={row.key}
-                            testID={`district-votes-row-${row.number}`}
-                            className="flex-row items-center gap-3 rounded-md px-2 py-1"
-                            style={row.isReaderDistrict ? { backgroundColor: highlight } : undefined}
-                        >
-                            <RowLabel row={row} />
-                            <View testID={`district-votes-bars-${row.number}`} className="flex-1 gap-1">
-                                <BarLine
-                                    testID={`district-votes-for-fill-${row.number}`}
-                                    trackTestID={`district-votes-for-track-${row.number}`}
-                                    pct={maxVotes > 0 ? (row.forCount / maxVotes) * 100 : 0}
-                                    colorClassName="bg-vote-for-light dark:bg-vote-for-dark"
-                                    count={row.forCount}
-                                />
-                                <BarLine
-                                    testID={`district-votes-against-fill-${row.number}`}
-                                    trackTestID={`district-votes-against-track-${row.number}`}
-                                    pct={maxVotes > 0 ? (row.againstCount / maxVotes) * 100 : 0}
-                                    colorClassName="bg-vote-against-light dark:bg-vote-against-dark"
-                                    count={row.againstCount}
-                                />
-                                <RowRepresentatives row={row} />
+            {rows.length > 0 ? (
+                <View
+                    testID="district-votes-chart"
+                    accessible
+                    accessibilityRole="image"
+                    accessibilityLabel={votesLabel}
+                >
+                    <View className="gap-2">
+                        <SectionLabel>Votes by district</SectionLabel>
+                        {visibleRows.map((row) => (
+                            <View
+                                key={row.key}
+                                testID={`district-votes-row-${row.number}`}
+                                className="flex-row items-center gap-3 rounded-md px-2 py-1"
+                                style={row.isReaderDistrict ? { backgroundColor: highlight } : undefined}
+                            >
+                                <RowLabel row={row} />
+                                <View testID={`district-votes-bars-${row.number}`} className="flex-1 gap-1">
+                                    <BarLine
+                                        testID={`district-votes-for-fill-${row.number}`}
+                                        trackTestID={`district-votes-for-track-${row.number}`}
+                                        pct={row.forPct}
+                                        colorClassName="bg-vote-for-light dark:bg-vote-for-dark"
+                                    />
+                                    <BarLine
+                                        testID={`district-votes-against-fill-${row.number}`}
+                                        trackTestID={`district-votes-against-track-${row.number}`}
+                                        pct={row.againstPct}
+                                        colorClassName="bg-vote-against-light dark:bg-vote-against-dark"
+                                    />
+                                    <RowRepresentatives row={row} />
+                                </View>
                             </View>
-                        </View>
-                    ))}
-                    <Legend
-                        testID="district-votes-legend"
-                        items={[
-                            { label: "For", className: "bg-vote-for-light dark:bg-vote-for-dark" },
-                            { label: "Against", className: "bg-vote-against-light dark:bg-vote-against-dark" },
-                        ]}
-                    />
+                        ))}
+                        <Legend
+                            testID="district-votes-legend"
+                            items={[
+                                { label: "For", className: "bg-vote-for-light dark:bg-vote-for-dark" },
+                                { label: "Against", className: "bg-vote-against-light dark:bg-vote-against-dark" },
+                            ]}
+                        />
+                    </View>
                 </View>
-            </View>
+            ) : null}
 
-            {maxAbsNet > 0 ? (
+            {rows.length > 0 ? (
                 <View
                     testID="district-affinity-chart"
                     accessible
@@ -276,9 +276,9 @@ export function DistrictVotesPanel({ votes, userVoteSupport, testID }: DistrictV
                     accessibilityLabel={netLabel}
                 >
                     <View className="gap-2">
-                        <SectionLabel>Net votes by district</SectionLabel>
+                        <SectionLabel>Net lean by district</SectionLabel>
                         {visibleRows.map((row) => {
-                            const pct = (Math.abs(row.net) / maxAbsNet) * 50;
+                            const pct = Math.abs(row.net) / 2;
                             const positive = row.net >= 0;
                             return (
                                 <View

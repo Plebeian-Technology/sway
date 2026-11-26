@@ -1,8 +1,15 @@
 // @lat: [[mobile-bill-surface-components-design#BillScreenTabs]]
 const mockUseSession = jest.fn();
+const SIGNED_IN_BOOTSTRAP_USER = { id: 7, invite_url: "https://app.example.test/invite/7/abc" };
+let mockBootstrapUser: typeof SIGNED_IN_BOOTSTRAP_USER | null = SIGNED_IN_BOOTSTRAP_USER;
 
 jest.mock("../../src/hooks/useSession", () => ({
     useSession: () => mockUseSession(),
+}));
+jest.mock("../../src/hooks/useBootstrap", () => ({
+    useBootstrap: () => ({
+        bootstrap: { current_user: mockBootstrapUser },
+    }),
 }));
 jest.mock("../../src/hooks/useCastUserVote", () => ({
     useCastUserVote: () => ({ submit: jest.fn(async () => ({})), isOnline: true }),
@@ -11,6 +18,7 @@ jest.mock("expo-haptics", () => ({
     impactAsync: jest.fn(async () => {}),
     ImpactFeedbackStyle: { Light: "Light" },
 }));
+jest.mock("expo-clipboard", () => ({ setStringAsync: jest.fn() }));
 jest.mock("expo-web-browser", () => ({
     openBrowserAsync: jest.fn(async () => ({ type: "dismiss" })),
 }));
@@ -22,6 +30,7 @@ jest.mock("../../src/api/client", () => ({
 import React from "react";
 import { StyleSheet } from "react-native";
 import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import * as Clipboard from "expo-clipboard";
 import * as WebBrowser from "expo-web-browser";
 
 import { BillScreenTabs, type BillScreenTabsProps } from "../../src/components/BillScreenTabs";
@@ -32,8 +41,10 @@ import type { PublicTestimonyCounts } from "../../src/types/bill";
 const scoreDistrict = (number: number, forCount: number, againstCount: number) => ({
     bill_score_id: 9,
     district: { name: `MD${number}`, number, region_code: "MD" },
-    for: forCount,
-    against: againstCount,
+    comparison_suppressed: false,
+    for_percent: Math.round((forCount / (forCount + againstCount)) * 100),
+    against_percent: 100 - Math.round((forCount / (forCount + againstCount)) * 100),
+    at_large: false,
 });
 
 const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabsProps => ({
@@ -46,7 +57,12 @@ const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabs
     },
     sponsor: { full_name: "Alice Q. Sponsor" },
     userVote: null,
-    billScore: { for: 10, against: 5, districts: [scoreDistrict(1, 6, 2), scoreDistrict(2, 4, 3)] },
+    billScore: {
+        for_percent: 70,
+        against_percent: 30,
+        comparison_suppressed: false,
+        districts: [scoreDistrict(1, 6, 2), scoreDistrict(2, 4, 3)],
+    },
     organizations: [
         {
             id: 1,
@@ -91,6 +107,7 @@ const openSummaries = () => fireEvent.press(screen.getByTestId("tab-summaries"))
 describe("BillScreenTabs", () => {
     beforeEach(() => {
         mockUseSession.mockReturnValue({ isAuthenticated: false, loading: false });
+        mockBootstrapUser = SIGNED_IN_BOOTSTRAP_USER;
         mockPost.mockReset();
     });
 
@@ -205,12 +222,12 @@ describe("BillScreenTabs", () => {
             expect(screen.getByTestId("bill-score-bar")).toBeTruthy();
         });
 
-        test("a bill with no score row says no votes and does not show a skeleton", () => {
+        test("a bill with no score row says there are not enough votes yet and does not show a skeleton", () => {
             renderTabs({ billScore: null });
             openVotes();
 
             expect(screen.queryByTestId("votes-skeleton")).toBeNull();
-            expect(screen.getByText(PARITY_COPY.bill.noVotesYet)).toBeTruthy();
+            expect(screen.getByText("Not enough votes yet")).toBeTruthy();
             expect(screen.queryByTestId("district-votes-panel")).toBeNull();
         });
 
@@ -221,7 +238,75 @@ describe("BillScreenTabs", () => {
         });
     });
 
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    describe("the Votes tab below the ten-voter minimum", () => {
+        const hiddenScore = {
+            for_percent: null,
+            against_percent: null,
+            comparison_suppressed: true,
+            districts: [scoreDistrict(1, 6, 2)],
+        };
+
+        test("shows the placeholder and no count, percentage or district chart", () => {
+            renderTabs({ billScore: hiddenScore, readerDistricts: [{ name: "MD1", number: 1, region_code: "MD" }] });
+            openVotes();
+
+            expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+            expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
+            expect(screen.queryByTestId("bill-score-bar")).toBeNull();
+            expect(screen.queryByTestId("district-votes-panel")).toBeNull();
+            expect(screen.queryByText(/For: |Against: |%/)).toBeNull();
+            expect(screen.getByTestId("vote-panel")).toBeTruthy();
+        });
+
+        test("copies the signed-in reader's invite link", async () => {
+            jest.mocked(Clipboard.setStringAsync).mockResolvedValue(true);
+            renderTabs({ billScore: hiddenScore, isSignedIn: true });
+            openVotes();
+
+            fireEvent.press(screen.getByTestId("vote-comparison-invite"));
+
+            expect(Clipboard.setStringAsync).toHaveBeenCalledWith("https://app.example.test/invite/7/abc");
+            expect(await screen.findByText("Invite link copied to clipboard.")).toBeTruthy();
+        });
+
+        test("offers a signed-in reader whose bootstrap has not loaded no sign-up button", () => {
+            mockBootstrapUser = null;
+            renderTabs({ billScore: hiddenScore, isSignedIn: true });
+            openVotes();
+
+            expect(screen.getByText("Invite others by sharing Sway")).toBeTruthy();
+            expect(screen.queryByTestId("vote-comparison-invite")).toBeNull();
+        });
+
+        test("treats a cached payload with no flag as suppressed", () => {
+            renderTabs({ billScore: { for_percent: 70, against_percent: 30, districts: [scoreDistrict(1, 30, 10)] } });
+            openVotes();
+
+            expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+            expect(screen.queryByTestId("bill-score-bar")).toBeNull();
+            expect(screen.queryByTestId("district-votes-panel")).toBeNull();
+            expect(screen.queryByText(/For: |Against: /)).toBeNull();
+        });
+    });
+
     describe("the Votes tab", () => {
+        // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+        test("shows the split as percentages", () => {
+            renderTabs({
+                billScore: {
+                    for_percent: 70,
+                    against_percent: 30,
+                    comparison_suppressed: false,
+                    districts: [],
+                },
+            });
+            openVotes();
+
+            expect(screen.getByText("For: 70%")).toBeTruthy();
+            expect(screen.getByText("Against: 30%")).toBeTruthy();
+        });
+
         test("stacks the vote panel, the tally, the districts and the next step in that order", () => {
             renderTabs();
             openVotes();
@@ -237,7 +322,9 @@ describe("BillScreenTabs", () => {
         });
 
         test("draws no district section, and no empty slot for one, when the score has no districts", () => {
-            renderTabs({ billScore: { for: 10, against: 5, districts: [] } });
+            renderTabs({
+                billScore: { for_percent: 70, against_percent: 30, comparison_suppressed: false, districts: [] },
+            });
             openVotes();
 
             expect(screen.queryByTestId("district-votes-panel")).toBeNull();

@@ -62,14 +62,13 @@ export const PARITY_COPY = {
         reportFailed: "Could not send your report. Please try again.",
         detailError: "Could not load this bill. Pull to refresh.",
         noVotesYet: "No votes recorded yet.",
+        // @lat: [[voter-privacy-threshold#The placeholder shown in place of a hidden comparison]]
         voteComparisonPlaceholder: {
-            message: (votersNeeded: number) =>
-                votersNeeded === 1
-                    ? "Visual comparisons will be shown when 1 more user has voted."
-                    : `Visual comparisons will be shown when ${votersNeeded} more users have voted.`,
             invitePrompt: "Invite others by sharing Sway",
-            inviteButton: "Share invite link",
-            notEnoughVotesYet: "Not enough votes yet",
+            copyInviteLink: "Copy invite link",
+            inviteLinkCopied: "Invite link copied to clipboard.",
+            signUp: "Sign up",
+            notEnoughVotes: "Not enough votes yet",
         },
         compareWithReps: "Compare with representatives",
         voteOnPastLegislation: "Vote on past legislation",
@@ -543,7 +542,6 @@ export const PARITY_COPY = {
         searchBrowsePrefix: "Search covers your feed only. To find any bill, browse ",
         searchBrowseLink: "all bills",
         showNewItems: (count: number, isCapped: boolean) => (isCapped ? `Show ${count}+ new` : `Show ${count} new`),
-        votedCount: (count: number) => `${count} voted`,
         viewedCount: (count: number) => `${count} viewed`,
         sharedCount: (count: number) => `${count} shared`,
     },

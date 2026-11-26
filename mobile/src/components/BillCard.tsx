@@ -7,6 +7,8 @@ import { readableForeground } from "./StampedBadge";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
 import { billHeadline } from "../utils/billTitle";
+import { isVoteComparisonSuppressed } from "../utils/districtVotes";
+import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
 export interface BillCardBill {
     id: number;
@@ -16,13 +18,15 @@ export interface BillCardBill {
     label?: string;
     status?: string;
     status_color?: string;
-    for_count?: number;
-    against_count?: number;
     external_id?: string;
     category?: string;
     summary?: string | null;
     user_vote?: { support?: string | null };
-    bill_score?: { for?: number | null; against?: number | null };
+    bill_score?: {
+        for_percent?: number | null;
+        against_percent?: number | null;
+        comparison_suppressed?: boolean | null;
+    };
     link?: string;
 }
 
@@ -43,8 +47,10 @@ export function BillCard({ bill, onPress, testID }: BillCardProps) {
         ? summaryClean.slice(0, SUMMARY_EXCERPT_CHARS) + (summaryClean.length > SUMMARY_EXCERPT_CHARS ? "…" : "")
         : "Open the bill to review the full summary, vote totals, and arguments.";
 
-    const forCount = bill.bill_score?.for ?? bill.for_count ?? 0;
-    const againstCount = bill.bill_score?.against ?? bill.against_count ?? 0;
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    const comparisonSuppressed = isVoteComparisonSuppressed(bill.bill_score);
+    const forPercent = bill.bill_score?.for_percent ?? 0;
+    const againstPercent = bill.bill_score?.against_percent ?? 0;
     const titleizedCategory = bill.category ? bill.category.charAt(0).toUpperCase() + bill.category.slice(1) : null;
 
     const support = bill.user_vote?.support ? String(bill.user_vote.support).toLowerCase() : null;
@@ -107,36 +113,47 @@ export function BillCard({ bill, onPress, testID }: BillCardProps) {
             </Text>
 
             <View className="flex-row items-center gap-2">
-                <View className="flex-row items-baseline gap-1.5 bg-surface-3-light dark:bg-surface-3-dark rounded-lg px-3 py-1.5">
+                {comparisonSuppressed ? (
                     <Text
-                        className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark"
-                        style={{ textTransform: "uppercase", letterSpacing: 1.2 }}
+                        testID={`bill-card-${bill.id}-comparison-suppressed`}
+                        className="flex-1 text-xs font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
                     >
-                        For
+                        {PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}
                     </Text>
-                    <Text
-                        className="text-lg font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark"
-                        style={{ fontVariant: ["tabular-nums"] }}
-                        testID={`bill-card-${bill.id}-for-count`}
-                    >
-                        {forCount}
-                    </Text>
-                </View>
-                <View className="flex-row items-baseline gap-1.5 bg-surface-3-light dark:bg-surface-3-dark rounded-lg px-3 py-1.5">
-                    <Text
-                        className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark"
-                        style={{ textTransform: "uppercase", letterSpacing: 1.2 }}
-                    >
-                        Against
-                    </Text>
-                    <Text
-                        className="text-lg font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark"
-                        style={{ fontVariant: ["tabular-nums"] }}
-                        testID={`bill-card-${bill.id}-against-count`}
-                    >
-                        {againstCount}
-                    </Text>
-                </View>
+                ) : (
+                    <>
+                        <View className="flex-row items-baseline gap-1.5 bg-surface-3-light dark:bg-surface-3-dark rounded-lg px-3 py-1.5">
+                            <Text
+                                className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark"
+                                style={{ textTransform: "uppercase", letterSpacing: 1.2 }}
+                            >
+                                For
+                            </Text>
+                            <Text
+                                className="text-lg font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark"
+                                style={{ fontVariant: ["tabular-nums"] }}
+                                testID={`bill-card-${bill.id}-for-percent`}
+                            >
+                                {`${forPercent}%`}
+                            </Text>
+                        </View>
+                        <View className="flex-row items-baseline gap-1.5 bg-surface-3-light dark:bg-surface-3-dark rounded-lg px-3 py-1.5">
+                            <Text
+                                className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark"
+                                style={{ textTransform: "uppercase", letterSpacing: 1.2 }}
+                            >
+                                Against
+                            </Text>
+                            <Text
+                                className="text-lg font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark"
+                                style={{ fontVariant: ["tabular-nums"] }}
+                                testID={`bill-card-${bill.id}-against-percent`}
+                            >
+                                {`${againstPercent}%`}
+                            </Text>
+                        </View>
+                    </>
+                )}
                 <View className="flex-1 items-end">
                     <Pressable
                         onPress={onPress}

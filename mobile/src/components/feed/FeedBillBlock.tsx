@@ -97,16 +97,6 @@ const FeedBillBlock: React.FC<IProps> = ({ bill, showSummary = false, onPressBil
                         fontVariant: ["tabular-nums"],
                     }}
                 >
-                    {PARITY_COPY.feed.votedCount(bill.vote_count)}
-                </Text>
-                <Text
-                    style={{
-                        fontFamily: "OpenSans-Regular",
-                        fontSize: 12,
-                        color: t.mutedForeground,
-                        fontVariant: ["tabular-nums"],
-                    }}
-                >
                     {PARITY_COPY.feed.viewedCount(bill.view_count)}
                 </Text>
                 <Text

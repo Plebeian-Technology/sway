@@ -1,6 +1,7 @@
 import type { sway } from "sway";
 
 import { Support } from "app/frontend/sway_constants";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 
 export interface BillOrgPosition {
     org: sway.IOrganizationBase;
@@ -29,18 +30,43 @@ export const selectBillPositions = (
 };
 
 export interface VoteTally {
-    forCount: number;
-    againstCount: number;
-    total: number;
-    forPct: number;
+    forPercent: number;
+    againstPercent: number;
 }
 
-export const selectVoteTally = (billScore: sway.IBaseScore | null | undefined): VoteTally => {
-    const forCount = billScore?.for ?? 0;
-    const againstCount = billScore?.against ?? 0;
-    const total = forCount + againstCount;
-    return { forCount, againstCount, total, forPct: total > 0 ? Math.round((forCount / total) * 100) : 0 };
+// @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
+export const isVoteComparisonSuppressed = (
+    billScore: Pick<sway.IBaseScore, "comparison_suppressed"> | null | undefined,
+): boolean => billScore?.comparison_suppressed !== false;
+
+// @lat: [[voter-privacy-threshold#Bill lists print one line for a hidden tally]]
+export const suppressedVoteComparisonLine = (): string => PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes;
+
+export interface DistrictVoteSplit {
+    district: sway.IDistrict;
+    forPercent: number;
+    againstPercent: number;
+}
+
+// @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
+export const selectDistrictVoteSplits = (billScore: sway.IBillScore | null | undefined): DistrictVoteSplit[] => {
+    if (!billScore || isVoteComparisonSuppressed(billScore)) return [];
+
+    return (billScore.districts ?? [])
+        .flatMap((row) =>
+            row.comparison_suppressed || row.at_large || row.for_percent === null || row.against_percent === null
+                ? []
+                : [{ district: row.district, forPercent: row.for_percent, againstPercent: row.against_percent }],
+        )
+        .sort((a, b) => a.district.number - b.district.number);
 };
+
+export const selectVoteTally = (
+    billScore: Pick<sway.IBaseScore, "for_percent" | "against_percent"> | null | undefined,
+): VoteTally => ({
+    forPercent: billScore?.for_percent ?? 0,
+    againstPercent: billScore?.against_percent ?? 0,
+});
 
 export type VoteMajorityStatus = "No votes yet" | "Evenly split" | "For leading" | "Against leading";
 
@@ -57,18 +83,20 @@ export const selectVoteMajority = (
     userVote: sway.IUserVote | null | undefined,
     tally: VoteTally,
 ): VoteMajorityResult => {
-    const { forCount, againstCount, total } = tally;
+    const { forPercent, againstPercent } = tally;
     const userVoted = Boolean(userVote);
     const userSupports = userVote?.support === Support.For;
     const majorityStatus: VoteMajorityStatus =
-        total === 0
+        forPercent + againstPercent === 0
             ? "No votes yet"
-            : forCount === againstCount
+            : forPercent === againstPercent
               ? "Evenly split"
-              : forCount > againstCount
+              : forPercent > againstPercent
                 ? "For leading"
                 : "Against leading";
     const withMajority =
-        userVoted && total > 0 && forCount !== againstCount ? userSupports === forCount > againstCount : null;
+        userVoted && forPercent + againstPercent > 0 && forPercent !== againstPercent
+            ? userSupports === forPercent > againstPercent
+            : null;
     return { userVoted, userSupports, majorityStatus, withMajority };
 };

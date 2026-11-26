@@ -61,6 +61,19 @@ describe("PARITY_COPY — keys (nested paths)", () => {
     it("bill.shareCopied is 'Bill link copied to clipboard.'", () => {
         expect(PARITY_COPY.bill.shareCopied).toBe("Bill link copied to clipboard.");
     });
+
+    it("bill.voteComparisonPlaceholder has no copy that counts the users still needed", () => {
+        expect(PARITY_COPY.bill.voteComparisonPlaceholder).not.toHaveProperty("votersNeeded");
+    });
+
+    it("bill.voteComparisonPlaceholder carries the invite, sign-up and no-number strings", () => {
+        const copy = PARITY_COPY.bill.voteComparisonPlaceholder;
+        expect(copy.invitePrompt).toBe("Invite others by sharing Sway");
+        expect(copy.copyInviteLink).toBe("Copy invite link");
+        expect(copy.inviteLinkCopied).toBe("Invite link copied to clipboard.");
+        expect(copy.signUp).toBe("Sign up");
+        expect(copy.notEnoughVotes).toBe("Not enough votes yet");
+    });
 });
 
 // ---------------------------------------------------------------------------

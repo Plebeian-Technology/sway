@@ -32,13 +32,42 @@ class BillScore < ApplicationRecord
     Jbuilder.new do |bs|
       bs.id id
       bs.bill_id bill_id
-      bs.for self.for
-      bs.against against
-      bs.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
-      bs.voters_needed VoteComparisonPrivacy.voters_needed(self.for, against)
+      bs.for_percent for_percent
+      bs.against_percent against_percent
+      bs.comparison_suppressed comparison_suppressed?
 
-      bs.districts bill_score_districts.map(&:to_sway_json)
+      bs.districts publishable_districts.map(&:to_sway_json)
     end
+  end
+
+  # Returns the district rows any reader may see for this bill.
+  # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
+  def publishable_districts
+    rows = bill_score_districts.select(&:publishable?)
+    voters_outside_publishable?(rows) ? rows : []
+  end
+
+  # Returns the ids of the districts whose district agreement scores may count this bill.
+  # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+  def countable_district_ids
+    at_large_rows =
+      bill_score_districts.select do |row|
+        row.at_large? && !row.comparison_suppressed? && voters_outside_publishable?([row])
+      end
+    (publishable_districts + at_large_rows).map(&:district_id)
+  end
+
+  # @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
+  def comparison_suppressed?
+    VoteComparisonPrivacy.withheld?(self.for, against)
+  end
+
+  def for_percent
+    rounded_percentages&.fetch(:for)
+  end
+
+  def against_percent
+    rounded_percentages&.fetch(:against)
   end
 
   def to_builder_with_user(user, user_districts: nil)
@@ -48,7 +77,7 @@ class BillScore < ApplicationRecord
     user_districts_by_id = user_districts.select(&:id).index_by(&:id)
 
     bill_districts =
-      bill_score_districts.filter do |bsd|
+      publishable_districts.filter do |bsd|
         if bsd.district_id && user_districts_by_id.any?
           matched_district = user_districts_by_id[bsd.district_id]
           if matched_district
@@ -65,11 +94,23 @@ class BillScore < ApplicationRecord
     Jbuilder.new do |bs|
       bs.id id
       bs.bill_id bill_id
-      bs.for self.for
-      bs.against against
-      bs.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
-      bs.voters_needed VoteComparisonPrivacy.voters_needed(self.for, against)
+      bs.for_percent for_percent
+      bs.against_percent against_percent
+      bs.comparison_suppressed comparison_suppressed?
       bs.districts bill_districts.map(&:to_sway_json)
     end
+  end
+
+  private
+
+  def rounded_percentages
+    return nil if comparison_suppressed?
+
+    VoteComparisonPrivacy.rounded_percentages({for: self.for, against: against}, voters: self.for + against)
+  end
+
+  def voters_outside_publishable?(rows)
+    outside = (self.for + against) - rows.sum { |row| row.for + row.against }
+    outside.zero? || outside >= VoteComparisonPrivacy::MINIMUM_VOTERS
   end
 end

@@ -89,20 +89,25 @@ const BOTM_PAGE = {
     bill_score: {
         id: 3,
         bill_id: 1,
-        for: 42,
-        against: 18,
+        for_percent: 70,
+        against_percent: 30,
+        comparison_suppressed: false,
         districts: [
             {
                 bill_score_id: 3,
                 district: { name: "MD1", number: 1, region_code: "MD" },
-                for: 10,
-                against: 5,
+                comparison_suppressed: false,
+                for_percent: 67,
+                against_percent: 33,
+                at_large: false,
             },
             {
                 bill_score_id: 3,
                 district: { name: "MD2", number: 2, region_code: "MD" },
-                for: 4,
-                against: 9,
+                comparison_suppressed: false,
+                for_percent: 31,
+                against_percent: 69,
+                at_large: false,
             },
         ],
     },
@@ -182,8 +187,8 @@ describe("BillOfTheMonthScreen", () => {
         wrap(<BillOfTheMonthScreen navigation={makeNav()} />);
 
         fireEvent.press(screen.getByTestId("tab-votes"));
-        expect(screen.getByText(/For: 42/)).toBeTruthy();
-        expect(screen.getByText(/Against: 18/)).toBeTruthy();
+        expect(screen.getByText(/For: 70%/)).toBeTruthy();
+        expect(screen.getByText(/Against: 30%/)).toBeTruthy();
 
         fireEvent.press(screen.getByTestId("tab-summaries"));
         expect(screen.getByText("Supporters Org")).toBeTruthy();
@@ -255,7 +260,7 @@ describe("BillOfTheMonthScreen", () => {
         fireEvent.press(screen.getByTestId("tab-votes"));
         expect(screen.queryByTestId("votes-skeleton")).toBeNull();
         expect(screen.queryByTestId("votes-detail-error")).toBeNull();
-        expect(screen.getByText(/For: 42/)).toBeTruthy();
+        expect(screen.getByText(/For: 70%/)).toBeTruthy();
     });
 
     test("the Votes tab marks the reader's own district from the detail response", () => {

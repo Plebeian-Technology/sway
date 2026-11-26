@@ -5,4 +5,15 @@
 class BillScore < ApplicationRecord
     def sway_locale: -> SwayLocale
     def to_builder_with_user: (User? user, ?user_districts: Array[District]?) -> Jbuilder
+    def publishable_districts: -> Array[BillScoreDistrict]
+    def countable_district_ids: -> Array[Integer]
+    def comparison_suppressed?: -> bool
+    def for_percent: -> Integer?
+    def against_percent: -> Integer?
+
+    private
+
+    def rounded_percentages: -> Hash[Symbol, Integer]?
+
+    def voters_outside_publishable?: (Array[BillScoreDistrict] rows) -> bool
 end

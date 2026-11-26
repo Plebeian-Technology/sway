@@ -59,6 +59,7 @@ require "support/shared_examples/microsecond_precision_timestamps"
 require "support/shared_examples/llm_structured_output_adapter"
 require "support/shared_examples/phone_verification_send_limit"
 require "support/shared_contexts/in_memory_rails_cache"
+require "support/shared_contexts/voter_minimum_of_one"
 require "support/system_driver"
 # Must follow system_driver: the capture is only ever non-empty because the
 # driver registered there asks Chrome to keep a console history.

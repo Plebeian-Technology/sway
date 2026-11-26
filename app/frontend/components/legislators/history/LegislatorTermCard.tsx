@@ -3,6 +3,8 @@ import { Link } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Info, Vote } from "lucide-react";
 import { sway } from "sway";
 
+import { isVoteComparisonSuppressed } from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 import VoterAgreementChart from "app/frontend/components/legislators/charts/VoterAgreementChart";
 import VoterDistrictAgreementChart from "app/frontend/components/legislators/charts/VoterDistrictAgreementChart";
 import HistoricalRepairModal from "app/frontend/components/legislators/history/HistoricalRepairModal";
@@ -57,6 +59,47 @@ function calculateAgreement(score: sway.scoring.IAgreeable | null | undefined): 
     };
 }
 
+interface IGroupAgreementTileProps {
+    testId: string;
+    title: string;
+    score: sway.scoring.IGroupAgreeable | null;
+}
+
+// @lat: [[voter-privacy-threshold#Legislator charts draw percentages or the placeholder]]
+const GroupAgreementTile: React.FC<IGroupAgreementTileProps> = ({ testId, title, score }) => {
+    const suppressed = !score || isVoteComparisonSuppressed(score);
+    const agreed = score?.agreed_percent ?? 0;
+    const disagreed = score?.disagreed_percent ?? 0;
+    const noVote = score?.no_legislator_vote_percent ?? 0;
+    const headline = score?.voter_agreement_percent;
+
+    return (
+        <div
+            data-testid={testId}
+            data-neo-surface="true"
+            className="space-y-2 rounded-xl border-neo border-border-strong bg-surface-2 p-4 shadow-neo"
+        >
+            <div className="flex items-center justify-between">
+                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">{title}</span>
+                {!suppressed && (
+                    <span className="text-xl font-black tabular-nums text-foreground">
+                        {headline === null || headline === undefined ? "--%" : `${headline}%`}
+                    </span>
+                )}
+            </div>
+            {suppressed ? (
+                <VoteComparisonPlaceholder />
+            ) : (
+                <div className="flex flex-wrap gap-4 text-xs font-bold text-muted-foreground">
+                    <span>{agreed}% Agreed</span>
+                    <span>{disagreed}% Disagreed</span>
+                    {noVote > 0 && <span>{noVote}% No Vote</span>}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // @lat: [[legislator-history-serialization#Read-only historical term agreement serialization]]
 // @lat: [[legislator-history-serialization#Why unvoted terms are rendered with distinct coverage indicators]]
 const LegislatorTermCard: React.FC<ILegislatorTermCardProps> = ({ term, legislator }) => {
@@ -65,8 +108,6 @@ const LegislatorTermCard: React.FC<ILegislatorTermCardProps> = ({ term, legislat
     const [repairModalOpen, setRepairModalOpen] = useState(false);
 
     const userCalc = calculateAgreement(term.user_score);
-    const districtCalc = calculateAgreement(term.district_score);
-    const localeCalc = calculateAgreement(term.locale_score);
 
     const termWindowText = `${term.term_start_year}\u2013${term.term_end_year}`;
     const districtTitle = term.district_name ?? legislator.district?.name ?? "District";
@@ -193,49 +234,16 @@ const LegislatorTermCard: React.FC<ILegislatorTermCardProps> = ({ term, legislat
                 )}
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <div
-                        data-testid="term-district-score-tile"
-                        data-neo-surface="true"
-                        className="space-y-2 rounded-xl border-neo border-border-strong bg-surface-2 p-4 shadow-neo"
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                {districtTitle} Agreement
-                            </span>
-                            <span
-                                className={`text-xl font-black tabular-nums ${districtCalc.total > 0 ? "text-foreground" : "text-muted-foreground"}`}
-                            >
-                                {districtCalc.total > 0 ? districtCalc.displayPct : "No votes recorded (--%)"}
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap gap-4 text-xs font-bold text-muted-foreground">
-                            <span>{districtCalc.agreed} Agreed</span>
-                            <span>{districtCalc.disagreed} Disagreed</span>
-                            {districtCalc.noVote > 0 && <span>{districtCalc.noVote} No Vote</span>}
-                        </div>
-                    </div>
-
-                    <div
-                        data-testid="term-locale-score-tile"
-                        data-neo-surface="true"
-                        className="space-y-2 rounded-xl border-neo border-border-strong bg-surface-2 p-4 shadow-neo"
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                Locale Agreement
-                            </span>
-                            <span
-                                className={`text-xl font-black tabular-nums ${localeCalc.total > 0 ? "text-foreground" : "text-muted-foreground"}`}
-                            >
-                                {localeCalc.total > 0 ? localeCalc.displayPct : "No votes recorded (--%)"}
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap gap-4 text-xs font-bold text-muted-foreground">
-                            <span>{localeCalc.agreed} Agreed</span>
-                            <span>{localeCalc.disagreed} Disagreed</span>
-                            {localeCalc.noVote > 0 && <span>{localeCalc.noVote} No Vote</span>}
-                        </div>
-                    </div>
+                    <GroupAgreementTile
+                        testId="term-district-score-tile"
+                        title={`${districtTitle} Agreement`}
+                        score={term.district_score}
+                    />
+                    <GroupAgreementTile
+                        testId="term-locale-score-tile"
+                        title="Locale Agreement"
+                        score={term.locale_score}
+                    />
                 </div>
 
                 {(term.user_score || term.district_score || term.locale_score) && (
@@ -268,13 +276,13 @@ const LegislatorTermCard: React.FC<ILegislatorTermCardProps> = ({ term, legislat
                                 )}
                                 {term.district_score && (
                                     <VoterDistrictAgreementChart
-                                        scores={{ legislator_id: legislator.id, ...term.district_score }}
+                                        scores={term.district_score}
                                         title={`${districtTitle} agreement · ${term.session_label}`}
                                     />
                                 )}
                                 {term.locale_score && (
                                     <VoterDistrictAgreementChart
-                                        scores={{ legislator_id: legislator.id, ...term.locale_score }}
+                                        scores={term.locale_score}
                                         title={`Locale agreement · ${term.session_label}`}
                                     />
                                 )}

@@ -11,7 +11,11 @@ import CategoryMultiSelect from "app/frontend/components/bill/list-layouts/Categ
 import SwayLocaleFlag from "app/frontend/components/locales/SwayLocaleFlag";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { isArchivedHistoricalBill } from "app/frontend/components/bill/sway_utils/billArchiving";
-import { selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectVoteTally,
+    suppressedVoteComparisonLine,
+} from "app/frontend/components/bill/sway_utils/billPositions";
 import { briefSummary } from "app/frontend/components/bill/sway_utils/billTitle";
 import { formatCalendarDay } from "app/frontend/sway_utils/datetimes";
 import { sway } from "sway";
@@ -147,7 +151,7 @@ const CornerstoreBillListLayout: React.FC<BillListLayoutProps> = ({
                 {bills.map((bill) => {
                     const entry = bill as sway.IBill & { user_vote?: sway.IApiUserVote };
                     const summary = briefSummary(entry.summary, 160);
-                    const { forCount, againstCount } = selectVoteTally(entry.bill_score);
+                    const { forPercent, againstPercent } = selectVoteTally(entry.bill_score);
                     const releaseDate =
                         listMode === "past_bills_of_the_month"
                             ? formatCalendarDay(entry.scheduled_release_date_utc)
@@ -169,7 +173,9 @@ const CornerstoreBillListLayout: React.FC<BillListLayoutProps> = ({
 
                             <div className="csl-poster__foot">
                                 <span className="csl-tally">
-                                    {forCount.toLocaleString()} for · {againstCount.toLocaleString()} against
+                                    {isVoteComparisonSuppressed(entry.bill_score)
+                                        ? suppressedVoteComparisonLine()
+                                        : `${forPercent}% for · ${againstPercent}% against`}
                                 </span>
                                 {entry.user_vote?.support && <span className="csl-voted">Vote recorded</span>}
                                 <BillEditLink

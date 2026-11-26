@@ -7,7 +7,9 @@ class ScoreRecomputeService
 
     def self.recompute_legislator_district!: (LegislatorTerm legislator_term) -> void
 
-    def self.recompute_legislator_locale!: (LegislatorTerm legislator_term) -> void
+    def self.recompute_district_scores!: (Array[Integer] bill_ids, ?legislators: Array[Legislator]) -> void
+
+    def self.recompute_legislator_locale!: (LegislatorTerm legislator_term, ?eligible_bill_ids: Set[Integer]?) -> void
 
     def self.recompute_user_legislator!: ((UserLegislator | User) user_legislator, LegislatorTerm legislator_term) -> void
 
@@ -22,4 +24,23 @@ class ScoreRecomputeService
         LegislatorTerm legislator_term,
         SwayLocale sway_locale
     ) -> Hash[Symbol, Integer]
+
+    def self.tally_group_agreement: (
+        Array[Integer] user_ids,
+        LegislatorTerm legislator_term,
+        SwayLocale sway_locale,
+        Set[Integer] bill_ids_with_minimum_voters
+    ) -> Hash[Symbol, Integer]
+
+    def self.bill_ids_with_minimum_voters: (SwayLocale sway_locale) -> Set[Integer]
+
+    def self.bill_ids_with_minimum_district_voters: (Integer district_id) -> Set[Integer]
+
+    def self.count_by_class: (Array[[Integer, String, String?, Integer]] pairs) -> Hash[Symbol, Integer]
+
+    def self.counted_pairs: (
+        Array[Integer] user_ids,
+        LegislatorTerm legislator_term,
+        SwayLocale sway_locale
+    ) -> Array[[Integer, String, String?, Integer]]
 end

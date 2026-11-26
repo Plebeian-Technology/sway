@@ -13,6 +13,8 @@ import DefaultBillLayout from "app/frontend/components/bill/layouts/DefaultBillL
 import { billLayoutFor } from "app/frontend/components/bill/layouts/index";
 import MonochromeBillLayout from "app/frontend/components/bill/layouts/MonochromeBillLayout";
 
+const pageState = vi.hoisted(() => ({ user: null as { id: number; invite_url: string } | null }));
+
 vi.mock("@inertiajs/react", () => ({
     router: {
         on: vi.fn<() => void>(),
@@ -20,7 +22,7 @@ vi.mock("@inertiajs/react", () => ({
     },
     usePage: () => ({
         props: {
-            user: null,
+            user: pageState.user,
             pending_vote: null,
             errors: {},
         },
@@ -239,30 +241,32 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             expect(screen.queryByText("Councilmember Jane Doe")).toBeNull();
         });
 
-        it("Stress: Zero-score edge case handles 0% votes without NaN rendering", async () => {
+        it("Stress: Zero-score edge case shows the placeholder without NaN rendering", async () => {
             const zeroScore = {
-                for: 0,
-                against: 0,
+                comparison_suppressed: true,
+                districts: [],
             } as unknown as sway.IBillScore;
 
             renderTestLayout({ bill_score: zeroScore });
             await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
 
             expect(document.body.textContent).not.toContain("NaN");
-            expect(screen.getAllByText(/\b0\b|\b0%/).length).toBeGreaterThan(0);
+            expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         });
 
-        it("Stress: Extreme vote tallies handle large numbers with comma formatting", async () => {
+        it("Stress: Extreme vote tallies show percentages and never the counts", async () => {
             const extremeScore = {
-                for: 1250000,
-                against: 850000,
+                for_percent: 60,
+                against_percent: 40,
+                comparison_suppressed: false,
+                districts: [],
             } as unknown as sway.IBillScore;
 
             renderTestLayout({ bill_score: extremeScore });
             await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
 
-            expect(document.body.textContent).toContain("1,250,000");
-            expect(document.body.textContent).toContain("850,000");
+            expect(document.body.textContent).toContain("60%");
+            expect(document.body.textContent).toContain("40%");
         });
 
         it("Stress: Inactive bill with user vote suppresses EmailLegislatorsModal", async () => {
@@ -297,6 +301,98 @@ describe("Empirical Challenge: Readability Bill Detail Layouts", () => {
             expect(screen.getByTestId("btn-share-bill")).toBeInTheDocument();
         });
     });
+
+    // @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
+    describe.each(THEMES.map((theme) => ({ themeId: theme.id })))(
+        "Ten-voter minimum: $themeId theme",
+        ({ themeId }) => {
+            const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
+                bill_id: SAMPLE_BILL.id,
+                for_percent: 70,
+                against_percent: 30,
+                comparison_suppressed: false,
+                districts: [
+                    {
+                        district: { name: "D-4", number: 4, region_code: "D" } as sway.IDistrict,
+                        comparison_suppressed: false,
+                        for_percent: 75,
+                        against_percent: 25,
+                        at_large: false,
+                    },
+                ],
+                ...overrides,
+            });
+            const userVote = { id: 1, bill_id: SAMPLE_BILL.id, support: Support.For } as unknown as sway.IUserVote;
+
+            const renderWithScore = async (bill_score: sway.IBillScore) => {
+                const Layout = billLayoutFor(themeId);
+                render(
+                    <Suspense fallback={<div data-testid="loading" />}>
+                        <Layout
+                            bill={SAMPLE_BILL}
+                            sponsor={SAMPLE_SPONSOR}
+                            organizations={[]}
+                            isAwaitingScoreUpdate={false}
+                            user_vote={userVote}
+                            bill_score={bill_score}
+                        />
+                    </Suspense>,
+                );
+                await waitFor(() => expect(screen.queryByTestId("loading")).toBeNull());
+            };
+
+            it("replaces every tally, chart and majority statement with one placeholder", async () => {
+                await renderWithScore(score({ comparison_suppressed: true }));
+
+                expect(screen.getAllByText("Not enough votes yet")).toHaveLength(1);
+                expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+                const placeholder = screen.getByText("Not enough votes yet").parentElement;
+                expect(placeholder?.textContent).not.toMatch(/\d/);
+                const text = document.body.textContent ?? "";
+                expect(text).not.toContain("%");
+                expect(text).not.toMatch(/majority|leading|evenly split|no votes yet/i);
+                for (const testId of [
+                    "total-votes-chart",
+                    "total-votes-chart-empty",
+                    "district-votes-chart",
+                    "affinity-district-chart",
+                    "bill-charts-panel",
+                    "bill-affinity-panel",
+                ]) {
+                    expect(screen.queryByTestId(testId)).toBeNull();
+                }
+            });
+
+            it("links an anonymous reader to sign-up from the placeholder", async () => {
+                await renderWithScore(score({ comparison_suppressed: true }));
+
+                expect(screen.getByRole("link", { name: "Sign up" })).toBeInTheDocument();
+                expect(screen.queryByRole("button", { name: "Copy invite link" })).toBeNull();
+            });
+
+            it("offers a signed-in reader a button to copy their invite link from the placeholder", async () => {
+                pageState.user = { id: 7, invite_url: "https://app.example.test/invite/7/abc" };
+                try {
+                    await renderWithScore(score({ comparison_suppressed: true }));
+
+                    expect(screen.getByRole("button", { name: "Copy invite link" })).toBeInTheDocument();
+                    expect(screen.queryByRole("link", { name: "Sign up" })).toBeNull();
+                } finally {
+                    pageState.user = null;
+                }
+            });
+
+            it("shows the bill total as percentages and never the counts once ten users have voted", async () => {
+                await renderWithScore(score({}));
+
+                const text = document.body.textContent ?? "";
+                expect(text).toContain("70%");
+                expect(text).toContain("30%");
+                expect(text).not.toContain("Not enough votes yet");
+                expect(document.body.innerHTML).not.toMatch(/7,?777|4,?321/);
+            });
+        },
+    );
 
     describe("3. SwissGrid Specialized Split Stance Verification", () => {
         it("splits testimonies strictly between Why Support and Why Oppose rows", async () => {

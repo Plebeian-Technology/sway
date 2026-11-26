@@ -46,6 +46,7 @@ vi.mock("app/frontend/components/legislators/charts/LegislatorChartsPanel", () =
 }));
 
 import Legislator from "app/frontend/pages/Legislator";
+import { groupScore } from "app/frontend/__tests__/support/groupScore";
 
 afterEach(() => {
     cleanup();
@@ -299,26 +300,23 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
             district_name: "MD7",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 50,
                 count_disagreed: 0,
                 count_no_legislator_vote: 5,
                 count_legislator_abstained: 2,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 100,
                 count_disagreed: 0,
                 count_no_legislator_vote: 10,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             user_score: {
                 count_agreed: 12,
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -328,14 +326,14 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("100%");
-        expect(districtTile).toHaveTextContent("50 Agreed");
-        expect(districtTile).toHaveTextContent("0 Disagreed");
-        expect(districtTile).toHaveTextContent("5 No Vote");
+        expect(districtTile).toHaveTextContent("88% Agreed");
+        expect(districtTile).toHaveTextContent("0% Disagreed");
+        expect(districtTile).toHaveTextContent("9% No Vote");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("100%");
-        expect(localeTile).toHaveTextContent("100 Agreed");
-        expect(localeTile).toHaveTextContent("0 Disagreed");
+        expect(localeTile).toHaveTextContent("91% Agreed");
+        expect(localeTile).toHaveTextContent("0% Disagreed");
 
         const userTile = screen.getByTestId("term-user-score-tile");
         expect(userTile).toHaveTextContent("100%");
@@ -354,26 +352,23 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
             district_name: "MD7",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 25,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 50,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             user_score: {
                 count_agreed: 0,
                 count_disagreed: 8,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -383,8 +378,8 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("0%");
-        expect(districtTile).toHaveTextContent("0 Agreed");
-        expect(districtTile).toHaveTextContent("25 Disagreed");
+        expect(districtTile).toHaveTextContent("0% Agreed");
+        expect(districtTile).toHaveTextContent("100% Disagreed");
 
         const userTile = screen.getByTestId("term-user-score-tile");
         expect(userTile).toHaveTextContent("0%");
@@ -403,20 +398,18 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
             district_name: "MD7",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 2,
                 count_disagreed: 1,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: false,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 1,
                 count_disagreed: 2,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: false,
-            },
+            }),
             user_score: null,
             correction_explanation: null,
         };
@@ -442,26 +435,23 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
             district_name: "MD7",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 14,
                 count_legislator_abstained: 3,
-                reached_ten_voter_minimum: false,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 20,
                 count_legislator_abstained: 5,
-                reached_ten_voter_minimum: false,
-            },
+            }),
             user_score: {
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 2,
                 count_legislator_abstained: 1,
-                reached_ten_voter_minimum: false,
             },
             correction_explanation: null,
         };
@@ -470,14 +460,14 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
         fireEvent.click(screen.getByRole("tab", { name: "History" }));
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent("No votes recorded (--%)");
+        expect(districtTile).toHaveTextContent("--%");
         expect(districtTile).not.toHaveTextContent("NaN");
-        expect(districtTile).toHaveTextContent("14 No Vote");
+        expect(districtTile).toHaveTextContent("82% No Vote");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
+        expect(localeTile).toHaveTextContent("--%");
         expect(localeTile).not.toHaveTextContent("NaN");
-        expect(localeTile).toHaveTextContent("20 No Vote");
+        expect(localeTile).toHaveTextContent("80% No Vote");
 
         const userTile = screen.getByTestId("term-user-score-tile");
         expect(userTile).toHaveTextContent("--%");
@@ -497,13 +487,12 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
             district_name: "MD7",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 1000000,
                 count_disagreed: 500000,
                 count_no_legislator_vote: 10000,
                 count_legislator_abstained: 5000,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             locale_score: null,
             user_score: null,
             correction_explanation: null,
@@ -514,8 +503,8 @@ describe("CHALLENGE 3: Agreement Percentage & Division-by-Zero Arithmetic Oracle
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("67%");
-        expect(districtTile).toHaveTextContent("1000000 Agreed");
-        expect(districtTile).toHaveTextContent("500000 Disagreed");
+        expect(districtTile).toHaveTextContent("66% Agreed");
+        expect(districtTile).toHaveTextContent("33% Disagreed");
     });
 });
 
@@ -531,26 +520,23 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: "Citywide",
             is_executive: true,
             active: false,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 99,
                 count_disagreed: 1,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 99,
                 count_disagreed: 1,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             user_score: {
                 count_agreed: 99,
                 count_disagreed: 1,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
             },
             correction_explanation: null,
         };
@@ -613,20 +599,18 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: "Citywide",
             is_executive: true,
             active: false,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: false,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: false,
-            },
+            }),
             user_score: null,
             correction_explanation: null,
         };
@@ -635,9 +619,9 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
         fireEvent.click(screen.getByRole("tab", { name: "History" }));
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent("No votes recorded (--%)");
+        expect(districtTile).toHaveTextContent("Not enough votes yet");
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
+        expect(localeTile).toHaveTextContent("Not enough votes yet");
     });
 
     it("authenticated user with unvoted term displays clear explanatory notice without misleading 0%", () => {
@@ -651,20 +635,18 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: "MD1",
             is_executive: false,
             active: false,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 20,
                 count_disagreed: 5,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 40,
                 count_disagreed: 10,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             user_score: null,
             correction_explanation: null,
         };
@@ -693,20 +675,18 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: "MD1",
             is_executive: false,
             active: false,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 15,
                 count_disagreed: 5,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 30,
                 count_disagreed: 10,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             user_score: null,
             correction_explanation: null,
         };
@@ -734,20 +714,18 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: null,
             is_executive: true,
             active: false,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 70,
                 count_disagreed: 30,
                 count_no_legislator_vote: 5,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            }),
+            locale_score: groupScore({
                 count_agreed: 80,
                 count_disagreed: 20,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             user_score: null,
             correction_explanation: null,
         };
@@ -763,9 +741,9 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("70%");
-        expect(districtTile).toHaveTextContent("70 Agreed");
-        expect(districtTile).toHaveTextContent("30 Disagreed");
-        expect(districtTile).toHaveTextContent("5 No Vote");
+        expect(districtTile).toHaveTextContent("67% Agreed");
+        expect(districtTile).toHaveTextContent("29% Disagreed");
+        expect(districtTile).toHaveTextContent("5% No Vote");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
         expect(localeTile).toHaveTextContent("80%");
@@ -804,14 +782,14 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
         expect(screen.queryByTestId("term-user-score-tile")).not.toBeInTheDocument();
 
         const districtTile = screen.getByTestId("term-district-score-tile");
-        expect(districtTile).toHaveTextContent("No votes recorded (--%)");
+        expect(districtTile).toHaveTextContent("Not enough votes yet");
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
+        expect(localeTile).toHaveTextContent("Not enough votes yet");
 
         expect(screen.queryByTestId("term-charts-toggle-505")).not.toBeInTheDocument();
     });
 
-    it("handles rogue/malformed string and zero-vote scores on executive terms safely", () => {
+    it("handles evenly split and zero-vote scores on executive terms safely", () => {
         const rogueExecutiveTerm: ILegislatorTermEntry = {
             id: 506,
             session_label: "Mayor 2012–2016",
@@ -822,26 +800,23 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: null,
             is_executive: true,
             active: false,
-            district_score: {
-                count_agreed: "25" as unknown as number,
-                count_disagreed: "25" as unknown as number,
-                count_no_legislator_vote: "0" as unknown as number,
-                count_legislator_abstained: "0" as unknown as number,
-                reached_ten_voter_minimum: true,
-            },
-            locale_score: {
+            district_score: groupScore({
+                count_agreed: 25,
+                count_disagreed: 25,
+                count_no_legislator_vote: 0,
+                count_legislator_abstained: 0,
+            }),
+            locale_score: groupScore({
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 8,
                 count_legislator_abstained: 2,
-                reached_ten_voter_minimum: false,
-            },
+            }),
             user_score: {
                 count_agreed: 0,
                 count_disagreed: 0,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: false,
             },
             correction_explanation: null,
         };
@@ -851,13 +826,13 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
 
         const districtTile = screen.getByTestId("term-district-score-tile");
         expect(districtTile).toHaveTextContent("50%");
-        expect(districtTile).toHaveTextContent("25 Agreed");
-        expect(districtTile).toHaveTextContent("25 Disagreed");
+        expect(districtTile).toHaveTextContent("50% Agreed");
+        expect(districtTile).toHaveTextContent("50% Disagreed");
         expect(districtTile).not.toHaveTextContent("NaN");
 
         const localeTile = screen.getByTestId("term-locale-score-tile");
-        expect(localeTile).toHaveTextContent("No votes recorded (--%)");
-        expect(localeTile).toHaveTextContent("8 No Vote");
+        expect(localeTile).toHaveTextContent("--%");
+        expect(localeTile).toHaveTextContent("80% No Vote");
         expect(localeTile).not.toHaveTextContent("NaN");
 
         const userTile = screen.getByTestId("term-user-score-tile");
@@ -876,13 +851,12 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: null,
             is_executive: true,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 18,
                 count_disagreed: 2,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             locale_score: null,
             user_score: null,
             correction_explanation: null,
@@ -898,13 +872,12 @@ describe("CHALLENGE 4: Executive Office & Missing Coverage Enforcements", () => 
             district_name: "District 7",
             is_executive: false,
             active: false,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 40,
                 count_disagreed: 10,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             locale_score: null,
             user_score: null,
             correction_explanation: null,
@@ -1020,13 +993,12 @@ describe("CHALLENGE 6: Interactive Collapsible Term Charts & Deep Linking", () =
             district_name: "MD1",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 10,
                 count_disagreed: 2,
                 count_no_legislator_vote: 1,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             locale_score: null,
             user_score: null,
             correction_explanation: null,
@@ -1093,13 +1065,12 @@ describe("CHALLENGE 7: Read-Only Invariant Enforcement", () => {
             district_name: "MD1",
             is_executive: false,
             active: true,
-            district_score: {
+            district_score: groupScore({
                 count_agreed: 10,
                 count_disagreed: 2,
                 count_no_legislator_vote: 0,
                 count_legislator_abstained: 0,
-                reached_ten_voter_minimum: true,
-            },
+            }),
             locale_score: null,
             user_score: null,
             correction_explanation: repair,

@@ -19,8 +19,8 @@ export interface ILegislatorTermEntry {
     district_name: string | null;
     is_executive: boolean;
     active: boolean;
-    district_score: sway.scoring.IAgreeable | null;
-    locale_score: sway.scoring.IAgreeable | null;
+    district_score: sway.scoring.IGroupAgreeable | null;
+    locale_score: sway.scoring.IGroupAgreeable | null;
     user_score: sway.scoring.IAgreeable | null;
     correction_explanation: IHistoricalScoreExplanation | null;
 }

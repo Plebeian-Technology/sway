@@ -24,15 +24,4 @@
 class LegislatorDistrictScore < ApplicationRecord
   belongs_to :legislator_term
   has_one :legislator, through: :legislator_term
-
-  def to_builder
-    Jbuilder.new do |lds|
-      lds.legislator_id legislator&.id
-
-      lds.count_agreed count_agreed
-      lds.count_disagreed count_disagreed
-      lds.count_no_legislator_vote count_no_legislator_vote
-      lds.count_legislator_abstained count_legislator_abstained
-    end
-  end
 end

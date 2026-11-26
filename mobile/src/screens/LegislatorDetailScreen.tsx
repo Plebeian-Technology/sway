@@ -309,6 +309,7 @@ export default function LegislatorDetailScreen({ route, navigation }: Props) {
                             {!isAtLarge && score.legislator_district_score ? (
                                 <View className="bg-surface-3-light dark:bg-surface-3-dark border border-border-light dark:border-border-dark rounded-xl">
                                     <LegislatorChartsPanel
+                                        group
                                         score={score.legislator_district_score}
                                         title={`District ${legislator.district?.number} agreement with ${legislator.full_name ?? "this legislator"}`}
                                         testID="legislator-detail-chart-district"
@@ -318,6 +319,7 @@ export default function LegislatorDetailScreen({ route, navigation }: Props) {
                             {score.legislator_locale_score ? (
                                 <View className="bg-surface-3-light dark:bg-surface-3-dark border border-border-light dark:border-border-dark rounded-xl">
                                     <LegislatorChartsPanel
+                                        group
                                         score={score.legislator_locale_score}
                                         title={`${swayLocaleLabel} agreement with ${legislator.full_name ?? "this legislator"}`}
                                         testID="legislator-detail-chart-locale"
@@ -349,6 +351,7 @@ export default function LegislatorDetailScreen({ route, navigation }: Props) {
                             {!isAtLarge && legislator.lifetime_score.legislator_district_score ? (
                                 <View className="bg-surface-3-light dark:bg-surface-3-dark border border-border-light dark:border-border-dark rounded-xl">
                                     <LegislatorChartsPanel
+                                        group
                                         score={legislator.lifetime_score.legislator_district_score}
                                         title={`All districts · lifetime agreement with ${legislator.full_name ?? "this legislator"}`}
                                         testID="legislator-detail-chart-district-lifetime"
@@ -358,6 +361,7 @@ export default function LegislatorDetailScreen({ route, navigation }: Props) {
                             {legislator.lifetime_score.legislator_locale_score ? (
                                 <View className="bg-surface-3-light dark:bg-surface-3-dark border border-border-light dark:border-border-dark rounded-xl">
                                     <LegislatorChartsPanel
+                                        group
                                         score={legislator.lifetime_score.legislator_locale_score}
                                         title={`${swayLocaleLabel} agreement with ${legislator.full_name ?? "this legislator"} · lifetime`}
                                         testID="legislator-detail-chart-locale-lifetime"

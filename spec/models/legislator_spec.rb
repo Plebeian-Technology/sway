@@ -44,8 +44,7 @@ RSpec.describe Legislator, type: :model do
     end
 
     it "does not auto-create a legislator_district_score on create (default-score creation lives on the term-keyed write path)" do
-      legislator = create(:legislator)
-      expect(legislator.reload.current_district_score).to be_nil
+      create(:legislator)
       expect(LegislatorDistrictScore.count).to eq(0)
     end
   end

@@ -29,10 +29,72 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(inertia.props[:bill][:id]).to eq(bill.id)
       expect(inertia.props[:bill][:identifier]).to eq("SB-123")
       expect(inertia.props[:bill][:title]).to eq("Clean Water and Community Health Act")
-      expect(inertia.props[:bill][:pro_count]).to eq(25)
-      expect(inertia.props[:bill][:con_count]).to eq(5)
-      expect(inertia.props[:bill][:total_votes]).to eq(30)
+      expect(inertia.props[:bill]).to include(pro_percent: 85, con_percent: 15)
       expect(inertia.props[:cta_url]).to eq("/bills/#{bill.id}")
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "withholds the percentages while the bill has nine votes" do
+      bill_score.update!(for: 6, against: 3)
+
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
+    end
+
+    it "sends the percentages and the flag once the bill has ten votes" do
+      bill_score.update!(for: 7, against: 3)
+
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill]).to include(pro_percent: 70, con_percent: 30, comparison_suppressed: false)
+    end
+
+    # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+    it "sends no vote count, voter total or voters-needed number for a bill with thirty voters" do
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill].keys).not_to include(:pro_count, :con_count, :total_votes, :voters_needed)
+      expect(response.body).not_to match(/pro_count|con_count|total_votes|voters_needed/)
+    end
+
+    it "carries payload version 4 in its cache tag" do
+      expect(Embed::BillsController::PAYLOAD_VERSION).to eq("4")
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    {
+      "nineteen votes, thirteen For" => [13, 6, 70, 30],
+      "forty votes, thirty-nine For" => [39, 1, 95, 5]
+    }.each do |description, (pro, con, pro_percent, con_percent)|
+      it "sends #{pro_percent} and #{con_percent} for #{description}" do
+        bill_score.update!(for: pro, against: con)
+
+        get "/embed/bills/#{bill.id}"
+
+        expect(inertia.props[:bill]).to include(pro_percent:, con_percent:, comparison_suppressed: false)
+      end
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "withholds a unanimous split of ten votes like one under ten" do
+      bill_score.update!(for: 10, against: 0)
+
+      get "/embed/bills/#{bill.id}"
+
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
+    end
+
+    it "answers a conditional GET holding the previous payload version's ETag with a full body" do
+      current_version = Embed::BillsController::PAYLOAD_VERSION
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "2")
+      get "/embed/bills/#{bill.id}"
+      old_etag = response.headers["ETag"]
+
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", current_version)
+      get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => old_etag}
+
+      expect(response).to have_http_status(:ok)
     end
 
     it "sets public CDN caching headers with s-maxage and stale-while-revalidate" do
@@ -103,6 +165,31 @@ RSpec.describe "Embed::Bills", type: :request do
       expect(response.body).to be_empty
     end
 
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "changes the ETag when the payload version changes" do
+      get "/embed/bills/#{bill.id}"
+      etag = response.headers["ETag"]
+
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "next")
+      get "/embed/bills/#{bill.id}"
+
+      expect(response.headers["ETag"]).not_to eq(etag)
+    end
+
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "answers a conditional GET holding a pre-change ETag with the suppressed body" do
+      bill_score.update!(for: 6, against: 3)
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "before")
+      get "/embed/bills/#{bill.id}"
+      old_etag = response.headers["ETag"]
+
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "after")
+      get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => old_etag}
+
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
+    end
+
     it "generates different ETags when utm_* parameters differ" do
       get "/embed/bills/#{bill.id}?partner=the-banner&utm_source=twitter"
       expect(response).to have_http_status(:ok)
@@ -134,57 +221,39 @@ RSpec.describe "Embed::Bills", type: :request do
       get "/embed/bills/#{bill.id}"
       expect(response).to have_http_status(:ok)
       original_etag = response.headers["ETag"]
-      original_last_modified = response.headers["Last-Modified"]
 
       original_bill_updated_at = bill.updated_at
       travel_to(1.hour.from_now) do
         bill_score.update_columns(for: 100, against: 20, updated_at: Time.current)
         expect(bill.reload.updated_at).to eq(original_bill_updated_at)
 
-        get "/embed/bills/#{bill.id}", headers: {
-          "If-None-Match" => original_etag,
-          "If-Modified-Since" => original_last_modified
-        }
+        get "/embed/bills/#{bill.id}", headers: {"If-None-Match" => original_etag}
 
         expect(response).to have_http_status(:ok)
         expect(response.headers["ETag"]).not_to eq(original_etag)
-        expect(inertia.props[:bill][:pro_count]).to eq(100)
-        expect(inertia.props[:bill][:con_count]).to eq(20)
-        expect(inertia.props[:bill][:total_votes]).to eq(120)
+        expect(inertia.props[:bill]).to include(pro_percent: 85, con_percent: 15)
       end
     end
 
-    it "returns 304 Not Modified when both ETag and Last-Modified match" do
+    # @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it "answers an If-Modified-Since-only conditional GET after a payload version change with a full body" do
+      bill_score.update!(for: 6, against: 3)
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "before")
       get "/embed/bills/#{bill.id}"
       expect(response).to have_http_status(:ok)
-      etag = response.headers["ETag"]
-      last_modified = response.headers["Last-Modified"]
 
-      expect(etag).to be_present
-      expect(last_modified).to be_present
+      stub_const("Embed::BillsController::PAYLOAD_VERSION", "after")
+      get "/embed/bills/#{bill.id}", headers: {"If-Modified-Since" => 1.hour.from_now.httpdate}
 
-      get "/embed/bills/#{bill.id}", headers: {
-        "If-None-Match" => etag,
-        "If-Modified-Since" => last_modified
-      }
-
-      expect(response).to have_http_status(:not_modified)
-      expect(response.body).to be_empty
+      expect(response).to have_http_status(:ok)
+      expect(inertia.props[:bill]).to include(pro_percent: nil, con_percent: nil, comparison_suppressed: true)
     end
 
-    it "returns 200 OK on If-Modified-Since if bill_score has updated" do
-      original_bill_updated_at = bill.updated_at
+    it "sends no Last-Modified header, so only the ETag can answer 304" do
       get "/embed/bills/#{bill.id}"
-      last_modified = response.headers["Last-Modified"]
 
-      travel_to(1.hour.from_now) do
-        bill_score.update_columns(for: 50, updated_at: Time.current)
-        expect(bill.reload.updated_at).to eq(original_bill_updated_at)
-
-        get "/embed/bills/#{bill.id}", headers: {"If-Modified-Since" => last_modified}
-        expect(response).to have_http_status(:ok)
-        expect(inertia.props[:bill][:pro_count]).to eq(50)
-      end
+      expect(response.headers["ETag"]).to be_present
+      expect(response.headers["Last-Modified"]).to be_nil
     end
 
     it "returns 404 Not Found for nonexistent bill" do

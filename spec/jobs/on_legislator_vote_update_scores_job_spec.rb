@@ -4,6 +4,8 @@ require "rails_helper"
 # Every counts tuple below reads
 # (agreed, disagreed, no_legislator_vote, legislator_abstained).
 RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
+  include_context "with a voter minimum of one"
+
   it "M-L1: G's vote created FOR reclassifies both voters; no_legislator_vote drops to 0" do
     sway_locale = create(:sway_locale)
     district = create(:district, sway_locale:)
@@ -24,6 +26,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     expect(uls1.count_no_legislator_vote).to eql(1)
 
     create(:legislator_vote, bill: bill1, legislator:, support: LegislatorVote::Support::FOR)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     lds = LegislatorDistrictScore.find_by!(legislator_term:)
@@ -51,9 +54,11 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     create(:user_vote, user: user1, bill: bill1, support: LegislatorVote::Support::FOR)
     create(:user_vote, user: user2, bill: bill1, support: LegislatorVote::Support::AGAINST)
     legislator_vote = create(:legislator_vote, bill: bill1, legislator:, support: LegislatorVote::Support::FOR)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     legislator_vote.update!(support: LegislatorVote::Support::ABSTAIN)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     lds = LegislatorDistrictScore.find_by!(legislator_term:)
@@ -76,11 +81,13 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     create(:user_vote, user: user1, bill: bill1, support: LegislatorVote::Support::FOR)
     create(:user_vote, user: user2, bill: bill1, support: LegislatorVote::Support::AGAINST)
     create(:legislator_vote, bill: bill1, legislator:, support: LegislatorVote::Support::FOR)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     bill2 = create(:bill, sway_locale:, legislator:, scheduled_release_date_utc: 2.days.ago)
     create(:user_vote, user: user1, bill: bill2, support: LegislatorVote::Support::FOR)
     create(:legislator_vote, bill: bill2, legislator:, support: LegislatorVote::Support::FOR)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     lds = LegislatorDistrictScore.find_by!(legislator_term:)
@@ -101,9 +108,11 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     create(:user_vote, user: user1, bill: bill1, support: LegislatorVote::Support::FOR)
     create(:user_vote, user: user2, bill: bill1, support: LegislatorVote::Support::AGAINST)
     legislator_vote = create(:legislator_vote, bill: bill1, legislator:, support: LegislatorVote::Support::FOR)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     legislator_vote.destroy!
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     lds = LegislatorDistrictScore.find_by!(legislator_term:)
@@ -123,7 +132,9 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     create(:user_vote, user: user1, bill: bill1, support: LegislatorVote::Support::FOR)
     create(:legislator_vote, bill: bill1, legislator:, support: LegislatorVote::Support::FOR)
 
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
 
     lds = LegislatorDistrictScore.find_by!(legislator_term:)
@@ -134,6 +145,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
   # cascade, by the time the job runs. It should do nothing and raise nothing.
   it "M-L7: a missing legislator is a no-op" do
     expect {
+      Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
       OnLegislatorVoteUpdateScoresJob.new.perform(999_999)
     }.not_to raise_error
   end
@@ -148,6 +160,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     legislator = create(:legislator, district:)
 
     expect {
+      Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
       OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id)
     }.not_to raise_error
     # The score table is now keyed on legislator_term alone, so find the person
@@ -178,6 +191,7 @@ RSpec.describe OnLegislatorVoteUpdateScoresJob, type: :job do
     create(:user_vote, user:, bill: prior_bill, support: LegislatorVote::Support::FOR)
     create(:legislator_vote, bill: prior_bill, legislator:, legislator_term: prior_term, support: LegislatorVote::Support::FOR)
 
+    Bill.find_each { |bill| ScoreRecomputeService.recompute_bill!(bill) }
     OnLegislatorVoteUpdateScoresJob.new.perform(legislator.id, prior_term.id)
 
     ults = UserLegislatorTermScore.find_by!(user_legislator: inactive_ul, legislator_term: prior_term)

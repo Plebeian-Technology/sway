@@ -9,8 +9,9 @@ import { swayTokens } from "../../theme/tokens";
 import { StampedBadge } from "../StampedBadge";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 import { LegislatorChartsPanel } from "../LegislatorChartsPanel";
+import { VoteComparisonPlaceholder } from "../VoteComparisonPlaceholder";
 import { HistoricalRepairModal } from "./HistoricalRepairModal";
-import { calculateAgreement } from "../../types/legislator";
+import { calculateAgreement, calculateGroupAgreement } from "../../types/legislator";
 import type { ILegislatorTermCardProps } from "../../types/legislator";
 import type { LegislatorRecord } from "../../hooks/useLegislators";
 
@@ -30,8 +31,8 @@ export function LegislatorTermCard({
     const [repairModalOpen, setRepairModalOpen] = useState(false);
 
     const userCalc = calculateAgreement(term.user_score);
-    const districtCalc = calculateAgreement(term.district_score);
-    const localeCalc = calculateAgreement(term.locale_score);
+    const districtCalc = calculateGroupAgreement(term.district_score);
+    const localeCalc = calculateGroupAgreement(term.locale_score);
 
     const legName = legislatorName ?? (legislator as LegislatorRecord)?.full_name ?? "Legislator";
     const districtTitle =
@@ -170,26 +171,32 @@ export function LegislatorTermCard({
                             <Text className="text-xs font-open-sans-semibold uppercase tracking-wider text-muted-foreground-light dark:text-muted-foreground-dark">
                                 {districtTitle} Agreement
                             </Text>
-                            <Text
-                                className="text-xl font-open-sans-bold tabular-nums text-foreground-light dark:text-foreground-dark"
-                                style={{ fontVariant: ["tabular-nums"] }}
-                            >
-                                {districtCalc.total > 0 ? districtCalc.displayPct : "No votes recorded (--%)"}
-                            </Text>
-                        </View>
-                        <View className="flex-row flex-wrap gap-4 text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
-                            <Text className="text-xs font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark">
-                                {districtCalc.agreed} Agreed
-                            </Text>
-                            <Text className="text-xs font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark">
-                                {districtCalc.disagreed} Disagreed
-                            </Text>
-                            {districtCalc.noVote > 0 ? (
-                                <Text className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
-                                    {districtCalc.noVote} No Vote
+                            {districtCalc.suppressed ? null : (
+                                <Text
+                                    className="text-xl font-open-sans-bold tabular-nums text-foreground-light dark:text-foreground-dark"
+                                    style={{ fontVariant: ["tabular-nums"] }}
+                                >
+                                    {districtCalc.displayPct}
                                 </Text>
-                            ) : null}
+                            )}
                         </View>
+                        {districtCalc.suppressed ? (
+                            <VoteComparisonPlaceholder testID="term-district-score-suppressed" />
+                        ) : (
+                            <View className="flex-row flex-wrap gap-4 text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
+                                <Text className="text-xs font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark">
+                                    {districtCalc.agreedPct}% Agreed
+                                </Text>
+                                <Text className="text-xs font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark">
+                                    {districtCalc.disagreedPct}% Disagreed
+                                </Text>
+                                {districtCalc.noVotePct > 0 ? (
+                                    <Text className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
+                                        {districtCalc.noVotePct}% No Vote
+                                    </Text>
+                                ) : null}
+                            </View>
+                        )}
                     </View>
 
                     <View
@@ -200,26 +207,32 @@ export function LegislatorTermCard({
                             <Text className="text-xs font-open-sans-semibold uppercase tracking-wider text-muted-foreground-light dark:text-muted-foreground-dark">
                                 Locale Agreement
                             </Text>
-                            <Text
-                                className="text-xl font-open-sans-bold tabular-nums text-foreground-light dark:text-foreground-dark"
-                                style={{ fontVariant: ["tabular-nums"] }}
-                            >
-                                {localeCalc.total > 0 ? localeCalc.displayPct : "No votes recorded (--%)"}
-                            </Text>
-                        </View>
-                        <View className="flex-row flex-wrap gap-4 text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
-                            <Text className="text-xs font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark">
-                                {localeCalc.agreed} Agreed
-                            </Text>
-                            <Text className="text-xs font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark">
-                                {localeCalc.disagreed} Disagreed
-                            </Text>
-                            {localeCalc.noVote > 0 ? (
-                                <Text className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
-                                    {localeCalc.noVote} No Vote
+                            {localeCalc.suppressed ? null : (
+                                <Text
+                                    className="text-xl font-open-sans-bold tabular-nums text-foreground-light dark:text-foreground-dark"
+                                    style={{ fontVariant: ["tabular-nums"] }}
+                                >
+                                    {localeCalc.displayPct}
                                 </Text>
-                            ) : null}
+                            )}
                         </View>
+                        {localeCalc.suppressed ? (
+                            <VoteComparisonPlaceholder testID="term-locale-score-suppressed" />
+                        ) : (
+                            <View className="flex-row flex-wrap gap-4 text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
+                                <Text className="text-xs font-open-sans-semibold text-vote-for-light dark:text-vote-for-dark">
+                                    {localeCalc.agreedPct}% Agreed
+                                </Text>
+                                <Text className="text-xs font-open-sans-semibold text-vote-against-light dark:text-vote-against-dark">
+                                    {localeCalc.disagreedPct}% Disagreed
+                                </Text>
+                                {localeCalc.noVotePct > 0 ? (
+                                    <Text className="text-xs font-open-sans-semibold text-muted-foreground-light dark:text-muted-foreground-dark">
+                                        {localeCalc.noVotePct}% No Vote
+                                    </Text>
+                                ) : null}
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -256,6 +269,7 @@ export function LegislatorTermCard({
                                 {term.district_score ? (
                                     <View className="bg-surface-3-light dark:bg-surface-3-dark border border-border-light dark:border-border-dark rounded-xl">
                                         <LegislatorChartsPanel
+                                            group
                                             score={term.district_score}
                                             title={`${districtTitle} agreement · ${term.session_label}`}
                                             testID={`term-chart-district-${term.id}`}
@@ -265,6 +279,7 @@ export function LegislatorTermCard({
                                 {term.locale_score ? (
                                     <View className="bg-surface-3-light dark:bg-surface-3-dark border border-border-light dark:border-border-dark rounded-xl">
                                         <LegislatorChartsPanel
+                                            group
                                             score={term.locale_score}
                                             title={`Locale agreement · ${term.session_label}`}
                                             testID={`term-chart-locale-${term.id}`}

@@ -133,6 +133,8 @@ RSpec.describe ReconcileUserDistrictsService do
     end
 
     context "when the user's district changed (moved)" do
+      include_context "with a voter minimum of one"
+
       it "deactivates the old link + user_district and creates new ones for the current district only" do
         user, sway_locale = build_user_with_congress_locale
 

@@ -215,8 +215,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       legislator = sway_locale.legislators.first
       term = legislator.active_term
 
-      create(:legislator_district_score, legislator_term: term, count_agreed: 5)
-      create(:legislator_locale_score, legislator_term: term, count_agreed: 10)
+      create(:legislator_district_score, legislator_term: term, count_agreed: 5, distinct_voter_count: 4)
+      create(:legislator_locale_score, legislator_term: term, count_agreed: 9, count_disagreed: 3, distinct_voter_count: 10)
       user_legislator = user.user_legislators.find_by(legislator:)
       create(:user_legislator_term_score, user_legislator:, legislator_term: term, count_agreed: 2)
       create(:historical_score_explanation, user:, legislator:)
@@ -259,10 +259,18 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
         ]
       )
 
-      score_keys = %w[count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
-      expect(term_entry["district_score"].keys).to match_array(score_keys)
-      expect(term_entry["locale_score"].keys).to match_array(score_keys)
-      expect(term_entry["user_score"].keys).to match_array(score_keys)
+      user_score_keys = %w[count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained]
+      percent_keys = %w[agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent]
+      group_score_keys = percent_keys + %w[voter_agreement_percent comparison_suppressed]
+      expect(term_entry["district_score"].keys).to match_array(group_score_keys)
+      expect(term_entry["locale_score"].keys).to match_array(group_score_keys)
+      expect(term_entry["user_score"].keys).to match_array(user_score_keys)
+
+      # @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+      expect(term_entry["district_score"]["comparison_suppressed"]).to be(true)
+      expect(term_entry["district_score"].values_at(*percent_keys, "voter_agreement_percent")).to all(be_nil)
+      expect(term_entry["locale_score"]["comparison_suppressed"]).to be(false)
+      expect(term_entry["locale_score"].values_at(*percent_keys, "voter_agreement_percent")).to eq([80, 20, 0, 0, 80])
 
       expect(term_entry["correction_explanation"].keys).to match_array(
         %w[title body delta score_type]
@@ -362,13 +370,13 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       create(:user_legislator_term_score, user_legislator:, legislator_term: prior_term,
         count_agreed: 2, count_disagreed: 0, count_no_legislator_vote: 1, count_legislator_abstained: 0)
 
-      create(:legislator_district_score, legislator_term: current_term,
+      create(:legislator_district_score, legislator_term: current_term, distinct_voter_count: 10,
         count_agreed: 10, count_disagreed: 2, count_no_legislator_vote: 0, count_legislator_abstained: 1)
-      create(:legislator_district_score, legislator_term: prior_term,
+      create(:legislator_district_score, legislator_term: prior_term, distinct_voter_count: 6,
         count_agreed: 5, count_disagreed: 1, count_no_legislator_vote: 0, count_legislator_abstained: 0)
-      create(:legislator_locale_score, legislator_term: current_term,
+      create(:legislator_locale_score, legislator_term: current_term, distinct_voter_count: 12,
         count_agreed: 20, count_disagreed: 3, count_no_legislator_vote: 1, count_legislator_abstained: 0)
-      create(:legislator_locale_score, legislator_term: prior_term,
+      create(:legislator_locale_score, legislator_term: prior_term, distinct_voter_count: 10,
         count_agreed: 8, count_disagreed: 0, count_no_legislator_vote: 0, count_legislator_abstained: 0)
 
       get "/legislators", headers: {"Accept" => "application/json"}
@@ -380,19 +388,14 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       ]
       expect(row["user_legislator_score"].keys).to match_array(expected_keys)
       expect(row["lifetime_score"].keys).to match_array(expected_keys)
-      expect(row["user_legislator_score"]["legislator_district_score"].keys).to match_array(
-        %w[
-          legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
-          comparison_suppressed agreed_percent disagreed_percent abstained_percent no_vote_percent
-        ]
-      )
-
-      expect(row["user_legislator_score"]["legislator_locale_score"].keys).to match_array(
-        %w[
-          legislator_id count_agreed count_disagreed count_no_legislator_vote count_legislator_abstained
-          comparison_suppressed agreed_percent disagreed_percent abstained_percent no_vote_percent
-        ]
-      )
+      group_score_keys = %w[
+        legislator_id comparison_suppressed voter_agreement_percent
+        agreed_percent disagreed_percent no_legislator_vote_percent legislator_abstained_percent
+      ]
+      %w[user_legislator_score lifetime_score].each do |scope|
+        expect(row[scope]["legislator_district_score"].keys).to match_array(group_score_keys)
+        expect(row[scope]["legislator_locale_score"].keys).to match_array(group_score_keys)
+      end
 
       # Current term stays the active term's own row (no summing).
       expect(row["user_legislator_score"]["count_agreed"]).to eq(3)
@@ -404,13 +407,18 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(lifetime["count_disagreed"]).to eq(1)
       expect(lifetime["count_no_legislator_vote"]).to eq(1)
       expect(lifetime["count_legislator_abstained"]).to eq(0)
+      # @lat: [[voter-privacy-threshold#A lifetime figure needs every summed term at the minimum]]
       expect(lifetime["legislator_district_score"]).to eq(
-        "legislator_id" => legislator.id, "count_agreed" => 15, "count_disagreed" => 3,
-        "count_no_legislator_vote" => 0, "count_legislator_abstained" => 1
+        "legislator_id" => legislator.id,
+        "comparison_suppressed" => true, "agreed_percent" => nil, "disagreed_percent" => nil,
+        "no_legislator_vote_percent" => nil, "legislator_abstained_percent" => nil,
+        "voter_agreement_percent" => nil
       )
       expect(lifetime["legislator_locale_score"]).to eq(
-        "legislator_id" => legislator.id, "count_agreed" => 28, "count_disagreed" => 3,
-        "count_no_legislator_vote" => 1, "count_legislator_abstained" => 0
+        "legislator_id" => legislator.id,
+        "comparison_suppressed" => false, "agreed_percent" => 80, "disagreed_percent" => 10,
+        "no_legislator_vote_percent" => 10, "legislator_abstained_percent" => 0,
+        "voter_agreement_percent" => 90
       )
     end
   end
@@ -434,6 +442,8 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       create(:user_legislator_term_score, user_legislator:, legislator_term: term,
         count_agreed: 4, count_disagreed: 1, count_no_legislator_vote: 0, count_legislator_abstained: 0)
+      create(:legislator_district_score, legislator_term: term, count_agreed: 6, count_disagreed: 2, distinct_voter_count: 9)
+      create(:legislator_locale_score, legislator_term: term, count_agreed: 6, count_disagreed: 2, distinct_voter_count: 10)
       user_legislator.update!(active: false)
       create(:user_district, user:, district: legislator.district, active: true)
       create(:user_legislator, user:, legislator: create(:legislator, district: legislator.district))
@@ -456,6 +466,13 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       )
       expect(entry["score"]["count_agreed"]).to eq(4)
       expect(entry["ended_reason"]).to eq("term_ended")
+
+      history_term = entry["legislator"]["terms"].find { |term_entry| term_entry["id"] == term.id }
+      expect(history_term["district_score"]).to include("comparison_suppressed" => true, "agreed_percent" => nil)
+      expect(history_term["locale_score"]).to include(
+        "comparison_suppressed" => false, "agreed_percent" => 80, "disagreed_percent" => 20,
+        "voter_agreement_percent" => 80
+      )
     end
 
     # @lat: [[representative-history-reason-tests#Still-running term with inactive link]]
@@ -1040,12 +1057,15 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       hash = raw.transform_keys(&:to_s)
 
       expect(hash.keys).to match_array(
-        %w[id identifier title brief_summary sway_locale current_status pro_count con_count total_votes cta_url]
+        %w[
+          id identifier title brief_summary sway_locale current_status pro_percent con_percent
+          cta_url comparison_suppressed
+        ]
       )
       expect(hash["sway_locale"].keys.map(&:to_s)).to match_array(%w[name jurisdiction state])
-      expect(hash["pro_count"]).to eq(42)
-      expect(hash["con_count"]).to eq(13)
-      expect(hash["total_votes"]).to eq(55)
+      expect(hash["pro_percent"]).to eq(75)
+      expect(hash["con_percent"]).to eq(25)
+      expect(hash["comparison_suppressed"]).to be(false)
       expect(hash["cta_url"]).to include("/bills/#{bill.id}")
       expect(hash["cta_url"]).to include("partner=the-banner")
       expect(hash["cta_url"]).to include("ref=banner-123")
@@ -1489,9 +1509,10 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       create(:legislator_vote, bill:, legislator: sponsor, legislator_term: current_term,
         support: LegislatorVote::Support::AGAINST)
       create(:organization_bill_position, bill:, organization: create(:organization, sway_locale:))
+      current_term.district.update!(name: "#{sway_locale.region_code}3")
       score = bill.bill_score
-      score.update!(for: 4, against: 2)
-      create(:bill_score_district, bill_score: score, district: current_term.district, for: 3, against: 1)
+      score.update!(for: 16, against: 6)
+      create(:bill_score_district, bill_score: score, district: current_term.district, for: 9, against: 3)
 
       other_locale = create(:sway_locale, (sway_locale.city == "congress") ? :maryland : :congress)
       other_district = create(:district, sway_locale: other_locale)
@@ -1523,9 +1544,9 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
-      score_keys = %w[id bill_id for against comparison_suppressed voters_needed districts]
+      score_keys = %w[id bill_id for_percent against_percent comparison_suppressed districts]
       score_district_keys = %w[
-        bill_score_id district for against legislator_names comparison_suppressed for_percent against_percent at_large
+        bill_score_id district legislator_names comparison_suppressed for_percent against_percent at_large
       ]
       user_vote_keys = %w[id bill_id support]
 
@@ -1584,15 +1605,13 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       # @lat: [[district-chart-tooltip#The mobile bill JSON carries the names, the web page does not]]
       web_score_district_keys = %w[
-        bill_score_id district for against comparison_suppressed for_percent against_percent at_large
+        bill_score_id district comparison_suppressed for_percent against_percent at_large
       ]
       ["/bills/#{bill.id}", "/bill_of_the_month"].each do |web_path|
         get web_path
         web_score_districts = inertia.props[:bill_score]["districts"]
         expect(web_score_districts).not_to be_empty
         web_score_districts.each do |web_score_district|
-          # In suppressed cases, some keys might be nil, but they should still be present
-          # if they are part of the resource whitelist.
           expect(web_score_district.keys).to match_array(web_score_district_keys)
         end
         expect(web_score_districts.first["district"].keys).to match_array(district_keys)
@@ -2043,7 +2062,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
         ]
       )
       expect(hash["sway_locale"].keys).to match_array(%i[id name])
-      expect(hash["bill"].keys).to match_array(%i[id external_id title summary summary_ai_unreviewed vote_count view_count share_count])
+      expect(hash["bill"].keys).to match_array(%i[id external_id title summary summary_ai_unreviewed view_count share_count])
       expect(hash["legislator"].keys).to match_array(%i[id full_name title district_name photo_url])
       expect(hash["legislators"].first.keys).to match_array(%i[id full_name title district_name photo_url])
       expect(hash["organization"].keys).to match_array(%i[id name support])

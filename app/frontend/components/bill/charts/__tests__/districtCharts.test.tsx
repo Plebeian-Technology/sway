@@ -1,0 +1,191 @@
+import { cleanup, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { sway } from "sway";
+
+const reloadMock = vi.fn<(options?: unknown) => void>();
+let mockPageProps: Record<string, unknown> = {};
+
+vi.mock("@inertiajs/react", () => ({
+    router: { reload: (options?: unknown) => reloadMock(options) },
+    usePage: () => ({ props: mockPageProps }),
+    Link: ({ children, href }: { children?: React.ReactNode; href?: string }) => <a href={href}>{children}</a>,
+}));
+
+import BillAffinityPanel from "app/frontend/components/bill/charts/BillAffinityPanel";
+import BillChartsPanel from "app/frontend/components/bill/charts/BillChartsPanel";
+
+const district = (number: number): sway.IDistrict =>
+    ({ name: `D-${number}`, number, region_code: "D" }) as sway.IDistrict;
+
+const BILL = { id: 42, title: "Street Trees Act" } as unknown as sway.IBill;
+
+// 30 voters: 12 in district 4, 4 in district 7, and the at-large row repeating the total.
+const SCORE: sway.IBillScore = {
+    bill_id: 42,
+    for_percent: 60,
+    against_percent: 40,
+    comparison_suppressed: false,
+    districts: [
+        { district: district(0), comparison_suppressed: false, for_percent: 60, against_percent: 40, at_large: true },
+        { district: district(4), comparison_suppressed: false, for_percent: 75, against_percent: 25, at_large: false },
+        {
+            district: district(7),
+            comparison_suppressed: true,
+            for_percent: null,
+            against_percent: null,
+            at_large: false,
+        },
+    ],
+};
+
+// @lat: [[bill-vote-charts-design#DistrictVotesChart.tsx]]
+describe("district charts at the ten-voter minimum", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [district(7)] };
+    });
+
+    afterEach(cleanup);
+
+    it("draws a district with ten voters as percentage bars with no count", () => {
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        const chart = screen.getByTestId("district-votes-chart");
+        expect(within(chart).getByLabelText("District 4 support 75%")).toBeInTheDocument();
+        expect(within(chart).getByLabelText("District 4 oppose 25%")).toBeInTheDocument();
+        expect(chart).toHaveTextContent("75%");
+        expect(chart).toHaveTextContent("25%");
+    });
+
+    it("keeps the bill total, as percentages, above the district bars", () => {
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(screen.getByLabelText("60% support, 40% oppose")).toBeInTheDocument();
+    });
+
+    it("does not draw the at-large row", () => {
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(screen.getByTestId("district-votes-chart")).not.toHaveTextContent("District 0");
+    });
+
+    it("says 'Not enough votes yet' for the reader's own district when it is under the minimum", () => {
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        const row = screen.getByTestId("district-votes-chart-reader-district-7");
+        expect(row).toHaveTextContent("District 7");
+        expect(row).toHaveTextContent("Not enough votes yet");
+        expect(screen.queryByLabelText(/District 7 support/)).toBeNull();
+    });
+
+    it("says 'Not enough votes yet' for the reader's own district when the server sent no row for it", () => {
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [district(9)] };
+
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(screen.getByTestId("district-votes-chart-reader-district-9")).toHaveTextContent("Not enough votes yet");
+    });
+
+    it("matches the reader's district on region as well as number", () => {
+        const regional = (number: number, region_code: string) =>
+            ({ name: `${region_code}-${number}`, number, region_code }) as sway.IDistrict;
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [regional(4, "MD")] };
+        const score = {
+            ...SCORE,
+            districts: [
+                {
+                    district: regional(4, "VA"),
+                    comparison_suppressed: false,
+                    for_percent: 75,
+                    against_percent: 25,
+                    at_large: false,
+                },
+            ],
+        } as sway.IBillScore;
+
+        render(<BillChartsPanel bill={BILL} bill_score={score} />);
+
+        expect(screen.getByTestId("district-votes-chart-reader-district-4")).toHaveTextContent("Not enough votes yet");
+    });
+
+    it("draws no other district that is under the minimum", () => {
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [district(4)] };
+
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(screen.getByTestId("district-votes-chart")).not.toHaveTextContent("District 7");
+    });
+
+    it("asks the server once for a signed-in reader's districts when the page has none", () => {
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+
+        render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(reloadMock).toHaveBeenCalledTimes(1);
+        expect(reloadMock).toHaveBeenCalledWith(expect.objectContaining({ only: ["districts"] }));
+    });
+
+    it("asks again and redraws the reader's row after the page props are replaced without districts", () => {
+        const { rerender } = render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(screen.getByTestId("district-votes-chart-reader-district-7")).toBeInTheDocument();
+        expect(reloadMock).not.toHaveBeenCalled();
+
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(screen.queryByTestId("district-votes-chart-reader-district-7")).toBeNull();
+        expect(reloadMock).toHaveBeenCalledTimes(1);
+
+        mockPageProps = { user: { id: 1 }, legislators: [], districts: [district(7)] };
+        const options = reloadMock.mock.calls[0][0] as {
+            onSuccess?: (page: { props: Record<string, unknown> }) => void;
+            onFinish?: () => void;
+        };
+        options.onSuccess?.({ props: mockPageProps });
+        options.onFinish?.();
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(screen.getByTestId("district-votes-chart-reader-district-7")).toHaveTextContent("Not enough votes yet");
+
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(reloadMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not ask again when the server answers without the districts prop", () => {
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        const { rerender } = render(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+        expect(reloadMock).toHaveBeenCalledTimes(1);
+
+        mockPageProps = { user: { id: 1 }, legislators: [] };
+        const options = reloadMock.mock.calls[0][0] as {
+            onSuccess?: (page: { props: Record<string, unknown> }) => void;
+            onFinish?: () => void;
+        };
+        options.onSuccess?.({ props: mockPageProps });
+        options.onFinish?.();
+        rerender(<BillChartsPanel bill={BILL} bill_score={SCORE} />);
+
+        expect(reloadMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("draws the affinity chart from percentages, without the hidden or at-large districts", () => {
+        render(<BillAffinityPanel bill_score={SCORE} />);
+
+        const chart = screen.getByTestId("affinity-district-chart");
+        expect(chart).toHaveTextContent("D-4 (+50%)");
+        expect(chart).not.toHaveTextContent("D-7");
+        expect(chart).not.toHaveTextContent("D-0");
+    });
+
+    it("draws neither panel while the bill tally is suppressed", () => {
+        const suppressed = { ...SCORE, comparison_suppressed: true };
+
+        const { container } = render(
+            <>
+                <BillChartsPanel bill={BILL} bill_score={suppressed} />
+                <BillAffinityPanel bill_score={suppressed} />
+            </>,
+        );
+
+        expect(container).toBeEmptyDOMElement();
+    });
+});

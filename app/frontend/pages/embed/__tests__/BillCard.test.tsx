@@ -14,9 +14,9 @@ const mockBill: IEmbedBill = {
         state: "maryland",
     },
     current_status: "In Committee",
-    pro_count: 75,
-    con_count: 25,
-    total_votes: 100,
+    pro_percent: 70,
+    con_percent: 30,
+    comparison_suppressed: false,
     cta_url: "/bills/42?partner=the-banner&ref=art-99",
 };
 
@@ -44,24 +44,62 @@ describe("embed/BillCard", () => {
         render(<BillCard bill={mockBill} />);
 
         expect(screen.getByTestId("vote-meter")).toBeTruthy();
-        expect(screen.getByText(/Support 75 \(75%\)/)).toBeTruthy();
-        expect(screen.getByText(/Oppose 25 \(25%\)/)).toBeTruthy();
+        expect(screen.getByText("Support 70%")).toBeTruthy();
+        expect(screen.getByText("Oppose 30%")).toBeTruthy();
         expect(screen.getByTestId("pro-bar")).toBeTruthy();
         expect(screen.getByTestId("con-bar")).toBeTruthy();
     });
 
-    it("renders empty vote state when total votes is zero", () => {
-        const zeroVotesBill: IEmbedBill = {
+    it("shows the percentages and no count in text, aria-label or title", () => {
+        render(<BillCard bill={mockBill} />);
+
+        expect(screen.getByTestId("vote-meter").textContent).not.toMatch(/votes|total/i);
+        expect(screen.getByTestId("vote-meter").querySelector("[aria-label]")?.getAttribute("aria-label")).toBe(
+            "Support 70%, Oppose 30%",
+        );
+        expect(screen.getByTestId("pro-bar").style.width).toBe("70%");
+        expect(screen.getByTestId("con-bar").style.width).toBe("30%");
+    });
+
+    // @lat: [[voter-privacy-threshold#The embed widget withholds counts on the server]]
+    it("shows the placeholder with a sign-up link and no percentage below the ten-voter minimum", () => {
+        const nineVotesBill: IEmbedBill = {
             ...mockBill,
-            pro_count: 0,
-            con_count: 0,
-            total_votes: 0,
+            pro_percent: null,
+            con_percent: null,
+            comparison_suppressed: true,
         };
 
-        render(<BillCard bill={zeroVotesBill} />);
+        render(<BillCard bill={nineVotesBill} />);
 
         expect(screen.queryByTestId("vote-meter")).toBeNull();
-        expect(screen.getByTestId("vote-meter-empty").textContent).toContain("No votes recorded yet");
+        const placeholder = screen.getByTestId("vote-meter-suppressed");
+        expect(placeholder.textContent).toContain("Not enough votes yet");
+        expect(placeholder.textContent).not.toMatch(/\d|%/);
+        const signUp = screen.getByRole("link", { name: "Sign up" });
+        expect(signUp.getAttribute("href")).toBe("/?partner=the-banner&ref=art-99");
+        expect(signUp.getAttribute("target")).toBe("_blank");
+        expect(signUp.getAttribute("rel")).toBe("noopener noreferrer");
+    });
+
+    it("sends a plain sign-in link when the embed carries no partner", () => {
+        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true, cta_url: "" }} />);
+
+        expect(screen.getByRole("link", { name: "Sign up" }).getAttribute("href")).toBe("/");
+    });
+
+    it("keeps percentages hidden when a payload says suppressed but still carries them", () => {
+        render(<BillCard bill={{ ...mockBill, comparison_suppressed: true }} />);
+
+        expect(screen.queryByTestId("vote-meter")).toBeNull();
+        expect(screen.getByTestId("vote-meter-suppressed").textContent).not.toMatch(/70|30|%/);
+    });
+
+    it("treats top-level props with no flag as suppressed", () => {
+        render(<BillCard id={mockBill.id} title={mockBill.title} pro_percent={70} con_percent={30} />);
+
+        expect(screen.queryByTestId("vote-meter")).toBeNull();
+        expect(screen.getByTestId("vote-meter-suppressed").textContent).toContain("Not enough votes yet");
     });
 
     it("renders the CTA button linking to cta_url with target=_blank and rel=noopener noreferrer", () => {

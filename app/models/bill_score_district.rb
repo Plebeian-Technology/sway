@@ -27,39 +27,46 @@ class BillScoreDistrict < ApplicationRecord
   belongs_to :bill_score
   belongs_to :district
 
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
   def to_builder
     Jbuilder.new do |bsd|
       bsd.bill_score_id bill_score_id
       bsd.district district.to_sway_json
-      bsd.for self.for
-      bsd.against against
-      bsd.comparison_suppressed VoteComparisonPrivacy.suppressed?(self.for, against)
+      bsd.comparison_suppressed comparison_suppressed?
       bsd.for_percent for_percent
       bsd.against_percent against_percent
       bsd.at_large at_large?
     end
   end
 
-  def at_large?
-    # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
-    district.at_large?
+  def comparison_suppressed?
+    VoteComparisonPrivacy.withheld?(self.for, against)
   end
 
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+  def publishable?
+    !comparison_suppressed? && !at_large?
+  end
+
+  # @lat: [[scores-and-agreement#An at-large official has no district tally worth drawing]]
+  def at_large?
+    district.number.zero?
+  end
+
+  # @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
   def for_percent
-    return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
-
-    total = self.for + against
-    return 0 if total.zero?
-
-    ((self.for.to_f / total) * 100).round
+    rounded_percentages&.fetch(:for)
   end
 
   def against_percent
-    return nil if VoteComparisonPrivacy.suppressed?(self.for, against)
+    rounded_percentages&.fetch(:against)
+  end
 
-    total = self.for + against
-    return 0 if total.zero?
+  private
 
-    ((against.to_f / total) * 100).round
+  def rounded_percentages
+    return nil if comparison_suppressed?
+
+    VoteComparisonPrivacy.rounded_percentages({for: self.for, against: against}, voters: self.for + against)
   end
 end

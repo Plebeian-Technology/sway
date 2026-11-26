@@ -1657,6 +1657,8 @@ RSpec.describe "/registration", type: :request do
     end
 
     context "when a user corrects an unlocated address that already linked the state's Senators" do
+      include_context "with a voter minimum of one"
+
       unlocated_md_address = {street: "100 N Holliday St", city: "", region_code: "MD", postal_code: "", country: ""}
       richmond_address = {
         street: "1000 Bank St",
@@ -1815,6 +1817,11 @@ RSpec.describe "/registration", type: :request do
         post_address(richmond_address)
 
         expect(response).to have_http_status(:ok)
+        expect(RecomputeDistrictScoresJob).to have_been_enqueued.with([bill.id], include(senator.id))
+        expect(LegislatorDistrictScore.find_by!(legislator_term: senator_term).count_agreed).to eq(1)
+
+        perform_enqueued_jobs(only: RecomputeDistrictScoresJob)
+
         expect(LegislatorDistrictScore.find_by!(legislator_term: senator_term).count_agreed).to eq(0)
       end
 
@@ -1824,13 +1831,15 @@ RSpec.describe "/registration", type: :request do
         end
         senator = senator_link.legislator
         senator.active_term.destroy!
-        allow(ScoreRecomputeService).to receive(:recompute_legislator!)
+        allow(ScoreRecomputeService).to receive(:recompute_legislator_locale!)
+        allow(ScoreRecomputeService).to receive(:recompute_legislator_district!)
 
         stub_census(status: 200, body: census_district_body("04"))
         post_address(richmond_address)
 
         expect(response).to have_http_status(:ok)
-        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator!).with(nil)
+        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator_locale!).with(nil)
+        expect(ScoreRecomputeService).not_to have_received(:recompute_legislator_district!).with(nil)
       end
     end
 

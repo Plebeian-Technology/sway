@@ -104,14 +104,13 @@ class ReconcileUserDistrictsService
         .filter_map(&:legislator)
     new_legislators = resolved_legislators.select { |l| new_legislator_ids.include?(l.id) }
 
-    (stale_legislators + new_legislators).uniq(&:id).each do |legislator|
-      term = legislator.active_term
-      ScoreRecomputeService.recompute_legislator_district!(term) if term
-    end
-
-    Bill.where(sway_locale: @sway_locale, id: @user.user_votes.select(:bill_id)).find_each do |bill|
+    # @lat: [[voter-privacy-threshold#Bill tallies are recomputed before the legislator scores that read them]]
+    bill_ids = Bill.where(sway_locale: @sway_locale, id: @user.user_votes.select(:bill_id)).ids
+    Bill.where(id: bill_ids).find_each do |bill|
       ScoreRecomputeService.recompute_bill!(bill)
     end
+
+    ScoreRecomputeService.recompute_district_scores!(bill_ids, legislators: (stale_legislators + new_legislators).uniq(&:id))
 
     ScoreUpdaterService.broadcast_score_refresh(@user)
   end

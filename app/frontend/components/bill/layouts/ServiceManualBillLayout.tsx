@@ -14,7 +14,12 @@ import NewsArticleTestimony from "app/frontend/components/bill/NewsArticleTestim
 import OrgPositionSummary from "app/frontend/components/bill/OrgPositionSummary";
 import PublicTestimonySection from "app/frontend/components/bill/PublicTestimonySection";
 import RelatedNewsArticles from "app/frontend/components/bill/RelatedNewsArticles";
-import { selectBillPositions, selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectBillPositions,
+    selectVoteTally,
+} from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 import { hasValidSourceLink } from "app/frontend/components/bill/sway_utils/billSourceLink";
 import { splitBillTitle } from "app/frontend/components/bill/sway_utils/billTitle";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
@@ -38,7 +43,8 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
     const { user, sway_locale, public_testimony_counts, public_testimony_letters } = usePage<sway.IPageProps>().props;
     const swayLocaleSlug = useSwayLocaleSlug();
     const { supporting, opposing } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
+    const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
     const status = bill.vote_date_time_utc ? `Voted ${formatDate(bill.vote_date_time_utc)}` : "Awaiting final vote";
@@ -137,15 +143,21 @@ const ServiceManualBillLayout: React.FC<BillLayoutProps> = ({
                 <aside className="smb-rail">
                     <div className="smb-meta-card">
                         <VotePanel bill={bill} user_vote={user_vote} />
-                        <div className="smb-tally" data-testid="score-panel">
-                            <div className="smb-tally__cell">
-                                <div className="smb-tally__num">{forCount.toLocaleString()}</div>
-                                <div className="smb-tally__label">{PARITY_COPY.votePanel.forLabel}</div>
-                            </div>
-                            <div className="smb-tally__cell">
-                                <div className="smb-tally__num">{againstCount.toLocaleString()}</div>
-                                <div className="smb-tally__label">{PARITY_COPY.votePanel.againstLabel}</div>
-                            </div>
+                        <div data-testid="score-panel">
+                            {comparisonSuppressed ? (
+                                <VoteComparisonPlaceholder showInvite />
+                            ) : (
+                                <div className="smb-tally">
+                                    <div className="smb-tally__cell">
+                                        <div className="smb-tally__num">{forPercent}%</div>
+                                        <div className="smb-tally__label">{PARITY_COPY.votePanel.forLabel}</div>
+                                    </div>
+                                    <div className="smb-tally__cell">
+                                        <div className="smb-tally__num">{againstPercent}%</div>
+                                        <div className="smb-tally__label">{PARITY_COPY.votePanel.againstLabel}</div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div
                             className="mt-4 flex flex-wrap items-center gap-3"

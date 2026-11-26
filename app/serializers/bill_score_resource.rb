@@ -4,24 +4,15 @@
 class BillScoreResource < ApplicationResource
   attributes :id, :bill_id
 
-  attribute :for do |score|
-    VoteComparisonPrivacy.suppressed?(score.for, score.against) ? nil : score.for
-  end
-
-  attribute :against do |score|
-    VoteComparisonPrivacy.suppressed?(score.for, score.against) ? nil : score.against
-  end
+  # @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
+  attributes :for_percent, :against_percent
 
   attribute :comparison_suppressed do |score|
-    VoteComparisonPrivacy.suppressed?(score.for, score.against)
-  end
-
-  attribute :voters_needed do |score|
-    VoteComparisonPrivacy.voters_needed(score.for, score.against)
+    score.comparison_suppressed?
   end
 
   attribute :districts do |score|
-    district_scores = score.bill_score_districts
+    district_scores = score.publishable_districts
     # @lat: [[district-chart-tooltip#The mobile bill JSON carries the names, the web page does not]]
     if params[:district_legislator_names]
       names_by_district_id = legislator_names_by_district_id(district_scores)

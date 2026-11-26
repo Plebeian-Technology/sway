@@ -15,6 +15,16 @@ export interface IAgreeableScore {
     count_legislator_abstained?: number | string;
 }
 
+// @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+export interface IGroupAgreeableScore {
+    comparison_suppressed?: boolean | null;
+    agreed_percent?: number | null;
+    disagreed_percent?: number | null;
+    no_legislator_vote_percent?: number | null;
+    legislator_abstained_percent?: number | null;
+    voter_agreement_percent?: number | null;
+}
+
 // @lat: [[legislator-history-serialization#Read-only historical term agreement serialization]]
 export interface ILegislatorTermEntry {
     id: number;
@@ -26,8 +36,8 @@ export interface ILegislatorTermEntry {
     district_name: string | null;
     is_executive: boolean;
     active: boolean;
-    district_score: IAgreeableScore | null;
-    locale_score: IAgreeableScore | null;
+    district_score: IGroupAgreeableScore | null;
+    locale_score: IGroupAgreeableScore | null;
     user_score: IAgreeableScore | null;
     correction_explanation: IHistoricalScoreExplanation | null;
 }
@@ -115,4 +125,24 @@ export interface IHistoricalRepairModalProps {
     legislatorName: string;
     visible: boolean;
     onClose: () => void;
+}
+
+export interface IGroupAgreementCalc {
+    suppressed: boolean;
+    displayPct: string;
+    agreedPct: number;
+    disagreedPct: number;
+    noVotePct: number;
+}
+
+// @lat: [[voter-privacy-threshold#The mobile legislator screens draw percentages or the placeholder]]
+export function calculateGroupAgreement(score: IGroupAgreeableScore | null | undefined): IGroupAgreementCalc {
+    const headline = score?.voter_agreement_percent;
+    return {
+        suppressed: score?.comparison_suppressed !== false,
+        displayPct: headline === null || headline === undefined ? "--%" : `${headline}%`,
+        agreedPct: score?.agreed_percent ?? 0,
+        disagreedPct: score?.disagreed_percent ?? 0,
+        noVotePct: score?.no_legislator_vote_percent ?? 0,
+    };
 }

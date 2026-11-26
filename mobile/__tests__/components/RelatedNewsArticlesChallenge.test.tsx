@@ -89,7 +89,7 @@ const fullBillDetailPayload = {
     },
     sponsor: { full_name: "Sen. Smith" },
     user_vote: null,
-    bill_score: { for: 42, against: 18 },
+    bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: false },
     organizations: [],
 };
 
@@ -101,7 +101,7 @@ const fullBotmPayload = {
     summary: "Featured bill summary describing public access legislation.",
     organizations: [],
     user_vote: null,
-    bill_score: { for: 42, against: 18 },
+    bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: false },
     link: "https://mgaleg.maryland.gov/bills/HB1234",
     sponsor: { full_name: "Sen. Smith" },
     status: "In Committee",

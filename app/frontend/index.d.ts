@@ -276,18 +276,26 @@ declare module "sway" {
             district_name: string | null;
             is_executive: boolean;
             active: boolean;
-            district_score: scoring.IAgreeable | null;
-            locale_score: scoring.IAgreeable | null;
+            district_score: scoring.IGroupAgreeable | null;
+            locale_score: scoring.IGroupAgreeable | null;
             user_score: scoring.IAgreeable | null;
             correction_explanation: IHistoricalScoreExplanation | null;
         }
 
+        // @lat: [[voter-privacy-threshold#Bill totals are sent as rounded percentages]]
         interface IBaseScore {
-            for: number;
-            against: number;
+            for_percent: number | null;
+            against_percent: number | null;
+            comparison_suppressed: boolean;
         }
-        interface IBillScoreDistrct extends IBaseScore {
+
+        // @lat: [[voter-privacy-threshold#Districts are sent as percentages only]]
+        interface IBillScoreDistrct {
             district: IDistrict;
+            comparison_suppressed: boolean;
+            for_percent: number | null;
+            against_percent: number | null;
+            at_large: boolean;
         }
 
         interface IBillScore extends IBaseScore {
@@ -541,28 +549,25 @@ declare module "sway" {
         }
 
         namespace scoring {
-            interface ISupportable {
-                for: number;
-                against: number;
-            }
-            interface IBillScoreDistrctSupport extends ISupportable {
-                district: IDistrict;
-            }
-
-            interface IBillScoreSupport extends ISupportable {
-                bill_id: number;
-                districts: IBillScoreDistrct[];
-            }
-
             interface IAgreeable {
                 count_agreed: number;
                 count_disagreed: number;
                 count_no_legislator_vote: number;
                 count_legislator_abstained: number;
-                reached_ten_voter_minimum: boolean;
             }
 
-            interface ILegislatorDistrictScore extends IAgreeable {
+            // @lat: [[voter-privacy-threshold#Legislator scores are sent as percentages]]
+            interface IGroupAgreeable {
+                comparison_suppressed: boolean;
+                agreed_percent: number | null;
+                disagreed_percent: number | null;
+                no_legislator_vote_percent: number | null;
+                legislator_abstained_percent: number | null;
+                // Agreed share of agreed plus disagreed pairs.
+                voter_agreement_percent: number | null;
+            }
+
+            interface ILegislatorDistrictScore extends IGroupAgreeable {
                 legislator_id: number;
             }
 

@@ -263,6 +263,37 @@ describe("BillContent — News Article Testimony Integration", () => {
     });
 });
 
+// @lat: [[voter-privacy-threshold#The web bill page asks one helper whether to draw a comparison]]
+describe("BillContent — How others voted below the ten-voter minimum", () => {
+    const score = (overrides: Partial<sway.IBillScore>): sway.IBillScore => ({
+        bill_id: BASE_BILL.id,
+        for_percent: 70,
+        against_percent: 30,
+        comparison_suppressed: false,
+        districts: [],
+        ...overrides,
+    });
+
+    it("shows the placeholder with the invite prompt and no count or voters-needed number", () => {
+        render(<BillContent bill={BASE_BILL} organizations={[]} bill_score={score({ comparison_suppressed: true })} />);
+
+        const panel = screen.getByTestId("score-panel");
+        expect(panel).toHaveTextContent("Not enough votes yet");
+        expect(panel).toHaveTextContent("Invite others by sharing Sway");
+        expect(panel.textContent).not.toMatch(/\d/);
+    });
+
+    it("shows percentages and no count once the tally is no longer suppressed", () => {
+        render(<BillContent bill={BASE_BILL} organizations={[]} bill_score={score({})} />);
+
+        const panel = screen.getByTestId("score-panel");
+        expect(panel).toHaveTextContent("70%");
+        expect(panel).toHaveTextContent("30%");
+        expect(panel.innerHTML).not.toMatch(/7,?777|4,?321/);
+        expect(panel).not.toHaveTextContent("Visual comparisons will be shown");
+    });
+});
+
 describe("BillContent — Share Bill Action", () => {
     it("renders the share bill button when userVote is undefined", () => {
         render(<BillContent bill={BASE_BILL} organizations={[]} />);

@@ -1,23 +1,25 @@
 // @lat: [[mobile-bill-surface-components-design#DistrictVotesPanel]]
 import {
     districtMajority,
-    formatVoteCount,
+    isVoteComparisonSuppressed,
     representativesText,
     selectDistrictVotes,
 } from "../../src/utils/districtVotes";
 
-// Rows in the shape BillScoreDistrictResource sends: no district id, region_code beside name and number.
+// Rows in the shape BillScoreDistrictResource sends: no district id, no counts, region_code beside name and number.
 const scoreRow = (
     number: number | null,
     name: string,
     regionCode: string | null,
-    forCount: number | string | null,
-    againstCount: number | string | null,
+    forPercent: number,
+    againstPercent: number = 100 - forPercent,
 ) => ({
     bill_score_id: 9,
     district: { name, number, region_code: regionCode },
-    for: forCount,
-    against: againstCount,
+    comparison_suppressed: false,
+    for_percent: forPercent,
+    against_percent: againstPercent,
+    at_large: false,
 });
 
 const READER = { name: "3A", number: 3, region_code: "A" };
@@ -28,9 +30,6 @@ describe("selectDistrictVotes", () => {
             const result = selectDistrictVotes(input, []);
             expect(result.rows).toEqual([]);
             expect(result.readerRows).toEqual([]);
-            expect(result.hasVotes).toBe(false);
-            expect(result.maxVotes).toBe(0);
-            expect(result.maxAbsNet).toBe(0);
         }
     });
 
@@ -45,7 +44,6 @@ describe("selectDistrictVotes", () => {
     test("a district list holding only the at-large district has no rows", () => {
         const result = selectDistrictVotes([scoreRow(0, "MD0", "MD", 5, 1)], []);
         expect(result.rows).toEqual([]);
-        expect(result.hasVotes).toBe(false);
     });
 
     test("keeps a row whose number is missing, as the website does, because only an exact 0 is skipped", () => {
@@ -53,64 +51,6 @@ describe("selectDistrictVotes", () => {
         expect(result.rows).toHaveLength(1);
         expect(result.rows[0].label).toBe("District Unnumbered");
         expect(result.rows[0].number).toBe(0);
-    });
-
-    test("computes for, against, total, net and the for percentage per district", () => {
-        const [row] = selectDistrictVotes([scoreRow(4, "MD4", "MD", 12, 8)], []).rows;
-        expect(row).toMatchObject({
-            label: "District 4",
-            number: 4,
-            name: "MD4",
-            forCount: 12,
-            againstCount: 8,
-            total: 20,
-            net: 4,
-            forPct: 60,
-            isReaderDistrict: false,
-        });
-    });
-
-    test("net is not clamped and goes negative when against leads", () => {
-        const [row] = selectDistrictVotes([scoreRow(1, "MD1", "MD", 2, 9)], []).rows;
-        expect(row.net).toBe(-7);
-    });
-
-    test("coerces strings and nulls the way the website does", () => {
-        const [row] = selectDistrictVotes([scoreRow(1, "MD1", "MD", "7", null)], []).rows;
-        expect(row.forCount).toBe(7);
-        expect(row.againstCount).toBe(0);
-        expect(row.net).toBe(7);
-    });
-
-    test("an unparseable count counts as zero instead of poisoning the chart with NaN", () => {
-        const [row] = selectDistrictVotes([scoreRow(1, "MD1", "MD", "n/a", 3)], []).rows;
-        expect(row.forCount).toBe(0);
-        expect(row.net).toBe(-3);
-    });
-
-    test("the by-district scale is the largest single for or against count, not a total", () => {
-        const result = selectDistrictVotes([scoreRow(1, "MD1", "MD", 10, 10), scoreRow(2, "MD2", "MD", 3, 25)], []);
-        expect(result.maxVotes).toBe(25);
-    });
-
-    test("the net scale is the largest absolute for-minus-against", () => {
-        const result = selectDistrictVotes([scoreRow(1, "MD1", "MD", 10, 4), scoreRow(2, "MD2", "MD", 3, 25)], []);
-        expect(result.maxAbsNet).toBe(22);
-    });
-
-    test("hasVotes is false when every district is at zero and true once any district has a vote", () => {
-        const zero = selectDistrictVotes([scoreRow(1, "MD1", "MD", 0, 0)], []);
-        expect(zero.rows).toHaveLength(1);
-        expect(zero.hasVotes).toBe(false);
-
-        const some = selectDistrictVotes([scoreRow(1, "MD1", "MD", 0, 0), scoreRow(2, "MD2", "MD", 0, 1)], []);
-        expect(some.hasVotes).toBe(true);
-    });
-
-    test("perfectly tied districts have votes but no net scale", () => {
-        const result = selectDistrictVotes([scoreRow(1, "MD1", "MD", 5, 5)], []);
-        expect(result.hasVotes).toBe(true);
-        expect(result.maxAbsNet).toBe(0);
     });
 
     test("two districts with the same number but different region codes stay separate rows with separate keys", () => {
@@ -125,9 +65,9 @@ describe("selectDistrictVotes", () => {
         test("match on number and region code, not number alone", () => {
             const result = selectDistrictVotes(rows, [READER]);
             expect(result.readerRows).toHaveLength(1);
-            expect(result.readerRows[0]).toMatchObject({ forCount: 9, againstCount: 1, isReaderDistrict: true });
+            expect(result.readerRows[0]).toMatchObject({ forPct: 9, againstPct: 1, isReaderDistrict: true });
             expect(result.rows.filter((r) => r.isReaderDistrict)).toHaveLength(1);
-            expect(result.rows.find((r) => r.forCount === 0 && r.againstCount === 6)?.isReaderDistrict).toBe(false);
+            expect(result.rows.find((r) => r.forPct === 0 && r.againstPct === 6)?.isReaderDistrict).toBe(false);
         });
 
         test("fall back to the name when either side has no region code", () => {
@@ -136,7 +76,7 @@ describe("selectDistrictVotes", () => {
                 [{ name: "3A", number: 3, region_code: "A" }],
             );
             expect(result.readerRows).toHaveLength(1);
-            expect(result.readerRows[0].forCount).toBe(9);
+            expect(result.readerRows[0].forPct).toBe(9);
         });
 
         test("a signed-out reader gets only the at-large district, so there is no reader row", () => {
@@ -150,9 +90,9 @@ describe("selectDistrictVotes", () => {
             expect(result.readerRows).toHaveLength(1);
             expect(result.readerRows[0]).toMatchObject({
                 label: "District 7",
-                forCount: 0,
-                againstCount: 0,
-                total: 0,
+                forPct: 0,
+                againstPct: 0,
+                suppressed: true,
                 net: 0,
                 isReaderDistrict: true,
             });
@@ -171,28 +111,6 @@ describe("selectDistrictVotes", () => {
                 expect(result.rows.some((r) => r.isReaderDistrict)).toBe(false);
             }
         });
-    });
-});
-
-describe("districtMajority", () => {
-    const row = (forCount: number, againstCount: number) =>
-        selectDistrictVotes([scoreRow(1, "MD1", "MD", forCount, againstCount)], []).rows[0];
-
-    test("names the side with more votes", () => {
-        expect(districtMajority(row(5, 2))).toBe("for");
-        expect(districtMajority(row(2, 5))).toBe("against");
-    });
-
-    test("is a tie when the sides are level and null when nobody voted", () => {
-        expect(districtMajority(row(4, 4))).toBe("tie");
-        expect(districtMajority(row(0, 0))).toBeNull();
-    });
-});
-
-describe("formatVoteCount", () => {
-    test("groups thousands", () => {
-        expect(formatVoteCount(1234)).toBe("1,234");
-        expect(formatVoteCount(42)).toBe("42");
     });
 });
 
@@ -240,5 +158,71 @@ describe("representativesText", () => {
 
     test("is null when nobody holds the district", () => {
         expect(representativesText({ legislatorNames: [] })).toBeNull();
+    });
+});
+
+// @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+describe("ten-voter minimum", () => {
+    const district = (number: number) => ({ name: `MD${number}`, number, region_code: "MD" });
+    const shown = (number: number, forPercent: number) => ({
+        district: district(number),
+        comparison_suppressed: false,
+        for_percent: forPercent,
+        against_percent: 100 - forPercent,
+        at_large: false,
+    });
+
+    test("a bill score with no flag, or a suppressed one, is suppressed", () => {
+        expect(isVoteComparisonSuppressed({ for: 40, against: 2 })).toBe(true);
+        expect(isVoteComparisonSuppressed({ comparison_suppressed: true })).toBe(true);
+        expect(isVoteComparisonSuppressed(null)).toBe(true);
+        expect(isVoteComparisonSuppressed({ for: 7, against: 3, comparison_suppressed: false })).toBe(false);
+    });
+
+    test("rows carry percentages and no counts", () => {
+        const { rows } = selectDistrictVotes([shown(4, 75)], []);
+
+        expect(rows).toHaveLength(1);
+        expect(rows[0]).toMatchObject({ number: 4, forPct: 75, againstPct: 25, net: 50, suppressed: false });
+        expect(rows[0]).not.toHaveProperty("forCount");
+        expect(rows[0]).not.toHaveProperty("total");
+    });
+
+    test("a suppressed district, a district with no flag and the at-large district are not drawn", () => {
+        const { rows } = selectDistrictVotes(
+            [
+                shown(4, 75),
+                { district: district(7), comparison_suppressed: true, for_percent: null, against_percent: null },
+                { district: district(8), for: 9, against: 3 } as never,
+                { ...shown(9, 60), at_large: true },
+                shown(0, 60),
+            ],
+            [],
+        );
+
+        expect(rows.map((row) => row.number)).toEqual([4]);
+    });
+
+    test("the reader's district is a suppressed row when it is hidden or absent", () => {
+        const { rows, readerRows } = selectDistrictVotes(
+            [
+                shown(4, 75),
+                { district: district(7), comparison_suppressed: true, for_percent: null, against_percent: null },
+            ],
+            [district(7), district(11)],
+        );
+
+        expect(rows.map((row) => row.number)).toEqual([4]);
+        expect(readerRows.map((row) => [row.number, row.suppressed])).toEqual([
+            [7, true],
+            [11, true],
+        ]);
+        expect(readerRows.map(districtMajority)).toEqual([null, null]);
+    });
+
+    test("the majority comes from the percentages", () => {
+        const [forRow, againstRow, tieRow] = selectDistrictVotes([shown(1, 75), shown(2, 40), shown(3, 50)], []).rows;
+
+        expect([forRow, againstRow, tieRow].map(districtMajority)).toEqual(["for", "against", "tie"]);
     });
 });

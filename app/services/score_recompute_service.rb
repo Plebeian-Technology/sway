@@ -38,35 +38,30 @@ class ScoreRecomputeService
         UserLegislator
           .where(legislator_id: legislator.id, active: true)
           .pluck(:user_id)
-      
-      # @lat: [[scores-and-agreement#Privacy thresholds for aggregates]]
-      score = LegislatorDistrictScore.create_or_find_by!(legislator_term: legislator_term)
-      tally = tally_agreement(district_user_ids, legislator_term, legislator.sway_locale)
-      
-      # @lat: [[score-recompute-service-overview#District score vs. locale score]]
-      distinct_users = UserVote
-        .joins(user: {user_legislators: {legislator: :district}})
-        .where(
-          user_id: district_user_ids,
-          user_legislators: {active: true, legislator_id: legislator.id},
-          bills: {sway_locale_id: legislator.sway_locale_id}
+      LegislatorDistrictScore
+        .create_or_find_by!(legislator_term: legislator_term)
+        .update!(
+          tally_group_agreement(
+            district_user_ids,
+            legislator_term,
+            legislator.sway_locale,
+            bill_ids_with_minimum_district_voters(legislator_term.district_id)
+          )
         )
-        .joins(:bill)
-        .where(bill_id: tally.keys.map { |k| k.to_s.include?("bill_id") ? nil : nil }.compact) # Simplified placeholder logic
-        # Actually need to filter based on tally_agreement logic...
-        # The prompt says: "filled by the same recompute pass"
-        # The tally_agreement method takes user_ids and filters bills based on term window.
-        .distinct
-        .pluck(:user_id)
-      
-      # Re-doing the recompute to include the distinct count is needed
-      # Given scope, I'll update tally_agreement or add a new method.
-      
-      score.update!(tally.merge(distinct_voter_count: distinct_users.count))
+    end
+
+    # @lat: [[score-updater-service-design#Why each score family uses a different scope and a different term]]
+    def recompute_district_scores!(bill_ids, legislators: [])
+      tallied_district_ids =
+        BillScoreDistrict.joins(:bill_score).where(bill_scores: {bill_id: bill_ids}).select(:district_id)
+      terms = LegislatorTerm.current.where(district_id: tallied_district_ids).includes(:legislator).to_a
+      (legislators.filter_map(&:active_term) + terms).uniq(&:id).each do |legislator_term|
+        recompute_legislator_district!(legislator_term)
+      end
     end
 
     # @lat: [[score-recompute-service-overview#Why recompute_legislator_locale! reads the locale off the legislator, not through districts]]
-    def recompute_legislator_locale!(legislator_term)
+    def recompute_legislator_locale!(legislator_term, eligible_bill_ids: nil)
       legislator = legislator_term.legislator
       sway_locale = legislator.sway_locale
       locale_user_ids =
@@ -77,7 +72,14 @@ class ScoreRecomputeService
           .pluck(:id)
       LegislatorLocaleScore
         .create_or_find_by!(legislator_term: legislator_term)
-        .update!(tally_agreement(locale_user_ids, legislator_term, sway_locale))
+        .update!(
+          tally_group_agreement(
+            locale_user_ids,
+            legislator_term,
+            sway_locale,
+            eligible_bill_ids || bill_ids_with_minimum_voters(sway_locale)
+          )
+        )
     end
 
     # @lat: [[score-recompute-service-overview#Why recompute_bill_score_districts! counts DISTINCT user_votes.id]]
@@ -109,6 +111,15 @@ class ScoreRecomputeService
       return :legislator_abstained if legislator_support == LegislatorVote::Support::ABSTAIN
 
       (user_support == legislator_support) ? :agreed : :disagreed
+    end
+
+    def bill_ids_with_minimum_voters(sway_locale)
+      BillScore
+        .joins(:bill)
+        .where(bills: {sway_locale_id: sway_locale.id})
+        .pluck(:bill_id, :for, :against)
+        .reject { |_bill_id, for_count, against_count| VoteComparisonPrivacy.withheld?(for_count, against_count) }
+        .to_set(&:first)
     end
 
     private
@@ -152,6 +163,50 @@ class ScoreRecomputeService
 
     # @lat: [[score-recompute-service-overview#Why recompute_bill_score_districts! counts DISTINCT user_votes.id]]
     def tally_agreement(user_ids, legislator_term, sway_locale)
+      count_by_class(counted_pairs(user_ids, legislator_term, sway_locale))
+    end
+
+    # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+    def tally_group_agreement(user_ids, legislator_term, sway_locale, bill_ids_with_minimum_voters)
+      pairs =
+        counted_pairs(user_ids, legislator_term, sway_locale)
+          .select { |_user_id, _user_support, _legislator_support, bill_id| bill_ids_with_minimum_voters.include?(bill_id) }
+          .group_by(&:last)
+          .select { |_bill_id, bill_pairs| bill_pairs.map(&:first).uniq.size >= VoteComparisonPrivacy::MINIMUM_VOTERS }
+          .values
+          .flatten(1)
+      count_by_class(pairs).merge(distinct_voter_count: pairs.map(&:first).uniq.size)
+    end
+
+    # @lat: [[voter-privacy-threshold#Legislator scores count only bills that reached the minimum]]
+    def bill_ids_with_minimum_district_voters(district_id)
+      tallied =
+        BillScoreDistrict
+          .where(district_id: district_id)
+          .where('bill_score_districts."for" + bill_score_districts."against" >= ?', VoteComparisonPrivacy::MINIMUM_VOTERS)
+          .select(:bill_score_id)
+      BillScore
+        .where(id: tallied)
+        .includes(bill_score_districts: :district)
+        .select { |bill_score| bill_score.countable_district_ids.include?(district_id) }
+        .to_set(&:bill_id)
+    end
+
+    def count_by_class(pairs)
+      counts = {
+        count_agreed: 0,
+        count_disagreed: 0,
+        count_no_legislator_vote: 0,
+        count_legislator_abstained: 0
+      }
+      pairs.each do |_user_id, user_support, legislator_support, _bill_id|
+        counts[CLASS_TO_COUNT_COLUMN.fetch(classify(user_support, legislator_support))] += 1
+      end
+      counts
+    end
+
+    # Rows of [user_id, user_support, legislator_support, bill_id] inside the term's window.
+    def counted_pairs(user_ids, legislator_term, sway_locale)
       legislator = legislator_term.legislator
 
       rows =
@@ -164,12 +219,13 @@ class ScoreRecomputeService
               "AND legislator_votes.legislator_id = #{legislator.id.to_i}"
           )
           .pluck(
+            "user_votes.user_id",
             "user_votes.support",
             "legislator_votes.support",
             "user_votes.bill_id"
           )
 
-      bill_ids = rows.pluck(2).uniq
+      bill_ids = rows.pluck(3).uniq
       bills = Bill.where(id: bill_ids).includes(:legislative_session)
       term_begins_on = TermWindow.begins_on(legislator_term)
       term_ends_on = TermWindow.ends_on(legislator_term)
@@ -194,18 +250,7 @@ class ScoreRecomputeService
         valid_bill_ids << bill.id
       end
 
-      counts = {
-        count_agreed: 0,
-        count_disagreed: 0,
-        count_no_legislator_vote: 0,
-        count_legislator_abstained: 0
-      }
-      rows.each do |user_support, legislator_support, bill_id|
-        next unless valid_bill_ids.include?(bill_id)
-
-        counts[CLASS_TO_COUNT_COLUMN.fetch(classify(user_support, legislator_support))] += 1
-      end
-      counts
+      rows.select { |_user_id, _user_support, _legislator_support, bill_id| valid_bill_ids.include?(bill_id) }
     end
   end
 end

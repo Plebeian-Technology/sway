@@ -7,6 +7,8 @@ class LegislativeSessionResource < ApplicationResource
 end
 
 class EmbedBillResource < ApplicationResource
+  def self.tally: (Bill bill) -> [Integer, Integer]
+  def self.percentages: (Bill bill) -> Hash[Symbol, Integer]?
 end
 
 class UserVoteResource < ApplicationResource
@@ -107,7 +109,17 @@ class UserLegislatorTermScoreResource < ApplicationResource
 
   def self.counters: (Array[untyped] rows) -> Hash[Symbol, Integer]
 
+  PERCENT_KEY_BY_COUNTER: Hash[Symbol, Symbol]
+
   def self.aggregate: (Array[untyped] rows, Integer legislator_id) -> Hash[Symbol, untyped]?
+
+  def self.group_score: (Array[untyped] rows) -> Hash[Symbol, untyped]
+
+  def self.comparison_suppressed?: (Array[untyped] counted_rows, Hash[Symbol, Integer] totals) -> bool
+
+  def self.percentages: (Hash[Symbol, Integer] totals, Integer voters) -> Hash[Symbol, Integer]
+
+  def self.voter_agreement_percent: (Hash[Symbol, Integer] totals, Integer voters) -> Integer?
 end
 
 # Phase 65 (D-27/D-26): the grouping implementation — every method here is a
@@ -184,7 +196,7 @@ end
 class BillScoreResource < ApplicationResource
   private
 
-  def legislator_names_by_district_id: (BillScoreDistrict::ActiveRecord_Associations_CollectionProxy district_scores) -> Hash[Integer, Array[String]]
+  def legislator_names_by_district_id: (Array[BillScoreDistrict] district_scores) -> Hash[Integer, Array[String]]
 end
 
 class BillScoreDistrictResource < ApplicationResource

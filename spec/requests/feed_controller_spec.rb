@@ -206,7 +206,7 @@ RSpec.describe "FeedController", type: :request do
         expect(newest_keys).not_to include("bill_of_the_month_released:#{other_bill.id}")
       end
 
-      it "includes bulk-loaded vote_count, view_count, and share_count on bills with constant count queries" do
+      it "includes bulk-loaded view_count and share_count, and no vote_count, on bills with constant count queries" do
         _sway_locale, user = setup
         user.complete!
         create(:user_address, user: user, address: create(:address, city: "Baltimore", region_code: "MD", country: "United States"))
@@ -260,17 +260,16 @@ RSpec.describe "FeedController", type: :request do
         counted_item = items.find { |item| (item.dig(:bill, :id) || item.dig("bill", "id")) == counted_bill.id }
         uncounted_item = items.find { |item| (item.dig(:bill, :id) || item.dig("bill", "id")) == uncounted_bill.id }
 
-        expect(counted_item.dig(:bill, :vote_count) || counted_item.dig("bill", "vote_count")).to eq(7)
+        expect(counted_item[:bill].to_h.keys.map(&:to_s)).not_to include("vote_count")
         expect(counted_item.dig(:bill, :view_count) || counted_item.dig("bill", "view_count")).to eq(2)
         expect(counted_item.dig(:bill, :share_count) || counted_item.dig("bill", "share_count")).to eq(2)
-        expect(uncounted_item.dig(:bill, :vote_count) || uncounted_item.dig("bill", "vote_count")).to eq(0)
         expect(uncounted_item.dig(:bill, :view_count) || uncounted_item.dig("bill", "view_count")).to eq(0)
         expect(uncounted_item.dig(:bill, :share_count) || uncounted_item.dig("bill", "share_count")).to eq(0)
 
         4.times { |i| create_counted_bill.call(i + 3, with_counts: true) }
         six_bill_count_queries = count_queries_for_request.call
 
-        expect(two_bill_count_queries).to eq(3)
+        expect(two_bill_count_queries).to eq(2)
         expect(six_bill_count_queries).to eq(two_bill_count_queries)
       end
 
@@ -482,11 +481,8 @@ RSpec.describe "FeedController", type: :request do
         expect(body["feed_match_count"]).to eq(body["items"].size)
 
         bill_item = body["items"].find { |item| item.dig("bill", "id") == bill.id }
-        expect(bill_item["bill"]).to include(
-          "vote_count" => 5,
-          "view_count" => 1,
-          "share_count" => 1
-        )
+        expect(bill_item["bill"]).to include("view_count" => 1, "share_count" => 1)
+        expect(bill_item["bill"]).not_to have_key("vote_count")
       end
 
       it "filters with feed_search and pages with feed_cursor" do

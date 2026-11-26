@@ -10,7 +10,12 @@ import SwayLocaleFlag from "app/frontend/components/locales/SwayLocaleFlag";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import { ROUTES, Support } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
-import { selectBillPositions, selectVoteTally } from "app/frontend/components/bill/sway_utils/billPositions";
+import {
+    isVoteComparisonSuppressed,
+    selectBillPositions,
+    selectVoteTally,
+} from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 import { splitBillTitle } from "app/frontend/components/bill/sway_utils/billTitle";
 import { toFormattedLocaleName } from "app/frontend/sway_utils/locales";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
@@ -32,7 +37,8 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
         : "Legislators have not yet voted on a final version.";
 
     const { all: positions } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount } = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = selectVoteTally(bill_score);
+    const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
     const { headline, deck } = splitBillTitle(bill.title);
 
     return (
@@ -101,16 +107,20 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
 
             <section className="bal-section">
                 <h2 className="bal-sectionlabel">The count</h2>
-                <div className="bal-count">
-                    <div className="bal-count__cell">
-                        <span className="bal-count__n">{forCount.toLocaleString()}</span>
-                        <span className="bal-count__l">voted for</span>
+                {comparisonSuppressed ? (
+                    <VoteComparisonPlaceholder showInvite />
+                ) : (
+                    <div className="bal-count">
+                        <div className="bal-count__cell">
+                            <span className="bal-count__n">{forPercent}%</span>
+                            <span className="bal-count__l">voted for</span>
+                        </div>
+                        <div className="bal-count__cell">
+                            <span className="bal-count__n">{againstPercent}%</span>
+                            <span className="bal-count__l">voted against</span>
+                        </div>
                     </div>
-                    <div className="bal-count__cell">
-                        <span className="bal-count__n">{againstCount.toLocaleString()}</span>
-                        <span className="bal-count__l">voted against</span>
-                    </div>
-                </div>
+                )}
             </section>
 
             <section className="bal-section">

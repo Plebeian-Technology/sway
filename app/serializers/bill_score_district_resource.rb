@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# @lat: [[scores-and-agreement#Scores and agreement#The five score families]]
+# @lat: [[voter-privacy-threshold#No endpoint sends a count that could identify a voter]]
 class BillScoreDistrictResource < ApplicationResource
   attributes :bill_score_id
 
@@ -8,25 +8,11 @@ class BillScoreDistrictResource < ApplicationResource
     BillPageDistrictResource.new(district_score.district).serializable_hash
   end
 
-  attribute :for do |district_score|
-    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.for
-  end
-
-  attribute :against do |district_score|
-    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.against
-  end
-
   attribute :comparison_suppressed do |district_score|
-    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against)
+    district_score.comparison_suppressed?
   end
 
-  attribute :for_percent do |district_score|
-    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.for_percent
-  end
-
-  attribute :against_percent do |district_score|
-    VoteComparisonPrivacy.suppressed?(district_score.for, district_score.against) ? nil : district_score.against_percent
-  end
+  attributes :for_percent, :against_percent
 
   attribute :at_large do |district_score|
     district_score.at_large?

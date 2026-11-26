@@ -1,78 +1,92 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi, describe, it, expect, beforeEach } from "vitest";
-import VoteComparisonPlaceholder from "../VoteComparisonPlaceholder";
-import { usePage } from "@inertiajs/react";
-import toast from "react-hot-toast";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { sway } from "sway";
+
+const useUserMock = vi.fn<() => sway.IUser | null | undefined>();
+const copyMock = vi.fn<(text: string) => Promise<boolean>>(() => Promise.resolve(true));
+const notifyMock = vi.fn<(...args: unknown[]) => void>();
 
 vi.mock("@inertiajs/react", () => ({
-    usePage: vi.fn<any>(),
-    Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+    Link: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
+        <a href={href} className={className}>
+            {children}
+        </a>
+    ),
 }));
 
-vi.mock("react-hot-toast", () => ({
-    default: vi.fn<any>(),
+vi.mock("app/frontend/hooks/users/useUser", () => ({
+    useUser: () => useUserMock(),
 }));
 
+vi.mock("copy-to-clipboard", () => ({
+    default: (text: string) => copyMock(text),
+}));
+
+vi.mock("app/frontend/sway_utils", () => ({
+    notify: (...args: unknown[]) => notifyMock(...args),
+}));
+
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
+import { ROUTES } from "app/frontend/sway_constants/routes";
+
+const INVITE_URL = "https://app.example.test/invite/7/abc";
+const signedInUser = (invite_url: string | null) => ({ id: 7, invite_url }) as unknown as sway.IUser;
+
+// @lat: [[voter-privacy-threshold#The placeholder shown in place of a hidden comparison]]
 describe("VoteComparisonPlaceholder", () => {
     beforeEach(() => {
-        vi.resetAllMocks();
-        Object.assign(navigator, { clipboard: { writeText: vi.fn<any>() } });
+        vi.clearAllMocks();
+        useUserMock.mockReturnValue(signedInUser(INVITE_URL));
     });
 
-    it("renders 'Not enough votes yet' when votersNeeded is absent", () => {
-        (usePage as any).mockReturnValue({ props: { user: undefined } });
-        render(<VoteComparisonPlaceholder votersNeeded={undefined} />);
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("says 'Not enough votes yet', then asks the reader to invite others, with no digit", () => {
+        const { container } = render(<VoteComparisonPlaceholder showInvite />);
+
         expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
+        expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+        expect(container.textContent).not.toMatch(/\d/);
     });
 
-    it("renders singular count when votersNeeded is 1", () => {
-        (usePage as any).mockReturnValue({ props: { user: undefined } });
-        render(<VoteComparisonPlaceholder votersNeeded={1} />);
-        expect(screen.getByText("Visual comparisons will be shown when 1 more user has voted.")).toBeInTheDocument();
+    it("says only 'Not enough votes yet' without showInvite", () => {
+        render(<VoteComparisonPlaceholder />);
+
+        expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
+        expect(screen.queryByText("Invite others by sharing Sway")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button")).not.toBeInTheDocument();
+        expect(screen.queryByRole("link")).not.toBeInTheDocument();
     });
 
-    it("renders plural count when votersNeeded is > 1", () => {
-        (usePage as any).mockReturnValue({ props: { user: undefined } });
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
-        expect(screen.getByText("Visual comparisons will be shown when 3 more users have voted.")).toBeInTheDocument();
-    });
+    it("copies a signed-in user's invite link and confirms it", async () => {
+        render(<VoteComparisonPlaceholder showInvite />);
 
-    it("renders sign-up link for signed-out users", () => {
-        (usePage as any).mockReturnValue({ props: { user: undefined } });
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
-        const link = screen.getByRole("link", { name: /Share invite link/i });
-        expect(link).toHaveAttribute("href", "/sign_up");
-    });
-
-    it("copies invite link for signed-in users and toasts success", async () => {
-        const inviteUrl = "https://sway.vote/invite/123";
-        (usePage as any).mockReturnValue({ props: { user: { invite_url: inviteUrl } } });
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
-
-        const button = screen.getByRole("button", { name: /Share invite link/i });
-        fireEvent.click(button);
+        fireEvent.click(screen.getByRole("button", { name: "Copy invite link" }));
 
         await waitFor(() => {
-            // eslint-disable-next-line
-            expect(navigator.clipboard.writeText).toHaveBeenCalledWith(inviteUrl);
-            expect(toast).toHaveBeenCalledWith("Bill link copied to clipboard.");
+            expect(notifyMock).toHaveBeenCalledWith({ level: "info", title: "Invite link copied to clipboard." });
         });
+        expect(copyMock).toHaveBeenCalledWith(INVITE_URL);
     });
 
-    it("renders the invite prompt above the button for signed-out and signed-in users", () => {
-        (usePage as any).mockReturnValue({ props: { user: undefined } });
-        const signedOut = render(<VoteComparisonPlaceholder votersNeeded={3} />);
-        expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
-        signedOut.unmount();
+    it("links a signed-out visitor to sign-up", () => {
+        useUserMock.mockReturnValue(null);
 
-        (usePage as any).mockReturnValue({ props: { user: { invite_url: "https://sway.vote/invite/123" } } });
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+        render(<VoteComparisonPlaceholder showInvite />);
+
+        expect(screen.getByRole("link", { name: "Sign up" })).toHaveAttribute("href", ROUTES.signin);
         expect(screen.getByText("Invite others by sharing Sway")).toBeInTheDocument();
+        expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
-    it("renders no button or invite prompt when signed-in with null invite_url", () => {
-        (usePage as any).mockReturnValue({ props: { user: { invite_url: null } } });
-        render(<VoteComparisonPlaceholder votersNeeded={3} />);
+    it("shows the message without a button or invite prompt when a signed-in user has no invite link", () => {
+        useUserMock.mockReturnValue(signedInUser(null));
+
+        render(<VoteComparisonPlaceholder showInvite />);
+
+        expect(screen.getByText("Not enough votes yet")).toBeInTheDocument();
         expect(screen.queryByRole("button")).not.toBeInTheDocument();
         expect(screen.queryByRole("link")).not.toBeInTheDocument();
         expect(screen.queryByText("Invite others by sharing Sway")).not.toBeInTheDocument();

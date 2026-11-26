@@ -110,20 +110,25 @@ const fullBillPayload = {
     bill_score: {
         id: 7,
         bill_id: 42,
-        for: 100,
-        against: 50,
+        for_percent: 65,
+        against_percent: 35,
+        comparison_suppressed: false,
         districts: [
             {
                 bill_score_id: 7,
                 district: { name: "MD1", number: 1, region_code: "MD" },
-                for: 12,
-                against: 8,
+                comparison_suppressed: false,
+                for_percent: 60,
+                against_percent: 40,
+                at_large: false,
             },
             {
                 bill_score_id: 7,
                 district: { name: "MD2", number: 2, region_code: "MD" },
-                for: 3,
-                against: 4,
+                comparison_suppressed: false,
+                for_percent: 43,
+                against_percent: 57,
+                at_large: false,
             },
         ],
     },
@@ -426,7 +431,7 @@ describe("BillDetailScreen", () => {
         expect(screen.queryByTestId("district-votes-reader")).toBeNull();
     });
 
-    test("a bill with no score yet says no votes instead of showing zeros", () => {
+    test("a bill with no score yet says there are not enough votes instead of showing zeros", () => {
         mockUseBill.mockReturnValue({
             data: { ...fullBillPayload, bill_score: null },
             loading: false,
@@ -436,7 +441,7 @@ describe("BillDetailScreen", () => {
         wrap(<BillDetailScreen route={route} />);
         fireEvent.press(screen.getByTestId("tab-votes"));
 
-        expect(screen.getByText(PARITY_COPY.bill.noVotesYet)).toBeTruthy();
+        expect(screen.getByText(PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes)).toBeTruthy();
         expect(screen.queryByText(/For: 0/)).toBeNull();
         expect(screen.queryByTestId("district-votes-panel")).toBeNull();
     });

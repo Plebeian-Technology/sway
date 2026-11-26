@@ -61,11 +61,11 @@ The `current` set carries no flag column and no `finalized_at` — it is the dat
 
 For each legislator among the candidates already in scope, it keeps only the term running today: begun and not yet ended. `group_by(legislator_id)` keeps this correct both called bare (`LegislatorTerm.current`, spanning many legislators) and pre-scoped to one legislator via `Legislator#active_term`'s `has_one ..., -> { current }`.
 
-## Why LegislatorTerm.current? and Legislator.current_district_score are kept though unused
+## Why LegislatorTerm.current? is kept though unused
 
-`LegislatorTerm#current?` and `Legislator#current_district_score` have no callers in `app/` today.
+`LegislatorTerm#current?` has no callers in `app/` today.
 
-Both are kept deliberately as small read-side helpers: `spec/models/legislator_term_spec.rb` and `spec/models/legislator_spec.rb` call them directly, to verify the date-derived "current" set (and the score row it resolves to) is right under both the bare-scope call shape and the per-instance predicate call shape.
+It is kept deliberately as a small read-side helper: `spec/models/legislator_term_spec.rb` calls it directly, to verify the date-derived "current" set is right under both the bare-scope call shape and the per-instance predicate call shape.
 
 ## Why RefreshLegislatorsCacheJob rescues each locale independently
 

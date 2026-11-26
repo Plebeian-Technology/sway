@@ -25,7 +25,7 @@ const baseBill = {
     summary: "A bill to improve records access in government agencies.",
     for_count: 12,
     against_count: 3,
-    bill_score: { for: 12, against: 3 },
+    bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: false },
     link: "https://mgaleg.maryland.gov/bills/HB1234",
 };
 
@@ -84,16 +84,25 @@ describe("BillCard (D-12 refactor)", () => {
         expect(screen.getByText("Open the bill to review the full summary, vote totals, and arguments.")).toBeTruthy();
     });
 
-    test("renders score grid with For and Against counts using tabular-nums", () => {
+    test("renders score grid with For and Against percentages using tabular-nums", () => {
         wrap(<BillCard bill={baseBill} onPress={() => {}} />);
-        const forCount = screen.getByTestId(`bill-card-${baseBill.id}-for-count`);
-        const againstCount = screen.getByTestId(`bill-card-${baseBill.id}-against-count`);
-        expect(forCount).toBeTruthy();
-        expect(againstCount).toBeTruthy();
+        const forPercent = screen.getByTestId(`bill-card-${baseBill.id}-for-percent`);
+        const againstPercent = screen.getByTestId(`bill-card-${baseBill.id}-against-percent`);
+        expect(forPercent).toHaveTextContent("70%");
+        expect(againstPercent).toHaveTextContent("30%");
         // The equal-width-digit style is set. On Text nodes style is one plain
         // object rather than an array, so compare against it directly.
-        expect(forCount.props.style).toEqual(expect.objectContaining({ fontVariant: ["tabular-nums"] }));
-        expect(againstCount.props.style).toEqual(expect.objectContaining({ fontVariant: ["tabular-nums"] }));
+        expect(forPercent.props.style).toEqual(expect.objectContaining({ fontVariant: ["tabular-nums"] }));
+        expect(againstPercent.props.style).toEqual(expect.objectContaining({ fontVariant: ["tabular-nums"] }));
+    });
+
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    test("prints only the two percentages", () => {
+        wrap(<BillCard bill={baseBill} onPress={() => {}} />);
+
+        expect(screen.getByTestId("bill-card-42-for-percent")).toHaveTextContent("70%");
+        expect(screen.getByTestId("bill-card-42-against-percent")).toHaveTextContent("30%");
+        expect(screen.queryByText(/\b(7777|4321)\b|voted|total/)).toBeNull();
     });
 
     test("renders 'Open bill' CTA with accessibilityRole=button", () => {
@@ -116,5 +125,33 @@ describe("BillCard (D-12 refactor)", () => {
         // footer button both use it
         const nodes = screen.getAllByLabelText("Open bill Open Records Act");
         expect(nodes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    // @lat: [[voter-privacy-threshold#The mobile bill screen hides what the web hides]]
+    test("shows one line and no digits for a withheld split", () => {
+        const hidden = {
+            ...baseBill,
+            bill_score: { for_percent: 70, against_percent: 30, comparison_suppressed: true },
+        };
+
+        wrap(<BillCard bill={hidden} onPress={() => {}} />);
+
+        const line = screen.getByTestId("bill-card-42-comparison-suppressed");
+        expect(line).toHaveTextContent("Not enough votes yet");
+        expect(line).not.toHaveTextContent(/\d/);
+        expect(screen.queryByTestId("bill-card-42-for-percent")).toBeNull();
+        expect(screen.queryByTestId("bill-card-42-against-percent")).toBeNull();
+    });
+
+    test("treats a cached bill score with no flag as suppressed", () => {
+        wrap(
+            <BillCard
+                bill={{ ...baseBill, bill_score: { for_percent: 70, against_percent: 30 } }}
+                onPress={() => {}}
+            />,
+        );
+
+        expect(screen.getByText("Not enough votes yet")).toBeTruthy();
+        expect(screen.queryByTestId("bill-card-42-for-percent")).toBeNull();
     });
 });

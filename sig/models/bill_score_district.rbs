@@ -1,0 +1,13 @@
+# Manual extensions for BillScoreDistrict. Schema-derived accessors live in the
+# rbs_rails-generated sig/rbs_rails/app/models/bill_score_district.rbs.
+class BillScoreDistrict < ApplicationRecord
+    def at_large?: -> bool
+    def comparison_suppressed?: -> bool
+    def publishable?: -> bool
+    def for_percent: -> Integer?
+    def against_percent: -> Integer?
+
+    private
+
+    def rounded_percentages: -> Hash[Symbol, Integer]?
+end

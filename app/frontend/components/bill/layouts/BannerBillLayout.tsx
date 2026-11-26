@@ -12,10 +12,12 @@ import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import { ROUTES, Support } from "app/frontend/sway_constants";
 import { titleize } from "app/frontend/sway_utils";
 import {
+    isVoteComparisonSuppressed,
     selectBillPositions,
     selectVoteMajority,
     selectVoteTally,
 } from "app/frontend/components/bill/sway_utils/billPositions";
+import VoteComparisonPlaceholder from "app/frontend/components/bill/VoteComparisonPlaceholder";
 import { briefSummary } from "app/frontend/components/bill/sway_utils/billTitle";
 import { toFormattedLocaleName } from "app/frontend/sway_utils/locales";
 import { formatDate } from "app/frontend/sway_utils/datetimes";
@@ -44,17 +46,15 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
     const dek = briefSummary(bill.summary, 220);
 
     const { all: positions } = selectBillPositions(organizations, bill.id);
-    const { forCount, againstCount, total, forPct } = selectVoteTally(bill_score);
+    const tally = selectVoteTally(bill_score);
+    const { forPercent, againstPercent } = tally;
 
-    const { userVoted, userSupports, majorityStatus, withMajority } = selectVoteMajority(user_vote, {
-        forCount,
-        againstCount,
-        total,
-        forPct,
-    });
+    const { userVoted, userSupports, majorityStatus, withMajority } = selectVoteMajority(user_vote, tally);
+
+    const comparisonSuppressed = isVoteComparisonSuppressed(bill_score);
 
     let verdict: React.ReactNode = null;
-    if (withMajority !== null) {
+    if (!comparisonSuppressed && withMajority !== null) {
         verdict = withMajority ? (
             <p>
                 Your vote stands <em>with</em> the current majority.
@@ -128,31 +128,37 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                                 {userVoted ? (userSupports ? "For" : "Against") : "Not yet cast"}
                             </div>
                         </div>
-                        <div className="bn-v">
-                            <div className="bn-who">Where it stands</div>
-                            <div className="bn-pos">{majorityStatus}</div>
-                        </div>
+                        {!comparisonSuppressed && (
+                            <div className="bn-v">
+                                <div className="bn-who">Where it stands</div>
+                                <div className="bn-pos">{majorityStatus}</div>
+                            </div>
+                        )}
                     </div>
 
                     {verdict && <div className="bn-verdict">{verdict}</div>}
 
-                    <div className="bn-tallies">
-                        <div className="bn-tally">
-                            <div className="bn-tl">In support</div>
-                            <div className="bn-tn">
-                                {forCount.toLocaleString()} <span className="bn-u">residents</span>
+                    {comparisonSuppressed ? (
+                        <VoteComparisonPlaceholder showInvite />
+                    ) : (
+                        <div className="bn-tallies">
+                            <div className="bn-tally">
+                                <div className="bn-tl">In support</div>
+                                <div className="bn-tn">
+                                    {forPercent}% <span className="bn-u">of voters</span>
+                                </div>
+                                <div className="bn-bar" aria-hidden="true">
+                                    <span style={{ width: `${forPercent}%` }} />
+                                </div>
                             </div>
-                            <div className="bn-bar" aria-hidden="true">
-                                <span style={{ width: `${forPct}%` }} />
+                            <div className="bn-tally">
+                                <div className="bn-tl">Opposed</div>
+                                <div className="bn-tn">
+                                    {againstPercent}% <span className="bn-u">of voters</span>
+                                </div>
                             </div>
                         </div>
-                        <div className="bn-tally">
-                            <div className="bn-tl">Opposed</div>
-                            <div className="bn-tn">
-                                {againstCount.toLocaleString()} <span className="bn-u">residents</span>
-                            </div>
-                        </div>
-                    </div>
+                    )}
 
                     <div className="bn-action">
                         <VotePanel bill={bill} user_vote={user_vote} />

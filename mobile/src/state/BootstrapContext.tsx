@@ -17,7 +17,7 @@ import { localeOverride } from "./localeOverride";
 import type { Locale } from "../utils/locale";
 
 export interface Bootstrap {
-    current_user: { id?: number; theme_mode?: string | null } | null;
+    current_user: { id?: number; theme_mode?: string | null; invite_url?: string | null } | null;
     locale: Locale | null;
     sway_locales: Locale[];
     bill_of_the_month?: Record<string, unknown> | null;
