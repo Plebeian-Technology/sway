@@ -13,7 +13,7 @@ class Test::SessionsController < ApplicationController
     # @lat: [[session-identity-guards#Why Test::SessionsController resets the session before stamping it]]
     reset_session
     session[:user_id] = user.id
-    session[:auth_identity] = user.created_at&.to_i
+    BrowserSession.stamp(session, user)
     render json: {ok: true}
   end
 end

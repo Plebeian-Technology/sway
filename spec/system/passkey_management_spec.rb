@@ -76,6 +76,28 @@ RSpec.describe "Passkey management", type: :system, js: true do
     # covered by spec/requests/users/passkeys_spec.rb.
   end
 
+  # @lat: [[passkey-management-page-overview#Removing a passkey#The web remove flow]]
+  it "removes one of two passkeys after an SMS check and a confirmation" do
+    retired = create(:passkey, user: @signed_in_user, label: "Retired tablet")
+
+    visit "/users/passkeys"
+    wait_until_loaded
+
+    within("[data-testid='passkey-row-#{retired.id}']", wait: 10) { click_button "Remove" }
+    fill_in "remove-passkey-code", with: "123456", wait: 10
+    find("[data-testid='remove-passkey-confirm-code']").click
+
+    within("[role='dialog']", wait: 10) do
+      expect(page).to have_text("Retired tablet")
+      click_button "Remove"
+    end
+
+    expect(page).to have_text("Passkey removed.", wait: 15)
+    expect(page).to have_no_css("[data-testid='passkey-row-#{retired.id}']", wait: 10)
+    expect(Passkey.where(user_id: @signed_in_user.id).count).to eq(1)
+    expect(Passkey.exists?(retired.id)).to be(false)
+  end
+
   it "shows the empty state to a signed-in user with no passkeys" do
     passkey_free_user = create(:user)
     complete_registration_with_active_link(passkey_free_user)

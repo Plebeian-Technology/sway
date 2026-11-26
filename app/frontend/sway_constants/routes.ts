@@ -46,8 +46,16 @@ export const ROUTES = {
         },
     },
 
+    profile: "/profile",
+    apiKeys: "/api_keys",
+
+    user: (id: string | number) => `/users/${id}`,
+
     users: {
         organization_memberships: "/users/organization_memberships",
+        passkeys: "/users/passkeys",
+        editAddress: "/users/address/edit",
+        signOutAllDevices: "/users/sign_out_all_devices",
     },
 
     userSettings: "/settings",

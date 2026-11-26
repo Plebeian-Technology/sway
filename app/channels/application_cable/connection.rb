@@ -20,7 +20,8 @@ module ApplicationCable
       user_id = session[:user_id]
       user = User.find_by(id: user_id) if user_id
       return nil if user.nil?
-      return nil if session[:auth_identity].present? && session[:auth_identity].to_i != user.created_at.to_i
+      # @lat: [[identity-and-access#Sessions, cookies and bearer tokens#Signing out every browser]]
+      return nil unless BrowserSession.current?(session, user)
 
       user
     end

@@ -20,7 +20,6 @@ import {
     Building2,
     Hammer,
     History,
-    KeyRound,
     Landmark,
     LayoutDashboard,
     LogIn,
@@ -30,6 +29,7 @@ import {
     Search,
     Sparkles,
     Tags,
+    UserRound,
     Users,
     WifiOff,
 } from "lucide-react";
@@ -156,7 +156,10 @@ const AuthLayout: React.FC<IProps> = ({ children }) => {
             // @lat: [[system-shape#Auth navigation]]
             const _items: NavItem[] = [{ route: ROUTES.index, label: "Back to Sway", Icon: ArrowLeft }];
             if (user) {
-                _items.push({ route: "/users/passkeys", label: "Passkeys", Icon: KeyRound }, buildSignOutItem());
+                _items.push(
+                    { route: ROUTES.profile, label: PARITY_COPY.profile.title, Icon: UserRound },
+                    buildSignOutItem(),
+                );
             }
             _items.push({ route: GITHUB_LINK, label: "GitHub", Icon: ArrowUpRight, external: true });
             return _items;
@@ -177,7 +180,10 @@ const AuthLayout: React.FC<IProps> = ({ children }) => {
         }
 
         if (user) {
-            items.push({ route: "/users/passkeys", label: "Passkeys", Icon: KeyRound }, buildSignOutItem());
+            items.push(
+                { route: ROUTES.profile, label: PARITY_COPY.profile.title, Icon: UserRound },
+                buildSignOutItem(),
+            );
         }
 
         items.push({ route: GITHUB_LINK, label: "GitHub", Icon: ArrowUpRight, external: true });

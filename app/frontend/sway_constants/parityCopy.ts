@@ -329,6 +329,8 @@ export const PARITY_COPY = {
             signOutAllTitle: "Sign out all devices",
             signOutAllBody: "You'll be signed out on every device. Sign back in with your passkey.",
             signOutAllAction: "Sign Out All Devices",
+            deleteAccountTitle: "Delete account",
+            deleteAccountBody: "This permanently removes your votes, profile, and history. This cannot be undone.",
         },
     },
 
@@ -407,6 +409,13 @@ export const PARITY_COPY = {
         addSuccess: "Passkey added.",
         addError: "Couldn't add the passkey. Please try again.",
         codeError: "That code didn't work. Please try again.",
+        removeCta: "Remove",
+        removeCodeHint: "We texted you a code. Enter it to remove this passkey.",
+        removeConfirmCodeCta: "Continue",
+        removeConfirmTitle: "Remove this passkey?",
+        removeConfirmBody: (label: string) => `"${label}" will no longer sign you in to Sway.`,
+        removeSuccess: "Passkey removed.",
+        removeError: "Couldn't remove the passkey. Please try again.",
     },
 
     address: {
@@ -427,12 +436,15 @@ export const PARITY_COPY = {
         edit: {
             saveCta: "Save address",
             cancelCta: "Cancel",
+            currentLabel: "Current address:",
         },
         switchConfirm: {
             editLead:
                 "Updating your address re-checks your district and legislators. Switching to a new address deactivates your current representative links, updates district scores, and records the change for audit.",
             title: "Confirm address change",
             body: "Switching your address will deactivate your current representative links, match you with the representatives for your new address, and record this switch so accounts cannot vote across multiple districts or locales.",
+            votesKept:
+                "Your past votes stay on your account and will count toward your new district and representatives.",
             confirmCta: "Confirm address change",
             cancelCta: "Keep current address",
         },

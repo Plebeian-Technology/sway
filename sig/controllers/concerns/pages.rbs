@@ -49,6 +49,8 @@ module Pages
 
     PRIVACY: "public/Privacy"
 
+    PROFILE: "Profile"
+
     REGISTRATION: "SwayRegistration"
 
     SMS: "public/Sms"

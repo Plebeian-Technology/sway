@@ -86,7 +86,7 @@ AllCops:
         - ".ruby-lsp/**/*"
         - ".vscode/**/*"
         # @lat: [[verification-gates#Known traps]]
-        - "worktrees/**/*"
+        - ".worktrees/**/*"
         - "bin/**/*"
         - "coverage/**/*"
         - "deploy/**/*"

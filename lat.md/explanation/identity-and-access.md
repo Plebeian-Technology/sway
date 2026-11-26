@@ -12,7 +12,9 @@ Registration starts with a phone number verified over SMS through Twilio.
 Passkeys are then bound to that account, and subsequent sign-ins are WebAuthn.
 Email is optional and exists so a user can be reached, not so they can log in.
 
-SMS verifies phone ownership for enrollment, including adding another passkey;
+SMS verifies phone ownership for enrollment, including adding another passkey
+or removing one that is not the last
+([[passkey-management-page-overview#Removing a passkey]]);
 it is not a sign-in or recovery method. A person who loses every passkey needs
 support rather than an in-app SMS fallback. The verified phone binding and
 unique account constraint are deliberate protections against duplicate accounts.
@@ -111,7 +113,10 @@ The column defaults to false. A row that predates the question, or a
 registration that left the box unticked, reads as unconfirmed, so silence is
 never mistaken for a yes — the checkbox is a recorded answer, not a gate on
 completing registration. `SwayRegistrationController#create` sets it from the
-web form; the mobile address screen is the
+web form, but only on a path that goes on to save the address: an address
+switch refused for a missing confirmation, the cooldown or a failed lookup
+leaves the stored answer as it was, since that answer belongs to the address
+still on file. The mobile address screen is the
 remaining writer. Both read the shared wording at
 `PARITY_COPY.address.helper.registeredVoterConfirmation`.
 
@@ -362,6 +367,18 @@ validation failure does not block authentication; it logs
 ### Signing out every device is atomic
 
 [[app/models/user.rb#User#revoke_all_devices!]] revokes each active device and its API keys in one transaction. If a revocation fails partway through, rollback prevents the user from ending up signed out on only some devices.
+
+### Signing out every browser
+
+Each account carries a session generation, an integer that every browser session must match to stay signed in. Raising it ends every web session at once.
+
+Web sessions live in Rails' cookie store, so the server holds no session row to delete. Deleting refresh tokens alone left another browser signed in, because its cookie still carried `user_id` and `auth_identity`. [[app/lib/browser_session.rb#BrowserSession]] therefore writes the account's generation into the session at sign-in, beside `auth_identity`, and every place that trusts a session cookie compares both through it: [[app/controllers/application_controller.rb#ApplicationController#authenticate_with_cookies]], the ActionCable connection, the admin direct-upload guard, funnel attribution and the test-only sign-in route. Without the cable check a disconnected browser would simply reconnect.
+
+A session with no generation reads as 0. Authentication never fills the missing value in, the way it backfills a missing `auth_identity`, because filling it with the current value would undo a revocation. Sessions written before the column existed keep working until the account's first sign-out everywhere.
+
+`POST /users/sign_out_all_devices` ([[app/controllers/users_controller.rb#UsersController#sign_out_all_devices]]) acts only on the signed-in account and carries Rails' CSRF check. [[app/models/user.rb#User#sign_out_all_devices!]] first deletes all of the account's refresh tokens and raises the generation in one transaction, then revokes every mobile device; the action then signs the calling browser out and redirects to the public home page.
+
+The tokens go in the same transaction as the generation, not later in the ordinary sign-out. Otherwise another browser arriving in between is judged stale, finds its refresh-token cookie still valid, and is stamped with the new generation, so it stays signed in.
 
 ### A refused CSRF write leaves a fresh retry path
 
@@ -736,6 +753,8 @@ legislators that follow from it.
 
 [[app/controllers/users_controller.rb#UsersController#destroy]] revokes all mobile device tokens before destroying the authenticated [[app/models/user.rb#User]] record and clearing the web session cookie.
 
-Self-service account deletion satisfies App Store account removal requirements while revoking bearer tokens first so no active mobile session survives the cascading deletion of user records. Account deletion completely cascades dependents across user-owned tables: votes, notification deliveries, organization memberships, passkeys, direct invites, sent organization invites, authored position changes, registration funnel events, authored bill summary reports, and received organization invites. In addition, shortened invite URLs owned by the user's invite link are removed through [[app/models/user_invite_link.rb#UserInviteLink]]. Database-level cascades similarly clear historical score explanations and historical repair deliveries.
+Self-service account deletion satisfies App Store account removal requirements while revoking bearer tokens first so no active mobile session survives the cascading deletion of user records.
+
+The revocation and the deletion run in one transaction. A delete the model refuses, such as an account still named as the requester of a news article discovery request ([[app/models/user.rb#User]] restricts that association rather than cascading it), rolls the revocation back too, so a refused delete leaves the account and every device signed in. The action answers that refusal rather than raising: a bearer or JSON caller gets 409 with the standard error envelope (`error.code` `account_not_deletable` and the same message, which the phone shows to the user), and a browser is redirected back to the Profile page with [[app/controllers/users_controller.rb#UsersController#ACCOUNT_NOT_DELETABLE_MESSAGE]] as an alert. The live-update connections the revocation drops are not rolled back; the clients reconnect on their own. Account deletion completely cascades dependents across user-owned tables: votes, notification deliveries, organization memberships, passkeys, direct invites, sent organization invites, authored position changes, registration funnel events, authored bill summary reports, and received organization invites. In addition, shortened invite URLs owned by the user's invite link are removed through [[app/models/user_invite_link.rb#UserInviteLink]]. Database-level cascades similarly clear historical score explanations and historical repair deliveries.
 
 Columns retaining rows on deletion are strictly limited to non-personal administrative references. At the database level, only `bill_summary_reports.resolved_by_id` retains its row. At the association level, nullify cascades are restricted to `resolved_bill_summary_reports`, `approved_position_changes`, and `rejected_position_changes` so administrative resolutions and review determinations preserve their historical outcomes without retaining personal user data. An automated deletion guard spec in [[spec/models/user_spec.rb]] verifies all foreign keys to `users` and limits nullify keys and associations to those explicit allowlists. The full set of dependent cascades is defined on [[app/models/user.rb#User]].

@@ -3,9 +3,9 @@ import { Button } from "app/frontend/components/ui/button";
 import { Input } from "app/frontend/components/ui/input";
 import { Label } from "app/frontend/components/ui/label";
 import { useAddPasskey } from "app/frontend/hooks/authentication/useAddPasskey";
+import { useRemovePasskey } from "app/frontend/hooks/authentication/useRemovePasskey";
 import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { formatDateShort } from "app/frontend/sway_utils/datetimes";
-import { router } from "@inertiajs/react";
 import { KeyRound } from "lucide-react";
 import { useCallback, useState } from "react";
 
@@ -26,6 +26,9 @@ const PasskeyManagement: React.FC<IProps> = ({ passkeys }) => {
     const [code, setCode] = useState("");
     const [deviceName, setDeviceName] = useState("");
     const isWorking = step === "working";
+    const removal = useRemovePasskey();
+    const [removeCode, setRemoveCode] = useState("");
+    const isRemoving = removal.step !== "idle";
 
     const handleSubmit = useCallback(
         (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -33,6 +36,15 @@ const PasskeyManagement: React.FC<IProps> = ({ passkeys }) => {
             submit(code, deviceName.trim()).catch(() => {});
         },
         [submit, code, deviceName],
+    );
+
+    const handleRemoveSubmit = useCallback(
+        (event: React.SubmitEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            removal.submit(removeCode).catch(() => {});
+            setRemoveCode("");
+        },
+        [removal, removeCode],
     );
 
     const handleCancel = useCallback(() => {
@@ -136,33 +148,69 @@ const PasskeyManagement: React.FC<IProps> = ({ passkeys }) => {
                                     ? `${PARITY_COPY.passkey.lastUsedPrefix} ${formatDateShort(p.last_used_at)}`
                                     : PARITY_COPY.passkey.neverUsed}
                             </div>
-                            <div className="flex justify-end pt-2">
-                                {passkeys.length > 1 && (
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() => {
-                                            if (
-                                                confirm(
-                                                    `Are you sure you want to remove the passkey "${p.label ?? "Passkey"}"?`,
-                                                )
-                                            ) {
-                                                router.delete(`/users/passkeys/${p.id}`);
-                                            }
-                                        }}
-                                    >
-                                        Remove
-                                    </Button>
-                                )}
-                                {passkeys.length === 1 && (
-                                    <p className="text-xs text-muted-foreground">
-                                        {PARITY_COPY.passkey.lastPasskeyCannotBeRemoved}
+                            {removal.target?.id === p.id && removal.step !== "idle" ? (
+                                <form className="space-y-3 pt-3" onSubmit={handleRemoveSubmit}>
+                                    <p className="text-sm text-muted-foreground">
+                                        {PARITY_COPY.passkey.removeCodeHint}
                                     </p>
-                                )}
-                            </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="remove-passkey-code">{PARITY_COPY.passkey.codeLabel}</Label>
+                                        <Input
+                                            id="remove-passkey-code"
+                                            inputMode="numeric"
+                                            maxLength={6}
+                                            value={removeCode}
+                                            onChange={(e) => setRemoveCode(e.target.value)}
+                                            placeholder={PARITY_COPY.passkey.codePlaceholder}
+                                            disabled={removal.step === "working"}
+                                            data-testid="remove-passkey-code"
+                                        />
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <Button
+                                            type="submit"
+                                            variant="destructive"
+                                            disabled={removal.step === "working"}
+                                            data-testid="remove-passkey-confirm-code"
+                                        >
+                                            {PARITY_COPY.passkey.removeConfirmCodeCta}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={removal.cancel}
+                                            disabled={removal.step === "working"}
+                                        >
+                                            {PARITY_COPY.passkey.cancelCta}
+                                        </Button>
+                                    </div>
+                                </form>
+                            ) : (
+                                passkeys.length > 1 && (
+                                    <div className="flex justify-end pt-2">
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            disabled={isRemoving}
+                                            onClick={() => {
+                                                removal.begin(p).catch(() => {});
+                                            }}
+                                        >
+                                            {PARITY_COPY.passkey.removeCta}
+                                        </Button>
+                                    </div>
+                                )
+                            )}
                         </li>
                     ))}
                 </ul>
+            )}
+
+            {passkeys.length === 1 && (
+                <p className="text-sm text-muted-foreground" data-testid="passkey-last-note">
+                    {PARITY_COPY.passkey.lastPasskeyCannotBeRemoved}
+                </p>
             )}
         </div>
     );

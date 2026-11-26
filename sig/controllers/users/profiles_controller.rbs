@@ -1,0 +1,5 @@
+module Users
+  class ProfilesController < ApplicationController
+    def show: -> untyped
+  end
+end

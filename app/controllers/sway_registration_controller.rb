@@ -30,19 +30,12 @@ class SwayRegistrationController < ApplicationController
       redirect_to root_path
     elsif address_not_located_outcome?
       render inertia: Pages::REGISTRATION, props: registration_page_props
-    elsif u.registered? && params[:action] != "change_address"
+    elsif u.registered?
       u.complete_registration!
       redirect_to feed_path
     else
       render inertia: Pages::REGISTRATION, props: registration_page_props
     end
-  end
-
-  def edit
-    render inertia: "users/AddressEdit", props: {
-      user: current_user.slice(:id, :is_registration_complete),
-      address: current_user.user_address&.address&.to_builder&.serializable_hash
-    }
   end
 
   # @lat: [[registration-dead-ends#An empty list says which kind of empty it is]]
@@ -51,10 +44,7 @@ class SwayRegistrationController < ApplicationController
     if u.nil?
       return respond_json_or_redirect(status: :unauthorized, json: {error: {code: "unauthorized"}}, redirect: root_path)
     end
-
-    # @lat: [[identity-and-access#Two voter-registration flags mean different things]]
-    # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
-    u.update_column(:is_voter_registration_address_confirmed, registered_voter_address_confirmed)
+    return_path = address_switch_return_path(u)
 
     # @lat: [[identity-and-access#A user holds one address]]
     existing_link = u.user_address
@@ -62,9 +52,10 @@ class SwayRegistrationController < ApplicationController
     previously_unlocated = previous_address.present? && !previous_address.located?
     address_instance = address
     if holds_representatives?(u, previous_address) && existing_link.present? && existing_link.address_id != address_instance.id
-      return handle_address_switch(u, existing_link.address, address_instance)
+      return handle_address_switch(u, existing_link.address, address_instance, return_path)
     end
 
+    record_voter_registration_address_confirmation(u)
     if existing_link
       existing_link.update!(address: address_instance)
     else
@@ -116,7 +107,7 @@ class SwayRegistrationController < ApplicationController
     u.reload
     wait_for_congress_representatives(u, address_instance) unless u.registered?
     u.complete_registration!
-    return render_address_not_located(u, address_instance) unless address_instance.located?
+    return render_address_not_located(u, address_instance, redirect: return_path) unless address_instance.located?
 
     redirect_after_registration_completion(u)
   end
@@ -166,14 +157,18 @@ class SwayRegistrationController < ApplicationController
   # @lat: [[onboarding-safety-net#Why every onboarding endpoint answers an unexpected error#A user with a representative link is completed]]
   def render_onboarding_unavailable
     u = current_user
-    return super unless u&.user_legislators&.where(active: true)&.exists?
+    return super if u.nil?
+    if !@address_switch_committed && address_switch_return_path(u) == edit_users_address_path
+      return redirect_to(edit_users_address_path, alert: ONBOARDING_UNAVAILABLE_MESSAGE)
+    end
+    return super unless u.user_legislators.where(active: true).exists?
 
     u.complete_registration!
     respond_json_or_redirect(status: :ok, json: {ok: true, registration_status: "completed"}, redirect: feed_path)
   end
 
   # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
-  def handle_address_switch(u, previous_address, new_address)
+  def handle_address_switch(u, previous_address, new_address, return_path)
     unless confirm_deactivate_legislators?
       error = RegistrationErrorResource.new(
         {
@@ -184,7 +179,7 @@ class SwayRegistrationController < ApplicationController
       return respond_json_or_redirect(
         status: :unprocessable_content,
         json: {error: error},
-        redirect: sway_registration_index_path
+        redirect: return_path
       )
     end
 
@@ -198,7 +193,7 @@ class SwayRegistrationController < ApplicationController
       return respond_json_or_redirect(
         status: :unprocessable_content,
         json: {error: error},
-        redirect: sway_registration_index_path
+        redirect: return_path
       )
     end
 
@@ -206,24 +201,32 @@ class SwayRegistrationController < ApplicationController
       begin
         UserAddressSwitchService.new(u, previous_address: previous_address, new_address: new_address).call
       rescue SwayGeocode::ServiceUnavailableError => e
-        return render_geocoding_unavailable(u, new_address, e)
+        return render_geocoding_unavailable(u, new_address, e, redirect: return_path)
       rescue => e
-        return render_address_switch_unavailable(u, new_address, e)
+        return render_address_switch_unavailable(u, new_address, e, redirect: return_path)
       end
 
     if change
+      @address_switch_committed = true
+      record_voter_registration_address_confirmation(u)
       new_address.sway_locales.each { |sway_locale| u.add_pending_representative_locale(sway_locale) } unless new_address.located?
       u.reload
       u.complete_registration!
-      return render_address_not_located(u, new_address) unless new_address.located?
+      return render_address_not_located(u, new_address, redirect: return_path) unless new_address.located?
 
       redirect_after_registration_completion(u)
     else
-      render_no_representatives
+      render_no_representatives(redirect: return_path)
     end
   end
 
-  def render_geocoding_unavailable(u, address_instance, exception)
+  # @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
+  def address_switch_return_path(u)
+    change_address = ActiveModel::Type::Boolean.new.cast(sway_registration_params[:change_address]) == true
+    (request.inertia? && change_address && u.registered?) ? edit_users_address_path : sway_registration_index_path
+  end
+
+  def render_geocoding_unavailable(u, address_instance, exception, redirect:)
     SwayLogging.log_exception(
       "sway_registration.geocoding_unavailable",
       exception: exception,
@@ -234,12 +237,12 @@ class SwayRegistrationController < ApplicationController
     respond_json_or_redirect(
       status: :service_unavailable,
       json: {error: {code: "geocoding_unavailable", message: REGISTRATION_UNAVAILABLE_MESSAGE}},
-      redirect: sway_registration_index_path
+      redirect: redirect
     )
   end
 
   # @lat: [[registration-dead-ends#A failed address switch changes nothing]]
-  def render_address_switch_unavailable(u, address_instance, exception)
+  def render_address_switch_unavailable(u, address_instance, exception, redirect:)
     SwayLogging.log_exception(
       "sway_registration.address_switch_failed",
       exception: exception,
@@ -257,7 +260,7 @@ class SwayRegistrationController < ApplicationController
     respond_json_or_redirect(
       status: :service_unavailable,
       json: {error: error},
-      redirect: sway_registration_index_path
+      redirect: redirect
     )
   end
 
@@ -289,7 +292,7 @@ class SwayRegistrationController < ApplicationController
     u.add_pending_representative_locale(congress) if congress
   end
 
-  def render_no_representatives
+  def render_no_representatives(redirect:)
     error = RegistrationErrorResource.new(
       {
         code: "no_representatives",
@@ -303,7 +306,7 @@ class SwayRegistrationController < ApplicationController
     respond_json_or_redirect(
       status: :unprocessable_content,
       json: {error: error},
-      redirect: sway_registration_index_path
+      redirect: redirect
     )
   end
 
@@ -318,7 +321,7 @@ class SwayRegistrationController < ApplicationController
   end
 
   # @lat: [[registration-dead-ends#A skipped lookup is recorded so it can be retried#An unlocated address waits for its geocode]]
-  def render_address_not_located(u, address_instance)
+  def render_address_not_located(u, address_instance, redirect: sway_registration_index_path)
     PendingVoteReconciliationService.call(user: u, cookies: cookies)
     SwayLogging.warn("sway_registration.address_not_located", user_id: u.id, address_id: address_instance.id)
     Sentry.capture_message(
@@ -338,7 +341,7 @@ class SwayRegistrationController < ApplicationController
         address_located: false,
         message: ADDRESS_NOT_LOCATED_MESSAGE
       },
-      redirect: sway_registration_index_path
+      redirect: redirect
     )
   end
 
@@ -357,6 +360,12 @@ class SwayRegistrationController < ApplicationController
     props
   end
 
+  # @lat: [[identity-and-access#Two voter-registration flags mean different things]]
+  # @lat: [[sway-registration-controller-notes#Why create's own user writes skip unrelated validations]]
+  def record_voter_registration_address_confirmation(u)
+    u.update_column(:is_voter_registration_address_confirmed, registered_voter_address_confirmed)
+  end
+
   def registered_voter_address_confirmed
     ActiveModel::Type::Boolean.new.cast(sway_registration_params[:is_voter_registration_address_confirmed]) || false
   end
@@ -370,12 +379,7 @@ class SwayRegistrationController < ApplicationController
     if mobile_api_request?
       render json: json, status: status
     else
-      redirect_path = if current_user&.registered? && redirect == sway_registration_index_path
-        edit_user_address_path
-      else
-        redirect
-      end
-      redirect_to redirect_path, inertia: {errors: json[:error]}
+      redirect_to redirect, inertia: {errors: json[:error]}
     end
   end
 
@@ -504,6 +508,7 @@ class SwayRegistrationController < ApplicationController
       :country,
       :is_voter_registration_address_confirmed,
       :confirm_deactivate_legislators,
+      :change_address,
       place_types: []
     )
   end

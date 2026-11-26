@@ -55,9 +55,8 @@ module AdminOnlyDirectUploads
 
   def upload_user_from_session
     user = User.find_by(id: session[:user_id])
-    if user && session[:auth_identity].present? && session[:auth_identity].to_i != user.created_at.to_i
-      session.delete(:user_id)
-      session.delete(:auth_identity)
+    if user && !BrowserSession.current?(session, user)
+      BrowserSession.forget(session)
       user = nil
     end
     user

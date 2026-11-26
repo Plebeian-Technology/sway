@@ -361,13 +361,13 @@ The development-only user row appears only when a phone number is present. Guest
 
 The shared page shell switches navigation for administrators on admin routes. Reader navigation keeps public discovery separate from account membership, while both modes use the same sign-out handler.
 
-Admin context matches the exact /admin path or a child path after removing query and fragment text. Tool prefixes keep their navigation item active on deeper pages. Admin secondary navigation offers Back to Sway, Passkeys, Sign Out and GitHub; reader notifications and organization links stay on the reader surface.
+Admin context matches the exact /admin path or a child path after removing query and fragment text. Tool prefixes keep their navigation item active on deeper pages. Admin secondary navigation offers Back to Sway, Profile, Sign Out and GitHub; reader notifications and organization links stay on the reader surface.
 
 The switch turns on two conditions together — the address namespace and the account's admin role — so a break in the address check alone would leave the navigation looking right for the people who test it. That is what the layout's own regression examples pin.
 
 Browse Organizations is public discovery; Organizations opens the account's memberships. Reader primary navigation separates Past Bills of the Month (`/past_bills_of_the_month`) from All Bills (`/bills`), so featured monthly history and full legislative session browsing have dedicated entries. Guests can discover organizations before signing in. A shared sign-out item keeps error handling consistent across both navigation modes. One page-state read supplies the route and shared props. The named AuthLayout export supports direct navigation tests; its default adapter accepts an Inertia page element.
 
-Signed-in readers and administrators have a Passkeys link in [[app/frontend/components/layouts/AuthLayout.tsx#AuthLayout|the shared navigation]]. The desktop sidebar and mobile web drawer use the same items, making [[identity-and-access#Identity and access#The admin gate is a lint rule#Adding a passkey re-verifies by SMS first|authenticated enrollment]] reachable without knowing its URL. Guests do not see the account link.
+Signed-in readers and administrators have a Profile link in [[app/frontend/components/layouts/AuthLayout.tsx#AuthLayout|the shared navigation]], and no separate Passkeys item. The [[web-profile-page#Web profile page]] gathers the account pages, so [[identity-and-access#Identity and access#The admin gate is a lint rule#Adding a passkey re-verifies by SMS first|authenticated enrollment]] stays one link away. The desktop sidebar and mobile web drawer use the same items. Guests do not see the account link.
 
 The offline notice spans the content column so its warning background covers the text. It preserves already rendered content and offers dismissal in its initial state. Its polite live region tells readers to reconnect to load pages and vote, without promising cached page access. The browser cache policy lives in [[client-caches-and-identity#Client caches and identity]].
 

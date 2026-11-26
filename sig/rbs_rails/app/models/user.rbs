@@ -364,6 +364,46 @@ class ::User < ::ApplicationRecord
 
     def sign_in_count_for_database: () -> ::Integer
 
+    def session_generation: () -> ::Integer
+
+    def session_generation=: (::Integer) -> ::Integer
+
+    def session_generation?: () -> bool
+
+    def session_generation_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def session_generation_change: () -> [ ::Integer?, ::Integer? ]
+
+    def session_generation_will_change!: () -> void
+
+    def session_generation_was: () -> ::Integer?
+
+    def session_generation_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def session_generation_previous_change: () -> ::Array[::Integer?]?
+
+    def session_generation_previously_was: () -> ::Integer?
+
+    def session_generation_before_last_save: () -> ::Integer?
+
+    def session_generation_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def session_generation_in_database: () -> ::Integer?
+
+    def saved_change_to_session_generation: () -> ::Array[::Integer?]?
+
+    def saved_change_to_session_generation?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_session_generation?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_session_generation!: () -> void
+
+    def clear_session_generation_change: () -> void
+
+    def session_generation_before_type_cast: () -> ::Integer
+
+    def session_generation_for_database: () -> ::Integer
+
     def current_sign_in_at: () -> ::ActiveSupport::TimeWithZone?
 
     def current_sign_in_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?

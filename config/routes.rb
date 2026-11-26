@@ -413,14 +413,17 @@ Rails.application.routes.draw do
 
   # @lat: [[legacy-cookie-json-routes#Retired top-level read routes and numeric user destroy constraint]]
   resources :users, only: %i[destroy], constraints: {id: /\d+/} do
-    post :revoke_all_devices, on: :member
+    post :sign_out_all_devices, on: :collection
   end
+
+  # @lat: [[web-profile-page#Web profile page]]
+  get "profile", to: "users/profiles#show", as: :profile
 
   namespace :users do
     # @lat: [[identity-and-access#Identity and access#The phone number is the account#Email is contact data, not an authentication path]]
     resource :email_verification, only: %i[create update destroy]
-    resource :profile, only: %i[show]
-    resource :address, only: %i[edit update]
+    # @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
+    resource :address, only: %i[edit]
 
     namespace :webauthn do
       resources :sessions, only: %i[create destroy] do
@@ -436,7 +439,6 @@ Rails.application.routes.draw do
     end
 
     resources :organization_memberships, only: %i[index]
-    resource :profile, only: %i[show]
 
     # @lat: [[identity-and-access#Identity and access#User JSON exposes only selected fields]]
     resource :preferences, only: %i[update]

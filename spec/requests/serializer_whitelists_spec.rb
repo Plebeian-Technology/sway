@@ -128,22 +128,18 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       expect(response.parsed_body.dig("error", "code")).to eq("no_representatives")
 
       post_switched_address
-      # We want to be on the registration index page.
-      # Because the user is technically registered, we must ensure the controller
-      # doesn't redirect them to the feed before we check our expectation.
-      # A simple way to do this is to temporarily mark the user as 'pending'
-      # or bypass the registered check.
-      user.user_legislators.delete_all
-      user.update!(pending_representative_locale_ids: [], registration_status: "pending")
-      user.reload
-      allow_any_instance_of(User).to receive(:registered?).and_return(false)
+      expect(response).to redirect_to(sway_registration_index_path)
+      UserLegislator.where(user:).update_all(active: false)
       get sway_registration_index_path,
         headers: {
           "X-Inertia" => "true",
           "X-Inertia-Version" => InertiaRails.configuration.version.to_s,
-          "Accept" => "application/json"
+          "User-Agent" => "RSpec Browser"
         }
-      expect(response).to have_http_status(:ok)
+
+      outcome = inertia.props[:registration_outcome] || inertia.props["registration_outcome"]
+      expect(outcome.keys.map(&:to_s)).to match_array(%w[reason message])
+      expect(outcome[:reason] || outcome["reason"]).to eq("no_representatives")
     end
   end
 

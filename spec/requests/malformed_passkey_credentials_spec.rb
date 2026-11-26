@@ -87,6 +87,7 @@ RSpec.describe "Malformed passkey credentials", type: :request do
         account = create(:user, :registered, phone: MalformedWebauthnCredentials::PHONE)
         sign_in(account)
         session_hash[:add_passkey_verified_at] = Time.current.to_i
+        session_hash[:add_passkey_verified_user_id] = account.id
         session_hash[:add_passkey_registration] = {"challenge" => challenge}
         credential = corrupt.call(MalformedWebauthnCredentials.registration(client, challenge))
 

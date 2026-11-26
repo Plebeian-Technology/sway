@@ -162,6 +162,24 @@ RSpec.describe "DELETE /users/:id", type: :request do
       expect(Shortener::ShortenedUrl.where("url LIKE ?", "%#{invite_uuid}%")).not_to exist
     end
 
+    it "answers 409 and changes nothing when a news discovery request blocks the delete" do
+      device = create(:user_device, user: user, platform: "ios", push_token: "tok")
+      stub_const("User::ADMIN_PHONES", [user.phone])
+      create(:news_article_discovery_request, requested_by: user)
+
+      delete "/users/#{user.id}", headers: {"Authorization" => "Bearer #{raw_token}"}
+
+      expect(response).to have_http_status(:conflict)
+      expect(response.parsed_body).to eq(
+        "error" => {
+          "code" => "account_not_deletable",
+          "message" => UsersController::ACCOUNT_NOT_DELETABLE_MESSAGE
+        }
+      )
+      expect(User.exists?(user.id)).to be(true)
+      expect(device.reload.revoked_at).to be_nil
+    end
+
     it "refuses to delete another user's account (403) and persists both" do
       other = create(:user).tap { |u| complete_registration_with_active_link(u) }
 
@@ -197,6 +215,48 @@ RSpec.describe "DELETE /users/:id", type: :request do
       delete "/users/#{user.id}"
 
       expect(session_hash[:inertia_clear_history]).to be true
+    end
+
+    it "signs the browser out, so the next signed-in page redirects" do
+      user_id = user.id
+      create(:refresh_token, user: user)
+      sign_in(user)
+
+      delete "/users/#{user_id}", headers: {"X-Inertia" => "true"}
+
+      expect(session_hash).not_to have_key(:user_id)
+      expect(RefreshToken.where(user_id: user_id)).to be_empty
+
+      get "/profile"
+
+      expect(response).to redirect_to(root_url)
+    end
+
+    it "keeps the account and its devices and returns to the profile with an alert when a news discovery request blocks the delete" do
+      device = create(:user_device, user: user, platform: "ios", push_token: "tok")
+      api_key = ApiKey.create!(bearer: user, user_device: device, token: "tok-#{SecureRandom.hex(8)}", expires_at: 90.days.from_now)
+      stub_const("User::ADMIN_PHONES", [user.phone])
+      create(:news_article_discovery_request, requested_by: user)
+      sign_in(user)
+
+      delete "/users/#{user.id}", headers: {"X-Inertia" => "true"}
+
+      expect(response).to redirect_to(profile_path)
+      expect(flash[:alert]).to eq(UsersController::ACCOUNT_NOT_DELETABLE_MESSAGE)
+      expect(User.exists?(user.id)).to be(true)
+      expect(session_hash[:user_id]).to eq(user.id)
+      expect(device.reload.revoked_at).to be_nil
+      expect(api_key.reload.expires_at).to be > Time.current
+    end
+
+    it "refuses to delete another user's account and keeps both" do
+      other = create(:user).tap { |u| complete_registration_with_active_link(u) }
+      sign_in(user)
+
+      delete "/users/#{other.id}", headers: {"X-Inertia" => "true"}
+
+      expect(User.exists?(user.id)).to be(true)
+      expect(User.exists?(other.id)).to be(true)
     end
   end
 end

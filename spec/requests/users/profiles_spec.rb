@@ -2,24 +2,41 @@
 
 require "rails_helper"
 
-RSpec.describe "Users::Profiles", type: :request do
+RSpec.describe "GET /profile", type: :request do
   include_context "SessionDouble"
   include_context "Setup"
 
-  describe "GET /users/profiles" do
-    it "renders the profile page for a logged-in user" do
-      _, user = setup
-      get "/users/profile"
-      expect(response).to have_http_status(:ok)
-      expect(inertia).to render_component("users/Profile")
-      # Need to check if user prop is passed
-      expect(inertia.props[:user][:email]).to eq(user.email)
-    end
+  it "renders the Profile page for a signed-in user" do
+    setup
 
-    it "redirects to signin for an unauthenticated user" do
-      get "/users/profile"
-      expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to("/")
-    end
+    get "/profile"
+
+    expect(response).to have_http_status(:ok)
+    expect(inertia).to render_component(Pages::PROFILE)
+  end
+
+  it "redirects a signed-out visitor the way other signed-in pages do" do
+    get "/profile"
+
+    expect(response).to redirect_to(root_url)
+    expect(flash[:notice]).to eq("Sign up or sign in to view this page.")
+  end
+
+  it "tells an allowlisted user's page that it may link API keys" do
+    _, user = setup
+    stub_const("User::API_USER_PHONES", [user.phone].freeze)
+
+    get "/profile"
+
+    expect(inertia).to have_props(can_manage_api_keys: true)
+  end
+
+  it "tells any other user's page that it may not link API keys" do
+    setup
+    stub_const("User::API_USER_PHONES", [].freeze)
+
+    get "/profile"
+
+    expect(inertia).to have_props(can_manage_api_keys: false)
   end
 end

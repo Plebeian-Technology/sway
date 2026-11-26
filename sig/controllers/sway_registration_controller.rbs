@@ -16,6 +16,8 @@ class SwayRegistrationController < ApplicationController
 
     @submitted_coordinates: { latitude: Float?, longitude: Float? }
 
+    @address_switch_committed: bool?
+
     def index: -> untyped
 
     # Finds representatives for the submitted address and reports completion only for active pairings.
@@ -31,17 +33,21 @@ class SwayRegistrationController < ApplicationController
 
     def render_onboarding_unavailable: () -> void
 
-    def handle_address_switch: (User u, Address previous_address, Address new_address) -> untyped
+    def handle_address_switch: (User u, Address previous_address, Address new_address, String return_path) -> untyped
 
-    def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
+    def address_switch_return_path: (User u) -> String
 
-    def render_address_switch_unavailable: (User u, Address address_instance, StandardError exception) -> untyped
+    def render_geocoding_unavailable: (User u, Address address_instance, StandardError exception, redirect: String) -> untyped
+
+    def render_address_switch_unavailable: (User u, Address address_instance, StandardError exception, redirect: String) -> untyped
 
     def report_skipped_locale: (User u, Address address_instance, SwayLocale sway_locale, StandardError exception) -> void
 
     def wait_for_congress_representatives: (User u, Address address_instance) -> void
 
-    def render_no_representatives: () -> untyped
+    def render_no_representatives: (redirect: String) -> untyped
+
+    def record_voter_registration_address_confirmation: (User u) -> void
 
     def registered_voter_address_confirmed: -> bool
 
@@ -78,6 +84,6 @@ class SwayRegistrationController < ApplicationController
     # envelope.
     def respond_json_or_redirect: (status: Symbol, json: Hash[Symbol, untyped], redirect: String) -> untyped
     def redirect_after_registration_completion: (User user) -> untyped
-    def render_address_not_located: (User u, Address address_instance) -> untyped
+    def render_address_not_located: (User u, Address address_instance, ?redirect: String) -> untyped
     def address_not_located_outcome?: () -> bool
 end

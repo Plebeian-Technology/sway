@@ -1,0 +1,5 @@
+module BrowserSession
+  def self.stamp: (untyped session, User user) -> void
+  def self.current?: (untyped session, User user) -> bool
+  def self.forget: (untyped session) -> void
+end

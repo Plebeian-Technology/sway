@@ -113,11 +113,7 @@ module Api
             authenticate_with_api_key
           elsif session[:user_id].present?
             u = User.find_by(id: session[:user_id])
-            if u && session[:auth_identity].present? && session[:auth_identity].to_i != u.created_at.to_i
-              nil
-            else
-              u
-            end
+            u if u && BrowserSession.current?(session, u)
           end
       end
     end

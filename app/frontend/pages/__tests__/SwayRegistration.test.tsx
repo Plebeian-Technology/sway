@@ -1,6 +1,6 @@
 // @lat: [[registration-dead-ends#Correcting an address after a failed lookup]]
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { sway } from "sway";
@@ -43,6 +43,12 @@ vi.mock("@inertiajs/react", () => ({
 }));
 
 vi.mock("app/frontend/hooks/users/useLogout", () => ({ useLogout: () => () => Promise.resolve() }));
+
+const { trackFunnelStep, trackFunnelStepOnce } = vi.hoisted(() => ({
+    trackFunnelStep: vi.fn<(step: string, metadata?: Record<string, unknown>) => void>(),
+    trackFunnelStepOnce: vi.fn<(step: string, metadata?: Record<string, unknown>) => void>(),
+}));
+vi.mock("app/frontend/sway_utils/funnelTracker", () => ({ trackFunnelStep, trackFunnelStepOnce }));
 
 const ROAD_ONLY_PLACE = {
     place_id: 300,
@@ -144,6 +150,8 @@ beforeEach(() => {
     post.mockReset();
     transform.mockReset();
     postedBody = undefined;
+    trackFunnelStep.mockReset();
+    trackFunnelStepOnce.mockReset();
 });
 
 describe("SwayRegistration — a failed lookup is not a dead end", () => {
@@ -252,6 +260,11 @@ describe("SwayRegistration — address switching confirmation", () => {
         expect(dialog).toBeInTheDocument();
         expect(dialog.querySelector("p")?.textContent).toBe(PARITY_COPY.address.switchConfirm.title);
         expect(screen.getByText(PARITY_COPY.address.switchConfirm.body)).toBeInTheDocument();
+        expect(
+            within(dialog).getByText(
+                "Your past votes stay on your account and will count toward your new district and representatives.",
+            ),
+        ).toBeInTheDocument();
         expect(screen.getByTestId("btn-confirm-address-switch").textContent).toBe(
             PARITY_COPY.address.switchConfirm.confirmCta,
         );
@@ -451,5 +464,119 @@ describe("SwayRegistration — the typed address is submitted as a fact", () => 
 
         expect(screen.getByTestId("confirm-address-switch-dialog")).toBeInTheDocument();
         expect(post).not.toHaveBeenCalled();
+    });
+});
+
+// @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
+describe("SwayRegistration — change-address mode for a registered user", () => {
+    const registeredUser = {
+        id: 11,
+        registration_status: "completed",
+        is_registration_complete: true,
+    } as unknown as sway.IUser;
+
+    const renderChangeAddress = () =>
+        render(
+            <SwayRegistration
+                user={registeredUser}
+                change_address={true}
+                current_address="100 N Holliday St, Baltimore, MD, 21202, US"
+            />,
+        );
+
+    it("shows the current address and the address-change lead instead of the first-time heading", () => {
+        renderChangeAddress();
+
+        expect(screen.getByTestId("current-address").textContent).toContain(
+            "100 N Holliday St, Baltimore, MD, 21202, US",
+        );
+        expect(screen.getByText(PARITY_COPY.address.switchConfirm.editLead)).toBeInTheDocument();
+        expect(screen.queryByText(PARITY_COPY.address.complete.heading)).toBeNull();
+        expect(screen.getByTestId("btn-submit-registration").textContent).toBe(PARITY_COPY.address.edit.saveCta);
+    });
+
+    it("cancels back to the Profile page rather than signing out", () => {
+        renderChangeAddress();
+
+        const cancel = screen.getByRole("link", { name: PARITY_COPY.address.edit.cancelCta });
+        expect(cancel.getAttribute("href")).toBe(ROUTES.profile);
+        expect(screen.queryByTestId("btn-cancel-registration")).toBeNull();
+    });
+
+    it("asks to confirm the switch, saying the legislators change, before posting the new address", () => {
+        renderChangeAddress();
+
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(post).not.toHaveBeenCalled();
+        expect(screen.getByText(PARITY_COPY.address.switchConfirm.body)).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                "Your past votes stay on your account and will count toward your new district and representatives.",
+            ),
+        ).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(postedBody).toMatchObject({ confirm_deactivate_legislators: true });
+    });
+
+    it("asks again on the next Save after a confirmed switch the server refused", () => {
+        renderChangeAddress();
+        const form = screen.getByTestId("btn-submit-registration").closest("form")!;
+
+        fireEvent.submit(form);
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+        expect(postedBody).toMatchObject({ confirm_deactivate_legislators: true });
+
+        post.mockClear();
+        fireEvent.submit(form);
+
+        expect(post).not.toHaveBeenCalled();
+        expect(screen.getByTestId("confirm-address-switch-dialog")).toBeInTheDocument();
+    });
+
+    it("records no registration funnel step when viewing or submitting the address change", () => {
+        renderChangeAddress();
+
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(trackFunnelStepOnce).not.toHaveBeenCalled();
+        expect(trackFunnelStep).not.toHaveBeenCalled();
+    });
+
+    it("marks the post as an address change", () => {
+        renderChangeAddress();
+
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+        fireEvent.click(screen.getByTestId("btn-confirm-address-switch"));
+
+        expect(postedBody).toMatchObject({ change_address: true, confirm_deactivate_legislators: true });
+    });
+});
+
+describe("SwayRegistration — first-time registration funnel", () => {
+    it("records the address form being viewed and submitted", () => {
+        render(<SwayRegistration user={failedUser} />);
+
+        fireEvent.click(screen.getByTestId("pick-suggestion"));
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(trackFunnelStepOnce).toHaveBeenCalledWith("address_form_viewed");
+        expect(trackFunnelStep).toHaveBeenCalledWith("address_submitted", expect.any(Object));
+    });
+
+    it("does not mark a first-time post as an address change", () => {
+        render(<SwayRegistration user={failedUser} />);
+
+        fireEvent.click(screen.getByTestId("pick-suggestion"));
+        fireEvent.submit(screen.getByTestId("btn-submit-registration").closest("form")!);
+
+        expect(post).toHaveBeenCalledWith("/sway_registration", expect.any(Object));
+        expect(postedBody).not.toHaveProperty("change_address");
     });
 });

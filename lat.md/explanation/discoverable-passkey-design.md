@@ -29,6 +29,8 @@ Adding a new passkey to an existing account requires a freshly verified SMS toke
 
 `Api::V1::PasskeysController` and `Users::PasskeysController` permit enrolled users to register additional devices. Session cookies and bearer tokens alone provide insufficient security for this credential modification. Requiring a fresh SMS token tied to the user's phone ensures an attacker holding a stolen session token cannot register an unauthorized authenticator onto the account.
 
+On the web, a passed SMS check opens a ten-minute window ([[app/controllers/users/passkeys_controller.rb#PasskeysController#ADD_PASSKEY_VERIFY_WINDOW]]) for adding or removing one passkey. The window lives in the browser session, but the reader each request acts for comes from a bearer token whenever one is sent, so a session and a token can name two different accounts. The window therefore records the account that passed the check, and it counts only for a request whose reader is that same account. Without that, a person who passed the check on their own account could send their session cookie with another account's bearer token and add or remove that account's passkeys with no text sent to its phone.
+
 ## Why the cached challenge is bound to the authenticated caller
 
 WebAuthn registration challenges bind to the user identifier of the requesting caller in the challenge cache.

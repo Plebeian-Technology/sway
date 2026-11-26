@@ -39,7 +39,8 @@ interface IProps {
     registration_outcome?: { reason: string; message: string } | null;
     sway_locale?: sway.ISwayLocale | null;
     locale?: sway.ISwayLocale | null;
-    isChangeAddressMode?: boolean;
+    change_address?: boolean;
+    current_address?: string | null;
 }
 
 const SwayRegistration: React.FC<IProps> = ({
@@ -47,13 +48,14 @@ const SwayRegistration: React.FC<IProps> = ({
     registration_outcome,
     sway_locale,
     locale,
-    isChangeAddressMode,
+    change_address = false,
+    current_address,
 }) => {
     const activeLocale = locale ?? sway_locale ?? null;
     const logout = useLogout();
     const hasAddressNotLocatedOutcome = registration_outcome?.reason === "address_not_located";
     const requiresAddressSwitchConfirmation =
-        (Boolean(user?.is_registration_complete) || isChangeAddressMode) && !hasAddressNotLocatedOutcome;
+        (Boolean(user?.is_registration_complete) || change_address) && !hasAddressNotLocatedOutcome;
     const form = useForm<IRegistrationFormData>({
         is_voter_registration_address_confirmed: false,
         ...(requiresAddressSwitchConfirmation ? { confirm_deactivate_legislators: false } : {}),
@@ -106,29 +108,35 @@ const SwayRegistration: React.FC<IProps> = ({
         return false;
     }, []);
 
+    // @lat: [[web-profile-page#Web profile page#Changing the address from the web]]
     useEffect(() => {
-        trackFunnelStepOnce("address_form_viewed");
-    }, []);
+        if (!change_address) {
+            trackFunnelStepOnce("address_form_viewed");
+        }
+    }, [change_address]);
 
     useEffect(() => {
-        if (user?.is_registration_complete) {
+        if (!change_address && user?.is_registration_complete) {
             trackFunnelStepOnce("registration_completed");
         }
-    }, [user?.is_registration_complete]);
+    }, [change_address, user?.is_registration_complete]);
 
     // @lat: [[registration-dead-ends#Submitting the typed address when no complete suggestion is picked]]
     const submitRegistration = useCallback(
         (extraData: Partial<IRegistrationFormData> = {}) => {
-            trackFunnelStep("address_submitted", {
-                voter_confirmed: form.data.is_voter_registration_address_confirmed,
-                city: form.data.city,
-                region_code: form.data.region_code,
-            });
+            if (!change_address) {
+                trackFunnelStep("address_submitted", {
+                    voter_confirmed: form.data.is_voter_registration_address_confirmed,
+                    city: form.data.city,
+                    region_code: form.data.region_code,
+                });
+            }
             handleStart();
             form.transform(({ typed_address, ...data }) => ({
                 ...data,
                 ...(data.street?.trim() || !typed_address?.trim() ? {} : { street: typed_address.trim() }),
                 ...extraData,
+                ...(change_address ? { change_address: true } : {}),
             }));
             form.post("/sway_registration", {
                 onHttpException: handleRequestFailed,
@@ -136,7 +144,7 @@ const SwayRegistration: React.FC<IProps> = ({
                 onFinish: handleFinish,
             });
         },
-        [form, handleStart, handleRequestFailed, handleFinish],
+        [change_address, form, handleStart, handleRequestFailed, handleFinish],
     );
 
     const handleSubmit = useCallback(
@@ -152,10 +160,9 @@ const SwayRegistration: React.FC<IProps> = ({
     );
 
     const handleConfirmAddressSwitch = useCallback(() => {
-        form.setData("confirm_deactivate_legislators", true);
         setShowSwitchConfirm(false);
         submitRegistration({ confirm_deactivate_legislators: true });
-    }, [form, submitRegistration]);
+    }, [submitRegistration]);
 
     const handleOpenUrl = useCallback((url: string) => {
         window.open(url, "_blank", "noopener,noreferrer");
@@ -184,10 +191,24 @@ const SwayRegistration: React.FC<IProps> = ({
         <div className="mx-auto w-full max-w-2xl space-y-6">
             {noRepresentativesNotice}
             {addressNotLocatedNotice}
-            <div className="space-y-1">
-                <h1 className="text-2xl font-semibold tracking-tight">{PARITY_COPY.address.complete.heading}</h1>
-                <p className="text-sm text-muted-foreground">{PARITY_COPY.address.complete.lead}</p>
-            </div>
+            {/* @lat: [[web-profile-page#Web profile page#Changing the address from the web]] */}
+            {change_address ? (
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-semibold tracking-tight">{PARITY_COPY.profile.rows.address}</h1>
+                    <p className="text-sm text-muted-foreground">{PARITY_COPY.address.switchConfirm.editLead}</p>
+                    {current_address && (
+                        <p className="text-sm text-foreground" data-testid="current-address">
+                            <span className="font-semibold">{PARITY_COPY.address.edit.currentLabel}</span>{" "}
+                            {current_address}
+                        </p>
+                    )}
+                </div>
+            ) : (
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-semibold tracking-tight">{PARITY_COPY.address.complete.heading}</h1>
+                    <p className="text-sm text-muted-foreground">{PARITY_COPY.address.complete.lead}</p>
+                </div>
+            )}
 
             <Card>
                 <CardContent className="pt-6">
@@ -230,6 +251,9 @@ const SwayRegistration: React.FC<IProps> = ({
                                 <p className="text-sm text-muted-foreground">
                                     {PARITY_COPY.address.switchConfirm.body}
                                 </p>
+                                <p className="text-sm text-muted-foreground">
+                                    {PARITY_COPY.address.switchConfirm.votesKept}
+                                </p>
                                 <div className="flex flex-row items-center justify-end gap-3">
                                     <Button
                                         type="button"
@@ -252,16 +276,22 @@ const SwayRegistration: React.FC<IProps> = ({
                         ) : null}
 
                         <div className="flex flex-row items-center justify-end gap-3 pt-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={logout}
-                                data-testid="btn-cancel-registration"
-                            >
-                                {PARITY_COPY.address.complete.cancelCta}
-                            </Button>
+                            {change_address ? (
+                                <Button asChild variant="outline">
+                                    <Link href={ROUTES.profile}>{PARITY_COPY.address.edit.cancelCta}</Link>
+                                </Button>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={logout}
+                                    data-testid="btn-cancel-registration"
+                                >
+                                    {PARITY_COPY.address.complete.cancelCta}
+                                </Button>
+                            )}
                             <Button type="submit" disabled={isLoading} data-testid="btn-submit-registration">
-                                {PARITY_COPY.address.complete.cta}
+                                {change_address ? PARITY_COPY.address.edit.saveCta : PARITY_COPY.address.complete.cta}
                             </Button>
                         </div>
                     </form>

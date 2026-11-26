@@ -13,15 +13,33 @@ The list arrives as server props, which is the usual Inertia way. Adding a passk
 
 When a passkey is registered, Sway records the authenticator's AAGUID, the id that says what make and model it is. The `device` field is the friendly name looked up from it, or null, which shows as "Unknown device".
 
-## Why the listing has no add/remove buttons of its own
+## Why the listing answers both web and mobile
 
-`Users::PasskeysController#index` answers with an Inertia page (cookie/session auth) OR JSON (bearer auth), per the `MobileFormatNegotiation` concern, so mobile gets the same view-only metadata as web.
+`Users::PasskeysController#index` answers with an Inertia page (cookie/session auth) OR JSON (bearer auth), per the `MobileFormatNegotiation` concern, so mobile gets the same metadata as web.
 
-The listing includes a remove button, protected by the same phone-confirmed window as adding a passkey; lost-passkey recovery goes through support, because Sway's auth model ties one phone to one passkey. The add-a-passkey actions are a separate, SMS-gated flow (see [[docs/explanation/discoverable-passkey-design.md|discoverable-passkey-design.md]]).
+The add-a-passkey actions are a separate, SMS-gated flow (see [[docs/explanation/discoverable-passkey-design.md|discoverable-passkey-design.md]]).
+
+## Removing a passkey
+
+A reader may remove one of their own passkeys on the web, as long as at least one stays.
+
+An earlier design had no remove action at all, on the grounds that one phone ties to one passkey. The operator reversed that so a reader can clean up a lost or retired device without support.
+
+[[app/controllers/users/passkeys_controller.rb#PasskeysController#destroy]] asks for the same evidence as adding one. It runs only inside the phone-confirmed window that `confirm_phone` opens for the same account ([[discoverable-passkey-design#Why an already-signed-in user still needs a fresh SMS token to add a passkey]]), and it closes that window after a removal, so one SMS check buys one change. A reader who could remove passkeys from an unattended session could otherwise strip a device the owner still uses.
+
+The last passkey stays. The action counts the reader's passkeys and destroys the chosen one inside a single immediate SQLite transaction, so two removals sent at once cannot both see two passkeys and leave none. [[app/models/user.rb#User#MIN_PASSKEY_COUNT]] sets the floor. Refusals answer 200 with `success: false` and a message, the same shape the add flow uses, and the lookup goes through `current_user.passkeys`, so another reader's passkey id answers not found whether or not it exists.
+
+Removal does not change recovery: SMS alone still never opens an existing account, and a reader who loses every passkey still contacts support ([[identity-and-access#The phone number is the account]]).
+
+### The web remove flow
+
+Each passkey row shows a Remove button while the reader has more than one passkey; with one left, the page says it must stay instead.
+
+[[app/frontend/hooks/authentication/useRemovePasskey.ts#useRemovePasskey]] reuses the add flow's `verify_phone` and `confirm_phone` steps to open the window, then asks in the shared confirm dialog, naming the passkey, before it sends the DELETE. The dialog comes after the code, so a reader who backs out at the dialog has already received a text, and the window it opened stays open. Every Remove press asks the server to text a new code, even while that window is still open, so backing out and trying again costs a second text. A removal refreshes only the `passkeys` prop. A refusal from the server, or a failed request, shows as a toast and leaves the list as it was. When the server throttles the text that opens the window (one code a minute, three an hour), the reader sees the same wait message as the other phone checks, not the generic removal error, and the page returns to its resting state.
 
 ## Threats considered
 
-Security boundaries protecting passkey registration and removal against session hijacking, credential replay, and unauthorized deletion.
+The listing and removal are scoped to the signed-in reader's own passkeys.
 
 - **Information disclosure**: the query is scoped to `current_user.passkeys`,
   so a user can only ever see their own.
@@ -54,4 +72,4 @@ The spec relies on one account per phone number: adding a credential needs a fre
 
 Adding one goes: confirm the account phone number, enter the SMS code, name the device, then create a passkey the phone can offer on its own next time. The screen used to be view-only, with recovery pointing at support; being fully locked out still means contacting support. Asking for an SMS code again puts a second check on top of the session the user is already in.
 
-The rows sit inside a Card, and the "nothing here" case uses the shared EmptyState. The server only accepts DELETE via the phone-confirmed window; admin/support tooling for passkey management is deprecated.
+The rows sit inside a Card, and the "nothing here" case uses the shared EmptyState. The mobile screen has no remove action.

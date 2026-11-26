@@ -48,6 +48,13 @@ describe("public/Privacy", () => {
         expect(screen.getAllByText(/You can remove all your data at any point\./).length).toBeGreaterThan(0);
     });
 
+    it("says an account can be deleted from the web Profile page or the mobile app", () => {
+        render(<Privacy />);
+        expect(
+            screen.getByText(/deleting your account from your Profile page on the web or in the Sway mobile app\./),
+        ).toBeTruthy();
+    });
+
     it("states the mandatory carrier clause: phone numbers and SMS opt-in data are never sold or shared for marketing", () => {
         render(<Privacy />);
         expect(

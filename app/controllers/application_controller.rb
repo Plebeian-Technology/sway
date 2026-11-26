@@ -153,7 +153,7 @@ class ApplicationController < ActionController::Base
       # @lat: [[client-caches-and-identity#Identity changes wait for network-only pages]]
       session[:inertia_clear_history] = true
       # @lat: [[identity-and-access#Sessions, cookies and bearer tokens]]
-      session[:auth_identity] = user.created_at&.to_i
+      BrowserSession.stamp(session, user)
 
       user.sign_in_count = user.sign_in_count + 1
       user.last_sign_in_at = user.current_sign_in_at
@@ -232,10 +232,9 @@ class ApplicationController < ActionController::Base
     u = User.find_by(id: session[:user_id]) if session[:user_id].present?
 
     # @lat: [[identity-and-access#Sessions, cookies and bearer tokens]]
-    if u && session[:auth_identity].present? && session[:auth_identity].to_i != u.created_at.to_i
+    if u && !BrowserSession.current?(session, u)
       SwayLogging.info("authenticate_with_cookies.stale_session_identity", user_id: u.id)
-      session.delete(:user_id)
-      session.delete(:auth_identity)
+      BrowserSession.forget(session)
       u = nil
     end
 
@@ -250,7 +249,7 @@ class ApplicationController < ActionController::Base
           session[:user_id] = u.id
           # @lat: [[client-caches-and-identity#Identity changes wait for network-only pages]]
           session[:inertia_clear_history] = true
-          session[:auth_identity] = u.created_at&.to_i
+          BrowserSession.stamp(session, u)
           cookies.encrypted[:refresh_token] = RefreshToken.for(
             u,
             request
