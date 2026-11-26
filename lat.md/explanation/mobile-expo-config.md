@@ -103,6 +103,14 @@ increase, and Play refuses a repeated version code the same way. Each block
 therefore spreads the static config first and overrides only the keys it
 owns.
 
+## Why every Pods target gets the iOS floor
+
+[[mobile/app.config.ts#addPodDeploymentTargetFloor]] raises every target in the generated Pods project to the app's iOS deployment target, including the resource bundles a pod ships beside its library.
+
+React Native's own `post_install` step already raises each pod's library target to its minimum, but it skips the resource bundles. Those keep whatever floor the pod's specification declares: 12.4 for the filter bundle in `react-native-svg`, 11.0 for the privacy-manifest bundle in the Sentry SDK. Older Xcode releases only warned about a floor that low. The iOS 27.2 SDK supports nothing below 15.0 and fails the archive.
+
+`expo-build-properties` does not reach these targets either. It sets the app target and writes `ios.deploymentTarget` into `Podfile.properties.json`, and nothing applies that value to the pods. The inserted step reads the same property, so the app and every pod share one floor, and it only ever raises a target, never lowers one. It runs before React Native's step, which only raises as well, so the order does not matter. The `ios/` directory is regenerated on every store build, so the change belongs in a config plugin and not in a hand-edited Podfile.
+
 ## Deployment identifiers come from the environment
 
 The Apple team id, the Expo account that owns the project and the EAS project id are read from `APPLE_TEAM_ID`, `EXPO_OWNER` and `EAS_PROJECT_ID` rather than written into `app.config.ts`, `app.json` or `eas.json`.

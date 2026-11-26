@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 import * as fs from "fs";
 import * as path from "path";
 
-import { ConfigPlugin, withGradleProperties, AndroidConfig } from "expo/config-plugins";
+import { ConfigPlugin, withGradleProperties, withPodfile, AndroidConfig } from "expo/config-plugins";
 
 // @lat: [[mobile-app-config-ts-import-extension#Why the list is not simply copied into the config]]
 import { DEEP_LINK_PATTERNS, androidPathData } from "./src/navigation/deepLinkPatterns.ts";
@@ -20,6 +20,39 @@ const withKotlinTargetValidationWarning: ConfigPlugin = (config) => {
         return modConfig;
     });
 };
+
+const POD_TARGET_FLOOR_MARKER = "# sway: pod deployment target floor";
+const POST_INSTALL_HOOK = "post_install do |installer|\n";
+
+// @lat: [[mobile-expo-config#Why every Pods target gets the iOS floor]]
+export const addPodDeploymentTargetFloor = (podfile: string): string => {
+    if (podfile.includes(POD_TARGET_FLOOR_MARKER)) return podfile;
+    if (!podfile.includes(POST_INSTALL_HOOK)) {
+        throw new Error("addPodDeploymentTargetFloor: the Podfile has no post_install hook");
+    }
+
+    const floor = [
+        `    ${POD_TARGET_FLOOR_MARKER}`,
+        "    floor = podfile_properties['ios.deploymentTarget'] || '15.1'",
+        "    installer.pods_project.targets.each do |target|",
+        "      target.build_configurations.each do |build_config|",
+        "        current = build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']",
+        "        if current.nil? || Gem::Version.new(current) < Gem::Version.new(floor)",
+        "          build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = floor",
+        "        end",
+        "      end",
+        "    end",
+        "",
+    ].join("\n");
+
+    return podfile.replace(POST_INSTALL_HOOK, `${POST_INSTALL_HOOK}${floor}`);
+};
+
+export const withPodDeploymentTargetFloor: ConfigPlugin = (config) =>
+    withPodfile(config, (modConfig) => {
+        modConfig.modResults.contents = addPodDeploymentTargetFloor(modConfig.modResults.contents);
+        return modConfig;
+    });
 
 // Single source of truth for dynamic + static Expo config (per Task 0 single-config consolidation).
 // app.json is intentionally a stub holding only name + slug; everything else is set here so the
@@ -68,7 +101,7 @@ const requireBundleId = (): string => {
 const devTunnelDomains = (host: string | undefined): string[] =>
     host ? [`webcredentials:${host}?mode=developer`, `applinks:${host}?mode=developer`] : [];
 
-export default ({ config }: ConfigContext): ExpoConfig => {
+const resolveConfig = ({ config }: ConfigContext): ExpoConfig => {
     const bundleId = requireBundleId();
     const devTunnelHost = process.env.EXPO_PUBLIC_DEV_TUNNEL_HOST || undefined;
 
@@ -204,3 +237,5 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         },
     });
 };
+
+export default (context: ConfigContext): ExpoConfig => withPodDeploymentTargetFloor(resolveConfig(context));

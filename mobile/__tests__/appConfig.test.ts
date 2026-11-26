@@ -1,4 +1,4 @@
-import appConfig from "../app.config";
+import appConfig, { addPodDeploymentTargetFloor } from "../app.config";
 import { DEEP_LINK_PATTERNS } from "../src/navigation/deepLinkPatterns.ts";
 
 const build = () => appConfig({ config: { name: "Sway", slug: "sway-mobile" } } as never);
@@ -94,5 +94,27 @@ describe("app.config.ts", () => {
         config.android?.intentFilters?.forEach((filter) => {
             expect(filter.data).toHaveLength(DEEP_LINK_PATTERNS.length);
         });
+    });
+
+    // @lat: [[mobile-expo-config#Why every Pods target gets the iOS floor]]
+    it("raises every Pods target, resource bundles included, to the app's iOS floor", () => {
+        const podfile = [
+            "target 'Sway' do",
+            "  post_install do |installer|",
+            "    react_native_post_install(installer)",
+            "  end",
+            "end",
+            "",
+        ].join("\n");
+
+        const patched = addPodDeploymentTargetFloor(podfile);
+
+        expect(patched).toContain("installer.pods_project.targets.each do |target|");
+        expect(patched).toContain("podfile_properties['ios.deploymentTarget']");
+        expect(patched.indexOf("pods_project.targets")).toBeLessThan(patched.indexOf("react_native_post_install"));
+        expect(addPodDeploymentTargetFloor(patched)).toBe(patched);
+        expect(() => addPodDeploymentTargetFloor("target 'Sway' do\nend\n")).toThrow(/post_install/);
+        const { mods } = build() as { mods?: { ios?: { podfile?: unknown } } };
+        expect(mods?.ios?.podfile).toEqual(expect.any(Function));
     });
 });
