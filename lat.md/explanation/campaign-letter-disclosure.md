@@ -18,6 +18,8 @@ The letters ride a prop the Bill Creator asks for by name, separate from the cam
 
 Two Bill Creator tabs refresh the campaign drafts every five seconds — the pipeline tab while a run is in flight, the summary tab on a branch that is not tied to a run at all. A draft's letter list is however many people sent the template, so a bill with heavy testimony re-sent most of its testimony corpus on every tick, per open tab. An `InertiaRails.optional` prop is left out of any response that does not name it, and neither poll list names this one.
 
+The phone cannot name a prop, so it asks with a query parameter that only its Positions tab sends ([[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]).
+
 Addressing a letter list through a dotted path into the drafts array was rejected: Inertia addresses an array element by index, which is the coupling `content_hash` exists to remove. A dedicated route was rejected too — both other optional props here are top-level props fetched by a router reload, and a third mechanism for the same job would earn nothing.
 
 ## Why a repeat letter is marked, not hidden

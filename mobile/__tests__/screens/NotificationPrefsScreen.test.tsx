@@ -128,7 +128,7 @@ describe("NotificationPrefsScreen", () => {
         expect(screen.getByText(PARITY_COPY.notifications.botmAnnouncement.label)).toBeTruthy();
         expect(screen.getByText(PARITY_COPY.notifications.botmAnnouncement.description)).toBeTruthy();
         expect(screen.getByText("Bill of the Month announcements")).toBeTruthy();
-        expect(screen.getByText("We'll let you know when a new Bill of the Month is published.")).toBeTruthy();
+        expect(screen.getByText("We'll let you know when a new Bill of the Month is released.")).toBeTruthy();
         expect(screen.getByText(PARITY_COPY.notifications.legislatorVoted.label)).toBeTruthy();
         expect(screen.getByText(PARITY_COPY.notifications.voteWindowClosing.label)).toBeTruthy();
         expect(screen.getByText(PARITY_COPY.notifications.orgPositionTaken.label)).toBeTruthy();

@@ -8,6 +8,7 @@ require "rails_helper"
 # lives here too.
 RSpec.describe MobileFormatNegotiation, type: :controller do
   controller(ActionController::Base) do
+    include JsonErrorRenderable
     include MobileFormatNegotiation
 
     def index
@@ -17,6 +18,21 @@ RSpec.describe MobileFormatNegotiation, type: :controller do
     # steep:ignore:start
     def show
       redirect_or_json("/redirected", flash_message: params[:flash])
+    end
+    # steep:ignore:end
+
+    # steep:ignore:start
+    def write
+      model = Bill.new.tap { |bill| bill.errors.add(:title, "can't be blank") }
+      respond_after_write(
+        "/after-write",
+        back: params[:back] == "true",
+        status: (params[:status] || :found).to_sym,
+        json: {saved: true},
+        notice: params[:notice],
+        alert: params[:alert],
+        errors: (params[:errors] == "model") ? model.errors : params[:errors].presence&.then { {title: [it]} }
+      )
     end
     # steep:ignore:end
 
@@ -33,6 +49,7 @@ RSpec.describe MobileFormatNegotiation, type: :controller do
       get "/anonymous", to: "anonymous#index"
       get "/anonymous/show", to: "anonymous#show"
       get "/anonymous/predicates", to: "anonymous#predicates"
+      get "/anonymous/write", to: "anonymous#write"
     end
   end
 
@@ -103,6 +120,82 @@ RSpec.describe MobileFormatNegotiation, type: :controller do
       get :show
       expect(response).to have_http_status(:redirect)
       expect(response.location).to end_with("/redirected")
+    end
+  end
+
+  describe "#respond_after_write" do
+    context "with a bearer request" do
+      before { request.headers["Authorization"] = "Bearer test" }
+
+      it "renders the given json with status 200 when there are no errors" do
+        get :write
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq("saved" => true)
+      end
+
+      it "answers 422 with the field errors under validation_failed" do
+        get :write, params: {errors: "is bad"}
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)).to eq(
+          "error" => {"code" => "validation_failed", "message" => "Validation failed.", "details" => {"title" => ["is bad"]}}
+        )
+      end
+
+      it "normalizes an ActiveModel::Errors object into details" do
+        get :write, params: {errors: "model"}
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body).dig("error", "details")).to eq("title" => ["can't be blank"])
+      end
+
+      it "answers 422 with the alert as the message when only an alert is given" do
+        get :write, params: {alert: "Nope"}
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(JSON.parse(response.body)).to eq("error" => {"code" => "validation_failed", "message" => "Nope"})
+      end
+
+      it "uses the alert as the message when errors are also given" do
+        get :write, params: {alert: "Nope", errors: "is bad"}
+        expect(JSON.parse(response.body).dig("error", "message")).to eq("Nope")
+      end
+    end
+
+    context "with a web request" do
+      it "redirects to the path with the notice" do
+        get :write, params: {notice: "Saved"}
+        expect(response).to redirect_to("/after-write")
+        expect(response).to have_http_status(:found)
+        expect(flash[:notice]).to eq("Saved")
+      end
+
+      it "redirects with the given status" do
+        get :write, params: {status: "see_other"}
+        expect(response).to have_http_status(:see_other)
+      end
+
+      it "redirects back with status see_other and stores the inertia errors" do
+        request.headers["Referer"] = "http://test.host/previous"
+        get :write, params: {back: "true", status: "see_other", errors: "is bad"}
+        expect(response).to redirect_to("http://test.host/previous")
+        expect(response).to have_http_status(:see_other)
+        expect(session[:inertia_errors]).to eq(title: ["is bad"])
+      end
+
+      it "stores the errors of an ActiveModel::Errors object" do
+        get :write, params: {errors: "model"}
+        expect(session[:inertia_errors]).to eq(title: ["can't be blank"])
+      end
+
+      it "falls back to the path when back is true and there is no referer" do
+        get :write, params: {back: "true"}
+        expect(response).to redirect_to("/after-write")
+      end
+
+      it "redirects with a flash alert and no inertia errors" do
+        get :write, params: {alert: "Nope", status: "see_other"}
+        expect(response).to redirect_to("/after-write")
+        expect(flash[:alert]).to eq("Nope")
+        expect(session[:inertia_errors]).to be_nil
+      end
     end
   end
 

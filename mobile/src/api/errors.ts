@@ -3,20 +3,22 @@ export const GENERIC_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
 export class ApiRequestError extends Error {
     public readonly code: string;
-    public readonly details?: Record<string, string[]>;
+    public readonly details?: Record<string, unknown>;
     public readonly status?: number;
+    public readonly body?: unknown;
 
-    constructor(code: string, message: string, details?: Record<string, string[]>, status?: number) {
+    constructor(code: string, message: string, details?: Record<string, unknown>, status?: number, body?: unknown) {
         super(message);
         this.name = "ApiRequestError";
         this.code = code;
         this.details = details;
         this.status = status;
+        this.body = body;
     }
 }
 
 export class UnauthorizedError extends ApiRequestError {
-    constructor(code: string, message: string, details?: Record<string, string[]>, status?: number) {
+    constructor(code: string, message: string, details?: Record<string, unknown>, status?: number) {
         super(code, message, details, status);
         this.name = "UnauthorizedError";
     }
@@ -28,7 +30,7 @@ export class RateLimitedError extends ApiRequestError {
     constructor(
         code: string,
         message: string,
-        details?: Record<string, string[]>,
+        details?: Record<string, unknown>,
         status?: number,
         retryAfterSeconds?: number,
     ) {
@@ -39,7 +41,7 @@ export class RateLimitedError extends ApiRequestError {
 }
 
 export class NetworkError extends ApiRequestError {
-    constructor(code: string, message: string, details?: Record<string, string[]>, status?: number) {
+    constructor(code: string, message: string, details?: Record<string, unknown>, status?: number) {
         super(code, message, details, status);
         this.name = "NetworkError";
     }

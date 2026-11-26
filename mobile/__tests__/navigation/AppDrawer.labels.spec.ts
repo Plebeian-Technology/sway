@@ -15,6 +15,7 @@ describe("AppDrawer label parity guard", () => {
         expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Legislators"/);
         expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Organizations"/);
         expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Profile"/);
+        expect(APP_DRAWER_SRC).toMatch(/drawerLabel:\s*"Admin"/);
     });
 
     it("never labels the Bill of the Month item as Home", () => {

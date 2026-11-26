@@ -1,15 +1,22 @@
 # Self-typed to ActionController::Base so steep resolves `session` and
 # `before_action`, and to JsonErrorRenderable for the refusal it renders
 # (mirrors JsonErrorRenderable's own self type).
-module AdminOnlyDirectUploads : ActionController::Base, JsonErrorRenderable
+module AdminOnlyDirectUploads : ActionController::Base, JsonErrorRenderable, ApiKeyAuthenticatable
   extend ActiveSupport::Concern
 
   # `included do ... end` runs against the including CLASS, but steep reads the
   # block with self as this module's singleton, so the callback methods have to
   # be declared there or before_action reads as undefined.
   extend AbstractController::Callbacks::ClassMethods
+  extend ActionController::RequestForgeryProtection::ClassMethods
 
   private
 
   def require_sway_admin_for_upload: () -> untyped
+
+  def sway_admin_bearer_token?: () -> bool
+
+  def upload_user_from_bearer_token: () -> User?
+
+  def upload_user_from_session: () -> User?
 end

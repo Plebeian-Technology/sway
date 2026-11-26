@@ -1118,6 +1118,60 @@ RSpec.describe "BillsController", type: :request do
         }
       )
     end
+
+    # @lat: [[mobile-bill-creator#The bill picker]]
+    it "serves the picker bills as JSON to an admin bearer request" do
+      sway_locale, user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+
+      get "/admin/bill_creator/new", headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      expect(response.parsed_body.fetch("bills").pluck("id", "external_id")).to eq([[bill.id, bill.external_id]])
+    end
+
+    it "serves only the picker bills to a bearer request that names no tab" do
+      _sway_locale, user = setup
+
+      get "/admin/bill_creator/new", headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.keys).to eq(["bills"])
+    end
+
+    it "serves only the named tab's props to a bearer request for a new bill" do
+      _sway_locale, user = setup
+
+      get "/admin/bill_creator/new",
+        params: {bill_creator_tab: "creator"},
+        headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.keys).to match_array(%w[bill bill_id tab_key legislators legislator_votes organizations news_articles])
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The bill fields section#Declaring news evidence]]
+    it "serves the bill's news articles on the Creator tab to a bearer request" do
+      sway_locale, user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+      article = create(:bill_news_article, :approved, :with_text_version, bill: bill)
+
+      get "/admin/bill_creator/#{bill.id}/creator", headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.fetch("news_articles").pluck("id", "approved", "has_text")).to eq([[article.id, true, true]])
+    end
+
+    it "still gives the web page every prop when a tab is named" do
+      setup
+
+      get "/admin/bill_creator/new", params: {bill_creator_tab: "creator"}
+
+      expect(inertia.props).to include(:bills, :pipeline_preview, :fetched_bills, :legislators)
+    end
   end
 
   describe "GET /edit vote-entry roster" do
@@ -1369,6 +1423,264 @@ RSpec.describe "BillsController", type: :request do
       expect(picker_row["interesting_score_normalized"]).to be_nil
       expect(picker_row["interesting_badges"]).to eq([])
     end
+
+    describe "one tab's props for a bearer request" do
+      def get_tab_as_json(bill, user, tab)
+        get "/admin/bill_creator/#{bill.id}/#{tab}", headers: authenticate_as(user).merge("Accept" => "application/json")
+      end
+
+      # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+      it "serves the schedule tab only the bill and the picker bills" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "schedule")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.keys).to match_array(%w[bill bill_id bills])
+        expect(response.parsed_body.fetch("bill").fetch("id")).to eq(bill.id)
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The schedule section]]
+      it "gives the schedule tab each picker bill's id, external id, title and release date" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.scheduled_release_date_utc = Date.new(2026, 9, 8)
+        bill.save!
+
+        get_tab_as_json(bill, user, "schedule")
+
+        row = response.parsed_body.fetch("bills").find { |b| b["id"] == bill.id }
+        expect(row).to include(
+          "external_id" => bill.external_id,
+          "title" => bill.title,
+          "scheduled_release_date_utc" => "2026-09-08"
+        )
+      end
+
+      it "serves the creator tab the vote-entry legislators" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "creator")
+
+        expect(response.parsed_body.keys).to include("legislators", "legislator_votes", "organizations")
+        expect(response.parsed_body.keys).not_to include("bills", "pipeline_preview", "summary_sources")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The pipeline progress section]]
+      it "gives the pipeline tab the current run with its stages and the bill's last failure" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        run = create(:legislation_pipeline_run, :running, bill: bill, sway_locale: sway_locale)
+        create(:pipeline_run_stage, legislation_pipeline_run: run, stage_name: "fetch-bills", status: "succeeded")
+
+        get_tab_as_json(bill, user, "pipeline")
+
+        current_run = response.parsed_body.fetch("legislation_pipeline_run")
+        expect(current_run).to include("id" => run.id, "status" => "running", "kind" => "single")
+        expect(current_run.fetch("pipeline_run_stages")).to contain_exactly(
+          hash_including("stage_name" => "fetch-bills", "status" => "succeeded", "position" => 1)
+        )
+        expect(response.parsed_body.fetch("bill")).to have_key("bill_pipeline_last_failure")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The pipeline run controls section]]
+      it "gives the pipeline tab the recent runs and the run its address pins" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        older_run = create(:legislation_pipeline_run, :running, bill: bill, sway_locale: sway_locale)
+        older_run.mark_cancelled!
+        newer_run = create(:legislation_pipeline_run, :running, bill: bill, sway_locale: sway_locale)
+
+        get "/admin/bill_creator/#{bill.id}/pipeline?run_id=#{older_run.id}",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        body = response.parsed_body
+        expect(body.fetch("legislation_pipeline_run").fetch("id")).to eq(older_run.id)
+        expect(body.fetch("recent_pipeline_runs").pluck("id")).to eq([newer_run.id, older_run.id])
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The pipeline cleanup section]]
+      it "gives the pipeline tab the stuck and orphan run counts" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        allow(LegislationPipelineRun).to receive(:solid_queue_job_exists_for?).and_return(false)
+        create(:legislation_pipeline_run, status: "running", created_at: 5.hours.ago, updated_at: 5.hours.ago)
+        create(:legislation_pipeline_run, status: "queued")
+
+        get_tab_as_json(bill, user, "pipeline")
+
+        expect(response.parsed_body.slice("stale_pipeline_run_count", "orphan_pipeline_run_count")).to eq(
+          "stale_pipeline_run_count" => 1,
+          "orphan_pipeline_run_count" => 1
+        )
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary generation section]]
+      it "gives the summary tab the active pipeline run and the bill's summary state" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        create(:bill_llm_provisioning, :completed, bill: bill)
+        run = create(:legislation_pipeline_run, status: "queued")
+
+        get_tab_as_json(bill, user, "summary")
+
+        body = response.parsed_body
+        expect(body.dig("active_legislation_pipeline_run", "id")).to eq(run.id)
+        expect(body.fetch("bill").keys).to include("summary", "summary_ai_unreviewed", "bill_llm_provisioning",
+          "bill_pipeline_refresh", "bill_pipeline_last_failure")
+        expect(body.dig("bill", "bill_llm_provisioning", "generation_status")).to eq("completed")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]
+      it "gives the summary tab the summary prompt only when the request asks for it" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "summary")
+        expect(response.parsed_body).not_to have_key("summary_prompt")
+
+        get "/admin/bill_creator/#{bill.id}/summary?summary_prompt=1",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.fetch("summary_prompt")).to include(bill.external_id, "summary_markdown")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "gives the summary tab the revision list only when the request asks for it" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        revision = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Older summary",
+          origin: "operator_edit",
+          publication_role: "published",
+          review_state: "reviewed"
+        )
+
+        get_tab_as_json(bill, user, "summary")
+        expect(response.parsed_body).not_to have_key("summary_revisions")
+
+        get "/admin/bill_creator/#{bill.id}/summary?summary_revisions=1",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.fetch("summary_revisions").pluck("id")).to include(revision.id)
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The category override section]]
+      it "gives the summary tab the bill's assigned categories and the categories it may add" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        assigned = create(:category, name: "Zoning")
+        offered = create(:category, name: "Finance")
+        create(:bill_category, bill: bill, category: assigned)
+
+        get_tab_as_json(bill, user, "summary")
+
+        body = response.parsed_body
+        expect(body.dig("bill", "override_categories")).to eq([{"id" => assigned.id, "name" => "Zoning", "active" => true}])
+        expect(body.fetch("active_categories")).to include({"id" => offered.id, "name" => "Finance"})
+        expect(body.fetch("max_active_categories_per_bill")).to eq(Category::MAX_ACTIVE_PER_BILL)
+        expect(body.fetch("bill")).to have_key("bill_llm_provisioning")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The draft positions section]]
+      it "gives the positions tab the drafts, the organizations panel and the run that holds Approve back" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        create(:bill_llm_provisioning, :completed, bill: bill,
+          draft_org_positions: [{"org_name" => "Org B", "stance" => "support", "summary" => "Supports."}])
+        run = create(:legislation_pipeline_run, status: "queued")
+
+        get_tab_as_json(bill, user, "positions")
+
+        body = response.parsed_body
+        expect(body.keys).to match_array(%w[
+          bill bill_id tab_key organizations active_legislation_pipeline_run testimony_coverage
+          testimony_campaign_drafts testimony_claimed_affiliations campaigns campaign_organization_candidates
+          public_testimony_counts
+        ])
+        expect(body.dig("active_legislation_pipeline_run", "id")).to eq(run.id)
+        expect(body.dig("bill", "bill_llm_provisioning", "draft_org_positions", 0)).to include("draft_token", "org_name" => "Org B")
+        expect(body.dig("bill", "bill_llm_provisioning")).to include("has_testimony", "generation_status", "reclaimable")
+        expect(body.fetch("bill")).to include("organizations", "bill_pipeline_refresh")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary sources section]]
+      it "gives the summary tab the prompt sections the model read only when the request asks for them" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get_tab_as_json(bill, user, "summary")
+        expect(response.parsed_body).to have_key("summary_sources")
+        expect(response.parsed_body).not_to have_key("summary_source_documents")
+
+        get "/admin/bill_creator/#{bill.id}/summary?summary_source_documents=1",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        documents = response.parsed_body.fetch("summary_source_documents")
+        expect(documents.keys).to match_array(%w[origin built_at bill_details source_text citations news])
+        expect(documents.fetch("origin")).to eq("now")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "gives the summary tab the draft revision its address names" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        draft = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Draft text",
+          origin: "restoration",
+          publication_role: "draft",
+          review_state: "reviewed"
+        )
+
+        get "/admin/bill_creator/#{bill.id}/summary?draft_revision_id=#{draft.id}",
+          headers: authenticate_as(user).merge("Accept" => "application/json")
+
+        expect(response.parsed_body.dig("review_draft_revision", "id")).to eq(draft.id)
+      end
+
+      it "serves each tab exactly the keys its list names" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        BillsController::BILL_CREATOR_TAB_PROPS.each do |tab, keys|
+          get "/admin/bill_creator/#{bill.id}/#{tab}?summary_prompt=1&summary_revisions=1&summary_source_documents=1&testimony_campaign_letters=1",
+            headers: authenticate_as(user).merge("Accept" => "application/json")
+
+          expect(response.parsed_body.keys).to match_array(keys.map(&:to_s)), "tab #{tab}"
+        end
+      end
+
+      it "still gives the web page every tab's props" do
+        sway_locale, _user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        get "/admin/bill_creator/#{bill.id}/schedule"
+
+        every_key = BillsController::BILL_CREATOR_TAB_PROPS.values.flatten.uniq - [:summary_prompt, :summary_revisions, :summary_source_documents, :testimony_campaign_letters]
+        expect(inertia.props).to include(*every_key)
+      end
+    end
   end
 
   describe "POST /create" do
@@ -1504,6 +1816,63 @@ RSpec.describe "BillsController", type: :request do
     it "does not create a new bill, because the sway_locale_id is missing" do
       spec_create_failure.call(:sway_locale_id)
     end
+
+    describe "for a bearer request" do
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      it "answers with the created bill as JSON" do
+        sway_locale, user = setup
+        bill, params = build_bill_params.call(sway_locale)
+
+        post "/bills", params: params.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        created_bill = Bill.last!
+        expect(response.parsed_body).to include("id" => created_bill.id, "external_id" => bill.external_id)
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section#The summary field]]
+      it "creates the bill with the summary the phone sends" do
+        sway_locale, user = setup
+        _bill, params = build_bill_params.call(sway_locale)
+
+        post "/bills", params: params.merge(summary: "Caps yearly rent increases.", news_usage: "none").to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("summary" => "Caps yearly rent increases.")
+        expect(Bill.last!.summary).to eq("Caps yearly rent increases.")
+      end
+
+      it "answers an invalid bill with 422 and the field errors" do
+        sway_locale, user = setup
+        _bill, params = build_bill_params.call(sway_locale, partial_bill: {title: nil})
+
+        expect {
+          post "/bills", params: params.to_json,
+            headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+        }.not_to change(Bill, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.dig("details", "title").first).to include("can't be blank")
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        _bill, params = build_bill_params.call(sway_locale)
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        post "/bills", params: params.to_json,
+          headers: authenticate_as(non_admin).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+      end
+    end
   end
 
   describe "PUT /update" do
@@ -1603,6 +1972,106 @@ RSpec.describe "BillsController", type: :request do
       put "/bills/#{bill.id}", params: {summary: "Failed replacement summary", news_usage: "none"}
 
       expect(bill.reload.summary).to eq("Original bill text before failure")
+    end
+
+    it "redirects an invalid web update to the Creator tab with the field errors" do
+      sway_locale, _user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+
+      put "/bills/#{bill.id}", params: {title: ""}
+
+      expect(response).to redirect_to(creator_bill_creator_path(bill.id, {event_key: "legislator_votes"}))
+      follow_redirect!
+      expect(inertia.props[:errors][:title].first).to include("can't be blank")
+    end
+
+    it "does not serialize the bill for a web update" do
+      sway_locale, _user = setup
+      bill, _params = build_bill_params.call(sway_locale)
+      bill.save!
+
+      expect(BillResource).not_to receive(:new)
+
+      put "/bills/#{bill.id}", params: {title: "Brand New Title"}
+
+      expect(response).to have_http_status(:found)
+    end
+
+    describe "for a bearer request" do
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      it "answers with the updated bill as JSON" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        patch "/bills/#{bill.id}", params: {title: "Brand New Title", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("id" => bill.id, "title" => "Brand New Title")
+        expect(bill.reload.title).to eq("Brand New Title")
+      end
+
+      it "answers an invalid update with 422 and the field errors" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        patch "/bills/#{bill.id}", params: {title: "", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "details", "title").first).to include("can't be blank")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section#The summary field]]
+      it "publishes a changed summary sent with news usage none" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+
+        patch "/bills/#{bill.id}", params: {summary: "Caps rent increases at 3%.", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("summary" => "Caps rent increases at 3%.")
+        expect(bill.reload.summary).to eq("Caps rent increases at 3%.")
+      end
+
+      it "answers a refused summary with 422 and each reason in details.errors" do
+        sway_locale, user = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.summary = "Original public summary"
+        bill.save!
+
+        patch "/bills/#{bill.id}",
+          params: {summary: "As reported by [Banner](https://baltimorebanner.com/transit-plan).", news_usage: "none"}.to_json,
+          headers: authenticate_as(user).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:unprocessable_content)
+        error = response.parsed_body.fetch("error")
+        expect(error.fetch("code")).to eq("validation_failed")
+        expect(error.dig("details", "errors")).to be_an(Array).and(be_present)
+        expect(error.dig("details", "errors")).to all(be_a(String))
+        expect(bill.reload.summary).to eq("Original public summary")
+      end
+
+      it "refuses a non-admin with a forbidden JSON error" do
+        sway_locale, _admin = setup
+        bill, _params = build_bill_params.call(sway_locale)
+        bill.save!
+        non_admin = create(:user)
+        create(:user_legislator, user: non_admin)
+        non_admin.complete!
+
+        patch "/bills/#{bill.id}", params: {title: "Brand New Title"}.to_json,
+          headers: authenticate_as(non_admin).merge("Accept" => "application/json", "Content-Type" => "application/json")
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body.dig("error", "code")).to eq("forbidden")
+        expect(bill.reload.title).not_to eq("Brand New Title")
+      end
     end
 
     describe "Validate manual news summary publication" do
@@ -1909,6 +2378,35 @@ RSpec.describe "BillsController", type: :request do
     end
   end
 
+  describe "DELETE /bills/legislation_pipeline_runs/:id for a bearer request" do
+    # @lat: [[mobile-bill-creator#Sections#The pipeline run controls section]]
+    it "cancels the run and answers 200 JSON" do
+      _sway_locale, user = setup
+      run = create(:legislation_pipeline_run, :running)
+
+      delete cancel_pipeline_run_bill_path(run.id), headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq({})
+      expect(run.reload.status).to eq("cancelled")
+    end
+
+    # @lat: [[mobile-bill-creator#Sections#The pipeline run controls section]]
+    it "answers a run that cannot be cancelled with 422 and the alert as the message" do
+      _sway_locale, user = setup
+      run = create(:legislation_pipeline_run)
+      run.start_running!
+      run.mark_completed!
+
+      delete cancel_pipeline_run_bill_path(run.id), headers: authenticate_as(user).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+      expect(response.parsed_body.dig("error", "message")).to eq("Cannot cancel run in status=completed")
+      expect(run.reload.status).to eq("completed")
+    end
+  end
+
   # @lat: [[identity-and-access#The admin gate is a lint rule]]
   describe "admin gate on the pipeline-run lifecycle routes" do
     include_examples "requires sway admin",
@@ -2089,6 +2587,86 @@ RSpec.describe "BillsController", type: :request do
       latest_rev = bill.bill_summary_revisions.order(:id).last
       expect(latest_rev.publication_role).to eq("draft")
       expect(latest_rev.origin).to eq("restoration")
+    end
+
+    describe "for a bearer request" do
+      let(:json_headers) { {"Accept" => "application/json"} }
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "restores the revision and answers 200 with the new published revision" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale: sway_locale, summary: "Current active summary")
+        old_rev = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Old historical summary markdown",
+          origin: "model_generation",
+          publication_role: "published",
+          review_state: "reviewed"
+        )
+
+        post "/bills/#{bill.id}/restore_summary_revision",
+          params: {revision_id: old_rev.id, news_usage: "none"},
+          headers: authenticate_as(user).merge(json_headers)
+
+        expect(response).to have_http_status(:ok)
+        revision = response.parsed_body.fetch("revision")
+        expect(revision).to include(
+          "summary_markdown" => "Old historical summary markdown",
+          "origin" => "restoration",
+          "publication_role" => "published",
+          "restored_from_id" => old_rev.id
+        )
+        expect(bill.reload.summary).to eq("Old historical summary markdown")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "answers 200 with the draft revision when a legacy revision is restored as a draft" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale: sway_locale, summary: "Current active summary")
+        legacy_rev = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Clean historical summary without news links",
+          origin: "operator_edit",
+          publication_role: "published",
+          review_state: "reviewed",
+          news_source_snapshot: nil
+        )
+
+        post "/bills/#{bill.id}/restore_summary_revision",
+          params: {revision_id: legacy_rev.id},
+          headers: authenticate_as(user).merge(json_headers)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.dig("revision", "publication_role")).to eq("draft")
+        expect(response.parsed_body.dig("revision", "id")).to eq(bill.bill_summary_revisions.order(:id).last.id)
+        expect(bill.reload.summary).to eq("Current active summary")
+      end
+
+      # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+      it "answers 422 with the alert as the message when the summary changed since the list loaded" do
+        sway_locale, user = setup
+        bill = create(:bill, sway_locale: sway_locale, summary: "Current active summary")
+        old_rev = BillSummaryRevision.create!(
+          bill: bill,
+          summary_markdown: "Old historical summary markdown",
+          origin: "model_generation",
+          publication_role: "published",
+          review_state: "reviewed"
+        )
+
+        expect {
+          post "/bills/#{bill.id}/restore_summary_revision",
+            params: {revision_id: old_rev.id, expected_summary: "Stale summary which does not match"},
+            headers: authenticate_as(user).merge(json_headers)
+        }.not_to change { bill.bill_summary_revisions.count }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body.dig("error", "code")).to eq("validation_failed")
+        expect(response.parsed_body.dig("error", "message")).to eq(
+          "The bill summary was modified by another operator. Please review before restoring."
+        )
+        expect(bill.reload.summary).to eq("Current active summary")
+      end
     end
 
     it "restoring a revision with a stale snapshot cannot replace public content; the submitted text survives as a draft" do

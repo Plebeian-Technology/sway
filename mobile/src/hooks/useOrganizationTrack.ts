@@ -31,7 +31,7 @@ export function useOrganizationTrack(orgId: number, initialFollowId: number | nu
         const prevId = followId;
         setFollowId(-1);
         try {
-            await apiClient.post(Routes.organizationTracks(), { organization_id: orgId });
+            await apiClient.post(Routes.organizationFollows(), { organization_id: orgId });
             try {
                 const orgData = await apiClient.get<{ current_user_follow_id?: number }>(
                     `/public/organizations/${orgId}`,
@@ -55,7 +55,7 @@ export function useOrganizationTrack(orgId: number, initialFollowId: number | nu
         setFollowId(null);
         try {
             if (prevId != null && prevId > 0) {
-                await apiClient.delete(Routes.organizationTrack(prevId));
+                await apiClient.delete(Routes.organizationFollow(prevId));
             }
         } catch (err) {
             setFollowId(prevId);
@@ -71,8 +71,8 @@ export function useOrganizationTrack(orgId: number, initialFollowId: number | nu
             if (followId === -1) {
                 throw new Error("Follow not yet resolved. Please wait and try again.");
             }
-            await apiClient.patch(Routes.organizationTrackPreferences(followId), {
-                organization_track: prefs,
+            await apiClient.patch(Routes.organizationFollowPreferences(followId), {
+                organization_follow: prefs,
             });
         },
         [followId],
@@ -80,9 +80,9 @@ export function useOrganizationTrack(orgId: number, initialFollowId: number | nu
 
     const createFollowWithPrefs = useCallback(
         async (prefs: OrgFollowPrefs) => {
-            await apiClient.post(Routes.organizationTracks(), {
+            await apiClient.post(Routes.organizationFollows(), {
                 organization_id: orgId,
-                organization_track: prefs,
+                organization_follow: prefs,
             });
             try {
                 const orgData = await apiClient.get<{ current_user_follow_id?: number }>(

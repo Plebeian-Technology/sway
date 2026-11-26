@@ -59,15 +59,39 @@ RSpec.describe "Admin::BillSummaryReports", type: :request do
       expect(inertia.props[:reports].first[:bill_id]).to eq(bill.id)
     end
 
-    it "returns JSON list when requested with format json" do
+    it "returns the reports with the page props when requested with format json" do
       create(:bill_summary_report, bill:)
 
       get "/admin/bill_summary_reports.json"
 
       expect(response).to have_http_status(:ok)
       body = response.parsed_body
-      expect(body.length).to eq(1)
-      expect(body.first["bill_id"]).to eq(bill.id)
+      expect(body.keys).to match_array(%w[reports status_counts locales filter_status filter_locale_id])
+      expect(body["reports"].length).to eq(1)
+      expect(body["reports"].first["bill_id"]).to eq(bill.id)
+    end
+
+    # @lat: [[mobile-admin-area#The bill summary reports screen]]
+    it "serves the filtered reports, counts and locales as JSON to a sway admin with a bearer token" do
+      create(:bill_summary_report, bill:, status: :pending)
+      create(:bill_summary_report, bill:, status: :resolved, created_at: 2.hours.ago)
+      create(:bill_summary_report, bill: other_bill, status: :resolved, created_at: 3.hours.ago)
+      other_locale
+
+      get "/admin/bill_summary_reports",
+        params: {status: "resolved", locale_id: sway_locale.id},
+        headers: authenticate_as(admin).merge("Accept" => "application/json")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("application/json")
+      body = response.parsed_body
+      expect(body.keys).to match_array(%w[reports status_counts locales filter_status filter_locale_id])
+      expect(body["reports"].pluck("bill_id")).to eq([bill.id])
+      expect(body["reports"].first["status"]).to eq("resolved")
+      expect(body["status_counts"]).to eq("all" => 3, "pending" => 1, "reviewed" => 0, "resolved" => 2, "dismissed" => 0)
+      expect(body["locales"]).to include({"id" => sway_locale.id, "name" => sway_locale.name})
+      expect(body["filter_status"]).to eq("resolved")
+      expect(body["filter_locale_id"]).to eq(sway_locale.id.to_s)
     end
   end
 

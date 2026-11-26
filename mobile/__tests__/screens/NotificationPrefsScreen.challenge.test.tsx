@@ -108,7 +108,7 @@ describe("NotificationPrefsScreen - Empirical Adversarial Challenge", () => {
         expect(screen.getByText(PARITY_COPY.notifications.botmAnnouncement.description)).toBeTruthy();
         expect(PARITY_COPY.notifications.botmAnnouncement.label).toBe("Bill of the Month announcements");
         expect(PARITY_COPY.notifications.botmAnnouncement.description).toBe(
-            "We'll let you know when a new Bill of the Month is published.",
+            "We'll let you know when a new Bill of the Month is released.",
         );
     });
 

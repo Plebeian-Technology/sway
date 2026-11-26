@@ -9,7 +9,6 @@ lat:
 
 - Along with the organizations themselves, the response carries who the reader follows:
 
-- `follower_count` on each organization
 - `user_follows`, a lookup of organization id → follow id
 - `is_member_of_org_ids`, the organizations this person actually belongs to
 
@@ -21,8 +20,6 @@ lat:
 
 Attribute definitions and types returned in the mobile organization subscription response payload.
 
-- `OrganizationRecord.follower_count` — how many people follow this
-  organization. The server always sends it.
 - `OrgFollowPref` — what this person asked to be told about, for one
   organization they follow. These arrive in `user_follow_prefs`, and only
   for organizations they actually follow.

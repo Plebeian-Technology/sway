@@ -15,6 +15,7 @@ const forPosition = {
     support: "FOR" as const,
     organization: { name: "ACLU" },
     summary: "Supports civil liberties.",
+    origin: "Sway-compiled" as const,
 };
 
 const againstPosition = {
@@ -22,6 +23,7 @@ const againstPosition = {
     support: "AGAINST" as const,
     organization: { name: "Chamber of Commerce" },
     summary: "Opposes business regulation.",
+    origin: "Sway-compiled" as const,
 };
 
 const newsSupport: NewsArticleTestimonyType = {

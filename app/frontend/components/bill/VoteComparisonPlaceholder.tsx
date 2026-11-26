@@ -34,7 +34,7 @@ const VoteComparisonPlaceholder: React.FC<IProps> = ({ showInvite, className }) 
     return (
         <div className={className ?? "space-y-3 text-sm text-muted-foreground"}>
             <p>{PARITY_COPY.bill.voteComparisonPlaceholder.notEnoughVotes}</p>
-            <p>{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>
+            {(inviteUrl || !user) && <p>{PARITY_COPY.bill.voteComparisonPlaceholder.invitePrompt}</p>}
             {inviteUrl && (
                 <Button
                     type="button"

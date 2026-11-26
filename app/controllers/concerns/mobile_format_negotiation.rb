@@ -23,6 +23,21 @@ module MobileFormatNegotiation
     end
   end
 
+  # @lat: [[surfaces#Dual-rendered JSON]]
+  def respond_after_write(path, back: false, status: :found, json: {}, notice: nil, alert: nil, errors: nil)
+    if mobile_api_request?
+      if errors.blank? && alert.blank?
+        render json: json
+      else
+        render_error(code: "validation_failed", message: alert.presence || "Validation failed.", status: :unprocessable_content, details: errors.presence&.to_hash)
+      end
+    else
+      options = {status: status, notice: notice, alert: alert}
+      options[:inertia] = {errors: errors} if errors.present?
+      back ? redirect_back_or_to(path, **options) : redirect_to(path, **options)
+    end
+  end
+
   def mobile_api_request?
     bearer_authorization_header? || request.format.json?
   end

@@ -69,14 +69,8 @@ exports[`OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow restor
     >
       baltimore-maryland-united_states
     </Text>
-    <Text
-      className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
-      testID="org-card-follower-count-7"
-    >
-      12 followers
-    </Text>
     <View
-      accessibilityLabel="Follow Civic Alliance"
+      accessibilityLabel="Track Civic Alliance"
       accessibilityRole="button"
       accessibilityState={
         {
@@ -133,7 +127,7 @@ exports[`OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow restor
       <Text
         className="text-sm font-open-sans-semibold text-white"
       >
-        Follow
+        Track
       </Text>
     </View>
   </View>

@@ -47,6 +47,36 @@ class BillsController < ApplicationController
   # @lat: [[bills-controller-design#BillsController design#The web bills index grows a stable page window]]
   BILLS_INDEX_PAGE_SIZE = 24
 
+  # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+  BILL_CREATOR_TAB_PROPS = {
+    "creator" => %i[
+      bill bill_id tab_key legislators legislator_votes legislator_votes_refreshed_at legislator_votes_source
+      organizations news_articles
+    ],
+    "schedule" => %i[bill bill_id bills],
+    "pipeline" => %i[
+      bill bill_id bills pipeline_preview selected_stages download_missing_assets testimony_coverage
+      testimony_campaign_drafts sending_service_domains sending_service_domains_total bill_artifact_mirrors
+      fetched_bills activity_log_entries activity_log_next_cursor activity_log_has_more legislation_pipeline_run
+      recent_pipeline_runs stale_pipeline_run_count orphan_pipeline_run_count
+    ],
+    "summary" => %i[
+      bill bill_id summary_model_options current_summarization_model current_summarization_reasoning_effort
+      summary_sources active_categories max_active_categories_per_bill news_articles receipt_status
+      review_draft_revision active_legislation_pipeline_run summary_prompt summary_revisions summary_source_documents
+    ],
+    "positions" => %i[
+      bill bill_id tab_key organizations active_legislation_pipeline_run testimony_coverage testimony_campaign_drafts
+      testimony_claimed_affiliations campaigns campaign_organization_candidates public_testimony_counts
+      testimony_campaign_letters
+    ]
+  }.freeze
+
+  # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+  BILL_PICKER_PROPS = %i[bills].freeze
+
+  STALE_SUMMARY_RESTORE_ALERT = "The bill summary was modified by another operator. Please review before restoring."
+
   def index
     # @lat: [[bills-controller-design#BillsController design#Why the search and sort labels in parityCopy.ts note the underlying split]]
     allowed_sort_columns = %w[
@@ -170,8 +200,8 @@ class BillsController < ApplicationController
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props]]
   def new
-    render inertia: Pages::BILL_CREATOR,
-      props: {
+    render_inertia_or_json(page: Pages::BILL_CREATOR,
+      props: mobile_bill_creator_tab_props({
         bills: -> {
           picker_bills(Bill.where(sway_locale: current_sway_locale).order(introduced_date_time_utc: :desc, external_id: :desc))
         },
@@ -199,7 +229,7 @@ class BillsController < ApplicationController
         download_missing_assets: -> { pipeline_controls_state[:download_missing_assets] },
         news_articles: -> { [] },
         receipt_status: -> {}
-      }
+      }))
   end
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
@@ -213,7 +243,7 @@ class BillsController < ApplicationController
       bill_artifact_mirrors: -> { ::BillCreator::ResourceCachePanelSerializer.call(@bill) },
       fetched_bills: -> { ::BillCreator::FetchedBillsPanelSerializer.call(@bill&.sway_locale || current_sway_locale) }
     )
-    render_inertia_or_json(page: Pages::BILL_CREATOR, props: props)
+    render_inertia_or_json(page: Pages::BILL_CREATOR, props: mobile_bill_creator_tab_props(props))
   end
 
   def create
@@ -231,14 +261,13 @@ class BillsController < ApplicationController
       # @lat: [[bootstrap-caching-and-rate-limiting#Why locale and featured bill are cached per locale]]
       Api::V1::BootstrapController.expire_botm_cache(b.sway_locale_id)
       # @lat: [[bill-creator-shell#The Bill Creator shell#Why the Bill Creator carries query parameters across navigation]]
-      redirect_to creator_bill_creator_path(b.id, {event_key: "legislator_votes"}),
-        notice: "Bill Created"
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      respond_after_write(creator_bill_creator_path(b.id, {event_key: "legislator_votes"}),
+        notice: "Bill Created",
+        json: written_bill_json(b))
     else
       SwayLogging.error("bills.save_failed", errors: b.errors.full_messages)
-      redirect_to new_bill_creator_path({event_key: "bill"}),
-        inertia: {
-          errors: b.errors
-        }
+      respond_after_write(new_bill_creator_path({event_key: "bill"}), errors: b.errors)
     end
   rescue => e
     # @lat: [[bills-controller-design#BillsController design#Bill creation rescues ordinary application failures]]
@@ -249,12 +278,7 @@ class BillsController < ApplicationController
       sway_locale_id: bill_params[:sway_locale_id] || current_sway_locale&.id,
       legislator_id: bill_params[:legislator_id]
     )
-    redirect_to new_bill_creator_path({event_key: "bill"}),
-      inertia: {
-        errors: {
-          external_id: e.message
-        }
-      }
+    respond_after_write(new_bill_creator_path({event_key: "bill"}), errors: {external_id: e.message})
   end
 
   def update
@@ -389,19 +413,14 @@ class BillsController < ApplicationController
         Api::V1::BootstrapController.expire_botm_cache(locale_id)
       end
       # @lat: [[bill-creator-shell#The Bill Creator shell#Why a bill save carries its own return tab#Summary saves own their success toast]]
-      redirect_to update_return_path, notice: update_success_notice
+      # @lat: [[mobile-bill-creator#Sections#The bill fields section]]
+      respond_after_write(update_return_path, notice: update_success_notice, json: written_bill_json(@bill))
     else
-      redirect_to update_return_path,
-        inertia: {
-          errors: @bill.errors
-        }
+      respond_after_write(update_return_path, errors: @bill.errors)
     end
   rescue ActiveRecord::RecordInvalid => e
     @bill.reload
-    redirect_to update_return_path,
-      inertia: {
-        errors: {base: e.message}
-      }
+    respond_after_write(update_return_path, errors: {base: e.message})
   end
 
   def destroy
@@ -418,24 +437,19 @@ class BillsController < ApplicationController
       **reasoning_effort_arg
     ).call
     when :no_pipeline_data
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "No pipeline data available"}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "No pipeline data available"})
     when :unsupported_model
       # @lat: [[bill-creator-summary-tab#Choosing the model for one regeneration]]
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That model is not one Sway offers. Reload the page and choose again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That model is not one Sway offers. Reload the page and choose again."})
     when :unsupported_reasoning_effort
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."})
     when :already_in_progress
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "Generation already in progress"}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "Generation already in progress"})
     when :enqueue_failed
       # @lat: [[bill-creator-summary-tab#The Bill Creator summary tab#A failed enqueue leaves a retry path]]
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "The summary could not be queued. Try again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "The summary could not be queued. Try again."})
     else
-      redirect_to summary_bill_creator_path(@bill)
+      respond_after_write(summary_bill_creator_path(@bill))
     end
   end
 
@@ -445,7 +459,7 @@ class BillsController < ApplicationController
       bill: @bill, **supplemental_testimony_args
     ).call
 
-    redirect_to positions_bill_creator_path(@bill)
+    respond_after_write(positions_bill_creator_path(@bill))
   end
 
   # @lat: [[testimony-letters#How CleanAndGroupService orders and threads the cleaning steps#Manual stance overrides]]
@@ -462,9 +476,9 @@ class BillsController < ApplicationController
     provisioning = @bill.bill_llm_provisioning
     cleaned = provisioning&.cleaned_testimony
     unless provisioning && cleaned.is_a?(Hash) && cleaned["letters"].is_a?(Array)
-      return redirect_back_or_to(
-        positions_bill_creator_path(@bill),
-        inertia: {errors: {testimony_letter_stance: "No cleaned testimony letters available on this bill."}}
+      return respond_after_write(
+        positions_bill_creator_path(@bill), back: true,
+        errors: {testimony_letter_stance: "No cleaned testimony letters available on this bill."}
       )
     end
 
@@ -494,9 +508,9 @@ class BillsController < ApplicationController
     end
 
     unless updated
-      return redirect_back_or_to(
-        positions_bill_creator_path(@bill),
-        inertia: {errors: {testimony_letter_stance: "Testimony letter not found."}}
+      return respond_after_write(
+        positions_bill_creator_path(@bill), back: true,
+        errors: {testimony_letter_stance: "Testimony letter not found."}
       )
     end
 
@@ -506,8 +520,7 @@ class BillsController < ApplicationController
       "Updated testimony letter stance to #{stance} on #{@bill.external_id}."
     end
 
-    redirect_back_or_to positions_bill_creator_path(@bill),
-      notice: notice_msg
+    respond_after_write(positions_bill_creator_path(@bill), back: true, notice: notice_msg)
   end
 
   # @lat: [[bill-creator-summary-tab#The Bill Creator summary tab#Supplemental testimony is replaced, never appended]]
@@ -519,27 +532,20 @@ class BillsController < ApplicationController
       **summary_instructions_arg, **reasoning_effort_arg
     ).call
     when :invalid_summary_instructions
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "Instructions must be text up to 2,000 characters."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "Instructions must be text up to 2,000 characters."})
     when :no_pipeline_data
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "No pipeline data available for regeneration."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "No pipeline data available for regeneration."})
     when :unsupported_model
       # @lat: [[bill-creator-summary-tab#Choosing the model for one regeneration]]
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That model is not one Sway offers. Reload the page and choose again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That model is not one Sway offers. Reload the page and choose again."})
     when :unsupported_reasoning_effort
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "That reasoning level is not supported. Choose default, low, medium, or high."})
     when :already_in_progress
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "Generation already in progress"}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "Generation already in progress"})
     when :enqueue_failed
-      redirect_to summary_bill_creator_path(@bill),
-        inertia: {errors: {generation: "The summary could not be queued. Try again."}}
+      respond_after_write(summary_bill_creator_path(@bill), errors: {generation: "The summary could not be queued. Try again."})
     else
-      redirect_to summary_bill_creator_path(@bill),
-        notice: "Summary regeneration queued successfully."
+      respond_after_write(summary_bill_creator_path(@bill), notice: "Summary regeneration queued successfully.")
     end
   end
 
@@ -561,66 +567,65 @@ class BillsController < ApplicationController
       override_private_individual: permitted[:override_private_individual]
     ).call
     when :org_name_required
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Organization name is required"}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Organization name is required"}
     when :summary_required
       # @lat: [[organization-position-removal#Taking an organization's position off a bill#A refusal reaches the operator as a message, not a 500]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Summary is required"}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Summary is required"}
     when :invalid_stance
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Invalid stance (expected support|oppose|neutral)"}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Invalid stance (expected support|oppose|neutral)"}
     when :identity_required
       # @lat: [[bill-draft-org-position-controller#Bill draft organization-position controller#Draft identity separates a moved entry from a removed one]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This request did not say which draft to approve — send draft_token."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This request did not say which draft to approve — send draft_token."}
     when :draft_index_required
       # @lat: [[bill-draft-org-position-controller#Bill draft organization-position controller#Draft identity separates a moved entry from a removed one]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This request named a draft but not its position — send index."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This request named a draft but not its position — send index."}
     when :draft_index_mismatch
       # @lat: [[bill-draft-org-position-controller#Bill draft organization-position controller#Draft identity separates a moved entry from a removed one]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}
     when :evidence_retracted
       # @lat: [[hearing-testimony-census#What a hearings fetch can conclude#Retracting evidence retires the conclusions drawn from it]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "The testimony behind this draft was retracted — regenerate the " \
-          "positions, or reject this draft."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "The testimony behind this draft was retracted — regenerate the " \
+          "positions, or reject this draft."}
     when :no_testimony
       # @lat: [[organization-position-removal#Taking an organization's position off a bill#A draft with no testimony behind it is not approvable]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This bill has no testimony on file, so this draft cannot be " \
-          "approved — paste the testimony back into Supplemental testimony, or reject this draft."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This bill has no testimony on file, so this draft cannot be " \
+          "approved — paste the testimony back into Supplemental testimony, or reject this draft."}
     when :run_in_flight
       # @lat: [[bill-creator-positions-tab#The Bill Creator positions tab#Why Approve says on this tab why it is off]]
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "A new summary is being written for this bill, and it will replace " \
-          "these drafts when it finishes — wait for it to finish, then review and approve the new drafts."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "A new summary is being written for this bill, and it will replace " \
+          "these drafts when it finishes — wait for it to finish, then review and approve the new drafts."}
     when :private_individual
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This bill's testimony reads #{org_name} as a person writing for " \
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This bill's testimony reads #{org_name} as a person writing for " \
           "themselves, not an organization — a resident who wrote in cannot be published as one.",
-                           private_individual_refusal: true}}
+                 private_individual_refusal: true}
     when :coverage_not_acknowledged
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "Some testimony did not reach the model — acknowledge what was left " \
-          "out before publishing a position drawn from it."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "Some testimony did not reach the model — acknowledge what was left " \
+          "out before publishing a position drawn from it."}
     when :claimed_affiliation_not_found
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: DraftOrgPositionRefusals::LIST_CHANGED}
     when :organization_has_users
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This organization has registered user accounts on Sway and " \
-          "manages its own positions — positions cannot be published on its behalf."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This organization has registered user accounts on Sway and " \
+          "manages its own positions — positions cannot be published on its behalf."}
     when :approved
-      flash[:notice] = "Approved #{org_name} on #{@bill.external_id}."
-      redirect_to positions_bill_creator_path(@bill)
+      respond_after_write positions_bill_creator_path(@bill), notice: "Approved #{org_name} on #{@bill.external_id}."
     else
       # @lat: [[bills-controller-design#Why approve_org_position names :approved explicitly and refuses unhandled outcomes]]
       SwayLogging.warn("approve_org_position.unhandled_outcome", bill_id: @bill.id)
-      redirect_to positions_bill_creator_path(@bill),
-        inertia: {errors: {org_position: "This position could not be approved. Reload and try again."}}
+      respond_after_write positions_bill_creator_path(@bill),
+        errors: {org_position: "This position could not be approved. Reload and try again."}
     end
   end
 
@@ -631,11 +636,10 @@ class BillsController < ApplicationController
     if run.can_mark_cancelled?
       run.error_message = nil
       run.mark_cancelled!
-      flash[:notice] = "Pipeline run cancelled"
+      respond_after_write(back_path, status: :see_other, notice: "Pipeline run cancelled")
     else
-      flash[:alert] = "Cannot cancel run in status=#{run.status}"
+      respond_after_write(back_path, status: :see_other, alert: "Cannot cancel run in status=#{run.status}")
     end
-    redirect_to back_path, status: :see_other
   end
 
   # @lat: [[legislation-pipeline#The legislation pipeline#Runs, resume and restart]]
@@ -684,17 +688,17 @@ class BillsController < ApplicationController
     if params[:sway_locale_id].present?
       sway_locale = SwayLocale.find_by(id: params[:sway_locale_id].to_i)
       if sway_locale.nil?
-        return redirect_to(back_path, inertia: {errors: {pipeline: "Selected SwayLocale not found."}})
+        return respond_after_write(back_path, errors: {pipeline: "Selected SwayLocale not found."})
       end
     end
 
     if target_bill
       if sway_locale && target_bill.sway_locale_id.present? && sway_locale.id != target_bill.sway_locale_id
-        return redirect_to(back_path, inertia: {errors: {pipeline: "Single-bill pipeline run cannot override bill jurisdiction with a conflicting locale."}})
+        return respond_after_write(back_path, errors: {pipeline: "Single-bill pipeline run cannot override bill jurisdiction with a conflicting locale."})
       end
       sway_locale ||= target_bill.sway_locale
     elsif sway_locale.nil?
-      return redirect_to(back_path, inertia: {errors: {pipeline: "A SwayLocale is required for all-bills pipeline runs."}})
+      return respond_after_write(back_path, errors: {pipeline: "A SwayLocale is required for all-bills pipeline runs."})
     end
 
     enqueue_pipeline_run!(
@@ -735,8 +739,11 @@ class BillsController < ApplicationController
       user_id: current_user&.id
     )
 
-    flash[:notice] = "Cleared #{rails_swept} stuck pipeline run#{"s" unless rails_swept == 1}."
-    redirect_to back_path
+    respond_after_write(
+      back_path,
+      notice: "Cleared #{rails_swept} stuck pipeline run#{"s" unless rails_swept == 1}.",
+      json: {count: rails_swept}
+    )
   end
 
   # @lat: [[paste-summary-dialog#Paste summary dialog#The dialog validates a pasted draft before publishing]]
@@ -772,7 +779,7 @@ class BillsController < ApplicationController
     revision = @bill.bill_summary_revisions.find(params[:revision_id])
 
     if params[:expected_summary].present? && params[:expected_summary] != @bill.summary
-      redirect_to summary_bill_creator_path(@bill), alert: "The bill summary was modified by another operator. Please review before restoring."
+      respond_after_write(summary_bill_creator_path(@bill), alert: STALE_SUMMARY_RESTORE_ALERT)
       return
     end
 
@@ -780,7 +787,7 @@ class BillsController < ApplicationController
     result_rev = nil
     @bill.with_lock do
       if params[:expected_summary].present? && params[:expected_summary] != @bill.summary
-        redirect_to summary_bill_creator_path(@bill), alert: "The bill summary was modified by another operator. Please review before restoring."
+        respond_after_write(summary_bill_creator_path(@bill), alert: STALE_SUMMARY_RESTORE_ALERT)
         return
       end
 
@@ -804,17 +811,32 @@ class BillsController < ApplicationController
       end
     end
 
+    # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+    json = restored_revision_json(result_rev)
     if result_rev&.publication_role == "draft"
-      redirect_to summary_bill_creator_path(@bill, draft_revision_id: result_rev.id),
-        notice: "Legacy revision restored as draft. Please review and declare news usage before publishing."
+      respond_after_write(summary_bill_creator_path(@bill, draft_revision_id: result_rev.id),
+        json: json,
+        notice: "Legacy revision restored as draft. Please review and declare news usage before publishing.")
     else
       # @lat: [[bootstrap-caching-and-rate-limiting#Why locale and featured bill are cached per locale]]
       Api::V1::BootstrapController.expire_botm_cache(@bill.sway_locale_id)
-      redirect_to summary_bill_creator_path(@bill), notice: "Bill summary restored."
+      respond_after_write(summary_bill_creator_path(@bill), json: json, notice: "Bill summary restored.")
     end
   end
 
   private
+
+  def restored_revision_json(revision)
+    return {} unless mobile_api_request? && revision
+
+    {revision: BillSummaryRevisionResource.new(revision).serializable_hash}
+  end
+
+  def written_bill_json(bill)
+    return {} unless mobile_api_request?
+
+    BillResource.new(bill).serializable_hash
+  end
 
   # @lat: [[bill-creator-summary-tab#Choosing the model for one regeneration]]
   def summarization_model_arg
@@ -992,7 +1014,7 @@ class BillsController < ApplicationController
     rescue LegislationPipelineRunService::ResumeNotAllowed,
       LegislationPipelineRunService::StageAllowlistError,
       LegislationPipelineRunService::LocaleError => e
-      return redirect_to(back_path, inertia: {errors: {pipeline: e.message}})
+      return respond_after_write(back_path, errors: {pipeline: e.message})
     end
 
     return render_pipeline_duplicate_run(existing, back_path) if existing
@@ -1003,8 +1025,7 @@ class BillsController < ApplicationController
 
     begin
       RunLegislationPipelineJob.perform_later(created_run.id, origin: origin)
-      flash[:notice] = notice.call(created_run)
-      redirect_to back_path
+      respond_after_write(back_path, notice: notice.call(created_run))
     rescue ActiveJob::EnqueueError => e
       if created_run.persisted?
         created_run.update!(error_message: "enqueue failed: #{e.message[0, 200]}")
@@ -1039,6 +1060,13 @@ class BillsController < ApplicationController
       external_id: bill.external_id,
       bill_llm_provisioning: provisioning&.to_sway_json
     }
+  end
+
+  # @lat: [[mobile-bill-creator#Each tab gets only its own props]]
+  def mobile_bill_creator_tab_props(props)
+    return props unless mobile_api_request?
+
+    props.merge(legislation_pipeline_run_props).slice(*BILL_CREATOR_TAB_PROPS.fetch(bill_creator_tab_param.to_s, BILL_PICKER_PROPS))
   end
 
   # @lat: [[lazy-inertia-props#Why the props became callables]]
@@ -1157,54 +1185,72 @@ class BillsController < ApplicationController
 
   # @lat: [[lazy-inertia-props#Lazy Inertia props#Current optional and deferred JSON props]]
   def summary_prompt_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The summary generation section#Preparing the summary prompt]]
+    if mobile_api_request?
+      return {} unless params[:summary_prompt] == "1"
+
+      return {summary_prompt: -> { BillSummaryPromptBuilder.new(@bill).call }}
+    end
 
     {summary_prompt: InertiaRails.optional { BillSummaryPromptBuilder.new(@bill).call }}
   end
 
   # @lat: [[bill-creator-summary-tab#Why the record of a run is kept at run time]]
   def summary_source_documents_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The summary sources section]]
+    if mobile_api_request?
+      return {} unless params[:summary_source_documents] == "1"
 
-    {
-      summary_source_documents: InertiaRails.optional {
-        SummarySourceDocumentsResource.new(SummarySourceDocuments.call(bill: @bill)).serializable_hash
-      }
-    }
+      return {summary_source_documents: -> { summary_source_documents_json }}
+    end
+
+    {summary_source_documents: InertiaRails.optional { summary_source_documents_json }}
+  end
+
+  def summary_source_documents_json
+    SummarySourceDocumentsResource.new(SummarySourceDocuments.call(bill: @bill)).serializable_hash
   end
 
   # @lat: [[bill-creator-summary-tab#Planned recoverable summary history]]
   def summary_revisions_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The summary revisions section]]
+    if mobile_api_request?
+      return {} unless params[:summary_revisions] == "1"
 
-    {
-      summary_revisions: InertiaRails.optional {
-        if @bill&.persisted?
-          BillSummaryRevisionResource.new(
-            @bill.bill_summary_revisions.order(created_at: :desc, id: :desc)
-          ).serializable_hash
-        else
-          []
-        end
-      }
-    }
+      return {summary_revisions: -> { summary_revisions_json }}
+    end
+
+    {summary_revisions: InertiaRails.optional { summary_revisions_json }}
+  end
+
+  def summary_revisions_json
+    return [] unless @bill&.persisted?
+
+    BillSummaryRevisionResource.new(
+      @bill.bill_summary_revisions.order(created_at: :desc, id: :desc)
+    ).serializable_hash
   end
 
   # @lat: [[campaign-letter-disclosure#Why the letter text is a prop of its own]]
   def testimony_campaign_letters_prop
-    return {} if mobile_api_request?
+    # @lat: [[mobile-bill-creator#Sections#The campaign drafts section#Serving the letter text to the phone]]
+    if mobile_api_request?
+      return {} unless params[:testimony_campaign_letters] == "1"
 
-    {
-      testimony_campaign_letters: InertiaRails.optional {
-        TestimonyCampaignLettersResource.new(
-          cleaned_testimony_derivation[:campaign_drafts],
-          params: {
-            letters_by_position: cleaned_testimony_derivation[:letters_by_position],
-            full_text: cleaned_testimony_derivation[:full_text]
-          }
-        ).serializable_hash
+      return {testimony_campaign_letters: -> { testimony_campaign_letters_json }}
+    end
+
+    {testimony_campaign_letters: InertiaRails.optional { testimony_campaign_letters_json }}
+  end
+
+  def testimony_campaign_letters_json
+    TestimonyCampaignLettersResource.new(
+      cleaned_testimony_derivation[:campaign_drafts],
+      params: {
+        letters_by_position: cleaned_testimony_derivation[:letters_by_position],
+        full_text: cleaned_testimony_derivation[:full_text]
       }
-    }
+    ).serializable_hash
   end
 
   def public_testimony_letters_prop

@@ -69,6 +69,7 @@ const baseProps = (overrides: Partial<BillScreenTabsProps> = {}): BillScreenTabs
             support: "FOR",
             organization: { name: "Supporters Org" },
             summary: "We support this because it improves access.",
+            origin: "Sway-compiled",
         },
     ],
     readerDistricts: [],
