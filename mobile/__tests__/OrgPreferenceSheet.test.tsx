@@ -65,6 +65,15 @@ describe("OrgPreferenceSheet", () => {
         expect(screen.getByTestId("pref-toggle-summary-change")).toBeTruthy();
     });
 
+    test("describes every event as Sway recording it, never the organization acting", () => {
+        wrap(<OrgPreferenceSheet visible={true} orgName="Civic Alliance" onSave={jest.fn()} onClose={jest.fn()} />);
+        expect(
+            screen.getByText("When Sway records a change in this organization's for/against position."),
+        ).toBeTruthy();
+        expect(screen.getByText("When Sway records a change to this organization's position summary.")).toBeTruthy();
+        expect(screen.queryByText(/this org (changes|updates)/)).toBeNull();
+    });
+
     test("renders cadence picker with all 3 options", () => {
         wrap(<OrgPreferenceSheet visible={true} orgName="Civic Alliance" onSave={jest.fn()} onClose={jest.fn()} />);
         expect(screen.getByTestId("cadence-picker")).toBeTruthy();
@@ -235,7 +244,9 @@ describe("OrgCard follow control", () => {
         // Heading is replaced: "Sign in to track", not the usual "Sign in to vote"
         expect(screen.getByText("Sign in to track")).toBeTruthy();
         expect(
-            screen.getByText("Track civic organizations and get notified when they take a position on legislation."),
+            screen.getByText(
+                "Track civic organizations and get notified when Sway records their positions on legislation.",
+            ),
         ).toBeTruthy();
     });
 

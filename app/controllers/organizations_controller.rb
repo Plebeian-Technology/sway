@@ -61,6 +61,11 @@ class OrganizationsController < ApplicationController
             else
               param[:summary]
             end
+          # @lat: [[news-org-position-persistence#Position origin and affiliation#Values and write paths]]
+          if position.new_record? || !position.active? || position.support_changed? || position.summary_changed?
+            position.source_kind = OrganizationBillPosition::SourceKind::SWAY_ADMIN
+            position.source_url = nil
+          end
           # @lat: [[organization-position-removal#A saved position is a published one]]
           position.active = true
 

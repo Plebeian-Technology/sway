@@ -289,7 +289,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       body = response.parsed_body
       expect(body.length).to eq(1)
       expect(body.first.keys).to match_array(
-        %w[id organization_id bill_id support summary summary_ai_unreviewed active created_at]
+        %w[id organization_id bill_id support summary summary_ai_unreviewed active created_at source_kind source_url]
       )
     end
 
@@ -301,7 +301,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
       get "/organization_bill_positions/#{obp.id}",
         params: {bill_id: bill.id, organization_id: obp.organization_id}
       expect(response.parsed_body.keys).to match_array(
-        %w[id organization_id bill_id support summary summary_ai_unreviewed active created_at]
+        %w[id organization_id bill_id support summary summary_ai_unreviewed active created_at source_kind source_url]
       )
 
       get "/organization_bill_positions/0",
@@ -318,7 +318,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
 
       row = response.parsed_body.first
       expect(row.keys).to match_array(
-        %w[id organization_id bill_id support summary summary_ai_unreviewed active created_at]
+        %w[id organization_id bill_id support summary summary_ai_unreviewed active created_at source_kind source_url]
       )
       expect(row["support"]).to eq("ABSTAIN")
       expect(row["summary"]).to be_nil
@@ -1541,7 +1541,7 @@ RSpec.describe "Serializer whitelists (alba)", type: :request do
         phone fax party photo_url district twitter
       ]
       district_keys = %w[name number region_code]
-      position_keys = %w[id bill_id organization support summary summary_ai_unreviewed]
+      position_keys = %w[id bill_id organization support summary summary_ai_unreviewed source_kind source_url]
       simple_organization_keys = %w[id sway_locale_id name icon_url]
       legislator_vote_keys = %w[id legislator_id bill_id support]
       score_keys = %w[id bill_id for_percent against_percent comparison_suppressed districts]

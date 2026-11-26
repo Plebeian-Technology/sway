@@ -168,6 +168,10 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                 <section className="sgb-row">
                     <h2 className="sgb-index">{PARITY_COPY.bill.content.whySupport}</h2>
                     <div className="sgb-content">
+                        {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+                        {supporting.length + opposing.length > 0 && (
+                            <p className="sgb-empty">{PARITY_COPY.orgs.listNotice}</p>
+                        )}
                         {supporting.length ? (
                             <ul className="sgb-orgs">
                                 {supporting.map(({ org, position }) => (
@@ -177,6 +181,9 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                                         <OrgPositionSummary
                                             summary={position.summary}
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                            organizationName={org.name}
+                                            sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             className="sgb-org__summary"
                                         />
                                     </li>
@@ -205,6 +212,9 @@ const SwissGridBillLayout: React.FC<BillLayoutProps> = ({
                                         <OrgPositionSummary
                                             summary={position.summary}
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                            organizationName={org.name}
+                                            sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             className="sgb-org__summary"
                                         />
                                     </li>

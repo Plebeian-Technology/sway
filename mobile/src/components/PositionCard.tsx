@@ -6,6 +6,8 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/Card";
 import { Pressable } from "./ui/Pressable";
 import { Markdown } from "./Markdown";
 import { StampedBadge } from "./StampedBadge";
+import { PositionSourceLine } from "./PositionSourceLine";
+import { organizationPositionTag } from "../../../app/frontend/sway_utils/organizationPositionLabels";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { useTheme } from "../theme/ThemeProvider";
 import { swayTokens } from "../theme/tokens";
@@ -18,6 +20,9 @@ export interface OrgPositionDisplay {
     summary: string | null;
     // @lat: [[mobile-org-membership-components-design#PositionCard]]
     summary_ai_unreviewed?: boolean;
+    // @lat: [[news-org-position-persistence#Position origin and affiliation]]
+    source_kind?: "hearing_testimony" | "news_article" | "sway_admin" | "organization" | null;
+    source_url?: string | null;
     link?: string | null;
     bill?: {
         id?: number;
@@ -30,10 +35,12 @@ export interface OrgPositionDisplay {
 
 export interface PositionCardProps {
     position: OrgPositionDisplay;
+    // @lat: [[organization-affiliation-labels#Organization affiliation labels#Every position carries its own tag]]
+    organizationName?: string;
     testID?: string;
 }
 
-export function PositionCard({ position, testID }: PositionCardProps) {
+export function PositionCard({ position, organizationName, testID }: PositionCardProps) {
     const { colorScheme } = useTheme();
     const t = swayTokens[colorScheme];
     const isSupport = position.support === "FOR";
@@ -54,6 +61,15 @@ export function PositionCard({ position, testID }: PositionCardProps) {
                     </View>
                 ) : null}
                 <StampedBadge label={badgeLabel} color={badgeColor} />
+                {organizationName !== undefined ? (
+                    <Text
+                        testID="org-position-source-tag"
+                        className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark"
+                    >
+                        {organizationPositionTag(organizationName, position.source_kind)}
+                    </Text>
+                ) : null}
+                <PositionSourceLine sourceKind={position.source_kind} sourceUrl={position.source_url} />
                 {position.bill?.title ? (
                     <Text className="text-base font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                         {position.bill.headline ?? billHeadline(position.bill.title)}

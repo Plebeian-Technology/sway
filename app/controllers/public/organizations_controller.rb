@@ -10,7 +10,16 @@ module Public
     def index
       scope = Organization.all
       filter_locale_id = params[:sway_locale_id].presence || params[:locale_id].presence
+      # @lat: [[public-organizations-endpoint#Why the web list defaults to the current locale and JSON does not]]
+      filter_locale_id ||= current_sway_locale&.id&.to_s unless mobile_api_request?
       scope = scope.where(sway_locale_id: filter_locale_id) if filter_locale_id.present?
+
+      # @lat: [[public-organizations-endpoint#Why the name search escapes its own wildcards]]
+      org_search = params[:org_search].presence if params[:org_search].is_a?(String)
+      if org_search
+        pattern = "%#{Organization.sanitize_sql_like(org_search)}%"
+        scope = scope.where(Organization.arel_table[:name].matches(pattern, "\\"))
+      end
 
       if ActiveModel::Type::Boolean.new.cast(params[:following]) && current_user
         scope = scope.joins(:organization_follows)
@@ -19,12 +28,14 @@ module Public
 
       # @lat: [[public-organizations-endpoint#The public organizations endpoint#Why the list preloads icons and the detail does not]]
       orgs = scope.with_attached_icon.includes(:sway_locale).order(:name).limit(MAX_ORGANIZATIONS_PER_INDEX_PAGE)
+      managed_ids = Organization.managed_on_sway_ids(orgs.map(&:id)).to_set
 
       props = {
-        organizations: orgs.map(&:to_public_json),
+        organizations: orgs.map { |org| org.to_public_json(managed_on_sway: managed_ids.include?(org.id)) },
         applied_filters: {
           locale_id: filter_locale_id,
-          sway_locale_id: filter_locale_id
+          sway_locale_id: filter_locale_id,
+          org_search: org_search
         }
       }
 

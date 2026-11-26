@@ -17,6 +17,7 @@ export interface OrgCardOrganization {
     name: string;
     icon_url?: string | null;
     sway_locale_slug?: string | null;
+    managed_on_sway?: boolean;
 }
 
 export interface OrgCardProps {
@@ -94,6 +95,11 @@ export function OrgCard({
                             {org.sway_locale_slug}
                         </Text>
                     ) : null}
+                    {org.managed_on_sway ? (
+                        <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                            {PARITY_COPY.orgs.managedOnSway(org.name)}
+                        </Text>
+                    ) : null}
 
                     {/* @lat: [[mobile-org-membership-components-design#OrgCard]] */}
                     {isMember && isSignedIn ? (
@@ -120,7 +126,7 @@ export function OrgCard({
                             testID={`org-card-following-btn-${org.id}`}
                             variant="outline"
                             onPress={handleUnfollowPress}
-                            accessibilityLabel={`Untrack ${org.name}`}
+                            accessibilityLabel={`${PARITY_COPY.orgs.untrack} ${org.name}`}
                         >
                             <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                                 {PARITY_COPY.orgs.tracking}
@@ -131,7 +137,7 @@ export function OrgCard({
                             testID={`org-card-follow-btn-${org.id}`}
                             variant="default"
                             onPress={handleFollowPress}
-                            accessibilityLabel={`Track ${org.name}`}
+                            accessibilityLabel={`${PARITY_COPY.orgs.track} ${org.name}`}
                         >
                             <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.track}</Text>
                         </Pressable>
@@ -157,7 +163,7 @@ export function OrgCard({
                 }}
                 onDismiss={() => setShowAuthSheet(false)}
                 heading="Sign in to track"
-                body="Track civic organizations and get notified when they take a position on legislation."
+                body="Track civic organizations and get notified when Sway records their positions on legislation."
                 testID={`auth-prompt-sheet-${org.id}`}
             />
 

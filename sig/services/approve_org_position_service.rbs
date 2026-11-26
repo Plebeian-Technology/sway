@@ -202,6 +202,9 @@ class ApproveOrgPositionService
   # wrote it.
   def upsert_position: (Organization org, String support, ai_summary: String?) -> void
 
+  # The source kind and source URL recorded on the approved position.
+  def approved_source: () -> [String, String?]
+
   # The model's own words for the draft being approved, or nil when
   # no machine wrote the text being published — no draft named, the draft was
   # edited through the edit endpoint, or the operator changed the sentence in

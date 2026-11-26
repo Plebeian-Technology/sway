@@ -11,6 +11,7 @@ export interface PositionsListProps {
     positions: OrgPositionDisplay[];
     loading?: boolean;
     isAdmin?: boolean;
+    organizationName?: string;
     onProposeNew?: () => void;
     testID?: string;
 }
@@ -19,6 +20,7 @@ export function PositionsList({
     positions,
     loading = false,
     isAdmin = false,
+    organizationName,
     onProposeNew,
     testID,
 }: PositionsListProps) {
@@ -50,7 +52,7 @@ export function PositionsList({
         <View testID={testID ?? "positions-list"} style={{ padding: 16 }}>
             {header}
             {positions.map((item) => (
-                <PositionCard key={item.id} position={item} />
+                <PositionCard key={item.id} position={item} organizationName={organizationName} />
             ))}
         </View>
     );

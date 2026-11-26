@@ -82,6 +82,74 @@ RSpec.describe "OrganizationsController", type: :request do
       expect(OrganizationBillPosition.where(bill_id: bill.id).pluck(:active)).to all(be(true))
     end
 
+    it "records each saved position as a Sway admin entry with no URL" do
+      sway_locale, = setup
+      organization_params = get_params(sway_locale)
+
+      post organizations_path, params: organization_params
+
+      positions = OrganizationBillPosition.where(bill_id: organization_params[:bill_id])
+      expect(positions.count).to eq(2)
+      expect(positions.pluck(:source_kind)).to all(eq("sway_admin"))
+      expect(positions.pluck(:source_url)).to all(be_nil)
+    end
+
+    # @lat: [[news-org-position-persistence#Position origin and affiliation#Values and write paths]]
+    it "keeps the origin of positions a re-save leaves unchanged and marks a changed one as a Sway admin entry" do
+      sway_locale, = setup
+      bill = create(:bill, sway_locale:)
+      news_org = create(:organization, name: "News Org", sway_locale:)
+      member_org = create(:organization, name: "Member Org", sway_locale:)
+      edited_org = create(:organization, name: "Edited Org", sway_locale:)
+      news_position = OrganizationBillPosition.create!(
+        bill:, organization: news_org, support: "FOR", summary: "Reported in the news.",
+        active: true, source_kind: "news_article", source_url: "https://news.example.com/story"
+      )
+      member_position = OrganizationBillPosition.create!(
+        bill:, organization: member_org, support: "AGAINST", summary: "Written by the members.",
+        active: true, source_kind: "organization"
+      )
+      edited_position = OrganizationBillPosition.create!(
+        bill:, organization: edited_org, support: "FOR", summary: "Before the edit.",
+        active: true, source_kind: "news_article", source_url: "https://news.example.com/other"
+      )
+
+      post organizations_path, params: {
+        bill_id: bill.id,
+        organizations: [
+          {label: news_org.name, value: news_org.id, support: "FOR", summary: "Reported in the news."},
+          {label: member_org.name, value: member_org.id, support: "AGAINST", summary: "Written by the members."},
+          {label: edited_org.name, value: edited_org.id, support: "FOR", summary: "After the edit."}
+        ]
+      }
+
+      expect(news_position.reload.slice(:source_kind, :source_url))
+        .to eq("source_kind" => "news_article", "source_url" => "https://news.example.com/story")
+      expect(member_position.reload.source_kind).to eq("organization")
+      expect(edited_position.reload.slice(:source_kind, :source_url))
+        .to eq("source_kind" => "sway_admin", "source_url" => nil)
+    end
+
+    it "marks a withdrawn position an admin turns back on as a Sway admin entry" do
+      sway_locale, = setup
+      bill = create(:bill, sway_locale:)
+      member_org = create(:organization, name: "Member Org", sway_locale:)
+      withdrawn = OrganizationBillPosition.create!(
+        bill:, organization: member_org, support: "FOR", summary: "Written by the members.",
+        active: false, source_kind: "organization"
+      )
+
+      post organizations_path, params: {
+        bill_id: bill.id,
+        organizations: [
+          {label: member_org.name, value: member_org.id, support: "FOR", summary: "Written by the members."}
+        ]
+      }
+
+      expect(withdrawn.reload.slice(:active, :source_kind, :source_url))
+        .to eq("active" => true, "source_kind" => "sway_admin", "source_url" => nil)
+    end
+
     # @lat: [[organizations-controller#Icon addresses keep their source meaning]]
     describe "the icon_url column" do
       it "stays empty when an admin uploads an icon" do

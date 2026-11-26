@@ -21,6 +21,14 @@ class OrganizationBillPosition < ApplicationRecord
   # The stored support value a Neutral position carries.
   NEUTRAL_SUPPORT: String
 
+  module SourceKind
+    HEARING_TESTIMONY: String
+    NEWS_ARTICLE: String
+    SWAY_ADMIN: String
+    ORGANIZATION: String
+    ALL: Array[String]
+  end
+
   def self.normalize_support: (untyped value) -> String?
 
   def self.neutral_support?: (untyped value) -> bool

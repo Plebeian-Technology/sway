@@ -106,9 +106,7 @@ describe("OrganizationsNotificationsPanel", () => {
     it("shows body copy about organizations and legislation", () => {
         renderPanel();
         expect(
-            screen.getByText(
-                /Get notified when organizations you follow publish or update their position on legislation/,
-            ),
+            screen.getByText(/Get notified when Sway records or updates a position from an organization you track/),
         ).toBeTruthy();
     });
 
@@ -134,7 +132,7 @@ describe("OrganizationsNotificationsPanel", () => {
         fireEvent.click(screen.getByLabelText("Enable organization notifications"));
 
         // The switch moved: the sections it gates are now on screen.
-        expect(screen.getByText("Default for new follows")).toBeTruthy();
+        expect(screen.getByText("Default for newly tracked organizations")).toBeTruthy();
         // The badge did not.
         expect(screen.getByTestId("org-notifications-saved-state").textContent).toBe("Disabled");
     });
@@ -159,13 +157,13 @@ describe("OrganizationsNotificationsPanel", () => {
 
     it("hides the event-type checkboxes when master is off", () => {
         renderPanel({ org_position_taken: false });
-        expect(screen.queryByText("Default for new follows")).toBeNull();
+        expect(screen.queryByText("Default for newly tracked organizations")).toBeNull();
         expect(screen.queryByText("New position on a bill")).toBeNull();
     });
 
     it("shows event-type checkboxes and cadence when master is on", () => {
         renderPanel({ org_position_taken: true });
-        expect(screen.getByText("Default for new follows")).toBeTruthy();
+        expect(screen.getByText("Default for newly tracked organizations")).toBeTruthy();
         expect(screen.getByText("New position on a bill")).toBeTruthy();
         expect(screen.getByText("Change in support (for/against)")).toBeTruthy();
         expect(screen.getByText("Summary update")).toBeTruthy();
@@ -206,7 +204,7 @@ describe("OrganizationsNotificationsPanel", () => {
     it("contains all required copy strings from UI-SPEC Copywriting Contract", () => {
         renderPanel({ org_position_taken: true });
         expect(screen.getByText("Enable organization notifications")).toBeTruthy();
-        expect(screen.getByText("Default for new follows")).toBeTruthy();
+        expect(screen.getByText("Default for newly tracked organizations")).toBeTruthy();
         expect(screen.getByText("Default delivery")).toBeTruthy();
         expect(screen.getByText("Save preferences")).toBeTruthy();
     });

@@ -138,7 +138,62 @@ describe("PARITY_COPY — Organizations keys (nested)", () => {
     });
 
     it("orgs.noPositions is the public organization page's positions empty state", () => {
-        expect(PARITY_COPY.orgs.noPositions).toBe("This organization hasn't added any positions yet.");
+        expect(PARITY_COPY.orgs.noPositions).toBe("Sway has not recorded any positions from this organization yet.");
+    });
+
+    it("orgs.noBillPositions says Sway found no organization positions on the bill", () => {
+        expect(PARITY_COPY.orgs.noBillPositions).toBe("Sway has not found any organization positions on this bill.");
+    });
+
+    it("orgs.subtitle says Sway recorded the positions", () => {
+        expect(PARITY_COPY.orgs.subtitle).toBe(
+            "Browse organizations and the positions Sway has recorded from public testimony and news.",
+        );
+    });
+
+    it("feed.organizationPositionRecordedPrefix names Sway as the recorder", () => {
+        expect(PARITY_COPY.feed.organizationPositionRecordedPrefix).toBe("Sway recorded that");
+    });
+
+    it("notifications.orgPositionTaken says Sway records the position", () => {
+        expect(PARITY_COPY.notifications.orgPositionTaken.label).toBe(
+            "Sway recorded a position from an organization you track",
+        );
+        expect(PARITY_COPY.notifications.orgPositionTaken.description).toBe(
+            "When Sway records a position from an organization you track on a new bill.",
+        );
+    });
+
+    it("orgNotifications.panelDescription says Sway records the positions", () => {
+        expect(PARITY_COPY.orgNotifications.panelDescription).toBe(
+            "Get notified when Sway records or updates a position from an organization you track.",
+        );
+    });
+
+    it("orgs.listNotice says where positions come from and when an organization is affiliated", () => {
+        expect(PARITY_COPY.orgs.listNotice).toBe(
+            "Sway compiles organizations' positions from public testimony and news reporting. An organization is not affiliated with Sway unless its page says it manages its positions on Sway.",
+        );
+    });
+
+    it("orgs.notAffiliated names the organization and makes no claim about who wrote its positions", () => {
+        expect(PARITY_COPY.orgs.notAffiliated("Bikemore")).toBe(
+            "Bikemore is not affiliated with Sway and is not responsible for its content.",
+        );
+    });
+
+    it("orgs.managedOnSway names the organization", () => {
+        expect(PARITY_COPY.orgs.managedOnSway("Bikemore")).toBe("Bikemore manages its positions on Sway.");
+    });
+
+    it("orgs.postedBy and orgs.compiledBySway are the per-position tags", () => {
+        expect(PARITY_COPY.orgs.postedBy("Bikemore")).toBe("Posted by Bikemore");
+        expect(PARITY_COPY.orgs.compiledBySway).toBe("Compiled by Sway");
+    });
+
+    it("orgs.sourceHearingTestimony and orgs.sourceNewsArticle label a position's source", () => {
+        expect(PARITY_COPY.orgs.sourceHearingTestimony).toBe("Source: hearing testimony");
+        expect(PARITY_COPY.orgs.sourceNewsArticle).toBe("Source: news article");
     });
 });
 

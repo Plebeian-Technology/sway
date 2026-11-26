@@ -5,6 +5,7 @@ import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { apiClient } from "../api/client";
 import { PositionsList } from "../components/PositionsList";
+import type { OrgPositionDisplay } from "../components/PositionCard";
 import { Pressable } from "../components/ui/Pressable";
 import { OrgPreferenceSheet } from "../components/OrgPreferenceSheet";
 import type { OrgFollowPrefs } from "../hooks/useOrganizationFollow";
@@ -18,6 +19,8 @@ interface OrgPosition {
     summary: string;
     active?: boolean;
     created_at?: string;
+    source_kind?: OrgPositionDisplay["source_kind"];
+    source_url?: string | null;
 }
 
 interface OrgDetailPayload {
@@ -108,7 +111,7 @@ function OrgDetailFollowSection({
                         testID="org-detail-following-btn"
                         variant="outline"
                         onPress={handleUnfollowPress}
-                        accessibilityLabel={`Untrack ${orgName}`}
+                        accessibilityLabel={`${PARITY_COPY.orgs.untrack} ${orgName}`}
                     >
                         <Text className="text-sm font-open-sans-semibold text-foreground-light dark:text-foreground-dark">
                             {PARITY_COPY.orgs.tracking}
@@ -119,7 +122,7 @@ function OrgDetailFollowSection({
                         testID="org-detail-follow-btn"
                         variant="default"
                         onPress={handleFollowPress}
-                        accessibilityLabel={`Track ${orgName}`}
+                        accessibilityLabel={`${PARITY_COPY.orgs.track} ${orgName}`}
                     >
                         <Text className="text-sm font-open-sans-semibold text-white">{PARITY_COPY.orgs.track}</Text>
                     </Pressable>
@@ -214,6 +217,15 @@ export default function OrgDetailScreen({ route }: OrgDetailScreenProps) {
                         {org.sway_locale_slug}
                     </Text>
                 ) : null}
+                {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Organization pages say whether the organization takes part]] */}
+                <Text
+                    testID="org-detail-affiliation"
+                    className="mt-2 text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark"
+                >
+                    {org.managed_on_sway
+                        ? PARITY_COPY.orgs.managedOnSway(org.name)
+                        : PARITY_COPY.orgs.notAffiliated(org.name)}
+                </Text>
 
                 {isSignedIn ? (
                     // @lat: [[mobile-org-detail-screen#Why the follow section is keyed on the server-assigned follow id]]
@@ -230,7 +242,7 @@ export default function OrgDetailScreen({ route }: OrgDetailScreenProps) {
             </View>
 
             <View testID="org-detail-positions">
-                <PositionsList positions={positions} isAdmin={false} />
+                <PositionsList positions={positions} isAdmin={false} organizationName={org.name} />
             </View>
         </ScrollView>
     );

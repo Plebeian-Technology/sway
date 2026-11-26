@@ -4,6 +4,8 @@ import { Text, View } from "react-native";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
 import { Markdown } from "./Markdown";
 import { NewsArticleTestimony } from "./NewsArticleTestimony";
+import { PositionSourceLine } from "./PositionSourceLine";
+import { organizationPositionTag } from "../../../app/frontend/sway_utils/organizationPositionLabels";
 import type { NewsArticleTestimony as NewsArticleTestimonyType } from "../types/bill";
 import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 
@@ -13,8 +15,9 @@ export interface OrgPosition {
     organization?: { name: string };
     summary?: string | null;
     summary_ai_unreviewed?: boolean;
-    origin: "Org-posted" | "Sway-compiled";
-    origin_url?: string | null;
+    // @lat: [[news-org-position-persistence#Position origin and affiliation]]
+    source_kind?: "hearing_testimony" | "news_article" | "sway_admin" | "organization" | null;
+    source_url?: string | null;
 }
 
 export interface OrgPositionsSectionProps {
@@ -59,11 +62,18 @@ function StanceCard({
                             >
                                 {pos.organization?.name}
                             </Text>
-                            <Text className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark mt-1">
-                                {pos.origin === "Org-posted"
-                                    ? `Posted by ${pos.organization?.name}`
-                                    : "Compiled by Sway"}
+                            {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Every position carries its own tag]] */}
+                            <Text
+                                testID="org-position-source-tag"
+                                className="text-xs font-open-sans-semibold uppercase text-muted-foreground-light dark:text-muted-foreground-dark mt-1"
+                            >
+                                {organizationPositionTag(pos.organization?.name ?? "", pos.source_kind)}
                             </Text>
+                            <PositionSourceLine
+                                sourceKind={pos.source_kind}
+                                sourceUrl={pos.source_url}
+                                onOpenUrl={onOpenUrl}
+                            />
                             <View className="mt-2 gap-1">
                                 <Markdown
                                     selectable
@@ -103,6 +113,12 @@ export function OrgPositionsSection({ positions = [], newsTestimonies, onOpenUrl
 
     return (
         <View testID={testID ?? "org-positions-section"} className="gap-4">
+            {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+            {supporting.length + opposing.length > 0 ? (
+                <Text className="text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                    {PARITY_COPY.orgs.listNotice}
+                </Text>
+            ) : null}
             <StanceCard
                 title={PARITY_COPY.bill.content.whySupport}
                 emptyLabel={PARITY_COPY.org.noSupport}

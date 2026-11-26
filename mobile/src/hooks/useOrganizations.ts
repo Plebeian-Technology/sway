@@ -10,6 +10,7 @@ export interface OrganizationRecord {
     sway_locale_id?: number;
     sway_locale_slug?: string | null;
     created_at?: string;
+    managed_on_sway: boolean;
 }
 
 // @lat: [[mobile-organizations-hook#Payload fields]]

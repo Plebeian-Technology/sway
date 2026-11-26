@@ -11,7 +11,7 @@ vi.mock("@inertiajs/react", async (importActual) => ({
 import OrganizationCard from "app/frontend/components/organizations/OrganizationCard";
 
 const organization = (icon_url: string | null) =>
-    ({ id: 11, name: "Bikemore", follower_count: 0, icon_url }) as unknown as sway.IPublicOrganization;
+    ({ id: 11, name: "Bikemore", icon_url }) as unknown as sway.IPublicOrganization;
 
 describe("OrganizationCard icon tile", () => {
     afterEach(cleanup);

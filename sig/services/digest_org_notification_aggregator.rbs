@@ -11,5 +11,7 @@ class DigestOrgNotificationAggregator
 
   def self.dispatch_period: (Symbol | String cadence, ?batch_size: Integer) -> void
 
-  def self.build_digest_copy: (Array[String] org_names, Integer change_count, String period_label) -> [String, String]
+  def self.build_digest_copy: (Array[String] org_names, Array[String?] row_change_types, String period_label) -> [String, String]
+
+  def self.digest_subject: (Array[String?] row_change_types) -> String
 end

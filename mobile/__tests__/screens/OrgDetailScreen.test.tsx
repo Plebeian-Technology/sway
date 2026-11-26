@@ -27,7 +27,9 @@ jest.mock("expo-haptics", () => ({
 }));
 
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { Linking } from "react-native";
 import OrgDetailScreen from "../../src/screens/OrgDetailScreen";
 import { apiClient } from "../../src/api/client";
 
@@ -119,5 +121,64 @@ describe("OrgDetailScreen (Phase 35 parity rebuild + Phase 61 follow restore)", 
         await waitFor(() => {
             expect(screen.getByTestId("org-detail-error")).toBeTruthy();
         });
+    });
+});
+
+describe("OrgDetailScreen affiliation labels", () => {
+    const mockGet = apiClient.get as jest.Mock;
+    const payload = (managed_on_sway: boolean) => ({
+        ...ORG_PAYLOAD,
+        organization: { ...ORG_PAYLOAD.organization, managed_on_sway },
+        organization_bill_positions: [
+            { id: 1, bill_id: 10, support: "FOR", summary: "Good policy", source_kind: "organization" },
+            { id: 2, bill_id: 11, support: "AGAINST", summary: "Bad policy", source_kind: null },
+        ],
+    });
+
+    test("says an unmanaged organization is not affiliated with Sway", async () => {
+        mockGet.mockResolvedValue(payload(false));
+        render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
+        expect(await screen.findByText(PARITY_COPY.orgs.notAffiliated("Civic Alliance"))).toBeTruthy();
+        expect(screen.queryByText(PARITY_COPY.orgs.managedOnSway("Civic Alliance"))).toBeNull();
+    });
+
+    test("shows the managed label instead for a managed organization", async () => {
+        mockGet.mockResolvedValue(payload(true));
+        render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
+        expect(await screen.findByText(PARITY_COPY.orgs.managedOnSway("Civic Alliance"))).toBeTruthy();
+        expect(screen.queryByText(PARITY_COPY.orgs.notAffiliated("Civic Alliance"))).toBeNull();
+    });
+
+    test("tags each position by who wrote it", async () => {
+        mockGet.mockResolvedValue(payload(true));
+        render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
+        const tags = await screen.findAllByTestId("org-position-source-tag");
+        expect(tags.map((tag) => tag.props.children)).toEqual(["Posted by Civic Alliance", "Compiled by Sway"]);
+    });
+});
+
+describe("OrgDetailScreen source line", () => {
+    const mockGet = apiClient.get as jest.Mock;
+
+    test("a news position links to its article", async () => {
+        const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+        mockGet.mockResolvedValue({
+            ...ORG_PAYLOAD,
+            organization: { ...ORG_PAYLOAD.organization, managed_on_sway: false },
+            organization_bill_positions: [
+                {
+                    id: 1,
+                    bill_id: 10,
+                    support: "FOR",
+                    summary: "Good policy",
+                    source_kind: "news_article",
+                    source_url: "https://news.example/story",
+                },
+            ],
+        });
+        render(<OrgDetailScreen route={makeRoute()} navigation={makeNav()} />);
+
+        fireEvent.press(await screen.findByRole("link", { name: PARITY_COPY.orgs.sourceNewsArticle }));
+        expect(openURL).toHaveBeenCalledWith("https://news.example/story");
     });
 });

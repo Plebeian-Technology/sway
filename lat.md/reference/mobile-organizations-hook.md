@@ -20,6 +20,9 @@ lat:
 
 Attribute definitions and types returned in the mobile organization subscription response payload.
 
+- `OrganizationRecord.managed_on_sway` — true while the organization has an
+  active member on Sway
+  ([[organizations-controller-notes#managed_on_sway: an active member, batched across a list]]).
 - `OrgFollowPref` — what this person asked to be told about, for one
   organization they follow. These arrive in `user_follow_prefs`, and only
   for organizations they actually follow.

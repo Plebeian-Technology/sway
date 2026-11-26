@@ -165,10 +165,22 @@ export const PARITY_COPY = {
     orgs: {
         title: "Organizations",
         noneFound: (formattedSwayLocaleName: string) => `No organizations found for ${formattedSwayLocaleName}.`,
-        noPositions: "This organization hasn't added any positions yet.",
+        subtitle: "Browse organizations and the positions Sway has recorded from public testimony and news.",
+        noPositions: "Sway has not recorded any positions from this organization yet.",
+        noBillPositions: "Sway has not found any organization positions on this bill.",
+        // @lat: [[organization-affiliation-labels#Organization affiliation labels]]
+        listNotice:
+            "Sway compiles organizations' positions from public testimony and news reporting. An organization is not affiliated with Sway unless its page says it manages its positions on Sway.",
+        notAffiliated: (organizationName: string) =>
+            `${organizationName} is not affiliated with Sway and is not responsible for its content.`,
+        managedOnSway: (organizationName: string) => `${organizationName} manages its positions on Sway.`,
+        postedBy: (organizationName: string) => `Posted by ${organizationName}`,
+        compiledBySway: "Compiled by Sway",
+        sourceHearingTestimony: "Source: hearing testimony",
+        sourceNewsArticle: "Source: news article",
         track: "Track",
         tracking: "Tracking",
-        untrack: "Untrack",
+        untrack: "Stop tracking",
     },
 
     // @lat: [[org-notification-cascade-and-defaults#Where organization notification copy is shared across pickers and settings]]
@@ -184,8 +196,8 @@ export const PARITY_COPY = {
         eventSupportChange: "Change in support (for/against)",
         eventSummaryChange: "Summary update",
         panelTitle: "Organization position updates",
-        panelDescription: "Get notified when organizations you track add or update their position on legislation.",
-        defaultsEventsLabel: "Default for new follows",
+        panelDescription: "Get notified when Sway records or updates a position from an organization you track.",
+        defaultsEventsLabel: "Default for newly tracked organizations",
         defaultsCadenceLabel: "Default delivery",
     },
 
@@ -336,8 +348,8 @@ export const PARITY_COPY = {
             description: "A reminder before voting closes on a bill you haven't voted on yet.",
         },
         orgPositionTaken: {
-            label: "Organization you track took a position",
-            description: "When an org you track adds a position on a new bill.",
+            label: "Sway recorded a position from an organization you track",
+            description: "When Sway records a position from an organization you track on a new bill.",
         },
         push: {
             title: "Push Notifications",
@@ -515,6 +527,7 @@ export const PARITY_COPY = {
         legislatorVotedVerb: "voted ",
         aLocaleBill: (localeName: string) => `a ${localeName} bill`,
         legislatorAbstainedOnLocaleBill: (localeName: string) => `abstained on a ${localeName} bill`,
+        organizationPositionRecordedPrefix: "Sway recorded that",
         organizationPositionTaken: (positionVerb: string, localeName: string) => `${positionVerb} a ${localeName} bill`,
         organizationPositionVerbs: {
             Support: "supports",
@@ -524,7 +537,7 @@ export const PARITY_COPY = {
         userJoinedActor: "You",
         userJoinedAction: "joined Sway",
         userJoinedSummary:
-            "New Bills of the Month, your representatives' votes and positions from organizations you follow will show up here, newest first.",
+            "New Bills of the Month, your representatives' votes and positions from organizations you track will show up here, newest first.",
         representativesFoundActor: "Sway",
         representativesFoundAction: "found your representatives",
         seeYourRepresentatives: "See your representatives",

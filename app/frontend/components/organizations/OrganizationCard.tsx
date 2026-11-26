@@ -73,6 +73,11 @@ const OrganizationCard: React.FC<IProps> = ({
                         )}
                     </div>
                     {swayLocaleLabel && <p className="mt-1 text-sm text-muted-foreground">{swayLocaleLabel}</p>}
+                    {organization.managed_on_sway && (
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            {PARITY_COPY.orgs.managedOnSway(organization.name)}
+                        </p>
+                    )}
                 </div>
 
                 {isSignedIn && (

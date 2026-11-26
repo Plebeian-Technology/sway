@@ -38,7 +38,7 @@ The badge is therefore never re-bound from the form.
 
 ## Why the control carries no aria-pressed
 
-A toggle names its state and reports it with `aria-pressed`; an action button names what it does. This control names what it does — track, or Untrack — so it carries no `aria-pressed`.
+A toggle names its state and reports it with `aria-pressed`; an action button names what it does. This control names what it does — Track, or Stop tracking — so it carries no `aria-pressed`.
 
 It used to carry both conventions at once. The untrack button read "Untrack NAME" to a screen reader and reported `aria-pressed="true"` with it, so the announcement mixed an instruction with a state: the word said do this, the state said this is on.
 

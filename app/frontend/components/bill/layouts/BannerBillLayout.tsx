@@ -10,6 +10,7 @@ import ShareBillButton from "app/frontend/components/bill/ShareBillButton";
 import VotePanel from "app/frontend/components/bill/VotePanel";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import { ROUTES, Support } from "app/frontend/sway_constants";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { titleize } from "app/frontend/sway_utils";
 import {
     isVoteComparisonSuppressed,
@@ -183,6 +184,8 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
 
                 <section className="bn-section">
                     <div className="bn-eyebrow">Where organizations stand</div>
+                    {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+                    {positions.length > 0 && <p className="bn-empty">{PARITY_COPY.orgs.listNotice}</p>}
                     <div className="bn-provisions">
                         {positions.length ? (
                             positions.map(({ org, position }, i) => (
@@ -195,13 +198,16 @@ const BannerBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                                         <OrgPositionSummary
                                             summary={position.summary}
                                             summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                            organizationName={org.name}
+                                            sourceKind={position.source_kind}
+                                            sourceUrl={position.source_url}
                                             prefix={position.support === Support.For ? "In support." : "In opposition."}
                                         />
                                     </div>
                                 </article>
                             ))
                         ) : (
-                            <p className="bn-empty">No organizations have filed a position on this bill.</p>
+                            <p className="bn-empty">{PARITY_COPY.orgs.noBillPositions}</p>
                         )}
                     </div>
                     <NewsArticleTestimony testimonies={bill.news_testimonies} variant="banner" />

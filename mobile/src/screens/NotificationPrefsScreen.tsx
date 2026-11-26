@@ -283,7 +283,7 @@ function OrgDefaultsCard({ form }: { form: OrgDefaultsForm }) {
                         <PreferenceToggle
                             name="notify_on_new_position_default"
                             label={PARITY_COPY.orgNotifications.eventNewPosition}
-                            description="Notify by default when this org publishes a new position."
+                            description="Notify by default when Sway records a new position from this organization."
                             value={notifyNewPos}
                             onValueChange={setNotifyNewPos}
                             testID="org-default-toggle-new-position"
@@ -291,7 +291,7 @@ function OrgDefaultsCard({ form }: { form: OrgDefaultsForm }) {
                         <PreferenceToggle
                             name="notify_on_support_change_default"
                             label={PARITY_COPY.orgNotifications.eventSupportChange}
-                            description="Notify by default when this org changes its for/against position."
+                            description="Notify by default when Sway records a change in this organization's for/against position."
                             value={notifySupportChange}
                             onValueChange={setNotifySupportChange}
                             testID="org-default-toggle-support-change"
@@ -299,7 +299,7 @@ function OrgDefaultsCard({ form }: { form: OrgDefaultsForm }) {
                         <PreferenceToggle
                             name="notify_on_summary_change_default"
                             label={PARITY_COPY.orgNotifications.eventSummaryChange}
-                            description="Notify by default when this org updates its position summary."
+                            description="Notify by default when Sway records a change to this organization's position summary."
                             value={notifySummaryChange}
                             onValueChange={setNotifySummaryChange}
                             testID="org-default-toggle-summary-change"

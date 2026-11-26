@@ -60,10 +60,11 @@ const FEATURE_DEFINITIONS = {
         },
     },
     organizations: {
-        parameters: ["org_tab"],
+        parameters: ["org_tab", "org_search"],
         route_patterns: ["^/organizations", "^/public/organizations"],
         parameter_families: {
             org_tab: ["tab", "tab_key"],
+            org_search: ["search"],
         },
     },
     feed: {

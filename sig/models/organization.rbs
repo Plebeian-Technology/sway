@@ -10,8 +10,8 @@
 # `self.mirrors_external_asset` is load-bearing: sig/models/concerns/
 # mirrors_external_asset.rbs delegates the singleton call sites to this decl.
 #
-# Phase 61 D-14 — follower_set / follower_count / notifiable_follower_set_for
-# (raw-SQL UNION + NOTIFY set with mute filtering + member-no-row defaults).
+# Phase 61 D-14 — notifiable_follower_set_for (NOTIFY set with mute filtering
+# + member-no-row defaults).
 class Organization < ApplicationRecord
   PUBLIC_FIELDS: Array[Symbol]
 
@@ -25,17 +25,11 @@ class Organization < ApplicationRecord
   def to_simple_builder: -> Jbuilder
   def to_builder: -> Jbuilder
   def mirrored_icon_url: () -> String?
-  # IN-08: optional follower_count override injected by the index serializer.
-  def to_public_json: (?follower_count: Integer?) -> Hash[Symbol, untyped]
+  # managed_on_sway: nil reads it from the database.
+  def to_public_json: (?managed_on_sway: bool?) -> Hash[Symbol, untyped]
 
-  # Phase 61 D-14 — deduped follower set (active members ∪ explicit follows)
-  def follower_set: () -> Array[Integer]
-
-  # Phase 61 D-14 / REQ-9 — deduped follower count (exposed via PUBLIC_FIELDS)
-  def follower_count: () -> Integer
-
-  # Phase 61 IN-08 — deduped follower counts for a set of orgs in ONE query.
-  def self.follower_counts_for: (Array[Integer] org_ids) -> Hash[Integer, Integer]
+  # Ids among org_ids with at least one active membership, in one query.
+  def self.managed_on_sway_ids: (Array[Integer] org_ids) -> Array[Integer]
 
   # Phase 61 D-14 — NOTIFY set: [user_id, cadence] tuples excluding muted followers
   def notifiable_follower_set_for: (Array[Symbol] change_types) -> Array[[Integer, String]]

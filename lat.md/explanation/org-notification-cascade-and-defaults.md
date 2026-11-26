@@ -87,5 +87,5 @@ The mobile organization position updates card configures event-type switches and
 
 Below the primary notification switches, `NotificationPrefsScreen` (`mobile/src/screens/NotificationPrefsScreen.tsx`) displays an "Organization position updates" card. It retrieves `GET /api/v1/notification_preferences/org_defaults` on mount, displaying three event switches and a delivery-frequency selector, and persists modifications with `PATCH` requests to the same endpoint. Updates cascade selectively: turning event types off disables notifications across followed organizations, whereas enabling event types does not cascade.
 
-The master "organization took a position" toggle is located among the primary switches above, leaving the card to configure the three event defaults and frequency without duplicate controls.
+The master organization-position toggle is located among the primary switches above, leaving the card to configure the three event defaults and frequency without duplicate controls.
 

@@ -363,8 +363,21 @@ class ApproveOrgPositionService
     position.support = support
     position.summary = @summary
     position.ai_summary = ai_summary
+    position.source_kind, position.source_url = approved_source
     position.active = true
     position.save!
+  end
+
+  # @lat: [[news-org-position-persistence#Position origin and affiliation#Values and write paths]]
+  def approved_source
+    entry = @index.present? ? draft_at(Array(@bill.bill_llm_provisioning&.draft_org_positions)) : nil
+    if entry.is_a?(::Hash) && BillLlmProvisioning.draft_news_sourced?(entry)
+      [OrganizationBillPosition::SourceKind::NEWS_ARTICLE, entry["source_url"].presence]
+    elsif testimony_sourced?
+      [OrganizationBillPosition::SourceKind::HEARING_TESTIMONY, nil]
+    else
+      [OrganizationBillPosition::SourceKind::SWAY_ADMIN, nil]
+    end
   end
 
   # @lat: [[org-position-ai-summary-attribution#approved_ai_summary: three ways the answer is nil]]

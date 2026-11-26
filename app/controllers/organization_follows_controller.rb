@@ -24,7 +24,7 @@ class OrganizationFollowsController < ApplicationController
     @follow.destroy!
     redirect_or_json(
       back_or_organization_path(@follow.organization_id),
-      flash_message: "Unfollowed."
+      flash_message: "Stopped tracking."
     )
   end
 
@@ -38,7 +38,7 @@ class OrganizationFollowsController < ApplicationController
   def follow_success_response(follow)
     redirect_or_json(
       back_or_organization_path(follow.organization_id),
-      flash_message: "Following #{follow.organization.name}!"
+      flash_message: "Tracking #{follow.organization.name}!"
     )
   end
 

@@ -162,6 +162,7 @@ These look inconsistent. They are decisions, not drift.
 | `sway_locale`        | "Locale" / "your locale" | "Sway locale" is harder for non-admin users                   |
 | `legislator`         | "Representatives"        | Friendlier, and documented here as the deliberate translation |
 | invite (identifiers) | "invitation"             | Natural English in copy                                       |
+| follow (`OrganizationFollow`, `organization_follows`, routes, props) | "Track" / "Tracking" / "Stop tracking" | "Follow" implies the organization has an audience on Sway; most never joined it |
 
 ## Frozen wire keys
 

@@ -67,7 +67,7 @@ export function useOrgFollowSheet({
             setShowPrefSheet(true);
         } catch {
             const nameMsg = orgName ? ` ${orgName}` : " this organization";
-            setFollowError(`Couldn't follow${nameMsg}. Try again.`);
+            setFollowError(`Couldn't track${nameMsg}. Try again.`);
         }
     }, [isSignedIn, follow, onRequireSignIn, onFollowSuccess, orgName]);
 
@@ -78,7 +78,7 @@ export function useOrgFollowSheet({
             onUnfollowSuccess?.();
         } catch {
             const nameMsg = orgName ? ` ${orgName}` : "";
-            setFollowError(`Couldn't unfollow${nameMsg}. Try again.`);
+            setFollowError(`Couldn't stop tracking${nameMsg}. Try again.`);
         }
     }, [unfollow, onUnfollowSuccess, orgName]);
 

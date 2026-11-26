@@ -40,11 +40,23 @@ afterEach(() => {
 describe("PositionCard — edit state seeds at Edit click", () => {
     it("shows the latest server summary in the textarea when Edit is clicked after a prop update", () => {
         const { rerender } = render(
-            <PositionCard position={buildPosition({ summary: "v1" })} organizationId={7} isAdmin />,
+            <PositionCard
+                position={buildPosition({ summary: "v1" })}
+                organizationId={7}
+                organizationName="Bikemore"
+                isAdmin
+            />,
         );
 
         // A partial reload brings newer server data while the card stays up.
-        rerender(<PositionCard position={buildPosition({ summary: "v2" })} organizationId={7} isAdmin />);
+        rerender(
+            <PositionCard
+                position={buildPosition({ summary: "v2" })}
+                organizationId={7}
+                organizationName="Bikemore"
+                isAdmin
+            />,
+        );
 
         fireEvent.click(screen.getByRole("button", { name: /edit/i }));
 
@@ -54,7 +66,12 @@ describe("PositionCard — edit state seeds at Edit click", () => {
 
     it("shows an empty textarea for a Neutral position, which carries no testimony", () => {
         render(
-            <PositionCard position={buildPosition({ support: "ABSTAIN", summary: null })} organizationId={7} isAdmin />,
+            <PositionCard
+                position={buildPosition({ support: "ABSTAIN", summary: null })}
+                organizationId={7}
+                organizationName="Bikemore"
+                isAdmin
+            />,
         );
 
         fireEvent.click(screen.getByRole("button", { name: /edit/i }));

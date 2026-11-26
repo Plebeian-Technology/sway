@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_18_034644) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_171036) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -960,8 +960,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_034644) do
     t.datetime "activated_at"
     t.string "origin_type"
     t.integer "origin_id"
-    t.string "origin"
-    t.string "origin_url"
+    t.string "source_kind"
+    t.string "source_url"
     t.index ["active"], name: "index_organization_bill_positions_on_active"
     t.index ["bill_id", "organization_id"], name: "idx_on_bill_id_organization_id_f380340a40", unique: true
     t.index ["bill_id"], name: "index_organization_bill_positions_on_bill_id"

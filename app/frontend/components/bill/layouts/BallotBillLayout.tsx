@@ -9,6 +9,7 @@ import ShareBillButton from "app/frontend/components/bill/ShareBillButton";
 import SwayLocaleFlag from "app/frontend/components/locales/SwayLocaleFlag";
 import { useSwayLocaleSlug } from "app/frontend/hooks/useSwayLocales";
 import { ROUTES, Support } from "app/frontend/sway_constants";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { titleize } from "app/frontend/sway_utils";
 import {
     isVoteComparisonSuppressed,
@@ -125,6 +126,8 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
 
             <section className="bal-section">
                 <h2 className="bal-sectionlabel">Support &amp; opposition</h2>
+                {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+                {positions.length > 0 && <p className="bal-empty">{PARITY_COPY.orgs.listNotice}</p>}
                 {positions.length ? (
                     <ul className="bal-orgs">
                         {positions.map(({ org, position }) => (
@@ -137,6 +140,9 @@ const BallotBillLayout: React.FC<BillLayoutProps> = ({ bill, sponsor, organizati
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                        organizationName={org.name}
+                                        sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="bal-org__summary"
                                     />
                                 </div>

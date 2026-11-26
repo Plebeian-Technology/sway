@@ -96,6 +96,12 @@ const Organization: React.FC<IProps> = ({
                     <div className="min-w-0 flex-1">
                         <h1 className="text-2xl font-black text-foreground">{organization.name}</h1>
                         {swayLocaleLabel && <p className="mt-1 text-sm text-muted-foreground">{swayLocaleLabel}</p>}
+                        {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Organization pages say whether the organization takes part]] */}
+                        <p data-testid="org-detail-affiliation" className="mt-2 text-sm text-muted-foreground">
+                            {organization.managed_on_sway
+                                ? PARITY_COPY.orgs.managedOnSway(organization.name)
+                                : PARITY_COPY.orgs.notAffiliated(organization.name)}
+                        </p>
                     </div>
 
                     {isSignedIn && (
@@ -125,11 +131,6 @@ const Organization: React.FC<IProps> = ({
                                         <Badge variant="stamp" tone={supportTone(position.support)}>
                                             {position.support}
                                         </Badge>
-                                        <div className="text-xs font-semibold uppercase text-muted-foreground">
-                                            {position.origin === "Org-posted"
-                                                ? `Posted by ${organization.name}`
-                                                : "Compiled by Sway"}
-                                        </div>
                                         <BillRowLink
                                             billId={position.bill_id}
                                             className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
@@ -142,6 +143,9 @@ const Organization: React.FC<IProps> = ({
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                                         className="text-sm leading-6 text-muted-foreground"
+                                        organizationName={organization.name}
+                                        sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                     />
                                 </CardContent>
                             </Card>

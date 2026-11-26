@@ -168,6 +168,8 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
 
             <section className="mcb-section">
                 <h2 className="mcb-sectionlabel">{PARITY_COPY.bill.content.whySupport}</h2>
+                {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#The bill page carries the notice once]] */}
+                {supporting.length + opposing.length > 0 && <p className="mcb-empty">{PARITY_COPY.orgs.listNotice}</p>}
                 {supporting.length ? (
                     <ul className="mcb-orgs">
                         {supporting.map(({ org, position }) => (
@@ -178,6 +180,9 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                        organizationName={org.name}
+                                        sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="mcb-org__summary"
                                     />
                                 </div>
@@ -202,6 +207,9 @@ const MonochromeBillLayout: React.FC<BillLayoutProps> = ({
                                     <OrgPositionSummary
                                         summary={position.summary}
                                         summaryAiUnreviewed={position.summary_ai_unreviewed}
+                                        organizationName={org.name}
+                                        sourceKind={position.source_kind}
+                                        sourceUrl={position.source_url}
                                         className="mcb-org__summary"
                                     />
                                 </div>

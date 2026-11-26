@@ -89,6 +89,7 @@ const org: sway.IPublicOrganization = {
     id: 42,
     name: "Civic League",
     sway_locale_id: 1,
+    managed_on_sway: false,
 };
 
 const savedFollowPrefs: sway.IOrgFollowPrefs = {
@@ -142,23 +143,26 @@ describe("OrganizationTrackControl — signed-out", () => {
 });
 
 describe("OrganizationTrackControl — not following (signed-in, non-member)", () => {
-    it("renders a Follow button", () => {
+    it("renders a Track button", () => {
         renderControl({ followId: null, isMember: false });
         expect(screen.getByTestId("follow-btn-42")).toBeTruthy();
-        expect(screen.getByText("Follow")).toBeTruthy();
+        expect(screen.getByText("Track")).toBeTruthy();
     });
 
-    it("does not render an Unfollow or Tracking button", () => {
+    it("does not render a Stop tracking or Tracking button", () => {
         renderControl({ followId: null, isMember: false });
         expect(screen.queryByText("Tracking")).toBeNull();
-        expect(screen.queryByText("Unfollow")).toBeNull();
+        expect(screen.queryByText("Stop tracking")).toBeNull();
     });
 
-    it("POSTs to /organization_tracks on Follow submit", () => {
+    it("POSTs to /organization_follows on Track submit", () => {
         renderControl({ followId: null, isMember: false });
         const form = screen.getByTestId("follow-btn-42").closest("form")!;
         fireEvent.submit(form);
-        expect(postSpy).toHaveBeenCalledWith("/organization_tracks", expect.objectContaining({ preserveScroll: true }));
+        expect(postSpy).toHaveBeenCalledWith(
+            "/organization_follows",
+            expect.objectContaining({ preserveScroll: true }),
+        );
     });
 
     it("does not use fetch or axios (Inertia PRG assertion)", () => {
@@ -182,19 +186,19 @@ describe("OrganizationTrackControl — not following (signed-in, non-member)", (
 });
 
 describe("OrganizationTrackControl — following (non-member)", () => {
-    it("renders an 'Unfollow' button, with the follow state shown on the card instead of a badge here", () => {
+    it("renders a 'Stop tracking' button, with the follow state shown on the card instead of a badge here", () => {
         renderControl({ followId: 99, isMember: false });
         expect(screen.getByTestId("following-btn-42")).toBeTruthy();
-        expect(screen.getByText("Unfollow", { selector: "button" })).toBeTruthy();
+        expect(screen.getByText("Stop tracking", { selector: "button" })).toBeTruthy();
         expect(screen.queryByText("Tracking", { selector: "span[data-slot='badge']" })).toBeNull();
     });
 
-    it("DELETEs to /organization_tracks/:id on Tracking submit", () => {
+    it("DELETEs to /organization_follows/:id on Tracking submit", () => {
         renderControl({ followId: 99, isMember: false });
         const form = screen.getByTestId("following-btn-42").closest("form")!;
         fireEvent.submit(form);
         expect(deleteSpy).toHaveBeenCalledWith(
-            "/organization_tracks/99",
+            "/organization_follows/99",
             expect.objectContaining({ preserveScroll: true }),
         );
     });
@@ -218,18 +222,18 @@ describe("OrganizationTrackControl — following (non-member)", () => {
         expect(screen.getByText("Notification preferences")).toBeTruthy();
     });
 
-    it("Preferences Save PATCHes to /organization_tracks/:id/preferences (never /0/preferences)", () => {
+    it("Preferences Save PATCHes to /organization_follows/:id/preferences (never /0/preferences)", () => {
         renderControl({ followId: 99, isMember: false, trackPrefs: savedFollowPrefs });
         fireEvent.click(screen.getByTestId("preferences-btn-42"));
         const saveBtn = screen.getByText("Save preferences");
         const form = saveBtn.closest("form")!;
         fireEvent.submit(form);
         expect(patchSpy).toHaveBeenCalledWith(
-            "/organization_tracks/99/preferences",
+            "/organization_follows/99/preferences",
             expect.objectContaining({ preserveScroll: true }),
         );
         // It must never aim at the broken URL that has a zero for the id.
-        expect(patchSpy).not.toHaveBeenCalledWith("/organization_tracks/0/preferences", expect.anything());
+        expect(patchSpy).not.toHaveBeenCalledWith("/organization_follows/0/preferences", expect.anything());
     });
 });
 
@@ -245,7 +249,7 @@ describe("OrganizationTrackControl — member with followId", () => {
         expect(screen.getByTestId("member-preferences-btn-42")).toBeTruthy();
         // Spelled out: no form with an Unfollow or Tracking submit button.
         expect(screen.queryByTestId("following-btn-42")).toBeNull();
-        expect(screen.queryByText("Follow", { selector: "button" })).toBeNull();
+        expect(screen.queryByText("Track", { selector: "button" })).toBeNull();
     });
 
     it("does NOT render a Follow or Tracking submit button — no Unfollow for members", () => {
@@ -283,18 +287,21 @@ describe("OrganizationTrackControl — member with NO follow row", () => {
         expect(screen.getByText("Notification preferences")).toBeTruthy();
     });
 
-    // With no follow row yet, Save must POST to /organization_tracks rather
+    // With no follow row yet, Save must POST to /organization_follows rather
     // than PATCH /0/preferences.
-    it("Save in create mode POSTs to /organization_tracks (never /0/preferences) (WR-13 regression)", () => {
+    it("Save in create mode POSTs to /organization_follows (never /0/preferences) (WR-13 regression)", () => {
         renderControl({ followId: null, isMember: true, orgDefaults });
         fireEvent.click(screen.getByTestId("member-preferences-btn-42"));
         const saveBtn = screen.getByText("Save preferences");
         const form = saveBtn.closest("form")!;
         fireEvent.submit(form);
         // It posts to the create route: the follow row is made when Save runs.
-        expect(postSpy).toHaveBeenCalledWith("/organization_tracks", expect.objectContaining({ preserveScroll: true }));
+        expect(postSpy).toHaveBeenCalledWith(
+            "/organization_follows",
+            expect.objectContaining({ preserveScroll: true }),
+        );
         // It must never PATCH the broken /0/preferences URL.
-        expect(patchSpy).not.toHaveBeenCalledWith("/organization_tracks/0/preferences", expect.anything());
+        expect(patchSpy).not.toHaveBeenCalledWith("/organization_follows/0/preferences", expect.anything());
     });
 
     // The picker starts from orgDefaults instead of switching everything on.
@@ -342,7 +349,7 @@ describe("OrganizationTrackControl — pref seeding (CR-04)", () => {
         const form = screen.getByText("Save preferences").closest("form")!;
         fireEvent.submit(form);
         expect(patchSpy).toHaveBeenCalledWith(
-            "/organization_tracks/99/preferences",
+            "/organization_follows/99/preferences",
             expect.objectContaining({ preserveScroll: true }),
         );
     });
@@ -360,14 +367,14 @@ describe("OrganizationTrackControl — an action button, not a toggle", () => {
     it("names the action on the follow button and reports no pressed state", () => {
         renderControl({ followId: null, isMember: false });
 
-        const follow = screen.getByRole("button", { name: "Follow" });
+        const follow = screen.getByRole("button", { name: "Track" });
         expect(follow.getAttribute("aria-pressed")).toBeNull();
     });
 
     it("names the organization on the unfollow button and reports no pressed state", () => {
         renderControl({ followId: 99, isMember: false });
 
-        const unfollow = screen.getByRole("button", { name: "Unfollow Civic League" });
+        const unfollow = screen.getByRole("button", { name: "Stop tracking Civic League" });
         expect(unfollow).toBe(screen.getByTestId("following-btn-42"));
         expect(unfollow.getAttribute("aria-pressed")).toBeNull();
     });

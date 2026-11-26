@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { OrgPositionsSection, type OrgPosition } from "../../src/components/OrgPositionsSection";
 import type { NewsArticleTestimony as NewsArticleTestimonyType } from "../../src/types/bill";
@@ -15,7 +15,6 @@ const forPosition = {
     support: "FOR" as const,
     organization: { name: "ACLU" },
     summary: "Supports civil liberties.",
-    origin: "Sway-compiled" as const,
 };
 
 const againstPosition = {
@@ -23,7 +22,6 @@ const againstPosition = {
     support: "AGAINST" as const,
     organization: { name: "Chamber of Commerce" },
     summary: "Opposes business regulation.",
-    origin: "Sway-compiled" as const,
 };
 
 const newsSupport: NewsArticleTestimonyType = {
@@ -170,5 +168,65 @@ describe("OrgPositionsSection", () => {
         expect(screen.getAllByText("•")).toHaveLength(2);
         expect(screen.queryByText(/\*\*/)).toBeNull();
         expect(screen.getByTestId("ai-unreviewed-notice")).toBeTruthy();
+    });
+});
+
+describe("OrgPositionsSection affiliation labels", () => {
+    test("shows the notice once and tags each position by who wrote it", () => {
+        wrap([
+            { ...forPosition, source_kind: "organization" },
+            { ...againstPosition, source_kind: "news_article" },
+        ]);
+
+        expect(screen.getAllByText(PARITY_COPY.orgs.listNotice)).toHaveLength(1);
+        const tags = screen.getAllByTestId("org-position-source-tag").map((tag) => tag.props.children);
+        expect(tags.toSorted()).toEqual(["Compiled by Sway", "Posted by ACLU"]);
+    });
+
+    test("tags a position with no recorded origin as compiled by Sway", () => {
+        wrap([{ ...forPosition, source_kind: null }]);
+
+        expect(screen.getByTestId("org-position-source-tag").props.children).toBe(PARITY_COPY.orgs.compiledBySway);
+    });
+
+    test("shows no notice when there are no positions", () => {
+        wrap([]);
+
+        expect(screen.queryByText(PARITY_COPY.orgs.listNotice)).toBeNull();
+    });
+});
+
+describe("OrgPositionsSection source line", () => {
+    const renderWith = (position: OrgPosition, onOpenUrl = jest.fn()) => {
+        render(
+            <ThemeProvider initialMode="light">
+                <OrgPositionsSection positions={[position]} onOpenUrl={onOpenUrl} />
+            </ThemeProvider>,
+        );
+        return onOpenUrl;
+    };
+
+    test("a news position with a URL opens its article", () => {
+        const onOpenUrl = renderWith({
+            ...forPosition,
+            source_kind: "news_article",
+            source_url: "https://news.example/story",
+        });
+
+        fireEvent.press(screen.getByRole("link", { name: PARITY_COPY.orgs.sourceNewsArticle }));
+        expect(onOpenUrl).toHaveBeenCalledWith("https://news.example/story");
+    });
+
+    test("a testimony position without a URL shows the label alone", () => {
+        renderWith({ ...forPosition, source_kind: "hearing_testimony", source_url: null });
+
+        expect(screen.getByText(PARITY_COPY.orgs.sourceHearingTestimony)).toBeTruthy();
+        expect(screen.queryByRole("link", { name: PARITY_COPY.orgs.sourceHearingTestimony })).toBeNull();
+    });
+
+    test.each(["organization", "sway_admin", null] as const)("a %s position shows no source line", (sourceKind) => {
+        renderWith({ ...forPosition, source_kind: sourceKind, source_url: "https://news.example/story" });
+
+        expect(screen.queryByTestId("org-position-source")).toBeNull();
     });
 });

@@ -91,6 +91,9 @@ class Organizations::BaseController < ApplicationController
               summary: p.summary_for_readers,
               # @lat: [[ai-unreviewed-notice-component-design#The server sends a derived boolean, not the source text]]
               summary_ai_unreviewed: p.summary_ai_unreviewed?,
+              # @lat: [[news-org-position-persistence#Position origin and affiliation]]
+              source_kind: p.source_kind,
+              source_url: p.source_url,
               bill: p.bill.to_sway_json
             }
           end

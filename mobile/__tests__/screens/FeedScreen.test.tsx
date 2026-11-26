@@ -268,7 +268,7 @@ describe("FeedScreen", () => {
         expect(screen.getByText(PARITY_COPY.feed.voteLabels.differ)).toBeTruthy();
 
         expect(screen.getByText(/Maryland Renters United/)).toBeTruthy();
-        expect(screen.getByText(/supports a Maryland bill/)).toBeTruthy();
+        expect(screen.getByText(/Sway recorded that Maryland Renters United supports a Maryland bill/)).toBeTruthy();
 
         expect(screen.getByText(PARITY_COPY.feed.legislativeTermBegan("Maryland"))).toBeTruthy();
 

@@ -20,10 +20,11 @@ import BillRowLink from "app/frontend/components/bill/BillRowLink";
 interface IProps {
     position: IPositionWithBill;
     organizationId: number;
+    organizationName: string;
     isAdmin: boolean;
 }
 
-const PositionCard: React.FC<IProps> = ({ position, organizationId, isAdmin }) => {
+const PositionCard: React.FC<IProps> = ({ position, organizationId, organizationName, isAdmin }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [support, setSupport] = useState<string>(position.support);
     const [summary, setSummary] = useState<string>(position.summary ?? "");
@@ -131,6 +132,9 @@ const PositionCard: React.FC<IProps> = ({ position, organizationId, isAdmin }) =
                         summary={position.summary}
                         summaryAiUnreviewed={position.summary_ai_unreviewed}
                         className="text-sm"
+                        organizationName={organizationName}
+                        sourceKind={position.source_kind}
+                        sourceUrl={position.source_url}
                     />
                 )}
                 {isAdmin && (

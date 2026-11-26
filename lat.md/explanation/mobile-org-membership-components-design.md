@@ -14,12 +14,12 @@ One organization on a card, with the control for tracking it.
 What the card offers:
 
 - a track control with three states: Track, Tracking, and Member
-- no follower count: the card shows only the name and the locale slug
+- the managed label when the organization manages its positions on Sway, and no follower count
 - tapping Track while signed out opens AuthPromptSheet, headed "Sign in to
   track", rather than calling the server
 - a Preferences button that opens OrgPreferenceSheet
 
-Membership comes ONLY from is_member_of_org_ids, never from whether a follow row exists. A member sees the "Member" label and the "Preferences" button and no way to unfollow, even when they have no follow row at all.
+Membership comes ONLY from is_member_of_org_ids, never from whether a follow row exists. A member sees the "Member" label and the "Preferences" button and no way to stop tracking, even when they have no follow row at all.
 
 How it looks:
 
@@ -86,12 +86,13 @@ Hierarchical resolution rules prioritizing organization-specific alert settings 
 
 Visual and interactive states rendered by the follow button across unfollowed, active, pending, and member-restricted conditions.
 
+- No follower count; the managed label, when present, sits under the locale slug.
 - The track control. Signed-out users see the Track button too; tapping it opens
   AuthPromptSheet instead of calling the server.
 - The member case, decided by isMember alone and never by followId. A member with no
-  follow row still reads as Member. There is no unfollow here, only the Preferences
+  follow row still reads as Member. There is no Stop tracking here, only the Preferences
   button.
-- Tracking but not a member: the button reads "Tracking", and tapping it untracks.
+- Tracking but not a member: the button reads "Tracking", screen readers hear "Stop tracking {name}", and tapping it stops tracking.
 - Not tracking, or signed out: the accent-coloured Track button. A signed-out tap
   opens AuthPromptSheet, not the API.
 

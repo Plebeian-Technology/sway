@@ -14,7 +14,7 @@ RSpec.describe "Public::OrganizationsController", type: :request do
   let(:user) { create(:user).tap { |u| complete_registration_with_active_link(u) } }
 
   describe "GET /public/organizations" do
-    it "is reachable without authentication and returns active orgs" do
+    it "is reachable without authentication and returns every locale's orgs as JSON when no locale is given" do
       create(:organization, name: "Alpha", sway_locale: sway_locale)
       create(:organization, name: "Beta", sway_locale: other_locale)
 
@@ -52,6 +52,63 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(body[:applied_filters][:sway_locale_id]).to eq(sway_locale.id.to_s)
     end
 
+    describe "?org_search=" do
+      def org_names_for(params)
+        get "/public/organizations", params: params, headers: {"Accept" => "application/json"}
+        JSON.parse(response.body, symbolize_names: true)[:organizations].pluck(:name)
+      end
+
+      it "returns only organizations whose name contains the text, in any case" do
+        create(:organization, name: "Housing Coalition", sway_locale: sway_locale)
+        create(:organization, name: "Lighthouse Fund", sway_locale: sway_locale)
+        create(:organization, name: "Beta", sway_locale: sway_locale)
+
+        expect(org_names_for(org_search: "HOUS")).to contain_exactly("Housing Coalition", "Lighthouse Fund")
+      end
+
+      it "intersects with the locale filter" do
+        create(:organization, name: "Housing Baltimore", sway_locale: sway_locale)
+        create(:organization, name: "Housing Annapolis", sway_locale: other_locale)
+
+        expect(org_names_for(org_search: "hous", sway_locale_id: sway_locale.id))
+          .to contain_exactly("Housing Baltimore")
+      end
+
+      it "treats % and _ as literal characters" do
+        create(:organization, name: "50% Coalition", sway_locale: sway_locale)
+        create(:organization, name: "500 Club", sway_locale: sway_locale)
+        create(:organization, name: "a_b Group", sway_locale: sway_locale)
+        create(:organization, name: "axb Group", sway_locale: sway_locale)
+
+        expect(org_names_for(org_search: "50%")).to contain_exactly("50% Coalition")
+        expect(org_names_for(org_search: "a_b")).to contain_exactly("a_b Group")
+      end
+
+      it "ignores org_search sent as an array or a hash instead of failing" do
+        create(:organization, name: "Alpha", sway_locale: sway_locale)
+        create(:organization, name: "Beta", sway_locale: sway_locale)
+
+        ["org_search[]=a", "org_search[name]=a"].each do |query|
+          get "/public/organizations?#{query}", headers: {"Accept" => "application/json"}
+          body = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to have_http_status(:ok)
+          expect(body[:organizations].pluck(:name)).to contain_exactly("Alpha", "Beta")
+          expect(body[:applied_filters][:org_search]).to be_nil
+        end
+      end
+
+      it "echoes the search text in applied_filters, nil when absent" do
+        get "/public/organizations", params: {org_search: "hous"}, headers: {"Accept" => "application/json"}
+        expect(JSON.parse(response.body, symbolize_names: true)[:applied_filters][:org_search]).to eq("hous")
+
+        get "/public/organizations", headers: {"Accept" => "application/json"}
+        applied_filters = JSON.parse(response.body, symbolize_names: true)[:applied_filters]
+        expect(applied_filters).to have_key(:org_search)
+        expect(applied_filters[:org_search]).to be_nil
+      end
+    end
+
     # @lat: [[sway-google-cloud-storage#A stored file name is not an address]]
     it "serializes a bare bucket icon_url as a full escaped storage address" do
       bucket = SwayGoogleCloudStorage::BUCKETS[:ASSETS]
@@ -66,14 +123,13 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       )
     end
 
-    # follower_count is one of PUBLIC_FIELDS, so to_public_json includes it.
-    it "renders the explicit whitelist including follower_count (no admin/internal fields leak)" do
+    it "renders the explicit whitelist (no admin/internal fields leak)" do
       create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations", headers: {"Accept" => "application/json"}
       body = JSON.parse(response.body, symbolize_names: true)
       payload = body[:organizations].first
-      expect(payload.keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug follower_count])
+      expect(payload.keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug managed_on_sway])
     end
 
     # A signed-out request must NOT get the follow or membership props.
@@ -192,14 +248,13 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(names).to contain_exactly("Followed")
     end
 
-    # follower_count is part of each org's payload.
-    it "follower_count is present in the org payload" do
+    it "sends no follower count in the org payload" do
       create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations", headers: {"Accept" => "application/json"}
 
       body = JSON.parse(response.body, symbolize_names: true)
-      expect(body[:organizations].first).to have_key(:follower_count)
+      expect(body[:organizations].first).not_to have_key(:follower_count)
     end
 
     # A mobile request with a bearer token gets the follow and membership props too.
@@ -229,10 +284,34 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(inertia).to render_component(Pages::ORGANIZATIONS)
       expect(inertia.props.keys).to include("organizations", "applied_filters")
     end
+
+    it "lists only the current locale's organizations on an Inertia request with no locale parameter" do
+      create(:organization, name: "Alpha", sway_locale: sway_locale)
+      create(:organization, name: "Beta", sway_locale: other_locale)
+      cookies_hash[:sway_locale_id] = other_locale.id.to_s
+
+      get "/public/organizations"
+
+      expect(inertia).to render_component(Pages::ORGANIZATIONS)
+      expect(inertia.props[:organizations].pluck(:name)).to contain_exactly("Beta")
+      expect(inertia.props[:applied_filters][:sway_locale_id]).to eq(other_locale.id.to_s)
+      expect(inertia.props[:applied_filters][:locale_id]).to eq(other_locale.id.to_s)
+    end
+
+    it "lists the requested locale's organizations on an Inertia request with ?sway_locale_id=" do
+      create(:organization, name: "Alpha", sway_locale: sway_locale)
+      create(:organization, name: "Beta", sway_locale: other_locale)
+      cookies_hash[:sway_locale_id] = other_locale.id.to_s
+
+      get "/public/organizations", params: {sway_locale_id: sway_locale.id}
+
+      expect(inertia.props[:organizations].pluck(:name)).to contain_exactly("Alpha")
+      expect(inertia.props[:applied_filters][:sway_locale_id]).to eq(sway_locale.id.to_s)
+    end
   end
 
   describe "GET /public/organizations/:id" do
-    it "returns the org payload with explicit fields including follower_count" do
+    it "returns the org payload with explicit fields" do
       org = create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations/#{org.id}", headers: {"Accept" => "application/json"}
@@ -240,7 +319,7 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body, symbolize_names: true)
       expect(body[:organization][:name]).to eq("Alpha")
-      expect(body[:organization].keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug follower_count])
+      expect(body[:organization].keys).to match_array(%i[id name icon_url sway_locale_id created_at sway_locale_slug managed_on_sway])
     end
 
     it "returns active bill positions via to_public_json" do
@@ -260,7 +339,25 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       body = JSON.parse(response.body, symbolize_names: true)
       expect(body[:organization_bill_positions].length).to eq(1)
       pos_keys = body[:organization_bill_positions].first.keys
-      expect(pos_keys).to match_array(%i[id organization_id bill_id support summary summary_ai_unreviewed active created_at])
+      expect(pos_keys).to match_array(
+        %i[id organization_id bill_id support summary summary_ai_unreviewed active created_at source_kind source_url]
+      )
+    end
+
+    it "sends each position's source kind and URL, null when the origin is unknown" do
+      org = create(:organization, name: "Alpha", sway_locale: sway_locale)
+      create(:organization_bill_position, organization: org, bill: create(:bill, sway_locale: sway_locale),
+        active: true, source_kind: "news_article", source_url: "https://example.com/article")
+      create(:organization_bill_position, organization: org, bill: create(:bill, sway_locale: sway_locale),
+        active: true)
+
+      get "/public/organizations/#{org.id}", headers: {"Accept" => "application/json"}
+
+      positions = JSON.parse(response.body, symbolize_names: true)[:organization_bill_positions]
+      expect(positions.map { |p| p.slice(:source_kind, :source_url) }).to contain_exactly(
+        {source_kind: "news_article", source_url: "https://example.com/article"},
+        {source_kind: nil, source_url: nil}
+      )
     end
 
     # A signed-out show request must NOT include the follow or membership props.
@@ -356,14 +453,13 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       expect(body).not_to have_key(:current_user_org_defaults)
     end
 
-    # follower_count is part of the show payload.
-    it "follower_count is present in the show payload" do
+    it "sends no follower count in the show payload" do
       org = create(:organization, name: "Alpha", sway_locale: sway_locale)
 
       get "/public/organizations/#{org.id}", headers: {"Accept" => "application/json"}
 
       body = JSON.parse(response.body, symbolize_names: true)
-      expect(body[:organization]).to have_key(:follower_count)
+      expect(body[:organization]).not_to have_key(:follower_count)
     end
 
     # A mobile bearer request to show gets current_user_follow_id and is_member_of_org_ids.
@@ -433,6 +529,34 @@ RSpec.describe "Public::OrganizationsController", type: :request do
       # would read exactly like one holding its cost steady.
       expect(small).to be_positive, "measured no icon reads at all, so this compares nothing"
       expect(count_asset_queries.call(6)).to eq(small)
+    end
+  end
+
+  # @lat: [[query-plan-indexes#A query-cost guard measures growth, not a ceiling]]
+  describe "listing organizations costs the same number of queries however many there are" do
+    it "runs the same number of queries for 3 organizations as for 30" do
+      count_queries = lambda do |org_count|
+        sway_locale = create(:sway_locale, :baltimore)
+        Organization.destroy_all
+        org_count.times do |i|
+          org = create(:organization, name: "Counted Org #{i}", sway_locale: sway_locale)
+          create(:user_organization_membership, organization: org, status: i.even? ? "active" : "removed")
+        end
+
+        seen = 0
+        subscription = ActiveSupport::Notifications.subscribe("sql.active_record") do |*, payload|
+          next if /SCHEMA|TRANSACTION/.match?(payload[:name].to_s)
+
+          seen += 1
+        end
+        get "/public/organizations", headers: {"Accept" => "application/json"}
+        ActiveSupport::Notifications.unsubscribe(subscription)
+
+        expect(response).to have_http_status(:ok)
+        seen
+      end
+
+      expect(count_queries.call(30)).to eq(count_queries.call(3))
     end
   end
 end

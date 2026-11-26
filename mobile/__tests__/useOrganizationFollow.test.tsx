@@ -153,7 +153,7 @@ describe("useOrganizationFollow", () => {
         // @lat: [[mobile-organization-follow-test-notes#useOrganizationFollow.test.tsx]]
         await act(async () => {
             await expect(result.current.updatePreferences({ notify_on_new_position: true })).rejects.toThrow(
-                "Follow not yet resolved",
+                "Tracking is not ready yet",
             );
         });
 
@@ -188,7 +188,7 @@ describe("useOrganizationFollow", () => {
         expect(result.current.followId).toBe(-1); // the placeholder is in place
 
         await act(async () => {
-            await expect(result.current.unfollow()).rejects.toThrow("Follow ID not yet resolved");
+            await expect(result.current.unfollow()).rejects.toThrow("Tracking is not ready yet");
         });
         expect(mockDelete).not.toHaveBeenCalled();
         // @lat: [[mobile-organization-follow-test-notes#useOrganizationFollow.test.tsx]]

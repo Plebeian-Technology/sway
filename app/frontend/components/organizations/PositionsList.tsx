@@ -8,12 +8,19 @@ import type { IPositionWithBill } from "app/frontend/hooks/users/useUserOrganiza
 
 interface IProps {
     organizationId: number;
+    organizationName: string;
     positions: IPositionWithBill[];
     isAdmin: boolean;
     showAddButton?: boolean;
 }
 
-const PositionsList: React.FC<IProps> = ({ organizationId, positions, isAdmin, showAddButton = true }) => {
+const PositionsList: React.FC<IProps> = ({
+    organizationId,
+    organizationName,
+    positions,
+    isAdmin,
+    showAddButton = true,
+}) => {
     return (
         <div className="space-y-4">
             {showAddButton && isAdmin && (
@@ -34,6 +41,7 @@ const PositionsList: React.FC<IProps> = ({ organizationId, positions, isAdmin, s
                         key={position.id}
                         position={position}
                         organizationId={organizationId}
+                        organizationName={organizationName}
                         isAdmin={isAdmin}
                     />
                 ))

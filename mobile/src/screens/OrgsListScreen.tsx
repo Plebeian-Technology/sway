@@ -1,6 +1,6 @@
 // @lat: [[mobile-orgs-list-screen#OrgsListScreen]]
 import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, RefreshControl, ScrollView, View } from "react-native";
+import { FlatList, RefreshControl, ScrollView, Text, View } from "react-native";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 
 import BrandHeader from "../components/BrandHeader";
@@ -73,8 +73,12 @@ export default function OrgsListScreen({ navigation }: Props) {
         [navigation, isSignedIn, data],
     );
 
-    const localePicker = (
-        <View className="py-3">
+    const listHeader = (
+        <View className="py-3 gap-3">
+            {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Organization pages say whether the organization takes part]] */}
+            <Text className="px-4 text-sm font-open-sans-light text-muted-foreground-light dark:text-muted-foreground-dark">
+                {PARITY_COPY.orgs.listNotice}
+            </Text>
             <SwayLocalePickerSheet
                 locales={swayLocales ?? []}
                 currentLocale={activeLocale ?? null}
@@ -96,7 +100,7 @@ export default function OrgsListScreen({ navigation }: Props) {
 
             {orgs.length === 0 ? (
                 <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-                    {localePicker}
+                    {listHeader}
                     <EmptyState title={PARITY_COPY.orgs.noneFound(formattedSwayLocaleName)} testID="orgs-empty-state" />
                 </ScrollView>
             ) : (
@@ -106,7 +110,7 @@ export default function OrgsListScreen({ navigation }: Props) {
                     keyExtractor={keyExtractor}
                     renderItem={renderItem}
                     // @lat: [[mobile-chrome-and-scroll-layout#Filters live inside the list, not above it]]
-                    ListHeaderComponent={localePicker}
+                    ListHeaderComponent={listHeader}
                     contentContainerStyle={{ paddingBottom: 24 }}
                     refreshControl={
                         <RefreshControl

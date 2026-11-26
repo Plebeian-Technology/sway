@@ -351,7 +351,7 @@ describe("Empirical Challenge Suite: News Article Testimony Web Integration", ()
                     isAwaitingScoreUpdate={false}
                 />,
             );
-            expect(screen.getByText("No statements of support or opposition are on file yet.")).toBeInTheDocument();
+            expect(screen.getByText(PARITY_COPY.orgs.noBillPositions)).toBeInTheDocument();
             u5();
         });
 

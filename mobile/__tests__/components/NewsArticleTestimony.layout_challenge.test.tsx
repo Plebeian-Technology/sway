@@ -550,14 +550,12 @@ describe("NewsArticleTestimony Layout & Volumetric Challenge Suite", () => {
                             support: "FOR",
                             organization: { name: "Supporters Org" },
                             summary: "Org Support",
-                            origin: "Sway-compiled",
                         },
                         {
                             id: 2,
                             support: "AGAINST",
                             organization: { name: "Opponents Org" },
                             summary: "Org Oppose",
-                            origin: "Sway-compiled",
                         },
                     ]}
                     newsTestimonies={mixedTestimonies}
@@ -568,7 +566,7 @@ describe("NewsArticleTestimony Layout & Volumetric Challenge Suite", () => {
             expect(root).toBeTruthy();
 
             const cards = (root.children ?? []).filter(
-                (child) => typeof child === "object" && child !== null,
+                (child) => typeof child === "object" && child !== null && (child as { type?: string }).type === "View",
             ) as JsonNode[];
             expect(cards).toHaveLength(2);
 

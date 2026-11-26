@@ -23,6 +23,7 @@ jest.mock("../../src/api/client", () => ({
 }));
 
 import React from "react";
+import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { render, screen } from "@testing-library/react-native";
 import { ThemeProvider } from "../../src/theme/ThemeProvider";
 import { OrgCard } from "../../src/components/OrgCard";
@@ -68,5 +69,17 @@ describe("OrgCard (Phase 35 D-09 Card-primitive refactor + Phase 61 follow resto
     test("snapshot matches (signed-out view)", () => {
         const { toJSON } = wrap(<OrgCard org={BASE_ORG} onPress={() => {}} isSignedIn={false} />);
         expect(toJSON()).toMatchSnapshot();
+    });
+});
+
+describe("OrgCard managed label", () => {
+    test("shows the managed label for an organization that manages its positions on Sway", () => {
+        wrap(<OrgCard org={{ ...BASE_ORG, managed_on_sway: true }} onPress={() => {}} />);
+        expect(screen.getByText(PARITY_COPY.orgs.managedOnSway("Civic Alliance"))).toBeTruthy();
+    });
+
+    test("shows no managed label for an unmanaged organization", () => {
+        wrap(<OrgCard org={{ ...BASE_ORG, managed_on_sway: false }} onPress={() => {}} />);
+        expect(screen.queryByText(PARITY_COPY.orgs.managedOnSway("Civic Alliance"))).toBeNull();
     });
 });

@@ -461,8 +461,9 @@ declare module "sway" {
             summary: string | null;
             // @lat: [[ai-unreviewed-notice-component-design#AiUnreviewedNotice component design#The server sends a derived boolean, not the source text]]
             summary_ai_unreviewed?: boolean;
-            origin: "Org-posted" | "Sway-compiled";
-            origin_url?: string | null;
+            // @lat: [[news-org-position-persistence#Position origin and affiliation]]
+            source_kind: "hearing_testimony" | "news_article" | "sway_admin" | "organization" | null;
+            source_url: string | null;
         }
 
         // @lat: [[organization-position-removal#Bill reader positions include their organization]]
@@ -485,6 +486,7 @@ declare module "sway" {
             sway_locale_id: number;
             sway_locale_slug?: string | null;
             created_at?: string;
+            managed_on_sway: boolean;
         }
 
         // @lat: [[organization-follows-controller#The follow preference payload matches the saved controls]]
@@ -523,8 +525,9 @@ declare module "sway" {
             summary_ai_unreviewed?: boolean;
             active: boolean;
             created_at?: string;
-            origin: "Org-posted" | "Sway-compiled";
-            origin_url?: string | null;
+            // @lat: [[news-org-position-persistence#Position origin and affiliation]]
+            source_kind: "hearing_testimony" | "news_article" | "sway_admin" | "organization" | null;
+            source_url: string | null;
         }
 
         interface IFormField<T> {

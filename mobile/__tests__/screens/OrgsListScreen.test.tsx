@@ -28,6 +28,7 @@ jest.mock("expo-haptics", () => ({
 }));
 
 import React from "react";
+import { PARITY_COPY } from "../../../app/frontend/sway_constants/parityCopy";
 import { render, screen } from "@testing-library/react-native";
 import OrgsListScreen from "../../src/screens/OrgsListScreen";
 
@@ -109,5 +110,23 @@ describe("OrgsListScreen (Phase 35 parity rebuild — RED)", () => {
         mockOnlineOrgs([]);
         const { toJSON } = render(<OrgsListScreen navigation={makeNav()} />);
         expect(toJSON()).toMatchSnapshot();
+    });
+});
+
+describe("OrgsListScreen affiliation notice", () => {
+    beforeEach(() => {
+        mockUseBootstrap.mockReturnValue({ bootstrap: BASE_BOOTSTRAP, loading: false });
+    });
+
+    test("shows the notice above the list", () => {
+        mockOnlineOrgs([ORG_1]);
+        render(<OrgsListScreen navigation={makeNav()} />);
+        expect(screen.getByText(PARITY_COPY.orgs.listNotice)).toBeTruthy();
+    });
+
+    test("shows the notice with an empty list", () => {
+        mockOnlineOrgs([]);
+        render(<OrgsListScreen navigation={makeNav()} />);
+        expect(screen.getByText(PARITY_COPY.orgs.listNotice)).toBeTruthy();
     });
 });

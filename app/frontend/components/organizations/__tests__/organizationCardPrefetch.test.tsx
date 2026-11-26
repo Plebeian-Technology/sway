@@ -48,7 +48,6 @@ import { PREFETCH_CACHE_FOR } from "app/frontend/sway_constants";
 const ORGANIZATION = {
     id: 11,
     name: "Baltimore Tenants Union",
-    follower_count: 4,
     icon_url: null,
 } as unknown as sway.IPublicOrganization;
 
@@ -114,7 +113,14 @@ describe("organization links warm their destination", () => {
 
 describe("the membership page's bill links", () => {
     it("warms the bill a position card names", () => {
-        render(<PositionCard position={POSITION as never} organizationId={11} isAdmin={false} />);
+        render(
+            <PositionCard
+                position={POSITION as never}
+                organizationId={11}
+                organizationName="Baltimore Tenants Union"
+                isAdmin={false}
+            />,
+        );
 
         const link = screen.getByRole("link");
         expect(link).toHaveAttribute("href", "/bills/21");

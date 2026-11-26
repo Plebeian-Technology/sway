@@ -1612,6 +1612,20 @@ RSpec.describe ApproveOrgPositionService do
       expect(bill.bill_llm_provisioning.reload.draft_org_positions).to eq([])
     end
 
+    it "records the position as compiled from a news article, with the draft's source URL" do
+      create(:bill_llm_provisioning, bill: bill, draft_org_positions: [news_draft])
+
+      described_class.new(
+        bill: bill, actor: actor, org_name: "Baltimore Tenants Union", support: "support",
+        summary: "Supports fair housing legislation for tenants.", index: "0",
+        draft_org_name: "Baltimore Tenants Union"
+      ).call
+
+      position = OrganizationBillPosition.find_by!(bill: bill)
+      expect(position.source_kind).to eq("news_article")
+      expect(position.source_url).to eq("https://example.com/article")
+    end
+
     it "refuses approval with :organization_has_users when matched organization has user memberships" do
       org = create(:organization, name: "Baltimore Tenants Union", sway_locale: sway_locale)
       create(:user_organization_membership, organization: org, user: actor)
@@ -1789,6 +1803,73 @@ RSpec.describe ApproveOrgPositionService do
       expect(position&.summary_for_readers).to be_nil
       expect(position&.ai_summary).to be_nil
       expect(bill.bill_llm_provisioning.reload.draft_org_positions).to eq([])
+    end
+  end
+
+  describe "recording where the position came from" do
+    it "records a testimony draft as hearing testimony with no URL" do
+      bill = create(:bill)
+      create(:bill_llm_provisioning, :with_testimony, bill: bill, draft_org_positions: [{"org_name" => "First"}])
+
+      outcome = described_class.new(
+        bill: bill, actor: create(:user),
+        org_name: "First", support: "support", summary: "x", index: "0", draft_org_name: "First"
+      ).call
+
+      expect(outcome).to eq(:approved)
+      position = OrganizationBillPosition.find_by!(bill: bill)
+      expect(position.source_kind).to eq("hearing_testimony")
+      expect(position.source_url).to be_nil
+    end
+
+    it "records a claimed affiliation from a testimony letter as hearing testimony with no URL" do
+      bill = create(:bill)
+      body = "I write on behalf of the Waverly Tenants Alliance."
+      create(:bill_llm_provisioning, :with_testimony, bill: bill, cleaned_testimony: {
+        "version" => 1,
+        "text" => body,
+        "letters" => [{"position" => 0, "character_offset" => 0, "characters" => body.length,
+                       "source_kind" => "person_speaking_for_org"}]
+      })
+
+      outcome = described_class.new(
+        bill: bill, actor: create(:user), org_name: "Waverly Tenants Alliance", support: "support",
+        summary: "Backs the bill", claimed_affiliation_position: 0
+      ).call
+
+      expect(outcome).to eq(:approved)
+      position = OrganizationBillPosition.find_by!(bill: bill)
+      expect(position.source_kind).to eq("hearing_testimony")
+      expect(position.source_url).to be_nil
+    end
+
+    it "records an approval that names no draft as a Sway admin entry with no URL" do
+      bill = create(:bill)
+
+      described_class.new(
+        bill: bill, actor: create(:user),
+        org_name: "Brand New Org", support: "support", summary: "Backs the bill"
+      ).call
+
+      position = OrganizationBillPosition.find_by!(bill: bill)
+      expect(position.source_kind).to eq("sway_admin")
+      expect(position.source_url).to be_nil
+    end
+
+    it "replaces an earlier origin when Sway approves a new position for the same organization" do
+      bill = create(:bill)
+      organization = create(:organization, name: "Brand New Org", sway_locale: bill.sway_locale)
+      create(:organization_bill_position, bill: bill, organization: organization,
+        source_kind: "news_article", source_url: "https://example.com/old")
+
+      described_class.new(
+        bill: bill, actor: create(:user),
+        org_name: "Brand New Org", support: "support", summary: "Backs the bill"
+      ).call
+
+      position = OrganizationBillPosition.find_by!(bill: bill)
+      expect(position.source_kind).to eq("sway_admin")
+      expect(position.source_url).to be_nil
     end
   end
 end

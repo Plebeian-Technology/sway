@@ -68,94 +68,9 @@ RSpec.describe Organization, type: :model do
     end
   end
 
-  # An org's followers are its active members plus anyone who explicitly followed it,
-  # counted once each even if they are both.
-  describe "#follower_set and #follower_count" do
-    let(:org) { create(:organization) }
-
-    it "returns empty array and 0 for an org with no members or follows" do
-      expect(org.follower_set).to eq([])
-      expect(org.follower_count).to eq(0)
-    end
-
-    it "includes active members in the follower set" do
-      member_user = create(:user)
-      create(:user_organization_membership, user: member_user, organization: org, status: "active")
-
-      expect(org.follower_set).to include(member_user.id)
-      expect(org.follower_count).to eq(1)
-    end
-
-    it "includes explicit non-member follows in the follower set" do
-      follower_user = create(:user)
-      create(:organization_follow, user: follower_user, organization: org)
-
-      expect(org.follower_set).to include(follower_user.id)
-      expect(org.follower_count).to eq(1)
-    end
-
-    it "dedupes a user who is both an active member and an explicit follower" do
-      dual_user = create(:user)
-      create(:user_organization_membership, user: dual_user, organization: org, status: "active")
-      create(:organization_follow, user: dual_user, organization: org)
-
-      expect(org.follower_set.count(dual_user.id)).to eq(1)
-      expect(org.follower_count).to eq(1)
-    end
-
-    it "returns M + F (deduplicated) when M active members and F non-member follows" do
-      member1 = create(:user)
-      member2 = create(:user)
-      follower1 = create(:user)
-      create(:user_organization_membership, user: member1, organization: org, status: "active")
-      create(:user_organization_membership, user: member2, organization: org, status: "active")
-      create(:organization_follow, user: follower1, organization: org)
-
-      expect(org.follower_count).to eq(3)
-      expect(org.follower_set).to contain_exactly(member1.id, member2.id, follower1.id)
-    end
-
-    it "excludes pending members from the follower set" do
-      pending_user = create(:user)
-      create(:user_organization_membership, user: pending_user, organization: org, status: "pending")
-
-      expect(org.follower_set).not_to include(pending_user.id)
-    end
-
-    it "excludes removed members from the follower set" do
-      removed_user = create(:user)
-      create(:user_organization_membership, user: removed_user, organization: org, status: "removed")
-
-      expect(org.follower_set).not_to include(removed_user.id)
-    end
-
-    it "includes muted explicit followers in follower_count (muted != unfollowed)" do
-      muted_follower = create(:user)
-      create(:organization_follow, :muted, user: muted_follower, organization: org)
-
-      # Muting only silences notifications. The person still follows the org, so they count.
-      expect(org.follower_set).to include(muted_follower.id)
-      expect(org.follower_count).to eq(1)
-    end
-  end
-
-  # follower_count is one of the org's public fields, so to_public_json hands it out.
   describe "#to_public_json" do
-    let(:org) { create(:organization) }
-
-    it "includes follower_count as an Integer" do
-      result = org.to_public_json
-      expect(result).to have_key(:follower_count)
-      expect(result[:follower_count]).to be_a(Integer)
-    end
-
-    it "follower_count in to_public_json reflects the deduped set" do
-      active_user = create(:user)
-      create(:user_organization_membership, user: active_user, organization: org, status: "active")
-      create(:organization_follow, user: active_user, organization: org)
-
-      # One person who is both a member and a follower still counts as 1.
-      expect(org.to_public_json[:follower_count]).to eq(1)
+    it "sends no follower count" do
+      expect(create(:organization).to_public_json).not_to have_key(:follower_count)
     end
   end
 
@@ -272,51 +187,6 @@ RSpec.describe Organization, type: :model do
 
       # At most 3 queries: load members, load follow rows, load those users in one batch.
       expect(query_count).to be <= 3
-    end
-  end
-
-  # Counts followers for a whole list of orgs in one query, still counting each person once.
-  describe ".follower_counts_for" do
-    it "returns deduped counts keyed by org id" do
-      org1 = create(:organization, name: "Counts 1")
-      org2 = create(:organization, name: "Counts 2")
-      u1 = create(:user)
-      u2 = create(:user)
-      create(:organization_follow, user: u1, organization: org1)
-      create(:user_organization_membership, user: u2, organization: org1, status: "active")
-      create(:organization_follow, user: u1, organization: org2)
-
-      counts = Organization.follower_counts_for([org1.id, org2.id])
-      expect(counts[org1.id]).to eq(2)
-      expect(counts[org2.id]).to eq(1)
-    end
-
-    it "counts a user who is BOTH member and follower exactly once (matches #follower_count)" do
-      org = create(:organization, name: "Dedup org")
-      u = create(:user)
-      create(:organization_follow, user: u, organization: org)
-      create(:user_organization_membership, user: u, organization: org, status: "active")
-
-      expect(Organization.follower_counts_for([org.id])[org.id]).to eq(1)
-      expect(org.follower_count).to eq(1)
-    end
-
-    it "returns an empty hash for an empty id set" do
-      expect(Organization.follower_counts_for([])).to eq({})
-    end
-
-    it "issues a single grouped query for many orgs (no N+1)" do
-      orgs = Array.new(3) { |i| create(:organization, name: "NQ #{i}") }
-      orgs.each { |o| create(:organization_follow, organization: o) }
-
-      query_count = 0
-      counter = ->(*, **) { query_count += 1 }
-      ActiveSupport::Notifications.subscribed(counter, "sql.active_record") do
-        Organization.follower_counts_for(orgs.map(&:id))
-      end
-
-      # One combined, grouped query covering every org — not one query per org.
-      expect(query_count).to be <= 2
     end
   end
 end

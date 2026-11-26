@@ -16,7 +16,7 @@ Inertia web layouts seat published opinion commentary within the support and opp
 
 Published commentary carries clear visual labeling to prevent readers from conflating external opinion journalism with official committee submissions.
 
-Testimony entries carry explicit news commentary stamps. While organizational positions represent official filings made by registered advocacy groups, news commentary represents published perspectives from columnists, guest contributors, or editorial boards. Preserving distinct author and publisher attribution prevents an individual columnist's viewpoint from being mistaken for an official newspaper endorsement.
+Testimony entries carry explicit news commentary stamps. While organizational positions are stances Sway records for advocacy groups, most of them compiled from public testimony and news reporting ([[organization-affiliation-labels]]), news commentary represents published perspectives from columnists, guest contributors, or editorial boards. Preserving distinct author and publisher attribution prevents an individual columnist's viewpoint from being mistaken for an official newspaper endorsement.
 
 ## Attribution fidelity and secure citation navigation
 

@@ -1,12 +1,24 @@
 import { usePage, usePoll } from "@inertiajs/react";
 
-import { useSwayLocales } from "app/frontend/hooks/useSwayLocales";
-import { localeLabelFor } from "app/frontend/sway_utils";
+import { useDebouncedUrlSearch } from "app/frontend/hooks/useDebouncedUrlSearch";
+import { useSwayLocale, useSwayLocales } from "app/frontend/hooks/useSwayLocales";
+import { localeLabelFor, toFormattedLocaleName } from "app/frontend/sway_utils";
 import OrganizationCard from "app/frontend/components/organizations/OrganizationCard";
+import SwayLocalePicker from "app/frontend/components/locales/SwayLocalePicker";
+import { Input } from "app/frontend/components/ui/input";
+import { Label } from "app/frontend/components/ui/label";
+import { PARITY_COPY } from "app/frontend/sway_constants/parityCopy";
 import { sway } from "sway";
+
+interface IAppliedFilters {
+    locale_id?: string | null;
+    sway_locale_id?: string | null;
+    org_search?: string | null;
+}
 
 interface IProps {
     organizations: sway.IPublicOrganization[];
+    applied_filters?: IAppliedFilters;
     user_follows?: sway.IOrganizationFollowPageProps["user_follows"];
     user_follow_prefs?: sway.IOrganizationFollowPageProps["user_follow_prefs"];
     current_user_org_defaults?: sway.IOrganizationFollowPageProps["current_user_org_defaults"];
@@ -24,8 +36,11 @@ const POLLING_PROPS = [
     "org_position_taken",
 ];
 
+const SEARCH_RELOAD_PROPS = [...POLLING_PROPS, "applied_filters"];
+
 const Organizations: React.FC<IProps> = ({
     organizations,
+    applied_filters,
     user_follows,
     user_follow_prefs,
     current_user_org_defaults,
@@ -33,10 +48,17 @@ const Organizations: React.FC<IProps> = ({
     org_position_taken = false,
 }) => {
     usePoll(15000, { only: POLLING_PROPS }, { background: "pause" });
-    const { sway_locales } = useSwayLocales();
+    const { sway_locales, options } = useSwayLocales();
+    const [swayLocale, getSwayLocale, pendingSwayLocaleId] = useSwayLocale();
     // @lat: [[public-organizations-endpoint#What a signed-out reader is never sent]]
     const { props } = usePage<sway.IPageProps>();
     const isSignedIn = Boolean(props.user?.id);
+    const { value: searchValue, onChange: searchOrganizations } = useDebouncedUrlSearch({
+        param: "org_search",
+        only: SEARCH_RELOAD_PROPS,
+        errorTitle: "Could not search the organizations.",
+    });
+    const appliedSearch = applied_filters?.org_search;
 
     const orgs = organizations ?? [];
 
@@ -44,9 +66,33 @@ const Organizations: React.FC<IProps> = ({
         <div className="space-y-6">
             <div className="space-y-2">
                 <h1 className="text-2xl font-black">Organizations</h1>
-                <p className="text-sm text-muted-foreground">
-                    Browse civic organizations and the positions they've taken on legislation.
-                </p>
+                <p className="text-sm text-muted-foreground">{PARITY_COPY.orgs.subtitle}</p>
+                {/* @lat: [[organization-affiliation-labels#Organization affiliation labels#Organization pages say whether the organization takes part]] */}
+                <p className="text-sm text-muted-foreground">{PARITY_COPY.orgs.listNotice}</p>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-2 px-4 py-3">
+                <Label htmlFor="organizations-locale" className="shrink-0">
+                    Locale
+                </Label>
+                <SwayLocalePicker
+                    id="organizations-locale"
+                    options={options}
+                    value={pendingSwayLocaleId ?? swayLocale?.id}
+                    onChange={getSwayLocale}
+                    className="min-w-0 flex-1"
+                />
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="organizations-search">Search organizations</Label>
+                <Input
+                    id="organizations-search"
+                    type="search"
+                    placeholder="Organization name"
+                    value={searchValue}
+                    onChange={(event) => searchOrganizations(event.target.value)}
+                />
             </div>
 
             {orgs.length ? (
@@ -83,7 +129,9 @@ const Organizations: React.FC<IProps> = ({
                     data-testid="public-organizations-empty"
                     className="rounded-xl border-neo border-dashed border-border-strong bg-surface-2 px-4 py-8 text-center text-sm text-muted-foreground"
                 >
-                    No organizations yet.
+                    {appliedSearch
+                        ? `No organizations match "${appliedSearch}".`
+                        : PARITY_COPY.orgs.noneFound(toFormattedLocaleName(swayLocale?.name ?? ""))}
                 </p>
             )}
         </div>

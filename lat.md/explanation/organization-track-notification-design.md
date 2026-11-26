@@ -23,7 +23,7 @@ A future fourth notification type wired into only one of the two branches theref
 
 `spec/system/organization_follows_spec.rb` covers what a user actually does, all the way through the real submit-redirect-reload cycle Inertia performs.
 
-The tricky corners — muted follows, digest emails, sending the same notification twice, approving positions in bulk — are covered by request, service, and job specs instead. Every check in this file looks at something observable — button state, follower count, badge text, or the database — never just the URL.
+The tricky corners — muted follows, digest emails, sending the same notification twice, approving positions in bulk — are covered by request, service, and job specs instead. Every check in this file looks at something observable — button state, badge text, or the database — never just the URL.
 
 ## Why seeding preferences lives on the model, not the controller
 
